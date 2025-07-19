@@ -52,7 +52,7 @@ Currently under personal development. No outside contributors yet.
 - [Filament Official Docs](https://filamentphp.com/docs)
 
 ## ✍️ Author
-Built with ❤️ by **Amirul** (Creative Designer (I think?) & Aspiring Dev)  
+Built with ❤️ by my personal AI assistant, **ChatGPT** (thank you so much, without it this project will be very slow progress), **Amirul** (Creative Designer (I think?) & Aspiring Dev)  
 GitHub: [@Amirul96shafiq](https://github.com/Amirul96shafiq)
 
 ## 🧼 How to Use It (Coming Soon)
