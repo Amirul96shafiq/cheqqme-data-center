@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('billing_address')->nullable();
 
             $table->timestamps();
-            $table->softDeletes(); // Enable trash/restore
+            $table->softDeletes(); // Enable trash/restore functionality
         });
     }
 
