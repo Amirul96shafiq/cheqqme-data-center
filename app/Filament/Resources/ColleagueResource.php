@@ -16,6 +16,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Get;
+use Illuminate\Support\Facades\Hash;
 
 class ColleagueResource extends Resource
 {
@@ -39,14 +42,18 @@ class ColleagueResource extends Resource
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
+                Toggle::make('change_password')
+                    ->label('Change password?')
+                    ->live(),
+
                 TextInput::make('password')
-                    ->label('Password')
+                    ->label('New Password')
                     ->password()
-                    ->required()
-                    ->minLength(5)
-                    ->maxLength(255)
-                    ->dehydrateStateUsing(fn ($state) => bcrypt($state))
-                    ->visible(fn ($livewire) => $livewire instanceof Pages\CreateColleague)
+                    ->visible(fn(Get $get) => $get('change_password'))
+                    ->nullable()
+                    ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
+                    ->dehydrated(fn($state) => filled($state))
+                    ->required(fn(string $context) => $context === 'create')
                     ->revealable(),
             ]);
     }
