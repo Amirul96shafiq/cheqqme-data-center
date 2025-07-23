@@ -45,10 +45,11 @@ class PhoneNumberResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('title')->searchable()->sortable(),
+                TextColumn::make('id')->sortable(),
+                TextColumn::make('title')->searchable()->sortable()->limit(10),
                 TextColumn::make('phone')->searchable(),
                 TextColumn::make('notes')->limit(30),
-                TextColumn::make('created_at')->dateTime()->sortable(),
+                TextColumn::make('created_at')->dateTime('d/m/y H:i')->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active

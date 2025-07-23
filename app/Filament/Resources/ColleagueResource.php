@@ -62,10 +62,11 @@ class ColleagueResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('id')->sortable(),
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('username')->sortable()->searchable(),
                 TextColumn::make('email')->sortable()->searchable(),
-                TextColumn::make('created_at')->label('Created')->dateTime()->sortable(),
+                TextColumn::make('created_at')->label('Created')->dateTime('d/m/y H:i')->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active
