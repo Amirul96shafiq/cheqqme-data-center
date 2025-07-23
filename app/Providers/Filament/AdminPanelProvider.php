@@ -18,6 +18,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Pages\Login;
+use App\Filament\Resources\PhoneNumberResource;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -29,6 +30,9 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->brandName('CheQQme Data Center')
             ->login(Login::class)
+            ->resources([
+                PhoneNumberResource::class, // Registering PhoneNumberResource
+            ])
             ->colors([
                 'primary' => Color::Amber,
             ])

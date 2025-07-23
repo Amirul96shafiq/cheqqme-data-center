@@ -2,14 +2,16 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ColleagueResource\Pages;
-use App\Filament\Resources\ColleagueResource\RelationManagers;
-use App\Models\Colleague;
+use App\Filament\Resources\PhoneNumberResource\Pages;
+use App\Filament\Resources\PhoneNumberResource\RelationManagers;
+use App\Models\PhoneNumber;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\PasswordInput;
 use Filament\Resources\Resource;
+
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -17,9 +19,9 @@ use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ColleagueResource extends Resource
+class PhoneNumberResource extends Resource
 {
-    protected static ?string $model = Colleague::class;
+    protected static ?string $model = PhoneNumber::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -27,27 +29,15 @@ class ColleagueResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->label('Colleague Name')
-                    ->maxLength(255),
-                TextInput::make('username')
+                TextInput::make('title')
                     ->required()
-                    ->unique(ignoreRecord: true)
                     ->maxLength(255),
-                TextInput::make('email')
-                    ->email()
+                TextInput::make('phone')
                     ->required()
-                    ->unique(ignoreRecord: true)
-                    ->maxLength(255),
-                TextInput::make('password')
-                    ->label('Password')
-                    ->password()
-                    ->required()
-                    ->minLength(5)
-                    ->maxLength(255)
-                    ->dehydrateStateUsing(fn ($state) => bcrypt($state))
-                    ->visible(fn ($livewire) => $livewire instanceof Pages\CreateColleague)
-                    ->revealable(),
+                    ->tel(), // format for telephone input
+                Textarea::make('notes')
+                    ->maxLength(1000)
+                    ->rows(4),
             ]);
     }
 
@@ -55,10 +45,10 @@ class ColleagueResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->sortable()->searchable(),
-                TextColumn::make('username')->sortable()->searchable(),
-                TextColumn::make('email')->sortable()->searchable(),
-                TextColumn::make('created_at')->label('Created')->dateTime()->sortable(),
+                TextColumn::make('title')->searchable()->sortable(),
+                TextColumn::make('phone')->searchable(),
+                TextColumn::make('notes')->limit(30),
+                TextColumn::make('created_at')->dateTime()->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active
@@ -88,10 +78,9 @@ class ColleagueResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListColleagues::route('/'),
-            'create' => Pages\CreateColleague::route('/create'),
-            'view' => Pages\ViewColleague::route('/{record}'),
-            'edit' => Pages\EditColleague::route('/{record}/edit'),
+            'index' => Pages\ListPhoneNumbers::route('/'),
+            'create' => Pages\CreatePhoneNumber::route('/create'),
+            'edit' => Pages\EditPhoneNumber::route('/{record}/edit'),
         ];
     }
 }
