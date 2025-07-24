@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Resources\PhoneNumberResource\Pages;
+namespace App\Filament\Resources\ClientResource\Pages;
 
-use App\Filament\Resources\PhoneNumberResource;
+use App\Filament\Resources\ClientResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Pages\Base\BaseEditRecord;
 
-class EditPhoneNumber extends BaseEditRecord
+class EditClient extends BaseEditRecord
 {
-    protected static string $resource = PhoneNumberResource::class;
+    protected static string $resource = ClientResource::class;
 
     protected function getHeaderActions(): array
     {

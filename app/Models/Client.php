@@ -15,7 +15,6 @@ class Client extends Model
         'pic_email',
         'pic_contact_number',
         'company_name',
-        'company_website_url',
         'company_address',
         'billing_address',
     ];

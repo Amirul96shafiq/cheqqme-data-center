@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Pages\Base;
 
 use Filament\Resources\Pages\CreateRecord;
 
@@ -8,6 +8,6 @@ abstract class BaseCreateRecord extends CreateRecord
 {
     protected function getRedirectUrl(): string
     {
-        return $this->getResource()::getUrl('index');
+        return static::getResource()::getUrl('index');
     }
 }
