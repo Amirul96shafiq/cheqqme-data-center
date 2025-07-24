@@ -6,8 +6,9 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\{TextInput, Toggle, Grid, Group};
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\PasswordInput;
 use Filament\Resources\Resource;
@@ -31,27 +32,54 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('username')
-                    ->label('Username')
-                    ->required()
-                    ->maxLength(20),
-                TextInput::make('name')
-                    ->label('Name')
-                    ->nullable()
-                    ->maxLength(50),
-                TextInput::make('email')
-                    ->label('Email')
-                    ->required()
-                    ->email()
-                    ->maxLength(255),
-                TextInput::make('password')
-                    ->label('Password')
-                    ->password()
-                    ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
-                    ->dehydrated(fn($state) => filled($state)) // Only save if not empty
-                    ->required(fn(string $context) => $context === 'create')
-                    ->minLength(5)
-                    ->maxLength(255),
+                Grid::make(2)->schema([
+                    TextInput::make('username')
+                        ->label('Username')
+                        ->required()
+                        ->maxLength(20),
+                    TextInput::make('name')
+                        ->label('Name')
+                        ->nullable()
+                        ->maxLength(50),
+                    TextInput::make('email')
+                        ->label('Email')
+                        ->required()
+                        ->email()
+                        ->maxLength(60),
+                    // Only show "Change password?" during editing
+                    Toggle::make('change_password')
+                        ->label('Change password?')
+                        ->helperText('Leave off to keep the current password')
+                        ->live()
+                        ->visible(fn(string $context) => $context === 'edit'),
+                ]),
+
+                Grid::make(2)->schema([
+                    TextInput::make('password')
+                        ->label(fn(string $context) => $context === 'edit' ? 'New Password' : 'Password')
+                        ->password()
+                        ->rule(\Illuminate\Validation\Rules\Password::defaults())
+                        ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
+                        ->dehydrated(fn($state) => filled($state))
+                        ->required(fn(string $context) => $context === 'create')
+                        ->visible(
+                            fn(Get $get, string $context) =>
+                            $context === 'create' || $get('change_password')
+                        )
+                        ->same('password_confirmation'),
+
+                    TextInput::make('password_confirmation')
+                        ->label('Confirm Password')
+                        ->password()
+                        ->required(
+                            fn(Get $get, string $context) =>
+                            $context === 'create' || filled($get('password'))
+                        )
+                        ->visible(
+                            fn(Get $get, string $context) =>
+                            $context === 'create' || $get('change_password')
+                        ),
+                ]),
             ]);
     }
 
