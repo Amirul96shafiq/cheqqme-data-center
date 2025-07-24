@@ -2,27 +2,27 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ColleagueResource\Pages;
-use App\Filament\Resources\ColleagueResource\RelationManagers;
-use App\Models\Colleague;
+use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\PasswordInput;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Hash;
+
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Get;
-use Illuminate\Support\Facades\Hash;
 
-class ColleagueResource extends Resource
+class UserResource extends Resource
 {
-    protected static ?string $model = Colleague::class;
+    protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -30,31 +30,28 @@ class ColleagueResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->label('Colleague Name')
-                    ->maxLength(255),
                 TextInput::make('username')
+                    ->label('Username')
                     ->required()
-                    ->unique(ignoreRecord: true)
-                    ->maxLength(255),
-                TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->maxLength(255),
-                Toggle::make('change_password')
-                    ->label('Change password?')
-                    ->live(),
-
-                TextInput::make('password')
-                    ->label('New Password')
-                    ->password()
-                    ->visible(fn(Get $get) => $get('change_password'))
+                    ->maxLength(20),
+                TextInput::make('name')
+                    ->label('Name')
                     ->nullable()
-                    ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
+                    ->maxLength(50),
+                TextInput::make('email')
+                    ->label('Email')
+                    ->required()
+                    ->email()
+                    ->maxLength(255),
+                TextInput::make('password')
+                    ->label('Password')
+                    ->required(fn($livewire) => $livewire instanceof CreateRecord)
+                    ->password()
+                    ->minLength(5)
+                    ->maxLength(255)
+                    ->dehydrateStateUsing(fn($state) => bcrypt($state))
                     ->dehydrated(fn($state) => filled($state))
-                    ->required(fn(string $context) => $context === 'create')
-                    ->revealable(),
+                    ->visible(fn($record) => is_null($record) || $record->isDirty('password')),
             ]);
     }
 
@@ -62,11 +59,9 @@ class ColleagueResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->sortable(),
-                TextColumn::make('name')->sortable()->searchable(),
-                TextColumn::make('username')->sortable()->searchable(),
-                TextColumn::make('email')->sortable()->searchable(),
-                TextColumn::make('created_at')->label('Created')->dateTime('d/m/y H:i')->sortable(),
+                TextColumn::make('name')->searchable()->sortable(),
+                TextColumn::make('email')->searchable()->sortable(),
+                TextColumn::make('created_at')->dateTime()->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active
@@ -96,10 +91,9 @@ class ColleagueResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListColleagues::route('/'),
-            'create' => Pages\CreateColleague::route('/create'),
-            'view' => Pages\ViewColleague::route('/{record}'),
-            'edit' => Pages\EditColleague::route('/{record}/edit'),
+            'index' => Pages\ListUsers::route('/'),
+            'create' => Pages\CreateUser::route('/create'),
+            'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
 }
