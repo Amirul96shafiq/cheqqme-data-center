@@ -49,4 +49,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function getNameAttribute($value): string
+    {
+        return $value ?? $this->username ?? 'User';
+    }
 }
