@@ -11,6 +11,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\PasswordInput;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Password;
 use Illuminate\Support\Facades\Hash;
 
 use Filament\Tables;
@@ -45,13 +46,12 @@ class UserResource extends Resource
                     ->maxLength(255),
                 TextInput::make('password')
                     ->label('Password')
-                    ->required(fn($livewire) => $livewire instanceof CreateRecord)
                     ->password()
+                    ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
+                    ->dehydrated(fn($state) => filled($state)) // Only save if not empty
+                    ->required(fn(string $context) => $context === 'create')
                     ->minLength(5)
-                    ->maxLength(255)
-                    ->dehydrateStateUsing(fn($state) => bcrypt($state))
-                    ->dehydrated(fn($state) => filled($state))
-                    ->visible(fn($record) => is_null($record) || $record->isDirty('password')),
+                    ->maxLength(255),
             ]);
     }
 
