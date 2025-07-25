@@ -84,4 +84,8 @@ class PhoneNumberResource extends Resource
             'edit' => Pages\EditPhoneNumber::route('/{record}/edit'),
         ];
     }
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Data Management';
+    }
 }
