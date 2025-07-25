@@ -15,7 +15,7 @@ return new class extends Migration {
         });
 
         Schema::table('projects', function (Blueprint $table) {
-            $table->text('notes')->nullable()->after('status');
+           // $table->text('notes')->nullable()->after('status');
         });
     }
 
@@ -29,7 +29,7 @@ return new class extends Migration {
         });
 
         Schema::table('projects', function (Blueprint $table) {
-            $table->dropColumn('notes');
+           //$table->dropColumn('notes');
         });
     }
 };

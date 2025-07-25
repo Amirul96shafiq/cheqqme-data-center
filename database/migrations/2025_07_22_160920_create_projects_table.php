@@ -16,9 +16,11 @@ return new class extends Migration
 
             // Project details
             $table->string('title');
-            $table->foreignId('client_id')->constrained()->onDelete('cascade');
+            $table->string('project_url')->nullable();
+            $table->foreignId('client_id')->nullable()->constrained()->nullOnDelete();
             $table->text('description')->nullable();
             $table->string('status')->default('Choose Project Status')->nullable(); // Default status // e.g. Planning, In Progress, Completed
+            $table->text('notes')->nullable(); // Additional notes for the project
             
             $table->timestamps();
             $table->softDeletes(); // Enable trash/restore functionality

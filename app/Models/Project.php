@@ -16,10 +16,16 @@ class Project extends Model
         'client_id',
         'description',
         'status',
+        'notes',
     ];
 
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+    
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
     }
 }

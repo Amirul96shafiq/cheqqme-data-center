@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+
 use Filament\Forms;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
@@ -12,9 +13,9 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\{TextInput, Toggle, Grid, Group};
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\PasswordInput;
-use Filament\Resources\Resource;
 use Filament\Forms\Components\Password;
 use Illuminate\Support\Facades\Hash;
+use Filament\Resources\Resource;
 
 use Filament\Tables;
 use Filament\Tables\Table;
