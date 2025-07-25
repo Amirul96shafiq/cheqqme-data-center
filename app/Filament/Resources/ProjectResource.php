@@ -58,6 +58,14 @@ class ProjectResource extends Resource
                             ->rows(3)
                             ->nullable()
                             ->maxLength(200),
+                        Select::make('status')
+                            ->label('Project Status')
+                            ->options([
+                                'Planning' => 'Planning',
+                                'In Progress' => 'In Progress',
+                                'Completed' => 'Completed',
+                            ])->default('Planning')
+                            ->required(),
                     ]),
                 Section::make('Project Extra Details')
                     ->schema([
@@ -95,6 +103,7 @@ class ProjectResource extends Resource
                     ]),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),

@@ -41,7 +41,7 @@ class ClientResource extends Resource
                             ->required()
                             ->tel(),
                     ])
-                    ->columns(2),
+                    ->columns(3),
 
                 Section::make('Client\'s Company Details')
                     ->schema([
@@ -79,7 +79,7 @@ class ClientResource extends Resource
                     ->label('PIC Email')
                     ->searchable(),
                 TextColumn::make('pic_contact_number')
-                    ->label('Contact Number')
+                    ->label('PIC Contact Number')
                     ->searchable(),
                 TextColumn::make('company_name')
                     ->label('Company')
