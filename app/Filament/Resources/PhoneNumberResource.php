@@ -5,16 +5,22 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PhoneNumberResource\Pages;
 use App\Filament\Resources\PhoneNumberResource\RelationManagers;
 use App\Models\PhoneNumber;
+
 use Filament\Forms;
+use Filament\Forms\Get;
 use Filament\Forms\Form;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, Grid};
 use Filament\Forms\Components\PasswordInput;
+use Filament\Forms\Components\Password;
+use Illuminate\Support\Facades\Hash;
 use Filament\Resources\Resource;
 
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Actions\{ViewAction, EditAction, DeleteAction, RestoreAction};
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -29,15 +35,23 @@ class PhoneNumberResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('phone')
-                    ->required()
-                    ->tel(), // format for telephone input
-                Textarea::make('notes')
-                    ->maxLength(1000)
-                    ->rows(4),
+                Section::make('Phone Number Details')
+                    ->schema([
+                        TextInput::make('title')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('phone')
+                            ->required()
+                            ->tel(),
+                    ])
+                    ->columns(2),
+
+                Section::make('Phone Number Extra Details')
+                    ->schema([
+                        Textarea::make('notes')
+                            ->maxLength(1000)
+                            ->rows(4),
+                    ]),
             ]);
     }
 
@@ -48,7 +62,6 @@ class PhoneNumberResource extends Resource
                 TextColumn::make('id')->sortable(),
                 TextColumn::make('title')->searchable()->sortable()->limit(10),
                 TextColumn::make('phone')->searchable(),
-                TextColumn::make('notes')->limit(30),
                 TextColumn::make('created_at')->dateTime('d/m/y H:i')->sortable(),
             ])
             ->filters([
