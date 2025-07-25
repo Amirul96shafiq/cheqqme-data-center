@@ -17,5 +17,6 @@ class Client extends Model
         'company_name',
         'company_address',
         'billing_address',
+        'notes',
     ];
 }

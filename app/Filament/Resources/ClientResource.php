@@ -43,6 +43,11 @@ class ClientResource extends Resource
                         Textarea::make('billing_address')->label('Billing Address')->rows(2)->nullable(),
                     ])
                     ->columns(2),
+                
+                Section::make('Client Extra Details')
+                    ->schema([
+                        Textarea::make('notes')->label('Notes')->rows(3)->nullable()->maxLength(500),
+                    ]),
             ]);
     }
 
