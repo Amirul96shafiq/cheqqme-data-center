@@ -36,20 +36,10 @@ class UserResource extends Resource
             ->schema([
                 Section::make('User Settings')
                     ->schema([
-                        Grid::make(2)->schema([
-                            TextInput::make('username')
-                                ->label('Username')
-                                ->required()
-                                ->maxLength(20),
-                            TextInput::make('name')
-                                ->label('Name')
-                                ->nullable()
-                                ->maxLength(50),
-                            TextInput::make('email')
-                                ->label('Email')
-                                ->required()
-                                ->email()
-                                ->maxLength(60),
+                        Grid::make(3)->schema([
+                            TextInput::make('username')->label('Username')->required()->maxLength(20),
+                            TextInput::make('name')->label('Name')->nullable()->maxLength(50),
+                            TextInput::make('email')->label('Email')->required()->email()->maxLength(60),
                             // Only show "Change password?" during editing
                             Toggle::make('change_password')
                                 ->label('Change password?')
@@ -97,7 +87,7 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('name')->searchable()->sortable(),
                 TextColumn::make('email')->searchable()->sortable(),
-                TextColumn::make('created_at')->dateTime()->sortable(),
+                TextColumn::make('created_at')->dateTime('d/m/y H:i')->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active

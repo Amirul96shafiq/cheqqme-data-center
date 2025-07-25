@@ -37,43 +37,17 @@ class ProjectResource extends Resource
             ->schema([
                 Section::make('Project Details')
                     ->schema([
-                        TextInput::make('title')
-                            ->label('Project Title')
-                            ->required()
-                            ->maxLength(50),
+                        TextInput::make('title')->label('Project Title')->required()->maxLength(50),
 
-                        TextInput::make('project_url')
-                            ->label('Project URL')
-                            ->url()
-                            ->nullable(),
+                        TextInput::make('project_url')->label('Project URL')->url()->nullable(),
 
-                        Select::make('client_id')
-                            ->label('Client')
-                            ->relationship('client', 'company_name')
-                            ->searchable()
-                            ->preload()
-                            ->nullable(),
-                        Textarea::make('description')
-                            ->label('Project Description')
-                            ->rows(3)
-                            ->nullable()
-                            ->maxLength(200),
-                        Select::make('status')
-                            ->label('Project Status')
-                            ->options([
-                                'Planning' => 'Planning',
-                                'In Progress' => 'In Progress',
-                                'Completed' => 'Completed',
-                            ])->default('Planning')
-                            ->required(),
+                        Select::make('client_id')->label('Client')->relationship('client', 'company_name')->searchable()->preload()->nullable(),
+                        Textarea::make('description')->label('Project Description')->rows(3)->nullable()->maxLength(200),
+                        Select::make('status')->label('Project Status')->options(['Planning' => 'Planning','In Progress' => 'In Progress','Completed' => 'Completed',])->default('Planning')->required(),
                     ]),
                 Section::make('Project Extra Details')
                     ->schema([
-                        Textarea::make('notes')
-                            ->label('Notes')
-                            ->rows(3)
-                            ->nullable()
-                            ->maxLength(500),
+                        Textarea::make('notes')->label('Notes')->rows(3)->nullable()->maxLength(500),
                     ]),
             ]);
     }
@@ -92,7 +66,7 @@ class ProjectResource extends Resource
                         'warning' => 'In Progress',
                         'success' => 'Completed',
                     ]),
-                TextColumn::make('created_at')->date(),
+                TextColumn::make('created_at')->dateTime('d/m/y H:i')->sortable(),
             ])
             ->filters([
                 SelectFilter::make('status')

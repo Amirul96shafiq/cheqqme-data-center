@@ -29,37 +29,18 @@ class ClientResource extends Resource
             ->schema([
                 Section::make('Client Details')
                     ->schema([
-                        TextInput::make('pic_name')
-                            ->label('Person-in-charge Name')
-                            ->required(),
-                        TextInput::make('pic_email')
-                            ->label('Person-in-charge Email')
-                            ->email()
-                            ->required(),
-                        TextInput::make('pic_contact_number')
-                            ->label('Person-in-charge Contact Number')
-                            ->required()
-                            ->tel(),
+                        TextInput::make('pic_name')->label('Person-in-charge Name')->required(),
+                        TextInput::make('pic_email')->label('Person-in-charge Email')->email()->required(),
+                        TextInput::make('pic_contact_number')->label('Person-in-charge Contact Number')->required()->tel(),
                     ])
                     ->columns(3),
 
                 Section::make('Client\'s Company Details')
                     ->schema([
-                        TextInput::make('company_name')
-                            ->label('Company Name')
-                            ->required(),
-                        TextInput::make('company_email')
-                            ->label('Company Email')
-                            ->email()
-                            ->nullable(),
-                        Textarea::make('company_address')
-                            ->label('Company Address')
-                            ->rows(2)
-                            ->nullable(),
-                        Textarea::make('billing_address')
-                            ->label('Billing Address')
-                            ->rows(2)
-                            ->nullable(),
+                        TextInput::make('company_name')->label('Company Name')->required(),
+                        TextInput::make('company_email')->label('Company Email')->email()->nullable(),
+                        Textarea::make('company_address')->label('Company Address')->rows(2)->nullable(),
+                        Textarea::make('billing_address')->label('Billing Address')->rows(2)->nullable(),
                     ])
                     ->columns(2),
             ]);
@@ -69,25 +50,12 @@ class ClientResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('ID')
-                    ->sortable(),
-                TextColumn::make('pic_name')
-                    ->label('PIC Name')
-                    ->searchable(),
-                TextColumn::make('pic_email')
-                    ->label('PIC Email')
-                    ->searchable(),
-                TextColumn::make('pic_contact_number')
-                    ->label('PIC Contact Number')
-                    ->searchable(),
-                TextColumn::make('company_name')
-                    ->label('Company')
-                    ->searchable(),
-                TextColumn::make('created_at')
-                    ->label('Created At')
-                    ->dateTime()
-                    ->sortable(),
+                TextColumn::make('id')->label('ID')->sortable(),
+                TextColumn::make('pic_name')->label('PIC Name')->searchable(),
+                TextColumn::make('pic_email')->label('PIC Email')->searchable(),
+                TextColumn::make('pic_contact_number')->label('PIC Contact Number')->searchable(),
+                TextColumn::make('company_name')->label('Company')->searchable(),
+                TextColumn::make('created_at')->dateTime('d/m/y H:i')->sortable(),
             ])
             ->filters([
                 //

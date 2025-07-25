@@ -111,7 +111,7 @@ class DocumentResource extends Resource
                 TextColumn::make('type')->badge(),
                 TextColumn::make('client.company_name')->label('Client')->sortable()->searchable(),
                 TextColumn::make('project.title')->label('Project')->sortable()->searchable(),
-                TextColumn::make('created_at')->label('Created')->dateTime()->sortable(),
+                TextColumn::make('created_at')->dateTime('d/m/y H:i')->sortable(),
             ])
             ->filters([
                 SelectFilter::make('type')->options([
