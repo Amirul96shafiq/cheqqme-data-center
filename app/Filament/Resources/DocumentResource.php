@@ -106,6 +106,7 @@ class DocumentResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('id')->label('ID')->sortable(),
                 TextColumn::make('title')->label('Document')->sortable()->searchable(),
                 TextColumn::make('type')->badge(),
                 TextColumn::make('client.company_name')->label('Client')->sortable()->searchable(),
@@ -158,6 +159,10 @@ class DocumentResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Data Management';
+        return 'Data Management'; // Grouping documents under Data Management
+    }
+    public static function getNavigationSort(): ?int
+    {
+        return 33; // Adjust the navigation sort order as needed
     }
 }

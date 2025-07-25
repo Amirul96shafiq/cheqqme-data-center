@@ -74,6 +74,7 @@ class ProjectResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('id')->label('ID')->sortable(),
                 TextColumn::make('title')->searchable()->sortable(),
                 TextColumn::make('client.company_name')->label('Client')->sortable()->searchable(),
                 TextColumn::make('status')
@@ -122,6 +123,10 @@ class ProjectResource extends Resource
     }
     public static function getNavigationGroup(): ?string
     {
-        return 'Data Management';
+        return 'Data Management'; // Grouping projects under Data Management
+    }
+    public static function getNavigationSort(): ?int
+    {
+        return 22; // Adjust the navigation sort order as needed
     }
 }

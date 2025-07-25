@@ -132,4 +132,12 @@ class UserResource extends Resource
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
+    public static function getNavigationGroup(): ?string
+    {
+        return 'User Management'; // Grouping users under User Management
+    }
+    public static function getNavigationSort(): ?int
+    {
+        return 11; // Adjust the navigation sort order as needed
+    }
 }

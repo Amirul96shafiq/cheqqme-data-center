@@ -124,6 +124,10 @@ class ClientResource extends Resource
     }
     public static function getNavigationGroup(): ?string
     {
-        return 'Data Management';
+        return 'Data Management'; // Grouping clients under Data Management
+    }
+    public static function getNavigationSort(): ?int
+    {
+        return 11; // Adjust the navigation sort order as needed
     }
 }

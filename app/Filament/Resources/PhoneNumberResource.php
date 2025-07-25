@@ -86,6 +86,10 @@ class PhoneNumberResource extends Resource
     }
     public static function getNavigationGroup(): ?string
     {
-        return 'Data Management';
+        return 'Data Management'; // Grouping phone numbers under Data Management
+    }
+    public static function getNavigationSort(): ?int
+    {
+        return 44; // Adjust the navigation sort order as needed
     }
 }
