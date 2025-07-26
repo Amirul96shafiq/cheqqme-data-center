@@ -49,7 +49,7 @@ class UserResource extends Resource
                         ])
                     ]),
 
-                Section::make('Password Information')
+                Section::make('Password Information')->description('Enable Change password toggle above to view this field')
                     ->schema([
                         Grid::make(2)->schema([
                             TextInput::make('password')
