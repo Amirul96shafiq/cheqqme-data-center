@@ -37,10 +37,23 @@ class DocumentResource extends Resource
             ->schema([
                 Section::make('Document Details')
                     ->schema([
-                        TextInput::make('title')
-                            ->label('Document Title')
-                            ->required()
-                            ->maxLength(50),
+                        Grid::make(3)->schema([
+                            TextInput::make('title')->label('Document Title')->required()->maxLength(50),
+
+                            Select::make('project_id')
+                            ->label('Project')
+                            ->relationship('project', 'title')
+                            ->preload()
+                            ->searchable()
+                            ->nullable(),
+
+                        Select::make('client_id')
+                            ->label('Client')
+                            ->relationship('client', 'company_name')
+                            ->preload()
+                            ->searchable()
+                            ->nullable(),
+                        ]),
 
                         Radio::make('type')
                             ->label('Document Type')
@@ -81,20 +94,6 @@ class DocumentResource extends Resource
                                 'application/vnd.openxmlformats-officedocument.presentationml.presentation', // pptx
                             ])
                             ->maxFiles(10240)
-                            ->nullable(),
-
-                        Select::make('project_id')
-                            ->label('Project')
-                            ->relationship('project', 'title')
-                            ->preload()
-                            ->searchable()
-                            ->nullable(),
-
-                        Select::make('client_id')
-                            ->label('Client')
-                            ->relationship('client', 'company_name')
-                            ->preload()
-                            ->searchable()
                             ->nullable(),
                     ]),
                 Section::make('Document Extra Details')
