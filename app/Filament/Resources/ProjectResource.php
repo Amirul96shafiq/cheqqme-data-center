@@ -35,17 +35,17 @@ class ProjectResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Project Details')
+                Section::make('Project Information')
                     ->schema([
-                        TextInput::make('title')->label('Project Title')->required()->maxLength(50),
-
+                        Grid::make(2)->schema([
+                            TextInput::make('title')->label('Project Title')->required()->maxLength(50),
+                            Select::make('client_id')->label('Client')->relationship('client', 'company_name')->searchable()->preload()->nullable(),
+                        ]),
                         TextInput::make('project_url')->label('Project URL')->url()->nullable(),
-
-                        Select::make('client_id')->label('Client')->relationship('client', 'company_name')->searchable()->preload()->nullable(),
                         Textarea::make('description')->label('Project Description')->rows(3)->nullable()->maxLength(200),
-                        Select::make('status')->label('Project Status')->options(['Planning' => 'Planning','In Progress' => 'In Progress','Completed' => 'Completed',])->default('Planning')->required(),
+                        Select::make('status')->label('Project Status')->options(['Planning' => 'Planning', 'In Progress' => 'In Progress', 'Completed' => 'Completed',])->default('Planning')->required(),
                     ]),
-                Section::make('Project Extra Details')
+                Section::make('Project Extra Information')
                     ->schema([
                         Textarea::make('notes')->label('Notes')->rows(3)->nullable()->maxLength(500),
                     ]),

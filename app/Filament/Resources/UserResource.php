@@ -34,7 +34,7 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('User Settings')
+                Section::make('User Information')
                     ->schema([
                         Grid::make(3)->schema([
                             TextInput::make('username')->label('Username')->required()->maxLength(20),
@@ -49,7 +49,7 @@ class UserResource extends Resource
                         ])
                     ]),
 
-                Section::make('Password Settings')
+                Section::make('Password Information')
                     ->schema([
                         Grid::make(2)->schema([
                             TextInput::make('password')
