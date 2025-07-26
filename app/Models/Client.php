@@ -19,4 +19,12 @@ class Client extends Model
         'billing_address',
         'notes',
     ];
+    protected static function booted()
+    {
+        static::saving(function ($client) {
+            if (empty($client->company_name)) {
+                $client->company_name = $client->pic_name;
+            }
+        });
+    }
 }

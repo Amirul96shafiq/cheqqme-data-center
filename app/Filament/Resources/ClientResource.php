@@ -29,7 +29,21 @@ class ClientResource extends Resource
             ->schema([
                 Section::make('Client Information')
                     ->schema([
-                        TextInput::make('pic_name')->label('Person-in-charge Name')->required(),
+                        TextInput::make('pic_name')
+                            ->label('Person-in-charge Name')
+                            ->required()
+                            ->reactive()
+                            ->debounce(500) // Delay the reaction so user can finish typing
+                            ->extraAttributes([
+                                'x-on:blur' => "
+                                    if (\$refs.companyName && !\$refs.companyName.value) {
+                                        \$refs.companyName.value = \$el.value;
+                                        \$el.dispatchEvent(new Event('input')); // Force model update
+                                        \$refs.companyName.dispatchEvent(new Event('input'));
+                                    }
+                                ",
+                            ])
+                            ->extraAlpineAttributes(['x-ref' => 'picName']),
                         TextInput::make('pic_email')->label('Person-in-charge Email')->email()->required(),
                         TextInput::make('pic_contact_number')->label('Person-in-charge Contact Number')->required()->tel(),
                     ])
@@ -37,13 +51,18 @@ class ClientResource extends Resource
 
                 Section::make('Client\'s Company Information')
                     ->schema([
-                        TextInput::make('company_name')->label('Company Name')->required(),
+                        TextInput::make('company_name')
+                            ->label('Company Name')
+                            ->nullable()
+                            ->extraAlpineAttributes(['x-ref' => 'companyName'])
+                            ->helperText('Defaults to Person-in-charge Name, free to fill in.')
+                            ->placeholder(fn(callable $get) => $get('pic_name')),
                         TextInput::make('company_email')->label('Company Email')->email()->nullable(),
                         Textarea::make('company_address')->label('Company Address')->rows(2)->nullable(),
                         Textarea::make('billing_address')->label('Billing Address')->rows(2)->nullable(),
                     ])
                     ->columns(2),
-                
+
                 Section::make('Client Extra Information')
                     ->schema([
                         Textarea::make('notes')->label('Notes')->rows(3)->nullable()->maxLength(500),
