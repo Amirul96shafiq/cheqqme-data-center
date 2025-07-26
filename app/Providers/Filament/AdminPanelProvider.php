@@ -19,6 +19,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Pages\Login;
 use App\Filament\Resources\PhoneNumberResource;
+use Filament\Navigation\NavigationGroup;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -59,6 +60,14 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label('Data Management'),
+
+                NavigationGroup::make()
+                    ->label('User Management'),
             ]);
+
     }
 }
