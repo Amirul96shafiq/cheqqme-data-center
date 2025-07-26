@@ -60,7 +60,7 @@ class DocumentResource extends Resource
 
                         FileUpload::make('file_path')
                             ->label('Upload Document')
-                            ->helperText('Upload internal documents here (only PDF, images, and office documents)')
+                            ->helperText('Upload internal documents here (PDF, JPEG, PNG, DOC, DOCX, XLS, XLSX, PPT, PPTX)')
                             ->visible(fn(Get $get) => $get('type') === 'internal')
                             ->directory('documents')
                             ->disk('public') // Or 'local' if you’re not using storage:link
@@ -68,6 +68,7 @@ class DocumentResource extends Resource
                             ->preserveFilenames()
                             ->enableDownload()
                             ->enableOpen()
+                            ->deletable()
                             ->acceptedFileTypes([
                                 'application/pdf',
                                 'image/jpeg',
