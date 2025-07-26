@@ -27,7 +27,7 @@ class ClientResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Client Details')
+                Section::make('Client Information')
                     ->schema([
                         TextInput::make('pic_name')->label('Person-in-charge Name')->required(),
                         TextInput::make('pic_email')->label('Person-in-charge Email')->email()->required(),
@@ -35,7 +35,7 @@ class ClientResource extends Resource
                     ])
                     ->columns(3),
 
-                Section::make('Client\'s Company Details')
+                Section::make('Client\'s Company Information')
                     ->schema([
                         TextInput::make('company_name')->label('Company Name')->required(),
                         TextInput::make('company_email')->label('Company Email')->email()->nullable(),
@@ -44,7 +44,7 @@ class ClientResource extends Resource
                     ])
                     ->columns(2),
                 
-                Section::make('Client Extra Details')
+                Section::make('Client Extra Information')
                     ->schema([
                         Textarea::make('notes')->label('Notes')->rows(3)->nullable()->maxLength(500),
                     ]),
