@@ -64,6 +64,10 @@ class DocumentResource extends Resource
                             ->visible(fn(Get $get) => $get('type') === 'internal')
                             ->directory('documents')
                             ->disk('public') // Or 'local' if you’re not using storage:link
+                            ->visibility('public')
+                            ->preserveFilenames()
+                            ->enableDownload()
+                            ->enableOpen()
                             ->acceptedFileTypes([
                                 'application/pdf',
                                 'image/jpeg',
@@ -75,6 +79,7 @@ class DocumentResource extends Resource
                                 'application/vnd.ms-powerpoint', // ppt
                                 'application/vnd.openxmlformats-officedocument.presentationml.presentation', // pptx
                             ])
+                            ->maxFiles(10240)
                             ->nullable(),
 
                         Select::make('project_id')
