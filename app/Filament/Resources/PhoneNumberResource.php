@@ -37,10 +37,10 @@ class PhoneNumberResource extends Resource
             ->schema([
                 Section::make('Phone Number Details')
                     ->schema([
-                        TextInput::make('title')
+                        TextInput::make('Phone Number title')
                             ->required()
                             ->maxLength(255),
-                        TextInput::make('phone')
+                        TextInput::make('phone Number')
                             ->required()
                             ->tel(),
                     ])
@@ -68,6 +68,7 @@ class PhoneNumberResource extends Resource
                 TrashedFilter::make(), // To show trashed or only active
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),

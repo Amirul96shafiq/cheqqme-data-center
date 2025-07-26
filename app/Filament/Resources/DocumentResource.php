@@ -35,7 +35,7 @@ class DocumentResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Document Details')
+                Section::make('Document Information')
                     ->schema([
                         Grid::make(3)->schema([
                             TextInput::make('title')->label('Document Title')->required()->maxLength(50),
@@ -96,7 +96,7 @@ class DocumentResource extends Resource
                             ->maxFiles(10240)
                             ->nullable(),
                     ]),
-                Section::make('Document Extra Details')
+                Section::make('Document Extra Information')
                     ->schema([
                         Textarea::make('notes')
                             ->label('Notes')
@@ -116,7 +116,7 @@ class DocumentResource extends Resource
                     ->label('ID')
                     ->sortable()
                     ->url(fn($record) => route('filament.admin.resources.documents.edit', $record)),
-                TextColumn::make('title')->label('Document')->sortable()->searchable(),
+                TextColumn::make('title')->label('Title')->sortable()->searchable(),
                 TextColumn::make('type')->badge(),
                 TextColumn::make('client.company_name')->label('Client')->sortable()->searchable(),
                 TextColumn::make('project.title')->label('Project')->sortable()->searchable(),
