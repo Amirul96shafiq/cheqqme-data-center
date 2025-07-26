@@ -111,8 +111,12 @@ class DocumentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(null)
             ->columns([
-                TextColumn::make('id')->label('ID')->sortable(),
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->url(fn($record) => route('filament.admin.resources.documents.edit', $record)),
                 TextColumn::make('title')->label('Document')->sortable()->searchable(),
                 TextColumn::make('type')->badge(),
                 TextColumn::make('client.company_name')->label('Client')->sortable()->searchable(),
@@ -130,11 +134,16 @@ class DocumentResource extends Resource
             ->actions([
                 ViewAction::make()
                     ->label('View')
-                    ->url(fn($record) => $record->type === 'external'
+                    ->url(
+                        fn($record) => $record->type === 'external' && $record->url
                         ? $record->url
-                        : asset('storage/' . $record->file_path))
+                        : ($record->type === 'internal' && $record->file_path
+                            ? asset('storage/' . $record->file_path)
+                            : route('filament.admin.resources.documents.edit', ['record' => $record->id])
+                        )
+                    )
                     ->icon('heroicon-o-eye')
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab(fn($record) => $record->type !== null && ($record->url || $record->file_path)),
 
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
