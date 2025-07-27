@@ -98,8 +98,8 @@ class ImportantUrlResource extends Resource
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('created_at')->dateTime('d/m/Y, h:i A')->sortable(),
-                TextColumn::make('updated_at')->dateTime('d/m/Y, h:i A') ->sortable(),
+                TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('updated_at')->dateTime('j/n/y, h:i A') ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('client_id')->label('Client')->relationship('client', 'company_name'),

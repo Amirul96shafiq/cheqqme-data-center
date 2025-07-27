@@ -128,8 +128,8 @@ class DocumentResource extends Resource
                 TextColumn::make('type')->badge(),
                 TextColumn::make('project.title')->label('Project')->sortable()->searchable(),
                 TextColumn::make('client.company_name')->label('Client')->sortable()->searchable(),
-                TextColumn::make('created_at')->dateTime('d/m/Y, h:i A')->sortable(),
-                TextColumn::make('updated_at')->dateTime('d/m/Y, h:i A') ->sortable(),
+                TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('updated_at')->dateTime('j/n/y, h:i A') ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('type')->options([

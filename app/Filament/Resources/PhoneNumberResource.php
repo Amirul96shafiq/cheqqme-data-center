@@ -37,10 +37,12 @@ class PhoneNumberResource extends Resource
             ->schema([
                 Section::make('Phone Number Details')
                     ->schema([
-                        TextInput::make('Phone Number title')
+                        TextInput::make('title')
+                            ->label('Phone Number title')
                             ->required()
                             ->maxLength(255),
-                        TextInput::make('phone Number')
+                        TextInput::make('phone')
+                            ->label('Phone Number')
                             ->required()
                             ->tel(),
                     ])
@@ -62,8 +64,24 @@ class PhoneNumberResource extends Resource
                 TextColumn::make('id')->label('ID')->sortable(),
                 TextColumn::make('title')->label('Title')->searchable()->sortable()->limit(10),
                 TextColumn::make('phone')->label('Phone')->searchable(),
-                TextColumn::make('created_at')->dateTime('d/m/Y, h:i A')->sortable(),
-                TextColumn::make('updated_at')->dateTime('d/m/Y, h:i A') ->sortable(),
+                TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('updated_at')
+                    ->label('Updated at (by)')
+                    ->formatStateUsing(function ($state, $record) {
+                        $user = $record->updatedBy;
+
+                        $formattedName = 'Unknown';
+
+                        if ($user) {
+                            $parts = explode(' ', $user->name);
+                            $first = array_shift($parts);
+                            $initials = implode(' ', array_map(fn($p) => mb_substr($p, 0, 1) . '.', $parts));
+                            $formattedName = trim($first . ' ' . $initials);
+                        }
+
+                        return $state?->format('j/n/y') . " ({$formattedName})";
+                    })
+                    ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active

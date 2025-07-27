@@ -66,8 +66,8 @@ class ProjectResource extends Resource
                         'warning' => 'In Progress',
                         'success' => 'Completed',
                     ]),
-                TextColumn::make('created_at')->dateTime('d/m/Y, h:i A')->sortable(),
-                TextColumn::make('updated_at')->dateTime('d/m/Y, h:i A') ->sortable(),
+                TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('updated_at')->dateTime('j/n/y, h:i A') ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('status')

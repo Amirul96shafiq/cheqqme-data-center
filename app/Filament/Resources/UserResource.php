@@ -88,7 +88,7 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('name')->searchable()->sortable(),
                 TextColumn::make('email')->searchable()->sortable(),
-                TextColumn::make('created_at')->dateTime('d/m/y, h:i A')->sortable(),
+                TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
                 TextColumn::make('updated_at')
                     ->label('Updated at (by)')
                     ->formatStateUsing(function ($state, $record) {

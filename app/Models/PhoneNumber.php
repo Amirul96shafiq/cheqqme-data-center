@@ -15,6 +15,12 @@ class PhoneNumber extends Model
         'title',
         'phone',
         'notes',
+        'updated_by',
     ];
     protected $dates = ['deleted_at'];
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
 }
