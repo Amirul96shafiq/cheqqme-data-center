@@ -1,59 +1,81 @@
 # 📦 CheQQme Data Center
 
-## 📝 Project Description
-**CheQQme Data Center** is an internal web-based application built with Laravel and Filament.  
-It serves as a centralized platform for managing and browsing important company resources such as SharePoint URLs, client project folders, and internal tools.
+## 📝 Overview
+**CheQQme Data Center** is an internal web application built with Laravel and FilamentPHP.  
+It acts as a centralized hub for managing and accessing important internal resources such as SharePoint URLs, client project folders, internal documents, and tools.
 
-## 🎯 Project Objective
-- Organize internal resources in a clean and structured way
-- Allow CheQQme team members to quickly locate key project links and documents
-- Optionally integrate AI assistant support to search or interact with saved data
-- Serve as a farewell gift from me, to the team before transitioning to a new role, meanwhile self learning how to operate as a very very very junior front-end, back-end, or even full-stack developer.
+This project serves a dual purpose:
+- To improve team productivity through organized access to company data
+- As a farewell gift to the CheQQme team, while I upskill myself in full-stack development
+
+## 🎯 Objectives
+- Organize internal links, files, and tools in a structured interface
+- Enable the CheQQme team to quickly find essential project data
+- Lay the foundation for AI-powered search and assistant features
+- Serve as a self-learning playground for Laravel, Filament, and web development in general
+
+---
 
 ## 🛠️ Tech Stack
 
-<table>
-  <thead>
-    <tr><th>Layer</th><th>Tools/Frameworks</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>Backend</td><td>Laravel 12.x</td></tr>
-    <tr><td>Admin Panel</td><td>FilamentPHP (v3)</td></tr>
-    <tr><td>Frontend</td><td>Tailwind CSS (via Filament UI)</td></tr>
-    <tr><td>Database</td><td>SQLite (for now, may switch later)</td></tr>
-    <tr><td>Dev Tools</td><td>Git, GitHub, GitHub CLI, Composer, Artisan</td></tr>
-  </tbody>
-</table>
+| Layer        | Tools / Frameworks               |
+|--------------|----------------------------------|
+| Backend      | Laravel 12.x                     |
+| Admin Panel  | FilamentPHP v3                   |
+| Frontend     | Tailwind CSS (via Filament UI)   |
+| Database     | SQLite (temporary, may change)   |
+| Dev Tools    | Git, GitHub, Composer, Artisan   |
 
-## 📁 Project Structure
-- `/app` → Laravel backend logic
-- `/resources/views` → Blade views (if any custom)
-- `/app/Filament/Resources` → Filament Admin Resources
-- `/database/seeders` → Dummy/test data
-- `/routes/web.php` → Custom web routes (e.g., redirect `/`)
+---
+
+## 📁 Folder Structure
+
+- `app/` → Laravel backend logic
+- `app/Filament/Resources/` → Filament admin resources
+- `resources/views/` → Blade views (custom auth pages, if any)
+- `routes/web.php` → Routes (e.g., `/` redirect, public pages)
+- `database/seeders/` → Sample/test data seeders
+
+---
 
 ## 🔐 Authentication
-Filament handles user authentication using Laravel’s built-in features.  
-Only registered users can access the admin panel.
+The app uses Laravel’s built-in authentication, managed via Filament's admin panel.  
+Only authorized users can access the admin area.
 
-## 📌 To-Do (Planned Features)
-- ✅ Link Management CRUD (title, URL, description)
+---
+
+## 🚧 Feature Roadmap
+
+- ✅ Link management (CRUD: title, URL, description)
 - ✅ Admin-only access
-- ✅ Created-by tracking
-- ⬜ AI-powered search assistant
-- ⬜ Tagging or categorization system
-- ⬜ Advanced user role support
+- ✅ "Created by" tracking per record
+- ⬜ AI assistant for smart search & queries
+- ⬜ Tagging / categorization system
+- ⬜ Advanced user roles & permissions
+- ⬜ Bulk import/export (CSV, XLSX)
 
-## 🤝 Contribution
-Currently under personal development. No outside contributors yet.
-
-## 📚 Useful Docs
-- [Laravel Official Docs](https://laravel.com/docs/12.x)
-- [Filament Official Docs](https://filamentphp.com/docs)
+---
 
 ## ✍️ Author
-Built with ❤️ by my personal AI assistant, **ChatGPT** (thank you so much, without it this project will be very slow progress), **Amirul** (Creative Designer (I think?) & Aspiring Dev)  
+
+Crafted by:
+- **Amirul** – Creative Designer & Aspiring Developer  
+- With huge help from **ChatGPT** – my 24/7 coding buddy  
 GitHub: [@Amirul96shafiq](https://github.com/Amirul96shafiq)
 
-## 🧼 How to Use It (Coming Soon)
-Full setup guide and deployment notes will be added.
+---
+
+## 📚 References
+
+- [Laravel Documentation](https://laravel.com/docs/12.x)
+- [FilamentPHP Documentation](https://filamentphp.com/docs)
+
+---
+
+## 🧪 Setup Instructions (Coming Soon)
+A full installation and deployment guide will be added soon.
+
+---
+
+## 🤝 Contributions
+Currently a solo project. Contributions may be open in the future.
