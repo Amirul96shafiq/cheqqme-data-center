@@ -106,8 +106,7 @@ class ImportantUrlResource extends Resource
                 SelectFilter::make('project_id')->label('Project')->relationship('project', 'title'),
             ])
             ->actions([
-                ViewAction::make()
-                    ->label('View'),
+                ViewAction::make()->label('View'),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),

@@ -11,6 +11,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, Grid};
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\PasswordInput;
 use Filament\Forms\Components\Password;
 use Illuminate\Support\Facades\Hash;
@@ -68,6 +69,13 @@ class DocumentResource extends Resource
                             ->label('Document URL')
                             ->helperText('URL for external documents')
                             ->visible(fn(Get $get) => $get('type') === 'external')
+                            ->disabled()
+                            ->suffixAction(
+                                Action::make('openUrl')
+                                    ->icon('heroicon-m-arrow-top-right-on-square')
+                                    ->url(fn($record) => $record->url, true) // true = open in new tab
+                                    ->tooltip('Open URL in new tab')
+                            )
                             ->url()
                             ->nullable(),
 
@@ -131,7 +139,7 @@ class DocumentResource extends Resource
                 SelectFilter::make('project_id')->label('Project')->relationship('project', 'title'),
             ])
             ->actions([
-                ViewAction::make()
+                /*ViewAction::make()
                     ->label('View')
                     ->url(
                         fn($record) => $record->type === 'external' && $record->url
@@ -142,8 +150,9 @@ class DocumentResource extends Resource
                         )
                     )
                     ->icon('heroicon-o-eye')
-                    ->openUrlInNewTab(fn($record) => $record->type !== null && ($record->url || $record->file_path)),
+                    ->openUrlInNewTab(fn($record) => $record->type !== null && ($record->url || $record->file_path)),*/
 
+                ViewAction::make()->label('View'),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
