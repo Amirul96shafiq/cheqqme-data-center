@@ -43,6 +43,7 @@ class UserResource extends Resource
                                 ->image()
                                 ->imageEditor()
                                 ->circleCropper()
+                                ->disk('public')
                                 ->directory('profile-pictures')
                                 ->avatar()
                                 ->columnSpanFull(),
