@@ -10,6 +10,7 @@ use Filament\Forms;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\{TextInput, Toggle, Grid, Group, Hidden};
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\PasswordInput;
@@ -34,6 +35,19 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
+                Section::make('User Profile Picture')
+                    ->schema([
+                        Grid::make(1)->schema([
+                            FileUpload::make('profile_picture')
+                                ->label(false)
+                                ->image()
+                                ->imageEditor()
+                                ->circleCropper()
+                                ->directory('profile-pictures')
+                                ->avatar()
+                                ->columnSpanFull(),
+                        ]),
+                    ]),
                 Section::make('User Information')
                     ->schema([
                         Grid::make(3)->schema([
