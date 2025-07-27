@@ -76,10 +76,9 @@ class ClientResource extends Resource
             ->columns([
                 TextColumn::make('id')->label('ID')->sortable(),
                 TextColumn::make('pic_name')->label('PIC Name')->searchable(),
-                TextColumn::make('pic_email')->label('PIC Email')->searchable(),
-                TextColumn::make('pic_contact_number')->label('PIC Contact Number')->searchable(),
                 TextColumn::make('company_name')->label('Company')->searchable(),
                 TextColumn::make('created_at')->dateTime('d/m/Y, h:i A')->sortable(),
+                TextColumn::make('updated_at')->dateTime('d/m/Y, h:i A') ->sortable(),
             ])
             ->filters([
                 //

@@ -26,5 +26,10 @@ class Client extends Model
                 $client->company_name = $client->pic_name;
             }
         });
+
+    }
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

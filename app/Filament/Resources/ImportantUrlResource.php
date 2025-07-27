@@ -57,7 +57,6 @@ class ImportantUrlResource extends Resource
                     TextInput::make('url')
                         ->label('Important URL')
                         ->required()
-                        ->disabled()
                         ->suffixAction(
                             Action::make('openUrl')
                                 ->icon('heroicon-m-arrow-top-right-on-square')
@@ -100,6 +99,7 @@ class ImportantUrlResource extends Resource
                     ->searchable(),
 
                 TextColumn::make('created_at')->dateTime('d/m/Y, h:i A')->sortable(),
+                TextColumn::make('updated_at')->dateTime('d/m/Y, h:i A') ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('client_id')->label('Client')->relationship('client', 'company_name'),

@@ -63,6 +63,7 @@ class PhoneNumberResource extends Resource
                 TextColumn::make('title')->label('Title')->searchable()->sortable()->limit(10),
                 TextColumn::make('phone')->label('Phone')->searchable(),
                 TextColumn::make('created_at')->dateTime('d/m/Y, h:i A')->sortable(),
+                TextColumn::make('updated_at')->dateTime('d/m/Y, h:i A') ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active

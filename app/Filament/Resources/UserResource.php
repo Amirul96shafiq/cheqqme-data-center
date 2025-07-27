@@ -10,7 +10,7 @@ use Filament\Forms;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\{TextInput, Toggle, Grid, Group};
+use Filament\Forms\Components\{TextInput, Toggle, Grid, Group, Hidden};
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\PasswordInput;
 use Filament\Forms\Components\Password;
@@ -46,6 +46,7 @@ class UserResource extends Resource
                                 ->helperText('Leave off to keep the current password')
                                 ->live()
                                 ->visible(fn(string $context) => $context === 'edit'),
+                            Hidden::make('Updated_by')->default(fn() => auth()->id())->dehydrated(),
                         ])
                     ]),
 
@@ -88,7 +89,23 @@ class UserResource extends Resource
                 TextColumn::make('name')->searchable()->sortable(),
                 TextColumn::make('email')->searchable()->sortable(),
                 TextColumn::make('created_at')->dateTime('d/m/y, h:i A')->sortable(),
-                TextColumn::make('updated_at')->dateTime('d/m/Y, h:i A') ->sortable()->toggleable(),
+                TextColumn::make('updated_at')
+                    ->label('Updated at (by)')
+                    ->formatStateUsing(function ($state, $record) {
+                        $user = $record->updatedBy;
+
+                        $formattedName = 'Unknown';
+
+                        if ($user) {
+                            $parts = explode(' ', $user->name);
+                            $first = array_shift($parts);
+                            $initials = implode(' ', array_map(fn($p) => mb_substr($p, 0, 1) . '.', $parts));
+                            $formattedName = trim($first . ' ' . $initials);
+                        }
+
+                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                    })
+                    ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active

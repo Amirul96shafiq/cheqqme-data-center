@@ -25,6 +25,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'updated_by',
     ];
 
     /**
@@ -51,6 +52,10 @@ class User extends Authenticatable
     }
     public function getNameAttribute($value): string
     {
-        return $value ?? $this->username ?? 'User';
+        return $value ?? $this->username ?? 'name';
+    }
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }
