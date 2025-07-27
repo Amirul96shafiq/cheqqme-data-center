@@ -17,6 +17,7 @@ class Project extends Model
         'description',
         'status',
         'notes',
+        'updated_by',
     ];
 
     public function client()
@@ -27,5 +28,9 @@ class Project extends Model
     public function documents()
     {
         return $this->hasMany(Document::class);
+    }
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

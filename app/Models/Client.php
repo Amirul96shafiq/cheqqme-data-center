@@ -18,6 +18,7 @@ class Client extends Model
         'company_address',
         'billing_address',
         'notes',
+        'updated_by',
     ];
     protected static function booted()
     {
@@ -32,4 +33,5 @@ class Client extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+    
 }

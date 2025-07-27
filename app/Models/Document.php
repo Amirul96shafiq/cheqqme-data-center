@@ -18,6 +18,7 @@ class Document extends Model
         'project_id',
         'client_id',
         'notes',
+        'updated_by',
     ];
 
     public function project()
@@ -28,5 +29,9 @@ class Document extends Model
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

@@ -67,7 +67,23 @@ class ProjectResource extends Resource
                         'success' => 'Completed',
                     ]),
                 TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
-                TextColumn::make('updated_at')->dateTime('j/n/y, h:i A') ->sortable(),
+                TextColumn::make('updated_at')
+                    ->label('Updated at (by)')
+                    ->formatStateUsing(function ($state, $record) {
+                        $user = $record->updatedBy;
+
+                        $formattedName = 'Unknown';
+
+                        if ($user) {
+                            $parts = explode(' ', $user->name);
+                            $first = array_shift($parts);
+                            $initials = implode(' ', array_map(fn($p) => mb_substr($p, 0, 1) . '.', $parts));
+                            $formattedName = trim($first . ' ' . $initials);
+                        }
+
+                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                    })
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('status')
