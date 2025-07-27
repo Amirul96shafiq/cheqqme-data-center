@@ -5,6 +5,8 @@ namespace App\Filament\Resources\ImportantUrlResource\Pages;
 use App\Filament\Resources\ImportantUrlResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Actions\CreateAction;
+
 
 class ListImportantUrls extends ListRecords
 {
@@ -13,7 +15,7 @@ class ListImportantUrls extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            CreateAction::make()->label('New Important URL'),
         ];
     }
 }
