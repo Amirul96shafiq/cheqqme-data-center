@@ -79,7 +79,7 @@ class PhoneNumberResource extends Resource
                             $formattedName = trim($first . ' ' . $initials);
                         }
 
-                        return $state?->format('j/n/y') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
                     ->sortable(),
             ])
