@@ -81,8 +81,15 @@ class ClientResource extends Resource
                 TextColumn::make('updated_at')
                     ->label('Updated at (by)')
                     ->formatStateUsing(function ($state, $record) {
-                        $user = $record->updatedBy;
+                        // Show '-' if there's no update or updated_by
+                        if (
+                            !$record->updated_by ||
+                            $record->updated_at?->eq($record->created_at)
+                        ) {
+                            return '-';
+                        }
 
+                        $user = $record->updatedBy;
                         $formattedName = 'Unknown';
 
                         if ($user) {
