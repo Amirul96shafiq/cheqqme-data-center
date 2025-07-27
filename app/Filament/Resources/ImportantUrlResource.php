@@ -60,7 +60,7 @@ class ImportantUrlResource extends Resource
                         ->suffixAction(
                             Action::make('openUrl')
                                 ->icon('heroicon-m-arrow-top-right-on-square')
-                                 ->url(fn($record) => $record?->url ?? '#', true) // true = open in new tab
+                                ->url(fn($record) => $record?->url ?? '#', true) // true = open in new tab
                                 ->tooltip('Open URL in new tab')
                                 ->visible(fn($record) => filled($record?->url))
                         )
@@ -165,5 +165,18 @@ class ImportantUrlResource extends Resource
     public static function getNavigationSort(): ?int
     {
         return 44; // Adjust the navigation sort order as needed
+    }
+    public static function getModelLabel(): string
+    {
+        return 'Important URL';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Important URLs';
+    }
+    public static function getNavigationLabel(): string
+    {
+        return 'Important URLs';
     }
 }
