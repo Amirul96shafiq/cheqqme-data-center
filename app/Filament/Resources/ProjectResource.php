@@ -99,6 +99,7 @@ class ProjectResource extends Resource
                         'In Progress' => 'In Progress',
                         'Completed' => 'Completed',
                     ]),
+                TrashedFilter::make(), // To show trashed or only active
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
