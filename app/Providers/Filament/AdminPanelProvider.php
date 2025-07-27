@@ -68,6 +68,5 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label('User Management'),
             ]);
-
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 
 class User extends Authenticatable
@@ -59,11 +60,5 @@ class User extends Authenticatable
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
-    }
-    public function getFilamentAvatarUrl(): ?string
-    {
-        return $this->profile_picture
-            ? Storage::disk('public')->url($this->profile_picture)
-            : null;
     }
 }

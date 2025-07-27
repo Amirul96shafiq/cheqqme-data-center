@@ -6,6 +6,7 @@ use App\Filament\Resources\UserResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Pages\Base\BaseEditRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class EditUser extends BaseEditRecord
 {

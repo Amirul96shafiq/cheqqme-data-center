@@ -45,6 +45,8 @@ class UserResource extends Resource
                                 ->circleCropper()
                                 ->disk('public')
                                 ->directory('profile-pictures')
+                                ->preserveFilenames()
+                                ->visibility('public')
                                 ->avatar()
                                 ->columnSpanFull(),
                         ]),
