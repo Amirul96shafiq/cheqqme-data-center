@@ -11,6 +11,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, Grid};
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\PasswordInput;
 use Filament\Forms\Components\Password;
 use Illuminate\Support\Facades\Hash;
@@ -53,7 +54,17 @@ class ImportantUrlResource extends Resource
                             ->nullable(),
                     ]),
 
-                    TextInput::make('url')->label('Important URL')->required()->url(),
+                    TextInput::make('url')
+                        ->label('Important URL')
+                        ->required()
+                        ->disabled()
+                        ->suffixAction(
+                            Action::make('openUrl')
+                                ->icon('heroicon-m-arrow-top-right-on-square')
+                                ->url(fn($record) => $record->url, true) // true = open in new tab
+                                ->tooltip('Open URL in new tab')
+                        )
+                        ->url(),
                 ]),
                 Section::make('Important URL Extra Information')->schema([
                     Textarea::make('notes')
@@ -76,7 +87,7 @@ class ImportantUrlResource extends Resource
                     ->url(fn($record) => $record->url, true)
                     ->openUrlInNewTab()
                     ->copyable()
-                    ->limit(20),
+                    ->limit(30),
 
                 TextColumn::make('project.title')
                     ->label('Project')

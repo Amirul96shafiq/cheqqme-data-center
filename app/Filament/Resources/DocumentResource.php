@@ -118,8 +118,8 @@ class DocumentResource extends Resource
                     ->url(fn($record) => route('filament.admin.resources.documents.edit', $record)),
                 TextColumn::make('title')->label('Title')->sortable()->searchable(),
                 TextColumn::make('type')->badge(),
-                TextColumn::make('client.company_name')->label('Client')->sortable()->searchable(),
                 TextColumn::make('project.title')->label('Project')->sortable()->searchable(),
+                TextColumn::make('client.company_name')->label('Client')->sortable()->searchable(),
                 TextColumn::make('created_at')->dateTime('d/m/y H:i')->sortable(),
             ])
             ->filters([
