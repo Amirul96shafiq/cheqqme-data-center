@@ -42,6 +42,8 @@ This project serves a dual purpose:
 The app uses Laravel’s built-in authentication, managed via Filament's admin panel.  
 Only authorized users can access the admin area.
 
+⚠️ Note: This project is not licensed for reuse or redistribution. Public only for demonstration purposes.
+
 ---
 
 ## 🚧 Feature Roadmap
