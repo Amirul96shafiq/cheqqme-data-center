@@ -179,9 +179,10 @@ class DocumentResource extends Resource
                     ->icon('heroicon-o-eye')
                     ->openUrlInNewTab(fn($record) => $record->type !== null && ($record->url || $record->file_path)),*/
 
-                ViewAction::make()->label('View'),
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([

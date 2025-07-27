@@ -60,8 +60,9 @@ class ImportantUrlResource extends Resource
                         ->suffixAction(
                             Action::make('openUrl')
                                 ->icon('heroicon-m-arrow-top-right-on-square')
-                                ->url(fn($record) => $record->url, true) // true = open in new tab
+                                 ->url(fn($record) => $record?->url ?? '#', true) // true = open in new tab
                                 ->tooltip('Open URL in new tab')
+                                ->visible(fn($record) => filled($record?->url))
                         )
                         ->url(),
                 ]),
@@ -86,7 +87,7 @@ class ImportantUrlResource extends Resource
                     ->url(fn($record) => $record->url, true)
                     ->openUrlInNewTab()
                     ->copyable()
-                    ->limit(30),
+                    ->limit(20),
 
                 TextColumn::make('project.title')
                     ->label('Project')
@@ -129,9 +130,10 @@ class ImportantUrlResource extends Resource
                 SelectFilter::make('project_id')->label('Project')->relationship('project', 'title'),
             ])
             ->actions([
-                ViewAction::make()->label('View'),
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
