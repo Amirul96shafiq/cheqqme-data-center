@@ -104,6 +104,6 @@ class PhoneNumberResource extends Resource
     }
     public static function getNavigationSort(): ?int
     {
-        return 44; // Adjust the navigation sort order as needed
+        return 55; // Adjust the navigation sort order as needed
     }
 }

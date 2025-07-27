@@ -41,18 +41,18 @@ class DocumentResource extends Resource
                             TextInput::make('title')->label('Document Title')->required()->maxLength(50),
 
                             Select::make('project_id')
-                            ->label('Project')
-                            ->relationship('project', 'title')
-                            ->preload()
-                            ->searchable()
-                            ->nullable(),
+                                ->label('Project')
+                                ->relationship('project', 'title')
+                                ->preload()
+                                ->searchable()
+                                ->nullable(),
 
-                        Select::make('client_id')
-                            ->label('Client')
-                            ->relationship('client', 'company_name')
-                            ->preload()
-                            ->searchable()
-                            ->nullable(),
+                            Select::make('client_id')
+                                ->label('Client')
+                                ->relationship('client', 'company_name')
+                                ->preload()
+                                ->searchable()
+                                ->nullable(),
                         ]),
 
                         Radio::make('type')
