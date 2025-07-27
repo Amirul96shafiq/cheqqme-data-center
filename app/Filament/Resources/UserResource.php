@@ -87,7 +87,8 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('name')->searchable()->sortable(),
                 TextColumn::make('email')->searchable()->sortable(),
-                TextColumn::make('created_at')->dateTime('d/m/y H:i')->sortable(),
+                TextColumn::make('created_at')->dateTime('d/m/y, h:i A')->sortable(),
+                TextColumn::make('updated_at')->dateTime('d/m/Y, h:i A') ->sortable()->toggleable(),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active

@@ -128,7 +128,7 @@ class DocumentResource extends Resource
                 TextColumn::make('type')->badge(),
                 TextColumn::make('project.title')->label('Project')->sortable()->searchable(),
                 TextColumn::make('client.company_name')->label('Client')->sortable()->searchable(),
-                TextColumn::make('created_at')->dateTime('d/m/y H:i')->sortable(),
+                TextColumn::make('created_at')->dateTime('d/m/Y, h:i A')->sortable(),
             ])
             ->filters([
                 SelectFilter::make('type')->options([
@@ -139,7 +139,10 @@ class DocumentResource extends Resource
                 SelectFilter::make('project_id')->label('Project')->relationship('project', 'title'),
             ])
             ->actions([
-                /*ViewAction::make()
+                /*
+                // Custom flow; when click on View icon in the table, it will redirect to the link provided in Document URL (internal/external)
+                //disabled because using normal View flow + open in new tab button inside view
+                ViewAction::make()
                     ->label('View')
                     ->url(
                         fn($record) => $record->type === 'external' && $record->url

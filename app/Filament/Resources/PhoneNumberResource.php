@@ -59,10 +59,10 @@ class PhoneNumberResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->sortable(),
-                TextColumn::make('title')->searchable()->sortable()->limit(10),
-                TextColumn::make('phone')->searchable(),
-                TextColumn::make('created_at')->dateTime('d/m/y H:i')->sortable(),
+                TextColumn::make('id')->label('ID')->sortable(),
+                TextColumn::make('title')->label('Title')->searchable()->sortable()->limit(10),
+                TextColumn::make('phone')->label('Phone')->searchable(),
+                TextColumn::make('created_at')->dateTime('d/m/Y, h:i A')->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active

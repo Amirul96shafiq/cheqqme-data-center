@@ -79,7 +79,7 @@ class ClientResource extends Resource
                 TextColumn::make('pic_email')->label('PIC Email')->searchable(),
                 TextColumn::make('pic_contact_number')->label('PIC Contact Number')->searchable(),
                 TextColumn::make('company_name')->label('Company')->searchable(),
-                TextColumn::make('created_at')->dateTime('d/m/y H:i')->sortable(),
+                TextColumn::make('created_at')->dateTime('d/m/Y, h:i A')->sortable(),
             ])
             ->filters([
                 //
