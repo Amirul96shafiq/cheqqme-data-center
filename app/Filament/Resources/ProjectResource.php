@@ -63,7 +63,7 @@ class ProjectResource extends Resource
                     ->badge()
                     ->colors([
                         'primary' => 'Planning',
-                        'warning' => 'In Progress',
+                        'info' => 'In Progress',
                         'success' => 'Completed',
                     ]),
                 TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
