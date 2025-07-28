@@ -69,15 +69,20 @@ class DocumentResource extends Resource
                             ->label('Document URL')
                             ->helperText('URL for external documents')
                             ->visible(fn(Get $get) => $get('type') === 'external')
-                            ->disabled()
                             ->suffixAction(
                                 Action::make('openUrl')
                                     ->icon('heroicon-m-arrow-top-right-on-square')
-                                    ->url(fn($record) => $record->url, true) // true = open in new tab
+                                    ->url(fn($livewire) => $livewire->data['url'] ?? '#', true)
                                     ->tooltip('Open URL in new tab')
+                                    ->disabled(
+                                        fn($livewire) =>
+                                        str($livewire::class)->contains('Create') ||
+                                        blank($livewire->data['url'] ?? null)
+                                    )
                             )
                             ->url()
                             ->nullable(),
+
 
                         FileUpload::make('file_path')
                             ->label('Upload Document')
@@ -164,22 +169,6 @@ class DocumentResource extends Resource
                 TrashedFilter::make(), // To show trashed or only active
             ])
             ->actions([
-                /*
-                // Custom flow; when click on View icon in the table, it will redirect to the link provided in Document URL (internal/external)
-                //disabled because using normal View flow + open in new tab button inside view
-                ViewAction::make()
-                    ->label('View')
-                    ->url(
-                        fn($record) => $record->type === 'external' && $record->url
-                        ? $record->url
-                        : ($record->type === 'internal' && $record->file_path
-                            ? asset('storage/' . $record->file_path)
-                            : route('filament.admin.resources.documents.edit', ['record' => $record->id])
-                        )
-                    )
-                    ->icon('heroicon-o-eye')
-                    ->openUrlInNewTab(fn($record) => $record->type !== null && ($record->url || $record->file_path)),*/
-
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
