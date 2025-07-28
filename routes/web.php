@@ -6,6 +6,10 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+Route::get('/admin', function () {
+    return redirect()->route('filament.admin.pages.dashboard');
+});
+
 Route::get('/', function () {
     // If user is logged in, redirect to admin dashboard
     if (Auth::check()) {

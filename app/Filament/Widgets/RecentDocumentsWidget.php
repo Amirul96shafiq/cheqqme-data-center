@@ -12,7 +12,11 @@ use Illuminate\Database\Eloquent\Builder;
 
 class RecentDocumentsWidget extends TableWidget
 {
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = [
+        'sm' => 12,
+        'md' => 6,
+        'lg' => 6,
+    ];
 
     protected function getTableQuery(): Builder
     {

@@ -34,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('CheQQme Data Center')
             ->login(Login::class)
             ->profile(Profile::class, isSimple: false)
+            //->home(\App\Filament\Pages\Dashboard::class)
             ->defaultAvatarProvider(GetAvatarProvider::class)
             ->resources([
                 PhoneNumberResource::class, // Registering PhoneNumberResource
@@ -44,13 +45,14 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                \App\Filament\Pages\Dashboard::class,
             ])
+            ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
+            /*->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
-            ])
+            ])*/
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
