@@ -8,6 +8,7 @@ use Filament\Resources\Pages\EditRecord;
 use App\Filament\Pages\Base\BaseEditRecord;
 use Illuminate\Database\Eloquent\Model;
 
+
 class EditUser extends BaseEditRecord
 {
     protected static string $resource = UserResource::class;

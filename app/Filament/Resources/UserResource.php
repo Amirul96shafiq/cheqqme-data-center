@@ -35,7 +35,7 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('User Profile Picture')
+                /*Section::make('User Profile Picture')
                     ->schema([
                         Grid::make(1)->schema([
                             FileUpload::make('profile_picture')
@@ -48,9 +48,9 @@ class UserResource extends Resource
                                 ->preserveFilenames()
                                 ->visibility('public')
                                 ->avatar()
-                                ->columnSpanFull(),
+                                ->columnSpanFull()
                         ]),
-                    ]),
+                    ]),*/
                 Section::make('User Information')
                     ->schema([
                         Grid::make(3)->schema([

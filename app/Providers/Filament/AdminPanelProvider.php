@@ -20,6 +20,8 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Pages\Login;
 use App\Filament\Resources\PhoneNumberResource;
 use Filament\Navigation\NavigationGroup;
+use App\Filament\Pages\Profile;
+use App\Filament\AvatarProviders\GetAvatarProvider;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -31,6 +33,8 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->brandName('CheQQme Data Center')
             ->login(Login::class)
+            ->profile(Profile::class, isSimple: false)
+            ->defaultAvatarProvider(GetAvatarProvider::class)
             ->resources([
                 PhoneNumberResource::class, // Registering PhoneNumberResource
             ])
