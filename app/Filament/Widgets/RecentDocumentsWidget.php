@@ -38,4 +38,8 @@ class RecentDocumentsWidget extends TableWidget
                 ->openUrlInNewTab(),
         ];
     }
+    protected function isTablePaginationEnabled(): bool
+    {
+        return false;
+    }
 }

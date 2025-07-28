@@ -41,4 +41,8 @@ class RecentProjectsWidget extends TableWidget
                 ->url(fn(Project $record) => route('filament.admin.resources.projects.edit', $record)),
         ];
     }
+    protected function isTablePaginationEnabled(): bool
+    {
+        return false;
+    }
 }
