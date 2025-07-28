@@ -24,6 +24,7 @@ class RecentDocumentsWidget extends TableWidget
         return [
             TextColumn::make('title')->label('Document Title')->limit(10),
             TextColumn::make('project.title')->label('Project Title')->limit(10),
+            TextColumn::make('client.company_name')->label('Company Name')->limit(10),
             TextColumn::make('created_at')->dateTime('j/n/y, h:i A'),
         ];
     }
