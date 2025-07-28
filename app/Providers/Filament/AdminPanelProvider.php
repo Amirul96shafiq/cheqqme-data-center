@@ -26,18 +26,19 @@ use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use App\Filament\Http\Controllers\Auth\AuthenticatedSessionController;
 use Filament\Facades\Filament;
 
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
             ->default()
+            ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
             ->brandName('CheQQme Data Center')
             ->login(Login::class)
             ->profile(Profile::class, isSimple: false)
-            //->home(\App\Filament\Pages\Dashboard::class)
             ->defaultAvatarProvider(GetAvatarProvider::class)
             ->resources([
                 PhoneNumberResource::class, // Registering PhoneNumberResource
@@ -45,20 +46,16 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->pages([
+                \Filament\Pages\Dashboard::class,
+            ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([
-                \App\Filament\Pages\Dashboard::class,
-            ])
-            ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
-            /*->authGuardRedirects([
-                'web' => fn() => route('filament.admin.pages.dashboard'),
-            ])*/
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            /*->widgets([
+            ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
-            ])*/
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

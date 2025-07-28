@@ -3,20 +3,16 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Client;
-use Filament\Widgets\StatsOverviewWidget;
-use Filament\Widgets\StatsOverviewWidget\Card;
+use Filament\Widgets\Widget;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class TotalClientsWidget extends StatsOverviewWidget
+class TotalClientsWidget extends BaseWidget
 {
-    protected int|string|array $columnSpan = [
-        'sm' => 12,
-        'md' => 6,
-        'lg' => 4,
-    ];
-    protected function getCards(): array
+    protected function getStats(): array
     {
         return [
-            Card::make('Total Clients', Client::count())
+            Stat::make('Total Clients', Client::count())
                 ->description('All registered clients')
                 ->color('success')
                 ->icon('heroicon-o-user-group'),
