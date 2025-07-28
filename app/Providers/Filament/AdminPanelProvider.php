@@ -22,6 +22,9 @@ use App\Filament\Resources\PhoneNumberResource;
 use Filament\Navigation\NavigationGroup;
 use App\Filament\Pages\Profile;
 use App\Filament\AvatarProviders\GetAvatarProvider;
+use Filament\Http\Responses\Auth\Contracts\LoginResponse;
+use App\Filament\Http\Controllers\Auth\AuthenticatedSessionController;
+use Filament\Facades\Filament;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -48,6 +51,9 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Pages\Dashboard::class,
             ])
             ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
+            /*->authGuardRedirects([
+                'web' => fn() => route('filament.admin.pages.dashboard'),
+            ])*/
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             /*->widgets([
                 Widgets\AccountWidget::class,
