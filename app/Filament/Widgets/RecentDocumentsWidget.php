@@ -26,16 +26,6 @@ class RecentDocumentsWidget extends TableWidget
             TextColumn::make('created_at')->dateTime('j/n/y, h:i A'),
         ];
     }
-    protected function getTableActions(): array
-    {
-        return [
-            Action::make('view')
-                ->label('View')
-                ->icon('heroicon-o-eye')
-                ->url(fn(Document $record) => $record->url ?? asset('storage/' . $record->file_path))
-                ->openUrlInNewTab(),
-        ];
-    }
     protected function isTablePaginationEnabled(): bool
     {
         return false;
