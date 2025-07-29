@@ -10,7 +10,7 @@ use Filament\Forms;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, Grid};
+use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, RichEditor, Grid};
 use Filament\Forms\Components\PasswordInput;
 use Filament\Forms\Components\Password;
 use Illuminate\Support\Facades\Hash;
@@ -47,7 +47,31 @@ class ProjectResource extends Resource
                     ]),
                 Section::make('Project Extra Information')
                     ->schema([
-                        Textarea::make('notes')->label('Notes')->rows(3)->nullable()->maxLength(500),
+                        RichEditor::make('notes')
+                            ->label('Notes')
+                            ->toolbarButtons([
+                                'bold',
+                                'italic',
+                                'strike',
+                                'bulletList',
+                                'orderedList',
+                                'link',
+                                'bulletList',
+                                'codeBlock',
+                            ])
+                            ->maxLength(500)
+                            ->extraAttributes([
+                                'style' => 'resize: vertical;',
+                            ])
+                            ->reactive()
+                            //Character limit reactive function
+                            ->helperText(function (Get $get) {
+                                $raw = $get('notes') ?? '';
+                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($raw))); // Strip HTML + normalize whitespace
+                                $remaining = 500 - mb_strlen($textOnly); // Use mb_strlen for multibyte safety
+                                return "{$remaining} characters remaining";
+                            })
+                            ->nullable(),
                     ]),
             ]);
     }
