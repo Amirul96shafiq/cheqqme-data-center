@@ -61,7 +61,7 @@ class PhoneNumberResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->label('ID')->sortable(),
+                TextColumn::make('id')->label('ID')->sortable()->limit(20),
                 TextColumn::make('title')->label('Title')->searchable()->sortable()->limit(10),
                 TextColumn::make('phone')->label('Phone')->searchable(),
                 TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
@@ -88,7 +88,8 @@ class PhoneNumberResource extends Resource
 
                         return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(30),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active

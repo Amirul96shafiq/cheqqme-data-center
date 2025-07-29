@@ -76,8 +76,8 @@ class ClientResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id')->label('ID')->sortable(),
-                TextColumn::make('pic_name')->label('PIC Name')->searchable(),
-                TextColumn::make('company_name')->label('Company')->searchable(),
+                TextColumn::make('pic_name')->label('PIC Name')->searchable()->limit(20),
+                TextColumn::make('company_name')->label('Company')->searchable()->limit(20),
                 TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
                 TextColumn::make('updated_at')
                     ->label('Updated at (by)')
@@ -102,7 +102,8 @@ class ClientResource extends Resource
 
                         return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(30),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active

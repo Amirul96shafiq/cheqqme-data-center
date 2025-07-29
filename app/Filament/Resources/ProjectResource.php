@@ -57,8 +57,8 @@ class ProjectResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id')->label('ID')->sortable(),
-                TextColumn::make('title')->searchable()->sortable(),
-                TextColumn::make('client.company_name')->label('Client')->sortable()->searchable(),
+                TextColumn::make('title')->searchable()->sortable()->limit(20),
+                TextColumn::make('client.company_name')->label('Client')->sortable()->searchable()->limit(20),
                 TextColumn::make('status')
                     ->badge()
                     ->colors([
@@ -90,7 +90,8 @@ class ProjectResource extends Resource
 
                         return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(30),
             ])
             ->filters([
                 SelectFilter::make('status')

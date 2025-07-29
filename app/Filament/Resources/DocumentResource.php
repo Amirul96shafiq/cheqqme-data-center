@@ -129,10 +129,9 @@ class DocumentResource extends Resource
                     ->label('ID')
                     ->sortable()
                     ->url(fn($record) => route('filament.admin.resources.documents.edit', $record)),
-                TextColumn::make('title')->label('Title')->sortable()->searchable(),
+                TextColumn::make('title')->label('Title')->sortable()->searchable()->limit(20),
                 TextColumn::make('type')->badge(),
-                TextColumn::make('project.title')->label('Project')->sortable()->searchable(),
-                TextColumn::make('client.company_name')->label('Client')->sortable()->searchable(),
+                TextColumn::make('project.title')->label('Project')->sortable()->searchable()->limit(20),
                 TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
                 TextColumn::make('updated_at')
                     ->label('Updated at (by)')
@@ -157,7 +156,8 @@ class DocumentResource extends Resource
 
                         return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(30),
             ])
             ->filters([
                 SelectFilter::make('type')->options([

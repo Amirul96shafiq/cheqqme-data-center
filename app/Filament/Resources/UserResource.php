@@ -103,8 +103,8 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable()->sortable(),
-                TextColumn::make('email')->searchable()->sortable(),
+                TextColumn::make('name')->searchable()->sortable()->limit(20),
+                TextColumn::make('email')->searchable()->sortable()->limit(50),
                 TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
                 TextColumn::make('updated_at')
                     ->label('Updated at (by)')
@@ -129,7 +129,8 @@ class UserResource extends Resource
 
                         return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(30),
             ])
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active

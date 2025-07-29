@@ -80,7 +80,7 @@ class ImportantUrlResource extends Resource
             ->columns([
                 TextColumn::make('id')->label('ID')->sortable(),
 
-                TextColumn::make('title')->label('Title')->sortable()->searchable(),
+                TextColumn::make('title')->label('Title')->sortable()->searchable()->limit(20),
 
                 TextColumn::make('url')
                     ->label('Link')
@@ -92,12 +92,8 @@ class ImportantUrlResource extends Resource
                 TextColumn::make('project.title')
                     ->label('Project')
                     ->sortable()
-                    ->searchable(),
-
-                TextColumn::make('client.company_name')
-                    ->label('Client')
-                    ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->limit(20),
 
                 TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
                 TextColumn::make('updated_at')
@@ -123,7 +119,8 @@ class ImportantUrlResource extends Resource
 
                         return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(30),
             ])
             ->filters([
                 SelectFilter::make('client_id')->label('Client')->relationship('client', 'company_name'),
