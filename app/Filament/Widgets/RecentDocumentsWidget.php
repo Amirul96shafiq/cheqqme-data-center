@@ -30,4 +30,16 @@ class RecentDocumentsWidget extends TableWidget
     {
         return false;
     }
+    protected function getTableHeaderActions(): array
+    {
+        return [
+            Action::make('viewAll')
+                ->label('View All')
+                ->url(route('filament.admin.resources.documents.index'))
+                ->icon('heroicon-m-arrow-right')
+                ->button()
+                ->color('primary')
+                ->outlined(),
+        ];
+    }
 }

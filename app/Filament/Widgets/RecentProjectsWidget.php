@@ -6,7 +6,7 @@ use App\Models\Project;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Widgets\TableWidget;
-use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
 
 class RecentProjectsWidget extends TableWidget
@@ -31,16 +31,20 @@ class RecentProjectsWidget extends TableWidget
             TextColumn::make('created_at')->dateTime('j/n/y, h:i A'),
         ];
     }
-    protected function getTableActions(): array
-    {
-        return [
-            EditAction::make()
-                ->label('Edit')
-                ->url(fn(Project $record) => route('filament.admin.resources.projects.edit', $record)),
-        ];
-    }
     protected function isTablePaginationEnabled(): bool
     {
         return false;
+    }
+    protected function getTableHeaderActions(): array
+    {
+        return [
+            Action::make('viewAll')
+                ->label('View All')
+                ->url(route('filament.admin.resources.projects.index'))
+                ->icon('heroicon-m-arrow-right')
+                ->button()
+                ->color('primary')
+                ->outlined(),
+        ];
     }
 }
