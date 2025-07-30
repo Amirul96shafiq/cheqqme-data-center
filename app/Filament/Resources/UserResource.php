@@ -90,7 +90,7 @@ class UserResource extends Resource
                                 ->dehydrated(false)
                                 ->visible(
                                     fn(Get $get, string $context) =>
-                                    $context === 'create' || $get('change_password')
+                                    $context === 'edit' && $get('change_password') === true
                                 )
                                 ->rule(function () {
                                     return function (string $attribute, $value, $fail) {
@@ -133,7 +133,8 @@ class UserResource extends Resource
 
                 // Account deletion
                 Section::make('Danger Zone')
-                ->description('Enable User Deletion? toggle to view this field')
+                    ->description('Enable User Deletion? toggle to view this field')
+                    ->visible(fn(string $context) => $context === 'edit') // hide entire section when creating
                     ->Schema([
                         // Only show "Change password?" during editing
                         Toggle::make('user_delete')
