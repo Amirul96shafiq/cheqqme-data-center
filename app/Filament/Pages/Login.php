@@ -7,6 +7,10 @@ use FIlament\Forms\Form;
 use Filament\Pages\Auth\Login as BaseLogin;
 use Filament\Forms\Components\Actions\Action;
 
+use Filament\Http\Responses\Auth\Contracts\LoginResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+
 
 class Login extends BaseLogin
 {
@@ -22,13 +26,16 @@ class Login extends BaseLogin
                 Forms\Components\TextInput::make('email')
                     ->label('Email Address')
                     ->email()
+                    ->autocomplete('email')
                     ->required()
                     ->autofocus(),
 
                 Forms\Components\TextInput::make('password')
                     ->label('Password')
                     ->password()
-                    ->required(),
+                    ->required()
+                    ->revealable()
+                    ->autocomplete('password'),
 
                 Forms\Components\Actions::make([
                     Action::make('login')

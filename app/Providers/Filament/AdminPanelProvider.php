@@ -24,6 +24,12 @@ use App\Filament\Pages\Profile;
 use App\Filament\AvatarProviders\GetAvatarProvider;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use App\Filament\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Filament\Pages\Settings;
+use Filament\Navigation\MenuItem;
+use Filament\Navigation\UserMenuItem;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use Filament\Pages\Actions\Logout;
 use Filament\Facades\Filament;
 
 
@@ -33,16 +39,16 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
+            ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
             ->brandName('CheQQme Data Center')
             ->login(Login::class)
             ->profile(Profile::class, isSimple: false)
             ->defaultAvatarProvider(GetAvatarProvider::class)
-            ->resources([
+            /*->resources([
                 PhoneNumberResource::class, // Registering PhoneNumberResource
-            ])
+            ])*/
             ->colors([
                 'primary' => Color::Amber,
             ])
