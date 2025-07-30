@@ -46,6 +46,9 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->sidebarCollapsibleOnDesktop()
+            ->sidebarWidth('20rem')
+            //->viteTheme('resources/css/app.css')
             ->pages([
                 \Filament\Pages\Dashboard::class,
             ])

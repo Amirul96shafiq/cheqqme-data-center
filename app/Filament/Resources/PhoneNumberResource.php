@@ -10,7 +10,7 @@ use Filament\Forms;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, Grid};
+use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, Grid, RichEditor};
 use Filament\Forms\Components\PasswordInput;
 use Filament\Forms\Components\Password;
 use Illuminate\Support\Facades\Hash;
