@@ -13,6 +13,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\{TextInput, Toggle, Grid, Group, Hidden};
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\PasswordInput;
 use Filament\Forms\Components\Password;
@@ -47,12 +48,12 @@ class UserResource extends Resource
                         ])
                     ]),
 
-                Section::make('Danger Zone')
-                    ->description('Enable Change password? toggle to view this field')
+                Section::make('Password Information')
+                    ->description('Enable Change Password? toggle to view this field')
                     ->schema([
                         // Only show "Change password?" during editing
                         Toggle::make('change_password')
-                            ->label('Change password?')
+                            ->label('Change Password?')
                             ->live()
                             ->afterStateUpdated(function (bool $state, callable $set) {
                                 if (!$state) {
@@ -128,7 +129,36 @@ class UserResource extends Resource
                                     $context === 'create' || $get('change_password')
                                 ),
                         ]),
-                    ])
+                    ]),
+
+                // Account deletion
+                Section::make('Danger Zone')
+                ->description('Enable User Deletion? toggle to view this field')
+                    ->Schema([
+                        // Only show "Change password?" during editing
+                        Toggle::make('user_delete')
+                            ->label('User Deletion?')
+                            ->live()
+                            ->visible(fn(string $context) => $context === 'edit'),
+                        // Delete button
+                        Actions::make([
+                            Action::make('deleteRecord')
+                                ->label('Delete User')
+                                ->icon('heroicon-o-trash')
+                                ->color('danger')
+                                ->requiresConfirmation()
+                                ->visible(
+                                    fn(Get $get, string $context) =>
+                                    $context === 'create' || $get('user_delete')
+                                )
+                                ->action(function ($record, $livewire) {
+                                    $record->delete();
+
+                                    // Optionally redirect after delete
+                                    $livewire->redirect('/admin/users');
+                                }),
+                        ]),
+                    ]),
             ]);
     }
 
