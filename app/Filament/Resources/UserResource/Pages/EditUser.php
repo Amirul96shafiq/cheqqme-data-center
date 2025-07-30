@@ -16,7 +16,7 @@ class EditUser extends BaseEditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            //Actions\DeleteAction::make(),
         ];
     }
     protected function mutateFormDataBeforeSave(array $data): array

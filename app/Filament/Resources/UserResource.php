@@ -51,6 +51,7 @@ class UserResource extends Resource
                 Section::make('Password Information')
                     ->description('Enable Change Password? toggle to view this field')
                     ->schema([
+
                         // Only show "Change password?" during editing
                         Toggle::make('change_password')
                             ->label('Change Password?')
@@ -136,11 +137,14 @@ class UserResource extends Resource
                     ->description('Enable User Deletion? toggle to view this field')
                     ->visible(fn(string $context) => $context === 'edit') // hide entire section when creating
                     ->Schema([
-                        // Only show "Change password?" during editing
+                        // Only show "User Deletion?" during editing
                         Toggle::make('user_delete')
                             ->label('User Deletion?')
+                            ->onColor('danger')
+                            ->offColor('gray')
                             ->live()
                             ->visible(fn(string $context) => $context === 'edit'),
+
                         // Delete button
                         Actions::make([
                             Action::make('deleteRecord')
@@ -148,10 +152,7 @@ class UserResource extends Resource
                                 ->icon('heroicon-o-trash')
                                 ->color('danger')
                                 ->requiresConfirmation()
-                                ->visible(
-                                    fn(Get $get, string $context) =>
-                                    $context === 'create' || $get('user_delete')
-                                )
+                                ->visible(fn(Get $get) => $get('user_delete') === true)
                                 ->action(function ($record, $livewire) {
                                     $record->delete();
 
@@ -167,6 +168,7 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('username')->searchable()->sortable()->limit(20),
                 TextColumn::make('name')->searchable()->sortable()->limit(20),
                 TextColumn::make('email')->searchable()->sortable()->limit(50),
                 TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
@@ -197,20 +199,19 @@ class UserResource extends Resource
                     ->limit(30),
             ])
             ->filters([
-                TrashedFilter::make(), // To show trashed or only active
+                //TrashedFilter::make(), // To show trashed or only active
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                /*Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
-                ]),
+                ]),*/
             ]);
     }
 
