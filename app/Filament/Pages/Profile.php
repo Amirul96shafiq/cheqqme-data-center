@@ -85,6 +85,7 @@ class Profile extends EditProfile
                                 ]),
                                 Forms\Components\TextInput::make('password')
                                     ->password()
+                                    ->helperText('Must be at least 5 characters')
                                     ->revealable()
                                     ->dehydrated(fn($state) => filled($state))
                                     ->same('password_confirmation')

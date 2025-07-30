@@ -104,6 +104,7 @@ class UserResource extends Resource
                             // NEW PASSWORD
                             TextInput::make('password')
                                 ->label(fn(string $context) => $context === 'edit' ? 'New Password' : 'Password')
+                                ->helperText('Must be at least 5 characters')
                                 ->password()
                                 ->revealable()
                                 ->minLength(5)
