@@ -12,6 +12,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\{TextInput, Toggle, Grid, Group, Hidden};
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\PasswordInput;
 use Filament\Forms\Components\Password;
@@ -35,44 +36,74 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                /*Section::make('User Profile Picture')
-                    ->schema([
-                        Grid::make(1)->schema([
-                            FileUpload::make('profile_picture')
-                                ->label(false)
-                                ->image()
-                                ->imageEditor()
-                                ->circleCropper()
-                                ->disk('public')
-                                ->directory('profile-pictures')
-                                ->preserveFilenames()
-                                ->visibility('public')
-                                ->avatar()
-                                ->columnSpanFull()
-                        ]),
-                    ]),*/
+
                 Section::make('User Information')
                     ->schema([
                         Grid::make(3)->schema([
                             TextInput::make('username')->label('Username')->required()->maxLength(20),
                             TextInput::make('name')->label('Name')->nullable()->maxLength(50),
                             TextInput::make('email')->label('Email')->required()->email()->maxLength(60),
-                            // Only show "Change password?" during editing
-                            Toggle::make('change_password')
-                                ->label('Change password?')
-                                ->helperText('Leave off to keep the current password')
-                                ->live()
-                                ->visible(fn(string $context) => $context === 'edit'),
                             Hidden::make('Updated_by')->default(fn() => auth()->id())->dehydrated(),
                         ])
                     ]),
 
-                Section::make('Password Information')->description('Enable Change password toggle above to view this field')
+                Section::make('Danger Zone')
+                    ->description('Enable Change password? toggle to view this field')
                     ->schema([
-                        Grid::make(2)->schema([
+                        // Only show "Change password?" during editing
+                        Toggle::make('change_password')
+                            ->label('Change password?')
+                            ->live()
+                            ->afterStateUpdated(function (bool $state, callable $set) {
+                                if (!$state) {
+                                    $set('old_password', null);
+                                    $set('password', null);
+                                    $set('password_confirmation', null);
+                                }
+                            })
+                            ->visible(fn(string $context) => $context === 'edit'),
+
+                        // Generate password feature
+                        Forms\Components\Actions::make([
+                            Action::make('generatePassword')
+                                ->label('Generate Strong Password')
+                                ->icon('heroicon-o-code-bracket-square')
+                                ->color('gray')
+                                ->action(function ($set) {
+                                    $generated = str()->random(16);
+                                    $set('password', $generated);
+                                })
+                                ->visible(
+                                    fn(Get $get, string $context) =>
+                                    $context === 'create' || $get('change_password')
+                                ),
+                        ]),
+
+                        Grid::make(3)->schema([
+
+                            // OLD PASSWORD
+                            Forms\Components\TextInput::make('old_password')
+                                ->label('Old Password')
+                                ->password()
+                                ->revealable()
+                                ->dehydrated(false)
+                                ->visible(
+                                    fn(Get $get, string $context) =>
+                                    $context === 'create' || $get('change_password')
+                                )
+                                ->rule(function () {
+                                    return function (string $attribute, $value, $fail) {
+                                        if ($value && !Hash::check($value, auth()->user()->password)) {
+                                            $fail('The old password is incorrect.');
+                                        }
+                                    };
+                                }),
+
+                            // NEW PASSWORD
                             TextInput::make('password')
                                 ->label(fn(string $context) => $context === 'edit' ? 'New Password' : 'Password')
                                 ->password()
+                                ->revealable()
                                 ->minLength(5)
                                 ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
                                 ->dehydrated(fn($state) => filled($state))
@@ -83,9 +114,11 @@ class UserResource extends Resource
                                 )
                                 ->same('password_confirmation'),
 
+                            // CONFIRM NEW PASSWORD
                             TextInput::make('password_confirmation')
-                                ->label('Confirm Password')
+                                ->label('Confirm New Password')
                                 ->password()
+                                ->revealable()
                                 ->required(
                                     fn(Get $get, string $context) =>
                                     $context === 'create' || filled($get('password'))
