@@ -49,6 +49,7 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->sidebarWidth('20rem')
             //->viteTheme('resources/css/app.css')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->pages([
                 \Filament\Pages\Dashboard::class,
             ])
