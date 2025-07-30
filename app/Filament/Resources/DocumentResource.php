@@ -141,7 +141,7 @@ class DocumentResource extends Resource
                                 return "{$remaining} characters remaining";
                             })
                             // Block save if over 500 visible characters
-                            ->rule(function (Get $get): \Closure {
+                            ->rule(function (Get $get): Closure {
                                 return function (string $attribute, $value, Closure $fail) {
                                     $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                     if (mb_strlen($textOnly) > 500) {
