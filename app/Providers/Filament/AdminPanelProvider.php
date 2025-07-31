@@ -32,6 +32,11 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Pages\Actions\Logout;
 use Filament\Facades\Filament;
 
+// Plugins
+// Light Switch by Adam Weston
+use Awcodes\LightSwitch\LightSwitchPlugin;
+use Awcodes\LightSwitch\Enums\Alignment;
+
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -86,6 +91,13 @@ class AdminPanelProvider extends PanelProvider
 
                 NavigationGroup::make()
                     ->label('User Management'),
+            ])
+            ->plugins([
+                LightSwitchPlugin::make()
+                ->position(Alignment::TopCenter)
+                ->enabledOn([
+                    'auth.login',
+                ]),
             ]);
     }
 }

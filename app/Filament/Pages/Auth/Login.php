@@ -19,7 +19,7 @@ class Login extends BaseLogin
     {
         return [];
     }
-    
+
     // Styling customise Login Form
     public function form(Form $form): Form
     {
@@ -39,8 +39,12 @@ class Login extends BaseLogin
                     ->revealable()
                     ->autocomplete('password'),
 
+                Forms\Components\Checkbox::make('remember')
+                    ->label('Remember Me')
+                    ->columnSpanFull(),
+
                 Forms\Components\Actions::make([
-                    Action::make('login')
+                    Action::make('login_button')
                         ->label('Login')
                         ->submit('login')
                         ->extraAttributes(['class' => 'w-full py-4']),
