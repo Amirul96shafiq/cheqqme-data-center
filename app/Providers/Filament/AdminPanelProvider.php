@@ -43,7 +43,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('CheQQme Data Center')
-            ->login(Login::class)
+            ->login(\App\Filament\Pages\Auth\Login::class)
             ->profile(Profile::class, isSimple: false)
             ->defaultAvatarProvider(GetAvatarProvider::class)
             /*->resources([
