@@ -67,6 +67,20 @@
       })
     })
   </script>
+
+  <script>
+    function togglePassword(id) {
+      const input = document.getElementById(id);
+      const eyeIcon = document.getElementById(id + '-eye');
+      const eyeOffIcon = document.getElementById(id + '-eye-slash');
+
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+
+      eyeIcon.classList.toggle('hidden', !isHidden);
+      eyeOffIcon.classList.toggle('hidden', isHidden);
+    }
+  </script>
 </head>
 
 <body class="min-h-screen bg-gray-100 dark:bg-neutral-950 flex items-center justify-center">
@@ -128,27 +142,40 @@
         <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
 
         <!-- New Password Field -->
-        <div class="mb-5">
-          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password
-            <span class="text-red-500">*</span></label>
+        <div class="mb-5 relative">
+          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            New Password <span class="text-red-500">*</span>
+          </label>
           <input id="password" type="password" name="password" required
-            class="w-full px-4 py-3 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
+            class="w-full px-4 py-3 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
+
+          <button type="button" onclick="togglePassword('password')"
+            class="absolute top-7 right-3 theme-toggle-btn text-gray-500 hover:text-gray-700 dark:hover:text-white">
+            <x-heroicon-s-eye-slash class="h-5 w-5" id="password-eye-slash" />
+            <x-heroicon-s-eye class="h-5 w-5 hidden" id="password-eye" />
+          </button>
         </div>
 
         <!-- Confirm Password Field -->
-        <div class="mb-5">
-          <label for="password_confirmation"
-            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm New Password
-            <span class="text-red-500">*</span></label>
+        <div class="mb-5 relative">
+          <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Confirm New Password <span class="text-red-500">*</span>
+          </label>
           <input id="password_confirmation" type="password" name="password_confirmation" required
-            class="w-full px-4 py-3 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
+            class="w-full px-4 py-3 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
+
+          <button type="button" onclick="togglePassword('password_confirmation')"
+            class="absolute top-7 right-3 theme-toggle-btn text-gray-500 hover:text-gray-700 dark:hover:text-white">
+            <x-heroicon-s-eye-slash class="h-5 w-5" id="password_confirmation-eye-slash" />
+            <x-heroicon-s-eye class="h-5 w-5 hidden" id="password_confirmation-eye" />
+          </button>
         </div>
 
         <!-- Submit button -->
         <button type="submit"
-          class="w-full py-5 px-4 bg-amber-500 hover:bg-amber-400 text-white font-semibold text-sm rounded-lg transition">
-          Reset Password
-        </button>
+              class="w-full py-5 px-4 bg-amber-500 hover:bg-amber-400 text-white font-semibold text-sm rounded-lg transition">
+              Reset Password
+          </button>
       </form>
 
       <!-- Footer -->

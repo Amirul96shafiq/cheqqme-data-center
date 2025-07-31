@@ -105,6 +105,22 @@
       </div>
 
       <!-- Form section -->
+      @if (session('status'))
+      <div class="mb-4 text-sm text-amber-400 font-medium text-center">
+      {{ session('status') }}
+      </div>
+    @endif
+
+      @if ($errors->any())
+      <div class="mb-4 text-sm text-red-400">
+      <ul class="list-disc pl-5 space-y-1">
+        @foreach ($errors->all() as $error)
+      <li>{{ $error }}</li>
+      @endforeach
+      </ul>
+      </div>
+    @endif
+
       <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
         @csrf
         <div>
