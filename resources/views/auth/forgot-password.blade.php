@@ -94,16 +94,17 @@
       </div>
     </div>
 
-    <!-- Card -->
-    <div class="bg-white dark:bg-neutral-900 shadow rounded-xl p-8 space-y-6">
-      <!-- Header -->
+    <!-- Card section -->
+    <div
+      class="bg-white dark:bg-neutral-900 rounded-2xl ring-1 ring-gray-950/5 dark:ring-white/10 sm:rounded-xl p-8 space-y-6">
+      <!-- Header section -->
       <div class="text-center">
         <h1 class="text-xl font-bold text-black dark:text-gray-100 mb-1">CheQQme Data Center</h1>
         <h2 class="text-2xl font-bold text-black dark:text-white">Forgot Password</h2>
         <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Enter your email to reset your password</p>
       </div>
 
-      <!-- Form -->
+      <!-- Form section -->
       <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
         @csrf
         <div>
@@ -115,7 +116,7 @@
 
         <div>
           <button type="submit"
-            class="w-full py-3 px-4 bg-amber-500 hover:bg-amber-400 text-white font-semibold text-sm rounded-lg transition">
+            class="w-full py-5 px-4 bg-amber-500 hover:bg-amber-400 text-white font-semibold text-sm rounded-lg transition">
             Send Password Reset Link
           </button>
         </div>
