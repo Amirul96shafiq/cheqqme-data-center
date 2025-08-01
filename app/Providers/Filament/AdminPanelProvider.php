@@ -49,29 +49,41 @@ class AdminPanelProvider extends PanelProvider
             ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
-            ->brandName(new HtmlString(<<<'HTML'
+            ->brandName(new HtmlString(
+                request()->is('admin/login') ?
+                        <<<'HTML'
                 <div class="text-center">
-                    <!-- Logo Light -->
-                    <img src="/logos/logo-light.png" alt="CheQQme Data Center Logo"
+                    <!-- Logo Light (Login Page) -->
+                    <img src="/logos/logo-light.png" alt="CheQQme Logo"
                         class="h-32 dark:hidden mx-auto">
 
-                    <!-- Logo Dark -->
-                    <img src="/logos/logo-dark.png" alt="CheQQme Data Center Logo"
+                    <!-- Logo Dark (Login Page) -->
+                    <img src="/logos/logo-dark.png" alt="CheQQme Logo"
                         class="h-32 hidden dark:block mx-auto">
                 </div>
-            HTML))
+            HTML
+                        :
+                        <<<'HTML'
+                <div class="text-center">
+                    <!-- Logo Light (Dashboard Pages) -->
+                    <img src="/logos/logo-light-vertical.png" alt="CheQQme Logo"
+                        class="h-12 dark:hidden mx-auto">
+
+                    <!-- Logo Dark (Dashboard Pages) -->
+                    <img src="/logos/logo-dark.png-vertical" alt="CheQQme Logo"
+                        class="h-12 hidden dark:block mx-auto">
+                </div>
+            HTML
+                    ))
+
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->profile(Profile::class, isSimple: false)
             ->defaultAvatarProvider(GetAvatarProvider::class)
-            /*->resources([
-                PhoneNumberResource::class, // Registering PhoneNumberResource
-            ])*/
             ->colors([
                 'primary' => Color::Amber,
             ])
             ->sidebarCollapsibleOnDesktop()
             ->sidebarWidth('20rem')
-            //->viteTheme('resources/css/app.css')
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->pages([
                 \Filament\Pages\Dashboard::class,
