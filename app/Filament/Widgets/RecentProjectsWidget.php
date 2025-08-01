@@ -55,8 +55,7 @@ class RecentProjectsWidget extends TableWidget
                 ->url(route('filament.admin.resources.projects.index'))
                 ->icon('heroicon-m-arrow-right')
                 ->button()
-                ->color('primary')
-                ->outlined(),
+                ->color('gray'),
         ];
     }
 }

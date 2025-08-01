@@ -1,6 +1,19 @@
+<!-- Not using this css -->
+<!-- Use resources/css/filament/admin/theme.css instead -->
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .dark .fi-btn {
+        color: #000 !important;
+    }
+
+    .dark .fi-btn * {
+        color: #000 !important;
+    }
+}
 
 select {
     appearance: none;

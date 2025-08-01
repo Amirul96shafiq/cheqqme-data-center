@@ -51,8 +51,7 @@ class RecentDocumentsWidget extends TableWidget
                 ->url(route('filament.admin.resources.documents.index')) // adjust route name if needed
                 ->icon('heroicon-m-arrow-right')
                 ->button()
-                ->color('primary')
-                ->outlined(),
+                ->color('gray'),
         ];
     }
 }
