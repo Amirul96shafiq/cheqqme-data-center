@@ -51,36 +51,46 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->brandName(new HtmlString(
                 request()->is('admin/login') ?
-                        <<<'HTML'
-                <div class="text-center">
-                    <!-- Logo Light (Login Page) -->
-                    <img src="/logos/logo-light.png" alt="CheQQme Logo"
-                        class="h-32 dark:hidden mx-auto">
+                <<<'HTML'
+                        <div class="text-center">
+                            <!-- Logo Light (Login Page) -->
+                            <img src="/logos/logo-light.png" alt="CheQQme Logo"
+                                class="h-32 dark:hidden mx-auto">
 
-                    <!-- Logo Dark (Login Page) -->
-                    <img src="/logos/logo-dark.png" alt="CheQQme Logo"
-                        class="h-32 hidden dark:block mx-auto">
-                </div>
-            HTML
-                        :
-                        <<<'HTML'
-                <div class="text-center">
-                    <!-- Logo Light (Dashboard Pages) -->
-                    <img src="/logos/logo-light-vertical.png" alt="CheQQme Logo"
-                        class="h-12 dark:hidden mx-auto">
+                            <!-- Logo Dark (Login Page) -->
+                            <img src="/logos/logo-dark.png" alt="CheQQme Logo"
+                                class="h-32 hidden dark:block mx-auto">
+                        </div>
+                    HTML
+                :
+                <<<'HTML'
+                        <div class="text-center">
+                            <!-- Logo Light (Dashboard Pages) -->
+                            <img src="/logos/logo-light-vertical.png" alt="CheQQme Logo"
+                                class="h-11 dark:hidden mx-auto">
 
-                    <!-- Logo Dark (Dashboard Pages) -->
-                    <img src="/logos/logo-dark.png-vertical" alt="CheQQme Logo"
-                        class="h-12 hidden dark:block mx-auto">
-                </div>
-            HTML
-                    ))
-
+                            <!-- Logo Dark (Dashboard Pages) -->
+                            <img src="/logos/logo-dark.png-vertical" alt="CheQQme Logo"
+                                class="h-11 hidden dark:block mx-auto">
+                        </div>
+                    HTML
+            ))
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->profile(Profile::class, isSimple: false)
             ->defaultAvatarProvider(GetAvatarProvider::class)
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => [
+                    50 => '#fbb43e',
+                    100 => '#fbb43e',
+                    200 => '#fbb43e',
+                    300 => '#fbb43e',
+                    400 => '#fbb43e',
+                    500 => '#fbb43e',
+                    600 => '#fbb43e',
+                    700 => '#fbb43e',
+                    800 => '#fbb43e',
+                    900 => '#fbb43e',
+                ],
             ])
             ->sidebarCollapsibleOnDesktop()
             ->sidebarWidth('20rem')
