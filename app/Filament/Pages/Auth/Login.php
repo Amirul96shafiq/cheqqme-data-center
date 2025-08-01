@@ -12,6 +12,7 @@ use Filament\Forms\Components\Actions\Action;
 
 class Login extends BaseLogin
 {
+    
     protected static bool $shouldRegisterNavigation = false;
 
     // Remove Default Form Action (Form buttons)

@@ -31,6 +31,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Filament\Pages\Actions\Logout;
 use Filament\Facades\Filament;
+use Illuminate\Support\HtmlString;
+
 
 // Plugins
 // Light Switch by Adam Weston
@@ -47,7 +49,17 @@ class AdminPanelProvider extends PanelProvider
             ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
-            ->brandName('CheQQme Data Center')
+            ->brandName(new HtmlString(<<<'HTML'
+                <div class="text-center">
+                    <!-- Logo Light -->
+                    <img src="/logos/logo-light.png" alt="CheQQme Data Center Logo"
+                        class="h-32 dark:hidden mx-auto">
+
+                    <!-- Logo Dark -->
+                    <img src="/logos/logo-dark.png" alt="CheQQme Data Center Logo"
+                        class="h-32 hidden dark:block mx-auto">
+                </div>
+            HTML))
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->profile(Profile::class, isSimple: false)
             ->defaultAvatarProvider(GetAvatarProvider::class)
@@ -94,10 +106,10 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 LightSwitchPlugin::make()
-                ->position(Alignment::TopCenter)
-                ->enabledOn([
-                    'auth.login',
-                ]),
+                    ->position(Alignment::TopCenter)
+                    ->enabledOn([
+                        'auth.login',
+                    ]),
             ]);
     }
 }
