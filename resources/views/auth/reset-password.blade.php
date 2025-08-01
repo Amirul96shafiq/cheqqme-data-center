@@ -134,9 +134,14 @@
       class="bg-white dark:bg-neutral-900 rounded-2xl ring-1 ring-gray-950/5 dark:ring-white/10 sm:rounded-xl p-8 space-y-6">
       <!-- Header section -->
       <div class="text-center">
-        <h1 class="text-xl font-bold text-black dark:text-gray-100 mb-1">CheQQme Data Center</h1>
-        <h2 class="text-2xl font-bold text-black dark:text-white">Reset Password</h2>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Enter new password</p>
+        <!-- Logo Light -->
+        <img src="/logos/logo-light.png" alt="CheQQme Data Center Logo"
+        class="h-32 dark:hidden mx-auto">
+        <!-- Logo Dark -->
+        <img src="/logos/logo-dark.png" alt="CheQQme Data Center Logo"
+        class="h-32 hidden dark:block mx-auto">
+        <h2 class="text-2xl font-bold text-black dark:text-white m-3">Reset Password</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Enter new password</p>
       </div>
 
       <!-- Form section -->
