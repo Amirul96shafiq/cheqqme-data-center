@@ -28,7 +28,7 @@ class RecentProjectsWidget extends TableWidget
             TextColumn::make('status')
                 ->badge()
                 ->colors([
-                    'primary' => 'Planning',
+                    'danger' => 'Planning',
                     'info' => 'In Progress',
                     'success' => 'Completed',
                 ]),

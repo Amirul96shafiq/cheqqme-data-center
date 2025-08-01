@@ -100,7 +100,7 @@ class ProjectResource extends Resource
                 TextColumn::make('status')
                     ->badge()
                     ->colors([
-                        'primary' => 'Planning',
+                        'gray' => 'Planning',
                         'info' => 'In Progress',
                         'success' => 'Completed',
                     ]),
