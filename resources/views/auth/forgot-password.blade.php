@@ -157,7 +157,7 @@
         <!-- Submit button -->
         <div>
           <button type="submit"
-            class="w-full py-5 px-4 bg-amber-500 hover:bg-amber-400 text-white font-semibold text-sm rounded-lg transition">
+            class="w-full py-4 px-4 bg-amber-500 hover:bg-amber-400 text-white dark:text-black font-semibold text-sm rounded-lg transition">
             Send Password Reset Link
           </button>
         </div>
