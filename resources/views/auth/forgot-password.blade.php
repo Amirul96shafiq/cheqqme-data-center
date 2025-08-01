@@ -23,10 +23,6 @@
     .theme-toggle-btn.active {
       background-color: rgba(255, 255, 255, 0.1);
     }
-
-    .theme-toggle-btn.active svg {
-      color: #facc15;
-    }
   </style>
 
   <script>
@@ -60,11 +56,32 @@
         applyTheme(storedTheme)
       }
 
-      document.querySelectorAll('.theme-toggle-btn').forEach((btn) => {
+      const buttons = document.querySelectorAll('.theme-toggle-btn');
+
+      function setActiveButton(activeTheme) {
+        buttons.forEach((btn) => {
+          const icon = btn.querySelector('svg');
+          if (btn.dataset.theme === activeTheme) {
+            btn.classList.add('active');
+            icon?.classList.add('text-yellow-400');
+          } else {
+            btn.classList.remove('active');
+            icon?.classList.remove('text-yellow-400');
+          }
+        });
+      }
+
+      // Initial highlighting
+      setActiveButton(storedTheme || 'system');
+
+      // Add click event to toggle
+      buttons.forEach((btn) => {
         btn.addEventListener('click', () => {
-          applyTheme(btn.dataset.theme)
-        })
-      })
+          const selected = btn.dataset.theme;
+          applyTheme(selected);
+          setActiveButton(selected);
+        });
+      });
     })
   </script>
 </head>
@@ -123,13 +140,16 @@
 
       <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
         @csrf
+
+        <!-- Email Address Field -->
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email
             address</label>
           <input id="email" name="email" type="email" required autofocus
-            class="w-full px-4 py-3 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
+            class="w-full px-4 py-2 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
         </div>
 
+        <!-- Submit button -->
         <div>
           <button type="submit"
             class="w-full py-5 px-4 bg-amber-500 hover:bg-amber-400 text-white font-semibold text-sm rounded-lg transition">

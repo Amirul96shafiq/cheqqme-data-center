@@ -60,11 +60,32 @@
         applyTheme(storedTheme)
       }
 
-      document.querySelectorAll('.theme-toggle-btn').forEach((btn) => {
+      const buttons = document.querySelectorAll('.theme-toggle-btn');
+
+      function setActiveButton(activeTheme) {
+        buttons.forEach((btn) => {
+          const icon = btn.querySelector('svg');
+          if (btn.dataset.theme === activeTheme) {
+            btn.classList.add('active');
+            icon?.classList.add('text-yellow-400');
+          } else {
+            btn.classList.remove('active');
+            icon?.classList.remove('text-yellow-400');
+          }
+        });
+      }
+
+      // Initial highlighting
+      setActiveButton(storedTheme || 'system');
+
+      // Add click event to toggle
+      buttons.forEach((btn) => {
         btn.addEventListener('click', () => {
-          applyTheme(btn.dataset.theme)
-        })
-      })
+          const selected = btn.dataset.theme;
+          applyTheme(selected);
+          setActiveButton(selected);
+        });
+      });
     })
   </script>
 
@@ -143,11 +164,11 @@
 
         <!-- New Password Field -->
         <div class="mb-5 relative">
-          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             New Password <span class="text-red-500">*</span>
           </label>
           <input id="password" type="password" name="password" required
-            class="w-full px-4 py-3 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
+            class="w-full px-4 py-2 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
 
           <button type="button" onclick="togglePassword('password')"
             class="absolute top-7 right-3 theme-toggle-btn text-gray-500 hover:text-gray-700 dark:hover:text-white">
@@ -158,11 +179,11 @@
 
         <!-- Confirm Password Field -->
         <div class="mb-5 relative">
-          <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Confirm New Password <span class="text-red-500">*</span>
           </label>
           <input id="password_confirmation" type="password" name="password_confirmation" required
-            class="w-full px-4 py-3 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
+            class="w-full px-4 py-2 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
 
           <button type="button" onclick="togglePassword('password_confirmation')"
             class="absolute top-7 right-3 theme-toggle-btn text-gray-500 hover:text-gray-700 dark:hover:text-white">
@@ -173,9 +194,9 @@
 
         <!-- Submit button -->
         <button type="submit"
-              class="w-full py-5 px-4 bg-amber-500 hover:bg-amber-400 text-white font-semibold text-sm rounded-lg transition">
-              Reset Password
-          </button>
+          class="w-full py-5 px-4 bg-amber-500 hover:bg-amber-400 text-white font-semibold text-sm rounded-lg transition">
+          Reset Password
+        </button>
       </form>
 
       <!-- Footer -->
