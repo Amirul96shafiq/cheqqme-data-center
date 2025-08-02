@@ -13,6 +13,7 @@ use Closure;
 use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, RichEditor, Grid};
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables;
@@ -30,10 +31,10 @@ class ClientResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Client Information')
+                Section::make(__('client.section.client_info'))
                     ->schema([
                         TextInput::make('pic_name')
-                            ->label('Person-in-charge Name')
+                            ->label(__('client.form.pic_name'))
                             ->required()
                             ->reactive()
                             ->debounce(500) // Delay the reaction so user can finish typing
@@ -47,29 +48,29 @@ class ClientResource extends Resource
                                 ",
                             ])
                             ->extraAlpineAttributes(['x-ref' => 'picName']),
-                        TextInput::make('pic_email')->label('Person-in-charge Email')->email()->required(),
-                        TextInput::make('pic_contact_number')->label('Person-in-charge Contact Number')->required()->tel(),
+                        TextInput::make('pic_email')->label(__('client.form.pic_email'))->email()->required(),
+                        TextInput::make('pic_contact_number')->label(__('client.form.pic_contact_number'))->required()->tel(),
                     ])
                     ->columns(3),
 
-                Section::make('Client\'s Company Information')
+                Section::make(__('client.section.company_info'))
                     ->schema([
                         TextInput::make('company_name')
-                            ->label('Company Name')
+                            ->label(__('client.form.company_name'))
                             ->nullable()
                             ->extraAlpineAttributes(['x-ref' => 'companyName'])
-                            ->helperText('Defaults to Person-in-charge Name, free to fill in.')
+                            ->helperText(__('client.form.company_name_helper'))
                             ->placeholder(fn(callable $get) => $get('pic_name')),
-                        TextInput::make('company_email')->label('Company Email')->email()->nullable(),
-                        Textarea::make('company_address')->label('Company Address')->rows(2)->nullable(),
-                        Textarea::make('billing_address')->label('Billing Address')->rows(2)->nullable(),
+                        TextInput::make('company_email')->label(__('client.form.company_email'))->email()->nullable(),
+                        Textarea::make('company_address')->label(__('client.form.company_address'))->rows(2)->nullable(),
+                        Textarea::make('billing_address')->label(__('client.form.billing_address'))->rows(2)->nullable(),
                     ])
                     ->columns(2),
 
-                Section::make('Client Extra Information')
+                Section::make(__('client.section.extra_info'))
                     ->schema([
                         RichEditor::make('notes')
-                            ->label('Notes')
+                            ->label(__('client.form.notes'))
                             ->toolbarButtons([
                                 'bold',
                                 'italic',
@@ -94,14 +95,14 @@ class ClientResource extends Resource
                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                 $remaining = 500 - mb_strlen($decoded);
-                                return "{$remaining} characters remaining";
+                                return __("client.form.notes_helper", ['count' => $remaining]);
                             })
                             // Block save if over 500 visible characters
                             ->rule(function (Get $get): Closure {
                                 return function (string $attribute, $value, Closure $fail) {
                                     $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                     if (mb_strlen($textOnly) > 500) {
-                                        $fail("Notes must not exceed 500 visible characters.");
+                                        $fail(__("client.form.notes_warning"));
                                     }
                                 };
                             })
@@ -114,12 +115,12 @@ class ClientResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->label('ID')->sortable(),
-                TextColumn::make('pic_name')->label('PIC Name')->searchable()->limit(20),
-                TextColumn::make('company_name')->label('Company')->searchable()->limit(20),
-                TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('id')->label(__('client.table.id'))->sortable(),
+                TextColumn::make('pic_name')->label(__('client.table.pic_name'))->searchable()->limit(20),
+                TextColumn::make('company_name')->label(__('client.table.company_name'))->searchable()->limit(20),
+                TextColumn::make('created_at')->label(__('client.table.created_at'))->dateTime('j/n/y, h:i A')->sortable(),
                 TextColumn::make('updated_at')
-                    ->label('Updated at (by)')
+                    ->label(__('client.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
@@ -177,9 +178,24 @@ class ClientResource extends Resource
             'edit' => Pages\EditClient::route('/{record}/edit'),
         ];
     }
+    public static function getNavigationLabel(): string
+    {
+        return __('client.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('client.labels.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('client.labels.plural');
+    }
+
     public static function getNavigationGroup(): ?string
     {
-        return 'Data Management'; // Grouping clients under Data Management
+        return __('client.navigation_group');
     }
     public static function getNavigationSort(): ?int
     {

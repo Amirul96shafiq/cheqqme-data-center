@@ -14,7 +14,7 @@ class ListClients extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('New Client'),
+            CreateAction::make()->label(__('client.actions.create')),
         ];
     }
 }
