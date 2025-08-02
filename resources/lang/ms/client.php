@@ -1,28 +1,47 @@
 <?php
 
 return [
-  'section.client_info' => 'Maklumat Klien',
-  'section.company_info' => "Maklumat Syarikat Klien",
-  'section.extra_info' => 'Maklumat Tambahan Klien',
+  'navigation_group' => 'Urus Data',
+  'navigation_label' => 'Klien',
 
-  'pic_name' => 'Nama Orang Bertanggungjawab',
-  'pic_email' => 'Emel Orang Bertanggungjawab',
-  'pic_contact_number' => 'Nombor Telefon Orang Bertanggungjawab',
+  'labels' => [
+    'singular' => 'Klien',
+    'plural' => 'Klien',
+  ],
 
-  'company_name' => 'Nama Syarikat',
-  'company_email' => 'Emel Syarikat',
-  'company_address' => 'Alamat Syarikat',
-  'billing_address' => 'Alamat Penagihan',
+  'navigation' => [
+    'labels' => 'Klien',
+  ],
 
-  'company_name_helper' => 'Nama Orang Bertanggungjawab akan digunakan secara automatik, bebas untuk diubahsuai.',
+  'actions' => [
+    'create' => 'Tambah Klien',
+  ],
 
-  'notes' => 'Nota',
-  'notes_remaining' => ':count aksara berbaki',
-  'notes_exceed' => 'Nota tidak boleh melebihi 500 aksara.',
+  'section' => [
+    'client_info' => 'Maklumat Klien',
+    'company_info' => 'Maklumat Syarikat Klien',
+    'extra_info' => 'Maklumat Tambahan Klien',
+  ],
 
-  'table.id' => 'ID',
-  'table.pic_name' => 'Nama PIC',
-  'table.company_name' => 'Syarikat',
-  'table.created_at' => 'Dicipta Pada',
-  'table.updated_at' => 'Dikemaskini Pada (oleh)',
+  'form' => [
+    'pic_name' => 'Nama PIC',
+    'pic_email' => 'Emel PIC',
+    'pic_contact_number' => 'Nombor Telefon PIC',
+    'company_name' => 'Nama Syarikat',
+    'company_email' => 'Emel Syarikat',
+    'company_address' => 'Alamat Syarikat',
+    'billing_address' => 'Alamat Invois',
+    'notes' => 'Catatan',
+    'notes_helper' => 'Baki aksara: :count',
+    'notes_warning' => 'Catatan tidak boleh melebihi 500 aksara yang boleh dibaca.',
+    'company_name_helper' => 'Akan guna nama PIC secara automatik, tapi boleh diubah.',
+  ],
+
+  'table' => [
+    'id' => 'ID',
+    'pic_name' => 'Nama PIC',
+    'company_name' => 'Nama Syarikat',
+    'created_at' => 'Tarikh Daftar',
+    'updated_at_by' => 'Dikemas Kini pada (oleh)',
+  ],
 ];
