@@ -27,31 +27,31 @@ class Login extends BaseLogin
         return $form
             ->schema([
                 Forms\Components\TextInput::make('email')
-                    ->label('Email Address')
+                    ->label(__('login.form.email'))
                     ->email()
                     ->autocomplete('email')
                     ->required()
                     ->autofocus(),
 
                 Forms\Components\TextInput::make('password')
-                    ->label('Password')
+                    ->label(__('login.form.password'))
                     ->password()
                     ->required()
                     ->revealable()
                     ->autocomplete('password'),
 
                 Forms\Components\Checkbox::make('remember')
-                    ->label('Remember Me')
+                    ->label(__('login.form.remember'))
                     ->columnSpanFull(),
 
                 Forms\Components\Actions::make([
                     Action::make('login_button')
-                        ->label('Login')
+                        ->label(__('login.actions.login'))
                         ->submit('login')
                         ->extraAttributes(['class' => 'w-full py-4']),
 
                     Action::make('forgotPassword')
-                        ->label('Forgot Password?')
+                        ->label(__('login.actions.forgotPassword'))
                         ->url(route('password.request'))
                         ->color('gray')
                         ->link()
