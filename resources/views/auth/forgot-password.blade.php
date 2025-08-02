@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@tabler/icons@latest/iconfont/tabler-icons.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 
   <style>
@@ -122,8 +123,8 @@
         <!-- Logo Dark -->
         <img src="/logos/logo-dark.png" alt="CheQQme Data Center Logo"
         class="h-32 hidden dark:block mx-auto">
-        <h2 class="text-2xl font-bold text-black dark:text-white m-3">Forgot Password</h2>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Enter your email to reset your password</p>
+        <h2 class="text-2xl font-bold text-black dark:text-white m-3">{{ __('auth.forgot_password') }}</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{{ __('auth.description') }}</p>
       </div>
 
       <!-- Form section -->
@@ -148,8 +149,7 @@
 
         <!-- Email Address Field -->
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-6 mb-2">Email
-            address</label>
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-6 mb-2">{{ __('auth.email_address') }}</label>
           <input id="email" name="email" type="email" required autofocus
             class="w-full px-4 py-2 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
         </div>
@@ -158,7 +158,7 @@
         <div>
           <button type="submit"
             class="w-full py-4 px-4 bg-amber-500 hover:bg-amber-400 text-white dark:text-black font-semibold text-sm rounded-lg transition">
-            Send Password Reset Link
+            {{ __('auth.send_link') }}
           </button>
         </div>
       </form>
@@ -166,11 +166,48 @@
       <!-- Footer -->
       <div class="text-center">
         <a href="{{ route('login') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:underline">
-          Back to Sign in
+          {{ __('auth.back_to_login') }}
         </a>
       </div>
     </div>
   </div>
+
+  <!-- Language Switcher URL Link logic -->
+  @php
+    $currentPath = Request::path();
+    $strippedPath = preg_replace('#^(en|ms|id|zh)(/)?#', '', $currentPath);
+  @endphp
+
+  <!-- Language Switcher -->
+  <div class="absolute bottom-2 left-0 right-0 flex justify-center z-50">
+    <div x-data="{ open: false }" class="relative">
+
+        <!-- Dropdown Menu -->
+        <div x-show="open" @click.away="open = false"
+            class="absolute bottom-full mb-2 w-40 rounded-md shadow-lg bg-white dark:bg-neutral-900 ring-1 ring-gray-950/5 dark:ring-white/10 z-50"
+            x-cloak>
+            <div class="py-1 text-sm text-gray-700 dark:text-gray-100">
+                <a href="{{ url('en/' . $strippedPath) }}"
+                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
+                    🇬🇧 English
+                </a>
+                <a href="{{ url('ms/' . $strippedPath) }}"
+                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
+                    🇲🇾 Bahasa Melayu
+                </a>
+            </div>
+        </div>
+
+        <!-- Toggle Button -->
+        <button @click="open = !open"
+            class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-2xl  sm:rounded-xl shadow-sm bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-800 ring-1 ring-gray-950/5 dark:ring-white/10 focus:outline-none">
+            {{ strtoupper(app()->getLocale()) }}
+        </button>
+    </div>
+  </div>
+
+</div>
+
 </body>
 
 </html>

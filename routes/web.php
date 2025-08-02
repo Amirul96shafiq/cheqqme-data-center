@@ -28,3 +28,10 @@ Route::get('reset-password/{token}', [ResetPasswordController::class, 'showReset
     ->name('password.reset');
 Route::post('reset-password', [ResetPasswordController::class, 'reset'])
     ->name('password.update');
+
+Route::group(['prefix' => '{locale}', 'where' => ['locale' => 'en|ms']], function () {
+    Route::get('forgot-password', function ($locale) {
+        app()->setLocale($locale);
+        return view('auth.forgot-password');
+    })->name('password.request');
+});
