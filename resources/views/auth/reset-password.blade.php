@@ -29,12 +29,6 @@
     }
   </style>
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-    }
-  </script>
-
   <!-- Theme Script -->
   <script>
     function applyTheme(theme) {
@@ -67,10 +61,10 @@
           const icon = btn.querySelector('svg');
           if (btn.dataset.theme === activeTheme) {
             btn.classList.add('active');
-            icon?.classList.add('text-yellow-400');
+            icon?.classList.add('text-primary-500');
           } else {
             btn.classList.remove('active');
-            icon?.classList.remove('text-yellow-400');
+            icon?.classList.remove('text-primary-500');
           }
         });
       }
@@ -102,6 +96,31 @@
       eyeOffIcon.classList.toggle('hidden', isHidden);
     }
   </script>
+
+  <!-- Custom Tailwind CSS Configuration -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#fff8eb',
+              100: '#fde7c3',
+              200: '#fcd39b',
+              300: '#fbbe72',
+              400: '#fab54f',
+              500: '#fbb43e',
+              600: '#e6a135',
+              700: '#c5862c',
+              800: '#a56b23',
+              900: '#844f1a',
+            }
+          }
+        }
+      }
+    }
+  </script>
 </head>
 
 <body class="min-h-screen bg-gray-100 dark:bg-neutral-950 flex items-center justify-center">
@@ -113,17 +132,17 @@
 
         <!-- Light Theme (Sun) -->
         <button class="theme-toggle-btn" data-theme="light" title="Enable light theme">
-          <x-heroicon-s-sun class="w-5 h-5 text-gray-400 hover:text-yellow-400" />
+          <x-heroicon-s-sun class="w-5 h-5 text-gray-400 hover:text-primary-500" />
         </button>
 
         <!-- Dark Theme (Moon) -->
         <button class="theme-toggle-btn" data-theme="dark" title="Enable dark theme">
-          <x-heroicon-s-moon class="w-5 h-5 text-gray-400 hover:text-yellow-400" />
+          <x-heroicon-s-moon class="w-5 h-5 text-gray-400 hover:text-primary-500" />
         </button>
 
         <!-- System Theme (Desktop) -->
         <button class="theme-toggle-btn" data-theme="system" title="Enable system theme">
-          <x-heroicon-s-computer-desktop class="w-5 h-5 text-gray-400 hover:text-yellow-400" />
+          <x-heroicon-s-computer-desktop class="w-5 h-5 text-gray-400 hover:text-primary-500" />
         </button>
 
       </div>
@@ -146,7 +165,7 @@
 
       <!-- Form section -->
       @if (session('status'))
-      <div class="mb-4 text-sm text-amber-400 font-medium text-center">
+      <div class="mb-4 text-sm text-primary-500 font-medium text-center">
       {{ session('status') }}
       </div>
     @endif
@@ -173,7 +192,7 @@
             New Password <span class="text-red-500">*</span>
           </label>
           <input id="password" type="password" name="password" required
-            class="w-full px-4 py-2 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
+            class="w-full px-4 py-2 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
 
           <button type="button" onclick="togglePassword('password')"
             class="absolute top-7 right-3 theme-toggle-btn text-gray-500 hover:text-gray-700 dark:hover:text-white">
@@ -188,7 +207,7 @@
             Confirm New Password <span class="text-red-500">*</span>
           </label>
           <input id="password_confirmation" type="password" name="password_confirmation" required
-            class="w-full px-4 py-2 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
+            class="w-full px-4 py-2 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
 
           <button type="button" onclick="togglePassword('password_confirmation')"
             class="absolute top-7 right-3 theme-toggle-btn text-gray-500 hover:text-gray-700 dark:hover:text-white">
@@ -199,7 +218,7 @@
 
         <!-- Submit button -->
         <button type="submit"
-          class="w-full py-4 px-4 bg-amber-500 hover:bg-amber-400 text-white dark:text-black font-semibold text-sm rounded-lg transition">
+          class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-white dark:text-black font-semibold text-sm rounded-lg transition">
           Reset Password
         </button>
       </form>
