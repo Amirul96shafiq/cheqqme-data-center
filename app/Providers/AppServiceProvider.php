@@ -25,9 +25,12 @@ class AppServiceProvider extends ServiceProvider
     {
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
-                ->locales(['en', 'ms']) // also accepts a closure
-                ->visible(outsidePanels: true)
-                ->outsidePanelPlacement(Placement::BottomRight);
+                ->locales(['en', 'ms'])
+                ->visible(
+                    insidePanels: true,
+                    outsidePanels: fn() => request()->is('admin/login') || request()->is('admin/forgot-password') || request()->is('admin/reset-password')
+                )
+                ->outsidePanelPlacement(Placement::TopRight);
         });
     }
 }
