@@ -143,7 +143,7 @@
         <img src="/logos/logo-dark.png" alt="CheQQme Data Center Logo"
         class="h-32 hidden dark:block mx-auto">
         <h2 class="text-2xl font-bold text-black dark:text-white m-3">{{ __('auth.forgot_password') }}</h2>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{{ __('auth.description') }}</p>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{{ __('auth.description_forgot_password') }}</p>
       </div>
 
       <!-- Form section -->

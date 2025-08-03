@@ -159,8 +159,8 @@
         <!-- Logo Dark -->
         <img src="/logos/logo-dark.png" alt="CheQQme Data Center Logo"
         class="h-32 hidden dark:block mx-auto">
-        <h2 class="text-2xl font-bold text-black dark:text-white m-3">Reset Password</h2>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Enter new password</p>
+        <h2 class="text-2xl font-bold text-black dark:text-white m-3">{{ __('auth.reset_password') }}</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{{ __('auth.description_reset_password') }}</p>
       </div>
 
       <!-- Form section -->
@@ -189,7 +189,7 @@
         <!-- New Password Field -->
         <div class="mb-5 relative">
           <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            New Password <span class="text-red-500">*</span>
+            {{ __('auth.new_password') }} <span class="text-red-500">*</span>
           </label>
           <input id="password" type="password" name="password" required
             class="w-full px-4 py-2 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
@@ -204,7 +204,7 @@
         <!-- Confirm Password Field -->
         <div class="mb-5 relative">
           <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Confirm New Password <span class="text-red-500">*</span>
+            {{ __('auth.confirm_new_password') }} <span class="text-red-500">*</span>
           </label>
           <input id="password_confirmation" type="password" name="password_confirmation" required
             class="w-full px-4 py-2 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
@@ -219,19 +219,19 @@
         <!-- Submit button -->
         <button type="submit"
           class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-white dark:text-black font-semibold text-sm rounded-lg transition">
-          Reset Password
+          {{ __('auth.send_reset_link') }}
         </button>
       </form>
 
       <!-- Footer -->
       <div class="text-center">
         <a href="{{ route('login') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:underline">
-          Back to Sign in
+          {{ __('auth.back_to_login') }}
         </a>
       </div>
       <div class="text-center">
         <a href="/forgot-password" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:underline">
-          Redo Forgot Password
+          {{ __('auth.back_to_forgot_password') }}
         </a>
       </div>
     </div>
