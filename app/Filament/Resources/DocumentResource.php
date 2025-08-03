@@ -37,20 +37,20 @@ class DocumentResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Document Information')
+                Section::make(__('document.section.document_info'))
                     ->schema([
                         Grid::make(3)->schema([
-                            TextInput::make('title')->label('Document Title')->required()->maxLength(50),
+                            TextInput::make('title')->label(__('document.form.document_title'))->required()->maxLength(50),
 
                             Select::make('project_id')
-                                ->label('Project')
+                                ->label(__('document.form.project'))
                                 ->relationship('project', 'title')
                                 ->preload()
                                 ->searchable()
                                 ->nullable(),
 
                             Select::make('client_id')
-                                ->label('Client')
+                                ->label(__('document.form.client'))
                                 ->relationship('client', 'company_name')
                                 ->preload()
                                 ->searchable()
@@ -58,23 +58,23 @@ class DocumentResource extends Resource
                         ]),
 
                         Radio::make('type')
-                            ->label('Document Type')
+                            ->label(__('document.form.document_type'))
                             ->options([
-                                'external' => 'External',
-                                'internal' => 'Internal',
+                                'external' => __('document.form.external'),
+                                'internal' => __('document.form.internal'),
                             ])
                             ->required()
                             ->live(),
 
                         TextInput::make('url')
-                            ->label('Document URL')
-                            ->helperText('URL for external documents')
+                            ->label(__('document.form.document_url'))
+                            ->helperText(__('document.form.document_url_note'))
                             ->visible(fn(Get $get) => $get('type') === 'external')
                             ->suffixAction(
                                 Action::make('openUrl')
                                     ->icon('heroicon-m-arrow-top-right-on-square')
                                     ->url(fn($livewire) => $livewire->data['url'] ?? '#', true)
-                                    ->tooltip('Open URL in new tab')
+                                    ->tooltip(__('document.form.document_url_helper'))
                                     ->disabled(
                                         fn($livewire) =>
                                         str($livewire::class)->contains('Create') ||
@@ -86,11 +86,11 @@ class DocumentResource extends Resource
 
 
                         FileUpload::make('file_path')
-                            ->label('Upload Document')
-                            ->helperText('Upload internal documents here (PDF, JPEG, PNG, DOC, DOCX, XLS, XLSX, PPT, PPTX)')
+                            ->label(__('document.form.document_upload'))
+                            ->helperText(__('document.form.document_upload_helper'))
                             ->visible(fn(Get $get) => $get('type') === 'internal')
                             ->directory('documents')
-                            ->disk('public') // Or 'local' if you’re not using storage:link
+                            ->disk('public')
                             ->visibility('public')
                             ->preserveFilenames()
                             ->enableDownload()
@@ -110,10 +110,10 @@ class DocumentResource extends Resource
                             ->maxFiles(10240)
                             ->nullable(),
                     ]),
-                Section::make('Document Extra Information')
+                Section::make(__('document.section.document_extra_info'))
                     ->schema([
                         RichEditor::make('notes')
-                            ->label('Notes')
+                            ->label(__('document.form.notes'))
                             ->toolbarButtons([
                                 'bold',
                                 'italic',
@@ -138,14 +138,16 @@ class DocumentResource extends Resource
                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                 $remaining = 500 - mb_strlen($decoded);
-                                return "{$remaining} characters remaining";
+                                return __(
+                                    __('document.form.notes_helper', ['count' => $remaining])
+                                );
                             })
                             // Block save if over 500 visible characters
                             ->rule(function (Get $get): Closure {
                                 return function (string $attribute, $value, Closure $fail) {
                                     $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                     if (mb_strlen($textOnly) > 500) {
-                                        $fail("Notes must not exceed 500 visible characters.");
+                                        $fail(__('document.form.notes_warning'));
                                     }
                                 };
                             })
@@ -163,12 +165,20 @@ class DocumentResource extends Resource
                     ->label('ID')
                     ->sortable()
                     ->url(fn($record) => route('filament.admin.resources.documents.edit', $record)),
-                TextColumn::make('title')->label('Title')->sortable()->searchable()->limit(20),
-                TextColumn::make('type')->badge(),
-                TextColumn::make('project.title')->label('Project')->sortable()->searchable()->limit(20),
-                TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('title')->label(__('document.table.title'))->sortable()->searchable()->limit(20),
+                TextColumn::make('type')
+                ->label(__('document.table.type'))
+                ->badge()
+                ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'internal' => __('document.table.internal'),
+                        'external' => __('document.table.external'),
+                    }),
+                TextColumn::make('project.title')->label(__('document.table.project'))->sortable()->searchable()->limit(20),
+                TextColumn::make('created_at')
+                    ->label(__('document.table.created_at'))
+                    ->dateTime('j/n/y, h:i A')->sortable(),
                 TextColumn::make('updated_at')
-                    ->label('Updated at (by)')
+                    ->label(__('document.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
@@ -195,11 +205,11 @@ class DocumentResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('type')->options([
-                    'internal' => 'Internal',
-                    'external' => 'External',
+                    'internal' => __('document.table.internal'),
+                    'external' => __('document.table.external'),
                 ]),
-                SelectFilter::make('client_id')->label('Client')->relationship('client', 'company_name'),
-                SelectFilter::make('project_id')->label('Project')->relationship('project', 'title'),
+                SelectFilter::make('client_id')->label(__('document.table.client'))->relationship('client', 'company_name'),
+                SelectFilter::make('project_id')->label(__('document.table.project'))->relationship('project', 'title'),
                 TrashedFilter::make(), // To show trashed or only active
             ])
             ->actions([
@@ -216,13 +226,6 @@ class DocumentResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
@@ -232,9 +235,24 @@ class DocumentResource extends Resource
         ];
     }
 
+    public static function getNavigationLabel(): string
+    {
+        return __('document.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('document.labels.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('document.labels.plural');
+    }
+
     public static function getNavigationGroup(): ?string
     {
-        return 'Data Management'; // Grouping documents under Data Management
+        return __('document.navigation_group'); // Grouping documents under Data Management
     }
     public static function getNavigationSort(): ?int
     {

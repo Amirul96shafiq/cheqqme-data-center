@@ -16,9 +16,9 @@ class ListDocuments extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('All'),
+            'all' => Tab::make(__('document.tabs.all')),
 
-            'today' => Tab::make('Today')
+            'today' => Tab::make(__('document.tabs.today'))
                 ->modifyQueryUsing(function (Builder $query) {
                     return $query->whereBetween('created_at', [
                         now()->startOfDay(),
@@ -26,7 +26,7 @@ class ListDocuments extends ListRecords
                     ]);
                 }),
 
-            'this_week' => Tab::make('This Week')
+            'this_week' => Tab::make(__('document.tabs.this_week'))
                 ->modifyQueryUsing(function (Builder $query) {
                     return $query->whereBetween('created_at', [
                         now()->startOfWeek(),
@@ -34,13 +34,13 @@ class ListDocuments extends ListRecords
                     ]);
                 }),
 
-            'this_month' => Tab::make('This Month')
+            'this_month' => Tab::make(__('document.tabs.this_month'))
                 ->modifyQueryUsing(function (Builder $query) {
                     return $query->whereMonth('created_at', now()->month)
                         ->whereYear('created_at', now()->year);
                 }),
 
-            'this_year' => Tab::make('This Year')
+            'this_year' => Tab::make(__('document.tabs.this_year'))
                 ->modifyQueryUsing(function (Builder $query) {
                     return $query->whereYear('created_at', now()->year);
                 }),
@@ -50,7 +50,7 @@ class ListDocuments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('New Document'),
+            CreateAction::make()->label(__('document.actions.create')),
         ];
     }
 }

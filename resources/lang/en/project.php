@@ -1,0 +1,58 @@
+<?php
+
+return [
+  'navigation_group' => 'Data Management',
+  'navigation_label' => 'Projects',
+
+  'labels' => [
+    'singular' => 'Project',
+    'plural' => 'Projects',
+  ],
+
+  'navigation' => [
+    'labels' => 'Projects',
+  ],
+
+  'actions' => [
+    'create' => 'Create Project',
+  ],
+
+  'section' => [
+    'project_info' => 'Project Information',
+    'project_extra_info' => 'Project Extra Information',
+
+  ],
+
+  'form' => [
+    'project_title' => 'Project Title',
+    'client' => 'Client',
+    'project_url' => 'Project URL',
+    'project_description' => 'Project Description',
+    'project_status' => 'Project Status',
+    'planning' => 'Planning',
+    'in_progress' => 'In Progress',
+    'completed' => 'Completed',
+    'notes' => 'Notes',
+    'notes_helper' => 'Remaining characters: :count',
+    'notes_warning' => 'Notes must not exceed 500 visible characters.',
+  ],
+
+  'table' => [
+    'id' => 'ID',
+    'title' => 'Title',
+    'client' => 'Client',
+    'status' => 'Status',
+    'planning' => 'Planning',
+    'in_progress' => 'In Progress',
+    'completed' => 'Completed',
+    'created_at' => 'Created At',
+    'updated_at_by' => 'Updated At (by)',
+  ],
+
+  'filter' => [
+    'status' => 'Status',
+    'planning' => 'Planning',
+    'in_progress' => 'In Progress',
+    'completed' => 'Completed',
+  ],
+];

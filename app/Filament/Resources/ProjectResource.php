@@ -36,20 +36,20 @@ class ProjectResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Project Information')
+                Section::make(__('project.section.project_info'))
                     ->schema([
                         Grid::make(2)->schema([
-                            TextInput::make('title')->label('Project Title')->required()->maxLength(50),
-                            Select::make('client_id')->label('Client')->relationship('client', 'company_name')->searchable()->preload()->nullable(),
+                            TextInput::make('title')->label(__('project.form.project_title'))->required()->maxLength(50),
+                            Select::make('client_id')->label(__('project.form.client'))->relationship('client', 'company_name')->searchable()->preload()->nullable(),
                         ]),
-                        TextInput::make('project_url')->label('Project URL')->url()->nullable(),
-                        Textarea::make('description')->label('Project Description')->rows(3)->nullable()->maxLength(200),
-                        Select::make('status')->label('Project Status')->options(['Planning' => 'Planning', 'In Progress' => 'In Progress', 'Completed' => 'Completed',])->default('Planning')->required(),
+                        TextInput::make('project_url')->label(__('project.form.project_url'))->url()->nullable(),
+                        Textarea::make('description')->label(__('project.form.project_description'))->rows(3)->nullable()->maxLength(200),
+                        Select::make('status')->label(__('project.form.project_status'))->options(['Planning' => __('project.form.planning'), 'In Progress' => __('project.form.in_progress'), 'Completed' => __('project.form.completed'),])->default('Planning')->required(),
                     ]),
-                Section::make('Project Extra Information')
+                Section::make(__('project.section.project_extra_info'))
                     ->schema([
                         RichEditor::make('notes')
-                            ->label('Notes')
+                            ->label(__('project.form.notes'))
                             ->toolbarButtons([
                                 'bold',
                                 'italic',
@@ -74,14 +74,14 @@ class ProjectResource extends Resource
                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                 $remaining = 500 - mb_strlen($decoded);
-                                return "{$remaining} characters remaining";
+                                return __(__('project.form.notes_helper', ['count' => $remaining]));
                             })
                             // Block save if over 500 visible characters
                             ->rule(function (Get $get): Closure {
                                 return function (string $attribute, $value, Closure $fail) {
                                     $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                     if (mb_strlen($textOnly) > 500) {
-                                        $fail("Notes must not exceed 500 visible characters.");
+                                        $fail(__("project.form.notes_warning"));
                                     }
                                 };
                             })
@@ -94,19 +94,27 @@ class ProjectResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->label('ID')->sortable(),
-                TextColumn::make('title')->searchable()->sortable()->limit(20),
-                TextColumn::make('client.company_name')->label('Client')->sortable()->searchable()->limit(20),
+                TextColumn::make('id')->label(__('project.table.id'))->sortable(),
+                TextColumn::make('title')->label(__('project.table.title'))->searchable()->sortable()->limit(20),
+                TextColumn::make('client.company_name')->label(__('project.table.client'))->sortable()->searchable()->limit(20),
                 TextColumn::make('status')
                     ->badge()
-                    ->colors([
-                        'primary' => 'Planning',
-                        'info' => 'In Progress',
-                        'success' => 'Completed',
-                    ]),
-                TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
+                    ->color(fn(string $state): string => match ($state) {
+                        'Planning' => 'primary',
+                        'In Progress' => 'info',
+                        'Completed' => 'success',
+                        default => 'secondary',
+                    })
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'Planning' => __('project.table.planning'),
+                        'In Progress' => __('project.table.in_progress'),
+                        'Completed' => __('project.table.completed'),
+                        default => $state,
+                    })
+                    ->sortable(),
+                TextColumn::make(__('created_at'))->label(__('project.table.created_at'))->dateTime('j/n/y, h:i A')->sortable(),
                 TextColumn::make('updated_at')
-                    ->label('Updated at (by)')
+                    ->label(__('project.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
@@ -132,11 +140,11 @@ class ProjectResource extends Resource
                     ->limit(30),
             ])
             ->filters([
-                SelectFilter::make('status')
+                SelectFilter::make(__('project.filter.status'))
                     ->options([
-                        'Planning' => 'Planning',
-                        'In Progress' => 'In Progress',
-                        'Completed' => 'Completed',
+                        'Planning' => __('project.filter.planning'),
+                        'In Progress' => __('project.filter.in_progress'),
+                        'Completed' => __('project.filter.completed'),
                     ]),
                 TrashedFilter::make(), // To show trashed or only active
             ])
@@ -168,9 +176,24 @@ class ProjectResource extends Resource
             'edit' => Pages\EditProject::route('/{record}/edit'),
         ];
     }
+    public static function getNavigationLabel(): string
+    {
+        return __('project.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('project.labels.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('project.labels.plural');
+    }
+
     public static function getNavigationGroup(): ?string
     {
-        return 'Data Management'; // Grouping projects under Data Management
+        return __('project.navigation_group'); // Grouping projects under Data Management
     }
     public static function getNavigationSort(): ?int
     {

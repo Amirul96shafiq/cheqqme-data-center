@@ -1,7 +1,7 @@
 <?php
 
 return [
-  'navigation_group' => 'Urus Data',
+  'navigation_group' => 'Pengurusan Data',
   'navigation_label' => 'Klien',
 
   'labels' => [
@@ -41,7 +41,7 @@ return [
     'id' => 'ID',
     'pic_name' => 'Nama PIC',
     'company_name' => 'Nama Syarikat',
-    'created_at' => 'Tarikh Daftar',
+    'created_at' => 'Dicipta Pada',
     'updated_at_by' => 'Dikemas Kini pada (oleh)',
   ],
 ];
