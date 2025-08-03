@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="{{ app()->getLocale() }}" class="scroll-smooth">
 
 <head>
   <meta charset="UTF-8">
@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@tabler/icons@latest/iconfont/tabler-icons.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 
   <style>
@@ -235,6 +236,46 @@
         </a>
       </div>
     </div>
+
+    <!-- Language Switcher URL Link logic -->
+  @php
+    $currentPath = Request::path();
+    $strippedPath = preg_replace('#^(en|ms|id|zh)(/)?#', '', $currentPath);
+  @endphp
+
+  <!-- Language Switcher -->
+  <div class="absolute bottom-2 left-0 right-0 flex justify-center z-50">
+    <div x-data="{ open: false }" class="relative">
+        <!-- Dropdown -->
+        <div x-show="open" @click.away="open = false"
+            class="absolute bottom-full mb-2 w-40 rounded-md shadow-lg bg-white dark:bg-neutral-900 ring-1 ring-gray-950/5 dark:ring-white/10 z-50"
+            x-cloak>
+            <div class="py-1 text-sm text-gray-700 dark:text-gray-100">
+                <form method="POST" action="{{ route('locale.set') }}">
+                    @csrf
+                    <input type="hidden" name="locale" value="en">
+                    <button type="submit"
+                        class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 {{ app()->getLocale() === 'en' ? 'font-bold' : '' }}">
+                        English
+                    </button>
+                </form>
+                <form method="POST" action="{{ route('locale.set') }}">
+                    @csrf
+                    <input type="hidden" name="locale" value="ms">
+                    <button type="submit"
+                          class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 {{ app()->getLocale() === 'ms' ? 'font-bold' : '' }}">
+                        Bahasa Melayu
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Toggle -->
+        <button @click="open = !open"
+            class="inline-flex items-center px-4 py-2 text-sm font-bold rounded-2xl sm:rounded-xl  text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-800 ring-1 ring-gray-950/5 dark:ring-white/10">
+            {{ strtoupper(app()->getLocale()) }}
+        </button>
+  </div>
 
   </div>
 </body>

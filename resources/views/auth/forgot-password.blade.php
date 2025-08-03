@@ -229,7 +229,7 @@
             class="inline-flex items-center px-4 py-2 text-sm font-bold rounded-2xl sm:rounded-xl  text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-800 ring-1 ring-gray-950/5 dark:ring-white/10">
             {{ strtoupper(app()->getLocale()) }}
         </button>
-    </div>
+  </div>
 </div>
 
 
