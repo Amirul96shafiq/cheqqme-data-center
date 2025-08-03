@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
                 ->locales(['en', 'ms'])
                 ->visible(
                     insidePanels: true,
-                    outsidePanels: fn() => request()->is('admin/login') || request()->is('admin/forgot-password') || request()->is('admin/reset-password')
+                    outsidePanels: fn() => request()->is('admin/login')
                 )
                 ->outsidePanelPlacement(Placement::TopRight);
         });

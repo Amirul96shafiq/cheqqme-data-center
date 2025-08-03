@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="{{ app()->getLocale() }}" class="scroll-smooth">
 
 <head>
   <meta charset="UTF-8" />
@@ -157,7 +157,7 @@
         <!-- Submit button -->
         <div>
           <button type="submit"
-            class="w-full py-4 px-4 bg-amber-500 hover:bg-amber-400 text-white dark:text-black font-semibold text-sm rounded-lg transition">
+            class="w-full py-4 px-4 bg-amber-400 hover:bg-amber-300 text-white dark:text-black font-semibold text-sm rounded-lg transition">
             {{ __('auth.send_link') }}
           </button>
         </div>
@@ -181,30 +181,38 @@
   <!-- Language Switcher -->
   <div class="absolute bottom-2 left-0 right-0 flex justify-center z-50">
     <div x-data="{ open: false }" class="relative">
-
-        <!-- Dropdown Menu -->
+        <!-- Dropdown -->
         <div x-show="open" @click.away="open = false"
             class="absolute bottom-full mb-2 w-40 rounded-md shadow-lg bg-white dark:bg-neutral-900 ring-1 ring-gray-950/5 dark:ring-white/10 z-50"
             x-cloak>
             <div class="py-1 text-sm text-gray-700 dark:text-gray-100">
-                <a href="{{ url('en/' . $strippedPath) }}"
-                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                    🇬🇧 English
-                </a>
-                <a href="{{ url('ms/' . $strippedPath) }}"
-                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                    🇲🇾 Bahasa Melayu
-                </a>
+                <form method="POST" action="{{ route('locale.set') }}">
+                    @csrf
+                    <input type="hidden" name="locale" value="en">
+                    <button type="submit"
+                        class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 {{ app()->getLocale() === 'en' ? 'font-bold' : '' }}">
+                        English
+                    </button>
+                </form>
+                <form method="POST" action="{{ route('locale.set') }}">
+                    @csrf
+                    <input type="hidden" name="locale" value="ms">
+                    <button type="submit"
+                          class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 {{ app()->getLocale() === 'ms' ? 'font-bold' : '' }}">
+                        Bahasa Melayu
+                    </button>
+                </form>
             </div>
         </div>
 
-        <!-- Toggle Button -->
+        <!-- Toggle -->
         <button @click="open = !open"
-            class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-2xl  sm:rounded-xl shadow-sm bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-800 ring-1 ring-gray-950/5 dark:ring-white/10 focus:outline-none">
+            class="inline-flex items-center px-4 py-2 text-sm font-bold rounded-2xl sm:rounded-xl  text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-800 ring-1 ring-gray-950/5 dark:ring-white/10">
             {{ strtoupper(app()->getLocale()) }}
         </button>
     </div>
-  </div>
+</div>
+
 
 </div>
 
