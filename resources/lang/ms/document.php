@@ -31,6 +31,7 @@ return [
     'internal' => 'Dalaman',
     'document_url' => 'URL Dokumen',
     'document_url_note' => 'URL untuk dokumen luar',
+    'open_url' => 'Buka URL',
     'document_url_helper' => 'Buka URL dalam tab baru',
     'document_upload' => 'Muat Naik Dokumen',
     'document_upload_helper' => 'Muat naik dokumen dalaman di sini (PDF, JPEG, PNG, DOC, DOCX, XLS, XLSX, PPT, PPTX)',

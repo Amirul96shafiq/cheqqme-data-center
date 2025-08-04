@@ -31,6 +31,7 @@ return [
     'internal' => 'Internal',
     'document_url' => 'Document URL',
     'document_url_note' => 'URL for external documents',
+    'open_url' => 'Open URL',
     'document_url_helper' => 'Open URL in a new tab',
     'document_upload' => 'Upload Document',
     'document_upload_helper' => 'Upload internal documents here (PDF, JPEG, PNG, DOC, DOCX, XLS, XLSX, PPT, PPTX)',

@@ -70,16 +70,12 @@ class DocumentResource extends Resource
                             ->label(__('document.form.document_url'))
                             ->helperText(__('document.form.document_url_note'))
                             ->visible(fn(Get $get) => $get('type') === 'external')
-                            ->suffixAction(
-                                Action::make('openUrl')
+                            ->hintAction(
+                                fn(Get $get) => blank($get('url')) ? null : Action::make('openUrl')
                                     ->icon('heroicon-m-arrow-top-right-on-square')
-                                    ->url(fn($livewire) => $livewire->data['url'] ?? '#', true)
+                                    ->label(__('document.form.open_url'))
+                                    ->url(fn() => $get('url'), true)
                                     ->tooltip(__('document.form.document_url_helper'))
-                                    ->disabled(
-                                        fn($livewire) =>
-                                        str($livewire::class)->contains('Create') ||
-                                        blank($livewire->data['url'] ?? null)
-                                    )
                             )
                             ->url()
                             ->nullable(),
@@ -167,9 +163,9 @@ class DocumentResource extends Resource
                     ->url(fn($record) => route('filament.admin.resources.documents.edit', $record)),
                 TextColumn::make('title')->label(__('document.table.title'))->sortable()->searchable()->limit(20),
                 TextColumn::make('type')
-                ->label(__('document.table.type'))
-                ->badge()
-                ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->label(__('document.table.type'))
+                    ->badge()
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
                         'internal' => __('document.table.internal'),
                         'external' => __('document.table.external'),
                     }),
