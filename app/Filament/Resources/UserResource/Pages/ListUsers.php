@@ -14,7 +14,7 @@ class ListUsers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label('New User'),
+            CreateAction::make()->label(__('user.actions.create')),
         ];
     }
 }

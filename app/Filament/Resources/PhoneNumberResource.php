@@ -36,23 +36,23 @@ class PhoneNumberResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Phone Number Details')
+                Section::make(__('phonenumber.section.phone_number_info'))
                     ->schema([
                         TextInput::make('title')
-                            ->label('Phone Number title')
+                            ->label(__('phonenumber.form.phone_number_title'))
                             ->required()
                             ->maxLength(255),
                         TextInput::make('phone')
-                            ->label('Phone Number')
+                            ->label(__('phonenumber.form.phone_number'))
                             ->required()
                             ->tel(),
                     ])
                     ->columns(2),
 
-                Section::make('Phone Number Extra Details')
+                Section::make(__('phonenumber.section.phone_number_extra_info'))
                     ->schema([
                         RichEditor::make('notes')
-                            ->label('Notes')
+                            ->label(__('phonenumber.form.notes'))
                             ->toolbarButtons([
                                 'bold',
                                 'italic',
@@ -77,14 +77,14 @@ class PhoneNumberResource extends Resource
                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                 $remaining = 500 - mb_strlen($decoded);
-                                return "{$remaining} characters remaining";
+                                return __("phonenumber.form.notes_helper", ['count' => $remaining]);
                             })
                             // Block save if over 500 visible characters
                             ->rule(function (Get $get): Closure {
                                 return function (string $attribute, $value, Closure $fail) {
                                     $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                     if (mb_strlen($textOnly) > 500) {
-                                        $fail("Notes must not exceed 500 visible characters.");
+                                        $fail(__("phonenumber.form.notes_warning"));
                                     }
                                 };
                             })
@@ -97,12 +97,12 @@ class PhoneNumberResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->label('ID')->sortable()->limit(20),
-                TextColumn::make('title')->label('Title')->searchable()->sortable()->limit(10),
-                TextColumn::make('phone')->label('Phone')->searchable(),
-                TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('id')->label(__('phonenumber.table.id'))->sortable()->limit(20),
+                TextColumn::make('title')->label(__('phonenumber.table.title'))->searchable()->sortable()->limit(10),
+                TextColumn::make('phone')->label(__('phonenumber.table.phone_number'))->searchable(),
+                TextColumn::make('created_at')->label(__('phonenumber.table.created_at'))->dateTime('j/n/y, h:i A')->sortable(),
                 TextColumn::make('updated_at')
-                    ->label('Updated at (by)')
+                    ->label(__('phonenumber.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
@@ -161,10 +161,26 @@ class PhoneNumberResource extends Resource
             'edit' => Pages\EditPhoneNumber::route('/{record}/edit'),
         ];
     }
+    public static function getNavigationLabel(): string
+    {
+        return __('phonenumber.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('phonenumber.labels.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('phonenumber.labels.plural');
+    }
+    
     public static function getNavigationGroup(): ?string
     {
-        return 'Data Management'; // Grouping phone numbers under Data Management
+        return __('phonenumber.navigation_group'); // Grouping phone numbers under Data Management
     }
+
     public static function getNavigationSort(): ?int
     {
         return 55; // Adjust the navigation sort order as needed

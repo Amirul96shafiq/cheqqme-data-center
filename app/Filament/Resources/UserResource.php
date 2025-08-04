@@ -38,23 +38,23 @@ class UserResource extends Resource
         return $form
             ->schema([
 
-                Section::make('User Information')
+                Section::make(heading: __('user.section.user_info'))
                     ->schema([
                         Grid::make(3)->schema([
-                            TextInput::make('username')->label('Username')->required()->maxLength(20),
-                            TextInput::make('name')->label('Name')->nullable()->maxLength(50),
-                            TextInput::make('email')->label('Email')->required()->email()->maxLength(60),
+                            TextInput::make('username')->label(__('user.form.username'))->required()->maxLength(20),
+                            TextInput::make('name')->label(__('user.form.name'))->nullable()->maxLength(50),
+                            TextInput::make('email')->label(__('user.form.email'))->required()->email()->maxLength(60),
                             Hidden::make('Updated_by')->default(fn() => auth()->id())->dehydrated(),
                         ])
                     ]),
 
-                Section::make('Password Information')
-                    ->description('Enable Change Password? toggle to view this field')
+                Section::make(heading: __('user.section.password_info'))
+                    ->description(__('user.section.password_info_description'))
                     ->schema([
 
                         // Only show "Change password?" during editing
                         Toggle::make('change_password')
-                            ->label('Change Password?')
+                            ->label(__('user.form.change_password'))
                             ->live()
                             ->afterStateUpdated(function (bool $state, callable $set) {
                                 if (!$state) {
@@ -68,7 +68,7 @@ class UserResource extends Resource
                         // Generate password feature
                         Forms\Components\Actions::make([
                             Action::make('generatePassword')
-                                ->label('Generate Strong Password')
+                                ->label(__('user.form.generate_password'))
                                 ->icon('heroicon-o-code-bracket-square')
                                 ->color('gray')
                                 ->action(function ($set) {
@@ -85,7 +85,7 @@ class UserResource extends Resource
 
                             // OLD PASSWORD
                             Forms\Components\TextInput::make('old_password')
-                                ->label('Old Password')
+                                ->label(label: __('user.form.old_password'))
                                 ->password()
                                 ->revealable()
                                 ->dehydrated(false)
@@ -103,8 +103,8 @@ class UserResource extends Resource
 
                             // NEW PASSWORD
                             TextInput::make('password')
-                                ->label(fn(string $context) => $context === 'edit' ? 'New Password' : 'Password')
-                                ->helperText('Must be at least 5 characters')
+                                ->label(fn(string $context) => $context === 'edit' ? __('user.form.new_password') : __('user.form.new_password'))
+                                ->helperText(__('user.form.password_helper'))
                                 ->password()
                                 ->revealable()
                                 ->minLength(5)
@@ -119,7 +119,7 @@ class UserResource extends Resource
 
                             // CONFIRM NEW PASSWORD
                             TextInput::make('password_confirmation')
-                                ->label('Confirm New Password')
+                                ->label(label: __('user.form.confirm_new_password'))
                                 ->password()
                                 ->revealable()
                                 ->required(
@@ -134,13 +134,13 @@ class UserResource extends Resource
                     ]),
 
                 // Account deletion
-                Section::make('Danger Zone')
-                    ->description('Enable User Deletion? toggle to view this field')
+                Section::make(heading: __('user.section.danger_zone'))
+                    ->description(__('user.section.danger_zone_description'))
                     ->visible(fn(string $context) => $context === 'edit') // hide entire section when creating
                     ->Schema([
                         // Only show "User Deletion?" during editing
                         Toggle::make('user_delete')
-                            ->label('User Deletion?')
+                            ->label(label: __('user.form.user_deletion'))
                             ->onColor('danger')
                             ->offColor('gray')
                             ->live()
@@ -149,7 +149,7 @@ class UserResource extends Resource
                         // Delete button
                         Actions::make([
                             Action::make('deleteRecord')
-                                ->label('Delete User')
+                                ->label(__('user.actions.delete'))
                                 ->icon('heroicon-o-trash')
                                 ->color('danger')
                                 ->requiresConfirmation()
@@ -169,12 +169,12 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('username')->searchable()->sortable()->limit(20),
-                TextColumn::make('name')->searchable()->sortable()->limit(20),
-                TextColumn::make('email')->searchable()->sortable()->limit(50),
-                TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('username')->label(__('user.table.username'))->searchable()->sortable()->limit(20),
+                TextColumn::make('name')->label(__('user.table.name'))->searchable()->sortable()->limit(20),
+                TextColumn::make('email')->label(__('user.table.email'))->searchable()->sortable()->limit(50),
+                TextColumn::make('created_at')->label(__('user.table.created_at'))->dateTime('j/n/y, h:i A')->sortable(),
                 TextColumn::make('updated_at')
-                    ->label('Updated at (by)')
+                    ->label(__('user.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
@@ -231,9 +231,24 @@ class UserResource extends Resource
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
+    public static function getNavigationLabel(): string
+    {
+        return __('user.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('user.labels.singular');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('user.labels.plural');
+    }
+    
     public static function getNavigationGroup(): ?string
     {
-        return 'User Management'; // Grouping users under User Management
+        return __('user.navigation_group'); // Grouping imporant url under Data Management
     }
     public static function getNavigationSort(): ?int
     {
