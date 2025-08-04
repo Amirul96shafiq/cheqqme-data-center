@@ -244,7 +244,7 @@
   @endphp
 
   <!-- Language Switcher -->
-  <div class="absolute bottom-2 left-0 right-0 flex justify-center z-50">
+  <div class="absolute bottom-4 left-0 right-0 flex justify-center z-50">
     <div x-data="{ open: false }" class="relative">
         <!-- Dropdown -->
         <div x-show="open" @click.away="open = false"
@@ -256,7 +256,7 @@
                     <input type="hidden" name="locale" value="en">
                     <button type="submit"
                         class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 {{ app()->getLocale() === 'en' ? 'font-bold' : '' }}">
-                        English
+                        <span class="text-primary-500">EN </span>English
                     </button>
                 </form>
                 <form method="POST" action="{{ route('locale.set') }}">
@@ -264,7 +264,7 @@
                     <input type="hidden" name="locale" value="ms">
                     <button type="submit"
                           class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 {{ app()->getLocale() === 'ms' ? 'font-bold' : '' }}">
-                        Bahasa Melayu
+                        <span class="text-primary-500">MS </span>Bahasa Melayu
                     </button>
                 </form>
             </div>
@@ -272,7 +272,7 @@
 
         <!-- Toggle -->
         <button @click="open = !open"
-            class="inline-flex items-center px-4 py-2 text-sm font-bold rounded-2xl sm:rounded-xl  text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-800 ring-1 ring-gray-950/5 dark:ring-white/10">
+            class="inline-flex items-center px-4 py-2 text-md font-semibold rounded-2xl sm:rounded-xl  text-primary-500 dark:text-primary-600">
             {{ strtoupper(app()->getLocale()) }}
         </button>
   </div>
