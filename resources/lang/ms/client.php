@@ -2,25 +2,25 @@
 
 return [
   'navigation_group' => 'Pengurusan Data',
-  'navigation_label' => 'Klien',
+  'navigation_label' => 'Pelanggan',
 
   'labels' => [
-    'singular' => 'Klien',
-    'plural' => 'Klien',
+    'singular' => 'Pelanggan',
+    'plural' => 'Pelanggan',
   ],
 
   'navigation' => [
-    'labels' => 'Klien',
+    'labels' => 'Pelanggan',
   ],
 
   'actions' => [
-    'create' => 'Tambah Klien',
+    'create' => 'Tambah Pelanggan',
   ],
 
   'section' => [
-    'client_info' => 'Maklumat Klien',
-    'company_info' => 'Maklumat Syarikat Klien',
-    'extra_info' => 'Maklumat Tambahan Klien',
+    'client_info' => 'Maklumat Pelanggan',
+    'company_info' => 'Maklumat Syarikat Pelanggan',
+    'extra_info' => 'Maklumat Tambahan Pelanggan',
   ],
 
   'form' => [

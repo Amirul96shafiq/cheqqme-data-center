@@ -37,18 +37,18 @@ class ImportantUrlResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Important URL Information')->schema([
+                Section::make(__('importanturl.section.important_url_info'))->schema([
                     Grid::make('3')->schema([
-                        TextInput::make('title')->label('Important URL Title')->required()->maxLength(50),
+                        TextInput::make('title')->label(__('importanturl.form.important_url_title'))->required()->maxLength(50),
                         Select::make('project_id')
-                            ->label('Project')
+                            ->label(__('importanturl.form.project'))
                             ->relationship('project', 'title')
                             ->preload()
                             ->searchable()
                             ->nullable(),
 
                         Select::make('client_id')
-                            ->label('Client')
+                            ->label(__('importanturl.form.client'))
                             ->relationship('client', 'company_name')
                             ->preload()
                             ->searchable()
@@ -56,20 +56,21 @@ class ImportantUrlResource extends Resource
                     ]),
 
                     TextInput::make('url')
-                        ->label('Important URL')
+                        ->label(__('importanturl.form.important_url'))
+                        ->helperText(__('importanturl.form.important_url_note'))
                         ->required()
-                        ->suffixAction(
-                            Action::make('openUrl')
-                                ->icon('heroicon-m-arrow-top-right-on-square')
-                                ->url(fn($record) => $record?->url ?? '#', true) // true = open in new tab
-                                ->tooltip('Open URL in new tab')
-                                ->visible(fn($record) => filled($record?->url))
-                        )
+                        ->hintAction(
+                                fn(Get $get) => blank($get('url')) ? null : Action::make('openUrl')
+                                    ->icon('heroicon-m-arrow-top-right-on-square')
+                                    ->label(__('importanturl.form.open_url'))
+                                    ->url(fn() => $get('url'), true)
+                                    ->tooltip(__('importanturl.form.important_url_helper'))
+                            )
                         ->url(),
                 ]),
-                Section::make('Important URL Extra Information')->schema([
+                Section::make(__('importanturl.section.important_url_extra_info'))->schema([
                     RichEditor::make('notes')
-                            ->label('Notes')
+                            ->label(__('importanturl.form.notes'))
                             ->toolbarButtons([
                                 'bold',
                                 'italic',
@@ -94,14 +95,14 @@ class ImportantUrlResource extends Resource
                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                 $remaining = 500 - mb_strlen($decoded);
-                                return "{$remaining} characters remaining";
+                                return __("importanturl.form.notes_helper", ['count' => $remaining]);
                             })
                             // Block save if over 500 visible characters
                             ->rule(function (Get $get): Closure {
                                 return function (string $attribute, $value, Closure $fail) {
                                     $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                     if (mb_strlen($textOnly) > 500) {
-                                        $fail("Notes must not exceed 500 visible characters.");
+                                        $fail(__('importanturl.form.notes_warning'));
                                     }
                                 };
                             })
@@ -114,26 +115,26 @@ class ImportantUrlResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->label('ID')->sortable(),
+                TextColumn::make('id')->label(__('importanturl.table.id'))->sortable(),
 
-                TextColumn::make('title')->label('Title')->sortable()->searchable()->limit(20),
+                TextColumn::make('title')->label(__('importanturl.table.title'))->sortable()->searchable()->limit(20),
 
                 TextColumn::make('url')
-                    ->label('Link')
+                    ->label(__('importanturl.table.link'))
                     ->url(fn($record) => $record->url, true)
                     ->openUrlInNewTab()
                     ->copyable()
                     ->limit(20),
 
                 TextColumn::make('project.title')
-                    ->label('Project')
+                    ->label(__('importanturl.table.project'))
                     ->sortable()
                     ->searchable()
                     ->limit(20),
 
-                TextColumn::make('created_at')->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('created_at')->label(__('importanturl.table.created_at'))->dateTime('j/n/y, h:i A')->sortable(),
                 TextColumn::make('updated_at')
-                    ->label('Updated at (by)')
+                    ->label(__('importanturl.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
@@ -159,8 +160,8 @@ class ImportantUrlResource extends Resource
                     ->limit(30),
             ])
             ->filters([
-                SelectFilter::make('client_id')->label('Client')->relationship('client', 'company_name'),
-                SelectFilter::make('project_id')->label('Project')->relationship('project', 'title'),
+                SelectFilter::make('client_id')->label(__('importanturl.filters.client_id'))->relationship('client', 'company_name'),
+                SelectFilter::make('project_id')->label(__('importanturl.filters.project_id'))->relationship('project', 'title'),
                 TrashedFilter::make(), // To show trashed or only active
             ])
             ->actions([

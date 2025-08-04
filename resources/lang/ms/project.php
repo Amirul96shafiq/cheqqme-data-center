@@ -14,7 +14,7 @@ return [
   ],
 
   'actions' => [
-    'create' => 'Cipta Projek',
+    'create' => 'Tambah Projek',
   ],
 
   'section' => [
@@ -39,7 +39,7 @@ return [
   'table' => [
     'id' => 'ID',
     'title' => 'Tajuk',
-    'client' => 'Klien',
+    'client' => 'Pelanggan',
     'status' => 'Status',
     'planning' => 'Perancangan',
     'in_progress' => 'Sedang Berjalan',

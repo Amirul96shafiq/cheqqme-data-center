@@ -14,7 +14,7 @@ return [
   ],
 
   'actions' => [
-    'create' => 'Cipta Dokumen',
+    'create' => 'Tambah Dokumen',
   ],
 
   'section' => [
@@ -25,7 +25,7 @@ return [
   'form' => [
     'document_title' => 'Tajuk Dokumen',
     'project' => 'Projek',
-    'client' => 'Klien',
+    'client' => 'Pelanggan',
     'document_type' => 'Jenis Dokumen',
     'external' => 'Luar',
     'internal' => 'Dalaman',
@@ -49,7 +49,7 @@ return [
     'updated_at_by' => 'Dikemaskini Pada (oleh)',
     'internal' => 'Dalaman',
     'external' => 'Luar',
-    'client' => 'Klien',
+    'client' => 'Pelanggan',
   ],
 
   'tabs' => [

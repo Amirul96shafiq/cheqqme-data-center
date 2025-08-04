@@ -1,0 +1,59 @@
+<?php
+
+return [
+  'navigation_group' => 'Pengurusan Data',
+  'navigation_label' => 'URL Penting',
+
+  'labels' => [
+    'singular' => 'URL Penting',
+    'plural' => 'URL Penting',
+  ],
+
+  'navigation' => [
+    'labels' => 'URL Penting',
+  ],
+
+  'actions' => [
+    'create' => 'Tambah URL Penting',
+  ],
+
+  'section' => [
+    'important_url_info' => 'Maklumat URL Penting',
+    'important_url_extra_info' => 'Maklumat Tambahan URL Penting',
+  ],
+
+  'form' => [
+    'important_url_title' => 'Tajuk URL Penting',
+    'project' => 'Projek',
+    'client' => 'Pelanggan',
+    'important_url' => 'URL Penting',
+    'important_url_note' => 'URL untuk pautan penting',
+    'open_url' => 'Buka URL',
+    'important_url_helper' => 'Buka URL dalam tab baru',
+    'notes' => 'Nota',
+    'notes_helper' => 'Baki aksara: :count',
+    'notes_warning' => 'Catatan tidak boleh melebihi 500 aksara yang boleh dilihat.',
+  ],
+
+  'table' => [
+    'id' => 'ID',
+    'title' => 'Tajuk',
+    'link' => 'Link',
+    'project' => 'Projek',
+    'created_at' => 'Dicipta Pada',
+    'updated_at_by' => 'Dikemas Kini Pada (oleh)',
+  ],
+
+  'filters' => [
+    'client_id' => 'Pelanggan',
+    'project_id' => 'Projek',
+  ],
+
+  'tabs' => [
+    'all' => 'Semua',
+    'today' => 'Hari Ini',
+    'this_week' => 'Minggu Ini',
+    'this_month' => 'Bulan Ini',
+    'this_year' => 'Tahun Ini',
+  ],
+];
