@@ -200,12 +200,12 @@ class ImportantUrlResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('importanturl.singular');
+        return __('importanturl.labels.singular');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('importanturl.plural');
+        return __('importanturl.labels.plural');
     }
     
     public static function getNavigationGroup(): ?string
