@@ -193,25 +193,28 @@ class ImportantUrlResource extends Resource
             'edit' => Pages\EditImportantUrl::route('/{record}/edit'),
         ];
     }
-    public static function getNavigationGroup(): ?string
+    public static function getNavigationLabel(): string
     {
-        return 'Data Management'; // Grouping imporant url under Data Management
+        return __('importanturl.navigation_label');
     }
-    public static function getNavigationSort(): ?int
-    {
-        return 44; // Adjust the navigation sort order as needed
-    }
+
     public static function getModelLabel(): string
     {
-        return 'Important URL';
+        return __('importanturl.singular');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'Important URLs';
+        return __('importanturl.plural');
     }
-    public static function getNavigationLabel(): string
+    
+    public static function getNavigationGroup(): ?string
     {
-        return 'Important URLs';
+        return __('importanturl.navigation_group'); // Grouping imporant url under Data Management
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 44; // Adjust the navigation sort order as needed
     }
 }
