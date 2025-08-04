@@ -23,16 +23,28 @@
         .fls-dropdown-width {
             max-width: fit-content !important;
         }
+
+        .fls-display-on {
+            position: fixed !important;
+            left: 50% !important;
+            bottom: 1rem !important;
+            transform: translateX(-50%) !important;
+            z-index: 9999 !important;
+        }
     </style>
+
+    @if (request()->is('admin/login'))
+        <style>
+            /* Fix dropdown alignment */
+            .fi-dropdown-panel {
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+            }
+        </style>
+    @endif
+
     @if ($isVisibleOutsidePanels)
-        <div @class([
-            'fls-display-on fixed w-fit flex p-4 z-50',
-            'top-0' => str_contains($outsidePanelsPlacement, 'top'),
-            'bottom-0' => str_contains($outsidePanelsPlacement, 'bottom'),
-            'justify-start' => str_contains($outsidePanelsPlacement, 'left'),
-            'justify-end' => str_contains($outsidePanelsPlacement, 'right'),
-            'justify-center' => str_contains($outsidePanelsPlacement, 'center'),
-        ])>
+        <div class="fls-display-on">
             <div class="rounded-lg bg-gray-50 dark:bg-gray-950">
                 @include('filament-language-switch::switch')
             </div>

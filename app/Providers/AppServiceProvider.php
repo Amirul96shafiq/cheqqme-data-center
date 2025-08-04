@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
                     insidePanels: true,
                     outsidePanels: fn() => request()->is('admin/login')
                 )
-                ->outsidePanelPlacement(Placement::TopRight);
+                ->outsidePanelPlacement(Placement::BottomCenter);
         });
     }
 }

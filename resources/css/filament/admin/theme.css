@@ -1,4 +1,4 @@
-@import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import "../../../../vendor/filament/filament/resources/css/theme.css";
 
 @config 'tailwind.config.js';
 
@@ -9,5 +9,22 @@
 
     .dark .fi-btn.fi-btn-color-primary * {
         color: #1f2d3a !important;
+    }
+
+    /* Custom placement for Filament Language Switch Outside Panel (Admin) */
+    .fls-display-on {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        display: flex;
+        justify-content: center; /* centers child horizontally */
+        padding: 1rem;
+        pointer-events: none; /* optional, allows clicks to pass through */
+    }
+
+    .fls-display-on > * {
+        pointer-events: auto; /* enable interaction for inner content */
     }
 }
