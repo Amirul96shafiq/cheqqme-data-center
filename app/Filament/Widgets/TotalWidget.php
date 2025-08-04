@@ -17,18 +17,18 @@ class TotalWidget extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Total Clients', Client::count())
-                ->description('View All Clients →')
+            Stat::make(__('dashboard.total_clients.title'), Client::count())
+                ->description(__('dashboard.actions.view_all_clients'))
                 ->color('primary')
                 ->icon('heroicon-o-briefcase')
                 ->url(route('filament.admin.resources.clients.index')),
-            Stat::make('Total Projects', Project::count())
-                ->description('View All Projects →')
+            Stat::make(__('dashboard.total_projects.title'), Project::count())
+                ->description(__('dashboard.actions.view_all_projects'))
                 ->color('primary')
                 ->icon('heroicon-o-folder-open')
                 ->url(route('filament.admin.resources.projects.index')),
-            Stat::make('Total Documents', Document::count())
-                ->description('View All Documents →')
+            Stat::make(__('dashboard.total_documents.title'), Document::count())
+                ->description(__('dashboard.actions.view_all_documents'))
                 ->color('primary')
                 ->icon('heroicon-o-archive-box')
                 ->url(route('filament.admin.resources.documents.index')),

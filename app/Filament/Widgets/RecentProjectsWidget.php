@@ -21,25 +21,31 @@ class RecentProjectsWidget extends TableWidget
     {
         return [
             TextColumn::make('id')
-                ->label('ID')
+                ->label(__('dashboard.recent_projects.id'))
                 ->sortable()
                 ->url(fn($record) => route('filament.admin.resources.projects.edit', $record)),
-            TextColumn::make('title')->label('Project Title')->limit(10),
+            TextColumn::make('title')->label(__('dashboard.recent_projects.project_title'))->limit(10),
             TextColumn::make('status')
                 ->badge()
                 ->colors([
                     'primary' => 'Planning',
                     'info' => 'In Progress',
                     'success' => 'Completed',
-                ]),
-            TextColumn::make('created_at')->dateTime('j/n/y, h:i A'),
+                ])
+                ->formatStateUsing(fn(string $state): string => match ($state) {
+                    'Planning' => __('dashboard.recent_projects.planning'),
+                    'In Progress' => __('dashboard.recent_projects.in_progress'),
+                    'Completed' => __('dashboard.recent_projects.completed'),
+                    default => $state,
+                }),
+            TextColumn::make('created_at')->label(__('dashboard.recent_projects.created_at'))->dateTime('j/n/y, h:i A'),
         ];
     }
     protected function getTableActions(): array
     {
         return [
             EditAction::make()
-                ->label('Edit')
+                ->label(__('dashboard.actions.edit'))
                 ->url(fn(Project $record) => route('filament.admin.resources.projects.edit', $record)),
         ];
     }
@@ -51,11 +57,17 @@ class RecentProjectsWidget extends TableWidget
     {
         return [
             Action::make('viewAll')
-                ->label('View All')
+                ->label(label: __('dashboard.actions.view_all'))
                 ->url(route('filament.admin.resources.projects.index'))
                 ->icon('heroicon-m-arrow-right')
                 ->button()
                 ->color('gray'),
         ];
+    }
+
+    // Heading for the widget
+    protected function getTableHeading(): string|\Illuminate\Contracts\Support\Htmlable|null
+    {
+        return __('dashboard.recent_projects.title');
     }
 }
