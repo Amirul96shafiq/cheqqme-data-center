@@ -10,6 +10,7 @@ return [
   ],
 
   'recent_projects' => [
+    'title' => 'Recent Projects',
     'id' => 'ID',
     'project_title' => 'Project Title',
     'status' => 'Status',

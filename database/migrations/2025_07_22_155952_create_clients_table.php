@@ -25,6 +25,9 @@ return new class extends Migration
             $table->string('company_address')->nullable();
             $table->string('billing_address')->nullable();
 
+            // Client Additional information
+            $table->text('notes')->nullable();
+
             $table->timestamps();
             $table->softDeletes(); // Enable trash/restore functionality
         });
