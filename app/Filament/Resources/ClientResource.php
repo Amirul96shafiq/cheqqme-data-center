@@ -114,6 +114,8 @@ class ClientResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // Disable record URL for trashed records
+            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')->label(__('client.table.id'))->sortable(),
                 TextColumn::make('pic_name')->label(__('client.table.pic_name'))->searchable()->limit(20),
@@ -150,7 +152,7 @@ class ClientResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),

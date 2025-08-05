@@ -60,53 +60,53 @@ class ImportantUrlResource extends Resource
                         ->helperText(__('importanturl.form.important_url_note'))
                         ->required()
                         ->hintAction(
-                                fn(Get $get) => blank($get('url')) ? null : Action::make('openUrl')
-                                    ->icon('heroicon-m-arrow-top-right-on-square')
-                                    ->label(__('importanturl.form.open_url'))
-                                    ->url(fn() => $get('url'), true)
-                                    ->tooltip(__('importanturl.form.important_url_helper'))
-                            )
+                            fn(Get $get) => blank($get('url')) ? null : Action::make('openUrl')
+                                ->icon('heroicon-m-arrow-top-right-on-square')
+                                ->label(__('importanturl.form.open_url'))
+                                ->url(fn() => $get('url'), true)
+                                ->tooltip(__('importanturl.form.important_url_helper'))
+                        )
                         ->url(),
                 ]),
                 Section::make(__('importanturl.section.important_url_extra_info'))->schema([
                     RichEditor::make('notes')
-                            ->label(__('importanturl.form.notes'))
-                            ->toolbarButtons([
-                                'bold',
-                                'italic',
-                                'strike',
-                                'bulletList',
-                                'orderedList',
-                                'link',
-                                'bulletList',
-                                'codeBlock',
-                            ])
-                            //->maxLength(500)
-                            ->extraAttributes([
-                                'style' => 'resize: vertical;',
-                            ])
-                            ->reactive()
-                            //Character limit reactive function
-                            ->helperText(function (Get $get) {
-                                $raw = $get('notes') ?? '';
-                                // 1. Strip all HTML tags
-                                $noHtml = strip_tags($raw);
-                                // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                $remaining = 500 - mb_strlen($decoded);
-                                return __("importanturl.form.notes_helper", ['count' => $remaining]);
-                            })
-                            // Block save if over 500 visible characters
-                            ->rule(function (Get $get): Closure {
-                                return function (string $attribute, $value, Closure $fail) {
-                                    $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                    if (mb_strlen($textOnly) > 500) {
-                                        $fail(__('importanturl.form.notes_warning'));
-                                    }
-                                };
-                            })
-                            ->nullable(),
+                        ->label(__('importanturl.form.notes'))
+                        ->toolbarButtons([
+                            'bold',
+                            'italic',
+                            'strike',
+                            'bulletList',
+                            'orderedList',
+                            'link',
+                            'bulletList',
+                            'codeBlock',
+                        ])
+                        //->maxLength(500)
+                        ->extraAttributes([
+                            'style' => 'resize: vertical;',
+                        ])
+                        ->reactive()
+                        //Character limit reactive function
+                        ->helperText(function (Get $get) {
+                            $raw = $get('notes') ?? '';
+                            // 1. Strip all HTML tags
+                            $noHtml = strip_tags($raw);
+                            // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
+                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                            // 3. Count as-is — includes normal spaces, line breaks, etc.
+                            $remaining = 500 - mb_strlen($decoded);
+                            return __("importanturl.form.notes_helper", ['count' => $remaining]);
+                        })
+                        // Block save if over 500 visible characters
+                        ->rule(function (Get $get): Closure {
+                            return function (string $attribute, $value, Closure $fail) {
+                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                if (mb_strlen($textOnly) > 500) {
+                                    $fail(__('importanturl.form.notes_warning'));
+                                }
+                            };
+                        })
+                        ->nullable(),
                 ]),
             ]);
     }
@@ -114,6 +114,8 @@ class ImportantUrlResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // Disable record URL for trashed records
+            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')->label(__('importanturl.table.id'))->sortable(),
 
@@ -166,7 +168,7 @@ class ImportantUrlResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
@@ -207,7 +209,7 @@ class ImportantUrlResource extends Resource
     {
         return __('importanturl.labels.plural');
     }
-    
+
     public static function getNavigationGroup(): ?string
     {
         return __('importanturl.navigation_group'); // Grouping imporant url under Data Management

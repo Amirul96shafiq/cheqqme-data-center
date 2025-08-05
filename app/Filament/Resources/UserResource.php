@@ -192,11 +192,7 @@ class UserResource extends Resource
     {
         return $table
             // Disable record URL for trashed records
-            ->recordUrl(function ($record) {
-                return $record->trashed()
-                    ? null
-                    : static::getUrl('edit', ['record' => $record]);
-            })
+            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('username')->label(__('user.table.username'))->searchable()->sortable()->limit(20),
                 TextColumn::make('name')->label(__('user.table.name'))->searchable()->sortable()->limit(20),

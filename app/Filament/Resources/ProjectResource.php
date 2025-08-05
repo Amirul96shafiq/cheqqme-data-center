@@ -93,6 +93,8 @@ class ProjectResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // Disable record URL for trashed records
+            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')->label(__('project.table.id'))->sortable(),
                 TextColumn::make('title')->label(__('project.table.title'))->searchable()->sortable()->limit(20),
@@ -150,7 +152,7 @@ class ProjectResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
             ])

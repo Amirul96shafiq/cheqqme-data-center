@@ -96,6 +96,8 @@ class PhoneNumberResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // Disable record URL for trashed records
+            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')->label(__('phonenumber.table.id'))->sortable()->limit(20),
                 TextColumn::make('title')->label(__('phonenumber.table.title'))->searchable()->sortable()->limit(10),
@@ -132,7 +134,7 @@ class PhoneNumberResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\ForceDeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
@@ -175,7 +177,7 @@ class PhoneNumberResource extends Resource
     {
         return __('phonenumber.labels.plural');
     }
-    
+
     public static function getNavigationGroup(): ?string
     {
         return __('phonenumber.navigation_group'); // Grouping phone numbers under Data Management
