@@ -223,10 +223,10 @@ class UserResource extends Resource
                     ->limit(30),
             ])
             ->filters([
-                //TrashedFilter::make(), // To show trashed or only active
+                TrashedFilter::make(), // To show trashed or only active
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
                 Tables\Actions\ForceDeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),
             ])
