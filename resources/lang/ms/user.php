@@ -36,7 +36,10 @@ return [
     'new_password' => 'Kata Laluan Baru',
     'password_helper' => 'Sekurang-kurangnya 5 aksara',
     'confirm_new_password' => 'Sahkan Kata Laluan Baru',
-    'user_deletion' => 'Penghapusan Penggunaw',
+    'user_deletion' => 'Penghapusan Pengguna',
+    'user_confirm_title' => 'Pengesahan Penghapusan Pengguna',
+    'user_confirm_placeholder' => 'Taipkan tepat CONFIRMED DELETE ACCOUNT (sensitif kepada huruf besar) untuk mengaktifkan butang padam di bawah',
+    'user_confirm_helpertext' => 'CONFIRMED DELETE ACCOUNT',
   ],
 
   'table' => [

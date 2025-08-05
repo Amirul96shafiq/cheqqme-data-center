@@ -146,7 +146,18 @@ class UserResource extends Resource
                             ->live()
                             ->visible(fn(string $context) => $context === 'edit'),
 
-                        // Delete button
+                        // Delete confirmation as a second defense mechanism
+                        TextInput::make('delete_confirmation')
+                            ->label(__('user.form.user_confirm_title'))
+                            ->placeholder(__('user.form.user_confirm_placeholder'))
+                            ->helperText(__('user.form.user_confirm_helpertext'))
+                            ->visible(
+                                fn(Get $get, string $context) =>
+                                $context === 'edit' && $get('user_delete') === true
+                            )
+                            ->live()
+                            ->dehydrated(false),
+
                         Actions::make([
                             Action::make('deleteRecord')
                                 ->label(__('user.actions.delete'))
@@ -154,6 +165,7 @@ class UserResource extends Resource
                                 ->color('danger')
                                 ->requiresConfirmation()
                                 ->visible(fn(Get $get) => $get('user_delete') === true)
+                                ->disabled(fn(Get $get) => $get('delete_confirmation') !== 'CONFIRMED DELETE ACCOUNT')
                                 ->action(function ($record, $livewire) {
                                     $record->delete();
 
@@ -245,7 +257,7 @@ class UserResource extends Resource
     {
         return __('user.labels.plural');
     }
-    
+
     public static function getNavigationGroup(): ?string
     {
         return __('user.navigation_group'); // Grouping imporant url under Data Management

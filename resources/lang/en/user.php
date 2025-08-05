@@ -37,6 +37,9 @@ return [
     'password_helper' => 'Must be at least 5 characters',
     'confirm_new_password' => 'Confirm New Password',
     'user_deletion' => 'User Deletion',
+    'user_confirm_title' => 'User Deletion Confirmation',
+    'user_confirm_placeholder' => 'Type exactly CONFIRMED DELETE ACCOUNT (case-sensitive) to enable delete button below',
+    'user_confirm_helpertext' => 'CPONFIRMED DELETE ACCOUNT',
   ],
 
   'table' => [
