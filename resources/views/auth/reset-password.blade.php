@@ -249,7 +249,8 @@
         <!-- Dropdown -->
         <div x-show="open" @click.away="open = false"
             class="absolute bottom-full mb-2 w-40 rounded-md shadow-lg bg-white dark:bg-neutral-900 ring-1 ring-gray-950/5 dark:ring-white/10 z-50"
-            x-cloak>
+            x-cloak
+            style="left: 50%; transform: translateX(-50%);">
             <div class="py-1 text-sm text-gray-700 dark:text-gray-100">
                 <form method="POST" action="{{ route('locale.set') }}">
                     @csrf
