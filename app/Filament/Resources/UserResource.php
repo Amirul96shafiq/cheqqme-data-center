@@ -19,6 +19,7 @@ use Filament\Forms\Components\PasswordInput;
 use Filament\Forms\Components\Password;
 use Illuminate\Support\Facades\Hash;
 use Filament\Resources\Resource;
+use Illuminate\Validation\Rules\Unique;
 
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -43,7 +44,17 @@ class UserResource extends Resource
                         Grid::make(3)->schema([
                             TextInput::make('username')->label(__('user.form.username'))->required()->maxLength(20),
                             TextInput::make('name')->label(__('user.form.name'))->nullable()->maxLength(50),
-                            TextInput::make('email')->label(__('user.form.email'))->required()->email()->maxLength(60),
+                            TextInput::make('email')
+                                ->label(__('user.form.email'))
+                                ->required()
+                                ->email()
+                                ->maxLength(60)
+                                ->unique(
+                                    table: 'users',
+                                    column: 'email',
+                                    ignoreRecord: true,
+                                    modifyRuleUsing: fn(Unique $rule) => $rule->whereNull('deleted_at')
+                                ),
                             Hidden::make('Updated_by')->default(fn() => auth()->id())->dehydrated(),
                         ])
                     ]),
