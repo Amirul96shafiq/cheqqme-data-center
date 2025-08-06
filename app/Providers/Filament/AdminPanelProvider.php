@@ -49,6 +49,7 @@ class AdminPanelProvider extends PanelProvider
             ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
+            ->favicon(asset('images/favicon.png'))
             ->brandLogo(Request::is('admin/login')
                 ? asset('logos/logo-light.png')
                 : asset('logos/logo-light-vertical.png'))
