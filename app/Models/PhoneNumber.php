@@ -16,6 +16,10 @@ class PhoneNumber extends Model
         'phone',
         'notes',
         'updated_by',
+        'extra_information',
+    ];
+    protected $casts = [
+        'extra_information' => 'array',
     ];
     protected $dates = ['deleted_at'];
 

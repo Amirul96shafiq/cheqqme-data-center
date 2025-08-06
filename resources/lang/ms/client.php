@@ -35,6 +35,10 @@ return [
     'notes_helper' => 'Baki aksara: :count',
     'notes_warning' => 'Catatan tidak boleh melebihi 500 aksara yang boleh dibaca.',
     'company_name_helper' => 'Akan guna nama PIC secara automatik, tapi boleh diubah.',
+    'extra_information' => 'Maklumat Tambahan',
+    'extra_title' => 'Tajuk',
+    'extra_value' => 'Nilai',
+    'add_extra_info' => '+ Tambah Maklumat Tambahan',
   ],
 
   'table' => [

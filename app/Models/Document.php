@@ -19,6 +19,10 @@ class Document extends Model
         'client_id',
         'notes',
         'updated_by',
+        'extra_information',
+    ];
+    protected $casts = [
+        'extra_information' => 'array',
     ];
 
     public function project()

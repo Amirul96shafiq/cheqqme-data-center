@@ -18,13 +18,17 @@ class Project extends Model
         'status',
         'notes',
         'updated_by',
+        'extra_information',
+    ];
+    protected $casts = [
+        'extra_information' => 'array',
     ];
 
     public function client()
     {
         return $this->belongsTo(Client::class);
     }
-    
+
     public function documents()
     {
         return $this->hasMany(Document::class);

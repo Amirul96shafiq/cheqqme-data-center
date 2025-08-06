@@ -34,6 +34,10 @@ return [
     'notes' => 'Nota',
     'notes_helper' => 'Baki aksara: :count',
     'notes_warning' => 'Nota tidak boleh melebihi 500 aksara yang boleh dilihat.',
+    'extra_information' => 'Maklumat Tambahan',
+    'extra_title' => 'Tajuk',
+    'extra_value' => 'Nilai',
+    'add_extra_info' => '+ Tambah Maklumat Tambahan',
   ],
 
   'table' => [

@@ -35,6 +35,10 @@ return [
     'notes' => 'Notes',
     'notes_helper' => 'Remaining characters: :count',
     'notes_warning' => 'Notes must not exceed 500 visible characters.',
+    'extra_information' => 'Extra Information',
+    'extra_title' => 'Title',
+    'extra_value' => 'Value',
+    'add_extra_info' => '+ Add Extra Information',
   ],
 
   'table' => [
