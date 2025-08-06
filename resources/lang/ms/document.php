@@ -63,4 +63,10 @@ return [
     'this_month' => 'Bulan Ini',
     'this_year' => 'Tahun Ini',
   ],
+
+  'search' => [
+    'title' => 'Tajuk Dokumen',
+    'client' => 'Pelanggan',
+    'project' => 'Projek',
+  ],
 ];

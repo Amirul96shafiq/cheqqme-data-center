@@ -42,8 +42,8 @@ class PhoneNumberResource extends Resource
     public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
     {
         return [
-            'Owner' => $record->title,
-            'Phone No.' => $record->phone,
+            __('phonenumber.search.title') => $record->title,
+            __('phonenumber.search.phone') => $record->phone,
         ];
     }
 

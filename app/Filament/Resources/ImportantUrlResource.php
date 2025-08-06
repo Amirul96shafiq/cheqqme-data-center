@@ -43,10 +43,10 @@ class ImportantUrlResource extends Resource
     public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
     {
         return [
-            'Title' => $record->title,
-            'Project' => $record->project?->title ?? 'N/A',
-            'Client' => $record->client?->company_name ?? 'N/A',
-            'URL' => $record->url,
+            __('importanturl.search.title') => $record->title,
+            __('importanturl.search.project') => $record->project?->title ?? 'N/A',
+            __('importanturl.search.client') => $record->client?->company_name ?? 'N/A',
+            __('importanturl.search.url') => $record->url,
         ];
     }
 

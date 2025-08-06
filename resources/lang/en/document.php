@@ -63,4 +63,10 @@ return [
     'this_month' => 'This Month',
     'this_year' => 'This Year',
   ],
+
+  'search' => [
+    'title' => 'Document Title',
+    'client' => 'Client',
+    'project' => 'Project',
+  ],
 ];

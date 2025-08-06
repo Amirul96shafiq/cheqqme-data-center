@@ -48,4 +48,10 @@ return [
     'created_at' => 'Created At',
     'updated_at_by' => 'Updated At (by)',
   ],
+
+  'search' => [
+    'pic_email' => 'PIC Email',
+    'pic_contact_number' => 'PIC Phone No.',
+    'company_name' => 'Company Name',
+  ],
 ];

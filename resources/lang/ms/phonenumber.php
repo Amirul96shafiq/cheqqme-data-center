@@ -41,4 +41,9 @@ return [
     'created_at' => 'Dicipta Pada',
     'updated_at_by' => 'Dikemaskini Pada (oleh)',
   ],
+
+  'search' => [
+    'title' => 'Pemilik',
+    'phone' => 'Nombor Telefon',
+  ],
 ];

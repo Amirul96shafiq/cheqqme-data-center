@@ -48,4 +48,10 @@ return [
     'created_at' => 'Dicipta Pada',
     'updated_at_by' => 'Dikemas Kini pada (oleh)',
   ],
+
+  'search' => [
+    'pic_email' => 'Emel PIC',
+    'pic_contact_number' => 'Nombor Telefon PIC',
+    'company_name' => 'Nama Syarikat',
+  ],
 ];

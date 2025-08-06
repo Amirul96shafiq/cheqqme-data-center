@@ -38,9 +38,9 @@ class ClientResource extends Resource
     public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
     {
         return [
-            'PIC Email' => $record->pic_email,
-            'PIC Phone No.' => $record->pic_contact_number,
-            'Company' => $record->company_name,
+            __('client.search.pic_email') => $record->pic_email,
+            __('client.search.pic_contact_number') => $record->pic_contact_number,
+            __('client.search.company_name') => $record->company_name,
         ];
     }
 

@@ -42,9 +42,9 @@ class ProjectResource extends Resource
     public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
     {
         return [
-            'Project Title' => $record->title,
-            'Client' => $record->client->company_name,
-            'Project URL' => $record->project_url,
+            __('project.search.title') => $record->title,
+            __('project.search.client') => $record->client->company_name,
+            __('project.search.project_url') => $record->project_url,
         ];
     }
 

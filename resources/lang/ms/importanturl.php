@@ -60,4 +60,11 @@ return [
     'this_month' => 'Bulan Ini',
     'this_year' => 'Tahun Ini',
   ],
+
+  'search' => [
+    'title' => 'Tajuk URL Penting',
+    'project' => 'Projek',
+    'client' => 'Pelanggan',
+    'url' => 'URL',
+  ],
 ];

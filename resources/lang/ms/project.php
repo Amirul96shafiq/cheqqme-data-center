@@ -24,7 +24,7 @@ return [
 
   'form' => [
     'project_title' => 'Tajuk Projek',
-    'client' => 'Klien',
+    'client' => 'Pelanggan',
     'project_url' => 'URL Projek',
     'project_description' => 'Deskripsi Projek',
     'project_status' => 'Status Projek',
@@ -57,5 +57,11 @@ return [
     'planning' => 'Perancangan',
     'in_progress' => 'Sedang Berjalan',
     'completed' => 'Selesai',
+  ],
+
+  'search' => [
+    'title' => 'Tajuk Projek',
+    'client' => 'Pelanggan',
+    'project_url' => 'URL Projek',
   ],
 ];

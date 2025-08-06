@@ -59,4 +59,10 @@ return [
     'in_progress' => 'In Progress',
     'completed' => 'Completed',
   ],
+
+  'search' => [
+    'title' => 'Project Title',
+    'client' => 'Client',
+    'project_url' => 'Project URL',
+  ],
 ];
