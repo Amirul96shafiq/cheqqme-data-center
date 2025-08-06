@@ -32,6 +32,21 @@ class PhoneNumberResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-device-phone-mobile';
 
+    protected static ?string $recordTitleAttribute = 'title'; // Use 'title' as the record title attribute
+
+    public static function getGloballySearchableAttributes(): array // This method defines which attributes are searchable globally
+    {
+        return ['title', 'phone'];
+    }
+    
+    public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
+    {
+        return [
+            'Owner' => $record->title,
+            'Phone No.' => $record->phone,
+        ];
+    }
+
     public static function form(Form $form): Form
     {
         return $form

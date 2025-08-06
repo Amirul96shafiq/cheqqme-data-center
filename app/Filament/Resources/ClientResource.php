@@ -28,6 +28,22 @@ class ClientResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
+    protected static ?string $recordTitleAttribute = 'pic_name'; // Use 'pic_name' as the record title attribute
+
+    public static function getGloballySearchableAttributes(): array // This method defines which attributes are searchable globally
+    {
+        return ['pic_name', 'company_name', 'company_email', 'pic_email', 'pic_contact_number'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
+    {
+        return [
+            'PIC Email' => $record->pic_email,
+            'PIC Phone No.' => $record->pic_contact_number,
+            'Company' => $record->company_name,
+        ];
+    }
+
     public static function form(Form $form): Form
     {
         return $form

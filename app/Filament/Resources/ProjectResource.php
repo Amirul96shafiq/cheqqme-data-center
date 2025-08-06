@@ -32,6 +32,22 @@ class ProjectResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-folder-open';
 
+    protected static ?string $recordTitleAttribute = 'title'; // Use 'title' as the record title attribute
+
+    public static function getGloballySearchableAttributes(): array // This method defines which attributes are searchable globally
+    {
+        return ['title', 'project_url', 'client.company_name'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
+    {
+        return [
+            'Project Title' => $record->title,
+            'Client' => $record->client->company_name,
+            'Project URL' => $record->project_url,
+        ];
+    }
+
     public static function form(Form $form): Form
     {
         return $form

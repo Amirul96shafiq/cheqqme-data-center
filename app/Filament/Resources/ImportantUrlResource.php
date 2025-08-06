@@ -33,6 +33,23 @@ class ImportantUrlResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-link';
 
+    protected static ?string $recordTitleAttribute = 'title'; // Use 'title' as the record title attribute
+
+    public static function getGloballySearchableAttributes(): array // This method defines which attributes are searchable globally
+    {
+        return ['title', 'url', 'project.title', 'client.company_name'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
+    {
+        return [
+            'Title' => $record->title,
+            'Project' => $record->project?->title ?? 'N/A',
+            'Client' => $record->client?->company_name ?? 'N/A',
+            'URL' => $record->url,
+        ];
+    }
+
     public static function form(Form $form): Form
     {
         return $form

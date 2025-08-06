@@ -33,6 +33,22 @@ class DocumentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
 
+    protected static ?string $recordTitleAttribute = 'title'; // Use 'title' as the record title attribute
+
+    public static function getGloballySearchableAttributes(): array // This method defines which attributes are searchable globally
+    {
+        return ['title', 'client.company_name'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
+    {
+        return [
+            'Document Title' => $record->title,
+            'Client' => $record->client->company_name,
+            'Project' => $record->project->title,
+        ];
+    }
+
     public static function form(Form $form): Form
     {
         return $form

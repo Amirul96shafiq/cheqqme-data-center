@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db87b3799bff46d71cd6a357b247188f",
+    "content-hash": "dec1b36e6dacbfd99318f9b4a9f5fd96",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -498,6 +498,53 @@
                 }
             ],
             "time": "2024-02-09T16:56:22+00:00"
+        },
+        {
+            "name": "charrafimed/global-search-modal",
+            "version": "v3.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CharrafiMed/global-search-modal.git",
+                "reference": "ce65e84d196799cbeadd0cfca57a4cbf573a3144"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CharrafiMed/global-search-modal/zipball/ce65e84d196799cbeadd0cfca57a4cbf573a3144",
+                "reference": "ce65e84d196799cbeadd0cfca57a4cbf573a3144",
+                "shasum": ""
+            },
+            "require": {
+                "filament/support": "^3.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "CharrafiMed\\GlobalSearchModal\\GlobalSearchModalServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CharrafiMed\\GlobalSearchModal\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CharrafiMed",
+                    "email": "charrafimohamed27@gmail.com"
+                }
+            ],
+            "description": "advanced global search modal",
+            "support": {
+                "issues": "https://github.com/CharrafiMed/global-search-modal/issues",
+                "source": "https://github.com/CharrafiMed/global-search-modal/tree/v3.7.1"
+            },
+            "time": "2025-06-02T12:26:13+00:00"
         },
         {
             "name": "danharrin/date-format-converter",

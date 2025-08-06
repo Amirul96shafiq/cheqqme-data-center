@@ -33,12 +33,11 @@ use Filament\Pages\Actions\Logout;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Request;
 
-
 // Plugins
 // Light Switch by Adam Weston
 use Awcodes\LightSwitch\LightSwitchPlugin;
 use Awcodes\LightSwitch\Enums\Alignment;
-
+use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -117,6 +116,7 @@ class AdminPanelProvider extends PanelProvider
                     ->enabledOn([
                         'auth.login',
                     ]),
+                GlobalSearchModalPlugin::make()
             ]);
     }
 }
