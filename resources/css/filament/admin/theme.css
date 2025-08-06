@@ -27,4 +27,9 @@
     .fls-display-on > * {
         pointer-events: auto; /* enable interaction for inner content */
     }
+
+    /* Hide the repeater-collapsible toolbar */
+    .no-repeater-collapse-toolbar .fi-link {
+        display: none !important;
+    }
 }

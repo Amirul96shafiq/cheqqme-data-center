@@ -10,7 +10,8 @@ use Filament\Forms;
 use Filament\Forms\Get;
 use Filament\Forms\Components\Section;
 use Closure;
-use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, RichEditor, Grid};
+use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, RichEditor, Grid, Repeater};
+use Filament\Support\Enums\ActionSize;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Pages\ListRecords;
@@ -107,7 +108,77 @@ class ClientResource extends Resource
                                 };
                             })
                             ->nullable(),
-                    ]),
+
+                        Repeater::make('extra_information')
+                            ->label(__('client.form.extra_information'))
+                            //->relationship('extra_information')
+                            ->schema([
+                                Grid::make()
+                                    ->schema([
+                                        TextInput::make('title')
+                                            ->label(__('client.form.extra_title'))
+                                            ->required()
+                                            ->maxLength(100)
+                                            ->columnSpan([
+                                                'default' => 12, // full width on small screens
+                                                'md' => 4,       // 1/3 of 12 columns on medium and up
+                                            ]),
+                                        RichEditor::make('value')
+                                            ->label(__('client.form.extra_value'))
+                                            ->toolbarButtons([
+                                                'bold',
+                                                'italic',
+                                                'strike',
+                                                'bulletList',
+                                                'orderedList',
+                                                'link',
+                                                'bulletList',
+                                                'codeBlock',
+                                            ])
+                                            ->extraAttributes([
+                                                'style' => 'resize: vertical;',
+                                            ])
+                                            ->reactive()
+                                            //Character limit reactive function
+                                            ->helperText(function (Get $get) {
+                                                $raw = $get('value') ?? '';
+                                                // 1. Strip all HTML tags
+                                                $noHtml = strip_tags($raw);
+                                                // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
+                                                $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                // 3. Count as-is — includes normal spaces, line breaks, etc.
+                                                $remaining = 500 - mb_strlen($decoded);
+                                                return __("client.form.notes_helper", ['count' => $remaining]);
+                                            })
+                                            // Block save if over 500 visible characters
+                                            ->rule(function (Get $get): Closure {
+                                                return function (string $attribute, $value, Closure $fail) {
+                                                    $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                    if (mb_strlen($textOnly) > 500) {
+                                                        $fail(__("client.form.notes_warning"));
+                                                    }
+                                                };
+                                            })
+                                            ->nullable()
+                                            ->columnSpan([
+                                                'default' => 12, // full width on small screens
+                                                'md' => 8,       // 1/3 of 12 columns on medium and up
+                                            ]),
+                                    ])
+                                    ->columns(12),
+                            ])
+                            ->columns(1)
+                            ->defaultItems(1)
+                            ->addActionLabel(__('client.form.add_extra_info'))
+                            ->cloneable()
+                            ->reorderable()
+                            ->collapsible(true)
+                            ->itemLabel(fn(array $state): ?string => $state['title'] ?? null)
+                            ->live()
+                            ->columnSpanFull()
+                            ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                    ])
+                    ->collapsible(),
             ]);
     }
 

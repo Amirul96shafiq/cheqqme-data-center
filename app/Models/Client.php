@@ -19,6 +19,10 @@ class Client extends Model
         'billing_address',
         'notes',
         'updated_by',
+        'extra_information',
+    ];
+    protected $casts = [
+        'extra_information' => 'array',
     ];
     protected static function booted()
     {
@@ -33,5 +37,5 @@ class Client extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
-    
+
 }
