@@ -155,7 +155,12 @@ class UserResource extends Resource
                             ->onColor('danger')
                             ->offColor('gray')
                             ->live()
-                            ->visible(fn(string $context) => $context === 'edit'),
+                            ->visible(fn(string $context) => $context === 'edit')
+                            ->afterStateUpdated(function (bool $state, callable $set) {
+                                if (!$state) {
+                                    $set('delete_confirmation', null);
+                                }
+                            }),
 
                         // Delete confirmation as a second defense mechanism
                         TextInput::make('delete_confirmation')
@@ -176,7 +181,7 @@ class UserResource extends Resource
                                 ->color('danger')
                                 ->requiresConfirmation()
                                 ->visible(fn(Get $get) => $get('user_delete') === true)
-                                ->disabled(fn(Get $get) => $get('delete_confirmation') !== 'CONFIRMED DELETE ACCOUNT')
+                                ->disabled(fn(Get $get) => $get('delete_confirmation') !== 'CONFIRM DELETE USER')
                                 ->action(function ($record, $livewire) {
                                     $record->delete();
 
