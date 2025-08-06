@@ -57,7 +57,8 @@ class AdminPanelProvider extends PanelProvider
                 ? asset('logos/logo-dark.png')
                 : asset('logos/logo-dark-vertical.png'))
 
-            ->brandLogoHeight(Request::is('admin/login') ? '8rem' : '2.75rem') // Optional
+            ->brandLogoHeight(Request::is('admin/login') ? '8rem' : '2.75rem')
+            ->font('Roboto')
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->profile(Profile::class, isSimple: false)
             ->defaultAvatarProvider(GetAvatarProvider::class)
