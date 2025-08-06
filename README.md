@@ -1,4 +1,4 @@
-# 📦 CheQQme Data Center
+![Alt text](public/logos/logo-dark-vertical.png)
 
 ## 📝 Overview
 **CheQQme Data Center** is an internal web application built with Laravel and FilamentPHP.  
