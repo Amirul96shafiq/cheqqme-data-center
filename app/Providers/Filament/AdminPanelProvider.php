@@ -37,7 +37,9 @@ use Illuminate\Support\Facades\Request;
 // Light Switch by Adam Weston
 use Awcodes\LightSwitch\LightSwitchPlugin;
 use Awcodes\LightSwitch\Enums\Alignment;
+// Global Search Modal by CharrafiMed
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
+use Filament\Support\Enums\MaxWidth;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -117,6 +119,8 @@ class AdminPanelProvider extends PanelProvider
                         'auth.login',
                     ]),
                 GlobalSearchModalPlugin::make()
+                    ->maxWidth(MaxWidth::ThreeExtraLarge)
+                    ->expandedUrlTarget(enabled: false)
             ]);
     }
 }
