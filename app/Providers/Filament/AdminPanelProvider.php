@@ -112,6 +112,33 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label('User Management'),
             ])
+            ->renderHook(
+                'panels::head.end',
+                fn() => <<<'HTML'
+                            <script>
+                                // Global Search Keyboard Shortcut + Custom Placeholder
+                                document.addEventListener('DOMContentLoaded', () => {
+                                    const searchInput = document.querySelector('.fi-global-search input');
+
+                                    // Set placeholder
+                                    if (searchInput) {
+                                        searchInput.placeholder = "Type / to search";
+                                    }
+
+                                    // Keyboard shortcut: /
+                                    document.addEventListener('keydown', function (e) {
+                                        if (e.key.toLowerCase() === '/') {
+                                            e.preventDefault();
+                                            const input = document.querySelector('.fi-global-search input');
+                                            if (input) {
+                                                input.focus();
+                                            }
+                                        }
+                                    });
+                                });
+                            </script>
+                        HTML,
+            )
             ->plugins([
                 LightSwitchPlugin::make()
                     ->position(Alignment::TopCenter)
