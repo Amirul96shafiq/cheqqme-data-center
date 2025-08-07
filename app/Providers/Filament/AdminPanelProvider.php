@@ -155,7 +155,7 @@ class AdminPanelProvider extends PanelProvider
                     ->expandedUrlTarget(enabled: false),
 
                 ActivitylogPlugin::make()
-                ->navigationGroup('Tools')
+                ->navigationGroup(fn () => __('activitylog.navigation_group'))
                 ->navigationSort(22),
             ]);
     }
