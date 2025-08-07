@@ -14,7 +14,7 @@ return [
   ],
 
   'actions' => [
-    'create' => 'Cipta Nombor Telefon',
+    'create' => 'Tambah Nombor Telefon',
   ],
 
   'section' => [

@@ -14,7 +14,7 @@ return [
   ],
 
   'actions' => [
-    'create' => 'Cipta Pengguna',
+    'create' => 'Tambah Pengguna',
     'delete' => 'Padam Pengguna',
   ],
 
