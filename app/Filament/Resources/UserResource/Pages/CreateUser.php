@@ -14,31 +14,6 @@ class CreateUser extends BaseCreateRecord
 {
     protected static string $resource = UserResource::class;
 
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $existingUser = User::onlyTrashed()->where('email', $data['email'])->first();
-
-        if ($existingUser) {
-            // Update soft-deleted user's data
-            $existingUser->restore();
-
-            $existingUser->update([
-                'name' => $data['name'],
-                'username' => $data['username'],
-                'password' => Hash::make($data['password']),
-            ]);
-
-            // Prevent actual "create" from being triggered
-            $this->record = $existingUser;
-            $this->hasMounted = true;
-
-            // Cancel default save behavior
-            $this->redirect(UserResource::getUrl());
-        }
-
-        return $data;
-    }
-
     protected function handleRecordCreation(array $data): User
     {
         // Check if a soft-deleted user exists with the same email
@@ -49,7 +24,12 @@ class CreateUser extends BaseCreateRecord
         if ($existingUser) {
             // Restore and update info
             $existingUser->restore();
-            $existingUser->update($data);
+            $existingUser->update([
+                'name' => $data['name'],
+                'username' => $data['username'],
+                'password' => Hash::make($data['password']),
+            ]);
+
             return $existingUser;
         }
 
