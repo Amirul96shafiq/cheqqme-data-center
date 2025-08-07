@@ -32,4 +32,14 @@
     .no-repeater-collapse-toolbar .fi-link {
         display: none !important;
     }
+
+    /* Global Search Modal Styles for DT */
+    .global-search-modal-details .inline.font-medium {
+        font-size: 0.75rem !important;
+    }
+
+    /* Global Search Modal Details for DD */
+    .global-search-modal-details .inline {
+        font-size: 0.75rem !important;
+    }
 }

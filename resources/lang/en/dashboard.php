@@ -40,4 +40,5 @@ return [
     'view_all_projects' => 'View All Projects',
     'view_all_documents' => 'View All Documents',
   ],
+  'search_shortcut' => 'Type / to search',
 ];
