@@ -43,6 +43,7 @@ return [
   ],
 
   'table' => [
+    'id' => 'ID',
     'username' => 'Username',
     'name' => 'Name',
     'email' => 'Email',

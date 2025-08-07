@@ -28,6 +28,9 @@ use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
+use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
@@ -199,6 +202,7 @@ class UserResource extends Resource
             // Disable record URL for trashed records
             ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
+                TextColumn::make('id')->label(__('user.table.id')),
                 TextColumn::make('username')->label(__('user.table.username'))->searchable()->sortable()->limit(20),
                 TextColumn::make('name')->label(__('user.table.name'))->searchable()->sortable()->limit(20),
                 TextColumn::make('email')->label(__('user.table.email'))->searchable()->sortable()->limit(50),
@@ -234,8 +238,12 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
+
+                Tables\Actions\ActionGroup::make([
+                    ActivityLogTimelineTableAction::make('Log'),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
+                ])
             ])
             ->bulkActions([
                 /*Tables\Actions\BulkActionGroup::make([
@@ -249,7 +257,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ActivitylogRelationManager::class,
         ];
     }
 

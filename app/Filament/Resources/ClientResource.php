@@ -22,6 +22,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
+use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+
 class ClientResource extends Resource
 {
     protected static ?string $model = Client::class;
@@ -240,9 +243,13 @@ class ClientResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
+
+                Tables\Actions\ActionGroup::make([
+                    ActivityLogTimelineTableAction::make('Log'),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
@@ -255,7 +262,7 @@ class ClientResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ActivitylogRelationManager::class,
         ];
     }
 

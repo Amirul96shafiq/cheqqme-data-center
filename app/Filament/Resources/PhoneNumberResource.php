@@ -25,6 +25,13 @@ use Filament\Tables\Actions\{ViewAction, EditAction, DeleteAction, RestoreAction
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\Action;
+use Filament\Support\Enums\Alignment;
+use Illuminate\Support\HtmlString;
+use Filament\Resources\Pages\ViewRecord;
+
+use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
+use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 class PhoneNumberResource extends Resource
 {
@@ -38,7 +45,7 @@ class PhoneNumberResource extends Resource
     {
         return ['title', 'phone'];
     }
-    
+
     public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
     {
         return [
@@ -218,10 +225,15 @@ class PhoneNumberResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->hidden(fn($record) => $record->trashed()),
+
+                Tables\Actions\ActionGroup::make([
+                    ActivityLogTimelineTableAction::make('Log'),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -235,7 +247,7 @@ class PhoneNumberResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ActivitylogRelationManager::class,
         ];
     }
 

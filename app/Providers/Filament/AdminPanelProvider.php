@@ -37,9 +37,13 @@ use Illuminate\Support\Facades\Request;
 // Light Switch by Adam Weston
 use Awcodes\LightSwitch\LightSwitchPlugin;
 use Awcodes\LightSwitch\Enums\Alignment;
+
 // Global Search Modal by CharrafiMed
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
 use Filament\Support\Enums\MaxWidth;
+
+// ActivityLog by Rômulo Ramos
+use Rmsramos\Activitylog\ActivitylogPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -145,9 +149,14 @@ class AdminPanelProvider extends PanelProvider
                     ->enabledOn([
                         'auth.login',
                     ]),
+
                 GlobalSearchModalPlugin::make()
                     ->maxWidth(MaxWidth::ThreeExtraLarge)
-                    ->expandedUrlTarget(enabled: false)
+                    ->expandedUrlTarget(enabled: false),
+
+                ActivitylogPlugin::make()
+                ->navigationGroup('Tools')
+                ->navigationSort(22),
             ]);
     }
 }
