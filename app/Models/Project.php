@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Project extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'title',
@@ -20,6 +22,24 @@ class Project extends Model
         'updated_by',
         'extra_information',
     ];
+
+    public function getActivityLogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'title',
+                'project_url',
+                'client_id',
+                'description',
+                'status',
+                'notes',
+                'extra_information',
+                'updated_at',
+                'updated_by',
+            ])
+            ->useLogName('Projects');
+    }
+
     protected $casts = [
         'extra_information' => 'array',
     ];

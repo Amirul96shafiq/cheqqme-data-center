@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class PhoneNumber extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'title',
@@ -18,6 +19,21 @@ class PhoneNumber extends Model
         'updated_by',
         'extra_information',
     ];
+
+    public function getActivityLogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'title',
+                'phone',
+                'notes',
+                'extra_information',
+                'updated_at',
+                'updated_by',
+            ])
+            ->useLogName('Phone Numbers');
+    }
+
     protected $casts = [
         'extra_information' => 'array',
     ];

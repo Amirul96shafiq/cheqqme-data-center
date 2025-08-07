@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Client extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
         'pic_name',
@@ -21,6 +23,25 @@ class Client extends Model
         'updated_by',
         'extra_information',
     ];
+
+    public function getActivityLogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'pic_name',
+                'pic_email',
+                'pic_contact_number',
+                'company_name',
+                'company_address',
+                'billing_address',
+                'notes',
+                'extra_information',
+                'created_at',
+                'updated_by'
+            ])
+            ->useLogName('Clients');
+    }
+
     protected $casts = [
         'extra_information' => 'array',
     ];
