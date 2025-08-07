@@ -115,6 +115,9 @@ class AdminPanelProvider extends PanelProvider
 
                 NavigationGroup::make()
                     ->label('User Management'),
+
+                NavigationGroup::make()
+                    ->label('Tools'),
             ])
             ->renderHook(
                 'panels::head.end',
@@ -155,8 +158,8 @@ class AdminPanelProvider extends PanelProvider
                     ->expandedUrlTarget(enabled: false),
 
                 ActivitylogPlugin::make()
-                ->navigationGroup(fn () => __('activitylog.navigation_group'))
-                ->navigationSort(22),
+                    ->navigationGroup(fn() => __('activitylog.navigation_group'))
+                    ->navigationSort(11),
             ]);
     }
 }
