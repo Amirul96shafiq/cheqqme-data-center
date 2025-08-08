@@ -45,6 +45,9 @@ use Filament\Support\Enums\MaxWidth;
 // ActivityLog by Rômulo Ramos
 use Rmsramos\Activitylog\ActivitylogPlugin;
 
+// Kanban by Mo Khosh
+use Mokhosh\FilamentKanban\FilamentKanbanPlugin;
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel

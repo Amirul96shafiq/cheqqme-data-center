@@ -4,10 +4,10 @@ return [
     'changes' => 'Perubahan',
     'fields' => [
         'log_name' => [
-            'label' => 'Jenis',
+            'label' => 'Jenis: ',
         ],
         'event' => [
-            'label' => 'Peristiwa',
+            'label' => 'Peristiwa: ',
         ],
         'subject_type' => [
             'label' => 'Subjek',
@@ -22,7 +22,7 @@ return [
             'label' => 'Ciri-ciri',
         ],
         'created_at' => [
-            'label' => 'Direkod pada',
+            'label' => 'Direkod pada: ',
         ],
         'old' => [
             'label' => 'Lama',

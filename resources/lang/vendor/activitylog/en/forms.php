@@ -4,10 +4,10 @@ return [
     'changes' => 'Changes',
     'fields' => [
         'log_name' => [
-            'label' => 'Type',
+            'label' => 'Type: ',
         ],
         'event' => [
-            'label' => 'Event',
+            'label' => 'Event: ',
         ],
         'subject_type' => [
             'label' => 'Subject',
@@ -22,7 +22,7 @@ return [
             'label' => 'Properties',
         ],
         'created_at' => [
-            'label' => 'Logged at',
+            'label' => 'Logged at: ',
         ],
         'old' => [
             'label' => 'Old',
