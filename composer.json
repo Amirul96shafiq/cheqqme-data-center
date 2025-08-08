@@ -14,6 +14,7 @@
         "filament/filament": "^3.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
+        "relaticle/flowforge": "^0.2.1",
         "rmsramos/activitylog": "^1.0",
         "spatie/eloquent-sortable": "^4.5",
         "spatie/laravel-activitylog": "^4.10"
