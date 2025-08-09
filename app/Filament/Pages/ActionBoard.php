@@ -95,8 +95,44 @@ class ActionBoard extends KanbanBoardPage
                                         ])
                                         ->searchable()
                                 ]),
-                            Forms\Components\Textarea::make('description')
-                                ->rows(4)
+                            Forms\Components\RichEditor::make('description')
+                                ->label('Description')
+                                ->toolbarButtons([
+                                    'bold',
+                                    'italic',
+                                    'strike',
+                                    'bulletList',
+                                    'orderedList',
+                                    'link',
+                                    'bulletList',
+                                    'codeBlock',
+                                ])
+                                //->maxLength(500)
+                                ->extraAttributes([
+                                    'style' => 'resize: vertical;',
+                                ])
+                                ->reactive()
+                                //Character limit reactive function
+                                ->helperText(function (Get $get) {
+                                    $raw = $get('notes') ?? '';
+                                    // 1. Strip all HTML tags
+                                    $noHtml = strip_tags($raw);
+                                    // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
+                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                    // 3. Count as-is — includes normal spaces, line breaks, etc.
+                                    $remaining = 500 - mb_strlen($decoded);
+                                    return __("action.create.description_helper", ['count' => $remaining]);
+                                })
+                                // Block save if over 500 visible characters
+                                ->rule(function (Get $get): Closure {
+                                    return function (string $attribute, $value, Closure $fail) {
+                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                        if (mb_strlen($textOnly) > 500) {
+                                            $fail(__("action.create.description_warning"));
+                                        }
+                                    };
+                                })
+                                ->nullable()
                                 ->columnSpanFull(),
                         ]),
 
@@ -137,14 +173,14 @@ class ActionBoard extends KanbanBoardPage
                                                     $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                                     // 3. Count as-is — includes normal spaces, line breaks, etc.
                                                     $remaining = 500 - mb_strlen($decoded);
-                                                    return __("task.form.notes_helper", ['count' => $remaining]);
+                                                    return __("action.edit.extra_information_helper", ['count' => $remaining]);
                                                 })
                                                 // Block save if over 500 visible characters
                                                 ->rule(function (Get $get): Closure {
                                                     return function (string $attribute, $value, Closure $fail) {
                                                         $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                         if (mb_strlen($textOnly) > 500) {
-                                                            $fail(__("task.form.notes_warning"));
+                                                            $fail(__("action.edit.extra_information_warning"));
                                                         }
                                                     };
                                                 })
@@ -200,8 +236,44 @@ class ActionBoard extends KanbanBoardPage
                                         ])
                                         ->searchable()
                                 ]),
-                            Forms\Components\Textarea::make('description')
-                                ->rows(4)
+                            Forms\Components\RichEditor::make('description')
+                                ->label('Description')
+                                ->toolbarButtons([
+                                    'bold',
+                                    'italic',
+                                    'strike',
+                                    'bulletList',
+                                    'orderedList',
+                                    'link',
+                                    'bulletList',
+                                    'codeBlock',
+                                ])
+                                //->maxLength(500)
+                                ->extraAttributes([
+                                    'style' => 'resize: vertical;',
+                                ])
+                                ->reactive()
+                                //Character limit reactive function
+                                ->helperText(function (Get $get) {
+                                    $raw = $get('notes') ?? '';
+                                    // 1. Strip all HTML tags
+                                    $noHtml = strip_tags($raw);
+                                    // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
+                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                    // 3. Count as-is — includes normal spaces, line breaks, etc.
+                                    $remaining = 500 - mb_strlen($decoded);
+                                    return __("action.edit.description_helper", ['count' => $remaining]);
+                                })
+                                // Block save if over 500 visible characters
+                                ->rule(function (Get $get): Closure {
+                                    return function (string $attribute, $value, Closure $fail) {
+                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                        if (mb_strlen($textOnly) > 500) {
+                                            $fail(__("action.edit.description_warning"));
+                                        }
+                                    };
+                                })
+                                ->nullable()
                                 ->columnSpanFull(),
                         ]),
 
@@ -242,14 +314,14 @@ class ActionBoard extends KanbanBoardPage
                                                     $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                                     // 3. Count as-is — includes normal spaces, line breaks, etc.
                                                     $remaining = 500 - mb_strlen($decoded);
-                                                    return __("task.form.notes_helper", ['count' => $remaining]);
+                                                    return __("action.edit.extra_information__helper", ['count' => $remaining]);
                                                 })
                                                 // Block save if over 500 visible characters
                                                 ->rule(function (Get $get): Closure {
                                                     return function (string $attribute, $value, Closure $fail) {
                                                         $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                         if (mb_strlen($textOnly) > 500) {
-                                                            $fail(__("task.form.notes_warning"));
+                                                            $fail(__("action.edit.extra_information_warning"));
                                                         }
                                                     };
                                                 })
