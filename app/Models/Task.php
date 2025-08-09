@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
@@ -62,6 +63,11 @@ class Task extends Model
   public function assignedTo()
   {
     return $this->belongsTo(User::class, 'assigned_to');
+  }
+
+  public function comments(): HasMany
+  {
+    return $this->hasMany(Comment::class)->with('user');
   }
 
   /**
