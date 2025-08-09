@@ -3,9 +3,9 @@
 namespace App\Filament\Pages;
 
 use App\Models\Task;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Relaticle\Flowforge\Filament\Pages\KanbanBoardPage;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Get;
@@ -15,7 +15,6 @@ class ActionBoard extends KanbanBoardPage
 {
     protected static ?string $navigationIcon = 'heroicon-o-rocket-launch';
     protected static ?string $navigationGroup = 'Boards';
-
     protected static ?string $navigationLabel = 'Action Board';
     protected static ?string $title = 'Action Board';
 
@@ -28,20 +27,31 @@ class ActionBoard extends KanbanBoardPage
     {
         $this
             ->titleField('title')
-            ->orderField('sort_order')
+            ->orderField('order_column')
             ->columnField('status')
             ->descriptionField('description')
+            // Provide attributes without visible labels (empty strings) so only the value shows on the badge.
+            // Multiple virtual due_date_* attributes exist to allow different static colors per urgency.
             ->cardAttributes([
-                'due_date' => '',
-                'assigned_to' => '',
+                'due_date_red' => '',
+                'due_date_yellow' => '',
+                'due_date_gray' => '',
+                'due_date_green' => '',
+                'assigned_to_username' => '',
             ])
             ->cardAttributeColors([
-                'due_date' => 'gray',
-                'assigned_to' => 'gray',
+                'due_date_red' => 'red',
+                'due_date_yellow' => 'yellow',
+                'due_date_gray' => 'gray',
+                'due_date_green' => 'green',
+                'assigned_to_username' => 'gray',
             ])
             ->cardAttributeIcons([
-                'due_date' => 'heroicon-o-calendar',
-                'assigned_to' => 'heroicon-o-user',
+                'due_date_red' => 'heroicon-o-calendar',
+                'due_date_yellow' => 'heroicon-o-calendar',
+                'due_date_gray' => 'heroicon-o-calendar',
+                'due_date_green' => 'heroicon-o-calendar',
+                'assigned_to_username' => 'heroicon-o-user',
             ])
             ->columns([
                 'todo' => 'To Do',
@@ -50,7 +60,6 @@ class ActionBoard extends KanbanBoardPage
                 'completed' => 'Completed',
                 'archived' => 'Archived',
             ])
-            ->orderField('order_column')
             ->columnColors([
                 'todo' => 'gray',
                 'in_progress' => 'blue',
@@ -60,6 +69,8 @@ class ActionBoard extends KanbanBoardPage
             ])
             ->cardLabel('Action Task')
             ->pluralCardLabel('Action Tasks');
+
+        // JS hook removed – server-side detectCreateColumn() now provides deterministic column default.
     }
 
     public function createAction(Action $action): Action
@@ -69,140 +80,7 @@ class ActionBoard extends KanbanBoardPage
             ->icon('heroicon-o-plus')
             ->modalHeading('Create Action Task')
             ->modalWidth('3xl')
-            ->form(function (Forms\Form $form) {
-                return $form->schema([
-                    Forms\Components\Section::make('Card Information')
-                        ->schema([
-                            Forms\Components\TextInput::make('title')
-                                ->required()
-                                ->placeholder('Enter task title'),
-                            Forms\Components\Grid::make('3')
-                                ->schema([
-                                    Forms\Components\Select::make('assigned_to')
-                                        ->label('Assign To')
-                                        ->options(User::all()->pluck('username', 'id'))
-                                        ->searchable(),
-                                    Forms\Components\DatePicker::make('due_date')
-                                        ->label('Due Date'),
-                                    Forms\Components\Select::make('status')
-                                        ->label('Status')
-                                        ->options([
-                                            'todo' => 'To Do',
-                                            'in_progress' => 'In Progress',
-                                            'toreview' => 'To Review',
-                                            'completed' => 'Completed',
-                                            'archived' => 'Archived',
-                                        ])
-                                        ->searchable()
-                                ]),
-                            Forms\Components\RichEditor::make('description')
-                                ->label('Description')
-                                ->toolbarButtons([
-                                    'bold',
-                                    'italic',
-                                    'strike',
-                                    'bulletList',
-                                    'orderedList',
-                                    'link',
-                                    'bulletList',
-                                    'codeBlock',
-                                ])
-                                //->maxLength(500)
-                                ->extraAttributes([
-                                    'style' => 'resize: vertical;',
-                                ])
-                                ->reactive()
-                                //Character limit reactive function
-                                ->helperText(function (Get $get) {
-                                    $raw = $get('notes') ?? '';
-                                    // 1. Strip all HTML tags
-                                    $noHtml = strip_tags($raw);
-                                    // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                    // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                    $remaining = 500 - mb_strlen($decoded);
-                                    return __("action.create.description_helper", ['count' => $remaining]);
-                                })
-                                // Block save if over 500 visible characters
-                                ->rule(function (Get $get): Closure {
-                                    return function (string $attribute, $value, Closure $fail) {
-                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                        if (mb_strlen($textOnly) > 500) {
-                                            $fail(__("action.create.description_warning"));
-                                        }
-                                    };
-                                })
-                                ->nullable()
-                                ->columnSpanFull(),
-                        ]),
-
-                    Forms\Components\Section::make('Card Additional Information')
-                        ->schema([
-                            Forms\Components\Repeater::make('extra_information')
-                                ->label('Extra Information')
-                                ->schema([
-                                    Forms\Components\Grid::make()
-                                        ->schema([
-                                            Forms\Components\TextInput::make('title')
-                                                ->label('Title')
-                                                ->required()
-                                                ->maxLength(100)
-                                                ->columnSpanFull(),
-                                            Forms\Components\RichEditor::make('value')
-                                                ->label(__('Value'))
-                                                ->toolbarButtons([
-                                                    'bold',
-                                                    'italic',
-                                                    'strike',
-                                                    'bulletList',
-                                                    'orderedList',
-                                                    'link',
-                                                    'bulletList',
-                                                    'codeBlock',
-                                                ])
-                                                ->extraAttributes([
-                                                    'style' => 'resize: vertical;',
-                                                ])
-                                                ->reactive()
-                                                //Character limit reactive function
-                                                ->helperText(function (Get $get) {
-                                                    $raw = $get('value') ?? '';
-                                                    // 1. Strip all HTML tags
-                                                    $noHtml = strip_tags($raw);
-                                                    // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                    // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                                    $remaining = 500 - mb_strlen($decoded);
-                                                    return __("action.edit.extra_information_helper", ['count' => $remaining]);
-                                                })
-                                                // Block save if over 500 visible characters
-                                                ->rule(function (Get $get): Closure {
-                                                    return function (string $attribute, $value, Closure $fail) {
-                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                        if (mb_strlen($textOnly) > 500) {
-                                                            $fail(__("action.edit.extra_information_warning"));
-                                                        }
-                                                    };
-                                                })
-                                                ->nullable()
-                                                ->columnSpanFull(),
-                                        ])
-                                ])
-                                ->defaultItems(1)
-                                ->addActionLabel(__('client.form.add_extra_info'))
-                                ->cloneable()
-                                ->reorderable()
-                                ->collapsible(true)
-                                ->collapsed()
-                                ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : 'Title goes here')
-                                ->live()
-                                ->columnSpanFull()
-                                ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
-                        ])
-                        ->collapsible()
-                        ->collapsed(),
-                ]);
-            });
+            ->form(fn(Forms\Form $form) => $this->taskFormSchema($form, 'create'));
     }
 
     public function editAction(Action $action): Action
@@ -210,139 +88,194 @@ class ActionBoard extends KanbanBoardPage
         return $action
             ->modalHeading('Edit Action Task')
             ->modalWidth('3xl')
-            ->form(function (Forms\Form $form) {
-                return $form->schema([
-                    Forms\Components\Section::make('Card Information')
-                        ->schema([
-                            Forms\Components\TextInput::make('title')
-                                ->required()
-                                ->placeholder('Enter task title'),
-                            Forms\Components\Grid::make('3')
-                                ->schema([
-                                    Forms\Components\Select::make('assigned_to')
-                                        ->label('Assign To')
-                                        ->options(User::all()->pluck('username', 'id'))
-                                        ->searchable(),
-                                    Forms\Components\DatePicker::make('due_date')
-                                        ->label('Due Date'),
-                                    Forms\Components\Select::make('status')
-                                        ->label('Status')
-                                        ->options([
-                                            'todo' => 'To Do',
-                                            'in_progress' => 'In Progress',
-                                            'toreview' => 'To Review',
-                                            'completed' => 'Completed',
-                                            'archived' => 'Archived',
-                                        ])
-                                        ->searchable()
-                                ]),
-                            Forms\Components\RichEditor::make('description')
-                                ->label('Description')
-                                ->toolbarButtons([
-                                    'bold',
-                                    'italic',
-                                    'strike',
-                                    'bulletList',
-                                    'orderedList',
-                                    'link',
-                                    'bulletList',
-                                    'codeBlock',
-                                ])
-                                //->maxLength(500)
-                                ->extraAttributes([
-                                    'style' => 'resize: vertical;',
-                                ])
-                                ->reactive()
-                                //Character limit reactive function
-                                ->helperText(function (Get $get) {
-                                    $raw = $get('notes') ?? '';
-                                    // 1. Strip all HTML tags
-                                    $noHtml = strip_tags($raw);
-                                    // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                    // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                    $remaining = 500 - mb_strlen($decoded);
-                                    return __("action.edit.description_helper", ['count' => $remaining]);
-                                })
-                                // Block save if over 500 visible characters
-                                ->rule(function (Get $get): Closure {
-                                    return function (string $attribute, $value, Closure $fail) {
-                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                        if (mb_strlen($textOnly) > 500) {
-                                            $fail(__("action.edit.description_warning"));
-                                        }
-                                    };
-                                })
-                                ->nullable()
-                                ->columnSpanFull(),
-                        ]),
-
-                    Forms\Components\Section::make('Card Additional Information')
-                        ->schema([
-                            Forms\Components\Repeater::make('extra_information')
-                                ->label('Extra Information')
-                                ->schema([
-                                    Forms\Components\Grid::make()
-                                        ->schema([
-                                            Forms\Components\TextInput::make('title')
-                                                ->label('Title')
-                                                ->required()
-                                                ->maxLength(100)
-                                                ->columnSpanFull(),
-                                            Forms\Components\RichEditor::make('value')
-                                                ->label(__('Value'))
-                                                ->toolbarButtons([
-                                                    'bold',
-                                                    'italic',
-                                                    'strike',
-                                                    'bulletList',
-                                                    'orderedList',
-                                                    'link',
-                                                    'bulletList',
-                                                    'codeBlock',
-                                                ])
-                                                ->extraAttributes([
-                                                    'style' => 'resize: vertical;',
-                                                ])
-                                                ->reactive()
-                                                //Character limit reactive function
-                                                ->helperText(function (Get $get) {
-                                                    $raw = $get('value') ?? '';
-                                                    // 1. Strip all HTML tags
-                                                    $noHtml = strip_tags($raw);
-                                                    // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                    // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                                    $remaining = 500 - mb_strlen($decoded);
-                                                    return __("action.edit.extra_information__helper", ['count' => $remaining]);
-                                                })
-                                                // Block save if over 500 visible characters
-                                                ->rule(function (Get $get): Closure {
-                                                    return function (string $attribute, $value, Closure $fail) {
-                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                        if (mb_strlen($textOnly) > 500) {
-                                                            $fail(__("action.edit.extra_information_warning"));
-                                                        }
-                                                    };
-                                                })
-                                                ->nullable()
-                                                ->columnSpanFull(),
-                                        ])
-                                ])
-                                ->defaultItems(1)
-                                ->addActionLabel(__('client.form.add_extra_info'))
-                                ->cloneable()
-                                ->reorderable()
-                                ->collapsible(true)
-                                ->collapsed()
-                                ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : 'Title goes here')
-                                ->live()
-                                ->columnSpanFull()
-                                ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
-                        ])
-                        ->collapsible()
-                        ->collapsed(),
+            ->form(function (Forms\Form $form, Action $action) {
+                return $this->taskFormSchema($form, 'edit');
+            })
+            ->mountUsing(function (Task $record, Forms\Form $form) {
+                // Explicit fill ensures assigned_to (and others) populate reliably.
+                $form->fill([
+                    'title' => $record->title,
+                    'description' => $record->description,
+                    'assigned_to' => $record->assigned_to,
+                    'status' => $record->status,
+                    'due_date' => $record->due_date,
+                    'extra_information' => $record->extra_information,
                 ]);
             });
+    }
+
+    protected function taskFormSchema(Forms\Form $form, string $mode)
+    {
+        return $form->schema([
+            Forms\Components\Section::make('Card Information')
+                ->schema([
+                    Forms\Components\TextInput::make('title')
+                        ->required()
+                        ->placeholder('Enter task title'),
+                    Forms\Components\Hidden::make('kanban_column_hint')
+                        ->dehydrated(false)
+                        ->afterStateHydrated(function (Forms\Components\Hidden $component) use ($mode) {
+                            if ($mode !== 'create')
+                                return;
+                            if ($col = $this->detectCreateColumn()) {
+                                $component->state($col);
+                            }
+                        }),
+                    Forms\Components\Grid::make(3)
+                        ->schema([
+                            Forms\Components\Select::make('assigned_to')
+                                ->label('Assign To')
+                                ->options(function () {
+                                    return User::withTrashed()
+                                        ->orderBy('username')
+                                        ->get()
+                                        ->mapWithKeys(fn($u) => [
+                                            $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
+                                        ])
+                                        ->toArray();
+                                })
+                                ->searchable()
+                                ->preload()
+                                ->native(false)
+                                ->afterStateHydrated(function (Forms\Components\Select $component, $state) {
+                                    if (is_array($state)) {
+                                        $component->state($state[0] ?? null);
+                                    }
+                                }),
+                            Forms\Components\DatePicker::make('due_date')
+                                ->label('Due Date'),
+                            Forms\Components\Select::make('status')
+                                ->label('Status')
+                                ->options([
+                                    'todo' => 'To Do',
+                                    'in_progress' => 'In Progress',
+                                    'toreview' => 'To Review',
+                                    'completed' => 'Completed',
+                                    'archived' => 'Archived',
+                                ])
+                                ->default(function () use ($mode) {
+                                    if ($mode === 'edit')
+                                        return null;
+                                    $col = $this->detectCreateColumn();
+                                    if (is_string($col) && in_array($col, ['todo', 'in_progress', 'toreview', 'completed', 'archived'])) {
+                                        return $col;
+                                    }
+                                    return 'todo';
+                                })
+                                ->searchable(),
+                        ]),
+                    Forms\Components\RichEditor::make('description')
+                        ->label('Description')
+                        ->toolbarButtons([
+                            'bold',
+                            'italic',
+                            'strike',
+                            'bulletList',
+                            'orderedList',
+                            'link',
+                            'codeBlock',
+                        ])
+                        ->extraAttributes(['style' => 'resize: vertical;'])
+                        ->reactive()
+                        ->helperText(function (Get $get) use ($mode) {
+                            $raw = $get('description') ?? '';
+                            $noHtml = strip_tags($raw);
+                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                            $remaining = 500 - mb_strlen($decoded);
+                            return __("action.$mode.description_helper", ['count' => $remaining]);
+                        })
+                        ->rule(function (Get $get) use ($mode): Closure {
+                            return function (string $attribute, $value, Closure $fail) use ($mode) {
+                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                if (mb_strlen($textOnly) > 500) {
+                                    $fail(__("action.$mode.description_warning"));
+                                }
+                            };
+                        })
+                        ->nullable()
+                        ->columnSpanFull(),
+                ]),
+            Forms\Components\Section::make('Card Additional Information')
+                ->schema([
+                    Forms\Components\Repeater::make('extra_information')
+                        ->label('Extra Information')
+                        ->schema([
+                            Forms\Components\Grid::make()
+                                ->schema([
+                                    Forms\Components\TextInput::make('title')
+                                        ->label('Title')
+                                        ->required()
+                                        ->maxLength(100)
+                                        ->columnSpanFull(),
+                                    Forms\Components\RichEditor::make('value')
+                                        ->label(__('Value'))
+                                        ->toolbarButtons([
+                                            'bold',
+                                            'italic',
+                                            'strike',
+                                            'bulletList',
+                                            'orderedList',
+                                            'link',
+                                            'codeBlock',
+                                        ])
+                                        ->extraAttributes(['style' => 'resize: vertical;'])
+                                        ->reactive()
+                                        ->helperText(function (Get $get) use ($mode) {
+                                            $raw = $get('value') ?? '';
+                                            $noHtml = strip_tags($raw);
+                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                            $remaining = 500 - mb_strlen($decoded);
+                                            return __("action.$mode.extra_information_helper", ['count' => $remaining]);
+                                        })
+                                        ->rule(function (Get $get) use ($mode): Closure {
+                                            return function (string $attribute, $value, Closure $fail) use ($mode) {
+                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                if (mb_strlen($textOnly) > 500) {
+                                                    $fail(__("action.$mode.extra_information_warning"));
+                                                }
+                                            };
+                                        })
+                                        ->nullable()
+                                        ->columnSpanFull(),
+                                ])
+                        ])
+                        ->defaultItems(1)
+                        ->addActionLabel(__('client.form.add_extra_info'))
+                        ->cloneable()
+                        ->reorderable()
+                        ->collapsible(true)
+                        ->collapsed()
+                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : 'Title goes here')
+                        ->live()
+                        ->columnSpanFull()
+                        ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
+                ])
+                ->collapsible()
+                ->collapsed(),
+        ]);
+    }
+
+    protected function detectCreateColumn(): ?string
+    {
+        $valid = ['todo', 'in_progress', 'toreview', 'completed', 'archived'];
+        $calls = request()->input('components.0.calls');
+        if (is_array($calls)) {
+            foreach (array_reverse($calls) as $call) {
+                if (($call['method'] ?? null) === 'mountAction') {
+                    $params = $call['params'] ?? [];
+                    if (($params[0] ?? null) === 'create') {
+                        $column = $params[1]['column'] ?? null;
+                        if (is_string($column) && in_array($column, $valid)) {
+                            return $column;
+                        }
+                    }
+                }
+            }
+        }
+        // Fallback minimal: explicit query param
+        $direct = request()->get('column');
+        if (is_string($direct) && in_array($direct, $valid))
+            return $direct;
+        return null;
     }
 }
