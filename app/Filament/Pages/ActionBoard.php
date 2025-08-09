@@ -80,7 +80,11 @@ class ActionBoard extends KanbanBoardPage
             ->icon('heroicon-o-plus')
             ->modalHeading('Create Action Task')
             ->modalWidth('3xl')
-            ->form(fn(Forms\Form $form) => $this->taskFormSchema($form, 'create'));
+            ->form(fn(Forms\Form $form) => $this->taskFormSchema($form, 'create'))
+            ->action(function (array $data) {
+                $task = Task::create($data);
+                $task->update(['order_column' => Task::max('order_column') + 1]); // Ensure new task is listed at the bottom
+            });
     }
 
     public function editAction(Action $action): Action
@@ -204,7 +208,6 @@ class ActionBoard extends KanbanBoardPage
                                 ->schema([
                                     Forms\Components\TextInput::make('title')
                                         ->label('Title')
-                                        ->required()
                                         ->maxLength(100)
                                         ->columnSpanFull(),
                                     Forms\Components\RichEditor::make('value')
