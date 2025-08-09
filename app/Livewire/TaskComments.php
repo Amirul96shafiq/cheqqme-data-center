@@ -16,6 +16,7 @@ class TaskComments extends Component
   public ?int $editingId = null;
   public string $editingText = '';
   public int $visibleCount = 5; // number of comments to display initially / currently
+  public ?int $confirmingDeleteId = null; // comment id pending delete confirmation
 
   protected $rules = [
     'newComment' => 'required|string|max:1000',
@@ -44,6 +45,8 @@ class TaskComments extends Component
       'comment' => $trimmed,
     ]);
     $this->newComment = '';
+  // Increase visible window so the previously oldest visible comment does not disappear
+  $this->visibleCount++;
     $this->dispatch('refreshTaskComments');
   }
 
@@ -87,6 +90,31 @@ class TaskComments extends Component
     $this->dispatch('refreshTaskComments');
   }
 
+  public function confirmDelete(int $commentId): void
+  {
+    $comment = $this->task->comments()->findOrFail($commentId);
+    if ($comment->user_id !== auth()->id()) {
+      return;
+    }
+    $this->confirmingDeleteId = $commentId;
+  }
+
+  public function performDelete(): void
+  {
+    if (!$this->confirmingDeleteId) return;
+    $comment = $this->task->comments()->find($this->confirmingDeleteId);
+    if ($comment && $comment->user_id === auth()->id()) {
+      $comment->delete();
+    }
+    $this->confirmingDeleteId = null;
+    $this->dispatch('refreshTaskComments');
+  }
+
+  public function cancelDelete(): void
+  {
+    $this->confirmingDeleteId = null;
+  }
+
   public function getCommentsProperty()
   {
     return $this->task->comments()
@@ -104,11 +132,11 @@ class TaskComments extends Component
 
   public function showMore(): void
   {
-    $this->visibleCount += 5;
-    $total = $this->task->comments()->whereNull('deleted_at')->count();
-    if ($this->visibleCount > $total) {
-      $this->visibleCount = $total; // clamp
-    }
+  $total = $this->task->comments()->whereNull('deleted_at')->count();
+  $remaining = $total - $this->visibleCount;
+  if ($remaining <= 0) return;
+  $this->visibleCount += min(5, $remaining);
+  $this->dispatch('comments-show-more');
   }
 
   public function render()
