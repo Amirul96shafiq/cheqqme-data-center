@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Task;
 use App\Models\Comment;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+// Filament Actions removed for delete confirmation to simplify implementation
 
 class TaskComments extends Component
 {
@@ -16,7 +17,7 @@ class TaskComments extends Component
   public ?int $editingId = null;
   public string $editingText = '';
   public int $visibleCount = 5; // number of comments to display initially / currently
-  public ?int $confirmingDeleteId = null; // comment id pending delete confirmation
+  public ?int $confirmingDeleteId = null; // comment pending delete
 
   protected $rules = [
     'newComment' => 'required|string|max:1000',
@@ -80,6 +81,14 @@ class TaskComments extends Component
     $this->dispatch('refreshTaskComments');
   }
 
+  public function confirmDelete(int $commentId): void
+  {
+    $comment = $this->task->comments()->findOrFail($commentId);
+    if ($comment->user_id !== auth()->id())
+      return;
+    $this->confirmingDeleteId = $commentId;
+  }
+
   public function deleteComment(int $commentId): void
   {
     $comment = $this->task->comments()->findOrFail($commentId);
@@ -87,28 +96,20 @@ class TaskComments extends Component
       return;
     }
     $comment->delete();
-    $this->dispatch('refreshTaskComments');
-  }
-
-  public function confirmDelete(int $commentId): void
-  {
-    $comment = $this->task->comments()->findOrFail($commentId);
-    if ($comment->user_id !== auth()->id()) {
-      return;
+    // Adjust visibleCount if it exceeds remaining (non-deleted) comments
+    $total = $this->task->comments()->whereNull('deleted_at')->count();
+    if ($this->visibleCount > $total) {
+      $this->visibleCount = $total;
     }
-    $this->confirmingDeleteId = $commentId;
+    $this->dispatch('refreshTaskComments');
+    $this->confirmingDeleteId = null;
   }
 
   public function performDelete(): void
   {
     if (!$this->confirmingDeleteId)
       return;
-    $comment = $this->task->comments()->find($this->confirmingDeleteId);
-    if ($comment && $comment->user_id === auth()->id()) {
-      $comment->delete();
-    }
-    $this->confirmingDeleteId = null;
-    $this->dispatch('refreshTaskComments');
+    $this->deleteComment($this->confirmingDeleteId);
   }
 
   public function cancelDelete(): void

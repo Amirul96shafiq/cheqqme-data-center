@@ -56,12 +56,6 @@
                                         <button wire:click="cancelEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200">Cancel</button>
                                     </div>
                                 </div>
-                            @elseif($confirmingDeleteId === $comment->id)
-                                <div class="flex items-center gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-md p-2">
-                                    <span class="text-xs text-red-700 dark:text-red-300 flex-1">Delete this comment?</span>
-                                    <button type="button" wire:click="performDelete" class="px-2 py-1 text-[11px] font-medium rounded bg-danger-600 text-white hover:bg-danger-700">Delete</button>
-                                    <button type="button" wire:click="cancelDelete" class="px-2 py-1 text-[11px] font-medium rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600">Cancel</button>
-                                </div>
                             @else
                                 <div class="prose prose-xs dark:prose-invert max-w-none">
                                     <p class="m-0 leading-snug text-[13px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words">{{ $comment->comment }}</p>
@@ -84,6 +78,28 @@
         @endif
         </div>
     </div>
+    @if($confirmingDeleteId)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-gray-900/60" wire:click="cancelDelete"></div>
+            <div class="relative w-full max-w-sm bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 space-y-5">
+                <button type="button" wire:click="cancelDelete" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+                <div class="w-12 h-12 mx-auto flex items-center justify-center rounded-full bg-danger-600/15 text-danger-600 dark:text-danger-400 dark:bg-danger-500/15">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                </div>
+                <div class="text-center space-y-2">
+                    <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Delete Comment</h2>
+                    <p class="text-xs text-gray-600 dark:text-gray-400">Are you sure you would like to delete this comment? This action can be reversed only by an admin.</p>
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" wire:click="cancelDelete" class="px-4 py-2 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
+                    <button type="button" wire:click="performDelete" class="px-4 py-2 text-xs font-medium rounded-md bg-danger-600 text-white hover:bg-danger-700 focus:ring-2 focus:ring-danger-500/40">Delete</button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @once
         <style>
             .custom-thin-scroll::-webkit-scrollbar { width: 6px; }
