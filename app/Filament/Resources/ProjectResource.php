@@ -116,10 +116,7 @@ class ProjectResource extends Resource
                                             ->label(__('project.form.extra_title'))
                                             ->required()
                                             ->maxLength(100)
-                                            ->columnSpan([
-                                                'default' => 12, // full width on small screens
-                                                'md' => 4,       // 1/3 of 12 columns on medium and up
-                                            ]),
+                                            ->columnSpanFull(),
                                         RichEditor::make('value')
                                             ->label(__('project.form.extra_value'))
                                             ->toolbarButtons([
@@ -157,10 +154,7 @@ class ProjectResource extends Resource
                                                 };
                                             })
                                             ->nullable()
-                                            ->columnSpan([
-                                                'default' => 12, // full width on small screens
-                                                'md' => 8,       // 1/3 of 12 columns on medium and up
-                                            ]),
+                                            ->columnSpanFull(),
                                     ])
                                     ->columns(12),
                             ])
@@ -170,6 +164,7 @@ class ProjectResource extends Resource
                             ->cloneable()
                             ->reorderable()
                             ->collapsible(true)
+                            ->collapsed()
                             ->itemLabel(fn(array $state): ?string => $state['title'] ?? null)
                             ->live()
                             ->columnSpanFull()

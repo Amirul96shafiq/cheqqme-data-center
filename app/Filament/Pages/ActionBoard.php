@@ -17,7 +17,7 @@ class ActionBoard extends KanbanBoardPage
     protected static ?string $navigationGroup = 'Boards';
 
     protected static ?string $navigationLabel = 'Action Board';
-    protected static ?string $title = 'Task Board';
+    protected static ?string $title = 'Action Board';
 
     public function getSubject(): Builder
     {
@@ -32,8 +32,8 @@ class ActionBoard extends KanbanBoardPage
             ->columnField('status')
             ->descriptionField('description')
             ->cardAttributes([
-                'due_date' => 'Due Date',
-                'assigned_to' => 'Assigned To',
+                'due_date' => '',
+                'assigned_to' => '',
             ])
             ->cardAttributeColors([
                 'due_date' => 'gray',
@@ -68,74 +68,103 @@ class ActionBoard extends KanbanBoardPage
             ->iconButton()
             ->icon('heroicon-o-plus')
             ->modalHeading('Create Action Task')
-            ->modalWidth('xl')
+            ->modalWidth('3xl')
             ->form(function (Forms\Form $form) {
                 return $form->schema([
-                    Forms\Components\TextInput::make('title')
-                        ->required()
-                        ->placeholder('Enter task title')
-                        ->columnSpanFull(),
-                    Forms\Components\Select::make('assigned_to')
-                        ->label('Assign To')
-                        ->options(User::all()->pluck('username', 'id'))
-                        ->searchable()
-                        ->columnSpanFull(),
-                    Forms\Components\DatePicker::make('due_date')
-                        ->label('Due Date')
-                        ->columnSpanFull(),
-                    Forms\Components\Textarea::make('description')
-                        ->rows(2)
-                        ->columnSpanFull(),
-                    Forms\Components\Repeater::make('extra_information')
-                        ->label('Extra Information')
+                    Forms\Components\Section::make('Card Information')
                         ->schema([
-                            Forms\Components\Grid::make()
+                            Forms\Components\TextInput::make('title')
+                                ->required()
+                                ->placeholder('Enter task title'),
+                            Forms\Components\Grid::make('3')
                                 ->schema([
-                                    Forms\Components\TextInput::make('title')
-                                        ->label('Title')
-                                        ->required()
-                                        ->maxLength(100)
-                                        ->columnSpanFull(),
-                                    Forms\Components\RichEditor::make('value')
-                                        ->label(__('Value'))
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'strike',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                            'bulletList',
-                                            'codeBlock',
+                                    Forms\Components\Select::make('assigned_to')
+                                        ->label('Assign To')
+                                        ->options(User::all()->pluck('username', 'id'))
+                                        ->searchable(),
+                                    Forms\Components\DatePicker::make('due_date')
+                                        ->label('Due Date'),
+                                    Forms\Components\Select::make('status')
+                                        ->label('Status')
+                                        ->options([
+                                            'todo' => 'To Do',
+                                            'in_progress' => 'In Progress',
+                                            'toreview' => 'To Review',
+                                            'completed' => 'Completed',
+                                            'archived' => 'Archived',
                                         ])
-                                        ->extraAttributes([
-                                            'style' => 'resize: vertical;',
+                                        ->searchable()
+                                ]),
+                            Forms\Components\Textarea::make('description')
+                                ->rows(4)
+                                ->columnSpanFull(),
+                        ]),
+
+                    Forms\Components\Section::make('Card Additional Information')
+                        ->schema([
+                            Forms\Components\Repeater::make('extra_information')
+                                ->label('Extra Information')
+                                ->schema([
+                                    Forms\Components\Grid::make()
+                                        ->schema([
+                                            Forms\Components\TextInput::make('title')
+                                                ->label('Title')
+                                                ->required()
+                                                ->maxLength(100)
+                                                ->columnSpanFull(),
+                                            Forms\Components\RichEditor::make('value')
+                                                ->label(__('Value'))
+                                                ->toolbarButtons([
+                                                    'bold',
+                                                    'italic',
+                                                    'strike',
+                                                    'bulletList',
+                                                    'orderedList',
+                                                    'link',
+                                                    'bulletList',
+                                                    'codeBlock',
+                                                ])
+                                                ->extraAttributes([
+                                                    'style' => 'resize: vertical;',
+                                                ])
+                                                ->reactive()
+                                                //Character limit reactive function
+                                                ->helperText(function (Get $get) {
+                                                    $raw = $get('value') ?? '';
+                                                    // 1. Strip all HTML tags
+                                                    $noHtml = strip_tags($raw);
+                                                    // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
+                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                    // 3. Count as-is — includes normal spaces, line breaks, etc.
+                                                    $remaining = 500 - mb_strlen($decoded);
+                                                    return __("task.form.notes_helper", ['count' => $remaining]);
+                                                })
+                                                // Block save if over 500 visible characters
+                                                ->rule(function (Get $get): Closure {
+                                                    return function (string $attribute, $value, Closure $fail) {
+                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                        if (mb_strlen($textOnly) > 500) {
+                                                            $fail(__("task.form.notes_warning"));
+                                                        }
+                                                    };
+                                                })
+                                                ->nullable()
+                                                ->columnSpanFull(),
                                         ])
-                                        ->reactive()
-                                        //Character limit reactive function
-                                        ->helperText(function (Get $get) {
-                                            $raw = $get('value') ?? '';
-                                            // 1. Strip all HTML tags
-                                            $noHtml = strip_tags($raw);
-                                            // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                            // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                            $remaining = 500 - mb_strlen($decoded);
-                                            return __("task.form.notes_helper", ['count' => $remaining]);
-                                        })
-                                        // Block save if over 500 visible characters
-                                        ->rule(function (Get $get): Closure {
-                                            return function (string $attribute, $value, Closure $fail) {
-                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                if (mb_strlen($textOnly) > 500) {
-                                                    $fail(__("task.form.notes_warning"));
-                                                }
-                                            };
-                                        })
-                                        ->nullable()
-                                        ->columnSpanFull(),
                                 ])
+                                ->defaultItems(1)
+                                ->addActionLabel(__('client.form.add_extra_info'))
+                                ->cloneable()
+                                ->reorderable()
+                                ->collapsible(true)
+                                ->collapsed()
+                                ->itemLabel(fn(array $state): ?string => $state['title'] ?? null)
+                                ->live()
+                                ->columnSpanFull()
+                                ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
                         ])
+                        ->collapsible()
+                        ->collapsed(),
                 ]);
             });
     }
@@ -144,74 +173,103 @@ class ActionBoard extends KanbanBoardPage
     {
         return $action
             ->modalHeading('Edit Action Task')
-            ->modalWidth('xl')
+            ->modalWidth('3xl')
             ->form(function (Forms\Form $form) {
                 return $form->schema([
-                    Forms\Components\TextInput::make('title')
-                        ->required()
-                        ->placeholder('Enter task title')
-                        ->columnSpanFull(),
-                    Forms\Components\Select::make('assigned_to')
-                        ->label('Assign To')
-                        ->options(User::all()->pluck('username', 'id'))
-                        ->searchable()
-                        ->columnSpanFull(),
-                    Forms\Components\DatePicker::make('due_date')
-                        ->label('Due Date')
-                        ->columnSpanFull(),
-                    Forms\Components\Textarea::make('description')
-                        ->rows(2)
-                        ->columnSpanFull(),
-                    Forms\Components\Repeater::make('extra_information')
-                        ->label('Extra Information')
+                    Forms\Components\Section::make('Card Information')
                         ->schema([
-                            Forms\Components\Grid::make()
+                            Forms\Components\TextInput::make('title')
+                                ->required()
+                                ->placeholder('Enter task title'),
+                            Forms\Components\Grid::make('3')
                                 ->schema([
-                                    Forms\Components\TextInput::make('title')
-                                        ->label('Title')
-                                        ->required()
-                                        ->maxLength(100)
-                                        ->columnSpanFull(),
-                                    Forms\Components\RichEditor::make('value')
-                                        ->label(__('Value'))
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'strike',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                            'bulletList',
-                                            'codeBlock',
+                                    Forms\Components\Select::make('assigned_to')
+                                        ->label('Assign To')
+                                        ->options(User::all()->pluck('username', 'id'))
+                                        ->searchable(),
+                                    Forms\Components\DatePicker::make('due_date')
+                                        ->label('Due Date'),
+                                    Forms\Components\Select::make('status')
+                                        ->label('Status')
+                                        ->options([
+                                            'todo' => 'To Do',
+                                            'in_progress' => 'In Progress',
+                                            'toreview' => 'To Review',
+                                            'completed' => 'Completed',
+                                            'archived' => 'Archived',
                                         ])
-                                        ->extraAttributes([
-                                            'style' => 'resize: vertical;',
+                                        ->searchable()
+                                ]),
+                            Forms\Components\Textarea::make('description')
+                                ->rows(4)
+                                ->columnSpanFull(),
+                        ]),
+
+                    Forms\Components\Section::make('Card Additional Information')
+                        ->schema([
+                            Forms\Components\Repeater::make('extra_information')
+                                ->label('Extra Information')
+                                ->schema([
+                                    Forms\Components\Grid::make()
+                                        ->schema([
+                                            Forms\Components\TextInput::make('title')
+                                                ->label('Title')
+                                                ->required()
+                                                ->maxLength(100)
+                                                ->columnSpanFull(),
+                                            Forms\Components\RichEditor::make('value')
+                                                ->label(__('Value'))
+                                                ->toolbarButtons([
+                                                    'bold',
+                                                    'italic',
+                                                    'strike',
+                                                    'bulletList',
+                                                    'orderedList',
+                                                    'link',
+                                                    'bulletList',
+                                                    'codeBlock',
+                                                ])
+                                                ->extraAttributes([
+                                                    'style' => 'resize: vertical;',
+                                                ])
+                                                ->reactive()
+                                                //Character limit reactive function
+                                                ->helperText(function (Get $get) {
+                                                    $raw = $get('value') ?? '';
+                                                    // 1. Strip all HTML tags
+                                                    $noHtml = strip_tags($raw);
+                                                    // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
+                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                    // 3. Count as-is — includes normal spaces, line breaks, etc.
+                                                    $remaining = 500 - mb_strlen($decoded);
+                                                    return __("task.form.notes_helper", ['count' => $remaining]);
+                                                })
+                                                // Block save if over 500 visible characters
+                                                ->rule(function (Get $get): Closure {
+                                                    return function (string $attribute, $value, Closure $fail) {
+                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                        if (mb_strlen($textOnly) > 500) {
+                                                            $fail(__("task.form.notes_warning"));
+                                                        }
+                                                    };
+                                                })
+                                                ->nullable()
+                                                ->columnSpanFull(),
                                         ])
-                                        ->reactive()
-                                        //Character limit reactive function
-                                        ->helperText(function (Get $get) {
-                                            $raw = $get('value') ?? '';
-                                            // 1. Strip all HTML tags
-                                            $noHtml = strip_tags($raw);
-                                            // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                            // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                            $remaining = 500 - mb_strlen($decoded);
-                                            return __("task.form.notes_helper", ['count' => $remaining]);
-                                        })
-                                        // Block save if over 500 visible characters
-                                        ->rule(function (Get $get): Closure {
-                                            return function (string $attribute, $value, Closure $fail) {
-                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                if (mb_strlen($textOnly) > 500) {
-                                                    $fail(__("task.form.notes_warning"));
-                                                }
-                                            };
-                                        })
-                                        ->nullable()
-                                        ->columnSpanFull(),
                                 ])
+                                ->defaultItems(1)
+                                ->addActionLabel(__('client.form.add_extra_info'))
+                                ->cloneable()
+                                ->reorderable()
+                                ->collapsible(true)
+                                ->collapsed()
+                                ->itemLabel(fn(array $state): ?string => $state['title'] ?? null)
+                                ->live()
+                                ->columnSpanFull()
+                                ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
                         ])
+                        ->collapsible()
+                        ->collapsed(),
                 ]);
             });
     }
