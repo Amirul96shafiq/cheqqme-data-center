@@ -45,8 +45,8 @@ class TaskComments extends Component
       'comment' => $trimmed,
     ]);
     $this->newComment = '';
-  // Increase visible window so the previously oldest visible comment does not disappear
-  $this->visibleCount++;
+    // Increase visible window so the previously oldest visible comment does not disappear
+    $this->visibleCount++;
     $this->dispatch('refreshTaskComments');
   }
 
@@ -101,7 +101,8 @@ class TaskComments extends Component
 
   public function performDelete(): void
   {
-    if (!$this->confirmingDeleteId) return;
+    if (!$this->confirmingDeleteId)
+      return;
     $comment = $this->task->comments()->find($this->confirmingDeleteId);
     if ($comment && $comment->user_id === auth()->id()) {
       $comment->delete();
@@ -132,11 +133,12 @@ class TaskComments extends Component
 
   public function showMore(): void
   {
-  $total = $this->task->comments()->whereNull('deleted_at')->count();
-  $remaining = $total - $this->visibleCount;
-  if ($remaining <= 0) return;
-  $this->visibleCount += min(5, $remaining);
-  $this->dispatch('comments-show-more');
+    $total = $this->task->comments()->whereNull('deleted_at')->count();
+    $remaining = $total - $this->visibleCount;
+    if ($remaining <= 0)
+      return;
+    $this->visibleCount += min(5, $remaining);
+    $this->dispatch('comments-show-more');
   }
 
   public function render()

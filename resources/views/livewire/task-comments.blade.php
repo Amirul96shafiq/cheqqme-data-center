@@ -26,11 +26,11 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between gap-2">
                             <div class="flex flex-col">
-                                <span class="text-[13px] font-medium text-gray-900 dark:text-gray-100 leading-none">{{ $comment->user->username ?? 'Unknown' }}</span>
-                                <span class="mt-1 text-[11px] text-gray-500 dark:text-gray-400" title="{{ $comment->created_at->format('Y-m-d H:i') }}">
-                                    {{ $comment->created_at->diffForHumans(short: true) }} · {{ $comment->created_at->format('Y-m-d H:i') }}
+                                    <span class="comment-username text-gray-900 dark:text-gray-100 leading-none">{{ $comment->user->username ?? 'Unknown' }}</span>
+                                    <span class="mt-1 comment-meta text-gray-500 dark:text-gray-400" title="{{ $comment->created_at->format('Y-m-d H:i') }}">
+                                        {{ $comment->created_at->diffForHumans(short: true) }} · {{ $comment->created_at->format('Y-m-d H:i') }}
                                     @if($comment->updated_at->gt($comment->created_at))
-                                        <span class="italic text-gray-400">· edited</span>
+                                            <span class="italic text-gray-400 comment-meta">· edited</span>
                                     @endif
                                 </span>
                             </div>
@@ -94,6 +94,8 @@
             .dark .custom-thin-scroll:hover::-webkit-scrollbar-thumb { background: rgba(148,163,184,.50); }
             .custom-thin-scroll { scrollbar-width: thin; scrollbar-color: rgba(148,163,184,.35) transparent; }
             .dark .custom-thin-scroll { scrollbar-color: rgba(148,163,184,.35) transparent; }
+            .comment-username { font-size: 14px; font-weight: 700 ;}
+            .comment-meta { font-size: 11px; line-height: 1rem; }
         </style>
     @endonce
 </div>
