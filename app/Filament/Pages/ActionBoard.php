@@ -111,7 +111,7 @@ class ActionBoard extends KanbanBoardPage
     protected function taskFormSchema(Forms\Form $form, string $mode)
     {
         return $form->schema([
-            Forms\Components\Section::make('Card Information')
+            Forms\Components\Section::make('Task Information')
                 ->schema([
                     Forms\Components\TextInput::make('title')
                         ->required()
@@ -199,7 +199,7 @@ class ActionBoard extends KanbanBoardPage
                         ->nullable()
                         ->columnSpanFull(),
                 ]),
-            Forms\Components\Section::make('Card Additional Information')
+            Forms\Components\Section::make('Task Additional Information')
                 ->schema([
                     Forms\Components\Repeater::make('extra_information')
                         ->label('Extra Information')
