@@ -15,7 +15,8 @@
 
     <!-- Comments List (scroll area) -->
     <div class="flex-1 min-h-0 px-0 pb-0">
-        <div class="px-4 py-4 space-y-4 text-sm overflow-y-auto custom-thin-scroll h-full" data-comment-list style="max-height:calc(68vh - 250px);">
+    <div class="px-4 py-4 text-sm overflow-y-auto custom-thin-scroll h-full" data-comment-list style="max-height:calc(68vh - 250px);">
+        <div class="space-y-6">
             @forelse($this->comments as $comment)
                 <div class="group relative flex gap-3" wire:key="comment-{{ $comment->id }}">
                     <div class="flex-shrink-0">
@@ -78,10 +79,11 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400 italic">No comments yet.</p>
                 </div>
             @endforelse
-    <div class="mt-2 text-[10px] text-gray-400">Showing {{ $this->comments->count() }} of {{ $this->totalComments }} comments</div>
-    @if($this->totalComments > $visibleCount)
+        </div>
+        <div class="mt-3 text-[10px] text-gray-400 text-center">Showing {{ $this->comments->count() }} of {{ $this->totalComments }} comments</div>
+        @if($this->totalComments > $visibleCount)
             @php $remaining = $this->totalComments - $visibleCount; @endphp
-            <div class="pt-2">
+            <div class="mt-2">
                 <button wire:click="showMore" type="button" class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40">Show more ({{ $remaining < 5 ? $remaining : 5 }})</button>
             </div>
         @endif
