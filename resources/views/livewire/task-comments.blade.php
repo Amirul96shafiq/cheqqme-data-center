@@ -79,10 +79,30 @@
         </div>
     </div>
     @if($confirmingDeleteId)
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75" wire:click="cancelDelete"></div>
-            <div class="fi-modal-window relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6">
-                <button type="button" wire:click="cancelDelete" class="fi-modal-close-btn absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900">
+        <!-- Elevated z-index to ensure overlay sits above form action buttons -->
+        <div
+            x-data
+            x-init="
+                const root = document.documentElement;
+                root.classList.add('comment-delete-open');
+                const prev = document.activeElement;
+                $nextTick(() => { $el.querySelector('[data-modal-initial]')?.focus(); });
+                // Fallback safety: ensure class removed if this element is ever removed without Alpine cleanup
+                const observer = new MutationObserver(() => {
+                    if (!document.body.contains($el)) {
+                        root.classList.remove('comment-delete-open');
+                        observer.disconnect();
+                        prev && prev.focus && prev.focus();
+                    }
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+            "
+            x-on:keydown.window.escape.prevent.stop="$wire.cancelDelete()"
+            class="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-auto comment-delete-modal-container"
+        >
+            <div class="comment-delete-modal-backdrop absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75" wire:click="cancelDelete" aria-hidden="true"></div>
+            <div role="dialog" aria-modal="true" aria-labelledby="delete-comment-heading" class="comment-delete-modal fi-modal-window relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
+                <button type="button" wire:click="cancelDelete" class="fi-modal-close-btn absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900" aria-label="Close">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
                 <div class="flex flex-col items-center text-center">
@@ -91,18 +111,23 @@
                             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                         </div>
                     </div>
-                    <h2 class="fi-modal-heading text-sm font-medium text-gray-900 dark:text-gray-100">Delete Comment</h2>
+                    <h2 id="delete-comment-heading" class="fi-modal-heading text-sm font-medium text-gray-900 dark:text-gray-100">Delete Comment</h2>
                     <p class="fi-modal-description mt-2 text-xs leading-relaxed text-gray-600 dark:text-gray-400">Are you sure you would like to delete this comment? This action can be reversed only by an admin.</p>
                     <div class="mt-6 flex w-full items-stretch gap-3">
-                        <button type="button" wire:click="cancelDelete" class="fi-btn flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-xs font-medium tracking-tight border border-gray-300 bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:border-gray-500 dark:focus:ring-primary-500/40 dark:focus:ring-offset-gray-900">Cancel</button>
+                        <button data-modal-initial type="button" wire:click="cancelDelete" class="fi-btn flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-xs font-medium tracking-tight border border-gray-300 bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:border-gray-500 dark:focus:ring-primary-500/40 dark:focus:ring-offset-gray-900">Cancel</button>
                         <button type="button" wire:click="performDelete" class="fi-btn fi-color-danger flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-xs font-medium tracking-tight bg-danger-600 text-white hover:bg-danger-500 focus:outline-none focus:ring-2 focus:ring-danger-500/40 focus:ring-offset-2 focus:ring-offset-white dark:bg-danger-600 dark:hover:bg-danger-500 dark:focus:ring-offset-gray-900">Delete</button>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Single backdrop already blocks clicks; extra blocker removed -->
     @endif
-
-    @once
+    @if(!$confirmingDeleteId)
+        <script>
+            // Ensure the helper class is cleared when modal not present
+            document.documentElement.classList.remove('comment-delete-open');
+        </script>
+    @endif
         <style>
             .custom-thin-scroll::-webkit-scrollbar { width: 6px; }
             .custom-thin-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -112,10 +137,16 @@
             .dark .custom-thin-scroll:hover::-webkit-scrollbar-thumb { background: rgba(148,163,184,.50); }
             .custom-thin-scroll { scrollbar-width: thin; scrollbar-color: rgba(148,163,184,.35) transparent; }
             .dark .custom-thin-scroll { scrollbar-color: rgba(148,163,184,.35) transparent; }
-            .comment-username { font-size: 14px; font-weight: 700 ;}
+            .comment-username { font-size: 14px; font-weight: 700; }
             .comment-meta { font-size: 11px; line-height: 1rem; }
-
-            /* (Removed fallback danger utilities – native Tailwind classes now present) */
-        </style>
-    @endonce
+            /* Scroll lock only when modal open */
+            .comment-delete-open body { overflow: hidden; }
+            /* Hide underlying Edit Task modal submit/cancel buttons while delete confirmation is open */
+            .comment-delete-open .fi-modal-window:not(.comment-delete-modal) .fi-modal-footer,
+            .comment-delete-open .fi-modal-window:not(.comment-delete-modal) .fi-modal-actions,
+            .comment-delete-open .fi-modal-window:not(.comment-delete-modal) footer button {
+                visibility: hidden !important;
+            }
+    </style>
+    <!-- Alpine handles adding/removing comment-delete-open class; no global pointer-events lock -->
 </div>
