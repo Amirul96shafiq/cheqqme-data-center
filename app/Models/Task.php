@@ -75,7 +75,11 @@ class Task extends Model
    */
   public function getAssignedToUsernameAttribute(): ?string
   {
-    return $this->assignedTo?->username;
+    $user = $this->assignedTo;
+    if (!$user)
+      return null;
+    // Prefer short_name accessor if set
+    return $user->short_name ?? $user->username ?? $user->name ?? null;
   }
 
   /**
@@ -137,7 +141,7 @@ class Task extends Model
   protected function formattedDueDate(): string
   {
     try {
-      return \Carbon\Carbon::parse($this->due_date)->format('Y-m-d');
+      return \Carbon\Carbon::parse($this->due_date)->format('j/n/y');
     } catch (\Throwable $e) {
       return (string) $this->due_date;
     }

@@ -73,4 +73,21 @@ class User extends Authenticatable
     {
         return $this->avatar ? Storage::url($this->avatar) : null;
     }
+
+    // Abbreviated name: "Amirul Shafiq Harun" => "Amirul S. H."
+    public function getShortNameAttribute(): string
+    {
+        $full = trim($this->attributes['name'] ?? '') ?: trim($this->username ?? '');
+        if ($full === '')
+            return 'Unknown';
+        $parts = preg_split('/\s+/', $full, -1, PREG_SPLIT_NO_EMPTY);
+        if (count($parts) === 1)
+            return $parts[0];
+        $first = array_shift($parts);
+        $initials = array_map(function ($p) {
+            $ch = mb_substr($p, 0, 1);
+            return mb_strtoupper($ch) . '.';
+        }, $parts);
+        return $first . ' ' . implode(' ', $initials);
+    }
 }

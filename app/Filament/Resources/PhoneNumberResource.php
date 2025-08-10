@@ -204,10 +204,7 @@ class PhoneNumberResource extends Resource
                         $formattedName = 'Unknown';
 
                         if ($user) {
-                            $parts = explode(' ', $user->name);
-                            $first = array_shift($parts);
-                            $initials = implode(' ', array_map(fn($p) => mb_substr($p, 0, 1) . '.', $parts));
-                            $formattedName = trim($first . ' ' . $initials);
+                            $formattedName = $user->short_name;
                         }
 
                         return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
