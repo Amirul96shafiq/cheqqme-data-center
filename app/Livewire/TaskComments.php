@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\Models\Task;
 use App\Models\Comment;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-// Filament Actions removed for delete confirmation to simplify implementation
+// (Filament Actions removed for nested component stability)
 
 class TaskComments extends Component
 {
@@ -14,10 +14,11 @@ class TaskComments extends Component
 
   public Task $task;
   public string $newComment = '';
+  // Editing state
   public ?int $editingId = null;
   public string $editingText = '';
   public int $visibleCount = 5; // number of comments to display initially / currently
-  public ?int $confirmingDeleteId = null; // comment pending delete
+  public ?int $confirmingDeleteId = null;
 
   protected $rules = [
     'newComment' => 'required|string|max:1000',
@@ -54,9 +55,8 @@ class TaskComments extends Component
   public function startEdit(int $commentId): void
   {
     $comment = $this->task->comments()->whereNull('deleted_at')->findOrFail($commentId);
-    if ($comment->user_id !== auth()->id()) {
-      return; // silently ignore
-    }
+    if ($comment->user_id !== auth()->id())
+      return;
     $this->editingId = $comment->id;
     $this->editingText = $comment->comment;
   }
@@ -73,20 +73,11 @@ class TaskComments extends Component
       return;
     $this->validateOnly('editingText');
     $comment = $this->task->comments()->findOrFail($this->editingId);
-    if ($comment->user_id !== auth()->id()) {
+    if ($comment->user_id !== auth()->id())
       return;
-    }
     $comment->update(['comment' => trim($this->editingText)]);
     $this->cancelEdit();
     $this->dispatch('refreshTaskComments');
-  }
-
-  public function confirmDelete(int $commentId): void
-  {
-    $comment = $this->task->comments()->findOrFail($commentId);
-    if ($comment->user_id !== auth()->id())
-      return;
-    $this->confirmingDeleteId = $commentId;
   }
 
   public function deleteComment(int $commentId): void
@@ -102,7 +93,14 @@ class TaskComments extends Component
       $this->visibleCount = $total;
     }
     $this->dispatch('refreshTaskComments');
-    $this->confirmingDeleteId = null;
+  }
+
+  public function confirmDelete(int $commentId): void
+  {
+    $comment = $this->task->comments()->findOrFail($commentId);
+    if ($comment->user_id !== auth()->id())
+      return;
+    $this->confirmingDeleteId = $commentId;
   }
 
   public function performDelete(): void
@@ -110,6 +108,7 @@ class TaskComments extends Component
     if (!$this->confirmingDeleteId)
       return;
     $this->deleteComment($this->confirmingDeleteId);
+    $this->confirmingDeleteId = null;
   }
 
   public function cancelDelete(): void
@@ -146,4 +145,6 @@ class TaskComments extends Component
   {
     return view('livewire.task-comments');
   }
+
+  // Filament Actions removed; keeping component lean
 }

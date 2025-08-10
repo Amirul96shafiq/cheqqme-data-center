@@ -42,4 +42,9 @@
     .global-search-modal-details .inline {
         font-size: 0.75rem !important;
     }
+
+    /* Note: Native danger (red) utilities now come from the main app Tailwind bundle.
+       We load both theme.css & app.css via ->viteTheme([...]) in AdminPanelProvider.
+       No manual danger fallbacks are necessary. If reds ever vanish again, first confirm
+       both CSS files are loading before re-adding overrides. */
 }

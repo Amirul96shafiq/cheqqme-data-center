@@ -84,10 +84,18 @@ class AdminPanelProvider extends PanelProvider
                     '800' => '#a56b23',
                     '900' => '#844f1a',
                 ],
+                // Add native danger palette so Filament can style danger buttons (fi-color-danger)
+                'danger' => Color::Red,
             ])
             ->sidebarCollapsibleOnDesktop()
             ->sidebarWidth('20rem')
-            ->viteTheme('resources/css/filament/admin/theme.css')
+            // Load both the Filament admin theme and the main app Tailwind bundle so that
+            // all generated utilities (including danger reds) are guaranteed to be present
+            // even if purge / safelist changes or fallback overrides are removed later.
+            ->viteTheme([
+                'resources/css/filament/admin/theme.css',
+                'resources/css/app.css',
+            ])
             ->pages([
                 \Filament\Pages\Dashboard::class,
             ])

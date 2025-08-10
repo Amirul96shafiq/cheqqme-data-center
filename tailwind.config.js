@@ -11,6 +11,25 @@ export default {
         "./storage/framework/views/*.php",
     ],
 
+    safelist: [
+        // Ensure danger/red classes are always generated for dynamic markup
+        "bg-danger-50",
+        "bg-danger-100",
+        "bg-danger-500",
+        "bg-danger-600",
+        "hover:bg-danger-500",
+        "text-danger-600",
+        "text-danger-500",
+        "hover:text-danger-600",
+        // Legacy direct red usage fallback
+        "bg-red-50",
+        "bg-red-100",
+        "bg-red-500",
+        "bg-red-600",
+        "hover:bg-red-500",
+        "text-red-600",
+    ],
+
     theme: {
         extend: {
             colors: {
@@ -26,6 +45,7 @@ export default {
                     800: "#a56b23",
                     900: "#844f1a",
                 },
+                danger: colors.red, // Map danger palette to Tailwind red scale
             },
         },
     },

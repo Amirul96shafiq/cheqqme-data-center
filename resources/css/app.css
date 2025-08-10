@@ -1,5 +1,5 @@
-<!-- Not using this css -->
-<!-- Use resources/css/filament/admin/theme.css instead -->
+/* Base Tailwind entry file.
+    Note: Filament-specific customizations live in resources/css/filament/admin/theme.css */
 
 @tailwind base;
 @tailwind components;

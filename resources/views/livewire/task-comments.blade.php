@@ -36,7 +36,7 @@
                             </div>
                             @if(auth()->id() === $comment->user_id)
                                 <div class="flex items-center gap-1">
-                                    @if($editingId !== $comment->id)
+                                    @if($this->editingId !== $comment->id)
                                         <button type="button" wire:click="startEdit({{ $comment->id }})" class="p-1.5 rounded-md text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40" title="Edit">
                                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                         </button>
@@ -48,7 +48,7 @@
                             @endif
                         </div>
                         <div class="mt-2">
-                            @if($editingId === $comment->id)
+                            @if($this->editingId === $comment->id)
                                 <div class="space-y-2">
                                     <textarea wire:model.defer="editingText" rows="3" class="w-full text-sm leading-snug rounded-lg border border-primary-300 dark:border-primary-500 focus:border-primary-500 focus:ring focus:ring-primary-500/20 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-2 resize-y"></textarea>
                                     <div class="flex items-center gap-2">
@@ -80,21 +80,23 @@
     </div>
     @if($confirmingDeleteId)
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-gray-900/60" wire:click="cancelDelete"></div>
-            <div class="relative w-full max-w-sm bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 space-y-5">
-                <button type="button" wire:click="cancelDelete" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+            <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75" wire:click="cancelDelete"></div>
+            <div class="fi-modal-window relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6">
+                <button type="button" wire:click="cancelDelete" class="fi-modal-close-btn absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
-                <div class="w-12 h-12 mx-auto flex items-center justify-center rounded-full bg-danger-600/15 text-danger-600 dark:text-danger-400 dark:bg-danger-500/15">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                </div>
-                <div class="text-center space-y-2">
-                    <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Delete Comment</h2>
-                    <p class="text-xs text-gray-600 dark:text-gray-400">Are you sure you would like to delete this comment? This action can be reversed only by an admin.</p>
-                </div>
-                <div class="flex items-center justify-end gap-2 pt-2">
-                    <button type="button" wire:click="cancelDelete" class="px-4 py-2 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
-                    <button type="button" wire:click="performDelete" class="px-4 py-2 text-xs font-medium rounded-md bg-danger-600 text-white hover:bg-danger-700 focus:ring-2 focus:ring-danger-500/40">Delete</button>
+                <div class="flex flex-col items-center text-center">
+                    <div class="mb-5 flex items-center justify-center">
+                        <div class="p-3 rounded-full bg-danger-100 text-danger-600 dark:bg-danger-500/20 dark:text-danger-400">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                        </div>
+                    </div>
+                    <h2 class="fi-modal-heading text-sm font-medium text-gray-900 dark:text-gray-100">Delete Comment</h2>
+                    <p class="fi-modal-description mt-2 text-xs leading-relaxed text-gray-600 dark:text-gray-400">Are you sure you would like to delete this comment? This action can be reversed only by an admin.</p>
+                    <div class="mt-6 flex w-full items-stretch gap-3">
+                        <button type="button" wire:click="cancelDelete" class="fi-btn flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-xs font-medium tracking-tight border border-gray-300 bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:border-gray-500 dark:focus:ring-primary-500/40 dark:focus:ring-offset-gray-900">Cancel</button>
+                        <button type="button" wire:click="performDelete" class="fi-btn fi-color-danger flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-xs font-medium tracking-tight bg-danger-600 text-white hover:bg-danger-500 focus:outline-none focus:ring-2 focus:ring-danger-500/40 focus:ring-offset-2 focus:ring-offset-white dark:bg-danger-600 dark:hover:bg-danger-500 dark:focus:ring-offset-gray-900">Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -112,6 +114,8 @@
             .dark .custom-thin-scroll { scrollbar-color: rgba(148,163,184,.35) transparent; }
             .comment-username { font-size: 14px; font-weight: 700 ;}
             .comment-meta { font-size: 11px; line-height: 1rem; }
+
+            /* (Removed fallback danger utilities – native Tailwind classes now present) */
         </style>
     @endonce
 </div>
