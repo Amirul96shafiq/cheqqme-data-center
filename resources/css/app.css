@@ -6,13 +6,7 @@
 @tailwind utilities;
 
 @layer utilities {
-    .dark .fi-btn {
-        color: #000 !important;
-    }
-
-    .dark .fi-btn * {
-        color: #000 !important;
-    }
+    /* Removed forced black text for dark mode buttons; rely on Filament defaults. */
 }
 
 select {

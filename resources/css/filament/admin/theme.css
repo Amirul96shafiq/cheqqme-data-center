@@ -3,12 +3,10 @@
 @config 'tailwind.config.js';
 
 @layer utilities {
-    .dark .fi-btn.fi-btn-color-primary {
-        color: #1f2d3a !important;
-    }
-
+    /* Dark mode primary buttons: ensure readable white text */
+    .dark .fi-btn.fi-btn-color-primary,
     .dark .fi-btn.fi-btn-color-primary * {
-        color: #1f2d3a !important;
+        color: #ffffff !important;
     }
 
     /* Custom placement for Filament Language Switch Outside Panel (Admin) */
