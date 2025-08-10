@@ -41,7 +41,7 @@ class TaskComments extends Component
     if ($trimmed === '') {
       return;
     }
-    Comment::create([
+    $comment = Comment::create([
       'task_id' => $this->task->id,
       'user_id' => auth()->id(),
       'comment' => $trimmed,
@@ -75,6 +75,7 @@ class TaskComments extends Component
     $comment = $this->task->comments()->findOrFail($this->editingId);
     if ($comment->user_id !== auth()->id())
       return;
+    $original = $comment->comment;
     $comment->update(['comment' => trim($this->editingText)]);
     $this->cancelEdit();
     $this->dispatch('refreshTaskComments');
