@@ -120,7 +120,7 @@ class ActionBoard extends KanbanBoardPage
     {
         return $form->schema([
             // For edit mode, use grid with sidebar layout
-            Forms\Components\Grid::make(3)
+            Forms\Components\Grid::make(5)
                 ->schema([
                     // Main content (left side) - spans 2 columns
                     Forms\Components\Grid::make(1)
@@ -270,7 +270,7 @@ class ActionBoard extends KanbanBoardPage
                                 ->collapsible()
                                 ->collapsed(),
                         ])
-                        ->columnSpan(2),
+                        ->columnSpan(3),
 
                     // Comments sidebar (right side) - spans 1 column
                     Forms\Components\Section::make('Comments')
@@ -287,12 +287,12 @@ class ActionBoard extends KanbanBoardPage
                                 ])
                                 ->dehydrated(false),
                         ])
-                        ->columnSpan(1)
                         ->extraAttributes([
                             // Fixed height; internal Livewire component handles its own scrolling; hide any accidental overflow outside border.
                             'style' => 'height:68vh; max-height:68vh; position:sticky; top:3vh; display:flex; flex-direction:column; align-self:flex-start; overflow:hidden;',
                             'class' => 'comments-pane'
-                        ]),
+                        ])
+                        ->columnSpan(2),
                 ])
                 ->visible($mode === 'edit'),
 
