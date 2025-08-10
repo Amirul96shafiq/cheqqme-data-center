@@ -1,7 +1,7 @@
 <div class="flex flex-col flex-1 h-full min-h-0 rounded-xl bg-white dark:bg-gray-900">
 
     <!-- Composer (Top) -->
-    <div class="px-4 pt-4 pb-3 bg-white dark:bg-gray-900" data-composer>
+    <div class="px-0 pt-0 pb-5 bg-white dark:bg-gray-900" data-composer>
         <div class="space-y-2">
             <textarea wire:model.defer="newComment" rows="3" placeholder="Write a comment..." class="w-full text-sm leading-snug rounded-lg border border-gray-300 dark:border-gray-600 focus:border-primary-500 focus:ring focus:ring-primary-500/20 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-3 resize-y placeholder:text-gray-400 dark:placeholder:text-gray-500"></textarea>
             @error('newComment') <p class="text-xs text-danger-600">{{ $message }}</p> @enderror
@@ -19,9 +19,18 @@
             @forelse($this->comments as $comment)
                 <div class="group relative flex gap-3" wire:key="comment-{{ $comment->id }}">
                     <div class="flex-shrink-0">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 text-white flex items-center justify-center text-[11px] font-medium shadow-sm">
-                            {{ mb_strtoupper(mb_substr($comment->user->username ?? 'U',0,1)) }}
-                        </div>
+                        @php
+                            $avatarPath = $comment->user->avatar ?? null;
+                            $avatarUrl = $avatarPath ? \Storage::url($avatarPath) : null;
+                            $initial = mb_strtoupper(mb_substr($comment->user->username ?? 'U',0,1));
+                        @endphp
+                        @if($avatarUrl)
+                            <img src="{{ $avatarUrl }}" alt="{{ $comment->user->username ?? 'User' }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm" loading="lazy">
+                        @else
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 text-white flex items-center justify-center text-[11px] font-medium shadow-sm select-none">
+                                {{ $initial }}
+                            </div>
+                        @endif
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between gap-2">

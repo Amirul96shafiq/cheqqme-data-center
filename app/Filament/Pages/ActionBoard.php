@@ -287,7 +287,8 @@ class ActionBoard extends KanbanBoardPage
                         ->columnSpan(1)
                         ->extraAttributes([
                             // Fixed height; internal Livewire component handles its own scrolling; hide any accidental overflow outside border.
-                            'style' => 'height:68vh; max-height:68vh; position:sticky; top:3vh; display:flex; flex-direction:column; align-self:flex-start; overflow:hidden;'
+                            'style' => 'height:68vh; max-height:68vh; position:sticky; top:3vh; display:flex; flex-direction:column; align-self:flex-start; overflow:hidden;',
+                            'class' => 'comments-pane'
                         ]),
                 ])
                 ->visible($mode === 'edit'),
