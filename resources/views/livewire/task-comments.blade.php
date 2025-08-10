@@ -2,8 +2,10 @@
 
     <!-- Composer (Top) -->
     <div class="px-0 pt-0 pb-5 bg-white dark:bg-gray-900" data-composer>
-        <div class="space-y-2">
-            <textarea wire:model.defer="newComment" rows="3" placeholder="Write a comment..." class="w-full text-sm leading-snug rounded-lg border border-gray-300 dark:border-gray-600 focus:border-primary-500 focus:ring focus:ring-primary-500/20 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-3 resize-y placeholder:text-gray-400 dark:placeholder:text-gray-500"></textarea>
+        <div class="space-y-3">
+            <div class="fi-form">
+                {{ $this->composerForm }}
+            </div>
             @error('newComment') <p class="text-xs text-danger-600">{{ $message }}</p> @enderror
             <button wire:click="addComment" wire:loading.attr="disabled" wire:target="addComment,saveEdit,performDelete,deleteComment" type="button" class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
@@ -60,16 +62,14 @@
                         <div class="mt-2">
                             @if($this->editingId === $comment->id)
                                 <div class="space-y-2">
-                                    <textarea wire:model.defer="editingText" rows="3" class="w-full text-sm leading-snug rounded-lg border border-primary-300 dark:border-primary-500 focus:border-primary-500 focus:ring focus:ring-primary-500/20 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-2 resize-y"></textarea>
+                                    <div class="fi-form">{{ $this->editForm }}</div>
                                     <div class="flex items-center gap-2">
                                         <button wire:click="saveEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50">Save</button>
                                         <button wire:click="cancelEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200">Cancel</button>
                                     </div>
                                 </div>
                             @else
-                                <div class="prose prose-xs dark:prose-invert max-w-none">
-                                    <p class="m-0 leading-snug text-[13px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words">{{ $comment->comment }}</p>
-                                </div>
+                                <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[13px] text-gray-700 dark:text-gray-300 break-words">{!! $comment->comment !!}</div>
                             @endif
                         </div>
                     </div>
@@ -158,6 +158,48 @@
             .comment-delete-open .fi-modal-window:not(.comment-delete-modal) footer button {
                 visibility: hidden !important;
             }
+            /* Minimal single-row Filament RichEditor (keep toolbar visible) */
+            .minimal-comment-editor .fi-fo-rich-editor-toolbar { padding: 0.15rem 0.25rem; gap: .25rem; display:flex; }
+            .minimal-comment-editor .fi-fo-rich-editor-toolbar button { height: 1.75rem; width: 1.75rem; }
+            .minimal-comment-editor .fi-fo-rich-editor-container { padding: 0 !important; }
+            .minimal-comment-editor .fi-fo-rich-editor,
+            .minimal-comment-editor .fi-fo-rich-editor-container,
+            .minimal-comment-editor .fi-fo-rich-editor-container .ProseMirror { min-height: 2rem !important; max-height: 2rem !important; }
+            .minimal-comment-editor .fi-fo-rich-editor-container .ProseMirror { overflow: hidden !important; white-space: nowrap; line-height: 1.1rem; padding: .25rem .6rem !important; }
+            .minimal-comment-editor .fi-fo-rich-editor-container .ProseMirror p { margin: 0; display:inline; }
+            .minimal-comment-editor .fi-fo-rich-editor-container .ProseMirror p + p { display:inline; }
+            .minimal-comment-editor [data-placeholder]::before { top: 4px !important; }
+            /* Force custom placeholder text to override any stray literal content flicker */
+            .minimal-comment-editor [data-placeholder]::before { content: 'Start typing your comment here'; }
+            .minimal-comment-editor .fi-fo-rich-editor { border-radius: .5rem; }
+            .minimal-comment-editor .fi-fo-rich-editor:focus-within .fi-fo-rich-editor-container .ProseMirror { white-space: normal; overflow:auto; max-height: 12rem !important; }
+            .minimal-comment-editor .fi-fo-rich-editor:focus-within { box-shadow: 0 0 0 2px rgba(59,130,246,.4); }
     </style>
     <!-- Alpine handles adding/removing comment-delete-open class; no global pointer-events lock -->
+    <!-- Custom composer script removed; using Filament RichEditor -->
+        <!-- Edit now uses Filament RichEditor; Alpine editor script removed -->
+        <!-- Toolbar always visible for composer; watcher script removed -->
+        <script>
+            function clearUndefinedInComposer(){
+                const wrapper = document.querySelector('.minimal-comment-editor');
+                if(!wrapper) return; 
+                const pm = wrapper.querySelector('.ProseMirror');
+                if(!pm) return;
+                if(pm.childNodes.length === 1 && pm.textContent.trim().toLowerCase() === 'undefined'){
+                    pm.textContent='';
+                    pm.dispatchEvent(new Event('input',{bubbles:true}));
+                }
+            }
+            document.addEventListener('DOMContentLoaded', clearUndefinedInComposer);
+            document.addEventListener('livewire:update', clearUndefinedInComposer);
+            document.addEventListener('livewire:navigated', clearUndefinedInComposer);
+                    document.addEventListener('resetComposerEditor', () => {
+                        const wrapper = document.querySelector('.minimal-comment-editor');
+                        const pm = wrapper?.querySelector('.ProseMirror');
+                        if (pm) {
+                            pm.innerHTML='';
+                            pm.dispatchEvent(new Event('input',{bubbles:true}));
+                        }
+                    });
+        </script>
 </div>
