@@ -37,7 +37,7 @@ class Comment extends Model
   public function getActivityLogOptions(): LogOptions
   {
     return LogOptions::defaults()
-      ->logOnly(['task_id','user_id','comment'])
+      ->logOnly(['task_id', 'user_id', 'comment'])
       ->useLogName('Comments');
   }
 }

@@ -5,10 +5,10 @@
         <div class="space-y-2">
             <textarea wire:model.defer="newComment" rows="3" placeholder="Write a comment..." class="w-full text-sm leading-snug rounded-lg border border-gray-300 dark:border-gray-600 focus:border-primary-500 focus:ring focus:ring-primary-500/20 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-3 resize-y placeholder:text-gray-400 dark:placeholder:text-gray-500"></textarea>
             @error('newComment') <p class="text-xs text-danger-600">{{ $message }}</p> @enderror
-            <button wire:click="addComment" wire:loading.attr="disabled" type="button" class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50">
+            <button wire:click="addComment" wire:loading.attr="disabled" wire:target="addComment,saveEdit,performDelete,deleteComment" type="button" class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-                <span wire:loading.remove>Send</span>
-                <span wire:loading>Saving...</span>
+                <span wire:loading.remove wire:target="addComment,saveEdit,performDelete,deleteComment">Send</span>
+                <span wire:loading wire:target="addComment,saveEdit,performDelete,deleteComment">Saving...</span>
             </button>
         </div>
     </div>
