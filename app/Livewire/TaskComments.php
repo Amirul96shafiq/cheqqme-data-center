@@ -266,7 +266,7 @@ class TaskComments extends Component implements HasForms
       'composerForm' => $this->makeForm()->schema([
         RichEditor::make('newComment')
           ->label('')
-          ->placeholder('Start typing your comment here')
+          ->placeholder('Write a comment here.')
           ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
           ->extraAttributes(['class' => 'minimal-comment-editor'])
           ->maxLength(1000)

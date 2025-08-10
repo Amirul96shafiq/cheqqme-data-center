@@ -45,4 +45,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::patch('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    // Live badge polling endpoint for Action Board navigation badge
+    Route::get('/action-board/assigned-active-count', function () {
+        if (!auth()->check())
+            return response()->json(['count' => 0]);
+        $count = \App\Models\Task::query()
+            ->where('assigned_to', auth()->id())
+            ->whereNotIn('status', ['completed', 'archived'])
+            ->count();
+        return response()->json(['count' => $count]);
+    })->name('action-board.assigned-active-count');
 });

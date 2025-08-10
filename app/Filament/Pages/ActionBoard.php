@@ -11,6 +11,7 @@ use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Get;
 use Closure;
+use Filament\Facades\Filament;
 
 class ActionBoard extends KanbanBoardPage
 {
@@ -18,6 +19,8 @@ class ActionBoard extends KanbanBoardPage
     protected static ?string $navigationGroup = 'Boards';
     protected static ?string $navigationLabel = 'Action Board';
     protected static ?string $title = 'Action Board';
+
+    // Removed native Filament navigation badge methods; using fully custom persistent badge.
 
     public function getSubject(): Builder
     {

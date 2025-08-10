@@ -172,7 +172,7 @@
             .minimal-comment-editor .fi-fo-rich-editor-container .ProseMirror p + p { display:inline; }
             .minimal-comment-editor [data-placeholder]::before { top: 4px !important; }
             /* Force custom placeholder text to override any stray literal content flicker */
-            .minimal-comment-editor [data-placeholder]::before { content: 'Start typing your comment here'; }
+            .minimal-comment-editor [data-placeholder]::before { content: 'Write a comment here.'; }
             .minimal-comment-editor .fi-fo-rich-editor { border-radius: .5rem; }
             .minimal-comment-editor .fi-fo-rich-editor:focus-within .fi-fo-rich-editor-container .ProseMirror { white-space: normal; overflow:auto; max-height: 12rem !important; }
             .minimal-comment-editor .fi-fo-rich-editor:focus-within { box-shadow: 0 0 0 2px rgba(59,130,246,.4); }
