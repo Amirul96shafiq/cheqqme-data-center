@@ -9,10 +9,10 @@
     <x-slot name="trigger">
         <div
             @class([
-                'flex items-center justify-center w-9 h-9 language-switch-trigger text-primary-600 bg-primary-500/10',
+                'flex items-center justify-center w-9 h-9 language-switch-trigger text-primary-600 bg-white dark:bg-[rgb(255_255_255_/_.05)] border border-[rgb(3 7 18 / 0.1)] hover:border-[rgb(3 7 18 / 0.2)] dark:border-[rgb(255 255 255 / 0.2)] dark:hover:border-[rgb(255 255 255 / 0.3)]',
                 'rounded-full' => $isCircular,
                 'rounded-lg' => !$isCircular,
-                'p-1 ring-2 ring-inset ring-gray-200 hover:ring-gray-300 dark:ring-gray-500 hover:dark:ring-gray-400' => $isFlagsOnly || $hasFlags,
+                'p-1' => $isFlagsOnly || $hasFlags,
             ])
             x-tooltip="{
                 content: @js($languageSwitch->getLabel(app()->getLocale())),
