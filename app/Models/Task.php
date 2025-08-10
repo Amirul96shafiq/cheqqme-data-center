@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Task extends Model
 {
@@ -49,6 +51,7 @@ class Task extends Model
   // Make virtual attributes available when converting to array / JSON for the Kanban adapter
   protected $appends = [
     'assigned_to_username',
+    'assigned_to_username_self',
     'due_date_red',
     'due_date_yellow',
     'due_date_green',
@@ -78,8 +81,24 @@ class Task extends Model
     $user = $this->assignedTo;
     if (!$user)
       return null;
-    // Prefer short_name accessor if set
+    $authId = Auth::id();
+    // If the assigned user IS the current user, suppress this (the _self variant will show)
+    if ($authId && $user->id === $authId) {
+      return null;
+    }
     return $user->short_name ?? $user->username ?? $user->name ?? null;
+  }
+
+  public function getAssignedToUsernameSelfAttribute(): ?string
+  {
+    $user = $this->assignedTo;
+    if (!$user)
+      return null;
+    $authId = Auth::id();
+    if ($authId && $user->id === $authId) {
+      return $user->short_name ?? $user->username ?? $user->name ?? null;
+    }
+    return null;
   }
 
   /**
@@ -102,6 +121,8 @@ class Task extends Model
    * Only one of these urgency accessors will return a formatted date; others return null so that
    * we can map static colors per virtual attribute via Flowforge config (no dynamic per-record colors supported).
    */
+
+  // Red due date - less than 1 day away
   public function getDueDateRedAttribute(): ?string
   {
     $diff = $this->dueDateDiffInDays();
@@ -111,6 +132,7 @@ class Task extends Model
     return null;
   }
 
+  // Yellow due date - 1 to 6 days away
   public function getDueDateYellowAttribute(): ?string
   {
     $diff = $this->dueDateDiffInDays();
@@ -120,6 +142,7 @@ class Task extends Model
     return null;
   }
 
+  // Green due date - 14 days or more away
   public function getDueDateGreenAttribute(): ?string
   {
     $diff = $this->dueDateDiffInDays();
@@ -129,6 +152,7 @@ class Task extends Model
     return null;
   }
 
+  // Gray due date - 7 to 13 days away
   public function getDueDateGrayAttribute(): ?string
   {
     $diff = $this->dueDateDiffInDays();

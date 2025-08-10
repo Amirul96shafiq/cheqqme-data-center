@@ -38,6 +38,7 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_yellow' => '',
                 'due_date_gray' => '',
                 'due_date_green' => '',
+                'assigned_to_username_self' => '',
                 'assigned_to_username' => '',
             ])
             ->cardAttributeColors([
@@ -45,6 +46,7 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_yellow' => 'yellow',
                 'due_date_gray' => 'gray',
                 'due_date_green' => 'green',
+                'assigned_to_username_self' => 'cyan',
                 'assigned_to_username' => 'gray',
             ])
             ->cardAttributeIcons([
@@ -52,6 +54,7 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_yellow' => 'heroicon-o-calendar',
                 'due_date_gray' => 'heroicon-o-calendar',
                 'due_date_green' => 'heroicon-o-calendar',
+                'assigned_to_username_self' => 'heroicon-m-user',
                 'assigned_to_username' => 'heroicon-o-user',
             ])
             ->columns([
