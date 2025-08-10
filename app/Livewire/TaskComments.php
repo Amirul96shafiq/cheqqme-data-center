@@ -267,7 +267,7 @@ class TaskComments extends Component implements HasForms
         RichEditor::make('newComment')
           ->label('')
           ->placeholder('Start typing your comment here')
-          ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'blockquote', 'link', 'codeBlock'])
+          ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
           ->extraAttributes(['class' => 'minimal-comment-editor'])
           ->maxLength(1000)
           ->extraInputAttributes(['style' => 'min-height:2rem;max-height:3.5rem;overflow-y:auto;'])
@@ -287,7 +287,7 @@ class TaskComments extends Component implements HasForms
         RichEditor::make('editingText')
           ->label('')
           ->placeholder('Edit comment...')
-          ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'blockquote', 'link', 'codeBlock'])
+          ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
           ->maxLength(1000)
           ->default('')
           ->formatStateUsing(function ($state) {
@@ -310,7 +310,7 @@ class TaskComments extends Component implements HasForms
     // Remove script/style tags completely
     $html = preg_replace('/<(script|style)[^>]*?>.*?<\/\1>/is', '', $html);
     // Allow only a whitelist of tags
-    $allowed = '<b><strong><i><em><s><del><strike><code><pre><ul><ol><li><a><br><blockquote><p>'; // include blockquote & paragraphs
+    $allowed = '<b><strong><i><em><s><del><strike><code><pre><ul><ol><li><a><br><p>'; // blockquote removed
     $html = strip_tags($html, $allowed);
     // Remove on* attributes & javascript: href
     // Process anchors
@@ -336,10 +336,15 @@ class TaskComments extends Component implements HasForms
     $html = preg_replace_callback('/<\/?strike>/i', function ($m) {
       return str_starts_with($m[0], '</') ? '</s>' : '<s>';
     }, $html);
-    // Strip any remaining attributes except for <a href target rel>
-    $html = preg_replace_callback('/<(?!a\b)(b|strong|i|em|s|del|code|pre|ul|ol|li|br|blockquote)([^>]*)>/i', function ($m) {
+    // Strip any remaining attributes except for <a href target rel> (blockquote removed)
+    $html = preg_replace_callback('/<(?!a\b)(b|strong|i|em|s|del|code|pre|ul|ol|li|br)([^>]*)>/i', function ($m) {
       return '<' . strtolower($m[1]) . '>';
     }, $html);
+    // Remove existing blockquote tags, keeping inner content
+    if (stripos($html, '<blockquote') !== false) {
+      $html = preg_replace('/<blockquote[^>]*>/i', '', $html);
+      $html = preg_replace('/<\/blockquote>/i', '', $html);
+    }
     // Remove event handlers from anchors
     $html = preg_replace('/<a([^>]*)(on[a-z]+\s*=\s*"[^"]*")([^>]*)>/i', '<a$1$3>', $html);
     $html = preg_replace('/<a([^>]*)(javascript:)[^>]*>/i', '<a$1>', $html);

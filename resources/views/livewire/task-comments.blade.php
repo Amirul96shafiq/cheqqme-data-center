@@ -80,7 +80,9 @@
                 </div>
             @endforelse
         </div>
-        <div class="mt-3 text-[10px] text-gray-400 text-center">Showing {{ $this->comments->count() }} of {{ $this->totalComments }} comments</div>
+        @if($this->totalComments > 0)
+            <div class="mt-3 text-[10px] text-gray-400 text-center">Showing {{ $this->comments->count() }} of {{ $this->totalComments }} comments</div>
+        @endif
         @if($this->totalComments > $visibleCount)
             @php $remaining = $this->totalComments - $visibleCount; @endphp
             <div class="mt-2">
@@ -174,6 +176,10 @@
             .minimal-comment-editor .fi-fo-rich-editor { border-radius: .5rem; }
             .minimal-comment-editor .fi-fo-rich-editor:focus-within .fi-fo-rich-editor-container .ProseMirror { white-space: normal; overflow:auto; max-height: 12rem !important; }
             .minimal-comment-editor .fi-fo-rich-editor:focus-within { box-shadow: 0 0 0 2px rgba(59,130,246,.4); }
+            /* Comment content blockquote styling */
+            .prose.prose-xs blockquote { font-weight: normal !important; font-style: italic; border-left: 3px solid rgba(148,163,184,.6); padding-left: .75rem; margin: .5rem 0; background: linear-gradient(to right, rgba(148,163,184,.10), rgba(148,163,184,0)); border-radius: 0 .375rem .375rem 0; }
+            .dark .prose.prose-xs blockquote { border-left-color: rgba(100,116,139,.6); background: linear-gradient(to right, rgba(51,65,85,.40), rgba(51,65,85,0)); }
+            .prose.prose-xs blockquote p { font-weight: inherit !important; }
     </style>
     <!-- Alpine handles adding/removing comment-delete-open class; no global pointer-events lock -->
     <!-- Custom composer script removed; using Filament RichEditor -->
