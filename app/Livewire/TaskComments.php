@@ -270,7 +270,7 @@ class TaskComments extends Component implements HasForms
           ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
           ->extraAttributes(['class' => 'minimal-comment-editor'])
           ->maxLength(1000)
-          ->extraInputAttributes(['style' => 'min-height:2rem;max-height:3.5rem;overflow-y:auto;'])
+          ->extraInputAttributes(['style' => 'min-height:4.5rem;max-height:4.5rem;overflow-y:auto;'])
           ->default('')
           ->formatStateUsing(function ($state) {
             if (is_string($state) && \Illuminate\Support\Str::lower(trim(strip_tags($state))) === 'undefined') {
