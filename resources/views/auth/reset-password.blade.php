@@ -273,8 +273,8 @@
 
         <!-- Toggle -->
         <button @click="open = !open"
-            class="inline-flex items-center px-4 py-2 text-md font-semibold rounded-2xl sm:rounded-xl  text-primary-500 dark:text-primary-600">
-            {{ strtoupper(app()->getLocale()) }}
+          class="flex items-center justify-center w-9 h-9 language-switch-trigger text-primary-600 bg-white dark:bg-[rgb(255_255_255_/_0.05)] border border-[rgb(3_7_18_/_0.1)] hover:border-[rgb(3_7_18_/_0.2)] dark:border-[rgb(255_255_255_/_0.2)] dark:hover:border-[rgb(255_255_255_/_0.3)] rounded-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 font-semibold">
+          {{ strtoupper(app()->getLocale()) }}
         </button>
   </div>
 
