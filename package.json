@@ -3,14 +3,17 @@
     "private": true,
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "serve:php": "php artisan serve",
+        "dev:full": "concurrently -k -n php,vite -c green,cyan \"npm:serve:php\" \"npm:dev\"",
+        "test:watch": "php artisan test --watch"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.10",
         "@tailwindcss/typography": "^0.5.16",
         "autoprefixer": "^10.4.21",
         "axios": "^1.8.2",
-        "concurrently": "^9.0.1",
+        "concurrently": "^9.0.0",
         "laravel-vite-plugin": "^1.2.0",
         "postcss": "^8.5.6",
         "postcss-nesting": "^13.0.2",

@@ -124,7 +124,7 @@
   </script>
 </head>
 
-<body class="min-h-screen bg-gray-100 dark:bg-neutral-950 flex items-center justify-center">
+<body class="min-h-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center">
   <div class="max-w-md w-full space-y-8">
 
     <!-- Theme Toggle Buttons -->
@@ -151,7 +151,7 @@
 
     <!-- Card section-->
     <div
-      class="bg-white dark:bg-neutral-900 rounded-2xl ring-1 ring-gray-950/5 dark:ring-white/10 sm:rounded-xl p-8 space-y-6">
+      class="bg-white dark:bg-[rgb(17_24_39_/_1)] rounded-2xl ring-1 ring-gray-950/5 dark:ring-white/10 sm:rounded-xl px-12 py-16 space-y-6">
       <!-- Header section -->
       <div class="text-center">
         <!-- Logo Light -->
@@ -193,7 +193,7 @@
             {{ __('auth.new_password') }} <span class="text-red-500">*</span>
           </label>
           <input id="password" type="password" name="password" required
-            class="w-full px-4 py-2 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
+            class="w-full px-4 py-2 bg-white text-black dark:bg-[rgb(255_255_255_/_0.05)] dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
 
           <button type="button" onclick="togglePassword('password')"
             class="absolute top-7 right-3 theme-toggle-btn text-gray-500 hover:text-gray-700 dark:hover:text-white">
@@ -208,7 +208,7 @@
             {{ __('auth.confirm_new_password') }} <span class="text-red-500">*</span>
           </label>
           <input id="password_confirmation" type="password" name="password_confirmation" required
-            class="w-full px-4 py-2 pr-12 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
+            class="w-full px-4 py-2 bg-white text-black dark:bg-[rgb(255_255_255_/_0.05)] dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
 
           <button type="button" onclick="togglePassword('password_confirmation')"
             class="absolute top-7 right-3 theme-toggle-btn text-gray-500 hover:text-gray-700 dark:hover:text-white">
@@ -219,7 +219,7 @@
 
         <!-- Submit button -->
         <button type="submit"
-          class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-white dark:text-black font-semibold text-sm rounded-lg transition">
+          class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-white dark:text-white font-semibold text-sm rounded-lg transition">
           {{ __('auth.send_reset_link') }}
         </button>
       </form>

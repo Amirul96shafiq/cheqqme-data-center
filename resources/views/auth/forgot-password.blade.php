@@ -2,7 +2,7 @@
 <html lang="{{ app()->getLocale() }}" class="scroll-smooth">
 
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Forgot Password - CheQQme Data Center</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,9 +21,8 @@
       transition: all 0.2s ease-in-out;
     }
 
-    .theme-toggle-btn.active {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
+  .theme-toggle-btn.active { background-color: rgba(255,255,255,0.1); }
+  .theme-toggle-btn.active svg { color: #fbb43e; /* match brand primary-500 like login/reset */ }
   </style>
 
   <!-- Theme Script -->
@@ -106,7 +105,7 @@
   </script>
 </head>
 
-<body class="min-h-screen bg-gray-100 dark:bg-neutral-950 flex items-center justify-center">
+<body class="min-h-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center">
   <div class="max-w-md w-full space-y-8">
 
     <!-- Theme Toggle Buttons -->
@@ -133,7 +132,7 @@
 
     <!-- Card section -->
     <div
-      class="bg-white dark:bg-neutral-900 rounded-2xl ring-1 ring-gray-950/5 dark:ring-white/10 sm:rounded-xl p-8 space-y-6">
+      class="bg-white dark:bg-[rgb(17_24_39_/_1)] rounded-2xl ring-1 ring-gray-950/5 dark:ring-white/10 sm:rounded-xl px-12 py-16 space-y-6"
       <!-- Header section -->
       <div class="text-center">
         <!-- Logo Light -->
@@ -167,16 +166,18 @@
         @csrf
 
         <!-- Email Address Field -->
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-6 mb-2">{{ __('auth.email_address') }}</label>
+        <div class="mt-6">
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {{ __('auth.email_address') }} <span class="text-red-500">*</span>
+          </label>
           <input id="email" name="email" type="email" required autofocus
-            class="w-full px-4 py-2 bg-white text-black dark:bg-neutral-800 dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
+            class="w-full px-4 py-2 bg-white text-black dark:bg-[rgb(255_255_255_/_0.05)] dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
         </div>
 
         <!-- Submit button -->
         <div>
           <button type="submit"
-            class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-white dark:text-black font-semibold text-sm rounded-lg transition">
+            class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-white dark:text-white font-semibold text-sm rounded-lg transition focus:ring-2 focus:ring-primary-600 focus:outline-none">
             {{ __('auth.send_link') }}
           </button>
         </div>
