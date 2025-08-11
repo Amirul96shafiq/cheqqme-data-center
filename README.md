@@ -158,7 +158,7 @@ public/              # Public assets (built via Vite)
 
 ---
 
-## 🗂 Action Board (Kanban)
+## Action Board (Kanban)
 
 Implemented via a custom Filament Page extending a Kanban board component. Columns reflect task lifecycle. Each card shows due date color indicators and assignment status. Future upgrades: inline comment thread, drag ordering persistence optimization, filters & swimlanes.
 
@@ -218,7 +218,7 @@ Legend: ✅ Done · 🛠 In Progress · 🔜 Planned
 
 ---
 
-## 🤝 Contributions
+## Contributions
 
 Currently a solo project; outside contributions may open later. Feel free to fork for learning (respect proprietary data & branding).
 
