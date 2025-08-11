@@ -1,6 +1,6 @@
 ![CheQQme Data Center](public/logos/logo-dark-vertical.png)
 
-## 📝 Overview
+## Overview
 
 **CheQQme Data Center** is an internal knowledge & operations hub built with Laravel + Filament. It centralizes:
 
@@ -20,7 +20,7 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Area         | Tools / Frameworks                             |
 | ------------ | ---------------------------------------------- |
