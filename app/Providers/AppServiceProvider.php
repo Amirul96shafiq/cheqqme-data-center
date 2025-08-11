@@ -112,6 +112,22 @@ class AppServiceProvider extends ServiceProvider
                     window.forceActionBoardBadgeRefresh = refresh;
                 }
                 </script>
+                                <script>
+                                // Global auto reload on task deletion (single installer)
+                                if(!window.__ffGlobalDeleteReload){
+                                    window.__ffGlobalDeleteReload = true;
+                                    const reload = ()=>{ if(window.__ffReloadScheduled) return; window.__ffReloadScheduled=true; setTimeout(()=>location.reload(), 300); };
+                                    window.addEventListener('kanban-task-deleted', reload);
+                                    document.addEventListener('kanban-task-deleted', reload);
+                                    // Also watch notifications
+                                    const mo = new MutationObserver(()=>{
+                                        const hit = Array.from(document.querySelectorAll('[role="alert"],[data-notification]'))
+                                            .some(el=>/Task deleted/i.test(el.textContent||''));
+                                        if(hit) reload();
+                                    });
+                                    try{ mo.observe(document.body,{childList:true,subtree:true}); }catch(e){}
+                                }
+                                </script>
             HTML;
         });
 

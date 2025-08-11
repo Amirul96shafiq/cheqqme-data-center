@@ -3,7 +3,6 @@
 namespace App\Filament\Pages;
 
 use App\Models\Task;
-use App\Models\Comment;
 use Illuminate\Database\Eloquent\Builder;
 use Relaticle\Flowforge\Filament\Pages\KanbanBoardPage;
 use App\Models\User;
@@ -12,6 +11,7 @@ use Filament\Forms;
 use Filament\Forms\Get;
 use Closure;
 use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 
 class ActionBoard extends KanbanBoardPage
 {
@@ -102,21 +102,11 @@ class ActionBoard extends KanbanBoardPage
             ->form(function (Forms\Form $form, Action $action) {
                 return $this->taskFormSchema($form, 'edit');
             })
-            ->mountUsing(function (Task $record, Forms\Form $form) {
-                // Explicit fill ensures assigned_to (and others) populate reliably.
-                $form->fill([
-                    'title' => $record->title,
-                    'description' => $record->description,
-                    'assigned_to' => $record->assigned_to,
-                    'status' => $record->status,
-                    'due_date' => $record->due_date,
-                    'extra_information' => $record->extra_information,
-                ]);
-            })
             ->action(function (array $data, Task $record) {
                 // Update task data only (comments are handled separately)
                 $record->update($data);
-            });
+            })
+        ;
     }
 
     protected function taskFormSchema(Forms\Form $form, string $mode)
@@ -130,6 +120,9 @@ class ActionBoard extends KanbanBoardPage
                         ->schema([
                             Forms\Components\Section::make('Task Information')
                                 ->schema([
+                                    Forms\Components\Hidden::make('id')
+                                        ->disabled() // not user editable
+                                        ->visible(false),
                                     Forms\Components\TextInput::make('title')
                                         ->required()
                                         ->placeholder('Enter task title'),
