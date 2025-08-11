@@ -114,5 +114,10 @@ if(!window.__globalActionBoardBadge){
 </script>
 HTML;
         });
+
+        // Late <style> tag so it loads after any on-request asset
+        \Filament\Facades\Filament::registerRenderHook('panels::head.end', function () {
+            return '<style>.ff-card__title{font-weight:400!important}</style>';
+        });
     }
 }
