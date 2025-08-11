@@ -33,7 +33,7 @@ class ActionBoard extends KanbanBoardPage
             ->titleField('title')
             ->orderField('order_column')
             ->columnField('status')
-            ->descriptionField('description')
+            //->descriptionField('description')
             // Provide attributes without visible labels (empty strings) so only the value shows on the badge.
             // Multiple virtual due_date_* attributes exist to allow different static colors per urgency.
             ->cardAttributes([
