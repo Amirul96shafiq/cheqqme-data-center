@@ -129,14 +129,10 @@ class ActionBoard extends KanbanBoardPage
                                     Forms\Components\Hidden::make('kanban_column_hint')
                                         ->dehydrated(false)
                                         ->afterStateHydrated(function (Forms\Components\Hidden $component) use ($mode) {
-                                            if ($mode !== 'create')
-                                                return;
-                                            if ($col = $this->detectCreateColumn()) {
-                                                $component->state($col);
-                                            }
                                         }),
                                     Forms\Components\Grid::make(3)
                                         ->schema([
+                                            // Updated assigned_to select for edit layout
                                             Forms\Components\Select::make('assigned_to')
                                                 ->label('Assign To')
                                                 ->options(function () {
@@ -151,11 +147,10 @@ class ActionBoard extends KanbanBoardPage
                                                 ->searchable()
                                                 ->preload()
                                                 ->native(false)
-                                                ->afterStateHydrated(function (Forms\Components\Select $component, $state) {
-                                                    if (is_array($state)) {
-                                                        $component->state($state[0] ?? null);
-                                                    }
-                                                }),
+                                                ->nullable()
+                                                ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
+                                                ->default(fn(?Task $record) => $record?->assigned_to)
+                                                ->dehydrated(),
                                             Forms\Components\DatePicker::make('due_date')
                                                 ->label('Due Date'),
                                             Forms\Components\Select::make('status')
@@ -167,15 +162,6 @@ class ActionBoard extends KanbanBoardPage
                                                     'completed' => 'Completed',
                                                     'archived' => 'Archived',
                                                 ])
-                                                ->default(function () use ($mode) {
-                                                    if ($mode === 'edit')
-                                                        return null;
-                                                    $col = $this->detectCreateColumn();
-                                                    if (is_string($col) && in_array($col, ['todo', 'in_progress', 'toreview', 'completed', 'archived'])) {
-                                                        return $col;
-                                                    }
-                                                    return 'todo';
-                                                })
                                                 ->searchable(),
                                         ]),
                                     Forms\Components\RichEditor::make('description')
@@ -187,7 +173,7 @@ class ActionBoard extends KanbanBoardPage
                                             'bulletList',
                                             'orderedList',
                                             'link',
-                                            'codeBlock',
+                                            'codeBlock'
                                         ])
                                         ->extraAttributes(['style' => 'resize: vertical;'])
                                         ->reactive()
@@ -214,43 +200,6 @@ class ActionBoard extends KanbanBoardPage
                                     Forms\Components\Repeater::make('extra_information')
                                         ->label('Extra Information')
                                         ->schema([
-                                            Forms\Components\Grid::make()
-                                                ->schema([
-                                                    Forms\Components\TextInput::make('title')
-                                                        ->label('Title')
-                                                        ->maxLength(100)
-                                                        ->columnSpanFull(),
-                                                    Forms\Components\RichEditor::make('value')
-                                                        ->label(__('Value'))
-                                                        ->toolbarButtons([
-                                                            'bold',
-                                                            'italic',
-                                                            'strike',
-                                                            'bulletList',
-                                                            'orderedList',
-                                                            'link',
-                                                            'codeBlock',
-                                                        ])
-                                                        ->extraAttributes(['style' => 'resize: vertical;'])
-                                                        ->reactive()
-                                                        ->helperText(function (Get $get) use ($mode) {
-                                                            $raw = $get('value') ?? '';
-                                                            $noHtml = strip_tags($raw);
-                                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                            $remaining = 500 - mb_strlen($decoded);
-                                                            return __("action.$mode.extra_information_helper", ['count' => $remaining]);
-                                                        })
-                                                        ->rule(function (Get $get) use ($mode): Closure {
-                                                            return function (string $attribute, $value, Closure $fail) use ($mode) {
-                                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                                if (mb_strlen($textOnly) > 500) {
-                                                                    $fail(__("action.$mode.extra_information_warning"));
-                                                                }
-                                                            };
-                                                        })
-                                                        ->nullable()
-                                                        ->columnSpanFull(),
-                                                ])
                                         ])
                                         ->defaultItems(1)
                                         ->addActionLabel(__('client.form.add_extra_info'))
@@ -309,6 +258,7 @@ class ActionBoard extends KanbanBoardPage
                         }),
                     Forms\Components\Grid::make(3)
                         ->schema([
+                            // Updated assigned_to select for create layout
                             Forms\Components\Select::make('assigned_to')
                                 ->label('Assign To')
                                 ->options(function () {
@@ -323,11 +273,10 @@ class ActionBoard extends KanbanBoardPage
                                 ->searchable()
                                 ->preload()
                                 ->native(false)
-                                ->afterStateHydrated(function (Forms\Components\Select $component, $state) {
-                                    if (is_array($state)) {
-                                        $component->state($state[0] ?? null);
-                                    }
-                                }),
+                                ->nullable()
+                                ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
+                                ->default(fn(?Task $record) => $record?->assigned_to)
+                                ->dehydrated(),
                             Forms\Components\DatePicker::make('due_date')
                                 ->label('Due Date'),
                             Forms\Components\Select::make('status')
@@ -345,8 +294,7 @@ class ActionBoard extends KanbanBoardPage
                                     $col = $this->detectCreateColumn();
                                     if (is_string($col) && in_array($col, ['todo', 'in_progress', 'toreview', 'completed', 'archived'])) {
                                         return $col;
-                                    }
-                                    return 'todo';
+                                    }return 'todo';
                                 })
                                 ->searchable(),
                         ]),
@@ -396,15 +344,7 @@ class ActionBoard extends KanbanBoardPage
                                         ->columnSpanFull(),
                                     Forms\Components\RichEditor::make('value')
                                         ->label(__('Value'))
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'strike',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                            'codeBlock',
-                                        ])
+                                        ->toolbarButtons(['codeBlock'])
                                         ->extraAttributes(['style' => 'resize: vertical;'])
                                         ->reactive()
                                         ->helperText(function (Get $get) use ($mode) {
@@ -422,7 +362,6 @@ class ActionBoard extends KanbanBoardPage
                                                 }
                                             };
                                         })
-                                        ->nullable()
                                         ->columnSpanFull(),
                                 ])
                         ])
