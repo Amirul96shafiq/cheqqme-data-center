@@ -2,6 +2,7 @@
 
 {{-- Published override to enable periodic polling refresh --}}
 <div
+    id="action-board-root"
     class="ff-board"
     x-load
     x-load-css="[@js(\Filament\Support\Facades\FilamentAsset::getStyleHref('flowforge', package: 'relaticle/flowforge'))]"
@@ -16,35 +17,6 @@
             pluralCardLabel: '{{ $config->getPluralCardLabel() }}'
         }
     })"
-    {{-- Custom JS polling (1s) with intelligent suppression to eliminate blink: no Livewire attribute polling. --}}
-    x-init="
-        const root = $el;
-        const wireId = root.getAttribute('wire:id');
-        let dragging = false;
-        let inFlight = false;
-        let lastRefreshAt = 0;
-        const MIN_INTERVAL = 1000; // 1s
-        function refresh(){
-            if(dragging || inFlight || document.hidden) return;
-            const now = Date.now();
-            if(now - lastRefreshAt < MIN_INTERVAL) return;
-            lastRefreshAt = now;
-            try { window.Livewire?.find(wireId)?.call('refreshBoard'); } catch(e){}
-        }
-        document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) setTimeout(refresh, 150); });
-        // Detect drag start/end
-        document.addEventListener('pointerdown', e=>{ if(e.target.closest('[x-sortable-item],[x-sortable-handle]')) dragging = true; });
-        document.addEventListener('pointerup', ()=>{ if(!dragging) return; dragging=false; setTimeout(()=>refresh(), 120); });
-        // Livewire request tracking
-        document.addEventListener('livewire:load', ()=>{
-            Livewire.hook('message.sent', (comp)=>{ if(comp.id===wireId) inFlight=true; });
-            Livewire.hook('message.processed', (comp)=>{ if(comp.id===wireId) { inFlight=false; } });
-        });
-        // Resume immediately after server reorder event
-        window.addEventListener('kanban-order-updated', ()=>{ setTimeout(()=>refresh(), 60); });
-        // Interval loop
-        setInterval(refresh, 350); // check frequently; refresh throttled by MIN_INTERVAL
-    "
 >
     <!-- Board Content -->
     <div class="ff-board__content">
@@ -62,3 +34,28 @@
 
     <x-filament-actions::modals />
 </div>
+
+<script data-flowforge-autopoll>
+// Lightweight polling script isolated from markup to avoid visible code issues.
+if(!window.__flowforgeBoardAutoPoll){
+    window.__flowforgeBoardAutoPoll = true;
+    const root = document.getElementById('action-board-root');
+    if(root){
+        const wireId = root.getAttribute('wire:id');
+        let dragging=false,inFlight=false,last=0; const MIN_INTERVAL=1000;
+        const modalOpen=()=>!!(document.querySelector('[data-filament-modal]')||document.querySelector('.fi-modal')||document.querySelector('.filament-action-component')||document.querySelector('.fi-modal-window')||document.querySelector('[role="dialog"]'));
+        function refresh(){
+            if(dragging||inFlight||document.hidden||modalOpen()) return; const now=Date.now(); if(now-last<MIN_INTERVAL) return; last=now; try{window.Livewire?.find(wireId)?.call('refreshBoard');}catch(e){}
+        }
+        document.addEventListener('visibilitychange',()=>{ if(!document.hidden) setTimeout(refresh,120); });
+        document.addEventListener('pointerdown',e=>{ if(e.target.closest('[x-sortable-item],[x-sortable-handle]')) dragging=true; });
+        document.addEventListener('pointerup',()=>{ if(!dragging) return; dragging=false; setTimeout(refresh,110); });
+        document.addEventListener('livewire:load',()=>{
+            Livewire.hook('message.sent',c=>{ if(c.id===wireId) inFlight=true; });
+            Livewire.hook('message.processed',c=>{ if(c.id===wireId) inFlight=false; });
+        });
+        window.addEventListener('kanban-order-updated',()=>setTimeout(refresh,50));
+        setInterval(()=>refresh(),300);
+    }
+}
+</script>
