@@ -2,14 +2,14 @@
 
 ## Overview
 
-**CheQQme Data Center** is an internal knowledge & operations hub built with Laravel + Filament. It centralizes:
+**CheQQme Data Center** is an internal knowledge & operations hub built with Laravel + Filament, now featuring MCP server integration for AI/semantic search. It centralizes:
 
 -   Important / frequently used URLs (SharePoint, tools, internal dashboards)
 -   Client & project records
 -   Internal documents & reference files
 -   Action Tasks (Kanban style board)
 
-It improves discoverability, reduces context switching, and lays groundwork for future AI-assisted search.
+It improves discoverability, reduces context switching, and lays groundwork for future AI-assisted search and MCP-powered automation.
 
 ## Core Objectives
 
@@ -29,6 +29,7 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 | Admin / UI   | FilamentPHP v3, Tailwind CSS                   |
 | Realtime UX  | Livewire (Filament integrated)                 |
 | Database     | SQLite (dev) → MySQL/PostgreSQL (future)       |
+| MCP Server   | Node.js (Express), SQLite, bcrypt, dotenv      |
 | Build Tools  | Vite, NPM                                      |
 | Testing      | PHPUnit, Laravel test utilities                |
 | Activity Log | spatie/laravel-activitylog (planned wiring)    |
@@ -38,6 +39,9 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 
 ## Major Features (Current)
 
+-   MCP server integration for context API and semantic search
+-   Password hash compatibility between MCP and Laravel (bcrypt $2b$ → $2y$)
+-   API endpoints for user creation, important URLs, and tasks (tested via Postman)
 -   URL / Link management with metadata & creator tracking
 -   Project & Client entities (foundation for relationships)
 -   Document records (file storage ready for local → S3 migration)
@@ -50,93 +54,80 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 -   Tagging system (polymorphic tags across Projects / Documents / Links)
 -   Advanced authorization (policies & role-based access control)
 -   Activity & audit logging (create/update/delete trails)
--   Full‑text / Scout based search + AI powered semantic layer
+-   Full‑text / Scout based search + AI powered semantic layer (MCP integration)
 -   Bulk import/export (CSV / XLSX)
 -   Background job queue (async file processing & notifications)
 -   S3 storage + signed download links
 
 ---
 
-## Environment Setup
+## First-Time Setup: CheQQme Data Center
 
-Follow these steps after cloning the repository.
+1. Clone the repository:
+    ```bash
+    git clone <repo-url> cheqqme-data-center
+    cd cheqqme-data-center
+    ```
+2. Install PHP and Node.js dependencies:
+    ```bash
+    composer install
+    npm install
+    ```
+3. Create your environment file:
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    # Edit .env and fill in any required values (DB, mail, MCP details)
+    ```
+4. Prepare the database and storage:
+    ```bash
+    php artisan migrate --seed   # if seeders available
+    php artisan storage:link
+    # If using SQLite, ensure database/database.sqlite exists
+    ```
+5. (Optional) Set up mail service for local testing:
+    - The default `.env` uses [Mailtrap](https://mailtrap.io/) for safe email testing.
+    - Sign up at Mailtrap and copy your SMTP credentials.
+    - Update these values in your `.env`:
+        ```properties
+        MAIL_MAILER=smtp
+        MAIL_HOST=sandbox.smtp.mailtrap.io
+        MAIL_PORT=2525
+        MAIL_USERNAME=your_mailtrap_username
+        MAIL_PASSWORD=your_mailtrap_password
+        MAIL_ENCRYPTION=tls
+        MAIL_FROM_ADDRESS=noreply@cheqqme.local
+        MAIL_FROM_NAME="CheQQme Data Center"
+        ```
+    - Emails sent by the app will appear in your Mailtrap inbox.
+6. Access the app at [http://127.0.0.1:8000](http://127.0.0.1:8000) (Filament admin panel at /admin).
 
-### 1. Requirements
+---
 
--   PHP 8.x with required Laravel extensions (bcmath, ctype, fileinfo, json, mbstring, openssl, pdo, tokenizer, xml)
--   Composer
--   Node.js (LTS) + npm
--   Git
+---
 
-### 2. Clone & Install Dependencies
+## MCP Server: First-Time Setup
 
-```bash
-git clone <repo-url> cheqqme-data-center
-cd cheqqme-data-center
-composer install
-npm install
-```
+1. Navigate to the `mcp-server` folder:
+    ```bash
+    cd mcp-server
+    ```
+2. Install dependencies:
+    ```bash
+    npm install
+    ```
+3. Copy the environment template and set your API key:
+    ```bash
+    cp .env.example .env
+    # Edit .env and fill MCP_API_KEY with your chosen key
+    ```
+4. Start the MCP server:
+    ```bash
+    node index.js
+    ```
+5. The MCP API will be available at `http://127.0.0.1:5000/api` by default.
 
-### 3. Environment File
-
-```bash
-cp .env.example .env
-php artisan key:generate
-```
-
-Optional: switch from SQLite to MySQL later by uncommenting the MySQL block inside `.env` and filling credentials.
-
-### 4. Database & Storage
-
-```bash
-php artisan migrate --seed   # if seeders available
-php artisan storage:link     # expose storage/app/public → public/storage
-```
-
-SQLite note: The default `DB_DATABASE=database/database.sqlite` file is committed (or will be created). If it does not exist:
-
-```bash
-touch database/database.sqlite
-```
-
-### 5. Build Frontend Assets (Dev)
-
-Run in two terminals (or use a process manager):
-
-```bash
-php artisan serve
-npm run dev
-```
-
-Then visit: http://127.0.0.1:8000 (Filament panel typically at /admin unless customized).
-
-### 6. Running Tests
-
-```bash
-php artisan test
-```
-
-Later you can add a CI workflow (GitHub Actions) to automate this.
-
-### 7. Optional: Queue Worker (Future)
-
-Once QUEUE_CONNECTION is not `sync`:
-
-```bash
-php artisan queue:work
-```
-
-### 8. Common Environment Variables (Reference)
-
-| Category    | Key Highlights                                                  |
-| ----------- | --------------------------------------------------------------- |
-| App         | APP_ENV, APP_DEBUG, APP_URL, APP_TIMEZONE                       |
-| Database    | DB_CONNECTION, DB_DATABASE (or MYSQL vars)                      |
-| Cache/Queue | CACHE_DRIVER, QUEUE_CONNECTION, SESSION_DRIVER                  |
-| Filesystem  | FILESYSTEM*DRIVER (public / s3) + AWS*\* (future)               |
-| Mail        | MAIL_MAILER, MAIL_HOST, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD |
-| Frontend    | VITE_APP_NAME                                                   |
-| Security    | SANCTUM_STATEFUL_DOMAINS, APP_TRUSTED_PROXIES (future)          |
+Refer to the main `.env` for connecting Laravel to MCP (MCP_ENDPOINT, MCP_API_KEY).
 
 ---
 
@@ -149,11 +140,13 @@ app/
 resources/
 	views/             # Blade templates
 database/
-	migrations/        # Schema definitions
-	seeders/           # (Add seeders for demo data)
+	migrations/        # Schema definitions (not tracked in repo)
+	seeders/           # (Add seeders for demo data, not tracked)
+mcp-server/           # Node.js MCP server (API endpoints, .env ignored)
 routes/
 	web.php            # Web routes (Filament auto-registers its own)
 public/              # Public assets (built via Vite)
+storage/             # Logs, cache, uploads (ignored from git)
 ```
 
 ---
@@ -190,7 +183,9 @@ Add seeds + factories to simplify realistic scenario coverage.
 
 ## Authentication & Security
 
--   Currently relies on Laravel auth scaffolding + Filament guard
+-   Laravel auth scaffolding + Filament guard
+-   MCP server password hashes compatible with Laravel (bcrypt $2b$ → $2y$)
+-   Sensitive files/folders (`.env`, `database/`, `storage/`, etc.) are ignored from git tracking
 -   Next steps: add Policies (Project, Document, URL) & roles field on `users` table
 -   Consider rate limiting if public endpoints added later
 
@@ -239,4 +234,4 @@ Crafted by **Amirul** (Creative Designer & Aspiring Developer) with assistance f
 
 ## Notice
 
-This repository is public for demonstration & portfolio purposes. Not licensed for commercial redistribution. Remove or anonymize any sensitive data before sharing.
+This repository is public for demonstration & portfolio purposes. Not licensed for commercial redistribution. All sensitive files and folders are now ignored from git tracking. Remove or anonymize any sensitive data before sharing.
