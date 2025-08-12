@@ -76,8 +76,6 @@ class ActionBoard extends KanbanBoardPage
             ])
             ->cardLabel('Action Task')
             ->pluralCardLabel('Action Tasks');
-
-        // JS hook removed – server-side detectCreateColumn() now provides deterministic column default.
     }
 
     public function createAction(Action $action): Action

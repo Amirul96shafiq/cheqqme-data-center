@@ -81,11 +81,7 @@ class Task extends Model
     $user = $this->assignedTo;
     if (!$user)
       return null;
-    $authId = Auth::id();
-    // If the assigned user IS the current user, suppress this (the _self variant will show)
-    if ($authId && $user->id === $authId) {
-      return null;
-    }
+    // Always show username, even for current user
     return $user->short_name ?? $user->username ?? $user->name ?? null;
   }
 
