@@ -12,6 +12,7 @@
         "blade-ui-kit/blade-heroicons": "^2.6",
         "charrafimed/global-search-modal": "^3.7",
         "filament/filament": "^3.0",
+        "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "relaticle/flowforge": "^0.2.1",
