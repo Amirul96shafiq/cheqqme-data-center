@@ -64,7 +64,6 @@ class EditTask extends EditRecord
         ->url('/admin/action-board')
         ->color('gray'),
       Actions\DeleteAction::make()
-        ->color('secondary'),
     ];
   }
 }

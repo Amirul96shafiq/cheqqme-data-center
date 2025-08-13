@@ -33,9 +33,7 @@ class ActionBoard extends KanbanBoardPage
             ->titleField('title')
             ->orderField('order_column')
             ->columnField('status')
-            //->descriptionField('description')
-            // Provide attributes without visible labels (empty strings) so only the value shows on the badge.
-            // Multiple virtual due_date_* attributes exist to allow different static colors per urgency.
+            // Attributes for badge display; virtual due_date_* for static colors.
             ->cardAttributes([
                 'due_date_red' => '',
                 'due_date_yellow' => '',
@@ -43,6 +41,34 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_green' => '',
                 'assigned_to_username_self' => '',
                 'assigned_to_username' => '',
+            ])
+            ->cardAttributeColors([
+                'due_date_red' => 'red',
+                'due_date_yellow' => 'yellow',
+                'due_date_gray' => 'gray',
+                'due_date_green' => 'green',
+                'assigned_to_display' => fn($record) => $record->assigned_to_display_color,
+            ])
+            ->cardAttributeIcons([
+                'due_date_red' => 'heroicon-o-calendar',
+                'due_date_yellow' => 'heroicon-o-calendar',
+                'due_date_gray' => 'heroicon-o-calendar',
+                'due_date_green' => 'heroicon-o-calendar',
+                'assigned_to_display' => fn($record) => $record->assigned_to_display_icon,
+            ])
+            ->cardAttributeColors([
+                'due_date_red' => 'red',
+                'due_date_yellow' => 'yellow',
+                'due_date_gray' => 'gray',
+                'due_date_green' => 'green',
+                'assigned_to_badge' => 'cyan', // Use cyan for self, gray for others in accessor
+            ])
+            ->cardAttributeIcons([
+                'due_date_red' => 'heroicon-o-calendar',
+                'due_date_yellow' => 'heroicon-o-calendar',
+                'due_date_gray' => 'heroicon-o-calendar',
+                'due_date_green' => 'heroicon-o-calendar',
+                'assigned_to_badge' => 'heroicon-o-user', // Use different icon in accessor if needed
             ])
             ->cardAttributeColors([
                 'due_date_red' => 'red',
@@ -85,7 +111,11 @@ class ActionBoard extends KanbanBoardPage
             ->icon('heroicon-o-plus')
             ->modalHeading('Create Action Task')
             ->modalWidth('3xl')
-            ->form(fn(Forms\Form $form) => $this->taskFormSchema($form, 'create'))
+            ->form(function (Forms\Form $form) use ($action) {
+                $args = method_exists($action, 'getArguments') ? $action->getArguments() : [];
+                $col = $args['column'] ?? $this->detectCreateColumn();
+                return $this->taskFormSchema($form, 'create', $col);
+            })
             ->action(function (array $data) {
                 $task = Task::create($data);
                 $task->update(['order_column' => Task::max('order_column') + 1]); // Ensure new task is listed at the bottom
@@ -98,6 +128,11 @@ class ActionBoard extends KanbanBoardPage
             ->modalHeading('Edit Action Task')
             ->modalWidth('7xl') // Increased width to accommodate sidebar
             ->form(function (Forms\Form $form, Action $action) {
+                $args = method_exists($action, 'getArguments') ? $action->getArguments() : [];
+                $col = $args['column'] ?? $this->detectCreateColumn();
+                if (is_string($col) && in_array($col, ['todo', 'in_progress', 'toreview', 'completed', 'archived'])) {
+                    $form->fill(['status' => $col]);
+                }
                 return $this->taskFormSchema($form, 'edit');
             })
             ->action(function (array $data, Task $record) {
@@ -107,7 +142,7 @@ class ActionBoard extends KanbanBoardPage
         ;
     }
 
-    protected function taskFormSchema(Forms\Form $form, string $mode)
+    protected function taskFormSchema(Forms\Form $form, string $mode, $defaultStatus = null)
     {
         return $form->schema([
             // For edit mode, use grid with sidebar layout
@@ -127,6 +162,7 @@ class ActionBoard extends KanbanBoardPage
                                     Forms\Components\Hidden::make('kanban_column_hint')
                                         ->dehydrated(false)
                                         ->afterStateHydrated(function (Forms\Components\Hidden $component) use ($mode) {
+                                            // Removed unused kanban_column_hint hidden field
                                         }),
                                     Forms\Components\Grid::make(3)
                                         ->schema([
@@ -160,7 +196,8 @@ class ActionBoard extends KanbanBoardPage
                                                     'completed' => 'Completed',
                                                     'archived' => 'Archived',
                                                 ])
-                                                ->searchable(),
+                                                ->searchable()
+                                                ->default($defaultStatus),
                                         ]),
                                     Forms\Components\RichEditor::make('description')
                                         ->label('Description')
@@ -286,13 +323,10 @@ class ActionBoard extends KanbanBoardPage
                                     'completed' => 'Completed',
                                     'archived' => 'Archived',
                                 ])
-                                ->default(function () use ($mode) {
-                                    if ($mode === 'edit')
-                                        return null;
-                                    $col = $this->detectCreateColumn();
-                                    if (is_string($col) && in_array($col, ['todo', 'in_progress', 'toreview', 'completed', 'archived'])) {
-                                        return $col;
-                                    }return 'todo';
+                                ->default(function (Get $get) {
+                                    $valid = ['todo', 'in_progress', 'toreview', 'completed', 'archived'];
+                                    $status = $get('status');
+                                    return (is_string($status) && in_array($status, $valid)) ? $status : 'todo';
                                 })
                                 ->searchable(),
                         ]),

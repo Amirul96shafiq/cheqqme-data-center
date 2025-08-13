@@ -50,13 +50,66 @@ class Task extends Model
 
   // Make virtual attributes available when converting to array / JSON for the Kanban adapter
   protected $appends = [
-    'assigned_to_username',
-    'assigned_to_username_self',
+    'assigned_to_badge',
     'due_date_red',
     'due_date_yellow',
     'due_date_green',
     'due_date_gray',
   ];
+
+  /**
+   * Returns only one assigned_to badge per card: highlighted for self, otherwise normal.
+   */
+  public function getAssignedToBadgeAttribute(): ?string
+  {
+    $user = $this->assignedTo;
+    if (!$user)
+      return null;
+    $authId = Auth::id();
+    if ($authId && $user->id === $authId) {
+      return $user->short_name ?? $user->username ?? $user->name ?? null;
+    }
+    return $user->short_name ?? $user->username ?? $user->name ?? null;
+  }
+  /**
+   * Returns only one assigned_to badge per card: highlighted for self, otherwise normal.
+   */
+  public function getAssignedToDisplayAttribute(): ?string
+  {
+    $user = $this->assignedTo;
+    if (!$user)
+      return null;
+    return $user->short_name ?? $user->username ?? $user->name ?? null;
+  }
+
+  public function getAssignedToDisplayColorAttribute(): string
+  {
+    $user = $this->assignedTo;
+    $authId = Auth::id();
+    if ($user && $authId && $user->id === $authId) {
+      return 'cyan'; // Highlight for self
+    }
+    if ($user) {
+      return 'gray'; // Normal for others
+    }
+    return 'gray'; // Default
+  }
+
+  public function getAssignedToDisplayIconAttribute(): string
+  {
+    $user = $this->assignedTo;
+    $authId = Auth::id();
+    if ($user && $authId && $user->id === $authId) {
+      return 'heroicon-m-user'; // Icon for self
+    }
+    if ($user) {
+      return 'heroicon-o-user'; // Icon for others
+    }
+    return 'heroicon-o-user'; // Default
+  }
+  /**
+   * Returns only one assigned_to badge per card: highlighted for self, otherwise normal.
+   */
 
   public function updatedBy()
   {
