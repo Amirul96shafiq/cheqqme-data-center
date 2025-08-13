@@ -53,15 +53,30 @@
         ])
     >
         @if (filled($icon) && ((! $subGrouped) || $sidebarCollapsible))
-            <x-filament::icon
-                :icon="($active && $activeIcon) ? $activeIcon : $icon"
-                :x-show="($subGrouped && $sidebarCollapsible) ? '! $store.sidebar.isOpen' : false"
-                @class([
-                    'fi-sidebar-item-icon h-6 w-6',
-                    'text-gray-400 dark:text-gray-500' => ! $active,
-                    'text-primary-600 dark:text-primary-400' => $active,
-                ])
-            />
+            <span class="relative inline-block">
+                <x-filament::icon
+                    :icon="($active && $activeIcon) ? $activeIcon : $icon"
+                    :x-show="($subGrouped && $sidebarCollapsible) ? '! $store.sidebar.isOpen' : false"
+                    @class([
+                        'fi-sidebar-item-icon h-6 w-6',
+                        'text-gray-400 dark:text-gray-500' => ! $active,
+                        'text-primary-600 dark:text-primary-400' => $active,
+                    ])
+                />
+                @if (filled($badge))
+                    <span
+                        x-show="!$store.sidebar.isOpen"
+                        class="absolute -top-1.5 -right-1.5 z-10 flex items-center justify-center w-4 h-4"
+                    >
+                        <span
+                            class="bg-primary-600 text-white text-[10px] font-bold rounded-full border-2 border-white dark:border-gray-900 shadow w-4 h-4 flex items-center justify-center"
+                            :title="$badgeTooltip"
+                        >
+                            {{ $badge }}
+                        </span>
+                    </span>
+                @endif
+            </span>
         @endif
 
         @if ((blank($icon) && $grouped) || $subGrouped)
@@ -111,12 +126,10 @@
 
         @if (filled($badge))
             <span
-                @if ($sidebarCollapsible)
-                    x-show="$store.sidebar.isOpen"
-                    x-transition:enter="lg:transition lg:delay-100"
-                    x-transition:enter-start="opacity-0"
-                    x-transition:enter-end="opacity-100"
-                @endif
+                x-show="$store.sidebar.isOpen"
+                x-transition:enter="lg:transition lg:delay-100"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
             >
                 <x-filament::badge
                     :color="$badgeColor"

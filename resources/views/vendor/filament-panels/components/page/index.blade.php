@@ -14,7 +14,7 @@
     {{
         $attributes->class([
             'fi-page',
-            'h-full' => $fullHeight,
+            'min-h-[65vh] max-h-[65vh] h-auto',
         ])
     }}
 >
@@ -23,7 +23,7 @@
     <section
         @class([
             'flex flex-col gap-y-8 py-8',
-            'h-full' => $fullHeight,
+            'min-h-[65vh] max-h-[65vh] h-auto',
         ])
     >
         @if ($header = $this->getHeader())
@@ -60,7 +60,7 @@
                     SubNavigationPosition::Start, SubNavigationPosition::End => 'md:flex-row md:items-start',
                     default => null,
                 } => $subNavigation,
-                'h-full' => $fullHeight,
+                'min-h-[65vh] max-h-[65vh] h-auto',
             ])
         >
             @if ($subNavigation)
@@ -100,7 +100,7 @@
             <div
                 @class([
                     'grid flex-1 auto-cols-fr gap-y-8',
-                    'h-full' => $fullHeight,
+                    'min-h-[65vh] max-h-[65vh] h-auto',
                 ])
             >
                 {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE, scopes: $this->getRenderHookScopes()) }}
