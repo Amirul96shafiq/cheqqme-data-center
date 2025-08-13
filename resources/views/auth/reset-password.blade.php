@@ -126,6 +126,7 @@
 </head>
 
 <body class="min-h-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center">
+  @include('components.global-loader')
   <div class="max-w-md w-full space-y-8">
 
     <!-- Theme Toggle Buttons -->

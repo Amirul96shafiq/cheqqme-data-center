@@ -107,6 +107,7 @@
 </head>
 
 <body class="min-h-screen bg-gray-100 dark:bg-gray-950 flex items-center justify-center">
+  @include('components.global-loader')
   <div class="max-w-md w-full space-y-8">
 
     <!-- Theme Toggle Buttons -->
@@ -146,6 +147,7 @@
         <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{{ __('auth.description_forgot_password') }}</p>
       </div>
 
+      
       <!-- Form section -->
       @if (session('status'))
       <div class="mb-4 text-sm text-primary-500 font-medium text-center">

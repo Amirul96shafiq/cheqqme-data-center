@@ -422,6 +422,11 @@ class ActionBoard extends KanbanBoardPage
         ]);
     }
 
+    /**
+     * Detects the appropriate Kanban column for task creation based on request parameters or component calls.
+     *
+     * @return string|null Returns the column key (e.g., 'todo', 'in_progress', etc.) if detected, or null if not found.
+     */
     protected function detectCreateColumn(): ?string
     {
         $valid = ['todo', 'in_progress', 'toreview', 'completed', 'archived'];
