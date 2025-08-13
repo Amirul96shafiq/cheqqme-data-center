@@ -61,6 +61,7 @@ return [
       'deleted' => 'Dihapus',
       'restored' => 'Dipulihkan',
       'draft' => 'Deraf',
+      'Task Moved' => 'Tugasan Dipindahkan',
     ],
   ],
 

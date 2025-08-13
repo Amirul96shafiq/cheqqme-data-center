@@ -11,6 +11,7 @@ return [
         'deleted' => 'deleted',
         'updated' => 'updated',
         'restored' => 'restored',
+        'Task Moved' => 'Task Moved',
     ],
     'view' => 'View',
     'edit' => 'Edit',

@@ -75,7 +75,7 @@ class TaskComments extends Component implements HasForms
       'comment' => $sanitized,
     ]);
     Notification::make()
-      ->title('Comment added')
+      ->title(__('comments.notifications.added_title'))
       ->body(Str::limit($textOnly, 120))
       ->success()
       ->send();
@@ -127,7 +127,7 @@ class TaskComments extends Component implements HasForms
     $sanitized = $this->sanitizeHtml($this->editingText);
     $plain = trim(strip_tags($sanitized));
     if ($plain === '') {
-      Notification::make()->title('Comment not updated')->body('Edited comment cannot be empty.')->danger()->send();
+      Notification::make()->title(__('comments.notifications.not_updated_title'))->body(__('comments.notifications.edited_empty'))->danger()->send();
       return;
     }
     if ($sanitized === $original) {
@@ -137,7 +137,7 @@ class TaskComments extends Component implements HasForms
     }
     $comment->update(['comment' => $sanitized]);
     Notification::make()
-      ->title('Comment updated')
+      ->title(__('comments.notifications.updated_title'))
       ->body(Str::limit($plain, 120))
       ->success()
       ->send();
@@ -173,7 +173,7 @@ class TaskComments extends Component implements HasForms
     }
     $comment->delete();
     Notification::make()
-      ->title('Comment deleted')
+      ->title(__('comments.notifications.deleted_title'))
       ->body(Str::limit($comment->comment, 120))
       ->danger()
       ->send();
@@ -266,7 +266,7 @@ class TaskComments extends Component implements HasForms
       'composerForm' => $this->makeForm()->schema([
         RichEditor::make('newComment')
           ->label('')
-          ->placeholder('Write a comment here.')
+          ->placeholder(__('comments.composer.placeholder'))
           ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
           ->extraAttributes(['class' => 'minimal-comment-editor'])
           ->maxLength(1000)
@@ -286,7 +286,7 @@ class TaskComments extends Component implements HasForms
       'editForm' => $this->makeForm()->schema([
         RichEditor::make('editingText')
           ->label('')
-          ->placeholder('Edit comment...')
+          ->placeholder(__('comments.composer.edit_placeholder'))
           ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
           ->maxLength(1000)
           ->default('')

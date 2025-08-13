@@ -3,7 +3,7 @@
     <!-- Comments Header -->
     <div class="p-3 border-b border-gray-200 dark:border-gray-700">
         <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">
-            Comments ({{ $comments->count() }})
+            {{ __('comments.header.title') }} ({{ $comments->count() }})
         </h3>
     </div>
 
@@ -22,12 +22,12 @@
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between">
                         <p class="text-xs font-medium text-gray-900 dark:text-gray-100">
-                            {{ $comment->user->username ?? 'Unknown User' }}
+                            {{ $comment->user->username ?? __('comments.meta.unknown_user') }}
                         </p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">
                             {{ $comment->created_at->format('M j, H:i') }}
                             @if($comment->updated_at->gt($comment->created_at))
-                                <span class="text-xs text-gray-400">(edited)</span>
+                                <span class="text-xs text-gray-400">({{ __('comments.meta.edited') }})</span>
                             @endif
                         </p>
                     </div>
@@ -42,14 +42,14 @@
                                 data-comment-id="{{ $comment->id }}"
                                 data-comment-text="{{ addslashes($comment->comment) }}"
                             >
-                                Edit
+                                {{ __('comments.buttons.edit') }}
                             </button>
                             <button 
                                 type="button"
                                 class="delete-comment-btn text-xs text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
                                 data-comment-id="{{ $comment->id }}"
                             >
-                                Delete
+                                {{ __('comments.buttons.delete') }}
                             </button>
                         </div>
                     @endif
@@ -57,7 +57,7 @@
             </div>
         @empty
             <p class="text-xs text-gray-500 dark:text-gray-400 italic text-center py-8">
-                No comments yet. Be the first to comment!
+                {{ __('comments.list.none_long') }}
             </p>
         @endforelse
     </div>
@@ -68,7 +68,7 @@
         
         <textarea 
             id="comment-input-{{ $taskId ?? 'new' }}" 
-            placeholder="Write your comment here..." 
+            placeholder="{{ __('comments.composer.placeholder') }}" 
             rows="3" 
             class="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
         ></textarea>
@@ -83,7 +83,7 @@
                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                 </svg>
-                Save Comment
+                {{ __('comments.buttons.save_comment') }}
             </button>
         </div>
     </div>

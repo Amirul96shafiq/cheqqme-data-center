@@ -219,4 +219,16 @@ class Task extends Model
       return (string) $this->due_date;
     }
   }
+
+  public function shouldLogEvent(string $eventName): bool
+  {
+    // Prevent trait from logging "updated" when moving columns/status
+    if (
+        $eventName === 'updated'
+        && ($this->isDirty('order_column') || $this->isDirty('status'))
+    ) {
+        return false;
+    }
+    return true;
+  }
 }

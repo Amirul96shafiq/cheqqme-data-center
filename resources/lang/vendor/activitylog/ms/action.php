@@ -11,6 +11,7 @@ return [
         'deleted' => 'dihapus',
         'updated' => 'dikemaskini',
         'restored' => 'dipulihkan',
+        'Task Moved' => 'Tugasan Dipindahkan',
     ],
     'view' => 'Lihat',
     'edit' => 'Sunting',

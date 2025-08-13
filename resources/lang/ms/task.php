@@ -1,0 +1,51 @@
+<?php
+
+return [
+    'form' => [
+        'task_information' => 'Maklumat Tugasan',
+        'additional_information' => 'Maklumat Tambahan Tugasan',
+        'extra_information' => 'Maklumat Tambahan',
+        'assign_to' => 'Ditugaskan Kepada',
+        'due_date' => 'Tarikh Habis',
+        'status' => 'Status',
+        'description' => 'Peterangan',
+        'title' => 'Tajuk',
+        'value' => 'Nilai',
+        'comments' => 'Komen',
+        'add_extra_info' => 'Tambah Maklumat Tambahan',
+        'title_placeholder' => 'Masukkan tajuk tugasan',
+        'title_placeholder_short' => 'Tajuk di sini',
+        'description_helper' => 'Baki aksara: :count',
+        'description_warning' => 'Keterangan tidak boleh melebihi 500 aksara yang boleh dibaca.',
+        'extra_information_helper' => 'Baki aksara: :count',
+        'extra_information_warning' => 'Maklumat tambahan tidak boleh melebihi 500 aksara yang boleh dibaca.',
+    ],
+    'search' => [
+        'status' => 'Status',
+        'due_date' => 'Tarikh Habis',
+        'assigned_to' => 'Ditugaskan Kepada',
+    ],
+    'status' => [
+        'todo' => 'Untuk Dilakukan',
+        'in_progress' => 'Sedang Berjalan',
+        'toreview' => 'Untuk Semakan',
+        'completed' => 'Selesai',
+        'archived' => 'Dihapus',
+    ],
+    'edit' => [
+        'description_helper' => 'Baki aksara: :count',
+        'description_warning' => 'Keterangan tidak boleh melebihi 500 aksara yang boleh dibaca.',
+        'extra_information_helper' => 'Baki aksara: :count',
+        'extra_information_warning' => 'Maklumat tambahan tidak boleh melebihi 500 aksara yang boleh dibaca.',
+    ],
+    'action' => [
+        'save_changes' => 'Simpan',
+        'cancel' => 'Batal',
+    ],
+    'notifications' => [
+        'created_title' => 'Tugasan Dicipta',
+        'created_body' => 'Tugasan berjaya dicipta',
+        'updated_title' => 'Tugasam Dikemas Kini',
+        'updated_body' => 'Tugasan berjaya dikemas kini.',
+    ],
+];

@@ -70,18 +70,19 @@ class TaskResource extends Resource
           // Main content (left side) - spans 2 columns
           Forms\Components\Grid::make(1)
             ->schema([
-              Forms\Components\Section::make('Task Information')
+              Forms\Components\Section::make(__('task.form.task_information'))
                 ->schema([
                   Forms\Components\Hidden::make('id')
                     ->disabled()
                     ->visible(false),
                   Forms\Components\TextInput::make('title')
+                    ->label(__('task.form.title'))
                     ->required()
-                    ->placeholder('Enter task title'),
+                    ->placeholder(__('task.form.title_placeholder')),
                   Forms\Components\Grid::make(3)
                     ->schema([
                       Forms\Components\Select::make('assigned_to')
-                        ->label('Assign To')
+                        ->label(__('task.form.assign_to'))
                         ->options(function () {
                           return \App\Models\User::withTrashed()
                             ->orderBy('username')
@@ -99,20 +100,20 @@ class TaskResource extends Resource
                         ->default(fn(?Task $record) => $record?->assigned_to)
                         ->dehydrated(),
                       Forms\Components\DatePicker::make('due_date')
-                        ->label('Due Date'),
+                        ->label(__('task.form.due_date')),
                       Forms\Components\Select::make('status')
-                        ->label('Status')
+                        ->label(__('task.form.status'))
                         ->options([
-                          'todo' => 'To Do',
-                          'in_progress' => 'In Progress',
-                          'toreview' => 'To Review',
-                          'completed' => 'Completed',
-                          'archived' => 'Archived',
+                          'todo' => __('task.status.todo'),
+                          'in_progress' => __('task.status.in_progress'),
+                          'toreview' => __('task.status.toreview'),
+                          'completed' => __('task.status.completed'),
+                          'archived' => __('task.status.archived'),
                         ])
                         ->searchable(),
                     ]),
                   Forms\Components\RichEditor::make('description')
-                    ->label('Description')
+                    ->label(__('task.form.description'))
                     ->toolbarButtons([
                       'bold',
                       'italic',
@@ -129,31 +130,39 @@ class TaskResource extends Resource
                       $noHtml = strip_tags($raw);
                       $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                       $remaining = 500 - mb_strlen($decoded);
-                      return __("action.edit.description_helper", ['count' => $remaining]);
+                      return __("task.edit.description_helper", ['count' => $remaining]);
                     })
                     ->rule(function (Forms\Get $get): \Closure {
                       return function (string $attribute, $value, \Closure $fail) {
                         $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                         if (mb_strlen($textOnly) > 500) {
-                          $fail(__("action.edit.description_warning"));
+                          $fail(__("task.edit.description_warning"));
                         }
                       };
                     })
                     ->nullable()
                     ->columnSpanFull(),
                 ]),
-              Forms\Components\Section::make('Task Additional Information')
+              Forms\Components\Section::make(__('task.form.additional_information'))
                 ->schema([
                   Forms\Components\Repeater::make('extra_information')
-                    ->label('Extra Information')
+                    ->label(__('task.form.extra_information'))
                     ->schema([
                       Forms\Components\TextInput::make('title')
-                        ->label('Title')
+                        ->label(__('task.form.title'))
                         ->maxLength(100)
                         ->columnSpanFull(),
                       Forms\Components\RichEditor::make('value')
-                        ->label(__('Value'))
-                        ->toolbarButtons(['codeBlock'])
+                        ->label(__('task.form.value'))
+                        ->toolbarButtons([
+                          'bold',
+                          'italic',
+                          'strike',
+                          'bulletList',
+                          'orderedList',
+                          'link',
+                          'codeBlock',
+                        ])
                         ->extraAttributes(['style' => 'resize: vertical;'])
                         ->reactive()
                         ->helperText(function (Forms\Get $get) {
@@ -161,25 +170,25 @@ class TaskResource extends Resource
                           $noHtml = strip_tags($raw);
                           $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                           $remaining = 500 - mb_strlen($decoded);
-                          return __("action.edit.extra_information_helper", ['count' => $remaining]);
+                          return __("task.edit.extra_information_helper", ['count' => $remaining]);
                         })
                         ->rule(function (Forms\Get $get): \Closure {
                           return function (string $attribute, $value, \Closure $fail) {
                             $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                             if (mb_strlen($textOnly) > 500) {
-                              $fail(__("action.edit.extra_information_warning"));
+                              $fail(__("task.edit.extra_information_warning"));
                             }
                           };
                         })
                         ->columnSpanFull(),
                     ])
                     ->defaultItems(1)
-                    ->addActionLabel(__('client.form.add_extra_info'))
+                    ->addActionLabel(__('task.form.add_extra_info'))
                     ->cloneable()
                     ->reorderable()
                     ->collapsible(true)
                     ->collapsed()
-                    ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : 'Title goes here')
+                    ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
                     ->live()
                     ->columnSpanFull()
                     ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
@@ -190,7 +199,7 @@ class TaskResource extends Resource
             ->columnSpan(3),
 
           // Comments sidebar (right side) - spans 1 column
-          Forms\Components\Section::make('Comments')
+          Forms\Components\Section::make(__('task.form.comments'))
             ->schema([
               Forms\Components\ViewField::make('task_comments')
                 ->view('filament.components.comments-sidebar-livewire-wrapper')
@@ -216,26 +225,17 @@ class TaskResource extends Resource
   {
     return $table
       ->columns([
-        Tables\Columns\TextColumn::make('title')->searchable(),
-        Tables\Columns\TextColumn::make('status')->searchable(),
-        Tables\Columns\TextColumn::make('due_date')->date()->sortable(),
+        // Add your table columns here
       ])
       ->filters([
-        TrashedFilter::make(),
+        // Add your table filters here
       ])
       ->actions([
-        Tables\Actions\ViewAction::make(),
-        Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
-        Tables\Actions\DeleteAction::make(),
-        Tables\Actions\RestoreAction::make(),
-        Tables\Actions\ForceDeleteAction::make(),
+        // Add your table actions here
       ])
       ->bulkActions([
-        Tables\Actions\DeleteBulkAction::make(),
-        Tables\Actions\RestoreBulkAction::make(),
-        Tables\Actions\ForceDeleteBulkAction::make(),
-      ])
-      ->defaultSort('order_column');
+        // Add your bulk actions here
+      ]);
   }
 
   public static function getPages(): array

@@ -16,9 +16,9 @@ use Filament\Notifications\Notification;
 class ActionBoard extends KanbanBoardPage
 {
     protected static ?string $navigationIcon = 'heroicon-o-rocket-launch';
-    protected static ?string $navigationGroup = 'Boards';
-    protected static ?string $navigationLabel = 'Action Board';
-    protected static ?string $title = 'Action Board';
+    protected static ?string $navigationGroup = null;
+    protected static ?string $navigationLabel = null;
+    protected static ?string $title = null;
 
     // Removed native Filament navigation badge methods; using fully custom persistent badge.
 
@@ -87,11 +87,11 @@ class ActionBoard extends KanbanBoardPage
                 'assigned_to_username' => 'heroicon-o-user',
             ])
             ->columns([
-                'todo' => 'To Do',
-                'in_progress' => 'In Progress',
-                'toreview' => 'To Review',
-                'completed' => 'Completed',
-                'archived' => 'Archived',
+                'todo' => __('action.status.todo'),
+                'in_progress' => __('action.status.in_progress'),
+                'toreview' => __('action.status.toreview'),
+                'completed' => __('action.status.completed'),
+                'archived' => __('action.status.archived'),
             ])
             ->columnColors([
                 'todo' => 'gray',
@@ -100,8 +100,8 @@ class ActionBoard extends KanbanBoardPage
                 'completed' => 'green',
                 'archived' => 'rose'
             ])
-            ->cardLabel('Action Task')
-            ->pluralCardLabel('Action Tasks');
+            ->cardLabel(__('action.card_label'))
+            ->pluralCardLabel(__('action.card_label_plural'));
     }
 
     public function createAction(Action $action): Action
@@ -109,7 +109,7 @@ class ActionBoard extends KanbanBoardPage
         return $action
             ->iconButton()
             ->icon('heroicon-o-plus')
-            ->modalHeading('Create Action Task')
+            ->modalHeading(__('action.modal.create_title'))
             ->modalWidth('3xl')
             ->form(function (Forms\Form $form) use ($action) {
                 $args = method_exists($action, 'getArguments') ? $action->getArguments() : [];
@@ -120,7 +120,7 @@ class ActionBoard extends KanbanBoardPage
                 $task = Task::create($data);
                 $task->update(['order_column' => Task::max('order_column') + 1]); // Ensure new task is listed at the bottom
                 Notification::make()
-                    ->title(__('Task created successfully'))
+                    ->title(__('action.notifications.created'))
                     ->success()
                     ->send();
             });
@@ -129,7 +129,7 @@ class ActionBoard extends KanbanBoardPage
     public function editAction(Action $action): Action
     {
         return $action
-            ->modalHeading('Edit Action Task')
+            ->modalHeading(__('action.modal.edit_title'))
             ->modalWidth('7xl') // Increased width to accommodate sidebar
             ->form(function (Forms\Form $form, Action $action) {
                 $args = method_exists($action, 'getArguments') ? $action->getArguments() : [];
@@ -143,7 +143,7 @@ class ActionBoard extends KanbanBoardPage
                 // Update task data only (comments are handled separately)
                 $record->update($data);
                 Notification::make()
-                    ->title(__('Task updated successfully'))
+                    ->title(__('action.notifications.updated'))
                     ->success()
                     ->send();
             })
@@ -159,14 +159,15 @@ class ActionBoard extends KanbanBoardPage
                     // Main content (left side) - spans 2 columns
                     Forms\Components\Grid::make(1)
                         ->schema([
-                            Forms\Components\Section::make('Task Information')
+                            Forms\Components\Section::make(__('action.form.task_information'))
                                 ->schema([
                                     Forms\Components\Hidden::make('id')
                                         ->disabled() // not user editable
                                         ->visible(false),
                                     Forms\Components\TextInput::make('title')
+                                        ->label(__('action.form.title'))
                                         ->required()
-                                        ->placeholder('Enter task title'),
+                                        ->placeholder(__('action.form.title_placeholder')),
                                     Forms\Components\Hidden::make('kanban_column_hint')
                                         ->dehydrated(false)
                                         ->afterStateHydrated(function (Forms\Components\Hidden $component) use ($mode) {
@@ -176,13 +177,13 @@ class ActionBoard extends KanbanBoardPage
                                         ->schema([
                                             // Updated assigned_to select for edit layout
                                             Forms\Components\Select::make('assigned_to')
-                                                ->label('Assign To')
+                                                ->label(__('action.form.assign_to'))
                                                 ->options(function () {
                                                     return User::withTrashed()
                                                         ->orderBy('username')
                                                         ->get()
                                                         ->mapWithKeys(fn($u) => [
-                                                            $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
+                                                            $u->id => ($u->username ?: __('action.form.user_with_id', ['id' => $u->id])) . ($u->deleted_at ? __('action.form.deleted_suffix') : ''),
                                                         ])
                                                         ->toArray();
                                                 })
@@ -194,21 +195,21 @@ class ActionBoard extends KanbanBoardPage
                                                 ->default(fn(?Task $record) => $record?->assigned_to)
                                                 ->dehydrated(),
                                             Forms\Components\DatePicker::make('due_date')
-                                                ->label('Due Date'),
+                                                ->label(__('action.form.due_date')),
                                             Forms\Components\Select::make('status')
-                                                ->label('Status')
+                                                ->label(__('action.form.status'))
                                                 ->options([
-                                                    'todo' => 'To Do',
-                                                    'in_progress' => 'In Progress',
-                                                    'toreview' => 'To Review',
-                                                    'completed' => 'Completed',
-                                                    'archived' => 'Archived',
+                                                    'todo' => __('action.status.todo'),
+                                                    'in_progress' => __('action.status.in_progress'),
+                                                    'toreview' => __('action.status.toreview'),
+                                                    'completed' => __('action.status.completed'),
+                                                    'archived' => __('action.status.archived'),
                                                 ])
                                                 ->searchable()
                                                 ->default($defaultStatus),
                                         ]),
                                     Forms\Components\RichEditor::make('description')
-                                        ->label('Description')
+                                        ->label(__('action.form.description'))
                                         ->toolbarButtons([
                                             'bold',
                                             'italic',
@@ -238,11 +239,44 @@ class ActionBoard extends KanbanBoardPage
                                         ->nullable()
                                         ->columnSpanFull(),
                                 ]),
-                            Forms\Components\Section::make('Task Additional Information')
+                            Forms\Components\Section::make(__('action.form.additional_information'))
                                 ->schema([
                                     Forms\Components\Repeater::make('extra_information')
-                                        ->label('Extra Information')
+                                        ->label(__('action.form.extra_information'))
                                         ->schema([
+                                            Forms\Components\TextInput::make('title')
+                                                ->label(__('action.form.title'))
+                                                ->maxLength(100)
+                                                ->columnSpanFull(),
+                                            Forms\Components\RichEditor::make('value')
+                                                ->label(__('action.form.value'))
+                                                ->toolbarButtons([
+                                                    'bold',
+                                                    'italic',
+                                                    'strike',
+                                                    'bulletList',
+                                                    'orderedList',
+                                                    'link',
+                                                    'codeBlock',
+                                                ])
+                                                ->extraAttributes(['style' => 'resize: vertical;'])
+                                                ->reactive()
+                                                ->helperText(function (Get $get) use ($mode) {
+                                                    $raw = $get('value') ?? '';
+                                                    $noHtml = strip_tags($raw);
+                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                    $remaining = 500 - mb_strlen($decoded);
+                                                    return __("action.$mode.extra_information_helper", ['count' => $remaining]);
+                                                })
+                                                ->rule(function (Get $get) use ($mode): Closure {
+                                                    return function (string $attribute, $value, Closure $fail) use ($mode) {
+                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                        if (mb_strlen($textOnly) > 500) {
+                                                            $fail(__("action.$mode.extra_information_warning"));
+                                                        }
+                                                    };
+                                                })
+                                                ->columnSpanFull(),
                                         ])
                                         ->defaultItems(1)
                                         ->addActionLabel(__('client.form.add_extra_info'))
@@ -250,7 +284,7 @@ class ActionBoard extends KanbanBoardPage
                                         ->reorderable()
                                         ->collapsible(true)
                                         ->collapsed()
-                                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : 'Title goes here')
+                                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('action.form.title_placeholder_short'))
                                         ->live()
                                         ->columnSpanFull()
                                         ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
@@ -261,7 +295,7 @@ class ActionBoard extends KanbanBoardPage
                         ->columnSpan(3),
 
                     // Comments sidebar (right side) - spans 1 column
-                    Forms\Components\Section::make('Comments')
+                    Forms\Components\Section::make(__('action.form.comments'))
                         ->schema([
                             Forms\Components\ViewField::make('task_comments')
                                 ->view('filament.components.comments-sidebar-livewire-wrapper')
@@ -285,11 +319,12 @@ class ActionBoard extends KanbanBoardPage
                 ->visible($mode === 'edit'),
 
             // For create mode, use the original single-column layout
-            Forms\Components\Section::make('Task Information')
+            Forms\Components\Section::make(__('action.form.task_information'))
                 ->schema([
                     Forms\Components\TextInput::make('title')
+                        ->label(__('action.form.title'))
                         ->required()
-                        ->placeholder('Enter task title'),
+                        ->placeholder(__('action.form.title_placeholder')),
                     Forms\Components\Hidden::make('kanban_column_hint')
                         ->dehydrated(false)
                         ->afterStateHydrated(function (Forms\Components\Hidden $component) use ($mode) {
@@ -303,13 +338,13 @@ class ActionBoard extends KanbanBoardPage
                         ->schema([
                             // Updated assigned_to select for create layout
                             Forms\Components\Select::make('assigned_to')
-                                ->label('Assign To')
+                                ->label(__('action.form.assign_to'))
                                 ->options(function () {
                                     return User::withTrashed()
                                         ->orderBy('username')
                                         ->get()
                                         ->mapWithKeys(fn($u) => [
-                                            $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
+                                            $u->id => ($u->username ?: __('action.form.user_with_id', ['id' => $u->id])) . ($u->deleted_at ? __('action.form.deleted_suffix') : ''),
                                         ])
                                         ->toArray();
                                 })
@@ -321,15 +356,15 @@ class ActionBoard extends KanbanBoardPage
                                 ->default(fn(?Task $record) => $record?->assigned_to)
                                 ->dehydrated(),
                             Forms\Components\DatePicker::make('due_date')
-                                ->label('Due Date'),
+                                ->label(__('action.form.due_date')),
                             Forms\Components\Select::make('status')
-                                ->label('Status')
+                                ->label(__('action.form.status'))
                                 ->options([
-                                    'todo' => 'To Do',
-                                    'in_progress' => 'In Progress',
-                                    'toreview' => 'To Review',
-                                    'completed' => 'Completed',
-                                    'archived' => 'Archived',
+                                    'todo' => __('action.status.todo'),
+                                    'in_progress' => __('action.status.in_progress'),
+                                    'toreview' => __('action.status.toreview'),
+                                    'completed' => __('action.status.completed'),
+                                    'archived' => __('action.status.archived'),
                                 ])
                                 ->default(function (Get $get) {
                                     $valid = ['todo', 'in_progress', 'toreview', 'completed', 'archived'];
@@ -339,7 +374,7 @@ class ActionBoard extends KanbanBoardPage
                                 ->searchable(),
                         ]),
                     Forms\Components\RichEditor::make('description')
-                        ->label('Description')
+                        ->label(__('action.form.description'))
                         ->toolbarButtons([
                             'bold',
                             'italic',
@@ -371,20 +406,28 @@ class ActionBoard extends KanbanBoardPage
                 ])
                 ->visible($mode === 'create'),
 
-            Forms\Components\Section::make('Task Additional Information')
+            Forms\Components\Section::make(__('action.form.additional_information'))
                 ->schema([
                     Forms\Components\Repeater::make('extra_information')
-                        ->label('Extra Information')
+                        ->label(__('action.form.extra_information'))
                         ->schema([
                             Forms\Components\Grid::make()
                                 ->schema([
                                     Forms\Components\TextInput::make('title')
-                                        ->label('Title')
+                                        ->label(__('action.form.title'))
                                         ->maxLength(100)
                                         ->columnSpanFull(),
                                     Forms\Components\RichEditor::make('value')
-                                        ->label(__('Value'))
-                                        ->toolbarButtons(['codeBlock'])
+                                        ->label(__('action.form.value'))
+                                        ->toolbarButtons([
+                                            'bold',
+                                            'italic',
+                                            'strike',
+                                            'bulletList',
+                                            'orderedList',
+                                            'link',
+                                            'codeBlock',
+                                        ])
                                         ->extraAttributes(['style' => 'resize: vertical;'])
                                         ->reactive()
                                         ->helperText(function (Get $get) use ($mode) {
@@ -411,7 +454,7 @@ class ActionBoard extends KanbanBoardPage
                         ->reorderable()
                         ->collapsible(true)
                         ->collapsed()
-                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : 'Title goes here')
+                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('action.form.title_placeholder_short'))
                         ->live()
                         ->columnSpanFull()
                         ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
@@ -456,5 +499,20 @@ class ActionBoard extends KanbanBoardPage
     protected function getKanbanBoardComponent(): string
     {
         return \App\Http\Livewire\Relaticle\Flowforge\KanbanBoard::class;
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('action.navigation.group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('action.navigation.label');
+    }
+
+    public function getTitle(): string
+    {
+        return __('action.title');
     }
 }

@@ -4,6 +4,8 @@ namespace App\Observers;
 
 use App\Models\Task;
 use Illuminate\Support\Facades\Log;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class TaskObserver
 {
@@ -12,10 +14,21 @@ class TaskObserver
    */
   public function updating(Task $task)
   {
-    // If order_column or status is dirty, force activity log
     if ($task->isDirty('order_column') || $task->isDirty('status')) {
-      // Touch updated_at to trigger activitylog
-      $task->updated_at = now();
+        // Temporarily disable activity logging for this update
+        $task->disableLogging();
+
+        activity()
+            ->useLog('Tasks')
+            ->performedOn($task)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'old_status' => $task->getOriginal('status'),
+                'new_status' => $task->status,
+                'old_order_column' => $task->getOriginal('order_column'),
+                'new_order_column' => $task->order_column,
+            ])
+            ->log('Task Moved');
     }
   }
 }

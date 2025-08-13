@@ -56,11 +56,11 @@ class EditTask extends EditRecord
   {
     return [
       Actions\Action::make('save')
-        ->label('Save changes')
+        ->label(__('task.action.save_changes'))
         ->color('primary')
         ->action('save'),
       Actions\Action::make('cancel')
-        ->label('Cancel')
+        ->label(__('task.action.cancel'))
         ->url('/admin/action-board')
         ->color('gray'),
       Actions\DeleteAction::make()
