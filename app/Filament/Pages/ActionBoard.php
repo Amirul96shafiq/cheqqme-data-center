@@ -119,6 +119,10 @@ class ActionBoard extends KanbanBoardPage
             ->action(function (array $data) {
                 $task = Task::create($data);
                 $task->update(['order_column' => Task::max('order_column') + 1]); // Ensure new task is listed at the bottom
+                Notification::make()
+                    ->title(__('Task created successfully'))
+                    ->success()
+                    ->send();
             });
     }
 
@@ -138,6 +142,10 @@ class ActionBoard extends KanbanBoardPage
             ->action(function (array $data, Task $record) {
                 // Update task data only (comments are handled separately)
                 $record->update($data);
+                Notification::make()
+                    ->title(__('Task updated successfully'))
+                    ->success()
+                    ->send();
             })
         ;
     }
