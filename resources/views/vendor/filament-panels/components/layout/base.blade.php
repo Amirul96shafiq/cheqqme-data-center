@@ -1,4 +1,3 @@
-    @include('components.global-loader')
 @props([
     'livewire' => null,
 ])
@@ -19,8 +18,11 @@
         <meta name="csrf-token" content="{{ csrf_token() }}" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+
         @if ($favicon = filament()->getFavicon())
             <link rel="icon" href="{{ $favicon }}" />
+        @else
+            <link rel="icon" href="{{ asset('images/favicon.png') }}" />
         @endif
 
         @php
