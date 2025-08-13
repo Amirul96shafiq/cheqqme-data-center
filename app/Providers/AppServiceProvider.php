@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use BezhanSalleh\FilamentLanguageSwitch\Enums\Placement;
+use App\Models\Task;
+use App\Observers\TaskObserver;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register Task observer to ensure activity logging on order/status changes
+        Task::observe(TaskObserver::class);
+
+        // Register custom KanbanBoard Livewire component alias
+        if (class_exists(\Livewire\Livewire::class)) {
+            \Livewire\Livewire::component('relaticle.flowforge.kanban-board', \App\Http\Livewire\Relaticle\Flowforge\KanbanBoard::class);
+        }
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
                 ->locales(['en', 'ms'])

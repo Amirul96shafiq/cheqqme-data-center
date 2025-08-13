@@ -445,4 +445,11 @@ class ActionBoard extends KanbanBoardPage
             return $direct;
         return null;
     }
+    /**
+     * Use the custom KanbanBoard Livewire component (with activity logging).
+     */
+    protected function getKanbanBoardComponent(): string
+    {
+        return \App\Http\Livewire\Relaticle\Flowforge\KanbanBoard::class;
+    }
 }
