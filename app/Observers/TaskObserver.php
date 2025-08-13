@@ -15,20 +15,20 @@ class TaskObserver
   public function updating(Task $task)
   {
     if ($task->isDirty('order_column') || $task->isDirty('status')) {
-        // Temporarily disable activity logging for this update
-        $task->disableLogging();
+      // Temporarily disable activity logging for this update
+      $task->disableLogging();
 
-        activity()
-            ->useLog('Tasks')
-            ->performedOn($task)
-            ->causedBy(auth()->user())
-            ->withProperties([
-                'old_status' => $task->getOriginal('status'),
-                'new_status' => $task->status,
-                'old_order_column' => $task->getOriginal('order_column'),
-                'new_order_column' => $task->order_column,
-            ])
-            ->log('Task Moved');
+      activity('Tasks')
+        ->performedOn($task)
+        ->causedBy(auth()->user())
+        ->event('Task Moved')
+        ->withProperties([
+          'old_status' => $task->getOriginal('status'),
+          'new_status' => $task->status,
+          'old_order_column' => $task->getOriginal('order_column'),
+          'new_order_column' => $task->order_column,
+        ])
+        ->log('Task Moved');
     }
   }
 }

@@ -76,7 +76,7 @@ class KanbanBoard extends BaseKanbanBoard
               ],
             ];
             try {
-              activity()
+              activity('Tasks')
                 ->performedOn($updatedTasks[$id])
                 ->causedBy(Auth::user())
                 ->withProperties([
@@ -94,7 +94,7 @@ class KanbanBoard extends BaseKanbanBoard
                 'changes' => $changes,
               ]);
               try {
-                activity()
+                activity('Tasks')
                   ->performedOn($updatedTasks[$id])
                   ->withProperties([
                     'order_column' => $newOrder,
