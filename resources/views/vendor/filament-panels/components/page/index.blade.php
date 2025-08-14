@@ -14,7 +14,7 @@
     {{
         $attributes->class([
             'fi-page',
-            'min-h-[65vh] max-h-[65vh] h-auto',
+            // Allow the page to grow naturally so bottom padding is preserved
         ])
     }}
 >
@@ -23,7 +23,6 @@
     <section
         @class([
             'flex flex-col gap-y-8 py-8',
-            'min-h-[65vh] max-h-[65vh] h-auto',
         ])
     >
         @if ($header = $this->getHeader())
@@ -60,7 +59,6 @@
                     SubNavigationPosition::Start, SubNavigationPosition::End => 'md:flex-row md:items-start',
                     default => null,
                 } => $subNavigation,
-                'min-h-[65vh] max-h-[65vh] h-auto',
             ])
         >
             @if ($subNavigation)
@@ -100,7 +98,6 @@
             <div
                 @class([
                     'grid flex-1 auto-cols-fr gap-y-8',
-                    'min-h-[65vh] max-h-[65vh] h-auto',
                 ])
             >
                 {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::PAGE_HEADER_WIDGETS_BEFORE, scopes: method_exists($this, 'getRenderHookScopes') ? $this->getRenderHookScopes() : []) }}

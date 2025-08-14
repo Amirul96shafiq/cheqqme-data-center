@@ -109,5 +109,54 @@
         .fi-main-ctn {
             margin-inline-start: var(--sidebar-width) !important;
         }
+
+        /* Action Board: remove vertical scrolling on the page when Flowforge board is present */
+        .fi-main:has(.ff-board),
+        .fi-page:has(.ff-board) {
+            overflow-y: hidden !important;
+        }
+
+        /* Ensure the main container fills the viewport to avoid stray scrollbars */
+        .fi-main:has(.ff-board) {
+            min-height: 80vh;
+            max-height: 90vh;
+        }
+    }
+
+    /* Action Board: clamp each column's internal scroll area to avoid page-level scrollbars */
+    .fi-page:has(.ff-board) .ff-board__columns {
+        overflow-y: hidden;
+    }
+
+    /* Tighten column content height relative to viewport to be below the page chrome */
+    .fi-page:has(.ff-board) .ff-column__content {
+        max-height: calc(100vh - 17rem) !important;
+    }
+
+    /* Final guard: disable body vertical scroll when the board is present */
+    body:has(.ff-board),
+    html:has(.ff-board) {
+        overflow-y: hidden !important;
+        height: 100%;
+    }
+
+    /* Explicit board sizing so page + board fits viewport without page scroll */
+    .fi-page .ff-board {
+        height: calc(100vh - 16rem) !important;
+    }
+
+    /* Ensure columns region fills the board height */
+    .fi-page .ff-board__columns {
+        height: 100% !important;
+    }
+
+    /* Columns respect the board height */
+    .fi-page .ff-column {
+        max-height: 100% !important;
+    }
+
+    /* Deduct column header (~3.25rem) from column scroll area */
+    .fi-page .ff-column__content {
+        max-height: calc(100% - 3.25rem) !important;
     }
 }
