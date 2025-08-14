@@ -159,4 +159,12 @@
     .fi-page .ff-column__content {
         max-height: calc(100% - 3.25rem) !important;
     }
+
+    /* While drag-scrolling, prevent text selection cursor and highlight */
+    .ff-drag-scrolling,
+    .ff-drag-scrolling * {
+        user-select: none !important;
+        cursor: grabbing !important;
+        cursor: -webkit-grabbing !important;
+    }
 }
