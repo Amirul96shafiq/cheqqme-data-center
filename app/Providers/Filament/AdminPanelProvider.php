@@ -21,7 +21,6 @@ use App\Filament\Pages\Login;
 use App\Filament\Resources\PhoneNumberResource;
 use Filament\Navigation\NavigationGroup;
 use App\Filament\Pages\Profile;
-use App\Filament\AvatarProviders\GetAvatarProvider;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use App\Filament\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Filament\Pages\Settings;
@@ -70,7 +69,6 @@ class AdminPanelProvider extends PanelProvider
             ->font('Roboto')
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->profile(Profile::class, isSimple: false)
-            ->defaultAvatarProvider(GetAvatarProvider::class)
             ->colors([
                 'primary' => [
                     '50' => '#fff8eb',

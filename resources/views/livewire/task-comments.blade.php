@@ -17,23 +17,23 @@
 
     <!-- Comments List (scroll area) -->
     <div class="flex-1 min-h-0 px-0 pb-0">
-    <div class="px-4 py-4 text-sm overflow-y-auto custom-thin-scroll h-full" data-comment-list style="max-height:calc(68vh - 250px);">
+    <div class="px-4 py-4 text-sm overflow-y-auto custom-thin-scroll h-full" data-comment-list style="max-height:calc(68vh - 270px);">
         <div class="space-y-6">
             @forelse($this->comments as $comment)
                 <div class="group relative flex gap-3" wire:key="comment-{{ $comment->id }}">
                     <div class="flex-shrink-0">
-                        @php
-                            $avatarPath = $comment->user->avatar ?? null;
-                            $avatarUrl = $avatarPath ? \Storage::url($avatarPath) : null;
-                            $initial = mb_strtoupper(mb_substr($comment->user->username ?? 'U',0,1));
-                        @endphp
-                        @if($avatarUrl)
-                            <img src="{{ $avatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm" loading="lazy">
-                        @else
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 text-white flex items-center justify-center text-[11px] font-medium shadow-sm select-none">
-                                {{ $initial }}
-                            </div>
-                        @endif
+					@php
+						$avatarPath = $comment->user->avatar ?? null;
+						$avatarUrl = $avatarPath ? \Storage::url($avatarPath) : null;
+					@endphp
+					@if($avatarUrl)
+						<img src="{{ $avatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm" loading="lazy">
+					@else
+						@php
+							$defaultAvatarUrl = (new \Filament\AvatarProviders\UiAvatarsProvider())->get($comment->user);
+						@endphp
+						<img src="{{ $defaultAvatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm" loading="lazy">
+					@endif
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between gap-2">

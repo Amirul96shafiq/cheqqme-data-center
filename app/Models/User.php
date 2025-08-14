@@ -12,8 +12,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Filament\Models\Contracts\HasAvatar;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasAvatar
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, SoftDeletes, LogsActivity;
