@@ -78,7 +78,6 @@
                 @endif
             </span>
         @endif
-
         @if ((blank($icon) && $grouped) || $subGrouped)
             <div
                 @if (filled($icon) && $subGrouped && $sidebarCollapsible)

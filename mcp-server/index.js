@@ -44,6 +44,46 @@ app.post("/api/context", (req, res) => {
     });
 });
 
+// GET users
+app.get("/api/users", (req, res) => {
+    db.all("SELECT * FROM users", [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ data: rows });
+    });
+});
+
+// GET all Important URLs
+app.get("/api/important-urls", (req, res) => {
+    db.all("SELECT * FROM important_urls", [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ data: rows });
+    });
+});
+
+// GET all Tasks
+app.get("/api/tasks", (req, res) => {
+    db.all("SELECT * FROM tasks", [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ data: rows });
+    });
+});
+
+// GET all Comments
+app.get("/api/comments", (req, res) => {
+    db.all("SELECT * FROM comments", [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ data: rows });
+    });
+});
+
 // POST user
 app.post("/api/users", async (req, res) => {
     const { name, email, password } = req.body;
@@ -74,26 +114,6 @@ app.post("/api/users", async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: "Password hashing failed." });
     }
-});
-
-// GET all Important URLs
-app.get("/api/important-urls", (req, res) => {
-    db.all("SELECT * FROM important_urls", [], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ data: rows });
-    });
-});
-
-// GET all Tasks
-app.get("/api/tasks", (req, res) => {
-    db.all("SELECT * FROM tasks", [], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ data: rows });
-    });
 });
 
 app.listen(port, () => {

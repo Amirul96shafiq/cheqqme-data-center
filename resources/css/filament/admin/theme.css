@@ -3,6 +3,31 @@
 @config 'tailwind.config.js';
 
 @layer utilities {
+    /* Neutral palette swap: force Zinc neutrals in dark mode */
+    .dark {
+        /* Filament/Tailwind often reference gray/slate tokens; align both to Zinc */
+        --color-gray-50: 250 250 250; /* zinc-50 */
+        --color-gray-100: 244 244 245; /* zinc-100 */
+        --color-gray-200: 228 228 231; /* zinc-200 */
+        --color-gray-300: 212 212 216; /* zinc-300 */
+        --color-gray-400: 161 161 170; /* zinc-400 */
+        --color-gray-500: 113 113 122; /* zinc-500 */
+        --color-gray-600: 82 82 91; /* zinc-600 */
+        --color-gray-700: 63 63 70; /* zinc-700 */
+        --color-gray-800: 39 39 42; /* zinc-800 */
+        --color-gray-900: 24 24 27; /* zinc-900 */
+        --color-slate-50: var(--color-gray-50);
+        --color-slate-100: var(--color-gray-100);
+        --color-slate-200: var(--color-gray-200);
+        --color-slate-300: var(--color-gray-300);
+        --color-slate-400: var(--color-gray-400);
+        --color-slate-500: var(--color-gray-500);
+        --color-slate-600: var(--color-gray-600);
+        --color-slate-700: var(--color-gray-700);
+        --color-slate-800: var(--color-gray-800);
+        --color-slate-900: var(--color-gray-900);
+    }
+
     /* Dark mode primary buttons: ensure readable white text */
     .dark .fi-btn.fi-btn-color-primary,
     .dark .fi-btn.fi-btn-color-primary * {
@@ -66,5 +91,23 @@
     /* Flowforge Kanban card title normal weight (lean override) */
     .ff-card__title {
         font-weight: 400 !important;
+    }
+
+    /* Force sidebar to pin on large screens, with full viewport height */
+    @media (min-width: 1024px) {
+        /* Pin the sidebar */
+        .fi-main-sidebar.fi-sidebar,
+        .fi-main-sidebar .fi-sidebar {
+            position: fixed !important;
+            top: 0;
+            inset-inline-start: 0;
+            height: 100vh;
+            z-index: 20;
+        }
+
+        /* Reserve space for the fixed sidebar */
+        .fi-main-ctn {
+            margin-inline-start: var(--sidebar-width) !important;
+        }
     }
 }

@@ -84,6 +84,9 @@ export default {
                     900: "#844f1a",
                 },
                 danger: colors.red, // Map danger palette to Tailwind red scale
+                // Use Zinc for all neutral palettes (overrides default Slate/Gray)
+                gray: colors.zinc,
+                slate: colors.zinc,
             },
         },
     },

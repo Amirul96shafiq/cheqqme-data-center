@@ -88,7 +88,7 @@ class AdminPanelProvider extends PanelProvider
                 'danger' => Color::Red,
             ])
             //->sidebarCollapsibleOnDesktop()
-            //->sidebarWidth('20rem')
+            ->sidebarWidth('20rem')
             // Load both the Filament admin theme and the main app Tailwind bundle so that
             // all generated utilities (including danger reds) are guaranteed to be present
             // even if purge / safelist changes or fallback overrides are removed later.
