@@ -13,7 +13,7 @@
 
   <style>
     html {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Roboto';
     }
 
     .theme-toggle-btn {
@@ -134,7 +134,7 @@
 
     <!-- Card section -->
     <div
-      class="bg-white dark:bg-[rgb(17_24_39_/_1)] rounded-2xl ring-1 ring-gray-950/5 dark:ring-white/10 sm:rounded-xl px-12 py-16 space-y-6"
+      class="bg-white dark:bg-[rgb(24_24_27_/_1)] rounded-2xl ring-1 ring-gray-950/5 dark:ring-white/10 sm:rounded-xl px-12 py-16 space-y-6"
       <!-- Header section -->
       <div class="text-center">
         <!-- Logo Light -->
