@@ -52,26 +52,31 @@ class DocumentResource extends Resource
             ->schema([
                 Section::make(__('document.section.document_info'))
                     ->schema([
-                        Grid::make(3)->schema([
-                            TextInput::make('title')->label(__('document.form.document_title'))->required()->maxLength(50),
+                        Grid::make(3)
+                            ->schema([
+                                TextInput::make('title')
+                                    ->label(__('document.form.document_title'))
+                                    ->required()
+                                    ->maxLength(50)
+                                    ->columnSpanFull(),
 
-                            Select::make('project_id')
-                                ->label(__('document.form.project'))
-                                ->relationship('project', 'title')
-                                ->preload()
-                                ->searchable()
-                                ->nullable(),
+                                Select::make('project_id')
+                                    ->label(__('document.form.project'))
+                                    ->relationship('project', 'title')
+                                    ->preload()
+                                    ->searchable()
+                                    ->nullable(),
 
-                            Select::make('type')
-                                ->label(__('document.form.document_type'))
-                                ->options([
-                                    'external' => __('document.form.external'),
-                                    'internal' => __('document.form.internal'),
-                                ])
-                                ->searchable()
-                                ->required()
-                                ->live(),
-                        ]),
+                                Select::make('type')
+                                    ->label(__('document.form.document_type'))
+                                    ->options([
+                                        'external' => __('document.form.external'),
+                                        'internal' => __('document.form.internal'),
+                                    ])
+                                    ->searchable()
+                                    ->required()
+                                    ->live(),
+                            ]),
 
                         TextInput::make('url')
                             ->label(__('document.form.document_url'))
@@ -241,7 +246,8 @@ class DocumentResource extends Resource
                         'internal' => __('document.table.internal'),
                         'external' => __('document.table.external'),
                     }),
-                TextColumn::make('project.title')->label(__('document.table.project'))->sortable()->searchable()->limit(20),
+                TextColumn::make('project.title')
+                    ->label(__('document.table.project'))->sortable()->searchable()->limit(20),
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))
                     ->dateTime('j/n/y, h:i A')->sortable(),
@@ -269,11 +275,21 @@ class DocumentResource extends Resource
                     ->limit(30),
             ])
             ->filters([
-                SelectFilter::make('type')->options([
+                SelectFilter::make('project_id')
+                    ->label(__('document.table.project'))
+                    ->relationship('project', 'title')
+                    ->preload()
+                    ->searchable()
+                    ->multiple(),
+                SelectFilter::make('type')
+                    ->label(__('document.table.type'))
+                    ->options([
                     'internal' => __('document.table.internal'),
                     'external' => __('document.table.external'),
-                ]),
-                SelectFilter::make('project_id')->label(__('document.table.project'))->relationship('project', 'title'),
+                ])
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
                 TrashedFilter::make(), // To show trashed or only active
             ])
             ->actions([

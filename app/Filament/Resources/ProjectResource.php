@@ -242,12 +242,21 @@ class ProjectResource extends Resource
                     ->limit(30),
             ])
             ->filters([
+                SelectFilter::make('client_id')
+                    ->label(__('project.table.client'))
+                    ->relationship('client', 'company_name')
+                    ->preload()
+                    ->searchable()
+                    ->multiple(),
                 SelectFilter::make(__('project.filter.status'))
                     ->options([
                         'Planning' => __('project.filter.planning'),
                         'In Progress' => __('project.filter.in_progress'),
                         'Completed' => __('project.filter.completed'),
-                    ]),
+                    ])
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
                 TrashedFilter::make(), // To show trashed or only active
             ])
             ->actions([
