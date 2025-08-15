@@ -2,22 +2,25 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Task extends Model
 {
-  use HasFactory, SoftDeletes, LogsActivity;
+  use HasFactory, LogsActivity, SoftDeletes;
 
   protected $fillable = [
     'title',
     'description',
+    'client',
+    'project',
+    'document',
     'assigned_to',
     'status',
     'order_column',
@@ -32,6 +35,9 @@ class Task extends Model
       ->logOnly([
         'title',
         'description',
+        'client',
+        'project',
+        'document',
         'assigned_to',
         'status',
         'order_column',
@@ -45,6 +51,9 @@ class Task extends Model
   }
 
   protected $casts = [
+    'client' => 'integer',
+    'project' => 'array',
+    'document' => 'array',
     'extra_information' => 'array',
   ];
 
@@ -63,22 +72,27 @@ class Task extends Model
   public function getAssignedToBadgeAttribute(): ?string
   {
     $user = $this->assignedTo;
-    if (!$user)
+    if (!$user) {
       return null;
+    }
     $authId = Auth::id();
     if ($authId && $user->id === $authId) {
       return $user->short_name ?? $user->username ?? $user->name ?? null;
     }
+
     return $user->short_name ?? $user->username ?? $user->name ?? null;
   }
+
   /**
    * Returns only one assigned_to badge per card: highlighted for self, otherwise normal.
    */
   public function getAssignedToDisplayAttribute(): ?string
   {
     $user = $this->assignedTo;
-    if (!$user)
+    if (!$user) {
       return null;
+    }
+
     return $user->short_name ?? $user->username ?? $user->name ?? null;
   }
 
@@ -92,6 +106,7 @@ class Task extends Model
     if ($user) {
       return 'gray'; // Normal for others
     }
+
     return 'gray'; // Default
   }
 
@@ -105,12 +120,13 @@ class Task extends Model
     if ($user) {
       return 'heroicon-o-user'; // Icon for others
     }
+
     return 'heroicon-o-user'; // Default
   }
+
   /**
    * Returns only one assigned_to badge per card: highlighted for self, otherwise normal.
    */
-
   public function updatedBy()
   {
     return $this->belongsTo(User::class, 'updated_by');
@@ -132,8 +148,10 @@ class Task extends Model
   public function getAssignedToUsernameAttribute(): ?string
   {
     $user = $this->assignedTo;
-    if (!$user)
+    if (!$user) {
       return null;
+    }
+
     // Always show username, even for current user
     return $user->short_name ?? $user->username ?? $user->name ?? null;
   }
@@ -141,12 +159,14 @@ class Task extends Model
   public function getAssignedToUsernameSelfAttribute(): ?string
   {
     $user = $this->assignedTo;
-    if (!$user)
+    if (!$user) {
       return null;
+    }
     $authId = Auth::id();
     if ($authId && $user->id === $authId) {
       return $user->short_name ?? $user->username ?? $user->name ?? null;
     }
+
     return null;
   }
 
@@ -160,6 +180,7 @@ class Task extends Model
     }
     try {
       $due = \Carbon\Carbon::parse($this->due_date);
+
       return now()->diffInDays($due, false); // negative if past
     } catch (\Throwable $e) {
       return null;
@@ -178,6 +199,7 @@ class Task extends Model
     if ($diff !== null && $diff < 1) {
       return $this->formattedDueDate();
     }
+
     return null;
   }
 
@@ -188,6 +210,7 @@ class Task extends Model
     if ($diff !== null && $diff >= 1 && $diff < 7) {
       return $this->formattedDueDate();
     }
+
     return null;
   }
 
@@ -198,6 +221,7 @@ class Task extends Model
     if ($diff !== null && $diff >= 14) {
       return $this->formattedDueDate();
     }
+
     return null;
   }
 
@@ -208,6 +232,7 @@ class Task extends Model
     if ($diff !== null && $diff >= 7 && $diff < 14) {
       return $this->formattedDueDate();
     }
+
     return null;
   }
 
@@ -224,11 +249,12 @@ class Task extends Model
   {
     // Prevent trait from logging "updated" when moving columns/status
     if (
-        $eventName === 'updated'
-        && ($this->isDirty('order_column') || $this->isDirty('status'))
+      $eventName === 'updated'
+      && ($this->isDirty('order_column') || $this->isDirty('status'))
     ) {
-        return false;
+      return false;
     }
+
     return true;
   }
 }

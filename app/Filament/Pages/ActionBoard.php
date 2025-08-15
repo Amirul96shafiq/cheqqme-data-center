@@ -3,21 +3,24 @@
 namespace App\Filament\Pages;
 
 use App\Models\Task;
-use Illuminate\Database\Eloquent\Builder;
-use Relaticle\Flowforge\Filament\Pages\KanbanBoardPage;
 use App\Models\User;
+use Closure;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Get;
-use Closure;
-use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Builder;
+use Relaticle\Flowforge\Filament\Pages\KanbanBoardPage;
 
 class ActionBoard extends KanbanBoardPage
 {
     protected static ?string $navigationIcon = 'heroicon-o-rocket-launch';
+
     protected static ?string $navigationGroup = null;
+
     protected static ?string $navigationLabel = null;
+
     protected static ?string $title = null;
 
     // Removed native Filament navigation badge methods; using fully custom persistent badge.
@@ -47,14 +50,14 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_yellow' => 'yellow',
                 'due_date_gray' => 'gray',
                 'due_date_green' => 'green',
-                'assigned_to_display' => fn($record) => $record->assigned_to_display_color,
+                'assigned_to_display' => fn ($record) => $record->assigned_to_display_color,
             ])
             ->cardAttributeIcons([
                 'due_date_red' => 'heroicon-o-calendar',
                 'due_date_yellow' => 'heroicon-o-calendar',
                 'due_date_gray' => 'heroicon-o-calendar',
                 'due_date_green' => 'heroicon-o-calendar',
-                'assigned_to_display' => fn($record) => $record->assigned_to_display_icon,
+                'assigned_to_display' => fn ($record) => $record->assigned_to_display_icon,
             ])
             ->cardAttributeColors([
                 'due_date_red' => 'red',
@@ -98,7 +101,7 @@ class ActionBoard extends KanbanBoardPage
                 'in_progress' => 'blue',
                 'toreview' => 'yellow',
                 'completed' => 'green',
-                'archived' => 'rose'
+                'archived' => 'rose',
             ])
             ->cardLabel(__('action.card_label'))
             ->pluralCardLabel(__('action.card_label_plural'));
@@ -114,6 +117,7 @@ class ActionBoard extends KanbanBoardPage
             ->form(function (Forms\Form $form) use ($action) {
                 $args = method_exists($action, 'getArguments') ? $action->getArguments() : [];
                 $col = $args['column'] ?? $this->detectCreateColumn();
+
                 return $this->taskFormSchema($form, 'create', $col);
             })
             ->action(function (array $data) {
@@ -137,6 +141,7 @@ class ActionBoard extends KanbanBoardPage
                 if (is_string($col) && in_array($col, ['todo', 'in_progress', 'toreview', 'completed', 'archived'])) {
                     $form->fill(['status' => $col]);
                 }
+
                 return $this->taskFormSchema($form, 'edit');
             })
             ->action(function (array $data, Task $record) {
@@ -146,8 +151,7 @@ class ActionBoard extends KanbanBoardPage
                     ->title(__('action.notifications.updated'))
                     ->success()
                     ->send();
-            })
-        ;
+            });
     }
 
     protected function taskFormSchema(Forms\Form $form, string $mode, $defaultStatus = null)
@@ -170,7 +174,7 @@ class ActionBoard extends KanbanBoardPage
                                         ->placeholder(__('action.form.title_placeholder')),
                                     Forms\Components\Hidden::make('kanban_column_hint')
                                         ->dehydrated(false)
-                                        ->afterStateHydrated(function (Forms\Components\Hidden $component) use ($mode) {
+                                        ->afterStateHydrated(function (Forms\Components\Hidden $component) {
                                             // Removed unused kanban_column_hint hidden field
                                         }),
                                     Forms\Components\Grid::make(3)
@@ -182,8 +186,8 @@ class ActionBoard extends KanbanBoardPage
                                                     return User::withTrashed()
                                                         ->orderBy('username')
                                                         ->get()
-                                                        ->mapWithKeys(fn($u) => [
-                                                            $u->id => ($u->username ?: __('action.form.user_with_id', ['id' => $u->id])) . ($u->deleted_at ? __('action.form.deleted_suffix') : ''),
+                                                        ->mapWithKeys(fn ($u) => [
+                                                            $u->id => ($u->username ?: __('action.form.user_with_id', ['id' => $u->id])).($u->deleted_at ? __('action.form.deleted_suffix') : ''),
                                                         ])
                                                         ->toArray();
                                                 })
@@ -191,8 +195,8 @@ class ActionBoard extends KanbanBoardPage
                                                 ->preload()
                                                 ->native(false)
                                                 ->nullable()
-                                                ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
-                                                ->default(fn(?Task $record) => $record?->assigned_to)
+                                                ->formatStateUsing(fn ($state, ?Task $record) => $record?->assigned_to)
+                                                ->default(fn (?Task $record) => $record?->assigned_to)
                                                 ->dehydrated(),
                                             Forms\Components\DatePicker::make('due_date')
                                                 ->label(__('action.form.due_date')),
@@ -217,7 +221,7 @@ class ActionBoard extends KanbanBoardPage
                                             'bulletList',
                                             'orderedList',
                                             'link',
-                                            'codeBlock'
+                                            'codeBlock',
                                         ])
                                         ->extraAttributes(['style' => 'resize: vertical;'])
                                         ->reactive()
@@ -226,6 +230,7 @@ class ActionBoard extends KanbanBoardPage
                                             $noHtml = strip_tags($raw);
                                             $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                             $remaining = 500 - mb_strlen($decoded);
+
                                             return __("action.$mode.description_helper", ['count' => $remaining]);
                                         })
                                         ->rule(function (Get $get) use ($mode): Closure {
@@ -238,6 +243,115 @@ class ActionBoard extends KanbanBoardPage
                                         })
                                         ->nullable()
                                         ->columnSpanFull(),
+
+                                    Forms\Components\Fieldset::make(__('task.form.task_resources'))
+                                        ->columns(1)
+                                        ->schema([
+                                            Forms\Components\Select::make('client')
+                                                ->label(__('task.form.client'))
+                                                ->options(function () {
+                                                    // return \App\Models\Client::all()->pluck('name', 'id');
+                                                    return \App\Models\Client::withTrashed()
+                                                        ->orderBy('company_name')
+                                                        ->get()
+                                                        ->mapWithKeys(fn ($c) => [
+                                                            $c->id => ($c->company_name ?: 'Company #'.$c->id).($c->deleted_at ? ' (deleted)' : ''),
+                                                        ])
+                                                        ->toArray();
+                                                })
+                                                ->searchable()
+                                                ->preload()
+                                                ->native(false)
+                                                ->nullable()
+                                                ->default(fn (?Task $record) => $record?->client)
+                                                ->dehydrated()
+                                                ->live()
+                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    if ($state) {
+                                                        // Get projects for selected client
+                                                        $projects = \App\Models\Project::where('client_id', $state)
+                                                            ->withTrashed()
+                                                            ->orderBy('title')
+                                                            ->get()
+                                                            ->pluck('id')
+                                                            ->toArray();
+
+                                                        // Get documents for projects of selected client
+                                                        $documents = \App\Models\Document::whereHas('project', function ($query) use ($state) {
+                                                            $query->where('client_id', $state);
+                                                        })
+                                                            ->withTrashed()
+                                                            ->orderBy('title')
+                                                            ->get()
+                                                            ->pluck('id')
+                                                            ->toArray();
+
+                                                        // Auto-select all projects and documents for the client
+                                                        $set('project', $projects);
+                                                        $set('document', $documents);
+                                                    } else {
+                                                        // Clear selections when no client is selected
+                                                        $set('project', []);
+                                                        $set('document', []);
+                                                    }
+                                                }),
+                                            Forms\Components\Grid::make(2)
+                                                ->schema([
+                                                    Forms\Components\Select::make('project')
+                                                        ->label(__('task.form.project'))
+                                                        ->helperText(__('task.form.project_helper'))
+                                                        ->options(function (Forms\Get $get) {
+                                                            $clientId = $get('client');
+                                                            if (! $clientId) {
+                                                                return [];
+                                                            }
+
+                                                            return \App\Models\Project::where('client_id', $clientId)
+                                                                ->withTrashed()
+                                                                ->orderBy('title')
+                                                                ->get()
+                                                                ->mapWithKeys(fn ($p) => [
+                                                                    $p->id => str($p->title)->limit(25).($p->deleted_at ? ' (deleted)' : ''),
+                                                                ])
+                                                                ->toArray();
+                                                        })
+                                                        ->searchable()
+                                                        ->preload()
+                                                        ->native(false)
+                                                        ->nullable()
+                                                        ->multiple()
+                                                        ->default(fn (?Task $record) => $record?->project)
+                                                        ->dehydrated(),
+                                                    Forms\Components\Select::make('document')
+                                                        ->label(__('task.form.document'))
+                                                        ->helperText(__('task.form.document_helper'))
+                                                        ->options(function (Forms\Get $get) {
+                                                            $clientId = $get('client');
+                                                            if (! $clientId) {
+                                                                return [];
+                                                            }
+
+                                                            return \App\Models\Document::whereHas('project', function ($query) use ($clientId) {
+                                                                $query->where('client_id', $clientId);
+                                                            })
+                                                                ->withTrashed()
+                                                                ->orderBy('title')
+                                                                ->get()
+                                                                ->mapWithKeys(fn ($d) => [
+                                                                    $d->id => str($d->title)->limit(25).($d->deleted_at ? ' (deleted)' : ''),
+                                                                ])
+                                                                ->toArray();
+                                                        })
+                                                        ->searchable()
+                                                        ->preload()
+                                                        ->native(false)
+                                                        ->nullable()
+                                                        ->multiple()
+                                                        ->default(fn (?Task $record) => $record?->document)
+                                                        ->dehydrated(),
+                                                ]),
+
+                                        ]),
                                 ]),
                             Forms\Components\Section::make(__('action.form.additional_information'))
                                 ->schema([
@@ -266,6 +380,7 @@ class ActionBoard extends KanbanBoardPage
                                                     $noHtml = strip_tags($raw);
                                                     $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                                     $remaining = 500 - mb_strlen($decoded);
+
                                                     return __("action.$mode.extra_information_helper", ['count' => $remaining]);
                                                 })
                                                 ->rule(function (Get $get) use ($mode): Closure {
@@ -284,10 +399,10 @@ class ActionBoard extends KanbanBoardPage
                                         ->reorderable()
                                         ->collapsible(true)
                                         ->collapsed()
-                                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('action.form.title_placeholder_short'))
+                                        ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('action.form.title_placeholder_short'))
                                         ->live()
                                         ->columnSpanFull()
-                                        ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
+                                        ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
                                 ])
                                 ->collapsible()
                                 ->collapsed(),
@@ -305,14 +420,14 @@ class ActionBoard extends KanbanBoardPage
                                 ->extraAttributes([
                                     // Allow the Livewire root to stretch and enable internal flex scrolling
                                     'class' => 'flex-1 flex flex-col min-h-0',
-                                    'style' => 'height:100%; display:flex; flex-direction:column;'
+                                    'style' => 'height:100%; display:flex; flex-direction:column;',
                                 ])
                                 ->dehydrated(false),
                         ])
                         ->extraAttributes([
                             // Fixed height; internal Livewire component handles its own scrolling; hide any accidental overflow outside border.
                             'style' => 'height:68vh; max-height:68vh; position:sticky; top:3vh; display:flex; flex-direction:column; align-self:flex-start; overflow:hidden;',
-                            'class' => 'comments-pane'
+                            'class' => 'comments-pane',
                         ])
                         ->columnSpan(2),
                 ])
@@ -328,8 +443,9 @@ class ActionBoard extends KanbanBoardPage
                     Forms\Components\Hidden::make('kanban_column_hint')
                         ->dehydrated(false)
                         ->afterStateHydrated(function (Forms\Components\Hidden $component) use ($mode) {
-                            if ($mode !== 'create')
+                            if ($mode !== 'create') {
                                 return;
+                            }
                             if ($col = $this->detectCreateColumn()) {
                                 $component->state($col);
                             }
@@ -343,8 +459,8 @@ class ActionBoard extends KanbanBoardPage
                                     return User::withTrashed()
                                         ->orderBy('username')
                                         ->get()
-                                        ->mapWithKeys(fn($u) => [
-                                            $u->id => ($u->username ?: __('action.form.user_with_id', ['id' => $u->id])) . ($u->deleted_at ? __('action.form.deleted_suffix') : ''),
+                                        ->mapWithKeys(fn ($u) => [
+                                            $u->id => ($u->username ?: __('action.form.user_with_id', ['id' => $u->id])).($u->deleted_at ? __('action.form.deleted_suffix') : ''),
                                         ])
                                         ->toArray();
                                 })
@@ -352,8 +468,8 @@ class ActionBoard extends KanbanBoardPage
                                 ->preload()
                                 ->native(false)
                                 ->nullable()
-                                ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
-                                ->default(fn(?Task $record) => $record?->assigned_to)
+                                ->formatStateUsing(fn ($state, ?Task $record) => $record?->assigned_to)
+                                ->default(fn (?Task $record) => $record?->assigned_to)
                                 ->dehydrated(),
                             Forms\Components\DatePicker::make('due_date')
                                 ->label(__('action.form.due_date')),
@@ -369,6 +485,7 @@ class ActionBoard extends KanbanBoardPage
                                 ->default(function (Get $get) {
                                     $valid = ['todo', 'in_progress', 'toreview', 'completed', 'archived'];
                                     $status = $get('status');
+
                                     return (is_string($status) && in_array($status, $valid)) ? $status : 'todo';
                                 })
                                 ->searchable(),
@@ -391,6 +508,7 @@ class ActionBoard extends KanbanBoardPage
                             $noHtml = strip_tags($raw);
                             $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                             $remaining = 500 - mb_strlen($decoded);
+
                             return __("action.$mode.description_helper", ['count' => $remaining]);
                         })
                         ->rule(function (Get $get) use ($mode): Closure {
@@ -435,6 +553,7 @@ class ActionBoard extends KanbanBoardPage
                                             $noHtml = strip_tags($raw);
                                             $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                             $remaining = 500 - mb_strlen($decoded);
+
                                             return __("action.$mode.extra_information_helper", ['count' => $remaining]);
                                         })
                                         ->rule(function (Get $get) use ($mode): Closure {
@@ -446,7 +565,7 @@ class ActionBoard extends KanbanBoardPage
                                             };
                                         })
                                         ->columnSpanFull(),
-                                ])
+                                ]),
                         ])
                         ->defaultItems(1)
                         ->addActionLabel(__('client.form.add_extra_info'))
@@ -454,10 +573,10 @@ class ActionBoard extends KanbanBoardPage
                         ->reorderable()
                         ->collapsible(true)
                         ->collapsed()
-                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('action.form.title_placeholder_short'))
+                        ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('action.form.title_placeholder_short'))
                         ->live()
                         ->columnSpanFull()
-                        ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
+                        ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
                 ])
                 ->collapsible()
                 ->collapsed()
@@ -489,10 +608,13 @@ class ActionBoard extends KanbanBoardPage
         }
         // Fallback minimal: explicit query param
         $direct = request()->get('column');
-        if (is_string($direct) && in_array($direct, $valid))
+        if (is_string($direct) && in_array($direct, $valid)) {
             return $direct;
+        }
+
         return null;
     }
+
     /**
      * Use the custom KanbanBoard Livewire component (with activity logging).
      */

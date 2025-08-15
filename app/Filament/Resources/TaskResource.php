@@ -85,8 +85,8 @@ return false;
                                                     return \App\Models\User::withTrashed()
                                                         ->orderBy('username')
                                                         ->get()
-                                                        ->mapWithKeys(fn($u) => [
-                                                            $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
+                                                        ->mapWithKeys(fn ($u) => [
+                                                            $u->id => ($u->username ?: 'User #'.$u->id).($u->deleted_at ? ' (deleted)' : ''),
                                                         ])
                                                         ->toArray();
                                                 })
@@ -94,8 +94,8 @@ return false;
                                                 ->preload()
                                                 ->native(false)
                                                 ->nullable()
-                                                ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
-                                                ->default(fn(?Task $record) => $record?->assigned_to)
+                                                ->formatStateUsing(fn ($state, ?Task $record) => $record?->assigned_to)
+                                                ->default(fn (?Task $record) => $record?->assigned_to)
                                                 ->dehydrated(),
                                             Forms\Components\DatePicker::make('due_date')
                                                 ->label(__('task.form.due_date')),
@@ -141,7 +141,7 @@ return false;
                                         })
                                         ->nullable()
                                         ->columnSpanFull(),
-                                    Forms\Components\Fieldset::make('Client, Project and Document')
+                                    Forms\Components\Fieldset::make(__('task.form.task_resources'))
                                         ->columns(1)
                                         ->schema([
                                             Forms\Components\Select::make('client')
@@ -151,8 +151,8 @@ return false;
                                                     return \App\Models\Client::withTrashed()
                                                         ->orderBy('company_name')
                                                         ->get()
-                                                        ->mapWithKeys(fn($c) => [
-                                                            $c->id => ($c->company_name ?: 'Company #' . $c->id) . ($c->deleted_at ? ' (deleted)' : ''),
+                                                        ->mapWithKeys(fn ($c) => [
+                                                            $c->id => ($c->company_name ?: 'Company #'.$c->id).($c->deleted_at ? ' (deleted)' : ''),
                                                         ])
                                                         ->toArray();
                                                 })
@@ -160,7 +160,7 @@ return false;
                                                 ->preload()
                                                 ->native(false)
                                                 ->nullable()
-                                                ->default(fn(?Task $record) => $record?->client)
+                                                ->default(fn (?Task $record) => $record?->client)
                                                 ->dehydrated()
                                                 ->live()
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
@@ -199,7 +199,7 @@ return false;
                                                         ->helperText(__('task.form.project_helper'))
                                                         ->options(function (Forms\Get $get) {
                                                             $clientId = $get('client');
-                                                            if (!$clientId) {
+                                                            if (! $clientId) {
                                                                 return [];
                                                             }
 
@@ -207,8 +207,8 @@ return false;
                                                                 ->withTrashed()
                                                                 ->orderBy('title')
                                                                 ->get()
-                                                                ->mapWithKeys(fn($p) => [
-                                                                    $p->id => str($p->title)->limit(25) . ($p->deleted_at ? ' (deleted)' : ''),
+                                                                ->mapWithKeys(fn ($p) => [
+                                                                    $p->id => str($p->title)->limit(25).($p->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
@@ -217,14 +217,14 @@ return false;
                                                         ->native(false)
                                                         ->nullable()
                                                         ->multiple()
-                                                        ->default(fn(?Task $record) => $record?->project)
+                                                        ->default(fn (?Task $record) => $record?->project)
                                                         ->dehydrated(),
                                                     Forms\Components\Select::make('document')
                                                         ->label(__('task.form.document'))
                                                         ->helperText(__('task.form.document_helper'))
                                                         ->options(function (Forms\Get $get) {
                                                             $clientId = $get('client');
-                                                            if (!$clientId) {
+                                                            if (! $clientId) {
                                                                 return [];
                                                             }
 
@@ -234,8 +234,8 @@ return false;
                                                                 ->withTrashed()
                                                                 ->orderBy('title')
                                                                 ->get()
-                                                                ->mapWithKeys(fn($d) => [
-                                                                    $d->id => str($d->title)->limit(25) . ($d->deleted_at ? ' (deleted)' : ''),
+                                                                ->mapWithKeys(fn ($d) => [
+                                                                    $d->id => str($d->title)->limit(25).($d->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
@@ -244,7 +244,7 @@ return false;
                                                         ->native(false)
                                                         ->nullable()
                                                         ->multiple()
-                                                        ->default(fn(?Task $record) => $record?->document)
+                                                        ->default(fn (?Task $record) => $record?->document)
                                                         ->dehydrated(),
                                                 ]),
 
@@ -296,7 +296,7 @@ return false;
                                         ->reorderable()
                                         ->collapsible(true)
                                         ->collapsed()
-                                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
+                                        ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
                                         ->live()
                                         ->columnSpanFull()
                                         ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
