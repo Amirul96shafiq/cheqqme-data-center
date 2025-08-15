@@ -128,12 +128,12 @@ class AdminPanelProvider extends PanelProvider
 
                                     // Set placeholder
                                     if (searchInput) {
-                                        searchInput.placeholder = "Type / to search";
+                                        searchInput.placeholder = "CTRL + / to search";
                                     }
 
                                     // Keyboard shortcut: /
                                     document.addEventListener('keydown', function (e) {
-                                        if (e.key.toLowerCase() === '/') {
+                                        if (e.ctrlKey && e.key.toLowerCase() === '/') {
                                             e.preventDefault();
                                             const input = document.querySelector('.fi-global-search input');
                                             if (input) {
