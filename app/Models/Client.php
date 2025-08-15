@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Client extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'pic_name',
@@ -37,7 +39,7 @@ class Client extends Model
                 'notes',
                 'extra_information',
                 'created_at',
-                'updated_by'
+                'updated_by',
             ])
             ->useLogName('Clients');
     }
@@ -45,6 +47,7 @@ class Client extends Model
     protected $casts = [
         'extra_information' => 'array',
     ];
+
     protected static function booted()
     {
         static::saving(function ($client) {
@@ -54,9 +57,19 @@ class Client extends Model
         });
 
     }
+
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    public function documents(): HasManyThrough
+    {
+        return $this->hasManyThrough(Document::class, Project::class);
+    }
 }

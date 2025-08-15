@@ -3,32 +3,27 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\DocumentResource\Pages;
-use App\Filament\Resources\DocumentResource\RelationManagers;
 use App\Models\Document;
-
-use Filament\Forms;
-use Filament\Forms\Get;
-use Filament\Forms\Form;
-use Filament\Forms\Components\Section;
 use Closure;
-use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, RichEditor, Grid, Repeater};
 use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\PasswordInput;
-use Filament\Forms\Components\Password;
-use Illuminate\Support\Facades\Hash;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
-
 use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Actions\{ViewAction, EditAction, DeleteAction, RestoreAction};
 use Filament\Tables\Filters\TrashedFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
+use Filament\Tables\Table;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 
 class DocumentResource extends Resource
 {
@@ -40,15 +35,14 @@ class DocumentResource extends Resource
 
     public static function getGloballySearchableAttributes(): array // This method defines which attributes are searchable globally
     {
-        return ['title', 'client.company_name'];
+        return ['title', 'project.title'];
     }
 
     public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
     {
         return [
             __('document.search.title') => $record->title,
-            __('document.search.client') => $record->client->company_name,
-            __('document.search.project') => $record->project->title,
+            __('document.search.project') => optional($record->project)->title,
         ];
     }
 
@@ -68,22 +62,16 @@ class DocumentResource extends Resource
                                 ->searchable()
                                 ->nullable(),
 
-                            Select::make('client_id')
-                                ->label(__('document.form.client'))
-                                ->relationship('client', 'company_name')
-                                ->preload()
+                            Select::make('type')
+                                ->label(__('document.form.document_type'))
+                                ->options([
+                                    'external' => __('document.form.external'),
+                                    'internal' => __('document.form.internal'),
+                                ])
                                 ->searchable()
-                                ->nullable(),
+                                ->required()
+                                ->live(),
                         ]),
-
-                        Radio::make('type')
-                            ->label(__('document.form.document_type'))
-                            ->options([
-                                'external' => __('document.form.external'),
-                                'internal' => __('document.form.internal'),
-                            ])
-                            ->required()
-                            ->live(),
 
                         TextInput::make('url')
                             ->label(__('document.form.document_url'))
@@ -98,7 +86,6 @@ class DocumentResource extends Resource
                             )
                             ->url()
                             ->nullable(),
-
 
                         FileUpload::make('file_path')
                             ->label(__('document.form.document_upload'))
@@ -139,12 +126,12 @@ class DocumentResource extends Resource
                                 'bulletList',
                                 'codeBlock',
                             ])
-                            //->maxLength(500)
+                            // ->maxLength(500)
                             ->extraAttributes([
                                 'style' => 'resize: vertical;',
                             ])
                             ->reactive()
-                            //Character limit reactive function
+                            // Character limit reactive function
                             ->helperText(function (Get $get) {
                                 $raw = $get('notes') ?? '';
                                 // 1. Strip all HTML tags
@@ -153,6 +140,7 @@ class DocumentResource extends Resource
                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                 $remaining = 500 - mb_strlen($decoded);
+
                                 return __(
                                     __('document.form.notes_helper', ['count' => $remaining])
                                 );
@@ -170,13 +158,12 @@ class DocumentResource extends Resource
 
                         Repeater::make('extra_information')
                             ->label(__('document.form.extra_information'))
-                            //->relationship('extra_information')
+                            // ->relationship('extra_information')
                             ->schema([
                                 Grid::make()
                                     ->schema([
                                         TextInput::make('title')
                                             ->label(__('document.form.extra_title'))
-                                            ->required()
                                             ->maxLength(100)
                                             ->columnSpanFull(),
                                         RichEditor::make('value')
@@ -195,7 +182,7 @@ class DocumentResource extends Resource
                                                 'style' => 'resize: vertical;',
                                             ])
                                             ->reactive()
-                                            //Character limit reactive function
+                                            // Character limit reactive function
                                             ->helperText(function (Get $get) {
                                                 $raw = $get('value') ?? '';
                                                 // 1. Strip all HTML tags
@@ -204,14 +191,15 @@ class DocumentResource extends Resource
                                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                                 $remaining = 500 - mb_strlen($decoded);
-                                                return __("document.form.notes_helper", ['count' => $remaining]);
+
+                                                return __('document.form.notes_helper', ['count' => $remaining]);
                                             })
                                             // Block save if over 500 visible characters
                                             ->rule(function (Get $get): Closure {
                                                 return function (string $attribute, $value, Closure $fail) {
                                                     $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                     if (mb_strlen($textOnly) > 500) {
-                                                        $fail(__("document.form.notes_warning"));
+                                                        $fail(__('document.form.notes_warning'));
                                                     }
                                                 };
                                             })
@@ -285,7 +273,6 @@ class DocumentResource extends Resource
                     'internal' => __('document.table.internal'),
                     'external' => __('document.table.external'),
                 ]),
-                SelectFilter::make('client_id')->label(__('document.table.client'))->relationship('client', 'company_name'),
                 SelectFilter::make('project_id')->label(__('document.table.project'))->relationship('project', 'title'),
                 TrashedFilter::make(), // To show trashed or only active
             ])
@@ -298,7 +285,7 @@ class DocumentResource extends Resource
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
@@ -342,6 +329,7 @@ class DocumentResource extends Resource
     {
         return __('document.navigation_group'); // Grouping documents under Data Management
     }
+
     public static function getNavigationSort(): ?int
     {
         return 33; // Adjust the navigation sort order as needed

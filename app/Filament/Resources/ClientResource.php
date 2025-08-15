@@ -68,8 +68,18 @@ class ClientResource extends Resource
                                 ",
                             ])
                             ->extraAlpineAttributes(['x-ref' => 'picName']),
-                        TextInput::make('pic_email')->label(__('client.form.pic_email'))->email()->required(),
-                        TextInput::make('pic_contact_number')->label(__('client.form.pic_contact_number'))->required()->tel(),
+
+                        TextInput::make('pic_email')
+                            ->label(__('client.form.pic_email'))
+                            ->email()
+                            ->required()
+                            ->searchable(),
+
+                        TextInput::make('pic_contact_number')
+                            ->label(__('client.form.pic_contact_number'))
+                            ->required()
+                            ->tel()
+                            ->searchable(),
                     ])
                     ->columns(3),
 
@@ -81,9 +91,23 @@ class ClientResource extends Resource
                             ->extraAlpineAttributes(['x-ref' => 'companyName'])
                             ->helperText(__('client.form.company_name_helper'))
                             ->placeholder(fn(callable $get) => $get('pic_name')),
-                        TextInput::make('company_email')->label(__('client.form.company_email'))->email()->nullable(),
-                        Textarea::make('company_address')->label(__('client.form.company_address'))->rows(2)->nullable(),
-                        Textarea::make('billing_address')->label(__('client.form.billing_address'))->rows(2)->nullable(),
+
+                        TextInput::make('company_email')->label(__('client.form.company_email'))
+                            ->email()
+                            ->searchable()
+                            ->nullable(),
+
+                        Textarea::make('company_address')
+                            ->label(__('client.form.company_address'))
+                            ->rows(2)
+                            ->searchable()
+                            ->nullable(),
+
+                        Textarea::make('billing_address')
+                            ->label(__('client.form.billing_address'))
+                            ->rows(2)
+                            ->searchable()
+                            ->nullable(),
                     ])
                     ->columns(2),
 

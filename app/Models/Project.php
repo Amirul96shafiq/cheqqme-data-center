@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Project extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'title',
@@ -44,15 +46,16 @@ class Project extends Model
         'extra_information' => 'array',
     ];
 
-    public function client()
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function documents()
+    public function documents(): HasMany
     {
         return $this->hasMany(Document::class);
     }
+
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');

@@ -3,31 +3,25 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProjectResource\Pages;
-use App\Filament\Resources\ProjectResource\RelationManagers;
 use App\Models\Project;
-
-use Filament\Forms;
-use Filament\Forms\Get;
-use Filament\Forms\Form;
-use Filament\Forms\Components\Section;
 use Closure;
-use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, RichEditor, Grid, Repeater};
-use Filament\Forms\Components\PasswordInput;
-use Filament\Forms\Components\Password;
-use Illuminate\Support\Facades\Hash;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
-
 use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Actions\{ViewAction, EditAction, DeleteAction, RestoreAction};
 use Filament\Tables\Filters\TrashedFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
+use Filament\Tables\Table;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 
 class ProjectResource extends Resource
 {
@@ -46,7 +40,7 @@ class ProjectResource extends Resource
     {
         return [
             __('project.search.title') => $record->title,
-            __('project.search.client') => $record->client->company_name,
+            __('project.search.client') => optional($record->client)->company_name,
             __('project.search.project_url') => $record->project_url,
         ];
     }
@@ -58,12 +52,37 @@ class ProjectResource extends Resource
                 Section::make(__('project.section.project_info'))
                     ->schema([
                         Grid::make(2)->schema([
-                            TextInput::make('title')->label(__('project.form.project_title'))->required()->maxLength(50),
-                            Select::make('client_id')->label(__('project.form.client'))->relationship('client', 'company_name')->searchable()->preload()->nullable(),
+                            TextInput::make('title')
+                                ->label(__('project.form.project_title'))
+                                ->required()
+                                ->maxLength(50),
+
+                            Select::make('client_id')
+                                ->label(__('project.form.client'))
+                                ->relationship('client', 'company_name')
+                                ->searchable()
+                                ->preload()
+                                ->nullable(),
                         ]),
-                        TextInput::make('project_url')->label(__('project.form.project_url'))->url()->nullable(),
-                        Textarea::make('description')->label(__('project.form.project_description'))->rows(3)->nullable()->maxLength(200),
-                        Select::make('status')->label(__('project.form.project_status'))->options(['Planning' => __('project.form.planning'), 'In Progress' => __('project.form.in_progress'), 'Completed' => __('project.form.completed'),])->default('Planning')->required(),
+
+                        TextInput::make('project_url')
+                            ->label(__('project.form.project_url'))
+                            ->url()
+                            ->helperText(__('project.form.project_url_note'))
+                            ->nullable(),
+
+                        Textarea::make('description')
+                            ->label(__('project.form.project_description'))
+                            ->rows(3)
+                            ->nullable()
+                            ->maxLength(200),
+
+                        Select::make('status')
+                            ->label(__('project.form.project_status'))
+                            ->options(['Planning' => __('project.form.planning'), 'In Progress' => __('project.form.in_progress'), 'Completed' => __('project.form.completed')])
+                            ->default('Planning')
+                            ->searchable()
+                            ->required(),
                     ]),
                 Section::make(__('project.section.project_extra_info'))
                     ->schema([
@@ -79,12 +98,12 @@ class ProjectResource extends Resource
                                 'bulletList',
                                 'codeBlock',
                             ])
-                            //->maxLength(500)
+                            // ->maxLength(500)
                             ->extraAttributes([
                                 'style' => 'resize: vertical;',
                             ])
                             ->reactive()
-                            //Character limit reactive function
+                            // Character limit reactive function
                             ->helperText(function (Get $get) {
                                 $raw = $get('notes') ?? '';
                                 // 1. Strip all HTML tags
@@ -93,6 +112,7 @@ class ProjectResource extends Resource
                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                 $remaining = 500 - mb_strlen($decoded);
+
                                 return __(__('project.form.notes_helper', ['count' => $remaining]));
                             })
                             // Block save if over 500 visible characters
@@ -100,7 +120,7 @@ class ProjectResource extends Resource
                                 return function (string $attribute, $value, Closure $fail) {
                                     $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                     if (mb_strlen($textOnly) > 500) {
-                                        $fail(__("project.form.notes_warning"));
+                                        $fail(__('project.form.notes_warning'));
                                     }
                                 };
                             })
@@ -108,13 +128,12 @@ class ProjectResource extends Resource
 
                         Repeater::make('extra_information')
                             ->label(__('project.form.extra_information'))
-                            //->relationship('extra_information')
+                            // ->relationship('extra_information')
                             ->schema([
                                 Grid::make()
                                     ->schema([
                                         TextInput::make('title')
                                             ->label(__('project.form.extra_title'))
-                                            ->required()
                                             ->maxLength(100)
                                             ->columnSpanFull(),
                                         RichEditor::make('value')
@@ -133,7 +152,7 @@ class ProjectResource extends Resource
                                                 'style' => 'resize: vertical;',
                                             ])
                                             ->reactive()
-                                            //Character limit reactive function
+                                            // Character limit reactive function
                                             ->helperText(function (Get $get) {
                                                 $raw = $get('value') ?? '';
                                                 // 1. Strip all HTML tags
@@ -142,14 +161,15 @@ class ProjectResource extends Resource
                                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                                 $remaining = 500 - mb_strlen($decoded);
-                                                return __("project.form.notes_helper", ['count' => $remaining]);
+
+                                                return __('project.form.notes_helper', ['count' => $remaining]);
                                             })
                                             // Block save if over 500 visible characters
                                             ->rule(function (Get $get): Closure {
                                                 return function (string $attribute, $value, Closure $fail) {
                                                     $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                     if (mb_strlen($textOnly) > 500) {
-                                                        $fail(__("project.form.notes_warning"));
+                                                        $fail(__('project.form.notes_warning'));
                                                     }
                                                 };
                                             })
@@ -239,7 +259,7 @@ class ProjectResource extends Resource
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
@@ -263,6 +283,7 @@ class ProjectResource extends Resource
             'edit' => Pages\EditProject::route('/{record}/edit'),
         ];
     }
+
     public static function getNavigationLabel(): string
     {
         return __('project.navigation_label');
@@ -282,6 +303,7 @@ class ProjectResource extends Resource
     {
         return __('project.navigation_group'); // Grouping projects under Data Management
     }
+
     public static function getNavigationSort(): ?int
     {
         return 22; // Adjust the navigation sort order as needed

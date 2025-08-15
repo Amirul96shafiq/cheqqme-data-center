@@ -2,51 +2,37 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Profile;
+use Awcodes\LightSwitch\Enums\Alignment;
+use Awcodes\LightSwitch\LightSwitchPlugin;
+use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
+use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-use App\Filament\Pages\Login;
-use App\Filament\Resources\PhoneNumberResource;
-use Filament\Navigation\NavigationGroup;
-use App\Filament\Pages\Profile;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse;
-use App\Filament\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Filament\Pages\Settings;
-use Filament\Navigation\MenuItem;
-use Filament\Navigation\UserMenuItem;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use Filament\Pages\Actions\Logout;
-use Filament\Facades\Filament;
-use Illuminate\Support\Facades\Request;
 // -----------------------------
 // Plugins
 // -----------------------------
 // Light Switch by Adam Weston
-use Awcodes\LightSwitch\LightSwitchPlugin;
-use Awcodes\LightSwitch\Enums\Alignment;
-
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Session\Middleware\StartSession;
 // Global Search Modal by CharrafiMed
-use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
-use Filament\Support\Enums\MaxWidth;
-
+use Illuminate\Support\Facades\Request;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 // ActivityLog by Rômulo Ramos
 use Rmsramos\Activitylog\ActivitylogPlugin;
 
 // Kanban by Mo Khosh
-use Mokhosh\FilamentKanban\FilamentKanbanPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -54,7 +40,7 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
+            ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
             ->favicon(asset('images/favicon.png'))
@@ -132,7 +118,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 'panels::body.end',
-                fn() => <<<'HTML'
+                fn () => <<<'HTML'
                             <script>
                                 document.addEventListener('DOMContentLoaded', () => {
                                     // -----------------------------
@@ -156,7 +142,6 @@ class AdminPanelProvider extends PanelProvider
                                         }
                                     });
                                 });
-                                
                                 // -----------------------------
                                 // Enable horizontal drag-scroll on Flowforge board
                                 // -----------------------------
@@ -214,7 +199,7 @@ class AdminPanelProvider extends PanelProvider
                     ->expandedUrlTarget(enabled: false),
 
                 ActivitylogPlugin::make()
-                    ->navigationGroup(fn() => __('activitylog.navigation_group'))
+                    ->navigationGroup(fn () => __('activitylog.navigation_group'))
                     ->navigationSort(11),
             ]);
     }
