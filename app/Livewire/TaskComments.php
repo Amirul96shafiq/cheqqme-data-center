@@ -236,7 +236,7 @@ class TaskComments extends Component implements HasForms
     // Final pre-render safeguard: clear any accidental 'undefined' before view output
     if (method_exists($this, 'composerForm')) {
       $state = $this->composerForm->getState();
-      if (isset($state['newComment']) && is_string($state['newComment']) && \Illuminate\Support\Str::lower(trim(strip_tags($state['newComment']))) === 'undefined') {
+      if (isset($state['newComment']) && is_string($state['newComment']) && Str::lower(trim(strip_tags($state['newComment']))) === 'undefined') {
         $this->composerForm->fill(['newComment' => '']);
         $this->newComment = '';
       }
@@ -247,12 +247,12 @@ class TaskComments extends Component implements HasForms
   public function hydrate(): void
   {
     // Defensive: clear any literal 'undefined' string that may slip into state before rendering
-    if (is_string($this->newComment) && \Illuminate\Support\Str::lower(trim(strip_tags($this->newComment))) === 'undefined') {
+    if (is_string($this->newComment) && Str::lower(trim(strip_tags($this->newComment))) === 'undefined') {
       $this->newComment = '';
     }
     if (method_exists($this, 'composerForm')) {
       $state = $this->composerForm->getState();
-      if (isset($state['newComment']) && is_string($state['newComment']) && \Illuminate\Support\Str::lower(trim(strip_tags($state['newComment']))) === 'undefined') {
+      if (isset($state['newComment']) && is_string($state['newComment']) && Str::lower(trim(strip_tags($state['newComment']))) === 'undefined') {
         $this->composerForm->fill(['newComment' => '']);
       }
       // Keep backing array in sync for entangle path reliability
@@ -273,13 +273,13 @@ class TaskComments extends Component implements HasForms
           ->extraInputAttributes(['style' => 'min-height:4.5rem;max-height:4.5rem;overflow-y:auto;'])
           ->default('')
           ->formatStateUsing(function ($state) {
-            if (is_string($state) && \Illuminate\Support\Str::lower(trim(strip_tags($state))) === 'undefined') {
+            if (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') {
               return '';
             }
             return $state;
           })
           ->mutateDehydratedStateUsing(function (?string $state) {
-            return (is_string($state) && \Illuminate\Support\Str::lower(trim(strip_tags($state))) === 'undefined') ? '' : $state;
+            return (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') ? '' : $state;
           })
           ->columnSpanFull(),
       ])->statePath('composerData'),
@@ -291,7 +291,7 @@ class TaskComments extends Component implements HasForms
           ->maxLength(1000)
           ->default('')
           ->formatStateUsing(function ($state) {
-            if (is_string($state) && \Illuminate\Support\Str::lower(trim(strip_tags($state))) === 'undefined') {
+            if (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') {
               return '';
             }
             return $state;
