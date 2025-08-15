@@ -164,6 +164,19 @@ return false;
                                                 ->default(fn (?Task $record) => $record?->client)
                                                 ->dehydrated()
                                                 ->live()
+                                                ->suffixAction(
+                                                    Forms\Components\Actions\Action::make('openClient')
+                                                        ->icon('heroicon-o-eye')
+                                                        ->url(function (Forms\Get $get) {
+                                                            $clientId = $get('client');
+                                                            if (!$clientId) {
+                                                                return null;
+                                                            }
+                                                            return \App\Filament\Resources\ClientResource::getUrl('edit', ['record' => $clientId]);
+                                                        })
+                                                        ->openUrlInNewTab()
+                                                        ->visible(fn (Forms\Get $get) => (bool) $get('client'))
+                                                )
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
                                                     if ($state) {
                                                         // Get projects for selected client
