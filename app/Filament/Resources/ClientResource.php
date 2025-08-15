@@ -72,14 +72,12 @@ class ClientResource extends Resource
                         TextInput::make('pic_email')
                             ->label(__('client.form.pic_email'))
                             ->email()
-                            ->required()
-                            ->searchable(),
+                            ->required(),
 
                         TextInput::make('pic_contact_number')
                             ->label(__('client.form.pic_contact_number'))
                             ->required()
-                            ->tel()
-                            ->searchable(),
+                            ->tel(),
                     ])
                     ->columns(3),
 
@@ -94,19 +92,16 @@ class ClientResource extends Resource
 
                         TextInput::make('company_email')->label(__('client.form.company_email'))
                             ->email()
-                            ->searchable()
                             ->nullable(),
 
                         Textarea::make('company_address')
                             ->label(__('client.form.company_address'))
                             ->rows(2)
-                            ->searchable()
                             ->nullable(),
 
                         Textarea::make('billing_address')
                             ->label(__('client.form.billing_address'))
                             ->rows(2)
-                            ->searchable()
                             ->nullable(),
                     ])
                     ->columns(2),
