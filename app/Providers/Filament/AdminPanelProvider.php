@@ -31,8 +31,9 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Pages\Actions\Logout;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Request;
-
+// -----------------------------
 // Plugins
+// -----------------------------
 // Light Switch by Adam Weston
 use Awcodes\LightSwitch\LightSwitchPlugin;
 use Awcodes\LightSwitch\Enums\Alignment;
@@ -85,11 +86,12 @@ class AdminPanelProvider extends PanelProvider
                 // Add native danger palette so Filament can style danger buttons (fi-color-danger)
                 'danger' => Color::Red,
             ])
-            //->sidebarCollapsibleOnDesktop()
-            ->sidebarWidth('20rem')
+            ->sidebarWidth('17rem')
+            // -----------------------------
             // Load both the Filament admin theme and the main app Tailwind bundle so that
             // all generated utilities (including danger reds) are guaranteed to be present
             // even if purge / safelist changes or fallback overrides are removed later.
+            // -----------------------------
             ->viteTheme([
                 'resources/css/filament/admin/theme.css',
                 'resources/css/app.css',
@@ -129,11 +131,13 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Tools'),
             ])
             ->renderHook(
-                'panels::head.end',
+                'panels::body.end',
                 fn() => <<<'HTML'
                             <script>
-                                // Global Search Keyboard Shortcut + Custom Placeholder
                                 document.addEventListener('DOMContentLoaded', () => {
+                                    // -----------------------------
+                                    // Global Search Keyboard Shortcut + Custom Placeholder
+                                    // -----------------------------
                                     const searchInput = document.querySelector('.fi-global-search input');
 
                                     // Set placeholder
@@ -152,14 +156,10 @@ class AdminPanelProvider extends PanelProvider
                                         }
                                     });
                                 });
-                            </script>
-                        HTML,
-            )
-            ->renderHook(
-                'panels::body.end',
-                fn() => <<<'HTML'
-                            <script>
-                                // Enable horizontal drag-scroll on Flowforge board by dragging empty areas inside columns
+                                
+                                // -----------------------------
+                                // Enable horizontal drag-scroll on Flowforge board
+                                // -----------------------------
                                 (function () {
                                     let isBound = false;
                                     function bind() {
