@@ -10,9 +10,9 @@ use Filament\Resources\Resource;
 use Filament\Tables\Table;
 
 class TaskResource extends Resource /*public static function shouldRegisterNavigation(): bool
-  {
-      return false;
-  }*/
+{
+return false;
+}*/
 {
     /**
      * Redirect global search result to Action Board and open the selected Task.
@@ -85,8 +85,8 @@ class TaskResource extends Resource /*public static function shouldRegisterNavig
                                                     return \App\Models\User::withTrashed()
                                                         ->orderBy('username')
                                                         ->get()
-                                                        ->mapWithKeys(fn ($u) => [
-                                                            $u->id => ($u->username ?: 'User #'.$u->id).($u->deleted_at ? ' (deleted)' : ''),
+                                                        ->mapWithKeys(fn($u) => [
+                                                            $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
                                                         ])
                                                         ->toArray();
                                                 })
@@ -94,8 +94,8 @@ class TaskResource extends Resource /*public static function shouldRegisterNavig
                                                 ->preload()
                                                 ->native(false)
                                                 ->nullable()
-                                                ->formatStateUsing(fn ($state, ?Task $record) => $record?->assigned_to)
-                                                ->default(fn (?Task $record) => $record?->assigned_to)
+                                                ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
+                                                ->default(fn(?Task $record) => $record?->assigned_to)
                                                 ->dehydrated(),
                                             Forms\Components\DatePicker::make('due_date')
                                                 ->label(__('task.form.due_date')),
@@ -113,14 +113,14 @@ class TaskResource extends Resource /*public static function shouldRegisterNavig
                                     Forms\Components\RichEditor::make('description')
                                         ->label(__('task.form.description'))
                                         ->toolbarButtons([
-                                        'bold',
-                                        'italic',
-                                        'strike',
-                                        'bulletList',
-                                        'orderedList',
-                                        'link',
-                                        'codeBlock',
-                                    ])
+                                            'bold',
+                                            'italic',
+                                            'strike',
+                                            'bulletList',
+                                            'orderedList',
+                                            'link',
+                                            'codeBlock',
+                                        ])
                                         ->extraAttributes(['style' => 'resize: vertical;'])
                                         ->reactive()
                                         ->helperText(function (Forms\Get $get) {
@@ -141,7 +141,8 @@ class TaskResource extends Resource /*public static function shouldRegisterNavig
                                         })
                                         ->nullable()
                                         ->columnSpanFull(),
-                                    Forms\Components\Grid::make(1)
+                                    Forms\Components\Fieldset::make('Client, Project and Document')
+                                        ->columns(1)
                                         ->schema([
                                             Forms\Components\Select::make('client')
                                                 ->label(__('task.form.client'))
@@ -150,8 +151,8 @@ class TaskResource extends Resource /*public static function shouldRegisterNavig
                                                     return \App\Models\Client::withTrashed()
                                                         ->orderBy('company_name')
                                                         ->get()
-                                                        ->mapWithKeys(fn ($c) => [
-                                                            $c->id => ($c->company_name ?: 'Company #'.$c->id).($c->deleted_at ? ' (deleted)' : ''),
+                                                        ->mapWithKeys(fn($c) => [
+                                                            $c->id => ($c->company_name ?: 'Company #' . $c->id) . ($c->deleted_at ? ' (deleted)' : ''),
                                                         ])
                                                         ->toArray();
                                                 })
@@ -159,7 +160,7 @@ class TaskResource extends Resource /*public static function shouldRegisterNavig
                                                 ->preload()
                                                 ->native(false)
                                                 ->nullable()
-                                                ->default(fn (?Task $record) => $record?->client)
+                                                ->default(fn(?Task $record) => $record?->client)
                                                 ->dehydrated()
                                                 ->live()
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
@@ -171,7 +172,7 @@ class TaskResource extends Resource /*public static function shouldRegisterNavig
                                                             ->get()
                                                             ->pluck('id')
                                                             ->toArray();
-                                                        
+
                                                         // Get documents for projects of selected client
                                                         $documents = \App\Models\Document::whereHas('project', function ($query) use ($state) {
                                                             $query->where('client_id', $state);
@@ -181,7 +182,7 @@ class TaskResource extends Resource /*public static function shouldRegisterNavig
                                                             ->get()
                                                             ->pluck('id')
                                                             ->toArray();
-                                                        
+
                                                         // Auto-select all projects and documents for the client
                                                         $set('project', $projects);
                                                         $set('document', $documents);
@@ -191,68 +192,74 @@ class TaskResource extends Resource /*public static function shouldRegisterNavig
                                                         $set('document', []);
                                                     }
                                                 }),
-                                            Forms\Components\Select::make('project')
-                                                ->label(__('task.form.project'))
-                                                ->options(function (Forms\Get $get) {
-                                                    $clientId = $get('client');
-                                                    if (!$clientId) {
-                                                        return [];
-                                                    }
-                                                    
-                                                    return \App\Models\Project::where('client_id', $clientId)
-                                                        ->withTrashed()
-                                                        ->orderBy('title')
-                                                        ->get()
-                                                        ->mapWithKeys(fn ($p) => [
-                                                            $p->id => $p->title . ($p->deleted_at ? ' (deleted)' : ''),
-                                                        ])
-                                                        ->toArray();
-                                                })
-                                                ->searchable()
-                                                ->preload()
-                                                ->native(false)
-                                                ->nullable()
-                                                ->multiple()
-                                                ->default(fn (?Task $record) => $record?->project)
-                                                ->dehydrated(),
-                                            Forms\Components\Select::make('document')
-                                                ->label(__('task.form.document'))
-                                                ->options(function (Forms\Get $get) {
-                                                    $clientId = $get('client');
-                                                    if (!$clientId) {
-                                                        return [];
-                                                    }
-                                                    
-                                                    return \App\Models\Document::whereHas('project', function ($query) use ($clientId) {
-                                                        $query->where('client_id', $clientId);
-                                                    })
-                                                        ->withTrashed()
-                                                        ->orderBy('title')
-                                                        ->get()
-                                                        ->mapWithKeys(fn ($d) => [
-                                                            $d->id => $d->title . ($d->deleted_at ? ' (deleted)' : ''),
-                                                        ])
-                                                        ->toArray();
-                                                })
-                                                ->searchable()
-                                                ->preload()
-                                                ->native(false)
-                                                ->nullable()
-                                                ->multiple()
-                                                ->default(fn (?Task $record) => $record?->document)
-                                                ->dehydrated(),
+                                            Forms\Components\Grid::make(2)
+                                                ->schema([
+                                                    Forms\Components\Select::make('project')
+                                                        ->label(__('task.form.project'))
+                                                        ->helperText(__('task.form.project_helper'))
+                                                        ->options(function (Forms\Get $get) {
+                                                            $clientId = $get('client');
+                                                            if (!$clientId) {
+                                                                return [];
+                                                            }
+
+                                                            return \App\Models\Project::where('client_id', $clientId)
+                                                                ->withTrashed()
+                                                                ->orderBy('title')
+                                                                ->get()
+                                                                ->mapWithKeys(fn($p) => [
+                                                                    $p->id => str($p->title)->limit(25) . ($p->deleted_at ? ' (deleted)' : ''),
+                                                                ])
+                                                                ->toArray();
+                                                        })
+                                                        ->searchable()
+                                                        ->preload()
+                                                        ->native(false)
+                                                        ->nullable()
+                                                        ->multiple()
+                                                        ->default(fn(?Task $record) => $record?->project)
+                                                        ->dehydrated(),
+                                                    Forms\Components\Select::make('document')
+                                                        ->label(__('task.form.document'))
+                                                        ->helperText(__('task.form.document_helper'))
+                                                        ->options(function (Forms\Get $get) {
+                                                            $clientId = $get('client');
+                                                            if (!$clientId) {
+                                                                return [];
+                                                            }
+
+                                                            return \App\Models\Document::whereHas('project', function ($query) use ($clientId) {
+                                                                $query->where('client_id', $clientId);
+                                                            })
+                                                                ->withTrashed()
+                                                                ->orderBy('title')
+                                                                ->get()
+                                                                ->mapWithKeys(fn($d) => [
+                                                                    $d->id => str($d->title)->limit(25) . ($d->deleted_at ? ' (deleted)' : ''),
+                                                                ])
+                                                                ->toArray();
+                                                        })
+                                                        ->searchable()
+                                                        ->preload()
+                                                        ->native(false)
+                                                        ->nullable()
+                                                        ->multiple()
+                                                        ->default(fn(?Task $record) => $record?->document)
+                                                        ->dehydrated(),
+                                                ]),
+
                                         ]),
                                 ]),
                             Forms\Components\Section::make(__('task.form.additional_information'))
                                 ->schema([
-                                Forms\Components\Repeater::make('extra_information')
-                                    ->label(__('task.form.extra_information'))
-                                    ->schema([
-                                        Forms\Components\TextInput::make('title')
+                                    Forms\Components\Repeater::make('extra_information')
+                                        ->label(__('task.form.extra_information'))
+                                        ->schema([
+                                            Forms\Components\TextInput::make('title')
                                                 ->label(__('task.form.title'))
                                                 ->maxLength(100)
                                                 ->columnSpanFull(),
-                                        Forms\Components\RichEditor::make('value')
+                                            Forms\Components\RichEditor::make('value')
                                                 ->label(__('task.form.value'))
                                                 ->toolbarButtons([
                                                     'bold',
@@ -282,18 +289,18 @@ class TaskResource extends Resource /*public static function shouldRegisterNavig
                                                     };
                                                 })
                                                 ->columnSpanFull(),
-                                    ])
-                                    ->defaultItems(1)
-                                    ->addActionLabel(__('task.form.add_extra_info'))
-                                    ->cloneable()
-                                    ->reorderable()
-                                    ->collapsible(true)
-                                    ->collapsed()
-                                    ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
-                                    ->live()
-                                    ->columnSpanFull()
-                                    ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
-                            ])
+                                        ])
+                                        ->defaultItems(1)
+                                        ->addActionLabel(__('task.form.add_extra_info'))
+                                        ->cloneable()
+                                        ->reorderable()
+                                        ->collapsible(true)
+                                        ->collapsed()
+                                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
+                                        ->live()
+                                        ->columnSpanFull()
+                                        ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                                ])
                                 ->collapsible()
                                 ->collapsed(),
                         ])
@@ -302,21 +309,21 @@ class TaskResource extends Resource /*public static function shouldRegisterNavig
                     // Comments sidebar (right side) - spans 1 column
                     Forms\Components\Section::make(__('task.form.comments'))
                         ->schema([
-                        Forms\Components\ViewField::make('task_comments')
-                            ->view('filament.components.comments-sidebar-livewire-wrapper')
-                            ->viewData(function ($get, $record) {
-                                return ['taskId' => $record instanceof Task ? $record->id : null];
-                            })
-                            ->extraAttributes([
-                                'class' => 'flex-1 flex flex-col min-h-0',
-                                'style' => 'height:100%; display:flex; flex-direction:column;',
-                            ])
-                            ->dehydrated(false),
-                    ])
+                            Forms\Components\ViewField::make('task_comments')
+                                ->view('filament.components.comments-sidebar-livewire-wrapper')
+                                ->viewData(function ($get, $record) {
+                                    return ['taskId' => $record instanceof Task ? $record->id : null];
+                                })
+                                ->extraAttributes([
+                                    'class' => 'flex-1 flex flex-col min-h-0',
+                                    'style' => 'height:100%; display:flex; flex-direction:column;',
+                                ])
+                                ->dehydrated(false),
+                        ])
                         ->extraAttributes([
-                        'style' => 'height:68vh; max-height:68vh; position:sticky; top:3vh; display:flex; flex-direction:column; align-self:flex-start; overflow:hidden;',
-                        'class' => 'comments-pane',
-                    ])
+                            'style' => 'height:68vh; max-height:68vh; position:sticky; top:3vh; display:flex; flex-direction:column; align-self:flex-start; overflow:hidden;',
+                            'class' => 'comments-pane',
+                        ])
                         ->columnSpan(2),
                 ]),
         ]);
