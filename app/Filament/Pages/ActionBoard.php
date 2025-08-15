@@ -268,7 +268,7 @@ class ActionBoard extends KanbanBoardPage
                                                 ->live()
                                                 ->suffixAction(
                                                     Forms\Components\Actions\Action::make('openClient')
-                                                        ->icon('heroicon-o-eye')
+                                                        ->icon('heroicon-o-arrow-top-right-on-square')
                                                         ->url(function (Forms\Get $get) {
                                                             $clientId = $get('client');
                                                             if (!$clientId) {
