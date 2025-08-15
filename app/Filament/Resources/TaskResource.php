@@ -76,7 +76,8 @@ return false;
                                     Forms\Components\TextInput::make('title')
                                         ->label(__('task.form.title'))
                                         ->required()
-                                        ->placeholder(__('task.form.title_placeholder')),
+                                        ->placeholder(__('task.form.title_placeholder'))
+                                        ->columnSpanFull(),
                                     Forms\Components\Grid::make(3)
                                         ->schema([
                                             Forms\Components\Select::make('assigned_to')

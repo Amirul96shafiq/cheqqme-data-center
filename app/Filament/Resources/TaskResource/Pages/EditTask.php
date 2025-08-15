@@ -1,14 +1,16 @@
 <?php
+
 namespace App\Filament\Resources\TaskResource\Pages;
-use App\Filament\Resources\TaskResource;
-use Filament\Resources\Pages\EditRecord;
-use Filament\Notifications\Notification;
-use Filament\Forms;
-use Filament\Pages\Actions;
+
 use App\Filament\Pages\ActionBoard;
+use App\Filament\Resources\TaskResource;
+use Filament\Pages\Actions;
+use Filament\Resources\Pages\EditRecord;
+
 class EditTask extends EditRecord
 {
   protected static string $resource = TaskResource::class;
+
   // Remove breadcrumb
   public function getBreadcrumb(): string
   {
@@ -18,23 +20,18 @@ class EditTask extends EditRecord
 
   public function getTitle(): string
   {
-    // Limit top title to 20 characters
+    // Limit top title to 50 characters in the page header only
     $title = parent::getTitle();
+
     return mb_strimwidth($title, 0, 50, '...');
   }
-  // Limit title length
-  protected function mutateFormDataBeforeFill(array $data): array
-  {
-    if (isset($data['title'])) {
-      $data['title'] = mb_substr($data['title'], 0, 100);
-    }
-    return $data;
-  }
+
   // Redirect to Action Board after save
   protected function getRedirectUrl(): string
   {
     return ActionBoard::getUrl();
   }
+
   // Redirect to Action Board after cancel
   protected function getCancelRedirectUrl(): ?string
   {
@@ -63,7 +60,7 @@ class EditTask extends EditRecord
         ->label(__('task.action.cancel'))
         ->url('/admin/action-board')
         ->color('gray'),
-      Actions\DeleteAction::make()
+      Actions\DeleteAction::make(),
     ];
   }
 }
