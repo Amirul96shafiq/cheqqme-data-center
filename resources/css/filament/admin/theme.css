@@ -93,6 +93,11 @@
         font-weight: 400 !important;
     }
 
+    .ff-card:is(.dark *) {
+        background-color: #22272B90 !important;
+        border-color: rgb(250 250 250 / 0.1) !important;
+    }
+
     /* Force sidebar to pin on large screens, with full viewport height */
     @media (min-width: 1024px) {
         /* Pin the sidebar */
