@@ -251,7 +251,7 @@ class ActionBoard extends KanbanBoardPage
                                                         ->orderBy('company_name')
                                                         ->get()
                                                         ->mapWithKeys(fn($c) => [
-                                                            $c->id => ($c->company_name ?: 'Company #' . $c->id) . ($c->deleted_at ? ' (deleted)' : ''),
+                                                            $c->id => $c->pic_name . ' (' . ($c->company_name ?: 'Company #' . $c->id) . ')' . ($c->deleted_at ? ' (deleted)' : ''),
                                                         ])
                                                         ->toArray();
                                                 })
@@ -533,7 +533,7 @@ class ActionBoard extends KanbanBoardPage
                                                         ->orderBy('company_name')
                                                         ->get()
                                                         ->mapWithKeys(fn($c) => [
-                                                            $c->id => ($c->company_name ?: 'Company #' . $c->id) . ($c->deleted_at ? ' (deleted)' : ''),
+                                                            $c->id => $c->pic_name . ' (' . ($c->company_name ?: 'Company #' . $c->id) . ')' . ($c->deleted_at ? ' (deleted)' : ''),
                                                         ])
                                                         ->toArray();
                                                 })
@@ -597,8 +597,8 @@ class ActionBoard extends KanbanBoardPage
                                                                 ->withTrashed()
                                                                 ->orderBy('title')
                                                                 ->get()
-                                                                ->mapWithKeys(fn($p) => [
-                                                                    $p->id => str($p->title)->limit(25) . ($p->deleted_at ? ' (deleted)' : ''),
+                                                                ->mapWithKeys(fn($c) => [
+                                                                    $c->id => $c->pic_name . ' (' . ($c->company_name ?: 'Company #' . $c->id) . ')' . ($c->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
