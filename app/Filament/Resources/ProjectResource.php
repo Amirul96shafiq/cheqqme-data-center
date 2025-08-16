@@ -62,10 +62,12 @@ class ProjectResource extends Resource
 
                                 Select::make('client_id')
                                     ->label(__('project.form.client'))
-                                    ->relationship('client', 'company_name')
+                                    ->relationship('client', 'pic_name')
+                                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->pic_name} ({$record->company_name})")
                                     ->searchable()
                                     ->preload()
                                     ->nullable(),
+                                    
                                 Select::make('status')
                                     ->label(__('project.form.project_status'))
                                     ->options(['Planning' => __('project.form.planning'), 'In Progress' => __('project.form.in_progress'), 'Completed' => __('project.form.completed')])
