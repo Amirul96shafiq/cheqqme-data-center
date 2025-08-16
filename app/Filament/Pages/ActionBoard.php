@@ -163,94 +163,89 @@ class ActionBoard extends KanbanBoardPage
                     // Main content (left side) - spans 2 columns
                     Forms\Components\Grid::make(1)
                         ->schema([
-                            Forms\Components\Section::make(__('action.form.task_information'))
-                                ->schema([
-                                    Forms\Components\Hidden::make('id')
-                                        ->disabled() // not user editable
-                                        ->visible(false),
-                                    Forms\Components\TextInput::make('title')
-                                        ->label(__('action.form.title'))
-                                        ->required()
-                                        ->placeholder(__('action.form.title_placeholder')),
-                                    Forms\Components\Hidden::make('kanban_column_hint')
-                                        ->dehydrated(false)
-                                        ->afterStateHydrated(function (Forms\Components\Hidden $component) {
-                                            // Removed unused kanban_column_hint hidden field
-                                        }),
-                                    Forms\Components\Grid::make(3)
+                            Forms\Components\Tabs::make('taskTabs')
+                                ->tabs([
+                                    Forms\Components\Tabs\Tab::make(__('task.form.task_information'))
                                         ->schema([
-                                            // Updated assigned_to select for edit layout
-                                            Forms\Components\Select::make('assigned_to')
-                                                ->label(__('action.form.assign_to'))
-                                                ->options(function () {
-                                                    return User::withTrashed()
-                                                        ->orderBy('username')
-                                                        ->get()
-                                                        ->mapWithKeys(fn($u) => [
-                                                            $u->id => ($u->username ?: __('action.form.user_with_id', ['id' => $u->id])) . ($u->deleted_at ? __('action.form.deleted_suffix') : ''),
+                                            Forms\Components\Hidden::make('id')
+                                                ->disabled()
+                                                ->visible(false),
+                                            Forms\Components\TextInput::make('title')
+                                                ->label(__('task.form.title'))
+                                                ->required()
+                                                ->placeholder(__('task.form.title_placeholder')),
+                                            Forms\Components\Grid::make(3)
+                                                ->schema([
+                                                    Forms\Components\Select::make('assigned_to')
+                                                        ->label(__('task.form.assign_to'))
+                                                        ->options(function () {
+                                                            return User::withTrashed()
+                                                                ->orderBy('username')
+                                                                ->get()
+                                                                ->mapWithKeys(fn($u) => [
+                                                                    $u->id => ($u->username ?: __('action.form.user_with_id', ['id' => $u->id])) . ($u->deleted_at ? __('action.form.deleted_suffix') : ''),
+                                                                ])
+                                                                ->toArray();
+                                                        })
+                                                        ->searchable()
+                                                        ->preload()
+                                                        ->native(false)
+                                                        ->nullable()
+                                                        ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
+                                                        ->default(fn(?Task $record) => $record?->assigned_to)
+                                                        ->dehydrated(),
+                                                    Forms\Components\DatePicker::make('due_date')
+                                                        ->label(__('task.form.due_date')),
+                                                    Forms\Components\Select::make('status')
+                                                        ->label(__('task.form.status'))
+                                                        ->options([
+                                                            'todo' => __('task.status.todo'),
+                                                            'in_progress' => __('task.status.in_progress'),
+                                                            'toreview' => __('task.status.toreview'),
+                                                            'completed' => __('task.status.completed'),
+                                                            'archived' => __('task.status.archived'),
                                                         ])
-                                                        ->toArray();
-                                                })
-                                                ->searchable()
-                                                ->preload()
-                                                ->native(false)
-                                                ->nullable()
-                                                ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
-                                                ->default(fn(?Task $record) => $record?->assigned_to)
-                                                ->dehydrated(),
-                                            Forms\Components\DatePicker::make('due_date')
-                                                ->label(__('action.form.due_date')),
-                                            Forms\Components\Select::make('status')
-                                                ->label(__('action.form.status'))
-                                                ->options([
-                                                    'todo' => __('action.status.todo'),
-                                                    'in_progress' => __('action.status.in_progress'),
-                                                    'toreview' => __('action.status.toreview'),
-                                                    'completed' => __('action.status.completed'),
-                                                    'archived' => __('action.status.archived'),
+                                                        ->searchable()
+                                                        ->default($defaultStatus),
+                                                ]),
+                                            Forms\Components\RichEditor::make('description')
+                                                ->label(__('task.form.description'))
+                                                ->toolbarButtons([
+                                                    'bold',
+                                                    'italic',
+                                                    'strike',
+                                                    'bulletList',
+                                                    'orderedList',
+                                                    'link',
+                                                    'codeBlock',
                                                 ])
-                                                ->searchable()
-                                                ->default($defaultStatus),
+                                                ->extraAttributes(['style' => 'resize: vertical;'])
+                                                ->reactive()
+                                                ->helperText(function (Get $get) use ($mode) {
+                                                    $raw = $get('description') ?? '';
+                                                    $noHtml = strip_tags($raw);
+                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                    $remaining = 500 - mb_strlen($decoded);
+
+                                                    return __("action.$mode.description_helper", ['count' => $remaining]);
+                                                })
+                                                ->rule(function (Get $get) use ($mode): Closure {
+                                                    return function (string $attribute, $value, Closure $fail) use ($mode) {
+                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                        if (mb_strlen($textOnly) > 500) {
+                                                            $fail(__("action.$mode.description_warning"));
+                                                        }
+                                                    };
+                                                })
+                                                ->nullable()
+                                                ->columnSpanFull(),
                                         ]),
-                                    Forms\Components\RichEditor::make('description')
-                                        ->label(__('action.form.description'))
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'strike',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                            'codeBlock',
-                                        ])
-                                        ->extraAttributes(['style' => 'resize: vertical;'])
-                                        ->reactive()
-                                        ->helperText(function (Get $get) use ($mode) {
-                                            $raw = $get('description') ?? '';
-                                            $noHtml = strip_tags($raw);
-                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                            $remaining = 500 - mb_strlen($decoded);
 
-                                            return __("action.$mode.description_helper", ['count' => $remaining]);
-                                        })
-                                        ->rule(function (Get $get) use ($mode): Closure {
-                                            return function (string $attribute, $value, Closure $fail) use ($mode) {
-                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                if (mb_strlen($textOnly) > 500) {
-                                                    $fail(__("action.$mode.description_warning"));
-                                                }
-                                            };
-                                        })
-                                        ->nullable()
-                                        ->columnSpanFull(),
-
-                                    Forms\Components\Fieldset::make(__('task.form.task_resources'))
-                                        ->columns(1)
+                                    Forms\Components\Tabs\Tab::make(__('task.form.task_resources'))
                                         ->schema([
                                             Forms\Components\Select::make('client')
                                                 ->label(__('task.form.client'))
                                                 ->options(function () {
-                                                    // return \App\Models\Client::all()->pluck('name', 'id');
                                                     return \App\Models\Client::withTrashed()
                                                         ->orderBy('company_name')
                                                         ->get()
@@ -281,7 +276,6 @@ class ActionBoard extends KanbanBoardPage
                                                 )
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
                                                     if ($state) {
-                                                        // Get projects for selected client
                                                         $projects = \App\Models\Project::where('client_id', $state)
                                                             ->withTrashed()
                                                             ->orderBy('title')
@@ -289,7 +283,6 @@ class ActionBoard extends KanbanBoardPage
                                                             ->pluck('id')
                                                             ->toArray();
 
-                                                        // Get documents for projects of selected client
                                                         $documents = \App\Models\Document::whereHas('project', function ($query) use ($state) {
                                                             $query->where('client_id', $state);
                                                         })
@@ -299,11 +292,9 @@ class ActionBoard extends KanbanBoardPage
                                                             ->pluck('id')
                                                             ->toArray();
 
-                                                        // Auto-select all projects and documents for the client
                                                         $set('project', $projects);
                                                         $set('document', $documents);
                                                     } else {
-                                                        // Clear selections when no client is selected
                                                         $set('project', []);
                                                         $set('document', []);
                                                     }
@@ -363,73 +354,63 @@ class ActionBoard extends KanbanBoardPage
                                                         ->default(fn(?Task $record) => $record?->document)
                                                         ->dehydrated(),
                                                 ]),
-
                                         ]),
-                                ]),
-                            Forms\Components\Section::make()
-                                ->heading(function (Get $get) {
-                                    $count = 0;
 
-                                    // Add count of extra_information items
-                                    $extraInfo = $get('extra_information') ?? [];
-                                    $count += count($extraInfo);
-
-                                    $title = __('task.form.additional_information');
-                                    $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
-
-                                    return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
-                                })
-                                ->collapsible(true)
-                                ->live()
-                                ->schema([
-                                    Forms\Components\Repeater::make('extra_information')
-                                        ->label(__('action.form.extra_information'))
+                                    Forms\Components\Tabs\Tab::make(__('task.form.additional_information'))
+                                        ->badge(function (Get $get) {
+                                            $extraInfo = $get('extra_information') ?? [];
+                                            return count($extraInfo) ?: null;
+                                        })
                                         ->schema([
-                                            Forms\Components\TextInput::make('title')
-                                                ->label(__('action.form.title'))
-                                                ->maxLength(100)
-                                                ->columnSpanFull(),
-                                            Forms\Components\RichEditor::make('value')
-                                                ->label(__('action.form.value'))
-                                                ->toolbarButtons([
-                                                    'bold',
-                                                    'italic',
-                                                    'strike',
-                                                    'bulletList',
-                                                    'orderedList',
-                                                    'link',
-                                                    'codeBlock',
-                                                ])
-                                                ->extraAttributes(['style' => 'resize: vertical;'])
-                                                ->reactive()
-                                                ->helperText(function (Get $get) use ($mode) {
-                                                    $raw = $get('value') ?? '';
-                                                    $noHtml = strip_tags($raw);
-                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                    $remaining = 500 - mb_strlen($decoded);
+                                            Forms\Components\Repeater::make('extra_information')
+                                                ->label(__('task.form.extra_information'))
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('title')
+                                                        ->label(__('task.form.title'))
+                                                        ->maxLength(100)
+                                                        ->columnSpanFull(),
+                                                    Forms\Components\RichEditor::make('value')
+                                                        ->label(__('task.form.value'))
+                                                        ->toolbarButtons([
+                                                            'bold',
+                                                            'italic',
+                                                            'strike',
+                                                            'bulletList',
+                                                            'orderedList',
+                                                            'link',
+                                                            'codeBlock',
+                                                        ])
+                                                        ->extraAttributes(['style' => 'resize: vertical;'])
+                                                        ->reactive()
+                                                        ->helperText(function (Get $get) use ($mode) {
+                                                            $raw = $get('value') ?? '';
+                                                            $noHtml = strip_tags($raw);
+                                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                            $remaining = 500 - mb_strlen($decoded);
 
-                                                    return __("action.$mode.extra_information_helper", ['count' => $remaining]);
-                                                })
-                                                ->rule(function (Get $get) use ($mode): Closure {
-                                                    return function (string $attribute, $value, Closure $fail) use ($mode) {
-                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                        if (mb_strlen($textOnly) > 500) {
-                                                            $fail(__("action.$mode.extra_information_warning"));
-                                                        }
-                                                    };
-                                                })
-                                                ->columnSpanFull(),
-                                        ])
-                                        ->defaultItems(1)
-                                        ->addActionLabel(__('client.form.add_extra_info'))
-                                        ->cloneable()
-                                        ->reorderable()
-                                        ->collapsible(true)
-                                        ->collapsed()
-                                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('action.form.title_placeholder_short'))
-                                        ->live()
-                                        ->columnSpanFull()
-                                        ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                                                            return __("action.$mode.extra_information_helper", ['count' => $remaining]);
+                                                        })
+                                                        ->rule(function (Get $get) use ($mode): Closure {
+                                                            return function (string $attribute, $value, Closure $fail) use ($mode) {
+                                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                                if (mb_strlen($textOnly) > 500) {
+                                                                    $fail(__("action.$mode.extra_information_warning"));
+                                                                }
+                                                            };
+                                                        })
+                                                        ->columnSpanFull(),
+                                                ])
+                                                ->defaultItems(1)
+                                                ->addActionLabel(__('task.form.add_extra_info'))
+                                                ->cloneable()
+                                                ->reorderable()
+                                                ->collapsible(true)
+                                                ->collapsed()
+                                                ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
+                                                ->live()
+                                                ->columnSpanFull()
+                                                ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                                        ]),
                                 ]),
                         ])
                         ->columnSpan(3),
@@ -458,153 +439,262 @@ class ActionBoard extends KanbanBoardPage
                 ])
                 ->visible($mode === 'edit'),
 
-            // For create mode, use the original single-column layout
-            Forms\Components\Section::make(__('action.form.task_information'))
+            // For create mode, reuse the Tabs layout without the comments section
+            Forms\Components\Grid::make(5)
                 ->schema([
-                    Forms\Components\TextInput::make('title')
-                        ->label(__('action.form.title'))
-                        ->required()
-                        ->placeholder(__('action.form.title_placeholder')),
-                    Forms\Components\Hidden::make('kanban_column_hint')
-                        ->dehydrated(false)
-                        ->afterStateHydrated(function (Forms\Components\Hidden $component) use ($mode) {
-                            if ($mode !== 'create') {
-                                return;
-                            }
-                            if ($col = $this->detectCreateColumn()) {
-                                $component->state($col);
-                            }
-                        }),
-                    Forms\Components\Grid::make(3)
+                    Forms\Components\Grid::make(1)
                         ->schema([
-                            // Updated assigned_to select for create layout
-                            Forms\Components\Select::make('assigned_to')
-                                ->label(__('action.form.assign_to'))
-                                ->options(function () {
-                                    return User::withTrashed()
-                                        ->orderBy('username')
-                                        ->get()
-                                        ->mapWithKeys(fn($u) => [
-                                            $u->id => ($u->username ?: __('action.form.user_with_id', ['id' => $u->id])) . ($u->deleted_at ? __('action.form.deleted_suffix') : ''),
-                                        ])
-                                        ->toArray();
-                                })
-                                ->searchable()
-                                ->preload()
-                                ->native(false)
-                                ->nullable()
-                                ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
-                                ->default(fn(?Task $record) => $record?->assigned_to)
-                                ->dehydrated(),
-                            Forms\Components\DatePicker::make('due_date')
-                                ->label(__('action.form.due_date')),
-                            Forms\Components\Select::make('status')
-                                ->label(__('action.form.status'))
-                                ->options([
-                                    'todo' => __('action.status.todo'),
-                                    'in_progress' => __('action.status.in_progress'),
-                                    'toreview' => __('action.status.toreview'),
-                                    'completed' => __('action.status.completed'),
-                                    'archived' => __('action.status.archived'),
-                                ])
-                                ->default(function (Get $get) {
-                                    $valid = ['todo', 'in_progress', 'toreview', 'completed', 'archived'];
-                                    $status = $get('status');
+                            Forms\Components\Tabs::make('taskTabsCreate')
+                                ->tabs([
+                                    Forms\Components\Tabs\Tab::make(__('task.form.task_information'))
+                                        ->schema([
+                                            Forms\Components\TextInput::make('title')
+                                                ->label(__('task.form.title'))
+                                                ->required()
+                                                ->placeholder(__('task.form.title_placeholder')),
+                                            Forms\Components\Grid::make(3)
+                                                ->schema([
+                                                    Forms\Components\Select::make('assigned_to')
+                                                        ->label(__('task.form.assign_to'))
+                                                        ->options(function () {
+                                                            return User::withTrashed()
+                                                                ->orderBy('username')
+                                                                ->get()
+                                                                ->mapWithKeys(fn($u) => [
+                                                                    $u->id => ($u->username ?: __('action.form.user_with_id', ['id' => $u->id])) . ($u->deleted_at ? __('action.form.deleted_suffix') : ''),
+                                                                ])
+                                                                ->toArray();
+                                                        })
+                                                        ->searchable()
+                                                        ->preload()
+                                                        ->native(false)
+                                                        ->nullable()
+                                                        ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
+                                                        ->default(fn(?Task $record) => $record?->assigned_to)
+                                                        ->dehydrated(),
+                                                    Forms\Components\DatePicker::make('due_date')
+                                                        ->label(__('task.form.due_date')),
+                                                    Forms\Components\Select::make('status')
+                                                        ->label(__('task.form.status'))
+                                                        ->options([
+                                                            'todo' => __('task.status.todo'),
+                                                            'in_progress' => __('task.status.in_progress'),
+                                                            'toreview' => __('task.status.toreview'),
+                                                            'completed' => __('task.status.completed'),
+                                                            'archived' => __('task.status.archived'),
+                                                        ])
+                                                        ->default(function () use ($defaultStatus) {
+                                                            $valid = ['todo', 'in_progress', 'toreview', 'completed', 'archived'];
+                                                            return (is_string($defaultStatus) && in_array($defaultStatus, $valid)) ? $defaultStatus : 'todo';
+                                                        })
+                                                        ->searchable(),
+                                                ]),
+                                            Forms\Components\RichEditor::make('description')
+                                                ->label(__('task.form.description'))
+                                                ->toolbarButtons([
+                                                    'bold',
+                                                    'italic',
+                                                    'strike',
+                                                    'bulletList',
+                                                    'orderedList',
+                                                    'link',
+                                                    'codeBlock',
+                                                ])
+                                                ->extraAttributes(['style' => 'resize: vertical;'])
+                                                ->reactive()
+                                                ->helperText(function (Get $get) use ($mode) {
+                                                    $raw = $get('description') ?? '';
+                                                    $noHtml = strip_tags($raw);
+                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                    $remaining = 500 - mb_strlen($decoded);
 
-                                    return (is_string($status) && in_array($status, $valid)) ? $status : 'todo';
-                                })
-                                ->searchable(),
-                        ]),
-                    Forms\Components\RichEditor::make('description')
-                        ->label(__('action.form.description'))
-                        ->toolbarButtons([
-                            'bold',
-                            'italic',
-                            'strike',
-                            'bulletList',
-                            'orderedList',
-                            'link',
-                            'codeBlock',
-                        ])
-                        ->extraAttributes(['style' => 'resize: vertical;'])
-                        ->reactive()
-                        ->helperText(function (Get $get) use ($mode) {
-                            $raw = $get('description') ?? '';
-                            $noHtml = strip_tags($raw);
-                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                            $remaining = 500 - mb_strlen($decoded);
+                                                    return __("action.$mode.description_helper", ['count' => $remaining]);
+                                                })
+                                                ->rule(function (Get $get) use ($mode): Closure {
+                                                    return function (string $attribute, $value, Closure $fail) use ($mode) {
+                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                        if (mb_strlen($textOnly) > 500) {
+                                                            $fail(__("action.$mode.description_warning"));
+                                                        }
+                                                    };
+                                                })
+                                                ->nullable()
+                                                ->columnSpanFull(),
+                                        ]),
 
-                            return __("action.$mode.description_helper", ['count' => $remaining]);
-                        })
-                        ->rule(function (Get $get) use ($mode): Closure {
-                            return function (string $attribute, $value, Closure $fail) use ($mode) {
-                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                if (mb_strlen($textOnly) > 500) {
-                                    $fail(__("action.$mode.description_warning"));
-                                }
-                            };
-                        })
-                        ->nullable()
-                        ->columnSpanFull(),
-                ])
-                ->visible($mode === 'create'),
+                                    Forms\Components\Tabs\Tab::make(__('task.form.task_resources'))
+                                        ->schema([
+                                            Forms\Components\Select::make('client')
+                                                ->label(__('task.form.client'))
+                                                ->options(function () {
+                                                    return \App\Models\Client::withTrashed()
+                                                        ->orderBy('company_name')
+                                                        ->get()
+                                                        ->mapWithKeys(fn($c) => [
+                                                            $c->id => ($c->company_name ?: 'Company #' . $c->id) . ($c->deleted_at ? ' (deleted)' : ''),
+                                                        ])
+                                                        ->toArray();
+                                                })
+                                                ->searchable()
+                                                ->preload()
+                                                ->native(false)
+                                                ->nullable()
+                                                ->default(fn(?Task $record) => $record?->client)
+                                                ->dehydrated()
+                                                ->live()
+                                                ->suffixAction(
+                                                    Forms\Components\Actions\Action::make('openClient')
+                                                        ->icon('heroicon-o-arrow-top-right-on-square')
+                                                        ->url(function (Forms\Get $get) {
+                                                            $clientId = $get('client');
+                                                            if (!$clientId) {
+                                                                return null;
+                                                            }
+                                                            return \App\Filament\Resources\ClientResource::getUrl('edit', ['record' => $clientId]);
+                                                        })
+                                                        ->openUrlInNewTab()
+                                                        ->visible(fn(Forms\Get $get) => (bool) $get('client'))
+                                                )
+                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    if ($state) {
+                                                        $projects = \App\Models\Project::where('client_id', $state)
+                                                            ->withTrashed()
+                                                            ->orderBy('title')
+                                                            ->get()
+                                                            ->pluck('id')
+                                                            ->toArray();
 
-            Forms\Components\Section::make(__('action.form.additional_information'))
-                ->schema([
-                    Forms\Components\Repeater::make('extra_information')
-                        ->label(__('action.form.extra_information'))
-                        ->schema([
-                            Forms\Components\Grid::make()
-                                ->schema([
-                                    Forms\Components\TextInput::make('title')
-                                        ->label(__('action.form.title'))
-                                        ->maxLength(100)
-                                        ->columnSpanFull(),
-                                    Forms\Components\RichEditor::make('value')
-                                        ->label(__('action.form.value'))
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'strike',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                            'codeBlock',
-                                        ])
-                                        ->extraAttributes(['style' => 'resize: vertical;'])
-                                        ->reactive()
-                                        ->helperText(function (Get $get) use ($mode) {
-                                            $raw = $get('value') ?? '';
-                                            $noHtml = strip_tags($raw);
-                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                            $remaining = 500 - mb_strlen($decoded);
+                                                        $documents = \App\Models\Document::whereHas('project', function ($query) use ($state) {
+                                                            $query->where('client_id', $state);
+                                                        })
+                                                            ->withTrashed()
+                                                            ->orderBy('title')
+                                                            ->get()
+                                                            ->pluck('id')
+                                                            ->toArray();
 
-                                            return __("action.$mode.extra_information_helper", ['count' => $remaining]);
+                                                        $set('project', $projects);
+                                                        $set('document', $documents);
+                                                    } else {
+                                                        $set('project', []);
+                                                        $set('document', []);
+                                                    }
+                                                }),
+                                            Forms\Components\Grid::make(2)
+                                                ->schema([
+                                                    Forms\Components\Select::make('project')
+                                                        ->label(__('task.form.project'))
+                                                        ->helperText(__('task.form.project_helper'))
+                                                        ->options(function (Forms\Get $get) {
+                                                            $clientId = $get('client');
+                                                            if (!$clientId) {
+                                                                return [];
+                                                            }
+
+                                                            return \App\Models\Project::where('client_id', $clientId)
+                                                                ->withTrashed()
+                                                                ->orderBy('title')
+                                                                ->get()
+                                                                ->mapWithKeys(fn($p) => [
+                                                                    $p->id => str($p->title)->limit(25) . ($p->deleted_at ? ' (deleted)' : ''),
+                                                                ])
+                                                                ->toArray();
+                                                        })
+                                                        ->searchable()
+                                                        ->preload()
+                                                        ->native(false)
+                                                        ->nullable()
+                                                        ->multiple()
+                                                        ->default(fn(?Task $record) => $record?->project)
+                                                        ->dehydrated(),
+                                                    Forms\Components\Select::make('document')
+                                                        ->label(__('task.form.document'))
+                                                        ->helperText(__('task.form.document_helper'))
+                                                        ->options(function (Forms\Get $get) {
+                                                            $clientId = $get('client');
+                                                            if (!$clientId) {
+                                                                return [];
+                                                            }
+
+                                                            return \App\Models\Document::whereHas('project', function ($query) use ($clientId) {
+                                                                $query->where('client_id', $clientId);
+                                                            })
+                                                                ->withTrashed()
+                                                                ->orderBy('title')
+                                                                ->get()
+                                                                ->mapWithKeys(fn($d) => [
+                                                                    $d->id => str($d->title)->limit(25) . ($d->deleted_at ? ' (deleted)' : ''),
+                                                                ])
+                                                                ->toArray();
+                                                        })
+                                                        ->searchable()
+                                                        ->preload()
+                                                        ->native(false)
+                                                        ->nullable()
+                                                        ->multiple()
+                                                        ->default(fn(?Task $record) => $record?->document)
+                                                        ->dehydrated(),
+                                                ]),
+                                        ]),
+
+                                    Forms\Components\Tabs\Tab::make(__('task.form.additional_information'))
+                                        ->badge(function (Get $get) {
+                                            $extraInfo = $get('extra_information') ?? [];
+                                            return count($extraInfo) ?: null;
                                         })
-                                        ->rule(function (Get $get) use ($mode): Closure {
-                                            return function (string $attribute, $value, Closure $fail) use ($mode) {
-                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                if (mb_strlen($textOnly) > 500) {
-                                                    $fail(__("action.$mode.extra_information_warning"));
-                                                }
-                                            };
-                                        })
-                                        ->columnSpanFull(),
+                                        ->schema([
+                                            Forms\Components\Repeater::make('extra_information')
+                                                ->label(__('task.form.extra_information'))
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('title')
+                                                        ->label(__('task.form.title'))
+                                                        ->maxLength(100)
+                                                        ->columnSpanFull(),
+                                                    Forms\Components\RichEditor::make('value')
+                                                        ->label(__('task.form.value'))
+                                                        ->toolbarButtons([
+                                                            'bold',
+                                                            'italic',
+                                                            'strike',
+                                                            'bulletList',
+                                                            'orderedList',
+                                                            'link',
+                                                            'codeBlock',
+                                                        ])
+                                                        ->extraAttributes(['style' => 'resize: vertical;'])
+                                                        ->reactive()
+                                                        ->helperText(function (Get $get) use ($mode) {
+                                                            $raw = $get('value') ?? '';
+                                                            $noHtml = strip_tags($raw);
+                                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                            $remaining = 500 - mb_strlen($decoded);
+
+                                                            return __("action.$mode.extra_information_helper", ['count' => $remaining]);
+                                                        })
+                                                        ->rule(function (Get $get) use ($mode): Closure {
+                                                            return function (string $attribute, $value, Closure $fail) use ($mode) {
+                                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                                if (mb_strlen($textOnly) > 500) {
+                                                                    $fail(__("action.$mode.extra_information_warning"));
+                                                                }
+                                                            };
+                                                        })
+                                                        ->columnSpanFull(),
+                                                ])
+                                                ->defaultItems(1)
+                                                ->addActionLabel(__('task.form.add_extra_info'))
+                                                ->cloneable()
+                                                ->reorderable()
+                                                ->collapsible(true)
+                                                ->collapsed()
+                                                ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
+                                                ->live()
+                                                ->columnSpanFull()
+                                                ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                                        ]),
                                 ]),
                         ])
-                        ->defaultItems(1)
-                        ->addActionLabel(__('client.form.add_extra_info'))
-                        ->cloneable()
-                        ->reorderable()
-                        ->collapsible(true)
-                        ->collapsed()
-                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('action.form.title_placeholder_short'))
-                        ->live()
-                        ->columnSpanFull()
-                        ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
                 ])
-                ->collapsible()
-                ->collapsed()
                 ->visible($mode === 'create'),
         ]);
     }

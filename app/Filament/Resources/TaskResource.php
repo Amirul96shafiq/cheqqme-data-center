@@ -69,87 +69,90 @@ return false;
                     // Main content (left side) - spans 2 columns
                     Forms\Components\Grid::make(1)
                         ->schema([
-                            Forms\Components\Section::make(__('task.form.task_information'))
-                                ->schema([
-                                    Forms\Components\Hidden::make('id')
-                                        ->disabled()
-                                        ->visible(false),
-                                    Forms\Components\TextInput::make('title')
-                                        ->label(__('task.form.title'))
-                                        ->required()
-                                        ->placeholder(__('task.form.title_placeholder'))
-                                        ->columnSpanFull(),
-                                    Forms\Components\Grid::make(3)
+                            Forms\Components\Tabs::make('taskTabs')
+                                ->tabs([
+                                    Forms\Components\Tabs\Tab::make(__('task.form.task_information'))
                                         ->schema([
-                                            Forms\Components\Select::make('assigned_to')
-                                                ->label(__('task.form.assign_to'))
-                                                ->options(function () {
-                                                    return \App\Models\User::withTrashed()
-                                                        ->orderBy('username')
-                                                        ->get()
-                                                        ->mapWithKeys(fn($u) => [
-                                                            $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
+                                            Forms\Components\Hidden::make('id')
+                                                ->disabled()
+                                                ->visible(false),
+                                            Forms\Components\TextInput::make('title')
+                                                ->label(__('task.form.title'))
+                                                ->required()
+                                                ->placeholder(__('task.form.title_placeholder'))
+                                                ->columnSpanFull(),
+                                            Forms\Components\Grid::make(3)
+                                                ->schema([
+                                                    Forms\Components\Select::make('assigned_to')
+                                                        ->label(__('task.form.assign_to'))
+                                                        ->options(function () {
+                                                            return \App\Models\User::withTrashed()
+                                                                ->orderBy('username')
+                                                                ->get()
+                                                                ->mapWithKeys(fn($u) => [
+                                                                    $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
+                                                                ])
+                                                                ->toArray();
+                                                        })
+                                                        ->searchable()
+                                                        ->preload()
+                                                        ->native(false)
+                                                        ->nullable()
+                                                        ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
+                                                        ->default(fn(?Task $record) => $record?->assigned_to)
+                                                        ->dehydrated(),
+                                                    Forms\Components\DatePicker::make('due_date')
+                                                        ->label(__('task.form.due_date')),
+                                                    Forms\Components\Select::make('status')
+                                                        ->label(__('task.form.status'))
+                                                        ->options([
+                                                            'todo' => __('task.status.todo'),
+                                                            'in_progress' => __('task.status.in_progress'),
+                                                            'toreview' => __('task.status.toreview'),
+                                                            'completed' => __('task.status.completed'),
+                                                            'archived' => __('task.status.archived'),
                                                         ])
-                                                        ->toArray();
-                                                })
-                                                ->searchable()
-                                                ->preload()
-                                                ->native(false)
-                                                ->nullable()
-                                                ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
-                                                ->default(fn(?Task $record) => $record?->assigned_to)
-                                                ->dehydrated(),
-                                            Forms\Components\DatePicker::make('due_date')
-                                                ->label(__('task.form.due_date')),
-                                            Forms\Components\Select::make('status')
-                                                ->label(__('task.form.status'))
-                                                ->options([
-                                                    'todo' => __('task.status.todo'),
-                                                    'in_progress' => __('task.status.in_progress'),
-                                                    'toreview' => __('task.status.toreview'),
-                                                    'completed' => __('task.status.completed'),
-                                                    'archived' => __('task.status.archived'),
+                                                        ->searchable(),
+                                                ]),
+                                            Forms\Components\RichEditor::make('description')
+                                                ->label(__('task.form.description'))
+                                                ->toolbarButtons([
+                                                    'bold',
+                                                    'italic',
+                                                    'strike',
+                                                    'bulletList',
+                                                    'orderedList',
+                                                    'link',
+                                                    'codeBlock',
                                                 ])
-                                                ->searchable(),
-                                        ]),
-                                    Forms\Components\RichEditor::make('description')
-                                        ->label(__('task.form.description'))
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'strike',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                            'codeBlock',
-                                        ])
-                                        ->extraAttributes(['style' => 'resize: vertical;'])
-                                        ->reactive()
-                                        ->helperText(function (Forms\Get $get) {
-                                            $raw = $get('description') ?? '';
-                                            $noHtml = strip_tags($raw);
-                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                            $remaining = 500 - mb_strlen($decoded);
+                                                ->extraAttributes(['style' => 'resize: vertical;'])
+                                                ->reactive()
+                                                ->helperText(function (Forms\Get $get) {
+                                                    $raw = $get('description') ?? '';
+                                                    $noHtml = strip_tags($raw);
+                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                    $remaining = 500 - mb_strlen($decoded);
 
-                                            return __('task.edit.description_helper', ['count' => $remaining]);
-                                        })
-                                        ->rule(function (Forms\Get $get): \Closure {
-                                            return function (string $attribute, $value, \Closure $fail) {
-                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                if (mb_strlen($textOnly) > 500) {
-                                                    $fail(__('task.edit.description_warning'));
-                                                }
-                                            };
-                                        })
-                                        ->nullable()
-                                        ->columnSpanFull(),
-                                    Forms\Components\Fieldset::make(__('task.form.task_resources'))
-                                        ->columns(1)
+                                                    return __('task.edit.description_helper', ['count' => $remaining]);
+                                                })
+                                                ->rule(function (Forms\Get $get): \Closure {
+                                                    return function (string $attribute, $value, \Closure $fail) {
+                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                        if (mb_strlen($textOnly) > 500) {
+                                                            $fail(__('task.edit.description_warning'));
+                                                        }
+                                                    };
+                                                })
+                                                ->nullable()
+                                                ->columnSpanFull(),
+                                        ]),
+
+                                    Forms\Components\Tabs\Tab::make(__('task.form.task_resources'))
                                         ->schema([
+
                                             Forms\Components\Select::make('client')
                                                 ->label(__('task.form.client'))
                                                 ->options(function () {
-                                                    // return \App\Models\Client::all()->pluck('name', 'id');
                                                     return \App\Models\Client::withTrashed()
                                                         ->orderBy('company_name')
                                                         ->get()
@@ -264,72 +267,63 @@ return false;
                                                 ]),
 
                                         ]),
-                                ]),
-                            Forms\Components\Section::make()
-                                ->heading(function (Get $get) {
-                                    $count = 0;
 
-                                    // Add count of extra_information items
-                                    $extraInfo = $get('extra_information') ?? [];
-                                    $count += count($extraInfo);
-
-                                    $title = __('task.form.additional_information');
-                                    $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
-
-                                    return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
-                                })
-                                ->collapsible(true)
-                                ->live()
-                                ->schema([
-                                    Forms\Components\Repeater::make('extra_information')
-                                        ->label(__('task.form.extra_information'))
+                                    Forms\Components\Tabs\Tab::make(__('task.form.additional_information'))
+                                        ->badge(function (Get $get) {
+                                            $extraInfo = $get('extra_information') ?? [];
+                                            return count($extraInfo) ?: null;
+                                        })
                                         ->schema([
-                                            Forms\Components\TextInput::make('title')
-                                                ->label(__('task.form.title'))
-                                                ->maxLength(100)
-                                                ->columnSpanFull(),
-                                            Forms\Components\RichEditor::make('value')
-                                                ->label(__('task.form.value'))
-                                                ->toolbarButtons([
-                                                    'bold',
-                                                    'italic',
-                                                    'strike',
-                                                    'bulletList',
-                                                    'orderedList',
-                                                    'link',
-                                                    'codeBlock',
-                                                ])
-                                                ->extraAttributes(['style' => 'resize: vertical;'])
-                                                ->reactive()
-                                                ->helperText(function (Forms\Get $get) {
-                                                    $raw = $get('value') ?? '';
-                                                    $noHtml = strip_tags($raw);
-                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                    $remaining = 500 - mb_strlen($decoded);
+                                            Forms\Components\Repeater::make('extra_information')
+                                                ->label(__('task.form.extra_information'))
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('title')
+                                                        ->label(__('task.form.title'))
+                                                        ->maxLength(100)
+                                                        ->columnSpanFull(),
+                                                    Forms\Components\RichEditor::make('value')
+                                                        ->label(__('task.form.value'))
+                                                        ->toolbarButtons([
+                                                            'bold',
+                                                            'italic',
+                                                            'strike',
+                                                            'bulletList',
+                                                            'orderedList',
+                                                            'link',
+                                                            'codeBlock',
+                                                        ])
+                                                        ->extraAttributes(['style' => 'resize: vertical;'])
+                                                        ->reactive()
+                                                        ->helperText(function (Forms\Get $get) {
+                                                            $raw = $get('value') ?? '';
+                                                            $noHtml = strip_tags($raw);
+                                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                            $remaining = 500 - mb_strlen($decoded);
 
-                                                    return __('task.edit.extra_information_helper', ['count' => $remaining]);
-                                                })
-                                                ->rule(function (Forms\Get $get): \Closure {
-                                                    return function (string $attribute, $value, \Closure $fail) {
-                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                        if (mb_strlen($textOnly) > 500) {
-                                                            $fail(__('task.edit.extra_information_warning'));
-                                                        }
-                                                    };
-                                                })
-                                                ->columnSpanFull(),
-                                        ])
-                                        ->defaultItems(1)
-                                        ->addActionLabel(__('task.form.add_extra_info'))
-                                        ->cloneable()
-                                        ->reorderable()
-                                        ->collapsible(true)
-                                        ->collapsed()
-                                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
-                                        ->live()
-                                        ->columnSpanFull()
-                                        ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
-                                ]),
+                                                            return __('task.edit.extra_information_helper', ['count' => $remaining]);
+                                                        })
+                                                        ->rule(function (Forms\Get $get): \Closure {
+                                                            return function (string $attribute, $value, \Closure $fail) {
+                                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                                if (mb_strlen($textOnly) > 500) {
+                                                                    $fail(__('task.edit.extra_information_warning'));
+                                                                }
+                                                            };
+                                                        })
+                                                        ->columnSpanFull(),
+                                                ])
+                                                ->defaultItems(1)
+                                                ->addActionLabel(__('task.form.add_extra_info'))
+                                                ->cloneable()
+                                                ->reorderable()
+                                                ->collapsible(true)
+                                                ->collapsed()
+                                                ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
+                                                ->live()
+                                                ->columnSpanFull()
+                                                ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                                        ]),
+                                ])
                         ])
                         ->columnSpan(3),
 
@@ -347,8 +341,9 @@ return false;
                                 ])
                                 ->dehydrated(false),
                         ])
+                        ->visible(fn($record) => $record instanceof Task)
                         ->extraAttributes([
-                            'style' => 'height:68vh; max-height:68vh; position:sticky; top:3vh; display:flex; flex-direction:column; align-self:flex-start; overflow:hidden;',
+                            ' style' => 'height:68vh; max-height:68vh; position:sticky; top:3vh; display:flex; flex-direction:column; align-self:flex-start; overflow:hidden;',
                             'class' => 'comments-pane',
                         ])
                         ->columnSpan(2),
