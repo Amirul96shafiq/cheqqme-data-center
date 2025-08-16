@@ -20,6 +20,7 @@ return [
   'section' => [
     'project_info' => 'Maklumat Projek',
     'project_extra_info' => 'Maklumat Tambahan Projek',
+    'project_documents' => 'Dokumen Projek',
   ],
 
   'form' => [

@@ -238,7 +238,11 @@ class DocumentResource extends Resource
                     ->label('ID')
                     ->sortable()
                     ->url(fn($record) => route('filament.admin.resources.documents.edit', $record)),
-                TextColumn::make('title')->label(__('document.table.title'))->sortable()->searchable()->limit(20),
+                TextColumn::make('title')
+                    ->label(__('document.table.title'))
+                    ->sortable()
+                    ->searchable()
+                    ->limit(20),
                 TextColumn::make('type')
                     ->label(__('document.table.type'))
                     ->badge()
