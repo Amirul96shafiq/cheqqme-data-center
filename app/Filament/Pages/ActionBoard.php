@@ -366,7 +366,21 @@ class ActionBoard extends KanbanBoardPage
 
                                         ]),
                                 ]),
-                            Forms\Components\Section::make(__('action.form.additional_information'))
+                            Forms\Components\Section::make()
+                                ->heading(function (Get $get) {
+                                    $count = 0;
+
+                                    // Add count of extra_information items
+                                    $extraInfo = $get('extra_information') ?? [];
+                                    $count += count($extraInfo);
+
+                                    $title = __('task.form.additional_information');
+                                    $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+
+                                    return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
+                                })
+                                ->collapsible(true)
+                                ->live()
                                 ->schema([
                                     Forms\Components\Repeater::make('extra_information')
                                         ->label(__('action.form.extra_information'))
@@ -416,9 +430,7 @@ class ActionBoard extends KanbanBoardPage
                                         ->live()
                                         ->columnSpanFull()
                                         ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
-                                ])
-                                ->collapsible()
-                                ->collapsed(),
+                                ]),
                         ])
                         ->columnSpan(3),
 

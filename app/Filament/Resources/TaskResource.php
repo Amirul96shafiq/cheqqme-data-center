@@ -6,6 +6,7 @@ use App\Filament\Resources\TaskResource\Pages;
 use App\Models\Task;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 
@@ -264,7 +265,21 @@ return false;
 
                                         ]),
                                 ]),
-                            Forms\Components\Section::make(__('task.form.additional_information'))
+                            Forms\Components\Section::make()
+                                ->heading(function (Get $get) {
+                                    $count = 0;
+
+                                    // Add count of extra_information items
+                                    $extraInfo = $get('extra_information') ?? [];
+                                    $count += count($extraInfo);
+
+                                    $title = __('task.form.additional_information');
+                                    $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+
+                                    return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
+                                })
+                                ->collapsible(true)
+                                ->live()
                                 ->schema([
                                     Forms\Components\Repeater::make('extra_information')
                                         ->label(__('task.form.extra_information'))
@@ -314,9 +329,7 @@ return false;
                                         ->live()
                                         ->columnSpanFull()
                                         ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
-                                ])
-                                ->collapsible()
-                                ->collapsed(),
+                                ]),
                         ])
                         ->columnSpan(3),
 

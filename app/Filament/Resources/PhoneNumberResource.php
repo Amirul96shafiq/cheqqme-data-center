@@ -71,7 +71,27 @@ class PhoneNumberResource extends Resource
                     ])
                     ->columns(2),
 
-                Section::make(__('phonenumber.section.phone_number_extra_info'))
+                    Section::make()
+                    ->heading(function (Get $get) {
+                        $count = 0;
+                        
+                        // Add 1 if notes field is not empty
+                        $notes = $get('notes');
+                        if (!blank($notes) && trim(strip_tags($notes))) {
+                            $count++;
+                        }
+                        
+                        // Add count of extra_information items
+                        $extraInfo = $get('extra_information') ?? [];
+                        $count += count($extraInfo);
+                        
+                        $title = __('phonenumber.section.phone_number_extra_info');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+                        
+                        return new HtmlString($title . ' ' . $badge);
+                    })
+                    ->collapsible(true)
+                    ->live()
                     ->schema([
                         RichEditor::make('notes')
                             ->label(__('phonenumber.form.notes'))
