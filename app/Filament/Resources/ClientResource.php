@@ -5,25 +5,22 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers;
 use App\Models\Client;
-
-use Filament\Forms;
-use Filament\Forms\Get;
-use Filament\Forms\Components\Section;
 use Closure;
-use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, RichEditor, Grid, Repeater};
-use Filament\Support\Enums\ActionSize;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
-use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 
 class ClientResource extends Resource
 {
@@ -120,12 +117,12 @@ class ClientResource extends Resource
                                 'bulletList',
                                 'codeBlock',
                             ])
-                            //->maxLength(500)
+                            // ->maxLength(500)
                             ->extraAttributes([
                                 'style' => 'resize: vertical;',
                             ])
                             ->reactive()
-                            //Character limit reactive function
+                            // Character limit reactive function
                             ->helperText(function (Get $get) {
                                 $raw = $get('notes') ?? '';
                                 // 1. Strip all HTML tags
@@ -134,14 +131,15 @@ class ClientResource extends Resource
                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                 $remaining = 500 - mb_strlen($decoded);
-                                return __("client.form.notes_helper", ['count' => $remaining]);
+
+                                return __('client.form.notes_helper', ['count' => $remaining]);
                             })
                             // Block save if over 500 visible characters
                             ->rule(function (Get $get): Closure {
                                 return function (string $attribute, $value, Closure $fail) {
                                     $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                     if (mb_strlen($textOnly) > 500) {
-                                        $fail(__("client.form.notes_warning"));
+                                        $fail(__('client.form.notes_warning'));
                                     }
                                 };
                             })
@@ -149,7 +147,7 @@ class ClientResource extends Resource
 
                         Repeater::make('extra_information')
                             ->label(__('client.form.extra_information'))
-                            //->relationship('extra_information')
+                            // ->relationship('extra_information')
                             ->schema([
                                 Grid::make()
                                     ->schema([
@@ -174,7 +172,7 @@ class ClientResource extends Resource
                                                 'style' => 'resize: vertical;',
                                             ])
                                             ->reactive()
-                                            //Character limit reactive function
+                                            // Character limit reactive function
                                             ->helperText(function (Get $get) {
                                                 $raw = $get('value') ?? '';
                                                 // 1. Strip all HTML tags
@@ -183,20 +181,21 @@ class ClientResource extends Resource
                                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                                 $remaining = 500 - mb_strlen($decoded);
-                                                return __("client.form.notes_helper", ['count' => $remaining]);
+
+                                                return __('client.form.notes_helper', ['count' => $remaining]);
                                             })
                                             // Block save if over 500 visible characters
                                             ->rule(function (Get $get): Closure {
                                                 return function (string $attribute, $value, Closure $fail) {
                                                     $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                     if (mb_strlen($textOnly) > 500) {
-                                                        $fail(__("client.form.notes_warning"));
+                                                        $fail(__('client.form.notes_warning'));
                                                     }
                                                 };
                                             })
                                             ->nullable()
                                             ->columnSpanFull(),
-                                    ])
+                                    ]),
                             ])
                             ->columns(1)
                             ->defaultItems(1)
@@ -259,7 +258,7 @@ class ClientResource extends Resource
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
@@ -272,6 +271,7 @@ class ClientResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\ProjectsRelationManager::class,
             ActivitylogRelationManager::class,
         ];
     }
@@ -284,6 +284,7 @@ class ClientResource extends Resource
             'edit' => Pages\EditClient::route('/{record}/edit'),
         ];
     }
+
     public static function getNavigationLabel(): string
     {
         return __('client.navigation_label');
@@ -303,6 +304,7 @@ class ClientResource extends Resource
     {
         return __('client.navigation_group');
     }
+
     public static function getNavigationSort(): ?int
     {
         return 11; // Adjust the navigation sort order as needed

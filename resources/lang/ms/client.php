@@ -20,6 +20,7 @@ return [
   'section' => [
     'client_info' => 'Maklumat Pelanggan',
     'company_info' => 'Maklumat Syarikat Pelanggan',
+    'company_projects' => 'Projek Syarikat Pelanggan',
     'extra_info' => 'Maklumat Tambahan Pelanggan',
   ],
 

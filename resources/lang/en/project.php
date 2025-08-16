@@ -44,6 +44,7 @@ return [
   'table' => [
     'id' => 'ID',
     'title' => 'Title',
+    'description' => 'Description',
     'client' => 'Client',
     'status' => 'Status',
     'planning' => 'Planning',

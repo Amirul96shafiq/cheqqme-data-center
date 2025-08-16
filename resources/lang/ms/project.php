@@ -44,6 +44,7 @@ return [
     'id' => 'ID',
     'title' => 'Tajuk',
     'client' => 'Pelanggan',
+    'description' => 'Deskripsi',
     'status' => 'Status',
     'planning' => 'Perancangan',
     'in_progress' => 'Sedang Berjalan',

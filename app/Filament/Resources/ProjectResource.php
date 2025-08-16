@@ -199,9 +199,20 @@ class ProjectResource extends Resource
             // Disable record URL for trashed records
             ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
-                TextColumn::make('id')->label(__('project.table.id'))->sortable(),
-                TextColumn::make('title')->label(__('project.table.title'))->searchable()->sortable()->limit(20),
-                TextColumn::make('client.company_name')->label(__('project.table.client'))->sortable()->searchable()->limit(20),
+                TextColumn::make('id')
+                    ->label(__('project.table.id'))
+                    ->sortable()
+                    ->hidden(),
+                TextColumn::make('title')
+                    ->label(__('project.table.title'))
+                    ->searchable()
+                    ->sortable()
+                    ->limit(20),
+                TextColumn::make('client.company_name')
+                    ->label(__('project.table.client'))
+                    ->sortable()
+                    ->searchable()
+                    ->limit(20),
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
@@ -217,7 +228,11 @@ class ProjectResource extends Resource
                         default => $state,
                     })
                     ->sortable(),
-                TextColumn::make(__('created_at'))->label(__('project.table.created_at'))->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make(__('created_at'))
+                    ->label(__('project.table.created_at'))
+                    ->dateTime('j/n/y, h:i A')
+                    ->sortable()
+                    ->hidden(),
                 TextColumn::make('updated_at')
                     ->label(__('project.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
