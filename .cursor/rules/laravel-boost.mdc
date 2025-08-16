@@ -21,7 +21,7 @@ Use the Boost tools for framework-aware actions and documentation:
 -   Routes: list and filter by method/name/path.
 -   Config: read via dot notation (`app.name`, `database.default`).
 -   Pint: run `vendor/bin/pint --dirty` after edits to fix formatting.
- 
+
 <laravel-boost-guidelines>
 === boost rules ===
 
