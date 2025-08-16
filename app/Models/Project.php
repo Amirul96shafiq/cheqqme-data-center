@@ -56,6 +56,11 @@ class Project extends Model
         return $this->hasMany(Document::class);
     }
 
+    public function importantUrls(): HasMany
+    {
+        return $this->hasMany(ImportantUrl::class);
+    }
+
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');

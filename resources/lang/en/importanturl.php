@@ -45,6 +45,8 @@ return [
     'title' => 'Title',
     'link' => 'Link',
     'project' => 'Project',
+    'client' => 'Client',
+    'important_url' => 'URL Link',
     'created_at' => 'Created At',
     'updated_at_by' => 'Updated At (by)',
   ],

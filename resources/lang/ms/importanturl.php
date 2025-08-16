@@ -45,6 +45,8 @@ return [
     'title' => 'Tajuk',
     'link' => 'Link',
     'project' => 'Projek',
+    'client' => 'Pelanggan',
+    'important_url' => 'Link URL',
     'created_at' => 'Dicipta Pada',
     'updated_at_by' => 'Dikemas Kini Pada (oleh)',
   ],

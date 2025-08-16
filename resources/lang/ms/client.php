@@ -22,6 +22,7 @@ return [
     'company_info' => 'Maklumat Syarikat Pelanggan',
     'company_projects' => 'Projek Syarikat Pelanggan',
     'extra_info' => 'Maklumat Tambahan Pelanggan',
+    'important_urls' => 'URL Penting Pelanggan',
   ],
 
   'form' => [

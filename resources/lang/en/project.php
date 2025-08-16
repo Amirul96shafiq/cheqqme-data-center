@@ -21,7 +21,7 @@ return [
     'project_info' => 'Project Information',
     'project_extra_info' => 'Project Extra Information',
     'project_documents' => 'Project Documents',
-
+    'important_urls' => 'Project Important URLs',
   ],
 
   'form' => [

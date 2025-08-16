@@ -21,6 +21,7 @@ return [
     'project_info' => 'Maklumat Projek',
     'project_extra_info' => 'Maklumat Tambahan Projek',
     'project_documents' => 'Dokumen Projek',
+    'important_urls' => 'URL Penting Projek',
   ],
 
   'form' => [

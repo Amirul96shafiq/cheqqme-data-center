@@ -74,4 +74,9 @@ class Client extends Model
     {
         return $this->hasManyThrough(Document::class, Project::class);
     }
+
+    public function importantUrls(): HasMany
+    {
+        return $this->hasMany(ImportantUrl::class);
+    }
 }

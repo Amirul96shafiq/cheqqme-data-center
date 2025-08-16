@@ -8,7 +8,6 @@ use App\Models\Client;
 use Closure;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
-use Filament\Support\Enums\Alignment;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
@@ -16,6 +15,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
@@ -295,6 +295,7 @@ class ClientResource extends Resource
     {
         return [
             RelationManagers\ProjectsRelationManager::class,
+            RelationManagers\ImportantUrlsRelationManager::class,
             ActivitylogRelationManager::class,
         ];
     }

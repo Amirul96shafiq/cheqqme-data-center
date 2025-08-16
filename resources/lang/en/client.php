@@ -22,6 +22,7 @@ return [
     'company_info' => 'Client Company Information',
     'company_projects' => 'Client Projects',
     'extra_info' => 'Client Additional Information',
+    'important_urls' => 'Client Important URLs',
   ],
 
   'form' => [
