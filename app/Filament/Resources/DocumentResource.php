@@ -10,6 +10,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
+use Filament\Support\Enums\Alignment;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -236,6 +237,7 @@ class DocumentResource extends Resource
                             ->columns(1)
                             ->defaultItems(1)
                             ->addActionLabel(__('document.form.add_extra_info'))
+                            ->addActionAlignment(Alignment::Start)
                             ->cloneable()
                             ->reorderable()
                             ->collapsible(true)

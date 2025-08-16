@@ -9,6 +9,8 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
+use Filament\Support\Enums\Alignment;
+
 
 class TaskResource extends Resource /*public static function shouldRegisterNavigation(): bool
 {
@@ -314,6 +316,7 @@ return false;
                                                 ])
                                                 ->defaultItems(1)
                                                 ->addActionLabel(__('task.form.add_extra_info'))
+                                                ->addActionAlignment(Alignment::Start)
                                                 ->cloneable()
                                                 ->reorderable()
                                                 ->collapsible(true)

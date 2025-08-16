@@ -187,6 +187,7 @@ class PhoneNumberResource extends Resource
                             ->columns(1)
                             ->defaultItems(1)
                             ->addActionLabel(__('phonenumber.form.add_extra_info'))
+                            ->addActionAlignment(Alignment::Start)
                             ->cloneable()
                             ->reorderable()
                             ->collapsible(true)

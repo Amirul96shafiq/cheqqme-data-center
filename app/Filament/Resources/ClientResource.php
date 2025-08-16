@@ -8,6 +8,7 @@ use App\Models\Client;
 use Closure;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
+use Filament\Support\Enums\Alignment;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
@@ -220,6 +221,7 @@ class ClientResource extends Resource
                             ->columns(1)
                             ->defaultItems(1)
                             ->addActionLabel(__('client.form.add_extra_info'))
+                            ->addActionAlignment(Alignment::Start)
                             ->cloneable()
                             ->reorderable()
                             ->collapsible(true)

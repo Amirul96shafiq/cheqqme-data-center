@@ -12,6 +12,7 @@ use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Relaticle\Flowforge\Filament\Pages\KanbanBoardPage;
+use Filament\Support\Enums\Alignment;
 
 class ActionBoard extends KanbanBoardPage
 {
@@ -402,6 +403,7 @@ class ActionBoard extends KanbanBoardPage
                                                 ])
                                                 ->defaultItems(1)
                                                 ->addActionLabel(__('task.form.add_extra_info'))
+                                                ->addActionAlignment(Alignment::Start)
                                                 ->cloneable()
                                                 ->reorderable()
                                                 ->collapsible(true)
@@ -683,6 +685,7 @@ class ActionBoard extends KanbanBoardPage
                                                 ])
                                                 ->defaultItems(1)
                                                 ->addActionLabel(__('task.form.add_extra_info'))
+                                                ->addActionAlignment(Alignment::Start)
                                                 ->cloneable()
                                                 ->reorderable()
                                                 ->collapsible(true)

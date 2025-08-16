@@ -12,6 +12,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Components\Section;
 use Closure;
 use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, Grid, RichEditor, Repeater};
+use Filament\Support\Enums\Alignment;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\PasswordInput;
 use Filament\Forms\Components\Password;
@@ -204,6 +205,7 @@ class ImportantUrlResource extends Resource
                         ->columns(1)
                         ->defaultItems(1)
                         ->addActionLabel(__('importanturl.form.add_extra_info'))
+                        ->addActionAlignment(Alignment::Start)
                         ->cloneable()
                         ->reorderable()
                         ->collapsible(true)
