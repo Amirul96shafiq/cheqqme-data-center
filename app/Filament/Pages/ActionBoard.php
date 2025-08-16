@@ -277,6 +277,7 @@ class ActionBoard extends KanbanBoardPage
                                                 )
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
                                                     if ($state) {
+                                                        // Get projects for selected client
                                                         $projects = \App\Models\Project::where('client_id', $state)
                                                             ->withTrashed()
                                                             ->orderBy('title')
@@ -284,6 +285,7 @@ class ActionBoard extends KanbanBoardPage
                                                             ->pluck('id')
                                                             ->toArray();
 
+                                                        // Get documents for projects of selected client
                                                         $documents = \App\Models\Document::whereHas('project', function ($query) use ($state) {
                                                             $query->where('client_id', $state);
                                                         })
@@ -293,14 +295,28 @@ class ActionBoard extends KanbanBoardPage
                                                             ->pluck('id')
                                                             ->toArray();
 
+                                                        // Get important URLs for projects of selected client
+                                                        $importantUrls = \App\Models\ImportantUrl::whereHas('project', function ($query) use ($state) {
+                                                            $query->where('client_id', $state);
+                                                        })
+                                                            ->withTrashed()
+                                                            ->orderBy('title')
+                                                            ->get()
+                                                            ->pluck('id')
+                                                            ->toArray();
+
+                                                        // Auto-select all projects, documents, and important URLs for the client
                                                         $set('project', $projects);
                                                         $set('document', $documents);
+                                                        $set('important_url', $importantUrls);
                                                     } else {
+                                                        // Clear selections when no client is selected
                                                         $set('project', []);
                                                         $set('document', []);
+                                                        $set('important_url', []);
                                                     }
                                                 }),
-                                            Forms\Components\Grid::make(2)
+                                            Forms\Components\Grid::make(1)
                                                 ->schema([
                                                     Forms\Components\Select::make('project')
                                                         ->label(__('task.form.project'))
@@ -353,6 +369,32 @@ class ActionBoard extends KanbanBoardPage
                                                         ->nullable()
                                                         ->multiple()
                                                         ->default(fn(?Task $record) => $record?->document)
+                                                        ->dehydrated(),
+                                                    Forms\Components\Select::make('important_url')
+                                                        ->label(__('task.form.important_url'))
+                                                        ->helperText(__('task.form.important_url_helper'))
+                                                        ->options(function (Forms\Get $get) {
+                                                            return \App\Models\ImportantUrl::whereHas('project', function ($query) use ($get) {
+                                                                $clientId = $get('client');
+                                                                if (!$clientId) {
+                                                                    return $query;
+                                                                }
+                                                                return $query->where('client_id', $clientId);
+                                                            })
+                                                                ->withTrashed()
+                                                                ->orderBy('title')
+                                                                ->get()
+                                                                ->mapWithKeys(fn($i) => [
+                                                                    $i->id => str($i->title)->limit(25) . ($i->deleted_at ? ' (deleted)' : ''),
+                                                                ])
+                                                                ->toArray();
+                                                        })
+                                                        ->searchable()
+                                                        ->preload()
+                                                        ->native(false)
+                                                        ->nullable()
+                                                        ->multiple()
+                                                        ->default(fn(?Task $record) => $record?->important_url)
                                                         ->dehydrated(),
                                                 ]),
                                         ]),
@@ -559,6 +601,7 @@ class ActionBoard extends KanbanBoardPage
                                                 )
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
                                                     if ($state) {
+                                                        // Get projects for selected client
                                                         $projects = \App\Models\Project::where('client_id', $state)
                                                             ->withTrashed()
                                                             ->orderBy('title')
@@ -566,6 +609,7 @@ class ActionBoard extends KanbanBoardPage
                                                             ->pluck('id')
                                                             ->toArray();
 
+                                                        // Get documents for projects of selected client
                                                         $documents = \App\Models\Document::whereHas('project', function ($query) use ($state) {
                                                             $query->where('client_id', $state);
                                                         })
@@ -575,14 +619,28 @@ class ActionBoard extends KanbanBoardPage
                                                             ->pluck('id')
                                                             ->toArray();
 
+                                                        // Get important URLs for projects of selected client
+                                                        $importantUrls = \App\Models\ImportantUrl::whereHas('project', function ($query) use ($state) {
+                                                            $query->where('client_id', $state);
+                                                        })
+                                                            ->withTrashed()
+                                                            ->orderBy('title')
+                                                            ->get()
+                                                            ->pluck('id')
+                                                            ->toArray();
+
+                                                        // Auto-select all projects, documents, and important URLs for the client
                                                         $set('project', $projects);
                                                         $set('document', $documents);
+                                                        $set('important_url', $importantUrls);
                                                     } else {
+                                                        // Clear selections when no client is selected
                                                         $set('project', []);
                                                         $set('document', []);
+                                                        $set('important_url', []);
                                                     }
                                                 }),
-                                            Forms\Components\Grid::make(2)
+                                            Forms\Components\Grid::make(1)
                                                 ->schema([
                                                     Forms\Components\Select::make('project')
                                                         ->label(__('task.form.project'))
@@ -597,8 +655,8 @@ class ActionBoard extends KanbanBoardPage
                                                                 ->withTrashed()
                                                                 ->orderBy('title')
                                                                 ->get()
-                                                                ->mapWithKeys(fn($c) => [
-                                                                    $c->id => $c->pic_name . ' (' . ($c->company_name ?: 'Company #' . $c->id) . ')' . ($c->deleted_at ? ' (deleted)' : ''),
+                                                                ->mapWithKeys(fn($p) => [
+                                                                    $p->id => str($p->title)->limit(25) . ($p->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
@@ -635,6 +693,32 @@ class ActionBoard extends KanbanBoardPage
                                                         ->nullable()
                                                         ->multiple()
                                                         ->default(fn(?Task $record) => $record?->document)
+                                                        ->dehydrated(),
+                                                    Forms\Components\Select::make('important_url')
+                                                        ->label(__('task.form.important_url'))
+                                                        ->helperText(__('task.form.important_url_helper'))
+                                                        ->options(function (Forms\Get $get) {
+                                                            return \App\Models\ImportantUrl::whereHas('project', function ($query) use ($get) {
+                                                                $clientId = $get('client');
+                                                                if (!$clientId) {
+                                                                    return $query;
+                                                                }
+                                                                return $query->where('client_id', $clientId);
+                                                            })
+                                                                ->withTrashed()
+                                                                ->orderBy('title')
+                                                                ->get()
+                                                                ->mapWithKeys(fn($i) => [
+                                                                    $i->id => str($i->title)->limit(25) . ($i->deleted_at ? ' (deleted)' : ''),
+                                                                ])
+                                                                ->toArray();
+                                                        })
+                                                        ->searchable()
+                                                        ->preload()
+                                                        ->native(false)
+                                                        ->nullable()
+                                                        ->multiple()
+                                                        ->default(fn(?Task $record) => $record?->important_url)
                                                         ->dehydrated(),
                                                 ]),
                                         ]),
