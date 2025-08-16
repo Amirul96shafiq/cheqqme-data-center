@@ -60,11 +60,15 @@ class ProjectsRelationManager extends RelationManager
             default => 'secondary',
           })
           ->sortable(),
+        TextColumn::make('documents_count')
+          ->label(__('project.table.total_documents'))
+          ->counts('documents')
+          ->sortable()
+          ->alignCenter(),
         TextColumn::make('created_at')
           ->label(__('project.table.created_at'))
           ->dateTime('j/n/y, h:i A')
-          ->sortable()
-          ->hidden(),
+          ->sortable(),
         TextColumn::make('updated_at')
           ->label(__('project.table.updated_at_by'))
           ->formatStateUsing(function ($state, $record) {

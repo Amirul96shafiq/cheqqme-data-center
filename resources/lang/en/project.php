@@ -52,6 +52,7 @@ return [
     'planning' => 'Planning',
     'in_progress' => 'In Progress',
     'completed' => 'Completed',
+    'total_documents' => 'Total Documents',
     'created_at' => 'Created At',
     'updated_at_by' => 'Updated At (by)',
   ],

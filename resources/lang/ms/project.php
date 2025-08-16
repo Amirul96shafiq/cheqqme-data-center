@@ -51,6 +51,7 @@ return [
     'planning' => 'Perancangan',
     'in_progress' => 'Sedang Berjalan',
     'completed' => 'Selesai',
+    'total_documents' => 'Jumlah Dokumen',
     'created_at' => 'Dicipta Pada',
     'updated_at_by' => 'Dikemaskini Pada (oleh)',
   ],
