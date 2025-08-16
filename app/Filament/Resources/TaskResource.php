@@ -159,7 +159,7 @@ return false;
                                                         ->orderBy('company_name')
                                                         ->get()
                                                         ->mapWithKeys(fn($c) => [
-                                                            $c->id => ($c->company_name ?: 'Company #' . $c->id) . ($c->deleted_at ? ' (deleted)' : ''),
+                                                            $c->id => $c->pic_name . ' (' . ($c->company_name ?: 'Company #' . $c->id) . ')' . ($c->deleted_at ? ' (deleted)' : ''),
                                                         ])
                                                         ->toArray();
                                                 })
