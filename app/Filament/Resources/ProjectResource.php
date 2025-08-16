@@ -207,7 +207,7 @@ class ProjectResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn(array $state): ?string => $state['title'] ?? null)
+                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('project.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),

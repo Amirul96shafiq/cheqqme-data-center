@@ -32,6 +32,7 @@ return [
     'extra_title' => 'Tajuk',
     'extra_value' => 'Nilai',
     'add_extra_info' => '+ Tambah Maklumat Tambahan',
+    'title_placeholder_short' => 'Tajuk di sini',
   ],
 
   'table' => [

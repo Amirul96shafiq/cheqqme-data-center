@@ -40,6 +40,7 @@ return [
     'extra_title' => 'Title',
     'extra_value' => 'Value',
     'add_extra_info' => '+ Add Extra Information',
+    'title_placeholder_short' => 'Title goes here',
   ],
 
   'table' => [
