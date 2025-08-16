@@ -6,6 +6,7 @@ use App\Filament\Resources\ImportantUrlResource;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
@@ -92,7 +93,13 @@ class ImportantUrlsRelationManager extends RelationManager
           ->limit(30),
       ])
       ->filters([
-
+        SelectFilter::make('client_id')
+          ->label(__('importanturl.table.client'))
+          ->relationship('client', 'pic_name')
+          ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
+          ->preload()
+          ->searchable()
+          ->multiple(),
       ])
       ->headerActions([
         // Intentionally empty to avoid creating from here unless needed

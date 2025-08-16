@@ -6,6 +6,7 @@ use App\Filament\Resources\ImportantUrlResource;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
@@ -87,7 +88,14 @@ class ImportantUrlsRelationManager extends RelationManager
           ->sortable()
           ->limit(30),
       ])
-      ->filters([])
+      ->filters([
+        SelectFilter::make('project_id')
+          ->label(__('importanturl.table.project'))
+          ->relationship('project', 'title')
+          ->preload()
+          ->searchable()
+          ->multiple(),
+      ])
       ->headerActions([])
       ->actions([
         Tables\Actions\EditAction::make()
