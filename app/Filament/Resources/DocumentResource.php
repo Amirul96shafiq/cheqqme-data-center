@@ -57,8 +57,7 @@ class DocumentResource extends Resource
                                 TextInput::make('title')
                                     ->label(__('document.form.document_title'))
                                     ->required()
-                                    ->maxLength(50)
-                                    ->columnSpanFull(),
+                                    ->maxLength(50),
 
                                 Select::make('project_id')
                                     ->label(__('document.form.project'))
@@ -88,6 +87,7 @@ class DocumentResource extends Resource
                                     ->label(__('document.form.open_url'))
                                     ->url(fn() => $get('url'), true)
                                     ->tooltip(__('document.form.document_url_helper'))
+                                    ->visible(fn(Get $get) => !blank($get('url')) && filter_var($get('url'), FILTER_VALIDATE_URL))
                             )
                             ->url()
                             ->nullable(),
