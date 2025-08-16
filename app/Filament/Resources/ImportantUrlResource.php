@@ -268,7 +268,8 @@ class ImportantUrlResource extends Resource
             ->filters([
                 SelectFilter::make('client_id')->label(__('importanturl.filters.client_id'))->relationship('client', 'company_name'),
                 SelectFilter::make('project_id')->label(__('importanturl.filters.project_id'))->relationship('project', 'title'),
-                TrashedFilter::make(), // To show trashed or only active
+                TrashedFilter::make()
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

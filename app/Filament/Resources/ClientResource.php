@@ -269,7 +269,8 @@ class ClientResource extends Resource
                     ->limit(30),
             ])
             ->filters([
-                TrashedFilter::make(), // To show trashed or only active
+                TrashedFilter::make()
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
