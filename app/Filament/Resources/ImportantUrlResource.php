@@ -14,19 +14,13 @@ use Closure;
 use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, Grid, RichEditor, Repeater};
 use Filament\Support\Enums\Alignment;
 use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\PasswordInput;
-use Filament\Forms\Components\Password;
-use Illuminate\Support\Facades\Hash;
 use Filament\Resources\Resource;
 
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Actions\{ViewAction, EditAction, DeleteAction, RestoreAction};
 use Filament\Tables\Filters\TrashedFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
@@ -61,6 +55,15 @@ class ImportantUrlResource extends Resource
                 Section::make(__('importanturl.section.important_url_info'))->schema([
                     Grid::make('3')->schema([
                         TextInput::make('title')->label(__('importanturl.form.important_url_title'))->required()->maxLength(50),
+
+                        Select::make('client_id')
+                            ->label(__('importanturl.form.client'))
+                            ->relationship('client', 'company_name')
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->pic_name . ' (' . $record->company_name . ')')
+                            ->preload()
+                            ->searchable()
+                            ->nullable(),
+                            
                         Select::make('project_id')
                             ->label(__('importanturl.form.project'))
                             ->relationship('project', 'title')
@@ -68,12 +71,6 @@ class ImportantUrlResource extends Resource
                             ->searchable()
                             ->nullable(),
 
-                        Select::make('client_id')
-                            ->label(__('importanturl.form.client'))
-                            ->relationship('client', 'company_name')
-                            ->preload()
-                            ->searchable()
-                            ->nullable(),
                     ]),
 
                     TextInput::make('url')
