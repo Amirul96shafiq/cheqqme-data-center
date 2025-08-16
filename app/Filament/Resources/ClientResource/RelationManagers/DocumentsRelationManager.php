@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\ProjectResource\RelationManagers;
 
 use App\Filament\Resources\DocumentResource;
-use App\Filament\Resources\DocumentResource\Pages;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -11,7 +10,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 
 class DocumentsRelationManager extends RelationManager
 {
@@ -53,8 +51,32 @@ class DocumentsRelationManager extends RelationManager
             'internal' => __('document.table.internal'),
             'external' => __('document.table.external'),
           }),
-        TextColumn::make('project.title')
-          ->label(__('document.table.project'))->sortable()->searchable()->limit(20),
+        TextColumn::make('document_url')
+          ->label(__('document.table.doc_url'))
+          ->state(function ($record) {
+            if ($record->type === 'external') {
+              return $record->url ?: '-';
+            }
+
+            if ($record->type === 'internal') {
+              return $record->file_path ? asset('storage/' . ltrim($record->file_path, '/')) : '-';
+            }
+
+            return '-';
+          })
+          ->url(function ($record) {
+            if ($record->type === 'external' && $record->url) {
+              return $record->url;
+            }
+
+            if ($record->type === 'internal' && $record->file_path) {
+              return asset('storage/' . ltrim($record->file_path, '/'));
+            }
+
+            return null;
+          })
+          ->openUrlInNewTab()
+          ->limit(40),
         TextColumn::make('created_at')
           ->label(__('document.table.created_at'))
           ->dateTime('j/n/y, h:i A')->sortable(),
@@ -97,7 +119,7 @@ class DocumentsRelationManager extends RelationManager
       ])
       ->actions([
         /*Tables\Actions\ViewAction::make()
-          ->url(fn($record) => DocumentResource::getUrl('view', ['record' => $record])),*/
+      ->url(fn($record) => DocumentResource::getUrl('view', ['record' => $record])),*/
         Tables\Actions\EditAction::make()
           ->url(fn($record) => DocumentResource::getUrl('edit', ['record' => $record]))
           ->hidden(fn($record) => $record->trashed()),
