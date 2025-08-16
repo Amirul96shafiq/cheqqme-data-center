@@ -51,9 +51,9 @@ return new class extends Migration {
             DB::table('tasks')
               ->where('id', $task->id)
               ->update([
-                  'important_url' => json_encode($importantUrlIds),
-                  'updated_at' => now(),
-                ]);
+                'important_url' => json_encode($importantUrlIds),
+                'updated_at' => now(),
+              ]);
 
             $lastId = $task->id;
           }
