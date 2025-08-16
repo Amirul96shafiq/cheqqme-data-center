@@ -55,6 +55,7 @@ return [
     'internal' => 'Dalaman',
     'external' => 'Luar',
     'client' => 'Pelanggan',
+    'document_url' => 'URL Dokumen',
   ],
 
   'tabs' => [

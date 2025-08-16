@@ -55,6 +55,7 @@ return [
     'internal' => 'Internal',
     'external' => 'External',
     'client' => 'Client',
+    'document_url' => 'Document URL',
   ],
 
   'tabs' => [
