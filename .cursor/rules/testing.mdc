@@ -1,0 +1,12 @@
+---
+alwaysApply: true
+description: Testing guidelines for Laravel, Filament, and Livewire
+---
+
+# Testing Guidelines
+
+-   Prefer feature tests. Use factories and seeded data where helpful.
+-   Authenticate as needed to access Filament panels.
+-   Livewire: `Livewire::test()` helpers for actions, forms, and assertions.
+-   Use `assertDatabaseHas`/`assertDatabaseMissing` for persistence checks.
+-   When adding models, also add factories and consider seeders.
