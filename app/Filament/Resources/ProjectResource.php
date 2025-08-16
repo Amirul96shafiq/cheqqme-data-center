@@ -53,24 +53,30 @@ class ProjectResource extends Resource
             ->schema([
                 Section::make(__('project.section.project_info'))
                     ->schema([
-                        Grid::make(2)->schema([
-                            TextInput::make('title')
-                                ->label(__('project.form.project_title'))
-                                ->required()
-                                ->maxLength(50),
+                        Grid::make(3)
+                            ->schema([
+                                TextInput::make('title')
+                                    ->label(__('project.form.project_title'))
+                                    ->required()
+                                    ->maxLength(50),
 
-                            Select::make('client_id')
-                                ->label(__('project.form.client'))
-                                ->relationship('client', 'company_name')
-                                ->searchable()
-                                ->preload()
-                                ->nullable(),
-                        ]),
+                                Select::make('client_id')
+                                    ->label(__('project.form.client'))
+                                    ->relationship('client', 'company_name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->nullable(),
+                                Select::make('status')
+                                    ->label(__('project.form.project_status'))
+                                    ->options(['Planning' => __('project.form.planning'), 'In Progress' => __('project.form.in_progress'), 'Completed' => __('project.form.completed')])
+                                    ->default('Planning')
+                                    ->searchable()
+                                    ->required(),
+                            ]),
 
                         TextInput::make('project_url')
                             ->label(__('project.form.project_url'))
                             ->url()
-                            ->helperText(__('project.form.project_url_note'))
                             ->nullable(),
 
                         Textarea::make('description')
@@ -78,31 +84,24 @@ class ProjectResource extends Resource
                             ->rows(3)
                             ->nullable()
                             ->maxLength(200),
-
-                        Select::make('status')
-                            ->label(__('project.form.project_status'))
-                            ->options(['Planning' => __('project.form.planning'), 'In Progress' => __('project.form.in_progress'), 'Completed' => __('project.form.completed')])
-                            ->default('Planning')
-                            ->searchable()
-                            ->required(),
                     ]),
                 Section::make()
                     ->heading(function (Get $get) {
                         $count = 0;
-                        
+
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
                         if (!blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
-                        
+
                         // Add count of extra_information items
                         $extraInfo = $get('extra_information') ?? [];
                         $count += count($extraInfo);
-                        
+
                         $title = __('project.section.project_extra_info');
                         $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
-                        
+
                         return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
                     })
                     ->collapsible(true)
