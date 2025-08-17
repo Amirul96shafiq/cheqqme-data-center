@@ -29,6 +29,7 @@ class Profile extends EditProfile
                             ->directory('avatars')
                             ->moveFiles()
                             ->columnSpanFull()
+                            ->avatar()
                             ->afterStateUpdated(function ($state) {
                                 if (!$state instanceof TemporaryUploadedFile)
                                     return;
