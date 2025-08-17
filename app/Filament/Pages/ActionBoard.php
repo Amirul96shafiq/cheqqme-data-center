@@ -377,7 +377,7 @@ class ActionBoard extends KanbanBoardPage
                                                             return \App\Models\ImportantUrl::whereHas('project', function ($query) use ($get) {
                                                                 $clientId = $get('client');
                                                                 if (!$clientId) {
-                                                                    return $query;
+                                                                    return $query; 
                                                                 }
                                                                 return $query->where('client_id', $clientId);
                                                             })

@@ -58,8 +58,8 @@ class ImportantUrlResource extends Resource
 
                         Select::make('client_id')
                             ->label(__('importanturl.form.client'))
-                            ->relationship('client', 'company_name')
-                            ->getOptionLabelFromRecordUsing(fn($record) => $record->pic_name . ' (' . $record->company_name . ')')
+                            ->relationship('client', 'pic_name')
+                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
                             ->preload()
                             ->searchable()
                             ->nullable(),
@@ -263,8 +263,19 @@ class ImportantUrlResource extends Resource
                     ->limit(30),
             ])
             ->filters([
-                SelectFilter::make('client_id')->label(__('importanturl.filters.client_id'))->relationship('client', 'company_name'),
-                SelectFilter::make('project_id')->label(__('importanturl.filters.project_id'))->relationship('project', 'title'),
+                SelectFilter::make('client_id')
+                    ->label(__('importanturl.filters.client_id'))
+                    ->relationship('client', 'pic_name')
+                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
+                    ->preload()
+                    ->searchable()
+                    ->multiple(),
+                SelectFilter::make('project_id')
+                    ->label(__('importanturl.filters.project_id'))
+                    ->relationship('project', 'title')
+                    ->preload()
+                    ->searchable()
+                    ->multiple(),
                 TrashedFilter::make()
                     ->searchable(),
             ])

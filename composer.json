@@ -15,6 +15,7 @@
         "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
+        "mokhosh/filament-jalali": "^4.10",
         "relaticle/flowforge": "^0.2.1",
         "rmsramos/activitylog": "^1.0",
         "spatie/eloquent-sortable": "^4.5",

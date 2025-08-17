@@ -34,5 +34,8 @@ return [
         'event' => [
             'label' => 'Peristiwa',
         ],
+        'log_name' => [
+            'label' => 'Jenis',
+        ],
     ],
 ];
