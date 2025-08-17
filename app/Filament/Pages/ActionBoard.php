@@ -184,7 +184,7 @@ class ActionBoard extends KanbanBoardPage
                                                     Forms\Components\Select::make('assigned_to')
                                                         ->label(__('task.form.assign_to'))
                                                         ->options(function () {
-                                                            return \App\Models\User::withTrashed()
+                                                            return User::withTrashed()
                                                                 ->orderBy('username')
                                                                 ->get()
                                                                 ->mapWithKeys(fn($u) => [
@@ -236,8 +236,8 @@ class ActionBoard extends KanbanBoardPage
 
                                                     return __('task.edit.description_helper', ['count' => $remaining]);
                                                 })
-                                                ->rule(function (Forms\Get $get): \Closure {
-                                                    return function (string $attribute, $value, \Closure $fail) {
+                                                ->rule(function (Forms\Get $get): Closure {
+                                                    return function (string $attribute, $value, Closure $fail) {
                                                         $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                         if (mb_strlen($textOnly) > 500) {
                                                             $fail(__('task.edit.description_warning'));
@@ -514,8 +514,8 @@ class ActionBoard extends KanbanBoardPage
 
                                                             return __('task.edit.extra_information_helper', ['count' => $remaining]);
                                                         })
-                                                        ->rule(function (Forms\Get $get): \Closure {
-                                                            return function (string $attribute, $value, \Closure $fail) {
+                                                        ->rule(function (Forms\Get $get): Closure {
+                                                            return function (string $attribute, $value, Closure $fail) {
                                                                 $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                                 if (mb_strlen($textOnly) > 500) {
                                                                     $fail(__('task.edit.extra_information_warning'));
@@ -589,7 +589,7 @@ class ActionBoard extends KanbanBoardPage
                                                     Forms\Components\Select::make('assigned_to')
                                                         ->label(__('task.form.assign_to'))
                                                         ->options(function () {
-                                                            return \App\Models\User::withTrashed()
+                                                            return User::withTrashed()
                                                                 ->orderBy('username')
                                                                 ->get()
                                                                 ->mapWithKeys(fn($u) => [
@@ -641,8 +641,8 @@ class ActionBoard extends KanbanBoardPage
 
                                                     return __('task.edit.description_helper', ['count' => $remaining]);
                                                 })
-                                                ->rule(function (Forms\Get $get): \Closure {
-                                                    return function (string $attribute, $value, \Closure $fail) {
+                                                ->rule(function (Forms\Get $get): Closure {
+                                                    return function (string $attribute, $value, Closure $fail) {
                                                         $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                         if (mb_strlen($textOnly) > 500) {
                                                             $fail(__('task.edit.description_warning'));
@@ -919,8 +919,8 @@ class ActionBoard extends KanbanBoardPage
 
                                                             return __('task.edit.extra_information_helper', ['count' => $remaining]);
                                                         })
-                                                        ->rule(function (Forms\Get $get): \Closure {
-                                                            return function (string $attribute, $value, \Closure $fail) {
+                                                        ->rule(function (Forms\Get $get): Closure {
+                                                            return function (string $attribute, $value, Closure $fail) {
                                                                 $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                                 if (mb_strlen($textOnly) > 500) {
                                                                     $fail(__('task.edit.extra_information_warning'));
