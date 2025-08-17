@@ -160,10 +160,11 @@ return false;
                                     // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.task_resources'))
                                         ->badge(function (Get $get) {
+                                            $client = $get('client') ? 1 : 0;
                                             $project = $get('project') ?? [];
                                             $document = $get('document') ?? [];
                                             $importantUrl = $get('important_url') ?? [];
-                                            return count($project) + count($document) + count($importantUrl) ?: null;
+                                            return $client + count($project) + count($document) + count($importantUrl) ?: null;
                                         })
                                         ->schema([
 
