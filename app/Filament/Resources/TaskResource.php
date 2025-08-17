@@ -8,9 +8,8 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
-use Filament\Tables\Table;
 use Filament\Support\Enums\Alignment;
-
+use Filament\Tables\Table;
 
 class TaskResource extends Resource /*public static function shouldRegisterNavigation(): bool
 {
@@ -94,8 +93,8 @@ return false;
                                                             return \App\Models\User::withTrashed()
                                                                 ->orderBy('username')
                                                                 ->get()
-                                                                ->mapWithKeys(fn($u) => [
-                                                                    $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
+                                                                ->mapWithKeys(fn ($u) => [
+                                                                    $u->id => ($u->username ?: 'User #'.$u->id).($u->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
@@ -103,8 +102,8 @@ return false;
                                                         ->preload()
                                                         ->native(false)
                                                         ->nullable()
-                                                        ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
-                                                        ->default(fn(?Task $record) => $record?->assigned_to)
+                                                        ->formatStateUsing(fn ($state, ?Task $record) => $record?->assigned_to)
+                                                        ->default(fn (?Task $record) => $record?->assigned_to)
                                                         ->dehydrated(),
                                                     Forms\Components\DatePicker::make('due_date')
                                                         ->label(__('task.form.due_date'))
@@ -153,6 +152,19 @@ return false;
                                                 })
                                                 ->nullable()
                                                 ->columnSpanFull(),
+                                            Forms\Components\FileUpload::make('attachments')
+                                                ->label(__('task.form.attachments'))
+                                                ->helperText(__('task.form.attachments_helper'))
+                                                ->multiple()
+                                                ->openable()
+                                                ->panelLayout('grid')
+                                                ->reorderable()
+                                                ->appendFiles()
+                                                ->acceptedFileTypes(['image/*', 'video/*', 'application/pdf'])
+                                                ->directory('tasks')
+                                                ->preserveFilenames()
+                                                ->moveFiles()
+                                                ->nullable(),
                                         ]),
 
                                     // -----------------------------
@@ -166,6 +178,7 @@ return false;
                                             $project = $get('project') ?? [];
                                             $document = $get('document') ?? [];
                                             $importantUrl = $get('important_url') ?? [];
+
                                             return $client + count($project) + count($document) + count($importantUrl) ?: null;
                                         })
                                         ->schema([
@@ -176,8 +189,8 @@ return false;
                                                     return \App\Models\Client::withTrashed()
                                                         ->orderBy('company_name')
                                                         ->get()
-                                                        ->mapWithKeys(fn($c) => [
-                                                            $c->id => $c->pic_name . ' (' . ($c->company_name ?: 'Company #' . $c->id) . ')' . ($c->deleted_at ? ' (deleted)' : ''),
+                                                        ->mapWithKeys(fn ($c) => [
+                                                            $c->id => $c->pic_name.' ('.($c->company_name ?: 'Company #'.$c->id).')'.($c->deleted_at ? ' (deleted)' : ''),
                                                         ])
                                                         ->toArray();
                                                 })
@@ -185,7 +198,7 @@ return false;
                                                 ->preload()
                                                 ->native(false)
                                                 ->nullable()
-                                                ->default(fn(?Task $record) => $record?->client)
+                                                ->default(fn (?Task $record) => $record?->client)
                                                 ->dehydrated()
                                                 ->live()
                                                 ->reactive()
@@ -195,13 +208,14 @@ return false;
                                                         ->icon('heroicon-o-arrow-top-right-on-square')
                                                         ->url(function (Forms\Get $get) {
                                                             $clientId = $get('client');
-                                                            if (!$clientId) {
+                                                            if (! $clientId) {
                                                                 return null;
                                                             }
+
                                                             return \App\Filament\Resources\ClientResource::getUrl('edit', ['record' => $clientId]);
                                                         })
                                                         ->openUrlInNewTab()
-                                                        ->visible(fn(Forms\Get $get) => (bool) $get('client'))
+                                                        ->visible(fn (Forms\Get $get) => (bool) $get('client'))
                                                 )
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
                                                     // If a client is selected, get all projects, documents, and important URLs for selected client
@@ -254,7 +268,7 @@ return false;
                                                         ->options(function (Forms\Get $get) {
                                                             // If no client is selected, return an empty array
                                                             $clientId = $get('client');
-                                                            if (!$clientId) {
+                                                            if (! $clientId) {
                                                                 return [];
                                                             }
 
@@ -262,8 +276,8 @@ return false;
                                                                 ->withTrashed()
                                                                 ->orderBy('title')
                                                                 ->get()
-                                                                ->mapWithKeys(fn($p) => [
-                                                                    $p->id => str($p->title)->limit(25) . ($p->deleted_at ? ' (deleted)' : ''),
+                                                                ->mapWithKeys(fn ($p) => [
+                                                                    $p->id => str($p->title)->limit(25).($p->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
@@ -272,7 +286,7 @@ return false;
                                                         ->native(false)
                                                         ->nullable()
                                                         ->multiple()
-                                                        ->default(fn(?Task $record) => $record?->project)
+                                                        ->default(fn (?Task $record) => $record?->project)
                                                         ->dehydrated()
                                                         ->live()
                                                         ->reactive()
@@ -284,6 +298,7 @@ return false;
                                                             if (empty($selectedProjects)) {
                                                                 // No projects selected, clear all documents
                                                                 $set('document', []);
+
                                                                 return;
                                                             }
 
@@ -316,9 +331,10 @@ return false;
                                                             if (empty($selectedProjects)) {
                                                                 // If no projects are selected, get all documents for the client
                                                                 $clientId = $get('client');
-                                                                if (!$clientId) {
+                                                                if (! $clientId) {
                                                                     return [];
                                                                 }
+
                                                                 // Get all documents for the client
                                                                 return \App\Models\Document::whereHas('project', function ($query) use ($clientId) {
                                                                     $query->where('client_id', $clientId);
@@ -326,8 +342,8 @@ return false;
                                                                     ->withTrashed()
                                                                     ->orderBy('title')
                                                                     ->get()
-                                                                    ->mapWithKeys(fn($d) => [
-                                                                        $d->id => str($d->title)->limit(25) . ($d->deleted_at ? ' (deleted)' : ''),
+                                                                    ->mapWithKeys(fn ($d) => [
+                                                                        $d->id => str($d->title)->limit(25).($d->deleted_at ? ' (deleted)' : ''),
                                                                     ])
                                                                     ->toArray();
                                                             }
@@ -337,8 +353,8 @@ return false;
                                                                 ->withTrashed()
                                                                 ->orderBy('title')
                                                                 ->get()
-                                                                ->mapWithKeys(fn($d) => [
-                                                                    $d->id => str($d->title)->limit(25) . ($d->deleted_at ? ' (deleted)' : ''),
+                                                                ->mapWithKeys(fn ($d) => [
+                                                                    $d->id => str($d->title)->limit(25).($d->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
@@ -347,7 +363,7 @@ return false;
                                                         ->native(false)
                                                         ->nullable()
                                                         ->multiple()
-                                                        ->default(fn(?Task $record) => $record?->document)
+                                                        ->default(fn (?Task $record) => $record?->document)
                                                         ->dehydrated()
                                                         ->live()
                                                         ->reactive(),
@@ -359,17 +375,18 @@ return false;
                                                             // If no client is selected, return an empty array
                                                             return \App\Models\ImportantUrl::whereHas('project', function ($query) use ($get) {
                                                                 $clientId = $get('client');
-                                                                if (!$clientId) {
+                                                                if (! $clientId) {
                                                                     return $query;
                                                                 }
+
                                                                 // Get all important URLs for the client
                                                                 return $query->where('client_id', $clientId);
                                                             })
                                                                 ->withTrashed()
                                                                 ->orderBy('title')
                                                                 ->get()
-                                                                ->mapWithKeys(fn($i) => [
-                                                                    $i->id => str($i->title)->limit(25) . ($i->deleted_at ? ' (deleted)' : ''),
+                                                                ->mapWithKeys(fn ($i) => [
+                                                                    $i->id => str($i->title)->limit(25).($i->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
@@ -378,7 +395,7 @@ return false;
                                                         ->native(false)
                                                         ->nullable()
                                                         ->multiple()
-                                                        ->default(fn(?Task $record) => $record?->important_url)
+                                                        ->default(fn (?Task $record) => $record?->important_url)
                                                         ->dehydrated(),
                                                 ]),
 
@@ -390,6 +407,7 @@ return false;
                                     Forms\Components\Tabs\Tab::make(__('task.form.additional_information'))
                                         ->badge(function (Get $get) {
                                             $extraInfo = $get('extra_information') ?? [];
+
                                             return count($extraInfo) ?: null;
                                         })
                                         ->schema([
@@ -438,12 +456,12 @@ return false;
                                                 ->reorderable()
                                                 ->collapsible(true)
                                                 ->collapsed()
-                                                ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
+                                                ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
                                                 ->live()
                                                 ->columnSpanFull()
                                                 ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
                                         ]),
-                                ])
+                                ]),
                         ])
                         ->columnSpan(3),
 
@@ -461,7 +479,7 @@ return false;
                                 ])
                                 ->dehydrated(false),
                         ])
-                        ->visible(fn($record) => $record instanceof Task)
+                        ->visible(fn ($record) => $record instanceof Task)
                         ->extraAttributes([
                             ' style' => 'height:68vh; max-height:68vh; position:sticky; top:3vh; display:flex; flex-direction:column; align-self:flex-start; overflow:hidden;',
                             'class' => 'comments-pane',

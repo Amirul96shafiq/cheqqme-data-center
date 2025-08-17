@@ -246,6 +246,19 @@ class ActionBoard extends KanbanBoardPage
                                                 })
                                                 ->nullable()
                                                 ->columnSpanFull(),
+                                            Forms\Components\FileUpload::make('attachments')
+                                                ->label(__('task.form.attachments'))
+                                                ->helperText(__('task.form.attachments_helper'))
+                                                ->multiple()
+                                                ->openable()
+                                                ->panelLayout('grid')
+                                                ->reorderable()
+                                                ->appendFiles()
+                                                ->acceptedFileTypes(['image/*', 'video/*', 'application/pdf'])
+                                                ->directory('tasks')
+                                                ->preserveFilenames()
+                                                ->moveFiles()
+                                                ->nullable(),
                                         ]),
 
                                     // -----------------------------
@@ -651,6 +664,19 @@ class ActionBoard extends KanbanBoardPage
                                                 })
                                                 ->nullable()
                                                 ->columnSpanFull(),
+                                            Forms\Components\FileUpload::make('attachments')
+                                                ->label(__('task.form.attachments'))
+                                                ->helperText(__('task.form.attachments_helper'))
+                                                ->multiple()
+                                                ->openable()
+                                                ->panelLayout('grid')
+                                                ->reorderable()
+                                                ->appendFiles()
+                                                ->acceptedFileTypes(['image/*', 'video/*', 'application/pdf'])
+                                                ->directory('tasks')
+                                                ->preserveFilenames()
+                                                ->moveFiles()
+                                                ->nullable(),
                                         ]),
 
                                     // -----------------------------

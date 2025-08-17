@@ -27,6 +27,8 @@ return [
         'description_warning' => 'Keterangan tidak boleh melebihi 500 aksara yang boleh dibaca.',
         'extra_information_helper' => 'Baki aksara: :count',
         'extra_information_warning' => 'Maklumat tambahan tidak boleh melebihi 500 aksara yang boleh dibaca.',
+        'attachments' => 'Lampiran',
+        'attachments_helper' => 'Lampirkan fail (PDF, gambar, video)',
     ],
     'search' => [
         'status' => 'Status',

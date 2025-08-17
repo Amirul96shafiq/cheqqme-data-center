@@ -28,6 +28,7 @@ class Task extends Model
         'due_date',
         'updated_by',
         'extra_information',
+        'attachments',
     ];
 
     public function getActivityLogOptions(): LogOptions
@@ -47,6 +48,7 @@ class Task extends Model
                 'extra_information',
                 'updated_at',
                 'updated_by',
+                'attachments',
             ])
             ->useLogName('Tasks');
     }
@@ -57,6 +59,7 @@ class Task extends Model
         'document' => 'array',
         'important_url' => 'array',
         'extra_information' => 'array',
+        'attachments' => 'array',
     ];
 
     // Make virtual attributes available when converting to array / JSON for the Kanban adapter

@@ -27,6 +27,8 @@ return [
         'description_warning' => 'Description must be less than 500 characters',
         'extra_information_helper' => 'You have :count characters remaining',
         'extra_information_warning' => 'Extra information must be less than 500 characters',
+        'attachments' => 'Attachments',
+        'attachments_helper' => 'Attach multiple files (PDF, images, videos)',
     ],
     'search' => [
         'status' => 'Status',
