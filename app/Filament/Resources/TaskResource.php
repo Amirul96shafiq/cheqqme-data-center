@@ -159,7 +159,9 @@ return false;
                                     // Task Resources
                                     // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.task_resources'))
+                                        // Badge for the tab
                                         ->badge(function (Get $get) {
+                                            // Count the number of resources selected
                                             $client = $get('client') ? 1 : 0;
                                             $project = $get('project') ?? [];
                                             $document = $get('document') ?? [];
@@ -167,7 +169,7 @@ return false;
                                             return $client + count($project) + count($document) + count($importantUrl) ?: null;
                                         })
                                         ->schema([
-
+                                            // Client
                                             Forms\Components\Select::make('client')
                                                 ->label(__('task.form.client'))
                                                 ->options(function () {
@@ -188,6 +190,7 @@ return false;
                                                 ->live()
                                                 ->reactive()
                                                 ->suffixAction(
+                                                    // Open the client in a new tab
                                                     Forms\Components\Actions\Action::make('openClient')
                                                         ->icon('heroicon-o-arrow-top-right-on-square')
                                                         ->url(function (Forms\Get $get) {
@@ -201,6 +204,7 @@ return false;
                                                         ->visible(fn(Forms\Get $get) => (bool) $get('client'))
                                                 )
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // If a client is selected, get all projects, documents, and important URLs for selected client
                                                     if ($state) {
                                                         // Get projects for selected client
                                                         $projects = \App\Models\Project::where('client_id', $state)
@@ -241,12 +245,14 @@ return false;
                                                         $set('important_url', []);
                                                     }
                                                 }),
+                                            // Projects
                                             Forms\Components\Grid::make(1)
                                                 ->schema([
                                                     Forms\Components\Select::make('project')
                                                         ->label(__('task.form.project'))
                                                         ->helperText(__('task.form.project_helper'))
                                                         ->options(function (Forms\Get $get) {
+                                                            // If no client is selected, return an empty array
                                                             $clientId = $get('client');
                                                             if (!$clientId) {
                                                                 return [];
@@ -269,19 +275,65 @@ return false;
                                                         ->default(fn(?Task $record) => $record?->project)
                                                         ->dehydrated()
                                                         ->live()
-                                                        ->reactive(),
+                                                        ->reactive()
+                                                        ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                            // If no projects are selected, clear all documents
+                                                            $selectedProjects = $state ?? [];
+                                                            $currentDocuments = $get('document') ?? [];
+
+                                                            if (empty($selectedProjects)) {
+                                                                // No projects selected, clear all documents
+                                                                $set('document', []);
+                                                                return;
+                                                            }
+
+                                                            // Get all documents for the selected projects
+                                                            $availableDocuments = \App\Models\Document::whereIn('project_id', $selectedProjects)
+                                                                ->withTrashed()
+                                                                ->pluck('id')
+                                                                ->toArray();
+
+                                                            // Keep existing documents that are still valid + add new ones for newly selected projects
+                                                            $validCurrentDocuments = array_intersect($currentDocuments, $availableDocuments);
+
+                                                            // Auto-add documents for newly selected projects if they weren't already selected
+                                                            $newDocuments = array_diff($availableDocuments, $currentDocuments);
+
+                                                            // Merge the valid documents with the new documents
+                                                            $finalDocuments = array_unique(array_merge($validCurrentDocuments, $newDocuments));
+
+                                                            // Set the documents
+                                                            $set('document', $finalDocuments);
+                                                        }),
+                                                    // Documents
                                                     Forms\Components\Select::make('document')
                                                         ->label(__('task.form.document'))
                                                         ->helperText(__('task.form.document_helper'))
                                                         ->options(function (Forms\Get $get) {
-                                                            $clientId = $get('client');
-                                                            if (!$clientId) {
-                                                                return [];
+                                                            // If no projects are selected, return an empty array
+                                                            $selectedProjects = $get('project') ?? [];
+
+                                                            if (empty($selectedProjects)) {
+                                                                // If no projects are selected, get all documents for the client
+                                                                $clientId = $get('client');
+                                                                if (!$clientId) {
+                                                                    return [];
+                                                                }
+                                                                // Get all documents for the client
+                                                                return \App\Models\Document::whereHas('project', function ($query) use ($clientId) {
+                                                                    $query->where('client_id', $clientId);
+                                                                })
+                                                                    ->withTrashed()
+                                                                    ->orderBy('title')
+                                                                    ->get()
+                                                                    ->mapWithKeys(fn($d) => [
+                                                                        $d->id => str($d->title)->limit(25) . ($d->deleted_at ? ' (deleted)' : ''),
+                                                                    ])
+                                                                    ->toArray();
                                                             }
 
-                                                            return \App\Models\Document::whereHas('project', function ($query) use ($clientId) {
-                                                                $query->where('client_id', $clientId);
-                                                            })
+                                                            // Get all documents for the selected projects
+                                                            return \App\Models\Document::whereIn('project_id', $selectedProjects)
                                                                 ->withTrashed()
                                                                 ->orderBy('title')
                                                                 ->get()
@@ -299,15 +351,18 @@ return false;
                                                         ->dehydrated()
                                                         ->live()
                                                         ->reactive(),
+                                                    // Important URLs
                                                     Forms\Components\Select::make('important_url')
                                                         ->label(__('task.form.important_url'))
                                                         ->helperText(__('task.form.important_url_helper'))
                                                         ->options(function (Forms\Get $get) {
+                                                            // If no client is selected, return an empty array
                                                             return \App\Models\ImportantUrl::whereHas('project', function ($query) use ($get) {
                                                                 $clientId = $get('client');
                                                                 if (!$clientId) {
                                                                     return $query;
                                                                 }
+                                                                // Get all important URLs for the client
                                                                 return $query->where('client_id', $clientId);
                                                             })
                                                                 ->withTrashed()
