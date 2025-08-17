@@ -255,8 +255,7 @@ class ProjectResource extends Resource
                 TextColumn::make(__('created_at'))
                     ->label(__('project.table.created_at'))
                     ->dateTime('j/n/y, h:i A')
-                    ->sortable()
-                    ->hidden(),
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->label(__('project.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
