@@ -104,7 +104,10 @@ return false;
                                                         ->default(fn(?Task $record) => $record?->assigned_to)
                                                         ->dehydrated(),
                                                     Forms\Components\DatePicker::make('due_date')
-                                                        ->label(__('task.form.due_date')),
+                                                        ->label(__('task.form.due_date'))
+                                                        ->placeholder('dd/mm/yyyy')
+                                                        ->native(false)
+                                                        ->displayFormat('j/n/y'),
                                                     Forms\Components\Select::make('status')
                                                         ->label(__('task.form.status'))
                                                         ->options([
