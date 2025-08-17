@@ -7,7 +7,7 @@ return [
   ],
 
   'form' => [
-    'email' => 'Alamat Emel',
+    'email' => 'Username / Email',
     'password' => 'Kata Laluan',
     'remember' => 'Ingat Saya',
   ],

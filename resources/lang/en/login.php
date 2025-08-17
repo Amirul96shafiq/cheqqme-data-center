@@ -7,7 +7,7 @@ return [
   ],
 
   'form' => [
-    'email' => 'Email Address',
+    'email' => 'Username / Email',
     'password' => 'Password',
     'remember' => 'Remember Me',
   ],

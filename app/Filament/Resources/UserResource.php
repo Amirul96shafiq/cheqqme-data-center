@@ -45,8 +45,32 @@ class UserResource extends Resource
                 Section::make(heading: __('user.section.user_info'))
                     ->schema([
                         Grid::make(3)->schema([
-                            TextInput::make('username')->label(__('user.form.username'))->required()->maxLength(20),
-                            TextInput::make('name')->label(__('user.form.name'))->nullable()->maxLength(50),
+                            TextInput::make('username')
+                                ->label(__('user.form.username'))
+                                ->required()
+                                ->maxLength(20)
+                                ->unique(ignoreRecord: true)
+                                ->reactive()
+                                ->debounce(500) // Delay the reaction so user can finish typing
+                                ->extraAttributes([
+                                    'x-on:blur' => "
+                                        if (\$refs.username && !\$refs.username.value) {
+                                            \$refs.username.value = \$el.value;
+                                            \$el.dispatchEvent(new Event('input')); // Force model update
+                                            \$refs.username.dispatchEvent(new Event('input'));
+                                        }
+                                    ",
+                                ])
+                                ->extraAlpineAttributes(['x-ref' => 'username']),
+
+                            TextInput::make('name')
+                                ->label(__('user.form.name'))
+                                ->nullable()
+                                ->extraAlpineAttributes(['x-ref' => 'name'])
+                                ->helperText(__('user.form.name_helper'))
+                                ->placeholder(fn(callable $get) => $get('username'))
+                                ->maxLength(50),
+
                             TextInput::make('email')
                                 ->label(__('user.form.email'))
                                 ->required()
@@ -58,12 +82,13 @@ class UserResource extends Resource
                                     ignoreRecord: true,
                                     modifyRuleUsing: fn(Unique $rule) => $rule->whereNull('deleted_at')
                                 ),
+
                             Hidden::make('Updated_by')->default(fn() => auth()->id())->dehydrated(),
                         ])
                     ]),
 
                 Section::make(heading: __('user.section.password_info'))
-                    ->description(__('user.section.password_info_description'))
+                    ->description(fn(string $context) => $context === 'edit' ? __('user.section.password_info_description') : null)
                     ->schema([
 
                         // Only show "Change password?" during editing

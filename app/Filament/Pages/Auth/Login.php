@@ -8,6 +8,9 @@ use Filament\Pages\Auth\Login as BaseLogin;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Redirect;
 use Filament\Forms\Components\Actions\Action;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
+use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 
 
 class Login extends BaseLogin
@@ -28,7 +31,6 @@ class Login extends BaseLogin
             ->schema([
                 Forms\Components\TextInput::make('email')
                     ->label(__('login.form.email'))
-                    ->email()
                     ->autocomplete('email')
                     ->required()
                     ->autofocus(),
@@ -63,6 +65,32 @@ class Login extends BaseLogin
                     ->columns(1),
             ]);
     }
+
+    public function authenticate(): ?LoginResponse
+    {
+        $data = $this->form->getState();
+
+        $loginField = filter_var($data['email'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $credentials = [
+            $loginField => $data['email'],
+            'password' => $data['password'],
+        ];
+
+        if (! Auth::attempt($credentials, $data['remember'] ?? false)) {
+            $this->throwFailureValidationException();
+        }
+
+        return app(LoginResponse::class);
+    }
+
+    protected function throwFailureValidationException(): never
+    {
+        throw ValidationException::withMessages([
+            'data.email' => __('filament-panels::pages/auth/login.messages.failed'),
+        ]);
+    }
+
     public function mount(): void
     {
         //dd('Custom Login Loaded'); // For testing loading

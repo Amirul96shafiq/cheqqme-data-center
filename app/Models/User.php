@@ -62,6 +62,15 @@ class User extends Authenticatable implements HasAvatar
             'password' => 'hashed',
         ];
     }
+    protected static function booted()
+    {
+        static::saving(function ($user) {
+            if (empty($user->name)) {
+                $user->name = $user->username;
+            }
+        });
+
+    }
     public function getNameAttribute($value): string
     {
         return $value ?? $this->username ?? 'name';

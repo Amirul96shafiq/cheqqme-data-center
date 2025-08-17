@@ -22,11 +22,17 @@ return [
     'user_info' => 'Maklumat Pengguna',
     'password_info' => 'Maklumat Kata Laluan',
     'password_info_description' => 'Aktifkan toggle Tukar Kata Laluan? untuk melihat bahagian ini',
+    'password_info_description_profile' => 'Jika tidak ingin mengubah kata laluan, biarkan kosong',
     'danger_zone' => 'Zon Bahaya',
     'danger_zone_description' => 'Aktifkan toggle Padam Pengguna? untuk melihat bahagian ini',
   ],
 
   'form' => [
+    'saved' => 'Disimpan.',
+    'saved_body' => 'Sila log masuk semula atau muat semula halaman.',
+    'saved_password' => 'Disimpan.',
+    'saved_password_body' => 'Sila log masuk semula atau muat semula halaman.',
+    'avatar' => 'Avatar',
     'username' => 'Gelaran Pengguna',
     'name' => 'Nama',
     'email'=> 'Emel',
@@ -34,12 +40,15 @@ return [
     'generate_password' => 'Hasilkan Kata Laluan Kuat',
     'old_password' => 'Kata Laluan Lama',
     'new_password' => 'Kata Laluan Baru',
+    'password' => 'Kata Laluan',
+    'confirm_password' => 'Sahkan Kata Laluan',
     'password_helper' => 'Sekurang-kurangnya 5 aksara',
     'confirm_new_password' => 'Sahkan Kata Laluan Baru',
     'user_deletion' => 'Penghapusan Pengguna',
     'user_confirm_title' => 'Pengesahan Penghapusan Pengguna',
     'user_confirm_placeholder' => 'Taipkan tepat CONFIRMED DELETE ACCOUNT (sensitif kepada huruf besar) untuk mengaktifkan butang padam di bawah',
     'user_confirm_helpertext' => 'CONFIRMED DELETE ACCOUNT',
+    'name_helper' => 'Dilengkapi dengan gelaran pengguna jika kosong, boleh diubah',
   ],
 
   'table' => [

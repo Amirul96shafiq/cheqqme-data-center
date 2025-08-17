@@ -19,9 +19,10 @@ class Profile extends EditProfile
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Profile Settings')
+                Forms\Components\Section::make(__('user.section.profile_settings'))
                     ->schema([
                         Forms\Components\FileUpload::make('avatar')
+                            ->label(__('user.form.avatar'))
                             ->image()
                             ->imageEditor()
                             ->circleCropper()
@@ -38,23 +39,44 @@ class Profile extends EditProfile
                                     Storage::delete($oldAvatar);
                                 }
                             }),
-                        Forms\Components\TextInput::make('username')->label('Username')->required()->maxLength(20),
-                        $this->getNameFormComponent()->nullable(),
-                        $this->getEmailFormComponent()->label('Email'),
-                        //$this->getPasswordFormComponent(),
-                        //$this->getPasswordConfirmationFormComponent(),
+
+                        Forms\Components\TextInput::make('username')
+                            ->label(__('user.form.username'))
+                            ->required()
+                            ->maxLength(20)
+                            ->unique(ignoreRecord: true)
+                            ->reactive()
+                            ->debounce(500) // Delay the reaction so user can finish typing
+                            ->extraAttributes([
+                                'x-on:blur' => "
+                                    if (\$refs.username && !\$refs.username.value) {
+                                        \$refs.username.value = \$el.value;
+                                        \$el.dispatchEvent(new Event('input')); // Force model update
+                                        \$refs.username.dispatchEvent(new Event('input'));
+                                    }
+                                ",
+                            ])
+                            ->extraAlpineAttributes(['x-ref' => 'username']),
+
+                        $this->getNameFormComponent()
+                            ->nullable()
+                            ->extraAlpineAttributes(['x-ref' => 'name'])
+                            ->helperText(__('user.form.name_helper'))
+                            ->placeholder(fn(callable $get) => $get('username')),
+
+                        $this->getEmailFormComponent()->label(__('user.form.email')),
                     ])
                     ->columns(1),
 
-                Forms\Components\Section::make('Password Settings')
-                    ->description('Leave blank if you don’t want to change your password')
+                Forms\Components\Section::make(__('user.section.password_settings'))
+                    ->description(__('user.section.password_info_description_profile'))
                     ->schema([
                         // OLD password
-                        Forms\Components\Fieldset::make('Old Password')
+                        Forms\Components\Fieldset::make(__('user.form.old_password'))
                             ->columns(1)
                             ->schema([
                                 Forms\Components\TextInput::make('old_password')
-                                    ->label('Password')
+                                    ->label(__('user.form.password'))
                                     ->password()
                                     ->revealable()
                                     ->dehydrated(false)
@@ -69,13 +91,13 @@ class Profile extends EditProfile
                                     ->columnSpanFull(),
                             ]),
                         // NEW password
-                        Forms\Components\Fieldset::make('New Password')
+                        Forms\Components\Fieldset::make(__('user.form.new_password'))
                             ->columns(1)
                             ->schema([
                                 // Generate password feature
                                 Forms\Components\Actions::make([
                                     Action::make('generatePassword')
-                                        ->label('Generate Strong Password')
+                                        ->label(__('user.form.generate_password'))
                                         ->icon('heroicon-o-code-bracket-square')
                                         ->color('gray')
                                         ->action(function ($set) {
@@ -84,8 +106,9 @@ class Profile extends EditProfile
                                         }),
                                 ]),
                                 Forms\Components\TextInput::make('password')
+                                    ->label(__('user.form.password'))
                                     ->password()
-                                    ->helperText('Must be at least 5 characters')
+                                    ->helperText(__('user.form.password_helper'))
                                     ->revealable()
                                     ->dehydrated(fn($state) => filled($state))
                                     ->same('password_confirmation')
@@ -93,7 +116,7 @@ class Profile extends EditProfile
                                     ->columnSpanFull(),
                                 // CONFIRM password
                                 Forms\Components\TextInput::make('password_confirmation')
-                                    ->label('Confirm Password')
+                                    ->label(__('user.form.confirm_password'))
                                     ->password()
                                     ->revealable()
                                     ->dehydrated(fn($state) => filled($state))
@@ -108,12 +131,14 @@ class Profile extends EditProfile
         // If user changed the password, log them out
         if (filled($this->form->getState()['password'] ?? null)) {
             Notification::make()
-                ->title('Saved. Please re-login or refresh the page.')
+                ->title(__('user.form.saved_password'))
+                ->body(__('user.form.saved_password_body'))
                 ->success()
                 ->send();
         } else {
             Notification::make()
-                ->title('Saved.')
+                ->title(__('user.form.saved'))
+                ->body(__('user.form.saved_body'))
                 ->success()
                 ->send();
         }
