@@ -73,6 +73,9 @@ return false;
                         ->schema([
                             Forms\Components\Tabs::make('taskTabs')
                                 ->tabs([
+                                    // -----------------------------
+                                    // Task Information
+                                    // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.task_information'))
                                         ->schema([
                                             Forms\Components\Hidden::make('id')
@@ -152,7 +155,16 @@ return false;
                                                 ->columnSpanFull(),
                                         ]),
 
+                                    // -----------------------------
+                                    // Task Resources
+                                    // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.task_resources'))
+                                        ->badge(function (Get $get) {
+                                            $project = $get('project') ?? [];
+                                            $document = $get('document') ?? [];
+                                            $importantUrl = $get('important_url') ?? [];
+                                            return count($project) + count($document) + count($importantUrl) ?: null;
+                                        })
                                         ->schema([
 
                                             Forms\Components\Select::make('client')
@@ -173,6 +185,7 @@ return false;
                                                 ->default(fn(?Task $record) => $record?->client)
                                                 ->dehydrated()
                                                 ->live()
+                                                ->reactive()
                                                 ->suffixAction(
                                                     Forms\Components\Actions\Action::make('openClient')
                                                         ->icon('heroicon-o-arrow-top-right-on-square')
@@ -253,7 +266,9 @@ return false;
                                                         ->nullable()
                                                         ->multiple()
                                                         ->default(fn(?Task $record) => $record?->project)
-                                                        ->dehydrated(),
+                                                        ->dehydrated()
+                                                        ->live()
+                                                        ->reactive(),
                                                     Forms\Components\Select::make('document')
                                                         ->label(__('task.form.document'))
                                                         ->helperText(__('task.form.document_helper'))
@@ -280,7 +295,9 @@ return false;
                                                         ->nullable()
                                                         ->multiple()
                                                         ->default(fn(?Task $record) => $record?->document)
-                                                        ->dehydrated(),
+                                                        ->dehydrated()
+                                                        ->live()
+                                                        ->reactive(),
                                                     Forms\Components\Select::make('important_url')
                                                         ->label(__('task.form.important_url'))
                                                         ->helperText(__('task.form.important_url_helper'))
@@ -311,6 +328,9 @@ return false;
 
                                         ]),
 
+                                    // -----------------------------
+                                    // Task Additional Information
+                                    // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.additional_information'))
                                         ->badge(function (Get $get) {
                                             $extraInfo = $get('extra_information') ?? [];
