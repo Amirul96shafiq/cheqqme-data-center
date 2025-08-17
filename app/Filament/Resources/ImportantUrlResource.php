@@ -155,7 +155,6 @@ class ImportantUrlResource extends Resource
                                 ->schema([
                                     TextInput::make('title')
                                         ->label(__('importanturl.form.extra_title'))
-                                        ->required()
                                         ->maxLength(100)
                                         ->columnSpanFull(),
                                     RichEditor::make('value')

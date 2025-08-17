@@ -174,7 +174,6 @@ class ClientResource extends Resource
                                     ->schema([
                                         TextInput::make('title')
                                             ->label(__('client.form.extra_title'))
-                                            ->required()
                                             ->maxLength(100)
                                             ->columnSpanFull(),
                                         RichEditor::make('value')
