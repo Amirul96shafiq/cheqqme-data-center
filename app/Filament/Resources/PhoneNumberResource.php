@@ -8,6 +8,7 @@ use App\Models\PhoneNumber;
 
 use Filament\Forms;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Section;
 use Closure;
@@ -32,6 +33,10 @@ use Filament\Resources\Pages\ViewRecord;
 
 use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
+use Ysfkaya\FilamentPhoneInput\Infolists\PhoneEntry;
+use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 
 class PhoneNumberResource extends Resource
 {
@@ -64,30 +69,93 @@ class PhoneNumberResource extends Resource
                             ->label(__('phonenumber.form.phone_number_title'))
                             ->required()
                             ->maxLength(255),
-                        TextInput::make('phone')
+                        /*TextInput::make('phone')
                             ->label(__('phonenumber.form.phone_number'))
                             ->required()
-                            ->tel(),
+                            ->tel(),*/
+                        PhoneInput::make('phone')
+                            ->label(__('phonenumber.form.phone_number'))
+                            ->required()
+                            ->countryStatePath('phone_country')
+                            //->inputNumberFormat(PhoneInputNumberType::E164)
+                            //->focusNumberFormat(PhoneInputNumberType::E164)
+                            ->initialCountry('MY')
+                            ->countryOrder(['MY', 'ID', 'SG', 'PH', 'US'])
+                            ->onlyCountries(['MY', 'ID', 'SG', 'PH', 'US'])
+                            //->autoPlaceholder('aggressive')
+                            ->countrySearch(false)
+                            ->dropdownContainer(false)
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
+                                $digits = preg_replace('/\D+/', '', (string) $state);
+                                if ($digits === '') {
+                                    $set('phone', '');
+                                    return;
+                                }
+
+                                $country = $get('phone_country') ?: 'MY';
+                                $dialCode = match ($country) {
+                                    'MY' => '60',
+                                    'ID' => '62',
+                                    'SG' => '65',
+                                    'PH' => '63',
+                                    'US' => '1',
+                                    default => '60',
+                                };
+
+                                if (!str_starts_with($digits, $dialCode)) {
+                                    $digits = ltrim($digits, '0');
+                                    if (!str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode . $digits;
+                                    }
+                                }
+
+                                $set('phone', $digits);
+                            })
+                            ->dehydrateStateUsing(function (?string $state, Get $get): string {
+                                $digits = preg_replace('/\D+/', '', (string) $state);
+                                if ($digits === '') {
+                                    return '';
+                                }
+
+                                $country = $get('phone_country') ?: 'MY';
+                                $dialCode = match ($country) {
+                                    'MY' => '60',
+                                    'ID' => '62',
+                                    'SG' => '65',
+                                    'PH' => '63',
+                                    'US' => '1',
+                                    default => '60',
+                                };
+
+                                if (!str_starts_with($digits, $dialCode)) {
+                                    $digits = ltrim($digits, '0');
+                                    if (!str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode . $digits;
+                                    }
+                                }
+
+                                return $digits;
+                            }),
                     ])
                     ->columns(2),
 
-                    Section::make()
+                Section::make()
                     ->heading(function (Get $get) {
                         $count = 0;
-                        
+
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
                         if (!blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
-                        
+
                         // Add count of extra_information items
                         $extraInfo = $get('extra_information') ?? [];
                         $count += count($extraInfo);
-                        
+
                         $title = __('phonenumber.section.phone_number_extra_info');
                         $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
-                        
+
                         return new HtmlString($title . ' ' . $badge);
                     })
                     ->collapsible(true)
@@ -140,7 +208,6 @@ class PhoneNumberResource extends Resource
                                     ->schema([
                                         TextInput::make('title')
                                             ->label(__('phonenumber.form.extra_title'))
-                                            ->required()
                                             ->maxLength(100)
                                             ->columnSpanFull(),
                                         RichEditor::make('value')

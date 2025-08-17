@@ -19,7 +19,8 @@
         "relaticle/flowforge": "^0.2.1",
         "rmsramos/activitylog": "^1.0",
         "spatie/eloquent-sortable": "^4.5",
-        "spatie/laravel-activitylog": "^4.10"
+        "spatie/laravel-activitylog": "^4.10",
+        "ysfkaya/filament-phone-input": "^3.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
