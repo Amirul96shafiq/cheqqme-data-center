@@ -166,6 +166,9 @@ class ActionBoard extends KanbanBoardPage
                         ->schema([
                             Forms\Components\Tabs::make('taskTabs')
                                 ->tabs([
+                                    // -----------------------------
+                                    // Task Information
+                                    // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.task_information'))
                                         ->schema([
                                             Forms\Components\Hidden::make('id')
@@ -174,17 +177,18 @@ class ActionBoard extends KanbanBoardPage
                                             Forms\Components\TextInput::make('title')
                                                 ->label(__('task.form.title'))
                                                 ->required()
-                                                ->placeholder(__('task.form.title_placeholder')),
+                                                ->placeholder(__('task.form.title_placeholder'))
+                                                ->columnSpanFull(),
                                             Forms\Components\Grid::make(3)
                                                 ->schema([
                                                     Forms\Components\Select::make('assigned_to')
                                                         ->label(__('task.form.assign_to'))
                                                         ->options(function () {
-                                                            return User::withTrashed()
+                                                            return \App\Models\User::withTrashed()
                                                                 ->orderBy('username')
                                                                 ->get()
                                                                 ->mapWithKeys(fn($u) => [
-                                                                    $u->id => ($u->username ?: __('action.form.user_with_id', ['id' => $u->id])) . ($u->deleted_at ? __('action.form.deleted_suffix') : ''),
+                                                                    $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
@@ -209,8 +213,7 @@ class ActionBoard extends KanbanBoardPage
                                                             'completed' => __('task.status.completed'),
                                                             'archived' => __('task.status.archived'),
                                                         ])
-                                                        ->searchable()
-                                                        ->default($defaultStatus),
+                                                        ->searchable(),
                                                 ]),
                                             Forms\Components\RichEditor::make('description')
                                                 ->label(__('task.form.description'))
@@ -225,19 +228,19 @@ class ActionBoard extends KanbanBoardPage
                                                 ])
                                                 ->extraAttributes(['style' => 'resize: vertical;'])
                                                 ->reactive()
-                                                ->helperText(function (Get $get) use ($mode) {
+                                                ->helperText(function (Forms\Get $get) {
                                                     $raw = $get('description') ?? '';
                                                     $noHtml = strip_tags($raw);
                                                     $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                                     $remaining = 500 - mb_strlen($decoded);
 
-                                                    return __("action.$mode.description_helper", ['count' => $remaining]);
+                                                    return __('task.edit.description_helper', ['count' => $remaining]);
                                                 })
-                                                ->rule(function (Get $get) use ($mode): Closure {
-                                                    return function (string $attribute, $value, Closure $fail) use ($mode) {
+                                                ->rule(function (Forms\Get $get): \Closure {
+                                                    return function (string $attribute, $value, \Closure $fail) {
                                                         $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                         if (mb_strlen($textOnly) > 500) {
-                                                            $fail(__("action.$mode.description_warning"));
+                                                            $fail(__('task.edit.description_warning'));
                                                         }
                                                     };
                                                 })
@@ -245,8 +248,21 @@ class ActionBoard extends KanbanBoardPage
                                                 ->columnSpanFull(),
                                         ]),
 
+                                    // -----------------------------
+                                    // Task Resources
+                                    // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.task_resources'))
+                                        // Badge for the tab
+                                        ->badge(function (Get $get) {
+                                            // Count the number of resources selected
+                                            $client = $get('client') ? 1 : 0;
+                                            $project = $get('project') ?? [];
+                                            $document = $get('document') ?? [];
+                                            $importantUrl = $get('important_url') ?? [];
+                                            return $client + count($project) + count($document) + count($importantUrl) ?: null;
+                                        })
                                         ->schema([
+                                            // Client
                                             Forms\Components\Select::make('client')
                                                 ->label(__('task.form.client'))
                                                 ->options(function () {
@@ -265,7 +281,9 @@ class ActionBoard extends KanbanBoardPage
                                                 ->default(fn(?Task $record) => $record?->client)
                                                 ->dehydrated()
                                                 ->live()
+                                                ->reactive()
                                                 ->suffixAction(
+                                                    // Open the client in a new tab
                                                     Forms\Components\Actions\Action::make('openClient')
                                                         ->icon('heroicon-o-arrow-top-right-on-square')
                                                         ->url(function (Forms\Get $get) {
@@ -279,6 +297,7 @@ class ActionBoard extends KanbanBoardPage
                                                         ->visible(fn(Forms\Get $get) => (bool) $get('client'))
                                                 )
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // If a client is selected, get all projects, documents, and important URLs for selected client
                                                     if ($state) {
                                                         // Get projects for selected client
                                                         $projects = \App\Models\Project::where('client_id', $state)
@@ -319,12 +338,14 @@ class ActionBoard extends KanbanBoardPage
                                                         $set('important_url', []);
                                                     }
                                                 }),
+                                            // Projects
                                             Forms\Components\Grid::make(1)
                                                 ->schema([
                                                     Forms\Components\Select::make('project')
                                                         ->label(__('task.form.project'))
                                                         ->helperText(__('task.form.project_helper'))
                                                         ->options(function (Forms\Get $get) {
+                                                            // If no client is selected, return an empty array
                                                             $clientId = $get('client');
                                                             if (!$clientId) {
                                                                 return [];
@@ -345,19 +366,67 @@ class ActionBoard extends KanbanBoardPage
                                                         ->nullable()
                                                         ->multiple()
                                                         ->default(fn(?Task $record) => $record?->project)
-                                                        ->dehydrated(),
+                                                        ->dehydrated()
+                                                        ->live()
+                                                        ->reactive()
+                                                        ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                            // If no projects are selected, clear all documents
+                                                            $selectedProjects = $state ?? [];
+                                                            $currentDocuments = $get('document') ?? [];
+
+                                                            if (empty($selectedProjects)) {
+                                                                // No projects selected, clear all documents
+                                                                $set('document', []);
+                                                                return;
+                                                            }
+
+                                                            // Get all documents for the selected projects
+                                                            $availableDocuments = \App\Models\Document::whereIn('project_id', $selectedProjects)
+                                                                ->withTrashed()
+                                                                ->pluck('id')
+                                                                ->toArray();
+
+                                                            // Keep existing documents that are still valid + add new ones for newly selected projects
+                                                            $validCurrentDocuments = array_intersect($currentDocuments, $availableDocuments);
+
+                                                            // Auto-add documents for newly selected projects if they weren't already selected
+                                                            $newDocuments = array_diff($availableDocuments, $currentDocuments);
+
+                                                            // Merge the valid documents with the new documents
+                                                            $finalDocuments = array_unique(array_merge($validCurrentDocuments, $newDocuments));
+
+                                                            // Set the documents
+                                                            $set('document', $finalDocuments);
+                                                        }),
+                                                    // Documents
                                                     Forms\Components\Select::make('document')
                                                         ->label(__('task.form.document'))
                                                         ->helperText(__('task.form.document_helper'))
                                                         ->options(function (Forms\Get $get) {
-                                                            $clientId = $get('client');
-                                                            if (!$clientId) {
-                                                                return [];
+                                                            // If no projects are selected, return an empty array
+                                                            $selectedProjects = $get('project') ?? [];
+
+                                                            if (empty($selectedProjects)) {
+                                                                // If no projects are selected, get all documents for the client
+                                                                $clientId = $get('client');
+                                                                if (!$clientId) {
+                                                                    return [];
+                                                                }
+                                                                // Get all documents for the client
+                                                                return \App\Models\Document::whereHas('project', function ($query) use ($clientId) {
+                                                                    $query->where('client_id', $clientId);
+                                                                })
+                                                                    ->withTrashed()
+                                                                    ->orderBy('title')
+                                                                    ->get()
+                                                                    ->mapWithKeys(fn($d) => [
+                                                                        $d->id => str($d->title)->limit(25) . ($d->deleted_at ? ' (deleted)' : ''),
+                                                                    ])
+                                                                    ->toArray();
                                                             }
 
-                                                            return \App\Models\Document::whereHas('project', function ($query) use ($clientId) {
-                                                                $query->where('client_id', $clientId);
-                                                            })
+                                                            // Get all documents for the selected projects
+                                                            return \App\Models\Document::whereIn('project_id', $selectedProjects)
                                                                 ->withTrashed()
                                                                 ->orderBy('title')
                                                                 ->get()
@@ -372,16 +441,21 @@ class ActionBoard extends KanbanBoardPage
                                                         ->nullable()
                                                         ->multiple()
                                                         ->default(fn(?Task $record) => $record?->document)
-                                                        ->dehydrated(),
+                                                        ->dehydrated()
+                                                        ->live()
+                                                        ->reactive(),
+                                                    // Important URLs
                                                     Forms\Components\Select::make('important_url')
                                                         ->label(__('task.form.important_url'))
                                                         ->helperText(__('task.form.important_url_helper'))
                                                         ->options(function (Forms\Get $get) {
+                                                            // If no client is selected, return an empty array
                                                             return \App\Models\ImportantUrl::whereHas('project', function ($query) use ($get) {
                                                                 $clientId = $get('client');
                                                                 if (!$clientId) {
-                                                                    return $query; 
+                                                                    return $query;
                                                                 }
+                                                                // Get all important URLs for the client
                                                                 return $query->where('client_id', $clientId);
                                                             })
                                                                 ->withTrashed()
@@ -400,8 +474,12 @@ class ActionBoard extends KanbanBoardPage
                                                         ->default(fn(?Task $record) => $record?->important_url)
                                                         ->dehydrated(),
                                                 ]),
+
                                         ]),
 
+                                    // -----------------------------
+                                    // Task Additional Information
+                                    // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.additional_information'))
                                         ->badge(function (Get $get) {
                                             $extraInfo = $get('extra_information') ?? [];
@@ -428,19 +506,19 @@ class ActionBoard extends KanbanBoardPage
                                                         ])
                                                         ->extraAttributes(['style' => 'resize: vertical;'])
                                                         ->reactive()
-                                                        ->helperText(function (Get $get) use ($mode) {
+                                                        ->helperText(function (Forms\Get $get) {
                                                             $raw = $get('value') ?? '';
                                                             $noHtml = strip_tags($raw);
                                                             $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                                             $remaining = 500 - mb_strlen($decoded);
 
-                                                            return __("action.$mode.extra_information_helper", ['count' => $remaining]);
+                                                            return __('task.edit.extra_information_helper', ['count' => $remaining]);
                                                         })
-                                                        ->rule(function (Get $get) use ($mode): Closure {
-                                                            return function (string $attribute, $value, Closure $fail) use ($mode) {
+                                                        ->rule(function (Forms\Get $get): \Closure {
+                                                            return function (string $attribute, $value, \Closure $fail) {
                                                                 $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                                 if (mb_strlen($textOnly) > 500) {
-                                                                    $fail(__("action.$mode.extra_information_warning"));
+                                                                    $fail(__('task.edit.extra_information_warning'));
                                                                 }
                                                             };
                                                         })
@@ -491,24 +569,31 @@ class ActionBoard extends KanbanBoardPage
                 ->schema([
                     Forms\Components\Grid::make(1)
                         ->schema([
-                            Forms\Components\Tabs::make('taskTabsCreate')
+                            Forms\Components\Tabs::make('taskTabs')
                                 ->tabs([
+                                    // -----------------------------
+                                    // Task Information
+                                    // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.task_information'))
                                         ->schema([
+                                            Forms\Components\Hidden::make('id')
+                                                ->disabled()
+                                                ->visible(false),
                                             Forms\Components\TextInput::make('title')
                                                 ->label(__('task.form.title'))
                                                 ->required()
-                                                ->placeholder(__('task.form.title_placeholder')),
+                                                ->placeholder(__('task.form.title_placeholder'))
+                                                ->columnSpanFull(),
                                             Forms\Components\Grid::make(3)
                                                 ->schema([
                                                     Forms\Components\Select::make('assigned_to')
                                                         ->label(__('task.form.assign_to'))
                                                         ->options(function () {
-                                                            return User::withTrashed()
+                                                            return \App\Models\User::withTrashed()
                                                                 ->orderBy('username')
                                                                 ->get()
                                                                 ->mapWithKeys(fn($u) => [
-                                                                    $u->id => ($u->username ?: __('action.form.user_with_id', ['id' => $u->id])) . ($u->deleted_at ? __('action.form.deleted_suffix') : ''),
+                                                                    $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
@@ -533,10 +618,6 @@ class ActionBoard extends KanbanBoardPage
                                                             'completed' => __('task.status.completed'),
                                                             'archived' => __('task.status.archived'),
                                                         ])
-                                                        ->default(function () use ($defaultStatus) {
-                                                            $valid = ['todo', 'in_progress', 'toreview', 'completed', 'archived'];
-                                                            return (is_string($defaultStatus) && in_array($defaultStatus, $valid)) ? $defaultStatus : 'todo';
-                                                        })
                                                         ->searchable(),
                                                 ]),
                                             Forms\Components\RichEditor::make('description')
@@ -552,19 +633,19 @@ class ActionBoard extends KanbanBoardPage
                                                 ])
                                                 ->extraAttributes(['style' => 'resize: vertical;'])
                                                 ->reactive()
-                                                ->helperText(function (Get $get) use ($mode) {
+                                                ->helperText(function (Forms\Get $get) {
                                                     $raw = $get('description') ?? '';
                                                     $noHtml = strip_tags($raw);
                                                     $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                                     $remaining = 500 - mb_strlen($decoded);
 
-                                                    return __("action.$mode.description_helper", ['count' => $remaining]);
+                                                    return __('task.edit.description_helper', ['count' => $remaining]);
                                                 })
-                                                ->rule(function (Get $get) use ($mode): Closure {
-                                                    return function (string $attribute, $value, Closure $fail) use ($mode) {
+                                                ->rule(function (Forms\Get $get): \Closure {
+                                                    return function (string $attribute, $value, \Closure $fail) {
                                                         $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                         if (mb_strlen($textOnly) > 500) {
-                                                            $fail(__("action.$mode.description_warning"));
+                                                            $fail(__('task.edit.description_warning'));
                                                         }
                                                     };
                                                 })
@@ -572,8 +653,21 @@ class ActionBoard extends KanbanBoardPage
                                                 ->columnSpanFull(),
                                         ]),
 
+                                    // -----------------------------
+                                    // Task Resources
+                                    // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.task_resources'))
+                                        // Badge for the tab
+                                        ->badge(function (Get $get) {
+                                            // Count the number of resources selected
+                                            $client = $get('client') ? 1 : 0;
+                                            $project = $get('project') ?? [];
+                                            $document = $get('document') ?? [];
+                                            $importantUrl = $get('important_url') ?? [];
+                                            return $client + count($project) + count($document) + count($importantUrl) ?: null;
+                                        })
                                         ->schema([
+                                            // Client
                                             Forms\Components\Select::make('client')
                                                 ->label(__('task.form.client'))
                                                 ->options(function () {
@@ -592,7 +686,9 @@ class ActionBoard extends KanbanBoardPage
                                                 ->default(fn(?Task $record) => $record?->client)
                                                 ->dehydrated()
                                                 ->live()
+                                                ->reactive()
                                                 ->suffixAction(
+                                                    // Open the client in a new tab
                                                     Forms\Components\Actions\Action::make('openClient')
                                                         ->icon('heroicon-o-arrow-top-right-on-square')
                                                         ->url(function (Forms\Get $get) {
@@ -606,6 +702,7 @@ class ActionBoard extends KanbanBoardPage
                                                         ->visible(fn(Forms\Get $get) => (bool) $get('client'))
                                                 )
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // If a client is selected, get all projects, documents, and important URLs for selected client
                                                     if ($state) {
                                                         // Get projects for selected client
                                                         $projects = \App\Models\Project::where('client_id', $state)
@@ -646,12 +743,14 @@ class ActionBoard extends KanbanBoardPage
                                                         $set('important_url', []);
                                                     }
                                                 }),
+                                            // Projects
                                             Forms\Components\Grid::make(1)
                                                 ->schema([
                                                     Forms\Components\Select::make('project')
                                                         ->label(__('task.form.project'))
                                                         ->helperText(__('task.form.project_helper'))
                                                         ->options(function (Forms\Get $get) {
+                                                            // If no client is selected, return an empty array
                                                             $clientId = $get('client');
                                                             if (!$clientId) {
                                                                 return [];
@@ -672,19 +771,67 @@ class ActionBoard extends KanbanBoardPage
                                                         ->nullable()
                                                         ->multiple()
                                                         ->default(fn(?Task $record) => $record?->project)
-                                                        ->dehydrated(),
+                                                        ->dehydrated()
+                                                        ->live()
+                                                        ->reactive()
+                                                        ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                            // If no projects are selected, clear all documents
+                                                            $selectedProjects = $state ?? [];
+                                                            $currentDocuments = $get('document') ?? [];
+
+                                                            if (empty($selectedProjects)) {
+                                                                // No projects selected, clear all documents
+                                                                $set('document', []);
+                                                                return;
+                                                            }
+
+                                                            // Get all documents for the selected projects
+                                                            $availableDocuments = \App\Models\Document::whereIn('project_id', $selectedProjects)
+                                                                ->withTrashed()
+                                                                ->pluck('id')
+                                                                ->toArray();
+
+                                                            // Keep existing documents that are still valid + add new ones for newly selected projects
+                                                            $validCurrentDocuments = array_intersect($currentDocuments, $availableDocuments);
+
+                                                            // Auto-add documents for newly selected projects if they weren't already selected
+                                                            $newDocuments = array_diff($availableDocuments, $currentDocuments);
+
+                                                            // Merge the valid documents with the new documents
+                                                            $finalDocuments = array_unique(array_merge($validCurrentDocuments, $newDocuments));
+
+                                                            // Set the documents
+                                                            $set('document', $finalDocuments);
+                                                        }),
+                                                    // Documents
                                                     Forms\Components\Select::make('document')
                                                         ->label(__('task.form.document'))
                                                         ->helperText(__('task.form.document_helper'))
                                                         ->options(function (Forms\Get $get) {
-                                                            $clientId = $get('client');
-                                                            if (!$clientId) {
-                                                                return [];
+                                                            // If no projects are selected, return an empty array
+                                                            $selectedProjects = $get('project') ?? [];
+
+                                                            if (empty($selectedProjects)) {
+                                                                // If no projects are selected, get all documents for the client
+                                                                $clientId = $get('client');
+                                                                if (!$clientId) {
+                                                                    return [];
+                                                                }
+                                                                // Get all documents for the client
+                                                                return \App\Models\Document::whereHas('project', function ($query) use ($clientId) {
+                                                                    $query->where('client_id', $clientId);
+                                                                })
+                                                                    ->withTrashed()
+                                                                    ->orderBy('title')
+                                                                    ->get()
+                                                                    ->mapWithKeys(fn($d) => [
+                                                                        $d->id => str($d->title)->limit(25) . ($d->deleted_at ? ' (deleted)' : ''),
+                                                                    ])
+                                                                    ->toArray();
                                                             }
 
-                                                            return \App\Models\Document::whereHas('project', function ($query) use ($clientId) {
-                                                                $query->where('client_id', $clientId);
-                                                            })
+                                                            // Get all documents for the selected projects
+                                                            return \App\Models\Document::whereIn('project_id', $selectedProjects)
                                                                 ->withTrashed()
                                                                 ->orderBy('title')
                                                                 ->get()
@@ -699,16 +846,21 @@ class ActionBoard extends KanbanBoardPage
                                                         ->nullable()
                                                         ->multiple()
                                                         ->default(fn(?Task $record) => $record?->document)
-                                                        ->dehydrated(),
+                                                        ->dehydrated()
+                                                        ->live()
+                                                        ->reactive(),
+                                                    // Important URLs
                                                     Forms\Components\Select::make('important_url')
                                                         ->label(__('task.form.important_url'))
                                                         ->helperText(__('task.form.important_url_helper'))
                                                         ->options(function (Forms\Get $get) {
+                                                            // If no client is selected, return an empty array
                                                             return \App\Models\ImportantUrl::whereHas('project', function ($query) use ($get) {
                                                                 $clientId = $get('client');
                                                                 if (!$clientId) {
                                                                     return $query;
                                                                 }
+                                                                // Get all important URLs for the client
                                                                 return $query->where('client_id', $clientId);
                                                             })
                                                                 ->withTrashed()
@@ -727,8 +879,12 @@ class ActionBoard extends KanbanBoardPage
                                                         ->default(fn(?Task $record) => $record?->important_url)
                                                         ->dehydrated(),
                                                 ]),
+
                                         ]),
 
+                                    // -----------------------------
+                                    // Task Additional Information
+                                    // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.additional_information'))
                                         ->badge(function (Get $get) {
                                             $extraInfo = $get('extra_information') ?? [];
@@ -755,19 +911,19 @@ class ActionBoard extends KanbanBoardPage
                                                         ])
                                                         ->extraAttributes(['style' => 'resize: vertical;'])
                                                         ->reactive()
-                                                        ->helperText(function (Get $get) use ($mode) {
+                                                        ->helperText(function (Forms\Get $get) {
                                                             $raw = $get('value') ?? '';
                                                             $noHtml = strip_tags($raw);
                                                             $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                                             $remaining = 500 - mb_strlen($decoded);
 
-                                                            return __("action.$mode.extra_information_helper", ['count' => $remaining]);
+                                                            return __('task.edit.extra_information_helper', ['count' => $remaining]);
                                                         })
-                                                        ->rule(function (Get $get) use ($mode): Closure {
-                                                            return function (string $attribute, $value, Closure $fail) use ($mode) {
+                                                        ->rule(function (Forms\Get $get): \Closure {
+                                                            return function (string $attribute, $value, \Closure $fail) {
                                                                 $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                                 if (mb_strlen($textOnly) > 500) {
-                                                                    $fail(__("action.$mode.extra_information_warning"));
+                                                                    $fail(__('task.edit.extra_information_warning'));
                                                                 }
                                                             };
                                                         })
