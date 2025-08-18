@@ -57,5 +57,8 @@ return [
         'created_body' => 'Tugasan berjaya dicipta',
         'updated_title' => 'Tugasam Dikemas Kini',
         'updated_body' => 'Tugasan berjaya dikemas kini.',
+        'assigned_title' => 'Tugasan Ditugaskan',
+        'assigned_body' => 'Tugasan telah ditugaskan kepada anda.',
+        'view_task' => 'Papar Tugasan',
     ],
 ];

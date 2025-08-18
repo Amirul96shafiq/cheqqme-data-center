@@ -57,5 +57,8 @@ return [
         'created_body' => 'The task was created successfully.',
         'updated_title' => 'Task Updated',
         'updated_body' => 'The task was updated successfully.',
+        'assigned_title' => 'Task Assigned',
+        'assigned_body' => 'A task was assigned to you.',
+        'view_task' => 'View Task',
     ],
 ];
