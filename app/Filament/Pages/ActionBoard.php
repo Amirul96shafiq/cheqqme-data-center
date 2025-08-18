@@ -213,7 +213,8 @@ class ActionBoard extends KanbanBoardPage
                                                             'completed' => __('task.status.completed'),
                                                             'archived' => __('task.status.archived'),
                                                         ])
-                                                        ->searchable(),
+                                                        ->searchable()
+                                                        ->default($defaultStatus),
                                                 ]),
                                             Forms\Components\RichEditor::make('description')
                                                 ->label(__('task.form.description'))
@@ -644,7 +645,8 @@ class ActionBoard extends KanbanBoardPage
                                                             'completed' => __('task.status.completed'),
                                                             'archived' => __('task.status.archived'),
                                                         ])
-                                                        ->searchable(),
+                                                        ->searchable()
+                                                        ->default($defaultStatus),
                                                 ]),
                                             Forms\Components\RichEditor::make('description')
                                                 ->label(__('task.form.description'))

@@ -13,6 +13,32 @@ use Filament\Notifications\Actions\Action;
 class TaskObserver
 {
   /**
+   * Handle the Task "created" event.
+   */
+  public function created(Task $task)
+  {
+    // Send notification to assigned user when task is created
+    if ($task->assigned_to) {
+      $assignedUser = User::find($task->assigned_to);
+      if ($assignedUser) {
+        Notification::make()
+          ->title(__('task.notifications.assigned_title'))
+          ->body(__('task.notifications.assigned_body', ['task' => $task->title]))
+          ->icon('heroicon-o-user-plus')
+          ->success()
+          ->actions([
+            Action::make('view_task')
+              ->label(__('task.notifications.view_task'))
+              ->url(route('filament.admin.resources.tasks.edit', $task))
+              ->button()
+              ->outlined()
+          ])
+          ->sendToDatabase($assignedUser);
+      }
+    }
+  }
+
+  /**
    * Handle the Task "updating" event.
    */
   public function updating(Task $task)
