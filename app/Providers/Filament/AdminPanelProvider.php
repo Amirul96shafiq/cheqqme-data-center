@@ -32,15 +32,13 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 // ActivityLog by Rômulo Ramos
 use Rmsramos\Activitylog\ActivitylogPlugin;
 
-// Kanban by Mo Khosh
-
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
             ->default()
-            ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
+            ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
             ->favicon(asset('images/favicon.png'))
@@ -56,6 +54,7 @@ class AdminPanelProvider extends PanelProvider
             ->font('Roboto')
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->profile(Profile::class, isSimple: false)
+            ->databaseNotifications()
             ->colors([
                 'primary' => [
                     '50' => '#fff8eb',
@@ -118,7 +117,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 'panels::body.end',
-                fn () => <<<'HTML'
+                fn() => <<<'HTML'
                             <script>
                                 document.addEventListener('DOMContentLoaded', () => {
                                     // -----------------------------
@@ -199,7 +198,7 @@ class AdminPanelProvider extends PanelProvider
                     ->expandedUrlTarget(enabled: false),
 
                 ActivitylogPlugin::make()
-                    ->navigationGroup(fn () => __('activitylog.navigation_group'))
+                    ->navigationGroup(fn() => __('activitylog.navigation_group'))
                     ->navigationSort(11),
             ]);
     }

@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
-use BezhanSalleh\FilamentLanguageSwitch\Enums\Placement;
 use App\Models\Task;
 use App\Observers\TaskObserver;
-
+use BezhanSalleh\FilamentLanguageSwitch\Enums\Placement;
+use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
+use Filament\Notifications\Livewire\DatabaseNotifications;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,7 +16,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+
+        DatabaseNotifications::trigger('filament.notifications.database-notifications-trigger');
 
     }
 
@@ -37,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
                 ->locales(['en', 'ms'])
                 ->visible(
                     insidePanels: true,
-                    outsidePanels: fn() => request()->is('admin/login')
+                    outsidePanels: fn () => request()->is('admin/login')
                 )
                 ->outsidePanelPlacement(Placement::BottomCenter);
         });

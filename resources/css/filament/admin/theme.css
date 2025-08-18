@@ -34,6 +34,33 @@
         color: #ffffff !important;
     }
 
+    .fi-modal-close-overlay {
+        /* Ensure overlays sit above custom fixed sidebar */
+        z-index: 80 !important;
+    }
+
+    /* Modal root containers also need higher stacking to cover the sidebar */
+    .fi-modal .fixed.inset-0 {
+        z-index: 90 !important; /* above overlay */
+    }
+
+    /* Create a higher stacking context for the modal wrapper itself */
+    .fi-modal-window {
+        position: relative;
+        z-index: 90;
+    }
+
+    /* Database notifications slide-over lives inside the modal window; ensure it stacks above overlay */
+    .fi-modal-window.fi-modal-slide-over-window {
+        z-index: 90 !important;
+    }
+
+    /* Also ensure the notifications trigger panel stays below overlays */
+    .fi-topbar,
+    .fi-sidebar {
+        z-index: 20;
+    }
+
     /* Custom placement for Filament Language Switch Outside Panel (Admin) */
     .fls-display-on {
         position: fixed;
@@ -94,7 +121,7 @@
     }
 
     .ff-card:is(.dark *) {
-        background-color: #22272B90 !important;
+        background-color: #22272b90 !important;
         border-color: rgb(250 250 250 / 0.1) !important;
     }
 
@@ -107,7 +134,7 @@
             top: 0;
             inset-inline-start: 0;
             height: 100vh;
-            z-index: 20;
+            z-index: 10 !important; /* keep under modal overlays */
         }
 
         /* Reserve space for the fixed sidebar */
