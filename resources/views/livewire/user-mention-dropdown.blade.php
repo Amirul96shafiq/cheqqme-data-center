@@ -8,8 +8,9 @@
         
         <!-- Dropdown -->
         <div 
-            class="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl max-h-64 overflow-y-auto w-80 user-mention-dropdown"
+            class="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl max-h-64 w-80 user-mention-dropdown"
             style="left: {{ $dropdownX }}px; top: {{ $dropdownY }}px;"
+            tabindex="0"
             x-data
             x-init="
                 $el.style.opacity = '0';
@@ -27,10 +28,37 @@
                 setTimeout(() => $wire.hideDropdown(), 100);
             "
         >
-            <div class="p-2">
+            <!-- Navigation Helper - Sticky to top -->
+            <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-2 z-10">
+                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                    <div class="flex items-center space-x-4">
+                        <span class="flex items-center space-x-1">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
+                            </svg>
+                            <span>↑</span>
+                            <span>↓</span>
+                        </span>
+                        <span>Navigate</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="flex items-center space-x-1">
+                            <span>↵</span>
+                            <span>Select</span>
+                        </span>
+                        <span class="flex items-center space-x-1">
+                            <span>Esc</span>
+                            <span>Cancel</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scrollable user list -->
+            <div class="overflow-y-auto max-h-48 p-2">
                 @foreach($users as $index => $user)
                     <div 
-                        class="flex items-center space-x-3 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-150 user-mention-item {{ $index === $selectedIndex ? 'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700 ring-2 ring-primary-200 dark:ring-primary-700' : '' }}"
+                        class="flex items-center space-x-3 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 user-mention-item {{ $index === $selectedIndex ? 'bg-blue-50 dark:bg-blue-900/20' : '' }}"
                         wire:click="selectUser({{ $index }})"
                         wire:key="user-{{ $user['id'] }}"
                         x-on:mouseenter="$wire.selectedIndex = {{ $index }}"
@@ -66,15 +94,6 @@
                                 {{ $user['email'] }}
                             </p>
                         </div>
-                        
-                        <!-- Selection Indicator -->
-                        @if($index === $selectedIndex)
-                            <div class="flex-shrink-0 user-mention-indicator">
-                                <svg class="w-4 h-4 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        @endif
                     </div>
                 @endforeach
             </div>
@@ -116,5 +135,8 @@
         .user-mention-indicator {
             flex-shrink: 0;
         }
+
+        /* No need to hide cursor - editor maintains focus for typing */
+        /* Users can type to search while dropdown is visible */
     </style>
 </div>

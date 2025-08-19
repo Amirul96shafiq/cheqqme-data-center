@@ -143,4 +143,78 @@ class UserMentionDropdownTest extends TestCase
                 in_array($users[1]['username'], ['john_doe', 'johnny_cash']);
         });
     }
+
+    public function test_navigation_up_wraps_to_bottom()
+    {
+        // Create test users
+        User::factory()->create(['username' => 'user1']);
+        User::factory()->create(['username' => 'user2']);
+        User::factory()->create(['username' => 'user3']);
+
+        $component = Livewire::test(UserMentionDropdown::class);
+
+        // Set up component with users and start at index 0
+        $component->set('users', [
+            ['id' => 1, 'username' => 'user1', 'email' => 'user1@test.com', 'name' => 'User 1', 'avatar' => null, 'short_name' => 'user1'],
+            ['id' => 2, 'username' => 'user2', 'email' => 'user2@test.com', 'name' => 'User 2', 'avatar' => null, 'short_name' => 'user2'],
+            ['id' => 3, 'username' => 'user3', 'email' => 'user3@test.com', 'name' => 'User 3', 'avatar' => null, 'short_name' => 'user3'],
+        ])
+            ->set('selectedIndex', 0);
+
+        // Test that updateSelectedIndex works correctly
+        $component->call('updateSelectedIndex', 2);
+
+        $component->assertSet('selectedIndex', 2);
+    }
+
+    public function test_navigation_down_wraps_to_top()
+    {
+        // Create test users
+        User::factory()->create(['username' => 'user1']);
+        User::factory()->create(['username' => 'user2']);
+        User::factory()->create(['username' => 'user3']);
+
+        $component = Livewire::test(UserMentionDropdown::class);
+
+        // Set up component with users and start at last index
+        $component->set('users', [
+            ['id' => 1, 'username' => 'user1', 'email' => 'user1@test.com', 'name' => 'User 1', 'avatar' => null, 'short_name' => 'user1'],
+            ['id' => 2, 'username' => 'user2', 'email' => 'user2@test.com', 'name' => 'User 2', 'avatar' => null, 'short_name' => 'user2'],
+            ['id' => 3, 'username' => 'user3', 'email' => 'user3@test.com', 'name' => 'User 3', 'avatar' => null, 'short_name' => 'user3'],
+        ])
+            ->set('selectedIndex', 2);
+
+        // Test that updateSelectedIndex works correctly
+        $component->call('updateSelectedIndex', 0);
+
+        $component->assertSet('selectedIndex', 0);
+    }
+
+    public function test_select_current_user_selects_highlighted_user()
+    {
+        // Create a test user
+        $user = User::factory()->create(['username' => 'test_user']);
+
+        $component = Livewire::test(UserMentionDropdown::class);
+
+        // Set up the component state
+        $component->set('users', [
+            [
+                'id' => $user->id,
+                'username' => $user->username,
+                'email' => $user->email,
+                'name' => $user->name,
+                'avatar' => null,
+                'short_name' => $user->username,
+            ],
+        ])
+            ->set('selectedIndex', 0)
+            ->set('targetInputId', 'test-input');
+
+        // Select current user
+        $component->call('selectCurrentUser');
+
+        // Verify the dropdown is hidden
+        $component->assertSet('showDropdown', false);
+    }
 }

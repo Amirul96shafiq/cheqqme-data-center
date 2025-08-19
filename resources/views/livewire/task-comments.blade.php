@@ -328,12 +328,44 @@
                 } else {
                     insertMention(editor, data.username);
                 }
+                // Editor should already be focused - no need to restore focus
+                // User can continue typing naturally
             });
             
             // Listen for hideMentionDropdown event
             Livewire.on('hideMentionDropdown', function() {
                 // Dropdown hidden - reset position when hidden
                 atSymbolPosition = null;
+                // Editor should already be focused - no need to restore focus
+                // User can continue typing naturally
+            });
+
+            // Listen for showMentionDropdown event - keep editor focused for typing
+            Livewire.on('showMentionDropdown', function() {
+                // Keep editor focused so user can continue typing to search
+                // The dropdown will appear for visual feedback and keyboard navigation
+                // No need to blur or hide cursor - let user type naturally
+                
+                                 // Reset client-side navigation state when dropdown appears
+                 currentSelectedIndex = 0;
+                 // Apply initial selection to first item immediately
+                 const dropdown = document.querySelector('.user-mention-dropdown');
+                 if (dropdown) {
+                     const userItems = dropdown.querySelectorAll('.user-mention-item');
+                     if (userItems.length > 0) {
+                         // Remove any existing selections first
+                         userItems.forEach(item => {
+                             item.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
+                         });
+                         // Apply selection to first item
+                         userItems[0].classList.add('bg-blue-50', 'dark:bg-blue-900/20');
+                     }
+                 }
+            });
+
+            // Navigation is now handled client-side for better performance
+            Livewire.on('selectCurrentUser', function() {
+                // Selection handled by Livewire component
             });
         }
 
@@ -372,6 +404,17 @@
                             x: atPosition.left,
                             y: atPosition.top
                         });
+                        
+                        // Set dropdown as focusable for keyboard navigation
+                        // But keep editor focused so user can continue typing
+                        setTimeout(() => {
+                            const dropdown = document.querySelector('.user-mention-dropdown');
+                            if (dropdown) {
+                                dropdown.setAttribute('tabindex', '0');
+                                // Don't blur editor - keep it focused for typing
+                                // Dropdown will handle keyboard navigation when needed
+                            }
+                        }, 100);
                     }
                 } else {
                     // Just update the search term, keep position static
@@ -389,10 +432,108 @@
             }
         }
 
+        // Client-side navigation state
+        let currentSelectedIndex = 0;
+        
         function handleMentionKeydown(e, editor) {
-            // Handle Escape to close dropdown
+            // Check if dropdown is visible before handling navigation keys
+            const dropdown = document.querySelector('.user-mention-dropdown');
+            // Since the dropdown uses Livewire conditional rendering, we just need to check if the element exists
+            const isDropdownVisible = dropdown !== null;
+            
+            if (!isDropdownVisible) {
+                return; // Don't interfere with normal typing if no dropdown
+            }
+            
+            // Handle keyboard navigation when dropdown is open
             if (e.key === 'Escape') {
+                e.preventDefault();
+                console.log('Dispatching hideMentionDropdown');
                 Livewire.dispatch('hideMentionDropdown');
+                // Keep editor focused - no need to restore focus
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                navigateUp();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                navigateDown();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                console.log('Dispatching selectCurrentUser');
+                Livewire.dispatch('selectCurrentUser');
+            }
+            // For all other keys (typing), let the editor handle them normally
+        }
+        
+        function navigateUp() {
+            const dropdown = document.querySelector('.user-mention-dropdown');
+            if (!dropdown) return;
+            
+            const userItems = dropdown.querySelectorAll('.user-mention-item');
+            if (userItems.length === 0) return;
+            
+            // Calculate new index with wrapping
+            const newIndex = currentSelectedIndex > 0 ? currentSelectedIndex - 1 : userItems.length - 1;
+            
+            // Only update if index actually changed
+            if (newIndex !== currentSelectedIndex) {
+                // Remove previous selection (if exists)
+                if (currentSelectedIndex >= 0 && currentSelectedIndex < userItems.length) {
+                    userItems[currentSelectedIndex].classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
+                }
+                
+                // Update index
+                currentSelectedIndex = newIndex;
+                
+                // Apply new selection
+                if (currentSelectedIndex >= 0 && currentSelectedIndex < userItems.length) {
+                    userItems[currentSelectedIndex].classList.add('bg-blue-50', 'dark:bg-blue-900/20');
+                    
+                    // Simple, instant scroll to keep item visible
+                    userItems[currentSelectedIndex].scrollIntoView({ 
+                        block: 'nearest', 
+                        behavior: 'instant' 
+                    });
+                }
+                
+                // Update Livewire component state immediately (no debounce for navigation)
+                Livewire.dispatch('updateSelectedIndex', { index: currentSelectedIndex });
+            }
+        }
+        
+        function navigateDown() {
+            const dropdown = document.querySelector('.user-mention-dropdown');
+            if (!dropdown) return;
+            
+            const userItems = dropdown.querySelectorAll('.user-mention-item');
+            if (userItems.length === 0) return;
+            
+            // Calculate new index with wrapping
+            const newIndex = currentSelectedIndex < userItems.length - 1 ? currentSelectedIndex + 1 : 0;
+            
+            // Only update if index actually changed
+            if (newIndex !== currentSelectedIndex) {
+                // Remove previous selection (if exists)
+                if (currentSelectedIndex >= 0 && currentSelectedIndex < userItems.length) {
+                    userItems[currentSelectedIndex].classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
+                }
+                
+                // Update index
+                currentSelectedIndex = newIndex;
+                
+                // Apply new selection
+                if (currentSelectedIndex >= 0 && currentSelectedIndex < userItems.length) {
+                    userItems[currentSelectedIndex].classList.add('bg-blue-50', 'dark:bg-blue-900/20');
+                    
+                    // Simple, instant scroll to keep item visible
+                    userItems[currentSelectedIndex].scrollIntoView({ 
+                        block: 'nearest', 
+                        behavior: 'instant' 
+                    });
+                }
+                
+                // Update Livewire component state immediately (no debounce for navigation)
+                Livewire.dispatch('updateSelectedIndex', { index: currentSelectedIndex });
             }
         }
 
