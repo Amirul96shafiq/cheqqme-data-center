@@ -8,7 +8,7 @@
         
         <!-- Dropdown -->
         <div 
-            class="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl max-h-64 overflow-y-auto min-w-64"
+            class="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl max-h-64 overflow-y-auto w-80 user-mention-dropdown"
             style="left: {{ $dropdownX }}px; top: {{ $dropdownY }}px;"
             x-data
             x-init="
@@ -30,13 +30,13 @@
             <div class="p-2">
                 @foreach($users as $index => $user)
                     <div 
-                        class="flex items-center space-x-3 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-150 {{ $index === $selectedIndex ? 'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700 ring-2 ring-primary-200 dark:ring-primary-700' : '' }}"
+                        class="flex items-center space-x-3 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-150 user-mention-item {{ $index === $selectedIndex ? 'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700 ring-2 ring-primary-200 dark:ring-primary-700' : '' }}"
                         wire:click="selectUser({{ $index }})"
                         wire:key="user-{{ $user['id'] }}"
                         x-on:mouseenter="$wire.selectedIndex = {{ $index }}"
                     >
                         <!-- User Avatar -->
-                        <div class="flex-shrink-0">
+                        <div class="flex-shrink-0 user-mention-avatar">
                             @if($user['avatar'])
                                 <img 
                                     src="{{ Storage::url($user['avatar']) }}" 
@@ -51,25 +51,25 @@
                         </div>
                         
                         <!-- User Info -->
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center space-x-2">
-                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                        <div class="flex-1 min-w-0 overflow-hidden">
+                            <div class="flex items-center space-x-2 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate flex-shrink-0 user-mention-username">
                                     {{ $user['username'] }}
                                 </p>
                                 @if($user['name'] && $user['name'] !== $user['username'])
-                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 truncate flex-shrink-0">
                                         ({{ $user['name'] }})
                                     </span>
                                 @endif
                             </div>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1 user-mention-email">
                                 {{ $user['email'] }}
                             </p>
                         </div>
                         
                         <!-- Selection Indicator -->
                         @if($index === $selectedIndex)
-                            <div class="flex-shrink-0">
+                            <div class="flex-shrink-0 user-mention-indicator">
                                 <svg class="w-4 h-4 text-primary-500" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                 </svg>
@@ -80,4 +80,41 @@
             </div>
         </div>
     @endif
+    
+    <style>
+        /* Ensure consistent dropdown width and overflow handling */
+        .user-mention-dropdown {
+            width: 20rem !important; /* 320px - matches w-80 */
+            min-width: 20rem !important;
+            max-width: 20rem !important;
+        }
+        
+        /* Consistent item heights */
+        .user-mention-item {
+            min-height: 3rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Better text truncation for long usernames/emails */
+        .user-mention-username {
+            max-width: 8rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .user-mention-email {
+            max-width: 12rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Ensure avatar and selection indicator don't shrink */
+        .user-mention-avatar,
+        .user-mention-indicator {
+            flex-shrink: 0;
+        }
+    </style>
 </div>

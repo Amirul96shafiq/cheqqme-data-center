@@ -112,8 +112,10 @@ class UserMentionDropdown extends Component
   {
     $this->selectedIndex = 0;
     $this->searchUsers();
+
+    // Position remains static at the @ symbol - no recalculation needed
   }
-  
+
   public function render()
   {
     return view('livewire.user-mention-dropdown');

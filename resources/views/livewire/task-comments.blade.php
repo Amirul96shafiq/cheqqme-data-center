@@ -332,12 +332,14 @@
             
             // Listen for hideMentionDropdown event
             Livewire.on('hideMentionDropdown', function() {
-                // Dropdown hidden
+                // Dropdown hidden - reset position when hidden
+                atSymbolPosition = null;
             });
         }
 
         // Add a flag to prevent mention detection when inserting
         let insertingMention = false;
+        let atSymbolPosition = null; // Store the position where @ was typed
 
         function handleMentionInput(e, editor) {
             if (insertingMention) {
@@ -353,18 +355,36 @@
             if (atMatch) {
                 const searchTerm = atMatch[1];
                 
-                // Get cursor position for dropdown positioning
-                const rect = getCaretCoordinates(editor, cursorPosition);
-                
-                // Show mention dropdown
-                Livewire.dispatch('showMentionDropdown', {
-                    inputId: 'composerData.newComment',
-                    searchTerm: searchTerm,
-                    x: rect.left,
-                    y: rect.top
-                });
+                // Calculate position only when @ is first typed (searchTerm is empty)
+                // or when we don't have a stored position yet
+                if (!atSymbolPosition || searchTerm === '') {
+                    // Find the position of the @ symbol in the text
+                    const atIndex = beforeCursor.lastIndexOf('@');
+                    const atPosition = getCaretCoordinatesAtIndex(editor, atIndex);
+                    
+                    if (atPosition && atPosition.left !== 0 && atPosition.top !== 0) {
+                        atSymbolPosition = atPosition;
+                        
+                        // Show mention dropdown at @ symbol position
+                        Livewire.dispatch('showMentionDropdown', {
+                            inputId: 'composerData.newComment',
+                            searchTerm: searchTerm,
+                            x: atPosition.left,
+                            y: atPosition.top
+                        });
+                    }
+                } else {
+                    // Just update the search term, keep position static
+                    Livewire.dispatch('showMentionDropdown', {
+                        inputId: 'composerData.newComment',
+                        searchTerm: searchTerm,
+                        x: atSymbolPosition.left,
+                        y: atSymbolPosition.top
+                    });
+                }
             } else {
-                // Hide mention dropdown if no @ symbol
+                // Hide mention dropdown if no @ symbol and reset position
+                atSymbolPosition = null;
                 Livewire.dispatch('hideMentionDropdown');
             }
         }
@@ -511,26 +531,83 @@
                         selection.addRange(range);
                         
                         const rect = range.getBoundingClientRect();
-                        return {
-                            left: rect.left,
-                            top: rect.bottom
-                        };
+                        if (rect && rect.left !== 0 && rect.top !== 0) {
+                            return {
+                                left: rect.left,
+                                top: rect.bottom
+                            };
+                        }
                     }
                 } catch (error) {
                     // Fall through to element position
                 }
             }
             
-            // Fallback to element position
+            // Fallback to element position with better positioning
             try {
                 const rect = element.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                
                 return {
-                    left: rect.left,
-                    top: rect.bottom
+                    left: rect.left + scrollLeft,
+                    top: rect.bottom + scrollTop
                 };
             } catch (error) {
-                return { left: 0, top: 0 };
+                // Last resort: return null to indicate failure
+                return null;
             }
+        }
+
+        function getCaretCoordinatesAtIndex(element, index) {
+            // For Trix editor, get position at specific character index
+            if (element.tagName === 'TRIX-EDITOR') {
+                try {
+                    const rect = element.editor.getClientRectAtPosition(index);
+                    if (rect) {
+                        return {
+                            left: rect.left,
+                            top: rect.bottom
+                        };
+                    }
+                } catch (error) {
+                    // Fall through to contenteditable logic
+                }
+            }
+            
+            // For contenteditable elements, create range at specific index
+            if (element.isContentEditable) {
+                try {
+                    const range = document.createRange();
+                    const selection = window.getSelection();
+                    
+                    if (element.firstChild) {
+                        const textNode = element.firstChild;
+                        const safeIndex = Math.min(index, textNode.length);
+                        
+                        range.setStart(textNode, safeIndex);
+                        range.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                        
+                        const rect = range.getBoundingClientRect();
+                        if (rect && rect.left !== 0 && rect.top !== 0) {
+                            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                            
+                            return {
+                                left: rect.left + scrollLeft,
+                                top: rect.bottom + scrollTop
+                            };
+                        }
+                    }
+                } catch (error) {
+                    // Fall through to element position
+                }
+            }
+            
+            // Fallback: use getCaretCoordinates with the index as position
+            return getCaretCoordinates(element, index);
         }
     </script>
 </div>
