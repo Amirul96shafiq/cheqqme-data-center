@@ -8,7 +8,7 @@
         
         <!-- Dropdown -->
         <div 
-            class="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl max-h-64 w-80 user-mention-dropdown"
+            class="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl max-h-64 w-80 user-mention-dropdown rounded-xl overflow-hidden"
             style="left: {{ $dropdownX }}px; top: {{ $dropdownY }}px;"
             tabindex="0"
             x-data
@@ -29,7 +29,7 @@
             "
         >
             <!-- Navigation Helper - Sticky to top -->
-            <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-2 z-10">
+            <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-2 z-10 rounded-t-xl">
                 <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                     <div class="flex items-center space-x-4">
                         <span class="flex items-center space-x-1">
