@@ -49,6 +49,8 @@ return [
     'deleted_title' => 'Comment deleted',
     'not_updated_title' => 'Comment not updated',
     'edited_empty' => 'Edited comment cannot be empty.',
+    'error_title' => 'Error: :title',
+    'starts_with_space' => 'Comment cannot start with a space or newline. Please remove any leading spaces and try again.',
   ],
   'mentions' => [
     'no_users_found' => 'No users found',

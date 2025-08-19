@@ -196,17 +196,73 @@
                     pm.dispatchEvent(new Event('input',{bubbles:true}));
                 }
             }
+            
+            // Function to prevent comments from starting with whitespace
+            function preventLeadingWhitespace(event) {
+                const editor = event.target;
+                const text = editor.textContent || '';
+                
+                // If the text starts with whitespace, prevent the input
+                if (text.match(/^\s/)) {
+                    // Remove leading whitespace
+                    editor.textContent = text.replace(/^\s+/, '');
+                    
+                    // Show a subtle warning
+                    const warning = document.createElement('div');
+                    warning.className = 'text-xs text-amber-600 dark:text-amber-400 mt-1';
+                    warning.textContent = 'Comments cannot start with spaces or newlines';
+                    
+                    // Remove any existing warning
+                    const existingWarning = editor.parentElement.querySelector('.text-amber-600');
+                    if (existingWarning) {
+                        existingWarning.remove();
+                    }
+                    
+                    // Add warning below the editor
+                    editor.parentElement.appendChild(warning);
+                    
+                    // Remove warning after 3 seconds
+                    setTimeout(() => {
+                        if (warning.parentElement) {
+                            warning.remove();
+                        }
+                    }, 3000);
+                }
+            }
+            
             document.addEventListener('DOMContentLoaded', clearUndefinedInComposer);
             document.addEventListener('livewire:update', clearUndefinedInComposer);
             document.addEventListener('livewire:navigated', clearUndefinedInComposer);
-                    document.addEventListener('resetComposerEditor', () => {
-                        const wrapper = document.querySelector('.minimal-comment-editor');
-                        const pm = wrapper?.querySelector('.ProseMirror');
-                        if (pm) {
-                            pm.innerHTML='';
-                            pm.dispatchEvent(new Event('input',{bubbles:true}));
-                        }
+            
+            document.addEventListener('resetComposerEditor', () => {
+                const wrapper = document.querySelector('.minimal-comment-editor');
+                const pm = wrapper?.querySelector('.ProseMirror');
+                if (pm) {
+                    pm.innerHTML='';
+                    pm.dispatchEvent(new Event('input',{bubbles:true}));
+                }
+            });
+            
+            // Add input event listeners to prevent leading whitespace
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(() => {
+                    const editors = document.querySelectorAll('.minimal-comment-editor .ProseMirror, [data-composer] .ProseMirror');
+                    editors.forEach(editor => {
+                        editor.addEventListener('input', preventLeadingWhitespace);
                     });
+                }, 1000);
+            });
+            
+            // Re-add listeners after Livewire updates
+            document.addEventListener('livewire:update', function() {
+                setTimeout(() => {
+                    const editors = document.querySelectorAll('.minimal-comment-editor .ProseMirror, [data-composer] .ProseMirror');
+                    editors.forEach(editor => {
+                        editor.removeEventListener('input', preventLeadingWhitespace);
+                        editor.addEventListener('input', preventLeadingWhitespace);
+                    });
+                }, 500);
+            });
         </script>
 
     <!-- User Mention Dropdown Component -->

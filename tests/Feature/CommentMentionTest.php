@@ -138,4 +138,95 @@ class CommentMentionTest extends TestCase
         $this->assertCount(1, $mentions);
         $this->assertContains($user1->id, $mentions);
     }
+
+    public function test_comment_cannot_start_with_whitespace()
+    {
+        $user = User::factory()->create();
+
+        // Create a simple task without complex relationships
+        $task = Task::create([
+            'title' => 'Test Task',
+            'description' => 'Test Description',
+            'status' => 'todo',
+        ]);
+
+        // Test comment that starts with a space
+        $commentText = ' This comment starts with a space';
+
+        // The sanitizeHtml method should remove leading whitespace
+        $sanitized = $this->getSanitizedHtml($commentText);
+        $textOnly = trim(strip_tags($sanitized));
+
+        // Should not start with whitespace
+        $this->assertDoesNotMatchRegularExpression('/^\s/', $textOnly);
+        $this->assertEquals('This comment starts with a space', $textOnly);
+    }
+
+    public function test_comment_cannot_start_with_newline()
+    {
+        $user = User::factory()->create();
+
+        // Create a simple task without complex relationships
+        $task = Task::create([
+            'title' => 'Test Task',
+            'description' => 'Test Description',
+            'status' => 'todo',
+        ]);
+
+        // Test comment that starts with a newline
+        $commentText = "\nThis comment starts with a newline";
+
+        // The sanitizeHtml method should remove leading whitespace
+        $sanitized = $this->getSanitizedHtml($commentText);
+        $textOnly = trim(strip_tags($sanitized));
+
+        // Should not start with whitespace
+        $this->assertDoesNotMatchRegularExpression('/^\s/', $textOnly);
+        $this->assertEquals('This comment starts with a newline', $textOnly);
+    }
+
+    public function test_comment_cannot_start_with_multiple_whitespace()
+    {
+        $user = User::factory()->create();
+
+        // Create a simple task without complex relationships
+        $task = Task::create([
+            'title' => 'Test Task',
+            'description' => 'Test Description',
+            'status' => 'todo',
+        ]);
+
+        // Test comment that starts with multiple spaces and tabs
+        $commentText = "   \t  This comment starts with multiple whitespace characters";
+
+        // The sanitizeHtml method should remove leading whitespace
+        $sanitized = $this->getSanitizedHtml($commentText);
+        $textOnly = trim(strip_tags($sanitized));
+
+        // Should not start with whitespace
+        $this->assertDoesNotMatchRegularExpression('/^\s/', $textOnly);
+        $this->assertEquals('This comment starts with multiple whitespace characters', $textOnly);
+    }
+
+    /**
+     * Helper method to test the sanitizeHtml method
+     */
+    private function getSanitizedHtml(string $html): string
+    {
+        // Create a mock instance to access the private method
+        $mock = $this->getMockBuilder(\stdClass::class)
+            ->addMethods(['sanitizeHtml'])
+            ->getMock();
+
+        // Use reflection to access the private method from TaskComments
+        $reflection = new \ReflectionClass(\App\Livewire\TaskComments::class);
+        $method = $reflection->getMethod('sanitizeHtml');
+        $method->setAccessible(true);
+
+        // Create a minimal TaskComments instance
+        $taskComments = new \App\Livewire\TaskComments;
+
+        // Call the private method
+        return $method->invoke($taskComments, $html);
+    }
 }

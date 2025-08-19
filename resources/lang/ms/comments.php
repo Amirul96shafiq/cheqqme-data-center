@@ -49,6 +49,8 @@ return [
     'deleted_title' => 'Komen dipadam',
     'not_updated_title' => 'Komen tidak dikemas kini',
     'edited_empty' => 'Komen yang disunting tidak boleh kosong.',
+    'error_title' => 'Ralat: :title',
+    'starts_with_space' => 'Komen tidak boleh bermula dengan ruang atau baris baru. Sila buang sebarang ruang di hadapan dan cuba lagi.',
   ],
   'mentions' => [
     'no_users_found' => 'Tiada pengguna ditemui',
@@ -72,5 +74,3 @@ return [
     'error_deleting_comment' => 'Ralat memadam komen',
   ],
 ];
-
-

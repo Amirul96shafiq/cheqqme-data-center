@@ -79,6 +79,17 @@ class TaskComments extends Component implements HasForms
       return;
     }
 
+    // Additional check: ensure comment doesn't start with whitespace
+    if (preg_match('/^\s/', $textOnly)) {
+      Notification::make()
+        ->title(__('comments.notifications.error_title', ['title' => 'Invalid Comment']))
+        ->body(__('comments.notifications.starts_with_space', ['message' => 'Comment cannot start with a space or newline']))
+        ->danger()
+        ->send();
+
+      return;
+    }
+
     // Extract mentions from comment text
     $mentions = Comment::extractMentions($sanitized);
 
@@ -149,6 +160,17 @@ class TaskComments extends Component implements HasForms
     $plain = trim(strip_tags($sanitized));
     if ($plain === '') {
       Notification::make()->title(__('comments.notifications.not_updated_title'))->body(__('comments.notifications.edited_empty'))->danger()->send();
+
+      return;
+    }
+
+    // Additional check: ensure comment doesn't start with whitespace
+    if (preg_match('/^\s/', $plain)) {
+      Notification::make()
+        ->title(__('comments.notifications.error_title', ['title' => 'Invalid Comment']))
+        ->body(__('comments.notifications.starts_with_space', ['message' => 'Comment cannot start with a space or newline']))
+        ->danger()
+        ->send();
 
       return;
     }
@@ -350,12 +372,15 @@ class TaskComments extends Component implements HasForms
   private function sanitizeHtml(?string $html): string
   {
     $html = $html ?? '';
-    // Normalize line breaks from contenteditable (convert div/p breaks to <br>) for simple paragraphs
+
+    // First, normalize line breaks from contenteditable (convert div/p breaks to <br>) for simple paragraphs
     // Remove script/style tags completely
     $html = preg_replace('/<(script|style)[^>]*?>.*?<\/\1>/is', '', $html);
+
     // Allow only a whitelist of tags
     $allowed = '<b><strong><i><em><s><del><strike><code><pre><ul><ol><li><a><br><p>'; // blockquote removed
     $html = strip_tags($html, $allowed);
+
     // Remove on* attributes & javascript: href
     // Process anchors
     if (stripos($html, '<a') !== false) {
@@ -377,25 +402,40 @@ class TaskComments extends Component implements HasForms
         return '<a href="' . $safe . '" target="_blank" rel="nofollow noopener">';
       }, $html);
     }
+
     // Normalize <strike> to <s>
     $html = preg_replace_callback('/<\/?strike>/i', function ($m) {
       return str_starts_with($m[0], '</') ? '</s>' : '<s>';
     }, $html);
+
     // Strip any remaining attributes except for <a href target rel> (blockquote removed)
     $html = preg_replace_callback('/<(?!a\b)(b|strong|i|em|s|del|code|pre|ul|ol|li|br)([^>]*)>/i', function ($m) {
       return '<' . strtolower($m[1]) . '>';
     }, $html);
+
     // Remove existing blockquote tags, keeping inner content
     if (stripos($html, '<blockquote') !== false) {
       $html = preg_replace('/<blockquote[^>]*>/i', '', $html);
       $html = preg_replace('/<\/blockquote>/i', '', $html);
     }
+
     // Remove event handlers from anchors
     $html = preg_replace('/<a([^>]*)(on[a-z]+\s*=\s*"[^"]*")([^>]*)>/i', '<a$1$3>', $html);
     $html = preg_replace('/<a([^>]*)(javascript:)[^>]*>/i', '<a$1>', $html);
+
     // Collapse excessive <br>
     $html = preg_replace('/(<br\s*\/?>\s*){3,}/i', '<br><br>', $html);
-    // Trim whitespace
+
+    // Remove leading/trailing whitespace from HTML content
+    // This handles cases where there might be leading spaces or newlines before the first character
+    $html = preg_replace('/^\s*(<[^>]+>)*\s*/', '$1', $html);
+    $html = preg_replace('/\s*(<\/[^>]+>)*\s*$/', '$1', $html);
+
+    // Also remove any leading/trailing whitespace from text content
+    $html = preg_replace('/^(\s*<br\s*\/?>\s*)+/', '', $html);
+    $html = preg_replace('/(\s*<br\s*\/?>\s*)+$/', '', $html);
+
+    // Final trim to catch any remaining whitespace
     $html = trim($html);
 
     return $html;
