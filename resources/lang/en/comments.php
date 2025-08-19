@@ -53,6 +53,11 @@ return [
   'mentions' => [
     'no_users_found' => 'No users found',
     'searching' => 'Searching users...',
+    'dropdown' => [
+      'navigate' => 'Navigate',
+      'select' => 'Select',
+      'cancel' => 'Cancel',
+    ],
   ],
   'js' => [
     'textarea_missing' => 'Textarea not found',

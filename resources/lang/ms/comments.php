@@ -53,6 +53,11 @@ return [
   'mentions' => [
     'no_users_found' => 'Tiada pengguna ditemui',
     'searching' => 'Mencari pengguna...',
+    'dropdown' => [
+      'navigate' => 'Navigasi',
+      'select' => 'Pilih',
+      'cancel' => 'Batal',
+    ],
   ],
   'js' => [
     'textarea_missing' => 'Medan teks tidak ditemui',
