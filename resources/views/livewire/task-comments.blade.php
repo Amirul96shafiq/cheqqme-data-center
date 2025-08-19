@@ -358,6 +358,8 @@
                 return;
             }
             
+
+            
             editor.dataset.mentionsInitialized = 'true';
             
             // Add event listeners
@@ -365,12 +367,10 @@
                 handleMentionInput(e, editor);
             });
             
+            // Search term updates are now handled automatically in handleMentionInput
+            // No need for separate keyup handler
             editor.addEventListener('keyup', function(e) {
-                if (e.key === '@') {
-                    setTimeout(() => {
-                        handleMentionInput(e, editor);
-                    }, 10);
-                }
+                // Keep this for any future keyup-specific logic if needed
             });
             
             editor.addEventListener('keydown', function(e) {
@@ -379,45 +379,56 @@
             
             // Listen for user selection from dropdown
             Livewire.on('userSelected', function(data) {
+                // Reset dropdown state when user selects
+                dropdownActive = false;
+                atSymbolPosition = null;
+                lastSelectedPosition = getCursorPosition(editor);
+                
                 if (data.inputId === 'composerData.newComment' || data.inputId === editor.id) {
                     insertMention(editor, data.username);
                 } else {
                     insertMention(editor, data.username);
                 }
-                // Editor should already be focused - no need to restore focus
-                // User can continue typing naturally
             });
             
             // Listen for hideMentionDropdown event
             Livewire.on('hideMentionDropdown', function() {
-                // Dropdown hidden - reset position when hidden
+                // Dropdown hidden - reset all state
+                dropdownActive = false;
                 atSymbolPosition = null;
-                // Editor should already be focused - no need to restore focus
-                // User can continue typing naturally
             });
 
             // Listen for showMentionDropdown event - keep editor focused for typing
             Livewire.on('showMentionDropdown', function() {
-                // Keep editor focused so user can continue typing to search
-                // The dropdown will appear for visual feedback and keyboard navigation
-                // No need to blur or hide cursor - let user type naturally
+                // Mark dropdown as active when it appears
+                dropdownActive = true;
                 
-                                 // Reset client-side navigation state when dropdown appears
-                 currentSelectedIndex = 0;
-                 // Apply initial selection to first item immediately
-                 const dropdown = document.querySelector('.user-mention-dropdown');
-                 if (dropdown) {
-                     const userItems = dropdown.querySelectorAll('.user-mention-item');
-                     if (userItems.length > 0) {
-                         // Remove any existing selections first
-                         userItems.forEach(item => {
-                             item.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
-                         });
-                         // Apply selection to first item
-                         userItems[0].classList.add('bg-blue-50', 'dark:bg-blue-900/20');
-                     }
-                 }
+                // Reset client-side navigation state when dropdown appears
+                currentSelectedIndex = 0;
+                // Apply initial selection to first item immediately
+                const dropdown = document.querySelector('.user-mention-dropdown');
+                if (dropdown) {
+                    const userItems = dropdown.querySelectorAll('.user-mention-item');
+                    if (userItems.length > 0) {
+                        // Remove any existing selections first
+                        userItems.forEach(item => {
+                            item.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
+                        });
+                        // Apply selection to first item
+                        userItems[0].classList.add('bg-blue-50', 'dark:bg-blue-900/20');
+                    }
+                }
             });
+            
+            // Search term updates are now handled directly in handleMentionInputDebounced
+            // This function is kept for backward compatibility but simplified
+            function updateSearchTerm(editor) {
+                // The main logic is now in handleMentionInputDebounced
+                // This function can be called for manual updates if needed
+                if (dropdownActive) {
+                    handleMentionInputDebounced({ type: 'manual' }, editor);
+                }
+            }
 
             // Navigation is now handled client-side for better performance
             Livewire.on('selectCurrentUser', function() {
@@ -425,66 +436,92 @@
             });
         }
 
+
+
         // Add a flag to prevent mention detection when inserting
         let insertingMention = false;
         let atSymbolPosition = null; // Store the position where @ was typed
+        let dropdownActive = false; // Track if dropdown is currently active
+        let lastSelectedPosition = -1; // Track the last position where user selected someone
 
+                // Add debouncing to prevent multiple rapid calls
+        let mentionInputTimeout = null;
+        
         function handleMentionInput(e, editor) {
             if (insertingMention) {
                 return;
             }
             
+            // Clear any existing timeout
+            if (mentionInputTimeout) {
+                clearTimeout(mentionInputTimeout);
+            }
+            
+            // Debounce the input handling to prevent multiple rapid calls
+            mentionInputTimeout = setTimeout(() => {
+                handleMentionInputDebounced(e, editor);
+            }, 10); // 10ms debounce
+        }
+        
+        function handleMentionInputDebounced(e, editor) {
             const text = editor.textContent || '';
             const cursorPosition = getCursorPosition(editor);
             const beforeCursor = text.substring(0, cursorPosition);
             
-            // Check for @ symbol
-            const atMatch = beforeCursor.match(/@(\w*)$/);
-            if (atMatch) {
-                const searchTerm = atMatch[1];
-                
-                // Calculate position only when @ is first typed (searchTerm is empty)
-                // or when we don't have a stored position yet
-                if (!atSymbolPosition || searchTerm === '') {
-                    // Find the position of the @ symbol in the text
-                    const atIndex = beforeCursor.lastIndexOf('@');
-                    const atPosition = getCaretCoordinatesAtIndex(editor, atIndex);
+
+            
+            // ENHANCED LOGIC: Handle both new @ and search updates with better pattern matching
+            
+            // 1. Check if we have a valid @ pattern - handle both @ at end and @ followed by space
+            let atMatch = beforeCursor.match(/(?:^|\s)@(\w*)$/);
+            
+            // If no match and cursor is right after @, check for @ at end of beforeCursor
+            if (!atMatch && beforeCursor.endsWith('@')) {
+                atMatch = beforeCursor.match(/(?:^|\s)@$/);
+                if (atMatch) {
+                    // This is a new @ symbol, treat as empty search term
+                    atMatch = ['@', '']; // Simulate match with empty search term
+                }
+            }
+            
+
+            
+            if (!atMatch) {
+                // No valid @ pattern - hide dropdown if active
+                if (dropdownActive) {
+                    dropdownActive = false;
+                    atSymbolPosition = null;
+                    Livewire.dispatch('hideMentionDropdown');
+                }
+                return;
+            }
+            
+            // 2. We have a valid @ pattern - check if we need to show or update dropdown
+            const searchTerm = atMatch[1] || '';
+            const atIndex = beforeCursor.lastIndexOf('@');
+            
+            if (!dropdownActive) {
+                // Show new dropdown
+                const atPosition = getCaretCoordinatesAtIndex(editor, atIndex);
+                if (atPosition && atPosition.left !== 0 && atPosition.top !== 0) {
+                    atSymbolPosition = atPosition;
+                    dropdownActive = true;
                     
-                    if (atPosition && atPosition.left !== 0 && atPosition.top !== 0) {
-                        atSymbolPosition = atPosition;
-                        
-                        // Show mention dropdown at @ symbol position
-                        Livewire.dispatch('showMentionDropdown', {
-                            inputId: 'composerData.newComment',
-                            searchTerm: searchTerm,
-                            x: atPosition.left,
-                            y: atPosition.top
-                        });
-                        
-                        // Set dropdown as focusable for keyboard navigation
-                        // But keep editor focused so user can continue typing
-                        setTimeout(() => {
-                            const dropdown = document.querySelector('.user-mention-dropdown');
-                            if (dropdown) {
-                                dropdown.setAttribute('tabindex', '0');
-                                // Don't blur editor - keep it focused for typing
-                                // Dropdown will handle keyboard navigation when needed
-                            }
-                        }, 100);
-                    }
-                } else {
-                    // Just update the search term, keep position static
                     Livewire.dispatch('showMentionDropdown', {
                         inputId: 'composerData.newComment',
                         searchTerm: searchTerm,
-                        x: atSymbolPosition.left,
-                        y: atSymbolPosition.top
+                        x: atPosition.left,
+                        y: atPosition.top
                     });
                 }
             } else {
-                // Hide mention dropdown if no @ symbol and reset position
-                atSymbolPosition = null;
-                Livewire.dispatch('hideMentionDropdown');
+                // Update existing dropdown with new search term
+                Livewire.dispatch('showMentionDropdown', {
+                    inputId: 'composerData.newComment',
+                    searchTerm: searchTerm,
+                    x: atSymbolPosition.left,
+                    y: atSymbolPosition.top
+                });
             }
         }
 
@@ -504,9 +541,9 @@
             // Handle keyboard navigation when dropdown is open
             if (e.key === 'Escape') {
                 e.preventDefault();
-                console.log('Dispatching hideMentionDropdown');
+                dropdownActive = false;
+                atSymbolPosition = null;
                 Livewire.dispatch('hideMentionDropdown');
-                // Keep editor focused - no need to restore focus
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
                 navigateUp();
@@ -515,7 +552,6 @@
                 navigateDown();
             } else if (e.key === 'Enter') {
                 e.preventDefault();
-                console.log('Dispatching selectCurrentUser');
                 Livewire.dispatch('selectCurrentUser');
             }
             // For all other keys (typing), let the editor handle them normally
@@ -598,41 +634,256 @@
                 return;
             }
             
+
+            
             insertingMention = true;
             
-            // For Trix editor, use the Trix API to insert text
-            if (editor.tagName === 'TRIX-EDITOR') {
+            // Find and temporarily disable Livewire component updates
+            const livewireElement = editor.closest('[wire\\:id]');
+            const livewireComponent = livewireElement ? Livewire.find(livewireElement.getAttribute('wire:id')) : null;
+            
+            // Store original Livewire update methods to restore later
+            let originalUpdate = null;
+            if (livewireComponent && livewireComponent.update) {
+                originalUpdate = livewireComponent.update;
+                livewireComponent.update = function() {
+                    // Block updates during mention insertion
+                };
+            }
+            
+            // Check for ProseMirror editor first (Filament Rich Editor)
+            if (editor.classList.contains('ProseMirror')) {
+                try {
+                    // Get current text content and cursor position
+                    const text = editor.textContent || '';
+                    const selection = window.getSelection();
+                    let cursorPosition = 0;
+                    
+                    // Get the actual cursor position in the text content
+                    if (selection.rangeCount > 0) {
+                        const range = selection.getRangeAt(0);
+                        const preCaretRange = range.cloneRange();
+                        preCaretRange.selectNodeContents(editor);
+                        preCaretRange.setEnd(range.startContainer, range.startOffset);
+                        cursorPosition = preCaretRange.toString().length;
+                        
+                        const beforeCursor = text.substring(0, cursorPosition);
+                        
+                        // Find the @ symbol in the current text
+                        const atIndex = beforeCursor.lastIndexOf('@');
+
+                        
+                        if (atIndex !== -1) {
+                            // Find where the @ symbol ends (at space or end of text)
+                            const afterAt = beforeCursor.substring(atIndex);
+                            const spaceIndex = afterAt.indexOf(' ');
+                            const endIndex = spaceIndex !== -1 ? spaceIndex : afterAt.length;
+                            
+                            // Create new text: replace @ and partial text with @username
+                            const beforeAt = text.substring(0, atIndex);
+                            const afterPartial = text.substring(atIndex + endIndex);
+                            const mentionHtml = '<span class="user-mention" style="background-color: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-weight: 500; border: 1px solid #bfdbfe; display: inline;">@' + username + '</span> ';
+                            const newText = beforeAt + mentionHtml + afterPartial;
+                            
+
+                            
+                            // Replace the content
+                            editor.innerHTML = newText;
+                            
+                            // Calculate cursor position after the mention
+                            setTimeout(() => {
+                                try {
+                                    // Find the mark element we just inserted
+                                    const markElement = editor.querySelector('mark');
+                                    if (markElement) {
+
+                                        
+                                        // Find the next text node after the mark element
+                                        let nextNode = markElement.nextSibling;
+                                        
+                                        // If there's no next sibling, create a text node
+                                        if (!nextNode) {
+                                            nextNode = document.createTextNode(' ');
+                                            markElement.parentNode.insertBefore(nextNode, markElement.nextSibling);
+                                        }
+                                        
+                                        // Position cursor at the beginning of the next text node
+                                        const range = document.createRange();
+                                        const selection = window.getSelection();
+                                        
+                                        if (nextNode.nodeType === Node.TEXT_NODE) {
+                                            range.setStart(nextNode, 1); // After the space
+                                        } else {
+                                            range.setStartAfter(markElement);
+                                        }
+                                        
+                                        range.collapse(true);
+                                        selection.removeAllRanges();
+                                        selection.addRange(range);
+                                        
+
+                                    } else {
+
+                                        // Fallback: position at end
+                                        const range = document.createRange();
+                                        const selection = window.getSelection();
+                                        range.selectNodeContents(editor);
+                                        range.collapse(false);
+                                        selection.removeAllRanges();
+                                        selection.addRange(range);
+                                        
+                                        console.log('ProseMirror - fallback: cursor at end');
+                                    }
+                                    
+                                    // Focus editor
+                                    editor.focus();
+                                    console.log('Editor focused');
+                                    
+                                    // Don't trigger input event immediately as it resets cursor
+                                    // Instead, manually update Livewire with the new content
+                                    setTimeout(() => {
+                                        const newTextContent = editor.textContent || '';
+                                        const livewireComponent = Livewire.find(editor.closest('[wire\\:id]')?.getAttribute('wire:id'));
+                                        if (livewireComponent) {
+                                            const fieldName = editor.getAttribute('name') || 'composerData.newComment';
+                                            console.log('Updating Livewire field:', fieldName, 'with content:', newTextContent);
+                                            livewireComponent.set(fieldName, newTextContent, false);
+                                        } else {
+                                            console.log('Livewire component not found, falling back to input event');
+                                            editor.dispatchEvent(new Event('input', { bubbles: true }));
+                                        }
+                                        console.log('ProseMirror - Livewire updated without cursor reset');
+                                    }, 10);
+                                } catch (error) {
+                                    console.error('ProseMirror cursor positioning error:', error);
+                                    editor.focus();
+                                    editor.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                            }, 100); // Increased timeout
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error inserting mention in ProseMirror:', error);
+                }
+            } else if (editor.tagName === 'TRIX-EDITOR') {
+                console.log('Using Trix editor insertion');
                 try {
                     const trixEditor = editor.editor;
+                    console.log('Trix editor instance:', trixEditor);
                     
                     // Get current text content
                     const currentText = trixEditor.getDocument().toString();
+                    console.log('Current Trix text:', currentText);
                     
                     // Find the @ symbol in the current text
                     const atIndex = currentText.lastIndexOf('@');
+                    console.log('Found @ at index:', atIndex);
                     
                     if (atIndex !== -1) {
                         // Find where the @ symbol ends (at space or end of text)
                         const afterAt = currentText.substring(atIndex);
                         const spaceIndex = afterAt.indexOf(' ');
                         const endIndex = spaceIndex !== -1 ? spaceIndex : afterAt.length;
+                        console.log('Text after @:', afterAt, 'endIndex:', endIndex);
                         
                         // Create new text: replace @ and partial text with @username
                         const beforeAt = currentText.substring(0, atIndex);
                         const afterPartial = currentText.substring(atIndex + endIndex);
-                        const newText = beforeAt + '<mark class="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">@' + username + '</mark> ' + afterPartial;
+                        const newText = beforeAt + '<span class="user-mention" style="background-color: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-weight: 500; border: 1px solid #bfdbfe; display: inline;">@' + username + '</span> ' + afterPartial;
                         
-                        // Replace the entire content with HTML
-                        trixEditor.loadHTML(newText);
+                        console.log('New Trix HTML:', newText);
                         
-                        // Set cursor position after the inserted username
+                                                                                        // Use Trix's native selection and insertion API instead of loadHTML
+                                console.log('Using Trix native insertion API');
+                                
+                                // Set selection to the @ symbol and the partial text after it
+                                const startPosition = atIndex;
+                                const endPosition = atIndex + endIndex;
+                                console.log('Setting Trix selection from', startPosition, 'to', endPosition);
+                                
+                                trixEditor.setSelectedRange([startPosition, endPosition]);
+                                
+                                // Since Trix strips HTML, use native Trix formatting instead
+                                // Get the position before insertion to calculate the correct range
+                                const beforeInsertionRange = trixEditor.getSelectedRange();
+                                const insertionStartPos = beforeInsertionRange[0];
+                                
+                                // First insert the @username text
+                                trixEditor.insertString('@' + username);
+                                console.log('Username inserted:', '@' + username);
+                                
+                                // Calculate the correct range for the inserted text
+                                const mentionText = '@' + username;
+                                const mentionStart = insertionStartPos;
+                                const mentionEnd = insertionStartPos + mentionText.length;
+                                
+                                console.log('Attempting to format range:', mentionStart, 'to', mentionEnd);
+                                console.log('Mention text length:', mentionText.length);
+                                
+                                // Apply Trix formatting to make it stand out
+                                // Select the text we just inserted
+                                trixEditor.setSelectedRange([mentionStart, mentionEnd]);
+                                
+                                // Verify the selection
+                                const verifyRange = trixEditor.getSelectedRange();
+                                console.log('Selected range after setSelectedRange:', verifyRange);
+                                
+                                // Try to apply some basic formatting that Trix supports
+                                let formattingApplied = false;
+                                try {
+                                    // Make the mention bold (this should work in Trix)
+                                    if (typeof trixEditor.activateAttribute === 'function') {
+                                        trixEditor.activateAttribute('bold');
+                                        console.log('Bold formatting applied');
+                                        formattingApplied = true;
+                                    }
+                                    
+                                    // Add a custom attribute that we can style with CSS
+                                    if (typeof trixEditor.setAttribute === 'function') {
+                                        trixEditor.setAttribute('data-mention', 'true');
+                                        console.log('Data attribute set');
+                                        formattingApplied = true;
+                                    }
+                                    
+                                    if (formattingApplied) {
+                                        console.log('Trix formatting applied to mention');
+                                    } else {
+                                        console.log('Trix formatting methods not available');
+                                    }
+                                } catch (error) {
+                                    console.log('Trix formatting error:', error);
+                                }
+                                
+                                // Move cursor to end of mention before inserting space
+                                trixEditor.setSelectedRange([mentionEnd, mentionEnd]);
+                                
+                                // Deactivate bold formatting before inserting space to ensure normal text afterwards
+                                try {
+                                    if (typeof trixEditor.deactivateAttribute === 'function') {
+                                        trixEditor.deactivateAttribute('bold');
+                                        console.log('Bold formatting deactivated for subsequent text');
+                                    }
+                                } catch (error) {
+                                    console.log('Could not deactivate bold formatting:', error);
+                                }
+                                
+                                // Now insert a space after the mention
+                                trixEditor.insertString(' ');
+                                console.log('Space inserted after mention');
+                                
+                                // Get current cursor position (should be after the inserted content)
+                                const currentSelection = trixEditor.getSelectedRange();
+                                console.log('Current Trix selection after insert:', currentSelection);
+                                
+                                // Verify the content was inserted correctly
                         const newTextContent = trixEditor.getDocument().toString();
-                        const mentionEndIndex = newTextContent.indexOf(username, atIndex) + username.length + 1;
+                                console.log('New text content after mention:', newTextContent);
                         
-                        trixEditor.setSelectedRange([mentionEndIndex, mentionEndIndex]);
+                                // Ensure the editor is focused
+                                editor.focus();
+                                console.log('Trix editor focused');
                         
-                        // Trigger input event to update Livewire
-                        editor.dispatchEvent(new Event('input', { bubbles: true }));
+                                console.log('Mention inserted successfully using Trix native API');
                     }
                 } catch (error) {
                     console.error('Error inserting mention in Trix editor:', error);
@@ -653,30 +904,101 @@
                     
                     // Create new text with highlighting
                     const newText = beforeCursor + '@' + username + ' ' + afterPartial;
-                    editor.innerHTML = newText.replace('@' + username, '<mark class="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">@' + username + '</mark>');
+                    editor.innerHTML = newText.replace('@' + username, '<span class="user-mention" style="background-color: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-weight: 500; border: 1px solid #bfdbfe; display: inline;">@' + username + '</span>');
                     
-                    // Set cursor position after the inserted username
+                    // Set cursor position after the inserted username and space
+                    setTimeout(() => {
+                        try {
+                            // Get the new text content after HTML insertion
                     const newTextContent = editor.textContent || '';
-                    const mentionEndIndex = newTextContent.indexOf(username, atIndex) + username.length + 1;
-                    setCursorPosition(editor, mentionEndIndex);
-                    
-                    // Trigger input event to update Livewire
+                            
+                            // Find the position after the inserted username
+                            // Look for the username in the new text content
+                            const usernameIndex = newTextContent.indexOf('@' + username);
+                            if (usernameIndex !== -1) {
+                                // Position cursor after the username and space
+                                const cursorPosition = usernameIndex + username.length + 1 + 1; // @ + username + space
+                                setCursorPosition(editor, cursorPosition);
+                            } else {
+                                // Fallback: position at end of text
+                                setCursorPosition(editor, newTextContent.length);
+                            }
+                            
+                            // Ensure the editor is focused
+                            editor.focus();
+                            
+                            // Don't trigger input event immediately as it resets cursor
+                            // Instead, manually update Livewire with the new content  
+                            setTimeout(() => {
+                                const finalTextContent = editor.textContent || '';
+                                const livewireComponent = Livewire.find(editor.closest('[wire\\:id]')?.getAttribute('wire:id'));
+                                if (livewireComponent) {
+                                    const fieldName = editor.getAttribute('name') || 'composerData.newComment';
+                                    console.log('Updating Livewire field:', fieldName, 'with content:', finalTextContent);
+                                    livewireComponent.set(fieldName, finalTextContent, false);
+                                } else {
+                                    console.log('Livewire component not found, falling back to input event');
                     editor.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                                console.log('Contenteditable - Livewire updated without cursor reset');
+                            }, 10);
+                        } catch (error) {
+                            console.error('Error setting cursor position in contenteditable:', error);
+                            // Still trigger input event even if cursor positioning fails
+                            editor.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
+                    }, 50);
                 }
             }
             
-            // Reset flag after insertion
+            // Reset flag and restore Livewire functionality after insertion
             setTimeout(() => {
+                console.log('🔄 Resetting insertingMention flag after insertion');
                 insertingMention = false;
-            }, 100);
+                
+                // Restore original Livewire update method
+                if (livewireComponent && originalUpdate) {
+                    livewireComponent.update = originalUpdate;
+                    console.log('Livewire update method restored');
+                }
+                
+                // CRITICAL: Also ensure dropdown state is reset after insertion
+                console.log('🔄 Final state after insertion:', {
+                    insertingMention: insertingMention,
+                    dropdownActive: dropdownActive,
+                    atSymbolPosition: atSymbolPosition
+                });
+            }, 500); // Longer delay to ensure cursor positioning is stable
         }
 
         function getCursorPosition(element) {
+            // Handle Trix editor specifically
+            if (element.tagName === 'TRIX-EDITOR' && element.editor) {
+                const selectedRange = element.editor.getSelectedRange();
+                return selectedRange ? selectedRange[0] : element.editor.getDocument().getLength();
+            }
+            
+            // Handle other editors with DOM selection
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
                 const range = selection.getRangeAt(0);
                 if (element.contains(range.startContainer)) {
-                    return range.startOffset;
+                    // Calculate position more accurately for contenteditable
+                    let position = 0;
+                    const walker = document.createTreeWalker(
+                        element,
+                        NodeFilter.SHOW_TEXT,
+                        null,
+                        false
+                    );
+                    
+                    let node;
+                    while (node = walker.nextNode()) {
+                        if (node === range.startContainer) {
+                            return position + range.startOffset;
+                        }
+                        position += node.textContent.length;
+                    }
                 }
             }
             return element.textContent.length;
@@ -686,11 +1008,52 @@
             const range = document.createRange();
             const selection = window.getSelection();
             
-            if (element.firstChild) {
-                range.setStart(element.firstChild, Math.min(position, element.firstChild.length));
+            try {
+                // Find the text node to place cursor in
+                let textNode = null;
+                let currentPos = 0;
+                
+                function findTextNodeAtPosition(node) {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        if (currentPos + node.textContent.length >= position) {
+                            textNode = node;
+                            return true;
+                        }
+                        currentPos += node.textContent.length;
+                    } else {
+                        for (let child of node.childNodes) {
+                            if (findTextNodeAtPosition(child)) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+                
+                findTextNodeAtPosition(element);
+                
+                if (textNode) {
+                    const offset = position - (currentPos - textNode.textContent.length);
+                    const safeOffset = Math.min(Math.max(0, offset), textNode.textContent.length);
+                    range.setStart(textNode, safeOffset);
                 range.collapse(true);
                 selection.removeAllRanges();
                 selection.addRange(range);
+                } else if (element.firstChild) {
+                    // Fallback to end of first child
+                    if (element.firstChild.nodeType === Node.TEXT_NODE) {
+                        range.setStart(element.firstChild, element.firstChild.textContent.length);
+                    } else {
+                        range.setStartAfter(element.firstChild);
+                    }
+                    range.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            } catch (error) {
+                console.error('Error setting cursor position:', error);
+                // Fallback: just focus the element
+                element.focus();
             }
         }
 

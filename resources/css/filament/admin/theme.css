@@ -199,4 +199,61 @@
         cursor: grabbing !important;
         cursor: -webkit-grabbing !important;
     }
+
+    /* User mention highlighting styles - for rich text editors */
+    .user-mention,
+    mark.user-mention {
+        background-color: #dbeafe !important; /* blue-100 */
+        color: #1e40af !important; /* blue-800 */
+        padding: 0.25rem 0.5rem !important;
+        border-radius: 0.375rem !important;
+        font-weight: 500 !important;
+        border: 1px solid #bfdbfe !important; /* blue-200 */
+        text-decoration: none !important;
+        display: inline !important;
+    }
+
+    /* Dark mode user mention styles */
+    .dark .user-mention,
+    .dark mark.user-mention {
+        background-color: #1e3a8a !important; /* blue-900 */
+        color: #bfdbfe !important; /* blue-200 */
+        border-color: #1d4ed8 !important; /* blue-700 */
+    }
+
+    /* Ensure mentions work in Trix editor specifically */
+    trix-editor .user-mention,
+    trix-editor mark.user-mention {
+        background-color: #dbeafe !important;
+        color: #1e40af !important;
+        padding: 0.25rem 0.5rem !important;
+        border-radius: 0.375rem !important;
+        font-weight: 500 !important;
+        border: 1px solid #bfdbfe !important;
+        text-decoration: none !important;
+        display: inline !important;
+    }
+
+    .dark trix-editor .user-mention,
+    .dark trix-editor mark.user-mention {
+        background-color: #1e3a8a !important;
+        color: #bfdbfe !important;
+        border-color: #1d4ed8 !important;
+    }
+
+    /* Trix editor mention styling using data attributes */
+    trix-editor [data-mention="true"] {
+        background-color: #dbeafe !important;
+        color: #1e40af !important;
+        font-weight: 600 !important;
+        border-radius: 0.25rem !important;
+        padding: 0.125rem 0.25rem !important;
+        border: 1px solid #bfdbfe !important;
+    }
+
+    .dark trix-editor [data-mention="true"] {
+        background-color: #1e3a8a !important;
+        color: #bfdbfe !important;
+        border-color: #1d4ed8 !important;
+    }
 }
