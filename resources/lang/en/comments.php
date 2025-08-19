@@ -7,7 +7,7 @@ return [
   'composer' => [
     'send' => 'Send',
     'saving' => 'Saving...',
-    'placeholder' => 'Write a comment here.',
+    'placeholder' => 'Write a comment here. Use @ to mention users.',
     'edit_placeholder' => 'Edit comment...',
   ],
   'buttons' => [
@@ -50,6 +50,10 @@ return [
     'not_updated_title' => 'Comment not updated',
     'edited_empty' => 'Edited comment cannot be empty.',
   ],
+  'mentions' => [
+    'no_users_found' => 'No users found',
+    'searching' => 'Searching users...',
+  ],
   'js' => [
     'textarea_missing' => 'Textarea not found',
     'enter_comment' => 'Please enter a comment',
@@ -63,5 +67,3 @@ return [
     'error_deleting_comment' => 'Error deleting comment',
   ],
 ];
-
-

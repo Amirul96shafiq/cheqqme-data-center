@@ -7,7 +7,7 @@ return [
   'composer' => [
     'send' => 'Hantar',
     'saving' => 'Menyimpan...',
-    'placeholder' => 'Tulis komen di sini.',
+    'placeholder' => 'Tulis komen di sini. Gunakan @ untuk menyebut pengguna.',
     'edit_placeholder' => 'Sunting komen...',
   ],
   'buttons' => [
@@ -49,6 +49,10 @@ return [
     'deleted_title' => 'Komen dipadam',
     'not_updated_title' => 'Komen tidak dikemas kini',
     'edited_empty' => 'Komen yang disunting tidak boleh kosong.',
+  ],
+  'mentions' => [
+    'no_users_found' => 'Tiada pengguna ditemui',
+    'searching' => 'Mencari pengguna...',
   ],
   'js' => [
     'textarea_missing' => 'Medan teks tidak ditemui',

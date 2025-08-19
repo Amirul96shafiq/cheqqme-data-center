@@ -208,4 +208,329 @@
                         }
                     });
         </script>
+
+    <!-- User Mention Dropdown Component -->
+    <livewire:user-mention-dropdown />
+
+    <!-- Mention Functionality JavaScript -->
+    <script>
+        // Wait for Livewire to be available
+        function waitForLivewire() {
+            if (typeof Livewire !== 'undefined') {
+                setTimeout(initializeMentions, 1000);
+            } else {
+                setTimeout(waitForLivewire, 100);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            waitForLivewire();
+            
+            // Re-initialize after Livewire updates
+            document.addEventListener('livewire:update', function() {
+                setTimeout(initializeMentions, 500);
+            });
+            
+            document.addEventListener('livewire:navigated', function() {
+                setTimeout(initializeMentions, 500);
+            });
+        });
+
+        function initializeMentions() {
+            let editor = findEditor();
+            
+            if (editor) {
+                initializeEditor(editor);
+                return;
+            }
+            
+            waitForEditor();
+        }
+
+        function findEditor() {
+            let editor = null;
+            
+            // Look for Trix editor in minimal-comment-editor class
+            const minimalCommentEditor = document.querySelector('.minimal-comment-editor');
+            if (minimalCommentEditor) {
+                editor = minimalCommentEditor.querySelector('trix-editor');
+                if (editor) return editor;
+                
+                editor = minimalCommentEditor.querySelector('.ProseMirror, [contenteditable="true"], [role="textbox"]');
+                if (editor) return editor;
+            }
+            
+            // Look for Trix editor in comment composer
+            const commentComposer = document.querySelector('[data-composer]');
+            if (commentComposer) {
+                const richEditor = commentComposer.querySelector('.fi-fo-rich-editor, .fi-fo-rich-editor-container');
+                if (richEditor) {
+                    editor = richEditor.querySelector('trix-editor');
+                    if (editor) return editor;
+                    
+                    editor = richEditor.querySelector('.ProseMirror, [contenteditable="true"], [role="textbox"]');
+                    if (editor) return editor;
+                }
+            }
+            
+            return null;
+        }
+
+        function waitForEditor() {
+            let attempts = 0;
+            const maxAttempts = 100;
+            
+            function checkForEditor() {
+                attempts++;
+                
+                const editor = findEditor();
+                if (editor) {
+                    initializeEditor(editor);
+                    return;
+                }
+                
+                if (attempts < maxAttempts) {
+                    setTimeout(checkForEditor, 100);
+                }
+            }
+            
+            setTimeout(checkForEditor, 100);
+        }
+
+        function initializeEditor(editor) {
+            if (editor.dataset.mentionsInitialized) {
+                return;
+            }
+            
+            editor.dataset.mentionsInitialized = 'true';
+            
+            // Add event listeners
+            editor.addEventListener('input', function(e) {
+                handleMentionInput(e, editor);
+            });
+            
+            editor.addEventListener('keyup', function(e) {
+                if (e.key === '@') {
+                    setTimeout(() => {
+                        handleMentionInput(e, editor);
+                    }, 10);
+                }
+            });
+            
+            editor.addEventListener('keydown', function(e) {
+                handleMentionKeydown(e, editor);
+            });
+            
+            // Listen for user selection from dropdown
+            Livewire.on('userSelected', function(data) {
+                if (data.inputId === 'composerData.newComment' || data.inputId === editor.id) {
+                    insertMention(editor, data.username);
+                } else {
+                    insertMention(editor, data.username);
+                }
+            });
+            
+            // Listen for hideMentionDropdown event
+            Livewire.on('hideMentionDropdown', function() {
+                // Dropdown hidden
+            });
+        }
+
+        // Add a flag to prevent mention detection when inserting
+        let insertingMention = false;
+
+        function handleMentionInput(e, editor) {
+            if (insertingMention) {
+                return;
+            }
+            
+            const text = editor.textContent || '';
+            const cursorPosition = getCursorPosition(editor);
+            const beforeCursor = text.substring(0, cursorPosition);
+            
+            // Check for @ symbol
+            const atMatch = beforeCursor.match(/@(\w*)$/);
+            if (atMatch) {
+                const searchTerm = atMatch[1];
+                
+                // Get cursor position for dropdown positioning
+                const rect = getCaretCoordinates(editor, cursorPosition);
+                
+                // Show mention dropdown
+                Livewire.dispatch('showMentionDropdown', {
+                    inputId: 'composerData.newComment',
+                    searchTerm: searchTerm,
+                    x: rect.left,
+                    y: rect.top
+                });
+            } else {
+                // Hide mention dropdown if no @ symbol
+                Livewire.dispatch('hideMentionDropdown');
+            }
+        }
+
+        function handleMentionKeydown(e, editor) {
+            // Handle Escape to close dropdown
+            if (e.key === 'Escape') {
+                Livewire.dispatch('hideMentionDropdown');
+            }
+        }
+
+        function insertMention(editor, username) {
+            if (!username || username === 'undefined') {
+                return;
+            }
+            
+            insertingMention = true;
+            
+            // For Trix editor, use the Trix API to insert text
+            if (editor.tagName === 'TRIX-EDITOR') {
+                try {
+                    const trixEditor = editor.editor;
+                    
+                    // Get current text content
+                    const currentText = trixEditor.getDocument().toString();
+                    
+                    // Find the @ symbol in the current text
+                    const atIndex = currentText.lastIndexOf('@');
+                    
+                    if (atIndex !== -1) {
+                        // Find where the @ symbol ends (at space or end of text)
+                        const afterAt = currentText.substring(atIndex);
+                        const spaceIndex = afterAt.indexOf(' ');
+                        const endIndex = spaceIndex !== -1 ? spaceIndex : afterAt.length;
+                        
+                        // Create new text: replace @ and partial text with @username
+                        const beforeAt = currentText.substring(0, atIndex);
+                        const afterPartial = currentText.substring(atIndex + endIndex);
+                        const newText = beforeAt + '<mark class="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">@' + username + '</mark> ' + afterPartial;
+                        
+                        // Replace the entire content with HTML
+                        trixEditor.loadHTML(newText);
+                        
+                        // Set cursor position after the inserted username
+                        const newTextContent = trixEditor.getDocument().toString();
+                        const mentionEndIndex = newTextContent.indexOf(username, atIndex) + username.length + 1;
+                        
+                        trixEditor.setSelectedRange([mentionEndIndex, mentionEndIndex]);
+                        
+                        // Trigger input event to update Livewire
+                        editor.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                } catch (error) {
+                    console.error('Error inserting mention in Trix editor:', error);
+                }
+            } else {
+                // Fallback for contenteditable elements
+                const text = editor.textContent || '';
+                const atIndex = text.lastIndexOf('@');
+                
+                if (atIndex !== -1) {
+                    const beforeCursor = text.substring(0, atIndex);
+                    const afterCursor = text.substring(atIndex);
+                    
+                    // Find where the @ symbol ends (at space or end of text)
+                    const spaceIndex = afterCursor.indexOf(' ');
+                    const endIndex = spaceIndex !== -1 ? spaceIndex : afterCursor.length;
+                    const afterPartial = afterCursor.substring(endIndex);
+                    
+                    // Create new text with highlighting
+                    const newText = beforeCursor + '@' + username + ' ' + afterPartial;
+                    editor.innerHTML = newText.replace('@' + username, '<mark class="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">@' + username + '</mark>');
+                    
+                    // Set cursor position after the inserted username
+                    const newTextContent = editor.textContent || '';
+                    const mentionEndIndex = newTextContent.indexOf(username, atIndex) + username.length + 1;
+                    setCursorPosition(editor, mentionEndIndex);
+                    
+                    // Trigger input event to update Livewire
+                    editor.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }
+            
+            // Reset flag after insertion
+            setTimeout(() => {
+                insertingMention = false;
+            }, 100);
+        }
+
+        function getCursorPosition(element) {
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                if (element.contains(range.startContainer)) {
+                    return range.startOffset;
+                }
+            }
+            return element.textContent.length;
+        }
+
+        function setCursorPosition(element, position) {
+            const range = document.createRange();
+            const selection = window.getSelection();
+            
+            if (element.firstChild) {
+                range.setStart(element.firstChild, Math.min(position, element.firstChild.length));
+                range.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
+
+        function getCaretCoordinates(element, position) {
+            // For Trix editor, we need to get the actual cursor position
+            if (element.tagName === 'TRIX-EDITOR') {
+                try {
+                    // Get the current selection/cursor position in Trix
+                    const selection = element.editor.getSelectedRange();
+                    if (selection && selection.length > 0) {
+                        // Get the position of the current selection
+                        const rect = element.editor.getClientRectAtPosition(selection[0]);
+                        if (rect) {
+                            return {
+                                left: rect.left,
+                                top: rect.bottom
+                            };
+                        }
+                    }
+                } catch (error) {
+                    // Fall through to element position
+                }
+            }
+            
+            // For contenteditable elements, try to get cursor position
+            if (element.isContentEditable) {
+                try {
+                    const range = document.createRange();
+                    const selection = window.getSelection();
+                    
+                    if (element.firstChild) {
+                        range.setStart(element.firstChild, Math.min(position, element.firstChild.length));
+                        range.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                        
+                        const rect = range.getBoundingClientRect();
+                        return {
+                            left: rect.left,
+                            top: rect.bottom
+                        };
+                    }
+                } catch (error) {
+                    // Fall through to element position
+                }
+            }
+            
+            // Fallback to element position
+            try {
+                const rect = element.getBoundingClientRect();
+                return {
+                    left: rect.left,
+                    top: rect.bottom
+                };
+            } catch (error) {
+                return { left: 0, top: 0 };
+            }
+        }
+    </script>
 </div>

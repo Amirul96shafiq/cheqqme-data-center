@@ -2,16 +2,17 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
+use App\Models\Comment;
+use App\Models\Task;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Form;
-use App\Models\Task;
-use App\Models\Comment;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Filament\Notifications\Notification;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Str;
+use Livewire\Component;
+
 // (Filament Actions removed for nested component stability)
 
 class TaskComments extends Component implements HasForms
@@ -20,14 +21,21 @@ class TaskComments extends Component implements HasForms
   use InteractsWithForms;
 
   public Task $task;
+
   public string $newComment = '';
+
   // Separate form state arrays for Filament multi-form usage
   public ?array $composerData = [];
+
   public ?array $editData = [];
+
   // Editing state
   public ?int $editingId = null;
+
   public string $editingText = '';
+
   public int $visibleCount = 5; // number of comments to display initially / currently
+
   public ?int $confirmingDeleteId = null;
 
   protected $rules = [
@@ -41,6 +49,7 @@ class TaskComments extends Component implements HasForms
 
   public function mount(int $taskId): void
   {
+    \Log::info('TaskComments component mounting for task ID: ' . $taskId);
     $this->task = Task::findOrFail($taskId);
     // Ensure base form array keys exist before Filament/Livewire entangle
     $this->composerData = $this->composerData ?? [];
@@ -69,11 +78,20 @@ class TaskComments extends Component implements HasForms
     if ($textOnly === '') {
       return;
     }
+
+    // Extract mentions from comment text
+    $mentions = Comment::extractMentions($sanitized);
+
     $comment = Comment::create([
       'task_id' => $this->task->id,
       'user_id' => auth()->id(),
       'comment' => $sanitized,
+      'mentions' => $mentions,
     ]);
+
+    // Process mentions and send notifications
+    $comment->processMentions();
+
     Notification::make()
       ->title(__('comments.notifications.added_title'))
       ->body(Str::limit($textOnly, 120))
@@ -93,8 +111,9 @@ class TaskComments extends Component implements HasForms
   public function startEdit(int $commentId): void
   {
     $comment = $this->task->comments()->whereNull('deleted_at')->findOrFail($commentId);
-    if ($comment->user_id !== auth()->id())
+    if ($comment->user_id !== auth()->id()) {
       return;
+    }
     $this->editingId = $comment->id;
     $this->editingText = $comment->comment;
     // Ensure underlying form state array has key
@@ -113,29 +132,44 @@ class TaskComments extends Component implements HasForms
 
   public function saveEdit(): void
   {
-    if (!$this->editingId)
+    if (!$this->editingId) {
       return;
+    }
     if (method_exists($this, 'editForm')) {
       $state = $this->editForm->getState();
       $this->editingText = $this->normalizeEditorInput($state['editingText'] ?? $this->editingText);
     }
     $this->validateOnly('editingText');
     $comment = $this->task->comments()->findOrFail($this->editingId);
-    if ($comment->user_id !== auth()->id())
+    if ($comment->user_id !== auth()->id()) {
       return;
+    }
     $original = $comment->comment;
     $sanitized = $this->sanitizeHtml($this->editingText);
     $plain = trim(strip_tags($sanitized));
     if ($plain === '') {
       Notification::make()->title(__('comments.notifications.not_updated_title'))->body(__('comments.notifications.edited_empty'))->danger()->send();
+
       return;
     }
     if ($sanitized === $original) {
       // No change; just exit without notification spam
       $this->cancelEdit();
+
       return;
     }
-    $comment->update(['comment' => $sanitized]);
+
+    // Extract mentions from updated comment text
+    $mentions = Comment::extractMentions($sanitized);
+
+    $comment->update([
+      'comment' => $sanitized,
+      'mentions' => $mentions,
+    ]);
+
+    // Process mentions and send notifications for new mentions
+    $comment->processMentions();
+
     Notification::make()
       ->title(__('comments.notifications.updated_title'))
       ->body(Str::limit($plain, 120))
@@ -187,16 +221,18 @@ class TaskComments extends Component implements HasForms
 
   public function confirmDelete(int $commentId): void
   {
-    $comment = $this->task->comments()->findOrFail($commentId);
-    if ($comment->user_id !== auth()->id())
+    $comment = $this->task->comments()->whereNull('deleted_at')->findOrFail($commentId);
+    if ($comment->user_id !== auth()->id()) {
       return;
+    }
     $this->confirmingDeleteId = $commentId;
   }
 
   public function performDelete(): void
   {
-    if (!$this->confirmingDeleteId)
+    if (!$this->confirmingDeleteId) {
       return;
+    }
     $this->deleteComment($this->confirmingDeleteId);
     $this->confirmingDeleteId = null;
   }
@@ -225,8 +261,9 @@ class TaskComments extends Component implements HasForms
   {
     $total = $this->task->comments()->whereNull('deleted_at')->count();
     $remaining = $total - $this->visibleCount;
-    if ($remaining <= 0)
+    if ($remaining <= 0) {
       return;
+    }
     $this->visibleCount += min(5, $remaining);
     $this->dispatch('comments-show-more');
   }
@@ -241,6 +278,7 @@ class TaskComments extends Component implements HasForms
         $this->newComment = '';
       }
     }
+
     return view('livewire.task-comments');
   }
 
@@ -276,10 +314,15 @@ class TaskComments extends Component implements HasForms
             if (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') {
               return '';
             }
+
             return $state;
           })
           ->mutateDehydratedStateUsing(function (?string $state) {
-            return (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') ? '' : $state;
+            if (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') {
+              return '';
+            }
+
+            return $state;
           })
           ->columnSpanFull(),
       ])->statePath('composerData'),
@@ -294,6 +337,7 @@ class TaskComments extends Component implements HasForms
             if (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') {
               return '';
             }
+
             return $state;
           })
           ->columnSpanFull(),
@@ -329,6 +373,7 @@ class TaskComments extends Component implements HasForms
           $href = 'https://' . ltrim($href); // force https
         }
         $safe = htmlspecialchars($href, ENT_QUOTES, 'UTF-8');
+
         return '<a href="' . $safe . '" target="_blank" rel="nofollow noopener">';
       }, $html);
     }
@@ -352,6 +397,7 @@ class TaskComments extends Component implements HasForms
     $html = preg_replace('/(<br\s*\/?>\s*){3,}/i', '<br><br>', $html);
     // Trim whitespace
     $html = trim($html);
+
     return $html;
   }
 
@@ -363,6 +409,7 @@ class TaskComments extends Component implements HasForms
     if ($lower === 'undefined' || $lower === 'null' || $lower === '"undefined"') {
       return '';
     }
+
     return $value;
   }
 }
