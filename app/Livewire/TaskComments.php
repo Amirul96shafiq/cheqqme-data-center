@@ -12,6 +12,7 @@ use Filament\Notifications\Notification;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Str;
 use Livewire\Component;
+
 class TaskComments extends Component implements HasForms
 {
   use AuthorizesRequests;
@@ -71,14 +72,18 @@ class TaskComments extends Component implements HasForms
       $this->newComment = $this->normalizeEditorInput($state['newComment'] ?? $this->newComment);
     }
     $this->validateOnly('newComment');
-    $sanitized = $this->sanitizeHtml($this->newComment);
-    $textOnly = trim(strip_tags($sanitized));
-    if ($textOnly === '') {
+
+    // Check for whitespace issues BEFORE sanitization
+    $preTextOnly = trim(strip_tags($this->newComment));
+    if ($preTextOnly === '') {
       return;
     }
 
+    // Get the original text content without trimming to check for leading/trailing whitespace
+    $originalTextOnly = strip_tags($this->newComment);
+
     // Additional check: ensure comment doesn't start with whitespace
-    if (preg_match('/^\s/', $textOnly)) {
+    if (preg_match('/^\s/', $originalTextOnly)) {
       Notification::make()
         ->title(__('comments.notifications.error_title', ['title' => 'Invalid Comment']))
         ->body(__('comments.notifications.starts_with_space', ['message' => 'Comment cannot start with a space or newline']))
@@ -87,6 +92,20 @@ class TaskComments extends Component implements HasForms
 
       return;
     }
+
+    // Additional check: ensure comment doesn't end with whitespace
+    if (preg_match('/\s$/', $originalTextOnly)) {
+      Notification::make()
+        ->title(__('comments.notifications.error_title', ['title' => 'Invalid Comment']))
+        ->body(__('comments.notifications.ends_with_space', ['message' => 'Comment cannot end with a space or newline']))
+        ->danger()
+        ->send();
+
+      return;
+    }
+
+    $sanitized = $this->sanitizeHtml($this->newComment);
+    $textOnly = trim(strip_tags($sanitized));
 
     // Extract mentions from comment text
     $mentions = Comment::extractMentions($sanitized);
@@ -159,16 +178,20 @@ class TaskComments extends Component implements HasForms
       return;
     }
     $original = $comment->comment;
-    $sanitized = $this->sanitizeHtml($this->editingText);
-    $plain = trim(strip_tags($sanitized));
-    if ($plain === '') {
+
+    // Check for whitespace issues BEFORE sanitization
+    $preTextOnly = trim(strip_tags($this->editingText));
+    if ($preTextOnly === '') {
       Notification::make()->title(__('comments.notifications.not_updated_title'))->body(__('comments.notifications.edited_empty'))->danger()->send();
 
       return;
     }
 
+    // Get the original text content without trimming to check for leading/trailing whitespace
+    $originalTextOnly = strip_tags($this->editingText);
+
     // Additional check: ensure comment doesn't start with whitespace
-    if (preg_match('/^\s/', $plain)) {
+    if (preg_match('/^\s/', $originalTextOnly)) {
       Notification::make()
         ->title(__('comments.notifications.error_title', ['title' => 'Invalid Comment']))
         ->body(__('comments.notifications.starts_with_space', ['message' => 'Comment cannot start with a space or newline']))
@@ -177,6 +200,20 @@ class TaskComments extends Component implements HasForms
 
       return;
     }
+
+    // Additional check: ensure comment doesn't end with whitespace
+    if (preg_match('/\s$/', $originalTextOnly)) {
+      Notification::make()
+        ->title(__('comments.notifications.error_title', ['title' => 'Invalid Comment']))
+        ->body(__('comments.notifications.ends_with_space', ['message' => 'Comment cannot end with a space or newline']))
+        ->danger()
+        ->send();
+
+      return;
+    }
+
+    $sanitized = $this->sanitizeHtml($this->editingText);
+    $plain = trim(strip_tags($sanitized));
     if ($sanitized === $original) {
       // No change; just exit without notification spam
       $this->cancelEdit();
@@ -381,6 +418,7 @@ class TaskComments extends Component implements HasForms
       ])->statePath('editData'),
     ];
   }
+
   // Sanitize the HTML
   private function sanitizeHtml(?string $html): string
   {
@@ -453,6 +491,7 @@ class TaskComments extends Component implements HasForms
 
     return $html;
   }
+
   // Normalize the editor input
   private function normalizeEditorInput(?string $value): string
   {

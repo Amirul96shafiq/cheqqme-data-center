@@ -12,6 +12,7 @@ class UserMentionDropdownTest extends TestCase
 {
     use RefreshDatabase;
 
+    // Test component can render
     public function test_component_can_render()
     {
         $component = Livewire::test(UserMentionDropdown::class);
@@ -19,6 +20,7 @@ class UserMentionDropdownTest extends TestCase
         $component->assertStatus(200);
     }
 
+    // Test show dropdown sets correct properties
     public function test_show_dropdown_sets_correct_properties()
     {
         $component = Livewire::test(UserMentionDropdown::class);
@@ -33,6 +35,7 @@ class UserMentionDropdownTest extends TestCase
             ->assertSet('selectedIndex', 0);
     }
 
+    // Test hide dropdown resets properties
     public function test_hide_dropdown_resets_properties()
     {
         $component = Livewire::test(UserMentionDropdown::class);
@@ -48,6 +51,7 @@ class UserMentionDropdownTest extends TestCase
             ->assertSet('users', []);
     }
 
+    // Test search users finds matching users
     public function test_search_users_finds_matching_users()
     {
         // Create test users
@@ -65,6 +69,7 @@ class UserMentionDropdownTest extends TestCase
         });
     }
 
+    // Test updated search maintains static position
     public function test_updated_search_maintains_static_position()
     {
         $component = Livewire::test(UserMentionDropdown::class);
@@ -81,6 +86,7 @@ class UserMentionDropdownTest extends TestCase
             ->assertSet('dropdownY', 200);
     }
 
+    // Test select user dispatches event and hides dropdown
     public function test_select_user_dispatches_event_and_hides_dropdown()
     {
         // Create a test user
@@ -108,6 +114,7 @@ class UserMentionDropdownTest extends TestCase
         $component->assertSet('showDropdown', false);
     }
 
+    // Test search users with empty search returns all users
     public function test_search_users_with_empty_search_returns_all_users()
     {
         // Create test users
@@ -125,6 +132,7 @@ class UserMentionDropdownTest extends TestCase
         });
     }
 
+    // Test search users with partial match
     public function test_search_users_with_partial_match()
     {
         // Create test users
@@ -144,6 +152,7 @@ class UserMentionDropdownTest extends TestCase
         });
     }
 
+    // Test navigation up wraps to bottom
     public function test_navigation_up_wraps_to_bottom()
     {
         // Create test users
@@ -167,6 +176,7 @@ class UserMentionDropdownTest extends TestCase
         $component->assertSet('selectedIndex', 2);
     }
 
+    // Test navigation down wraps to top
     public function test_navigation_down_wraps_to_top()
     {
         // Create test users
@@ -190,6 +200,7 @@ class UserMentionDropdownTest extends TestCase
         $component->assertSet('selectedIndex', 0);
     }
 
+    // Test select current user selects highlighted user
     public function test_select_current_user_selects_highlighted_user()
     {
         // Create a test user

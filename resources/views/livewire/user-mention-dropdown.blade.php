@@ -1,4 +1,6 @@
+<!-- User Mention Dropdown -->
 <div>
+    <!-- Show dropdown if it exists and has users -->
     @if($showDropdown && count($users) > 0)
         <!-- Backdrop for click outside -->
         <div 

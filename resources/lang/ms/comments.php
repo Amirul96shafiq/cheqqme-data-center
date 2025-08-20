@@ -51,6 +51,7 @@ return [
     'edited_empty' => 'Komen yang disunting tidak boleh kosong.',
     'error_title' => 'Ralat: :title',
     'starts_with_space' => 'Komen tidak boleh bermula dengan ruang atau baris baru. Sila buang sebarang ruang di hadapan dan cuba lagi.',
+    'ends_with_space' => 'Komen tidak boleh berakhir dengan ruang atau baris baru. Sila buang sebarang ruang di belakang dan cuba lagi.',
   ],
   'mentions' => [
     'no_users_found' => 'Tiada pengguna ditemui',

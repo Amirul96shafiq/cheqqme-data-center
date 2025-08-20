@@ -160,11 +160,15 @@ class CommentMentionTest extends TestCase
         // Test comment that starts with a space
         $commentText = ' This comment starts with a space';
 
-        // The sanitizeHtml method should remove leading whitespace
+        // Check the original text content (before sanitization) for leading whitespace
+        $originalTextOnly = strip_tags($commentText);
+
+        // Should start with whitespace (this is what we want to detect and prevent)
+        $this->assertMatchesRegularExpression('/^\s/', $originalTextOnly);
+
+        // After sanitization, whitespace should be removed
         $sanitized = $this->getSanitizedHtml($commentText);
         $textOnly = trim(strip_tags($sanitized));
-
-        // Should not start with whitespace
         $this->assertDoesNotMatchRegularExpression('/^\s/', $textOnly);
         $this->assertEquals('This comment starts with a space', $textOnly);
     }
@@ -184,11 +188,15 @@ class CommentMentionTest extends TestCase
         // Test comment that starts with a newline
         $commentText = "\nThis comment starts with a newline";
 
-        // The sanitizeHtml method should remove leading whitespace
+        // Check the original text content (before sanitization) for leading whitespace
+        $originalTextOnly = strip_tags($commentText);
+
+        // Should start with whitespace (this is what we want to detect and prevent)
+        $this->assertMatchesRegularExpression('/^\s/', $originalTextOnly);
+
+        // After sanitization, whitespace should be removed
         $sanitized = $this->getSanitizedHtml($commentText);
         $textOnly = trim(strip_tags($sanitized));
-
-        // Should not start with whitespace
         $this->assertDoesNotMatchRegularExpression('/^\s/', $textOnly);
         $this->assertEquals('This comment starts with a newline', $textOnly);
     }
@@ -208,13 +216,200 @@ class CommentMentionTest extends TestCase
         // Test comment that starts with multiple spaces and tabs
         $commentText = "   \t  This comment starts with multiple whitespace characters";
 
-        // The sanitizeHtml method should remove leading whitespace
+        // Check the original text content (before sanitization) for leading whitespace
+        $originalTextOnly = strip_tags($commentText);
+
+        // Should start with whitespace (this is what we want to detect and prevent)
+        $this->assertMatchesRegularExpression('/^\s/', $originalTextOnly);
+
+        // After sanitization, whitespace should be removed
         $sanitized = $this->getSanitizedHtml($commentText);
         $textOnly = trim(strip_tags($sanitized));
-
-        // Should not start with whitespace
         $this->assertDoesNotMatchRegularExpression('/^\s/', $textOnly);
         $this->assertEquals('This comment starts with multiple whitespace characters', $textOnly);
+    }
+
+    // Test comment cannot end with whitespace
+    public function test_comment_cannot_end_with_whitespace()
+    {
+        $user = User::factory()->create();
+
+        // Create a simple task without complex relationships
+        $task = Task::create([
+            'title' => 'Test Task',
+            'description' => 'Test Description',
+            'status' => 'todo',
+        ]);
+
+        // Test comment that ends with a space
+        $commentText = 'This comment ends with a space ';
+
+        // Check the original text content (before sanitization) for trailing whitespace
+        $originalTextOnly = strip_tags($commentText);
+
+        // Should end with whitespace (this is what we want to detect and prevent)
+        $this->assertMatchesRegularExpression('/\s$/', $originalTextOnly);
+
+        // After sanitization, whitespace should be removed
+        $sanitized = $this->getSanitizedHtml($commentText);
+        $textOnly = trim(strip_tags($sanitized));
+        $this->assertDoesNotMatchRegularExpression('/\s$/', $textOnly);
+        $this->assertEquals('This comment ends with a space', $textOnly);
+    }
+
+    // Test comment cannot end with newline
+    public function test_comment_cannot_end_with_newline()
+    {
+        $user = User::factory()->create();
+
+        // Create a simple task without complex relationships
+        $task = Task::create([
+            'title' => 'Test Task',
+            'description' => 'Test Description',
+            'status' => 'todo',
+        ]);
+
+        // Test comment that ends with a newline
+        $commentText = "This comment ends with a newline\n";
+
+        // Check the original text content (before sanitization) for trailing whitespace
+        $originalTextOnly = strip_tags($commentText);
+
+        // Should end with whitespace (this is what we want to detect and prevent)
+        $this->assertMatchesRegularExpression('/\s$/', $originalTextOnly);
+
+        // After sanitization, whitespace should be removed
+        $sanitized = $this->getSanitizedHtml($commentText);
+        $textOnly = trim(strip_tags($sanitized));
+        $this->assertDoesNotMatchRegularExpression('/\s$/', $textOnly);
+        $this->assertEquals('This comment ends with a newline', $textOnly);
+    }
+
+    // Test comment cannot end with multiple whitespace
+    public function test_comment_cannot_end_with_multiple_whitespace()
+    {
+        $user = User::factory()->create();
+
+        // Create a simple task without complex relationships
+        $task = Task::create([
+            'title' => 'Test Task',
+            'description' => 'Test Description',
+            'status' => 'todo',
+        ]);
+
+        // Test comment that ends with multiple spaces and tabs
+        $commentText = "This comment ends with multiple whitespace characters   \t  ";
+
+        // Check the original text content (before sanitization) for trailing whitespace
+        $originalTextOnly = strip_tags($commentText);
+
+        // Should end with whitespace (this is what we want to detect and prevent)
+        $this->assertMatchesRegularExpression('/\s$/', $originalTextOnly);
+
+        // After sanitization, whitespace should be removed
+        $sanitized = $this->getSanitizedHtml($commentText);
+        $textOnly = trim(strip_tags($sanitized));
+        $this->assertDoesNotMatchRegularExpression('/\s$/', $textOnly);
+        $this->assertEquals('This comment ends with multiple whitespace characters', $textOnly);
+    }
+
+    // Test that addComment method actually rejects whitespace comments
+    public function test_add_comment_rejects_leading_whitespace()
+    {
+        $user = User::factory()->create();
+        $task = Task::create([
+            'title' => 'Test Task',
+            'description' => 'Test Description',
+            'status' => 'todo',
+        ]);
+
+        $this->actingAs($user);
+
+        // Create TaskComments component instance
+        $component = new \App\Livewire\TaskComments;
+        $component->mount($task->id);
+
+        // Set a comment with leading whitespace
+        $component->newComment = ' This comment starts with a space';
+
+        // Count comments before
+        $commentsBefore = Comment::count();
+
+        // Try to add the comment
+        $component->addComment();
+
+        // Count comments after - should be the same (no comment added)
+        $commentsAfter = Comment::count();
+
+        $this->assertEquals($commentsBefore, $commentsAfter, 'Comment with leading whitespace should be rejected');
+    }
+
+    // Test that addComment method actually rejects trailing whitespace comments
+    public function test_add_comment_rejects_trailing_whitespace()
+    {
+        $user = User::factory()->create();
+        $task = Task::create([
+            'title' => 'Test Task',
+            'description' => 'Test Description',
+            'status' => 'todo',
+        ]);
+
+        $this->actingAs($user);
+
+        // Create TaskComments component instance
+        $component = new \App\Livewire\TaskComments;
+        $component->mount($task->id);
+
+        // Set a comment with trailing whitespace
+        $component->newComment = 'This comment ends with a space ';
+
+        // Count comments before
+        $commentsBefore = Comment::count();
+
+        // Try to add the comment
+        $component->addComment();
+
+        // Count comments after - should be the same (no comment added)
+        $commentsAfter = Comment::count();
+
+        $this->assertEquals($commentsBefore, $commentsAfter, 'Comment with trailing whitespace should be rejected');
+    }
+
+    // Test that addComment method accepts valid comments without whitespace
+    public function test_add_comment_accepts_valid_comment()
+    {
+        $user = User::factory()->create();
+        $task = Task::create([
+            'title' => 'Test Task',
+            'description' => 'Test Description',
+            'status' => 'todo',
+        ]);
+
+        $this->actingAs($user);
+
+        // Create TaskComments component instance
+        $component = new \App\Livewire\TaskComments;
+        $component->mount($task->id);
+
+        // Set a valid comment without leading/trailing whitespace
+        $component->newComment = 'This is a valid comment';
+
+        // Count comments before
+        $commentsBefore = Comment::count();
+
+        // Try to add the comment
+        $component->addComment();
+
+        // Count comments after - should be one more
+        $commentsAfter = Comment::count();
+
+        $this->assertEquals($commentsBefore + 1, $commentsAfter, 'Valid comment should be accepted');
+
+        // Check the comment was saved correctly
+        $savedComment = Comment::latest()->first();
+        $this->assertNotNull($savedComment);
+        $this->assertEquals($task->id, $savedComment->task_id);
+        $this->assertEquals($user->id, $savedComment->user_id);
     }
 
     /**
