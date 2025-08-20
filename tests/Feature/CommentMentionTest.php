@@ -13,6 +13,7 @@ class CommentMentionTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
+    // Test can extract mentions from comment text
     public function test_can_extract_mentions_from_comment_text()
     {
         // Create test users
@@ -31,6 +32,7 @@ class CommentMentionTest extends TestCase
         $this->assertContains($user3->id, $mentions);
     }
 
+    // Test can create a comment with mentions
     public function test_can_create_comment_with_mentions()
     {
         $user = User::factory()->create();
@@ -61,6 +63,7 @@ class CommentMentionTest extends TestCase
         $this->assertEquals($mentionedUser->id, $comment->mentioned_users->first()->id);
     }
 
+    // Test mentions are stored as JSON
     public function test_mentions_are_stored_as_json()
     {
         $user = User::factory()->create();
@@ -85,6 +88,7 @@ class CommentMentionTest extends TestCase
         $this->assertEquals($mentions, $comment->mentions);
     }
 
+    // Test empty mentions are handled correctly
     public function test_empty_mentions_are_handled_correctly()
     {
         $user = User::factory()->create();
@@ -107,6 +111,7 @@ class CommentMentionTest extends TestCase
         $this->assertNull($comment->mentions);
     }
 
+    // Test comment without mentions has empty mentions array
     public function test_comment_without_mentions_has_empty_mentions_array()
     {
         $user = User::factory()->create();
@@ -125,6 +130,7 @@ class CommentMentionTest extends TestCase
         $this->assertEmpty($mentions);
     }
 
+    // Test mention extraction ignores invalid usernames
     public function test_mention_extraction_ignores_invalid_usernames()
     {
         // Create test users
@@ -139,6 +145,7 @@ class CommentMentionTest extends TestCase
         $this->assertContains($user1->id, $mentions);
     }
 
+    // Test comment cannot start with whitespace
     public function test_comment_cannot_start_with_whitespace()
     {
         $user = User::factory()->create();
@@ -162,6 +169,7 @@ class CommentMentionTest extends TestCase
         $this->assertEquals('This comment starts with a space', $textOnly);
     }
 
+    // Test comment cannot start with newline
     public function test_comment_cannot_start_with_newline()
     {
         $user = User::factory()->create();
@@ -185,6 +193,7 @@ class CommentMentionTest extends TestCase
         $this->assertEquals('This comment starts with a newline', $textOnly);
     }
 
+    // Test comment cannot start with multiple whitespace
     public function test_comment_cannot_start_with_multiple_whitespace()
     {
         $user = User::factory()->create();

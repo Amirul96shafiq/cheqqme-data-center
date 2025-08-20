@@ -12,9 +12,6 @@ use Filament\Notifications\Notification;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Str;
 use Livewire\Component;
-
-// (Filament Actions removed for nested component stability)
-
 class TaskComments extends Component implements HasForms
 {
   use AuthorizesRequests;
@@ -47,9 +44,9 @@ class TaskComments extends Component implements HasForms
     'refreshTaskComments' => '$refresh',
   ];
 
+  // Mount the component
   public function mount(int $taskId): void
   {
-    \Log::info('TaskComments component mounting for task ID: ' . $taskId);
     $this->task = Task::findOrFail($taskId);
     // Ensure base form array keys exist before Filament/Livewire entangle
     $this->composerData = $this->composerData ?? [];
@@ -65,6 +62,7 @@ class TaskComments extends Component implements HasForms
     }
   }
 
+  // Add a comment
   public function addComment(): void
   {
     // Pull latest value from composer form state
@@ -108,6 +106,8 @@ class TaskComments extends Component implements HasForms
       ->body(Str::limit($textOnly, 120))
       ->success()
       ->send();
+
+    // Clear the composer form
     $this->newComment = '';
     if (method_exists($this, 'composerForm')) {
       $this->composerForm->fill(['newComment' => '']);
@@ -119,6 +119,7 @@ class TaskComments extends Component implements HasForms
     $this->dispatch('resetComposerEditor');
   }
 
+  // Start editing a comment
   public function startEdit(int $commentId): void
   {
     $comment = $this->task->comments()->whereNull('deleted_at')->findOrFail($commentId);
@@ -135,12 +136,14 @@ class TaskComments extends Component implements HasForms
     }
   }
 
+  // Cancel editing a comment
   public function cancelEdit(): void
   {
     $this->editingId = null;
     $this->editingText = '';
   }
 
+  // Save editing a comment
   public function saveEdit(): void
   {
     if (!$this->editingId) {
@@ -201,6 +204,7 @@ class TaskComments extends Component implements HasForms
     $this->dispatch('refreshTaskComments');
   }
 
+  // Update the composer data
   public function updatedComposerData($value, $key): void
   {
     if ($key === 'newComment') {
@@ -211,6 +215,7 @@ class TaskComments extends Component implements HasForms
     }
   }
 
+  // Update the edit data
   public function updatedEditData($value, $key): void
   {
     if ($key === 'editingText') {
@@ -221,6 +226,7 @@ class TaskComments extends Component implements HasForms
     }
   }
 
+  // Delete a comment
   public function deleteComment(int $commentId): void
   {
     $comment = $this->task->comments()->findOrFail($commentId);
@@ -241,6 +247,7 @@ class TaskComments extends Component implements HasForms
     $this->dispatch('refreshTaskComments');
   }
 
+  // Confirm deleting a comment
   public function confirmDelete(int $commentId): void
   {
     $comment = $this->task->comments()->whereNull('deleted_at')->findOrFail($commentId);
@@ -250,6 +257,7 @@ class TaskComments extends Component implements HasForms
     $this->confirmingDeleteId = $commentId;
   }
 
+  // Perform deleting a comment
   public function performDelete(): void
   {
     if (!$this->confirmingDeleteId) {
@@ -259,11 +267,13 @@ class TaskComments extends Component implements HasForms
     $this->confirmingDeleteId = null;
   }
 
+  // Cancel deleting a comment
   public function cancelDelete(): void
   {
     $this->confirmingDeleteId = null;
   }
 
+  // Get the comments
   public function getCommentsProperty()
   {
     return $this->task->comments()
@@ -274,11 +284,13 @@ class TaskComments extends Component implements HasForms
       ->get();
   }
 
+  // Get the total comments
   public function getTotalCommentsProperty(): int
   {
     return $this->task->comments()->whereNull('deleted_at')->count();
   }
 
+  // Show more comments
   public function showMore(): void
   {
     $total = $this->task->comments()->whereNull('deleted_at')->count();
@@ -290,6 +302,7 @@ class TaskComments extends Component implements HasForms
     $this->dispatch('comments-show-more');
   }
 
+  // Render the component
   public function render()
   {
     // Final pre-render safeguard: clear any accidental 'undefined' before view output
@@ -304,6 +317,7 @@ class TaskComments extends Component implements HasForms
     return view('livewire.task-comments');
   }
 
+  // Hydrate the component
   public function hydrate(): void
   {
     // Defensive: clear any literal 'undefined' string that may slip into state before rendering
@@ -320,6 +334,7 @@ class TaskComments extends Component implements HasForms
     }
   }
 
+  // Get the forms
   protected function getForms(): array
   {
     return [
@@ -366,9 +381,7 @@ class TaskComments extends Component implements HasForms
       ])->statePath('editData'),
     ];
   }
-
-  // Filament Actions removed; keeping component lean
-
+  // Sanitize the HTML
   private function sanitizeHtml(?string $html): string
   {
     $html = $html ?? '';
@@ -440,7 +453,7 @@ class TaskComments extends Component implements HasForms
 
     return $html;
   }
-
+  // Normalize the editor input
   private function normalizeEditorInput(?string $value): string
   {
     $value = $value ?? '';
