@@ -13,12 +13,14 @@ class UserMentionedInComment extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    /**
+     * Create a new notification instance.
+     */
     public function __construct(
         public Comment $comment,
         public Task $task,
         public User $mentionedBy
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.
