@@ -545,12 +545,18 @@ class TaskComments extends Component implements HasForms
       return '';
     }
 
-    // Aggressively remove trailing newlines, <br> tags, and empty paragraphs at the end of content
+    // Aggressively remove trailing newlines, <br> tags, and empty paragraphs at the  front and end of content
     // First remove any trailing <br> tags with whitespace
     $value = preg_replace('/<br\s*\/?>\s*$/', '', $value);
 
+    // Remove empty paragraphs at the front (<p>&nbsp;</p> or <p></p> or <p> </p>)
+    $value = preg_replace('/^<p[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/p>\s*/', '', $value);
+
     // Remove empty paragraphs at the end (<p>&nbsp;</p> or <p></p> or <p> </p>)
     $value = preg_replace('/<p[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/p>\s*$/', '', $value);
+
+    // Remove any <div> tags that might contain only whitespace at the front
+    $value = preg_replace('/^<div[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/div>\s*/', '', $value);
 
     // Remove any <div> tags that might contain only whitespace at the end
     $value = preg_replace('/<div[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/div>\s*$/', '', $value);
