@@ -54,7 +54,8 @@ class AdminPanelProvider extends PanelProvider
             ->font('Roboto')
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->profile(Profile::class, isSimple: false)
-            ->databaseNotifications()
+            ->databaseNotifications(true, false)
+            ->databaseNotificationsPolling('5s')
             ->colors([
                 'primary' => [
                     '50' => '#fff8eb',

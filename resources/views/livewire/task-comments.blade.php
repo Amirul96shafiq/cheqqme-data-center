@@ -3,7 +3,7 @@
     <!-- Composer (Top) -->
     <div class="px-0 pt-0 pb-5 bg-white dark:bg-gray-900" data-composer>
         <div class="space-y-3">
-            <div class="fi-form">
+            <div class="fi-form" wire:ignore>
                 {{ $this->composerForm }} <!-- Filament RichEditor -->
             </div>
             @error('newComment') <p class="text-xs text-danger-600">{{ $message }}</p> @enderror <!-- Error message -->
@@ -73,7 +73,7 @@
                             <!-- Edit form -->
                             @if($this->editingId === $comment->id)
                                 <div class="space-y-2">
-                                    <div class="fi-form">{{ $this->editForm }}</div>
+                                    <div class="fi-form" wire:ignore>{{ $this->editForm }}</div>
                                     <div class="flex items-center gap-2">
                                         <!-- Save Edit form button -->
                                         <button wire:click="saveEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-white hover:bg-primary-500 hover:dark:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.save') }}</button>
@@ -275,7 +275,7 @@
                 const wrapper = document.querySelector('.minimal-comment-editor');
                 const pm = wrapper?.querySelector('.ProseMirror');
                 if (pm) {
-                    pm.innerHTML='';
+                    pm.textContent='';
                     pm.dispatchEvent(new Event('input',{bubbles:true}));
                 }
             });
@@ -301,9 +301,6 @@
                 }, 500);
             });
         </script>
-
-    <!-- User Mention Dropdown Component -->
-    <livewire:user-mention-dropdown />
 
     <!-- Mention Functionality JavaScript -->
     <script>
@@ -419,8 +416,15 @@
                 lastSelectedPosition = getCursorPosition(editor);
                 
                 if (data.inputId === 'composerData.newComment' || data.inputId === editor.id) {
+                    // Notify server of selected user id to track mentions robustly
+                    if (typeof data.userId !== 'undefined') {
+                        Livewire.dispatch('mentionSelected', { userId: data.userId });
+                    }
                     insertMention(editor, data.username);
                 } else {
+                    if (typeof data.userId !== 'undefined') {
+                        Livewire.dispatch('mentionSelected', { userId: data.userId });
+                    }
                     insertMention(editor, data.username);
                 }
             });
@@ -655,17 +659,43 @@
             
             insertingMention = true;
             
-            // Find and temporarily disable Livewire component updates
-            const livewireElement = editor.closest('[wire\\:id]');
-            const livewireComponent = livewireElement ? Livewire.find(livewireElement.getAttribute('wire:id')) : null;
-            
-            // Store original Livewire update methods to restore later
-            let originalUpdate = null;
-            if (livewireComponent && livewireComponent.update) {
-                originalUpdate = livewireComponent.update;
-                livewireComponent.update = function() {
-                    // Block updates during mention insertion
-                };
+            // Avoid mutating Livewire internals to keep DOM stable
+            // Helpers to safely replace a text range inside a contenteditable without rewriting outer HTML
+            function getTextNodeAndOffset(root, position) {
+                let currentPos = 0;
+                const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+                let node;
+                while ((node = walker.nextNode())) {
+                    const len = node.textContent.length;
+                    if (currentPos + len >= position) {
+                        return { node, offset: Math.max(0, position - currentPos) };
+                    }
+                    currentPos += len;
+                }
+                return null;
+            }
+            function replaceTextInEditor(root, startPos, endPos, replacementText) {
+                try {
+                    const start = getTextNodeAndOffset(root, startPos);
+                    const end = getTextNodeAndOffset(root, endPos);
+                    if (!start || !end) return false;
+                    const range = document.createRange();
+                    range.setStart(start.node, start.offset);
+                    range.setEnd(end.node, end.offset);
+                    range.deleteContents();
+                    const textNode = document.createTextNode(replacementText);
+                    range.insertNode(textNode);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    const after = document.createRange();
+                    after.setStart(textNode, textNode.textContent.length);
+                    after.collapse(true);
+                    selection.addRange(after);
+                    return true;
+                } catch (e) {
+                    console.error('replaceTextInEditor failed:', e);
+                    return false;
+                }
             }
             
             // Check for ProseMirror editor first (Filament Rich Editor)
@@ -699,11 +729,24 @@
                             // Create new text: replace @ and partial text with @username
                             const beforeAt = text.substring(0, atIndex);
                             const afterPartial = text.substring(atIndex + endIndex);
-                            const mentionHtml = '<span class="user-mention" style="background-color: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-weight: 500; border: 1px solid #bfdbfe; display: inline;">@' + username + '</span> ';
+                            // Handle usernames with spaces by keeping the spaces intact
+                            const formattedUsername = username;
+                            const mentionHtml = '<span class="user-mention" style="background-color: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-weight: 500; border: 1px solid #bfdbfe; display: inline;">@' + formattedUsername + '</span> ';
                             const newText = beforeAt + mentionHtml + afterPartial;
                             
-                            // Replace the content
-                            editor.innerHTML = newText;
+                            // Replace the content safely (avoid full innerHTML reset)
+                            try {
+                                const range = document.createRange();
+                                range.selectNodeContents(editor);
+                                range.deleteContents();
+                                const temp = document.createElement('div');
+                                temp.innerHTML = newText;
+                                while (temp.firstChild) {
+                                    editor.appendChild(temp.firstChild);
+                                }
+                            } catch (e) {
+                                editor.textContent = beforeAt + '@' + username + ' ' + afterPartial;
+                            }
                             
                             // Calculate cursor position after the mention
                             setTimeout(() => {
@@ -747,17 +790,8 @@
                                     // Focus editor
                                     editor.focus();
                                     
-                                    // Don't trigger input event immediately as it resets cursor
-                                    // Instead, manually update Livewire with the new content
                                     setTimeout(() => {
-                                        const newTextContent = editor.textContent || '';
-                                        const livewireComponent = Livewire.find(editor.closest('[wire\\:id]')?.getAttribute('wire:id'));
-                                        if (livewireComponent) {
-                                            const fieldName = editor.getAttribute('name') || 'composerData.newComment';
-                                            livewireComponent.set(fieldName, newTextContent, false);
-                                        } else {
-                                            editor.dispatchEvent(new Event('input', { bubbles: true }));
-                                        }
+                                        editor.dispatchEvent(new Event('input', { bubbles: true }));
                                     }, 10);
                                 } catch (error) {
                                     console.error('ProseMirror cursor positioning error:', error);
@@ -801,11 +835,12 @@
                                 const beforeInsertionRange = trixEditor.getSelectedRange();
                                 const insertionStartPos = beforeInsertionRange[0];
                                 
-                                // First insert the @username text
-                                trixEditor.insertString('@' + username);
+                                // First insert the @username text - handle usernames with spaces by wrapping in quotes if needed
+                                const formattedUsername = username.includes(' ') ? username : username;
+                                trixEditor.insertString('@' + formattedUsername);
                                 
                                 // Calculate the correct range for the inserted text
-                                const mentionText = '@' + username;
+                                const mentionText = '@' + formattedUsername;
                                 const mentionStart = insertionStartPos;
                                 const mentionEnd = insertionStartPos + mentionText.length;
                                 
@@ -874,9 +909,11 @@
                     const endIndex = spaceIndex !== -1 ? spaceIndex : afterCursor.length;
                     const afterPartial = afterCursor.substring(endIndex);
                     
-                    // Create new text with highlighting
-                    const newText = beforeCursor + '@' + username + ' ' + afterPartial;
-                    editor.innerHTML = newText.replace('@' + username, '<span class="user-mention" style="background-color: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-weight: 500; border: 1px solid #bfdbfe; display: inline;">@' + username + '</span>');
+                    // Create new text (plain text replacement to avoid DOM corruption)
+                    // Handle usernames with spaces by keeping the spaces intact
+                    const formattedUsername = username;
+                    const newText = beforeCursor + '@' + formattedUsername + ' ' + afterPartial;
+                    editor.textContent = newText;
                     
                     // Set cursor position after the inserted username and space
                     setTimeout(() => {
@@ -899,17 +936,8 @@
                             // Ensure the editor is focused
                             editor.focus();
                             
-                            // Don't trigger input event immediately as it resets cursor
-                            // Instead, manually update Livewire with the new content  
                             setTimeout(() => {
-                                const finalTextContent = editor.textContent || '';
-                                const livewireComponent = Livewire.find(editor.closest('[wire\\:id]')?.getAttribute('wire:id'));
-                                if (livewireComponent) {
-                                    const fieldName = editor.getAttribute('name') || 'composerData.newComment';
-                                    livewireComponent.set(fieldName, finalTextContent, false);
-                                } else {
                                 editor.dispatchEvent(new Event('input', { bubbles: true }));
-                                }
                             }, 10);
                         } catch (error) {
                             console.error('Error setting cursor position in contenteditable:', error);
@@ -925,11 +953,7 @@
                 console.log('🔄 Resetting insertingMention flag after insertion');
                 insertingMention = false;
                 
-                // Restore original Livewire update method
-                if (livewireComponent && originalUpdate) {
-                    livewireComponent.update = originalUpdate;
-                    console.log('Livewire update method restored');
-                }
+                // No Livewire method overrides to restore
                 
                 // CRITICAL: Also ensure dropdown state is reset after insertion
                 console.log('🔄 Final state after insertion:', {

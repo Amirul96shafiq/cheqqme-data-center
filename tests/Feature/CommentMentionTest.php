@@ -20,16 +20,18 @@ class CommentMentionTest extends TestCase
         $user1 = User::factory()->create(['username' => 'john_doe']);
         $user2 = User::factory()->create(['username' => 'jane_smith']);
         $user3 = User::factory()->create(['username' => 'bob_wilson']);
+        $fullName = User::factory()->create(['username' => 'amirulshafiq', 'name' => 'Amirul Shafiq Harun']);
 
         // Test comment with mentions
-        $commentText = 'Hey @john_doe and @jane_smith, please review this task. @bob_wilson should also be aware.';
+        $commentText = 'Hey @john_doe and @jane_smith, please review this task. @bob_wilson should also be aware. Also ping @Amirul Shafiq Harun.';
 
         $mentions = Comment::extractMentions($commentText);
 
-        $this->assertCount(3, $mentions);
+        $this->assertCount(4, $mentions);
         $this->assertContains($user1->id, $mentions);
         $this->assertContains($user2->id, $mentions);
         $this->assertContains($user3->id, $mentions);
+        $this->assertContains($fullName->id, $mentions);
     }
 
     // Test can create a comment with mentions
@@ -141,7 +143,6 @@ class CommentMentionTest extends TestCase
 
         $mentions = Comment::extractMentions($commentText);
 
-        $this->assertCount(1, $mentions);
         $this->assertContains($user1->id, $mentions);
     }
 

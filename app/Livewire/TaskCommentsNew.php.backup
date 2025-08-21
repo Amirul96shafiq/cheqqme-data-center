@@ -1,0 +1,353 @@
+<?php
+
+namespace App\Livewire;
+
+use App\Models\Comment;
+use App\Models\Task;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
+use Filament\Notifications\Notification;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
+
+class TaskCommentsNew extends Component implements HasForms
+{
+    use AuthorizesRequests;
+    use InteractsWithForms;
+
+    public Task $task;
+
+    public string $newComment = '';
+
+    public ?array $composerData = [];
+
+    public ?array $editData = [];
+
+    public ?int $editingId = null;
+
+    public string $editingText = '';
+
+    public int $visibleCount = 5;
+
+    public ?int $confirmingDeleteId = null;
+
+    protected $rules = [
+        'newComment' => 'required|string|max:1000',
+        'editingText' => 'required|string|max:1000',
+    ];
+
+    public function mount(int $taskId): void
+    {
+        $this->task = Task::findOrFail($taskId);
+        $this->composerData = ['newComment' => ''];
+        $this->editData = ['editingText' => ''];
+    }
+
+    public function addComment(): void
+    {
+        \Log::info('addComment called');
+
+        try {
+            // Test if component is responding by updating a property
+            $this->composerData = ['newComment' => 'TEST_' . time()];
+            \Log::info('composerData updated');
+
+            // Get form state from Filament form
+            $state = $this->getForms()['composerForm']->getState();
+            $this->newComment = $state['newComment'] ?? '';
+            \Log::info('Form state retrieved', ['newComment' => $this->newComment]);
+
+            // Validate comment content
+            $this->validate([
+                'newComment' => 'required|string|max:1000',
+            ]);
+
+            // Check if comment is not empty after trimming
+            if (trim($this->newComment) === '') {
+                return;
+            }
+
+            \Log::info('addComment: Starting comment creation', ['newComment' => $this->newComment]);
+
+            // Extract mentions from comment text
+            $mentions = Comment::extractMentions($this->newComment);
+
+            // Create the comment
+            $comment = Comment::create([
+                'task_id' => $this->task->id,
+                'user_id' => auth()->id(),
+                'comment' => $this->newComment,
+                'mentions' => $mentions,
+                'mentions_processed' => false,
+            ]);
+
+            // Process mentions and send notifications
+            $comment->processMentions();
+
+            // Clear the form and reset state
+            $this->newComment = '';
+            $this->composerData = ['newComment' => ''];
+
+            // Clear the form after state reset
+            try {
+                $this->getForms()['composerForm']->fill(['newComment' => '']);
+            } catch (\Exception $e) {
+                \Log::warning('Form fill error (non-critical):', ['error' => $e->getMessage()]);
+            }
+
+            // Reset any other state that might be stuck
+            $this->editingId = null;
+            $this->editingText = '';
+            $this->confirmingDeleteId = null;
+
+            // Show success notification
+            Notification::make()
+                ->title('Comment added successfully')
+                ->success()
+                ->send();
+
+            // Simple refresh - just dispatch the refresh event
+            $this->dispatch('$refresh');
+
+        } catch (\Exception $e) {
+            \Log::error('addComment error:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+
+            // Show error notification
+            Notification::make()
+                ->title('Error adding comment')
+                ->body('Please try again.')
+                ->danger()
+                ->send();
+        }
+    }
+
+    public function startEdit(int $commentId): void
+    {
+        \Log::info('startEdit called: ' . $commentId);
+
+        $comment = Comment::find($commentId);
+        if ($comment && $comment->user_id === auth()->id()) {
+            $this->editingId = $commentId;
+            $this->editingText = $comment->comment;
+            $this->editData = ['editingText' => $this->editingText];
+
+            \Log::info('Edit state set:', [
+                'editingId' => $this->editingId,
+                'editingText' => $this->editingText,
+                'editData' => $this->editData
+            ]);
+
+            // Pre-fill the edit form
+            $this->getForms()['editForm']->fill(['editingText' => $this->editingText]);
+
+            \Log::info('Edit form filled');
+        } else {
+            \Log::warning('startEdit failed:', [
+                'commentFound' => $comment ? true : false,
+                'userId' => $comment ? $comment->user_id : null,
+                'authId' => auth()->id()
+            ]);
+        }
+    }
+
+    public function cancelEdit(): void
+    {
+        \Log::info('cancelEdit called');
+
+        $this->editingId = null;
+        $this->editingText = '';
+        $this->editData = ['editingText' => ''];
+
+        // Clear the edit form
+        $this->getForms()['editForm']->fill(['editingText' => '']);
+
+        \Log::info('Edit state cleared');
+    }
+
+    public function saveEdit(): void
+    {
+        \Log::info('saveEdit called', [
+            'editingId' => $this->editingId,
+            'editingText' => $this->editingText
+        ]);
+
+        // Get form state from Filament form
+        $state = $this->getForms()['editForm']->getState();
+        $this->editingText = $state['editingText'] ?? '';
+
+        \Log::info('Form state retrieved:', ['state' => $state, 'editingText' => $this->editingText]);
+
+        // Validate comment content
+        $this->validate([
+            'editingText' => 'required|string|max:1000',
+        ]);
+
+        // Check if comment is not empty after trimming
+        if (trim($this->editingText) === '') {
+            \Log::warning('saveEdit: Comment is empty after trimming');
+            return;
+        }
+
+        try {
+            $comment = Comment::find($this->editingId);
+            if ($comment && $comment->user_id === auth()->id()) {
+                \Log::info('Comment found and authorized for edit');
+
+                // Extract mentions from updated comment text
+                $mentions = Comment::extractMentions($this->editingText);
+
+                // Update the comment
+                $comment->update([
+                    'comment' => $this->editingText,
+                    'mentions' => $mentions,
+                ]);
+
+                \Log::info('Comment updated successfully');
+
+                // Process mentions and send notifications for new mentions
+                $comment->processMentions();
+
+                // Clear edit state
+                $this->editingId = null;
+                $this->editingText = '';
+                $this->editData = ['editingText' => ''];
+
+                // Clear the edit form
+                $this->getForms()['editForm']->fill(['editingText' => '']);
+
+                \Log::info('Edit state cleared after successful update');
+
+                // Show success notification
+                Notification::make()
+                    ->title('Comment updated successfully')
+                    ->success()
+                    ->send();
+            } else {
+                \Log::warning('saveEdit: Comment not found or not authorized', [
+                    'commentFound' => $comment ? true : false,
+                    'userId' => $comment ? $comment->user_id : null,
+                    'authId' => auth()->id()
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('saveEdit error:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+
+            // Show error notification
+            Notification::make()
+                ->title('Error updating comment')
+                ->body('Please try again.')
+                ->danger()
+                ->send();
+        }
+
+        // Use a simpler refresh approach to avoid component ID issues
+        $this->dispatch('$refresh');
+    }
+
+    public function deleteComment(int $commentId): void
+    {
+        \Log::info('deleteComment called with commentId:', ['commentId' => $commentId]);
+
+        $comment = Comment::find($commentId);
+        if ($comment && $comment->user_id === auth()->id()) {
+            $comment->delete();
+
+            \Log::info('Comment deleted successfully');
+
+            // Show success notification
+            Notification::make()
+                ->title('Comment deleted successfully')
+                ->success()
+                ->send();
+        } else {
+            \Log::warning('deleteComment: Comment not found or not authorized', [
+                'commentFound' => $comment ? true : false,
+                'userId' => $comment ? $comment->user_id : null,
+                'authId' => auth()->id()
+            ]);
+        }
+
+        // Use a simpler refresh approach to avoid component ID issues
+        $this->dispatch('$refresh');
+    }
+
+    public function confirmDelete(int $commentId): void
+    {
+        \Log::info('confirmDelete called: ' . $commentId);
+        $this->confirmingDeleteId = $commentId;
+    }
+
+    public function performDelete(): void
+    {
+        \Log::info('performDelete called with confirmingDeleteId:', ['confirmingDeleteId' => $this->confirmingDeleteId]);
+
+        if ($this->confirmingDeleteId) {
+            $this->deleteComment($this->confirmingDeleteId);
+            $this->confirmingDeleteId = null;
+        }
+    }
+
+    public function cancelDelete(): void
+    {
+        \Log::info('cancelDelete called');
+        $this->confirmingDeleteId = null;
+    }
+
+    public function getCommentsProperty()
+    {
+        return $this->task->comments()
+            ->whereNull('deleted_at')
+            ->with('user')
+            ->orderByDesc('created_at')
+            ->take($this->visibleCount)
+            ->get();
+    }
+
+    public function getTotalCommentsProperty(): int
+    {
+        return $this->task->comments()->whereNull('deleted_at')->count();
+    }
+
+    public function showMore(): void
+    {
+        $total = $this->task->comments()->whereNull('deleted_at')->count();
+        $remaining = $total - $this->visibleCount;
+        if ($remaining <= 0) {
+            return;
+        }
+        $this->visibleCount += min(5, $remaining);
+    }
+
+    public function render()
+    {
+        return view('livewire.task-comments-new');
+    }
+
+    protected function getForms(): array
+    {
+        return [
+            'composerForm' => $this->makeForm()->schema([
+                RichEditor::make('newComment')
+                    ->label('')
+                    ->placeholder('Write your comment... (Use @username to mention someone)')
+                    ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
+                    ->maxLength(1000)
+                    ->columnSpanFull()
+                    ->extraAttributes(['class' => 'min-h-[60px] max-h-[80px]'])
+                    ->extraInputAttributes(['class' => 'min-h-[60px] max-h-[80px]']),
+            ])->statePath('composerData'),
+            'editForm' => $this->makeForm()->schema([
+                RichEditor::make('editingText')
+                    ->label('')
+                    ->placeholder('Edit your comment... (Use @username to mention someone)')
+                    ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
+                    ->maxLength(1000)
+                    ->columnSpanFull()
+                    ->extraAttributes(['class' => 'min-h-[60px] max-h-[80px]'])
+                    ->extraInputAttributes(['class' => 'min-h-[60px] max-h-[80px]']),
+            ])->statePath('editData'),
+        ];
+    }
+}

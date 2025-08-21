@@ -60,9 +60,9 @@ class UserMentionDropdown extends Component
         \Log::info('UserMentionDropdown::searchUsers called', ['search' => $this->search]);
 
         $query = User::query()
-            ->where('username', 'like', '%'.$this->search.'%')
-            ->orWhere('email', 'like', '%'.$this->search.'%')
-            ->orWhere('name', 'like', '%'.$this->search.'%')
+            ->where('username', 'like', '%' . $this->search . '%')
+            ->orWhere('email', 'like', '%' . $this->search . '%')
+            ->orWhere('name', 'like', '%' . $this->search . '%')
             ->orderBy('username')
             ->limit(10);
 
@@ -98,7 +98,7 @@ class UserMentionDropdown extends Component
                 'inputId' => $this->targetInputId,
             ]);
 
-            $this->dispatch('userSelected', username: $user['username'], inputId: $this->targetInputId);
+            $this->dispatch('userSelected', username: $user['username'], userId: $user['id'], inputId: $this->targetInputId);
 
             \Log::info('userSelected event dispatched', ['username' => $user['username']]);
 

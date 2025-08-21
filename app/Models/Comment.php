@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Notifications\UserMentionedInComment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -61,12 +60,8 @@ class Comment extends Model
     $mentionedUsers = User::whereIn('id', $this->mentions)->get();
 
     foreach ($mentionedUsers as $user) {
-      // Don't notify the comment author
-      if ($user->id === $this->user_id) {
-        continue;
-      }
-
-      $user->notify(new UserMentionedInComment($this, $this->task, $this->user));
+      // Use UserMentionedInComment notification class
+      $user->notify(new \App\Notifications\UserMentionedInComment($this, $this->task, $this->user));
     }
   }
 
@@ -75,18 +70,47 @@ class Comment extends Model
    */
   public static function extractMentions(string $commentText): array
   {
-    preg_match_all('/@(\w+)/', $commentText, $matches);
+    // First try with the original HTML content (some editors add spans around mentions)
+    $originalText = $commentText;
 
-    if (empty($matches[1])) {
+    // Then also try with plain text to avoid HTML tags interfering with parsing
+    $plainText = trim(strip_tags($commentText));
+
+    // Extract all possible username formats
+    $patterns = [
+      // Username with spaces (e.g., @Amirul Other Account)
+      '/(?:^|[\s>])@([A-Za-z0-9_\.\-]+(?: +[A-Za-z0-9_\.\-]+)+)(?=[\s\.,;:!\?\)]|$|\s|<)/u',
+
+      // Regular username without spaces (e.g., @author1)
+      '/(?:^|[\s>])@([A-Za-z0-9_\.\-]+)(?=[\s\.,;:!\?\)]|$|\s|<)/u',
+    ];
+
+    $usernames = [];
+
+    // Apply each pattern to both original and plain text
+    foreach ([$originalText, $plainText] as $text) {
+      foreach ($patterns as $pattern) {
+        preg_match_all($pattern, $text, $matches);
+        if (!empty($matches[1])) {
+          $usernames = array_merge($usernames, $matches[1]);
+        }
+      }
+    }
+
+    // Filter and deduplicate
+    $usernames = array_values(array_unique(array_filter($usernames, static fn($u) => $u !== '')));
+
+    if (empty($usernames)) {
       return [];
     }
 
-    $usernames = $matches[1];
-    $userIds = User::whereIn('username', $usernames)
+    // Look up users by username
+    return User::query()
+      ->whereIn('username', $usernames)
       ->pluck('id')
+      ->unique()
+      ->values()
       ->toArray();
-
-    return $userIds;
   }
 
   public function getActivityLogOptions(): LogOptions

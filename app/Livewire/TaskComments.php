@@ -36,6 +36,9 @@ class TaskComments extends Component implements HasForms
 
   public ?int $confirmingDeleteId = null;
 
+  // Track mentions selected from dropdown to avoid relying only on text parsing
+  public array $pendingMentionUserIds = [];
+
   protected $rules = [
     'newComment' => 'required|string|max:1000',
     'editingText' => 'required|string|max:1000',
@@ -43,6 +46,7 @@ class TaskComments extends Component implements HasForms
 
   protected $listeners = [
     'refreshTaskComments' => '$refresh',
+    'mentionSelected' => 'onMentionSelected',
   ];
 
   // Mount the component
@@ -109,6 +113,10 @@ class TaskComments extends Component implements HasForms
 
     // Extract mentions from comment text
     $mentions = Comment::extractMentions($sanitized);
+    // Merge with any user IDs selected via the dropdown tracking
+    if (!empty($this->pendingMentionUserIds)) {
+      $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
+    }
 
     $comment = Comment::create([
       'task_id' => $this->task->id,
@@ -128,6 +136,7 @@ class TaskComments extends Component implements HasForms
 
     // Clear the composer form
     $this->newComment = '';
+    $this->pendingMentionUserIds = [];
     if (method_exists($this, 'composerForm')) {
       $this->composerForm->fill(['newComment' => '']);
     }
@@ -223,6 +232,9 @@ class TaskComments extends Component implements HasForms
 
     // Extract mentions from updated comment text
     $mentions = Comment::extractMentions($sanitized);
+    if (!empty($this->pendingMentionUserIds)) {
+      $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
+    }
 
     $comment->update([
       'comment' => $sanitized,
@@ -238,7 +250,20 @@ class TaskComments extends Component implements HasForms
       ->success()
       ->send();
     $this->cancelEdit();
+    $this->pendingMentionUserIds = [];
     $this->dispatch('refreshTaskComments');
+  }
+
+  // Receive mentionSelected event from the dropdown JS bridge
+  public function onMentionSelected(?array $payload = null): void
+  {
+    if (!$payload) {
+      return;
+    }
+    $userId = (int) ($payload['userId'] ?? 0);
+    if ($userId > 0 && !in_array($userId, $this->pendingMentionUserIds, true)) {
+      $this->pendingMentionUserIds[] = $userId;
+    }
   }
 
   // Update the composer data
