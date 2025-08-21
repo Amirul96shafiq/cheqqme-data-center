@@ -281,10 +281,12 @@
                 }
             }
             
+            // Clear undefined in composer
             document.addEventListener('DOMContentLoaded', clearUndefinedInComposer);
             document.addEventListener('livewire:update', clearUndefinedInComposer);
             document.addEventListener('livewire:navigated', clearUndefinedInComposer);
             
+            // Reset composer editor
             document.addEventListener('resetComposerEditor', () => {
                 const wrapper = document.querySelector('.minimal-comment-editor');
                 const pm = wrapper?.querySelector('.ProseMirror');
@@ -333,20 +335,20 @@
             document.addEventListener('livewire:update', function() {
                 setTimeout(initializeMentions, 500);
             });
-            
+            // Re-initialize after Livewire navigated
             document.addEventListener('livewire:navigated', function() {
                 setTimeout(initializeMentions, 500);
             });
         });
-
+        // Initialize mentions
         function initializeMentions() {
             let editor = findEditor();
-            
+            // If the editor is found, initialize it
             if (editor) {
                 initializeEditor(editor);
                 return;
             }
-            
+            // Wait for the editor to be available
             waitForEditor();
         }
         // Find the editor
@@ -489,7 +491,7 @@
         let lastSelectedPosition = -1;
         // Add debouncing to prevent multiple rapid calls
         let mentionInputTimeout = null;
-        
+        // Handle mention input
         function handleMentionInput(e, editor) {
             if (insertingMention) {
                 return;
@@ -505,7 +507,7 @@
                 handleMentionInputDebounced(e, editor);
             }, 10); // 10ms debounce
         }
-        
+        // Handle mention input debounced
         function handleMentionInputDebounced(e, editor) {
             const text = editor.textContent || '';
             const cursorPosition = getCursorPosition(editor);
@@ -524,7 +526,7 @@
                     atMatch = ['@', '']; // Simulate match with empty search term
                 }
             }
-            
+            // If no match, hide the dropdown
             if (!atMatch) {
                 // No valid @ pattern - hide dropdown if active
                 if (dropdownActive) {
@@ -714,6 +716,7 @@
                 }
                 return null;
             }
+            // Replace text in editor
             function replaceTextInEditor(root, startPos, endPos, replacementText) {
                 try {
                     const start = getTextNodeAndOffset(root, startPos);
@@ -759,7 +762,7 @@
                         // Find the @ symbol in the current text
                         const atIndex = beforeCursor.lastIndexOf('@');
 
-                        
+                        // If the @ symbol is found, insert the mention
                         if (atIndex !== -1) {
                             // Find where the @ symbol ends (at space or end of text)
                             const afterAt = beforeCursor.substring(atIndex);
@@ -1024,6 +1027,7 @@
             }, 500); // Longer delay to ensure cursor positioning is stable
         }
 
+        // Get cursor position
         function getCursorPosition(element) {
             // Handle Trix editor specifically
             if (element.tagName === 'TRIX-EDITOR' && element.editor) {

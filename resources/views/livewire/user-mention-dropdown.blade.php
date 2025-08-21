@@ -134,8 +134,5 @@
         .user-mention-indicator {
             flex-shrink: 0;
         }
-
-        /* No need to hide cursor - editor maintains focus for typing */
-        /* Users can type to search while dropdown is visible */
     </style>
 </div>

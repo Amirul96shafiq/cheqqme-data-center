@@ -78,6 +78,7 @@ class UserMentionedInComment extends Notification
     {
         $taskTitle = Str::limit($this->task->title, 50);
 
+        // Create the notification
         return FilamentNotification::make()
             ->title(__('task.notifications.mentioned_title'))
             ->body(__('task.notifications.mentioned_body', [
