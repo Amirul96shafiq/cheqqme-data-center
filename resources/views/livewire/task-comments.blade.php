@@ -84,7 +84,7 @@
                             @else
                                 <!-- Comment content -->
                                 <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4">
-                                    <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[13px] text-gray-700 dark:text-gray-300 break-words">{!! $comment->comment !!}</div>
+                                    <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[13px] text-gray-700 dark:text-gray-300 break-words">{!! $comment->rendered_comment !!}</div>
                                 </div>
                             @endif
                         </div>
@@ -173,6 +173,20 @@
     @endif
     <!-- Custom styles -->
         <style>
+            /* Mention badge styling */
+            .prose.prose-xs .mention {
+                display: inline-block;
+                padding: .15rem .35rem;
+                border-radius: .35rem;
+                background-color: #00AE9F12;
+                color: #00AE9F;
+                font-weight: 600;
+                white-space: nowrap;
+            }
+            .dark .prose.prose-xs .mention {
+                background-color: #00AE9F33;
+                color: #b7e9e6;
+            }
             /* Custom scrollbar styles */
             .custom-thin-scroll::-webkit-scrollbar { width: 6px; }
             .custom-thin-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -552,6 +566,32 @@
         let currentSelectedIndex = 0;
         
         function handleMentionKeydown(e, editor) {
+            // Always handle Shift+Enter to prevent bold formatting issues
+            if (e.key === 'Enter' && e.shiftKey) {
+                // Let the default behavior happen but clean up any potential bold formatting
+                // We'll handle this in the sanitizeHtml function in PHP
+                
+                // Add a small delay to allow the editor to update
+                setTimeout(() => {
+                    // Ensure no bold formatting is applied
+                    if (editor.classList.contains('ProseMirror')) {
+                        // For ProseMirror, we can't directly manipulate the editor's internal state
+                        // So we'll rely on the sanitizeHtml function in PHP
+                    } else if (editor.tagName === 'TRIX-EDITOR' && editor.editor) {
+                        // For Trix, we can try to deactivate bold formatting
+                        try {
+                            if (typeof editor.editor.deactivateAttribute === 'function') {
+                                editor.editor.deactivateAttribute('bold');
+                            }
+                        } catch (error) {
+                            console.error('Error deactivating bold after Shift+Enter:', error);
+                        }
+                    }
+                }, 10);
+                
+                return; // Let the default behavior happen
+            }
+            
             // Check if dropdown is visible before handling navigation keys
             const dropdown = document.querySelector('.user-mention-dropdown');
             // Since the dropdown uses Livewire conditional rendering, we just need to check if the element exists
@@ -731,7 +771,8 @@
                             const afterPartial = text.substring(atIndex + endIndex);
                             // Handle usernames with spaces by keeping the spaces intact
                             const formattedUsername = username;
-                            const mentionHtml = '<span class="user-mention" style="background-color: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-weight: 500; border: 1px solid #bfdbfe; display: inline;">@' + formattedUsername + '</span> ';
+                            // Use plain text for mentions to avoid HTML issues
+                            const mentionHtml = '@' + formattedUsername + ' ';
                             const newText = beforeAt + mentionHtml + afterPartial;
                             
                             // Replace the content safely (avoid full innerHTML reset)
@@ -751,42 +792,85 @@
                             // Calculate cursor position after the mention
                             setTimeout(() => {
                                 try {
-                                    // Find the mark element we just inserted
-                                    const markElement = editor.querySelector('mark');
-                                    if (markElement) {
-
-                                        // Find the next text node after the mark element
-                                        let nextNode = markElement.nextSibling;
-                                        
-                                        // If there's no next sibling, create a text node
-                                        if (!nextNode) {
-                                            nextNode = document.createTextNode(' ');
-                                            markElement.parentNode.insertBefore(nextNode, markElement.nextSibling);
-                                        }
-                                        
-                                        // Position cursor at the beginning of the next text node
-                                        const range = document.createRange();
-                                        const selection = window.getSelection();
-                                        
-                                        if (nextNode.nodeType === Node.TEXT_NODE) {
-                                            range.setStart(nextNode, 1); // After the space
-                                        } else {
-                                            range.setStartAfter(markElement);
-                                        }
-                                        
+                                    // Calculate position after the username and space
+                                    const mentionLength = username.length + 2; // @ + username + space
+                                    const newPosition = atIndex + mentionLength;
+                                    
+                                    // Set the cursor position after the mention
+                                    const range = document.createRange();
+                                    const selection = window.getSelection();
+                                    
+                                    // Find the text node where the cursor should be positioned
+                                    const textNode = findTextNodeAtPosition(editor, newPosition);
+                                    if (textNode) {
+                                        // Calculate offset within the text node
+                                        const offset = calculateOffsetInNode(editor, textNode, newPosition);
+                                        range.setStart(textNode, offset);
                                         range.collapse(true);
                                         selection.removeAllRanges();
                                         selection.addRange(range);
-
                                     } else {
                                         // Fallback: position at end
-                                        const range = document.createRange();
-                                        const selection = window.getSelection();
                                         range.selectNodeContents(editor);
                                         range.collapse(false);
                                         selection.removeAllRanges();
                                         selection.addRange(range);
                                     }
+
+                                    
+                                    // Helper function to find text node at position
+                                    function findTextNodeAtPosition(rootNode, position) {
+                                        let currentPos = 0;
+                                        let foundNode = null;
+                                        
+                                        function traverse(node) {
+                                            if (foundNode) return;
+                                            
+                                            if (node.nodeType === Node.TEXT_NODE) {
+                                                const nodeLength = node.textContent.length;
+                                                if (currentPos <= position && position <= currentPos + nodeLength) {
+                                                    foundNode = node;
+                                                    return;
+                                                }
+                                                currentPos += nodeLength;
+                                            } else {
+                                                for (let i = 0; i < node.childNodes.length; i++) {
+                                                    traverse(node.childNodes[i]);
+                                                }
+                                            }
+                                        }
+                                        
+                                        traverse(rootNode);
+                                        return foundNode;
+                                    }
+                                    
+                                    // Helper function to calculate offset in a text node
+                                    function calculateOffsetInNode(rootNode, targetNode, position) {
+                                        let currentPos = 0;
+                                        let offset = 0;
+                                        
+                                        function traverse(node) {
+                                            if (node === targetNode) {
+                                                offset = position - currentPos;
+                                                return true;
+                                            }
+                                            
+                                            if (node.nodeType === Node.TEXT_NODE) {
+                                                currentPos += node.textContent.length;
+                                            } else {
+                                                for (let i = 0; i < node.childNodes.length; i++) {
+                                                    if (traverse(node.childNodes[i])) {
+                                                        return true;
+                                                    }
+                                                }
+                                            }
+                                            return false;
+                                        }
+                                        
+                                        traverse(rootNode);
+                                        return offset;
+                                    }
+                                    
                                     // Focus editor
                                     editor.focus();
                                     
@@ -824,7 +908,7 @@
                         // Create new text: replace @ and partial text with @username
                         const beforeAt = currentText.substring(0, atIndex);
                         const afterPartial = currentText.substring(atIndex + endIndex);
-                        const newText = beforeAt + '<span class="user-mention" style="background-color: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-weight: 500; border: 1px solid #bfdbfe; display: inline;">@' + username + '</span> ' + afterPartial;
+                        const newText = beforeAt + '@' + username + ' ' + afterPartial;
                                 // Use Trix's native selection and insertion API instead of loadHTML
                                 // Set selection to the @ symbol and the partial text after it
                                 const startPosition = atIndex;
@@ -851,34 +935,10 @@
                                 // Verify the selection
                                 const verifyRange = trixEditor.getSelectedRange();
                                 
-                                // Try to apply some basic formatting that Trix supports
-                                let formattingApplied = false;
-                                try {
-                                    // Make the mention bold (this should work in Trix)
-                                    if (typeof trixEditor.activateAttribute === 'function') {
-                                        trixEditor.activateAttribute('bold');
-                                        formattingApplied = true;
-                                    }
-                                    
-                                    // Add a custom attribute that we can style with CSS
-                                    if (typeof trixEditor.setAttribute === 'function') {
-                                        trixEditor.setAttribute('data-mention', 'true');
-                                        formattingApplied = true;
-                                    }
-                                } catch (error) {
-                                    console.log('Could not apply Trix formatting:', error);
-                                }
+                                // Do not apply any formatting to mentions - keep them as plain text
+                                
                                 // Move cursor to end of mention before inserting space
                                 trixEditor.setSelectedRange([mentionEnd, mentionEnd]);
-                                
-                                // Deactivate bold formatting before inserting space to ensure normal text afterwards
-                                try {
-                                    if (typeof trixEditor.deactivateAttribute === 'function') {
-                                        trixEditor.deactivateAttribute('bold');
-                                    }
-                                } catch (error) {
-                                    console.log('Could not deactivate bold formatting:', error);
-                                }
 
                                 // Now insert a space after the mention
                                 trixEditor.insertString(' ');
@@ -1160,3 +1220,4 @@
         }
     </script>
 </div>
+

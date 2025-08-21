@@ -117,6 +117,19 @@ class TaskComments extends Component implements HasForms
       return;
     }
 
+    // Aggressively remove trailing newlines and empty elements before sanitizing
+    // First remove any trailing <br> tags with whitespace
+    $this->newComment = preg_replace('/<br\s*\/?>\s*$/', '', $this->newComment);
+
+    // Remove empty paragraphs at the end (<p>&nbsp;</p> or <p></p> or <p> </p>)
+    $this->newComment = preg_replace('/<p[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/p>\s*$/', '', $this->newComment);
+
+    // Remove any <div> tags that might contain only whitespace at the end
+    $this->newComment = preg_replace('/<div[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/div>\s*$/', '', $this->newComment);
+
+    // Remove any trailing whitespace
+    $this->newComment = rtrim($this->newComment);
+
     $sanitized = $this->sanitizeHtml($this->newComment);
     $textOnly = trim(strip_tags($sanitized));
 
@@ -229,6 +242,19 @@ class TaskComments extends Component implements HasForms
 
       return;
     }
+
+    // Aggressively remove trailing newlines and empty elements before sanitizing
+    // First remove any trailing <br> tags with whitespace
+    $this->editingText = preg_replace('/<br\s*\/?>\s*$/', '', $this->editingText);
+
+    // Remove empty paragraphs at the end (<p>&nbsp;</p> or <p></p> or <p> </p>)
+    $this->editingText = preg_replace('/<p[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/p>\s*$/', '', $this->editingText);
+
+    // Remove any <div> tags that might contain only whitespace at the end
+    $this->editingText = preg_replace('/<div[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/div>\s*$/', '', $this->editingText);
+
+    // Remove any trailing whitespace
+    $this->editingText = rtrim($this->editingText);
 
     $sanitized = $this->sanitizeHtml($this->editingText);
     $plain = trim(strip_tags($sanitized));
@@ -454,72 +480,59 @@ class TaskComments extends Component implements HasForms
   {
     $html = $html ?? '';
 
-    // First, normalize line breaks from contenteditable (convert div/p breaks to <br>) for simple paragraphs
-    // Remove script/style tags completely
+    // 1) Remove script/style entirely
     $html = preg_replace('/<(script|style)[^>]*?>.*?<\/\1>/is', '', $html);
 
-    // Allow only a whitelist of tags
-    $allowed = '<b><strong><i><em><s><del><strike><code><pre><ul><ol><li><a><br><p>'; // blockquote removed
-    $html = strip_tags($html, $allowed);
-
-    // Remove on* attributes & javascript: href
-    // Process anchors
-    if (stripos($html, '<a') !== false) {
-      $html = preg_replace_callback('/<a\s+([^>]+)>/i', function ($m) {
-        $attr = $m[1];
-        // Extract href
-        if (preg_match('/href\s*=\s*"([^"]*)"/i', $attr, $hrefMatch)) {
-          $href = $hrefMatch[1];
-        } elseif (preg_match("/href\s*=\s*'([^']*)'/i", $attr, $hrefMatch)) {
-          $href = $hrefMatch[1];
-        } else {
-          $href = '';
-        }
-        if ($href && !preg_match('/^https?:\/\//i', $href)) {
-          $href = 'https://' . ltrim($href); // force https
-        }
-        $safe = htmlspecialchars($href, ENT_QUOTES, 'UTF-8');
-
-        return '<a href="' . $safe . '" target="_blank" rel="nofollow noopener">';
-      }, $html);
-    }
-
-    // Normalize <strike> to <s>
+    // 2) Normalize legacy tags to semantic ones
+    $html = preg_replace('/<b\b[^>]*>/i', '<strong>', $html);
+    $html = preg_replace('/<\/b>/i', '</strong>', $html);
+    $html = preg_replace('/<i\b[^>]*>/i', '<em>', $html);
+    $html = preg_replace('/<\/i>/i', '</em>', $html);
     $html = preg_replace_callback('/<\/?strike>/i', function ($m) {
       return str_starts_with($m[0], '</') ? '</s>' : '<s>';
     }, $html);
 
-    // Strip any remaining attributes except for <a href target rel> (blockquote removed)
-    $html = preg_replace_callback('/<(?!a\b)(b|strong|i|em|s|del|code|pre|ul|ol|li|br)([^>]*)>/i', function ($m) {
+    // 3) Convert non-breaking spaces
+    $html = str_replace('&nbsp;', ' ', $html);
+
+    // 4) Whitelist only the tags supported by the current RichEditor toolbar
+    $allowed = '<strong><em><s><code><pre><a><ul><ol><li><br><p>';
+    $html = strip_tags($html, $allowed);
+
+    // 5) Sanitize anchor tags (allow only safe href + standard attrs)
+    if (stripos($html, '<a') !== false) {
+      $html = preg_replace_callback('/<a\s+([^>]+)>/i', function ($m) {
+        $attr = $m[1];
+        $href = '';
+        if (preg_match('/href\s*=\s*"([^"]*)"/i', $attr, $hrefMatch)) {
+          $href = $hrefMatch[1];
+        } elseif (preg_match("/href\s*=\s*'([^']*)'/i", $attr, $hrefMatch)) {
+          $href = $hrefMatch[1];
+        }
+        if ($href && !preg_match('/^https?:\/\//i', $href)) {
+          $href = 'https://' . ltrim($href);
+        }
+        $safe = htmlspecialchars($href, ENT_QUOTES, 'UTF-8');
+        return '<a href="' . $safe . '" target="_blank" rel="nofollow noopener">';
+      }, $html);
+      // Drop event handlers / javascript: remnants just in case
+      $html = preg_replace('/<a([^>]*)(on[a-z]+\s*=\s*"[^"]*")([^>]*)>/i', '<a$1$3>', $html);
+      $html = preg_replace('/<a([^>]*)(javascript:)[^>]*>/i', '<a$1>', $html);
+    }
+
+    // 6) Strip attributes from all other allowed tags
+    $html = preg_replace_callback('/<(?!a\b)(strong|em|s|code|pre|ul|ol|li|br|p)([^>]*)>/i', function ($m) {
       return '<' . strtolower($m[1]) . '>';
     }, $html);
 
-    // Remove existing blockquote tags, keeping inner content
-    if (stripos($html, '<blockquote') !== false) {
-      $html = preg_replace('/<blockquote[^>]*>/i', '', $html);
-      $html = preg_replace('/<\/blockquote>/i', '', $html);
-    }
+    // 7) Collapse excessive <br>
+    $html = preg_replace('/(<br\s*\/?>(\s|&nbsp;)*?){3,}/i', '<br><br>', $html);
 
-    // Remove event handlers from anchors
-    $html = preg_replace('/<a([^>]*)(on[a-z]+\s*=\s*"[^"]*")([^>]*)>/i', '<a$1$3>', $html);
-    $html = preg_replace('/<a([^>]*)(javascript:)[^>]*>/i', '<a$1>', $html);
+    // 8) Remove empty paragraphs
+    $html = preg_replace('/<p[^>]*>\s*<\/p>/i', '', $html);
 
-    // Collapse excessive <br>
-    $html = preg_replace('/(<br\s*\/?>\s*){3,}/i', '<br><br>', $html);
-
-    // Remove leading/trailing whitespace from HTML content
-    // This handles cases where there might be leading spaces or newlines before the first character
-    $html = preg_replace('/^\s*(<[^>]+>)*\s*/', '$1', $html);
-    $html = preg_replace('/\s*(<\/[^>]+>)*\s*$/', '$1', $html);
-
-    // Also remove any leading/trailing whitespace from text content
-    $html = preg_replace('/^(\s*<br\s*\/?>\s*)+/', '', $html);
-    $html = preg_replace('/(\s*<br\s*\/?>\s*)+$/', '', $html);
-
-    // Final trim to catch any remaining whitespace
-    $html = trim($html);
-
-    return $html;
+    // 9) Final trim
+    return trim($html);
   }
 
   // Normalize the editor input
@@ -531,6 +544,19 @@ class TaskComments extends Component implements HasForms
     if ($lower === 'undefined' || $lower === 'null' || $lower === '"undefined"') {
       return '';
     }
+
+    // Aggressively remove trailing newlines, <br> tags, and empty paragraphs at the end of content
+    // First remove any trailing <br> tags with whitespace
+    $value = preg_replace('/<br\s*\/?>\s*$/', '', $value);
+
+    // Remove empty paragraphs at the end (<p>&nbsp;</p> or <p></p> or <p> </p>)
+    $value = preg_replace('/<p[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/p>\s*$/', '', $value);
+
+    // Remove any <div> tags that might contain only whitespace at the end
+    $value = preg_replace('/<div[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/div>\s*$/', '', $value);
+
+    // Remove any trailing whitespace
+    $value = rtrim($value);
 
     return $value;
   }
