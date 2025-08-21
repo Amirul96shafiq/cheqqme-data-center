@@ -22,8 +22,7 @@ class UserMentionedInComment extends Notification
         public Comment $comment,
         public Task $task,
         public User $mentionedBy
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.
@@ -47,7 +46,7 @@ class UserMentionedInComment extends Notification
      */
     public function toArray(object $notifiable): array
     {
-        $preview = Str::limit(strip_tags($this->comment->comment), 100);
+        $taskTitle = Str::limit($this->task->title, 50);
 
         // Include Filament-compatible keys so it shows in the topbar database notifications
         return [
@@ -55,40 +54,44 @@ class UserMentionedInComment extends Notification
             'type' => 'user_mentioned',
             'comment_id' => $this->comment->id,
             'task_id' => $this->task->id,
-            'task_title' => $this->task->title,
+            'task_title' => $taskTitle,
             'mentioned_by_id' => $this->mentionedBy->id,
             'mentioned_by_username' => $this->mentionedBy->username,
-            'comment_preview' => $preview,
             'action_url' => \App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $this->task->id]),
 
             // Filament notification rendering
             'format' => 'filament',
-            'title' => __('You were mentioned in a comment'),
-            'body' => (($this->mentionedBy?->username) ?: __('Someone')) . ' ' . __('mentioned you on') . ' "' . (($this->task?->title) ?: __('a task')) . '": ' . $preview,
+            'title' => __('task.notifications.mentioned_title'),
+            'body' => __('task.notifications.mentioned_body', [
+                'username' => $this->mentionedBy?->username ?: __('task.notifications.mentioned_someone'),
+                'task_title' => $taskTitle ?: __('task.notifications.mentioned_task_fallback'),
+            ]),
             'icon' => 'heroicon-o-at-symbol',
             'iconColor' => 'primary',
         ];
     }
-
-
 
     /**
      * Provide Filament-compatible database payload.
      */
     public function toDatabase(object $notifiable): array
     {
-        $preview = Str::limit(strip_tags($this->comment->comment), 100);
+        $taskTitle = Str::limit($this->task->title, 50);
 
         return FilamentNotification::make()
-            ->title(__('You were mentioned in a comment'))
-            ->body((($this->mentionedBy?->username) ?: __('Someone')) . ' ' . __('mentioned you on') . ' "' . (($this->task?->title) ?: __('a task')) . '": ' . $preview)
+            ->title(__('task.notifications.mentioned_title'))
+            ->body(__('task.notifications.mentioned_body', [
+                'username' => $this->mentionedBy?->username ?: __('task.notifications.mentioned_someone'),
+                'task_title' => $taskTitle ?: __('task.notifications.mentioned_task_fallback'),
+            ]))
             ->icon('heroicon-o-at-symbol')
             ->iconColor('primary')
             ->actions([
                 FilamentAction::make('view')
-                    ->label(__('View task'))
+                    ->label(__('task.notifications.view_task'))
                     ->url(\App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $this->task->id]))
-                    ->button(),
+                    ->button()
+                    ->outlined(),
             ])
             ->getDatabaseMessage();
     }

@@ -60,5 +60,10 @@ return [
         'assigned_title' => 'Tugasan Ditugaskan',
         'assigned_body' => 'Tugasan telah ditugaskan kepada anda.',
         'view_task' => 'Papar Tugasan',
+        'mentioned_title' => 'Anda dinyatakan dalam komen',
+        'mentioned_body' => ':username dinyatakan dalam ":task_title"',
+        'mentioned_someone' => 'Seseorang',
+        'mentioned_task_fallback' => 'tugasan',
+        'mentioned_actions_view_task' => 'Papar Tugasan',
     ],
 ];

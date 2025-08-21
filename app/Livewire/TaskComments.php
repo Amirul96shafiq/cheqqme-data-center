@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class TaskComments extends Component implements HasForms
@@ -39,15 +40,23 @@ class TaskComments extends Component implements HasForms
   // Track mentions selected from dropdown to avoid relying only on text parsing
   public array $pendingMentionUserIds = [];
 
-  protected $rules = [
-    'newComment' => 'required|string|max:1000',
-    'editingText' => 'required|string|max:1000',
-  ];
+  #[On('refreshTaskComments')]
+  public function refresh(): void
+  {
+    // Refresh the component
+  }
 
-  protected $listeners = [
-    'refreshTaskComments' => '$refresh',
-    'mentionSelected' => 'onMentionSelected',
-  ];
+  #[On('mentionSelected')]
+  public function onMentionSelected(?array $payload = null): void
+  {
+    if (!$payload) {
+      return;
+    }
+    $userId = (int) ($payload['userId'] ?? 0);
+    if ($userId > 0 && !in_array($userId, $this->pendingMentionUserIds, true)) {
+      $this->pendingMentionUserIds[] = $userId;
+    }
+  }
 
   // Mount the component
   public function mount(int $taskId): void
@@ -254,18 +263,6 @@ class TaskComments extends Component implements HasForms
     $this->dispatch('refreshTaskComments');
   }
 
-  // Receive mentionSelected event from the dropdown JS bridge
-  public function onMentionSelected(?array $payload = null): void
-  {
-    if (!$payload) {
-      return;
-    }
-    $userId = (int) ($payload['userId'] ?? 0);
-    if ($userId > 0 && !in_array($userId, $this->pendingMentionUserIds, true)) {
-      $this->pendingMentionUserIds[] = $userId;
-    }
-  }
-
   // Update the composer data
   public function updatedComposerData($value, $key): void
   {
@@ -394,6 +391,14 @@ class TaskComments extends Component implements HasForms
       // Keep backing array in sync for entangle path reliability
       $this->composerData['newComment'] = $state['newComment'] ?? '';
     }
+  }
+
+  protected function rules(): array
+  {
+    return [
+      'newComment' => 'required|string|max:1000',
+      'editingText' => 'required|string|max:1000',
+    ];
   }
 
   // Get the forms
