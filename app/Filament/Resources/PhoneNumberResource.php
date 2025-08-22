@@ -3,40 +3,23 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PhoneNumberResource\Pages;
-use App\Filament\Resources\PhoneNumberResource\RelationManagers;
 use App\Models\PhoneNumber;
-
-use Filament\Forms;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Forms\Components\Section;
 use Closure;
-use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, Grid, RichEditor, Repeater};
-use Filament\Forms\Components\PasswordInput;
-use Filament\Forms\Components\Password;
-use Illuminate\Support\Facades\Hash;
+use Filament\Forms\Components\{TextInput, Grid, RichEditor, Repeater};
 use Filament\Resources\Resource;
-
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Actions\{ViewAction, EditAction, DeleteAction, RestoreAction};
 use Filament\Tables\Filters\TrashedFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Tables\Actions\Action;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Support\HtmlString;
-use Filament\Resources\Pages\ViewRecord;
-
 use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
-use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
-use Ysfkaya\FilamentPhoneInput\Infolists\PhoneEntry;
-use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 
 class PhoneNumberResource extends Resource
 {
@@ -273,10 +256,20 @@ class PhoneNumberResource extends Resource
             // Disable record URL for trashed records
             ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
-                TextColumn::make('id')->label(__('phonenumber.table.id'))->sortable()->limit(20),
-                TextColumn::make('title')->label(__('phonenumber.table.title'))->searchable()->sortable()->limit(10),
-                TextColumn::make('phone')->label(__('phonenumber.table.phone_number'))->searchable(),
-                TextColumn::make('created_at')->label(__('phonenumber.table.created_at'))->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('id')
+                    ->label(__('phonenumber.table.id'))
+                    ->sortable(),
+                TextColumn::make('title')
+                    ->label(__('phonenumber.table.title'))
+                    ->searchable()
+                    ->sortable()
+                    ->limit(10),
+                TextColumn::make('phone')
+                    ->label(__('phonenumber.table.phone_number'))->searchable(),
+                TextColumn::make('created_at')
+                    ->label(__('phonenumber.table.created_at'))
+                    ->dateTime('j/n/y, h:i A')
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->label(__('phonenumber.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {

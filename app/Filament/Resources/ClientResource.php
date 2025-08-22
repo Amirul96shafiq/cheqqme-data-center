@@ -14,6 +14,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
@@ -22,6 +23,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class ClientResource extends Resource
 {
@@ -72,10 +74,66 @@ class ClientResource extends Resource
                             ->email()
                             ->required(),
 
-                        TextInput::make('pic_contact_number')
+                        PhoneInput::make('pic_contact_number')
                             ->label(__('client.form.pic_contact_number'))
                             ->required()
-                            ->tel(),
+                            ->countryStatePath('pic_contact_number_country')
+                            ->initialCountry('MY')
+                            ->countryOrder(['MY', 'ID', 'SG', 'PH', 'US'])
+                            ->onlyCountries(['MY', 'ID', 'SG', 'PH', 'US'])
+                            ->countrySearch(false)
+                            ->dropdownContainer(false)
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
+                                $digits = preg_replace('/\D+/', '', (string) $state);
+                                if ($digits === '') {
+                                    $set('pic_contact_number', '');
+                                    return;
+                                }
+
+                                $country = $get('pic_contact_number_country') ?: 'MY';
+                                $dialCode = match ($country) {
+                                    'MY' => '60',
+                                    'ID' => '62',
+                                    'SG' => '65',
+                                    'PH' => '63',
+                                    'US' => '1',
+                                    default => '60',
+                                };
+
+                                if (!str_starts_with($digits, $dialCode)) {
+                                    $digits = ltrim($digits, '0');
+                                    if (!str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode . $digits;
+                                    }
+                                }
+
+                                $set('pic_contact_number', $digits);
+                            })
+                            ->dehydrateStateUsing(function (?string $state, Get $get): string {
+                                $digits = preg_replace('/\D+/', '', (string) $state);
+                                if ($digits === '') {
+                                    return '';
+                                }
+
+                                $country = $get('pic_contact_number_country') ?: 'MY';
+                                $dialCode = match ($country) {
+                                    'MY' => '60',
+                                    'ID' => '62',
+                                    'SG' => '65',
+                                    'PH' => '63',
+                                    'US' => '1',
+                                    default => '60',
+                                };
+
+                                if (!str_starts_with($digits, $dialCode)) {
+                                    $digits = ltrim($digits, '0');
+                                    if (!str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode . $digits;
+                                    }
+                                }
+
+                                return $digits;
+                            }),
                     ])
                     ->columns(3),
 
@@ -240,10 +298,26 @@ class ClientResource extends Resource
             // Disable record URL for trashed records
             ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
-                TextColumn::make('id')->label(__('client.table.id'))->sortable(),
-                TextColumn::make('pic_name')->label(__('client.table.pic_name'))->searchable()->limit(20),
-                TextColumn::make('company_name')->label(__('client.table.company_name'))->searchable()->limit(20),
-                TextColumn::make('created_at')->label(__('client.table.created_at'))->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('id')
+                    ->label(__('client.table.id'))
+                    ->sortable(),
+                TextColumn::make('pic_name')
+                    ->label(__('client.table.pic_name'))
+                    ->searchable()
+                    ->sortable()
+                    ->limit(10),
+                TextColumn::make('pic_contact_number')
+                    ->label(__('client.table.pic_contact_number'))
+                    ->searchable(),
+                TextColumn::make('company_name')
+                    ->label(__('client.table.company_name'))
+                    ->searchable()
+                    ->sortable()
+                    ->limit(20),
+                TextColumn::make('created_at')
+                    ->label(__('client.table.created_at'))
+                    ->dateTime('j/n/y, h:i A')
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->label(__('client.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {

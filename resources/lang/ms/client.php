@@ -47,6 +47,7 @@ return [
   'table' => [
     'id' => 'ID',
     'pic_name' => 'Nama PIC',
+    'pic_contact_number' => 'Nombor Telefon PIC',
     'company_name' => 'Nama Syarikat',
     'created_at' => 'Dicipta Pada',
     'updated_at_by' => 'Dikemas Kini pada (oleh)',

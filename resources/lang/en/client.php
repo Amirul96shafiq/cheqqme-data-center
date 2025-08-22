@@ -47,6 +47,7 @@ return [
   'table' => [
     'id' => 'ID',
     'pic_name' => 'PIC Name',
+    'pic_contact_number' => 'PIC Contact Number',
     'company_name' => 'Company Name',
     'created_at' => 'Created At',
     'updated_at_by' => 'Updated At (by)',

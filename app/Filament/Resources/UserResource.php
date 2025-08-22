@@ -227,11 +227,28 @@ class UserResource extends Resource
             // Disable record URL for trashed records
             ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
-                TextColumn::make('id')->label(__('user.table.id')),
-                TextColumn::make('username')->label(__('user.table.username'))->searchable()->sortable()->limit(20),
-                TextColumn::make('name')->label(__('user.table.name'))->searchable()->sortable()->limit(20),
-                TextColumn::make('email')->label(__('user.table.email'))->searchable()->sortable()->limit(50),
-                TextColumn::make('created_at')->label(__('user.table.created_at'))->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('id')
+                    ->label(__('user.table.id'))
+                    ->sortable(),
+                TextColumn::make('username')
+                    ->label(__('user.table.username'))
+                    ->searchable()
+                    ->sortable()
+                    ->limit(20),
+                TextColumn::make('name')
+                    ->label(__('user.table.name'))
+                    ->searchable()
+                    ->sortable()
+                    ->limit(20),
+                TextColumn::make('email')
+                    ->label(__('user.table.email'))
+                    ->searchable()
+                    ->sortable()
+                    ->limit(30),
+                TextColumn::make('created_at')
+                    ->label(__('user.table.created_at'))
+                    ->dateTime('j/n/y, h:i A')
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->label(__('user.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {

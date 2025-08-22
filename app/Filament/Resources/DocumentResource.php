@@ -259,8 +259,7 @@ class DocumentResource extends Resource
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->sortable()
-                    ->url(fn($record) => route('filament.admin.resources.documents.edit', $record)),
+                    ->sortable(),
                 TextColumn::make('title')
                     ->label(__('document.table.title'))
                     ->sortable()

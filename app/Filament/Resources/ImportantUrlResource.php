@@ -220,24 +220,29 @@ class ImportantUrlResource extends Resource
             // Disable record URL for trashed records
             ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
-                TextColumn::make('id')->label(__('importanturl.table.id'))->sortable(),
-
-                TextColumn::make('title')->label(__('importanturl.table.title'))->sortable()->searchable()->limit(20),
-
+                TextColumn::make('id')
+                    ->label(__('importanturl.table.id'))
+                    ->sortable(),
+                TextColumn::make('title')
+                    ->label(__('importanturl.table.title'))
+                    ->sortable()
+                    ->searchable()
+                    ->limit(20),
                 TextColumn::make('url')
                     ->label(__('importanturl.table.link'))
                     ->url(fn($record) => $record->url, true)
                     ->openUrlInNewTab()
                     ->copyable()
                     ->limit(20),
-
                 TextColumn::make('project.title')
                     ->label(__('importanturl.table.project'))
                     ->sortable()
                     ->searchable()
                     ->limit(20),
-
-                TextColumn::make('created_at')->label(__('importanturl.table.created_at'))->dateTime('j/n/y, h:i A')->sortable(),
+                TextColumn::make('created_at')
+                    ->label(__('importanturl.table.created_at'))
+                    ->dateTime('j/n/y, h:i A')
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->label(__('importanturl.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
