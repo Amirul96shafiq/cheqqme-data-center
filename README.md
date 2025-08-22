@@ -22,31 +22,41 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 
 ## Tech Stack
 
-| Area         | Tools / Frameworks                             |
-| ------------ | ---------------------------------------------- |
-| Language     | PHP 8.x                                        |
-| Backend      | Laravel 12.x                                   |
-| Admin / UI   | FilamentPHP v3, Tailwind CSS                   |
-| Realtime UX  | Livewire (Filament integrated)                 |
-| Database     | SQLite (dev) → MySQL/PostgreSQL (future)       |
-| MCP Server   | Node.js (Express), SQLite, bcrypt, dotenv      |
-| Build Tools  | Vite, NPM                                      |
-| Testing      | PHPUnit, Laravel test utilities                |
-| Activity Log | spatie/laravel-activitylog (planned wiring)    |
-| Kanban Board | Relaticle Flowforge (custom Action Board page) |
+| Area         | Tools / Frameworks                                              |
+| ------------ | --------------------------------------------------------------- |
+| Language     | PHP 8.2                                                         |
+| Backend      | Laravel 12.20.0                                                 |
+| Admin / UI   | Filament v3.3.31, Tailwind CSS v3.4                             |
+| Realtime UX  | Livewire v3.6 (Filament integrated)                             |
+| Database     | SQLite (dev) → MySQL/PostgreSQL (future)                        |
+| MCP Server   | Node.js (Express 5), SQLite, bcrypt 6, dotenv 17                |
+| Build Tools  | Vite, NPM                                                       |
+| Testing      | PHPUnit 11, Laravel testing utilities, Livewire component tests |
+| Activity Log | Spatie Activitylog + Filament Activitylog plugin (enabled)      |
+| Kanban Board | Relaticle Flowforge v0.2 (custom Action Board page)             |
 
 ---
 
 ## Major Features (Current)
 
--   MCP server integration for context API and semantic search
--   Password hash compatibility between MCP and Laravel (bcrypt $2b$ → $2y$)
--   API endpoints for user creation, important URLs, and tasks (tested via Postman)
--   URL / Link management with metadata & creator tracking
--   Project & Client entities (foundation for relationships)
--   Document records (file storage ready for local → S3 migration)
--   Action Board (Kanban) for internal tasks (columns: To Do / In Progress / To Review / Completed / Archived)
--   Basic user authentication (Filament panel guarded)
+-   MCP server integration (Node/Express) reading the same SQLite DB as Laravel
+    -   Auth via `x-api-key` header; endpoints for users, tasks, comments, clients, projects, documents, important-urls, phone-numbers
+    -   Password hash compatible: bcrypt `$2b$` is converted to `$2y$` for Laravel
+-   Action Board (Kanban) using Relaticle Flowforge
+    -   Columns: To Do / In Progress / To Review / Completed / Archived
+    -   Due date color badges (red/yellow/gray/green), single assignee badge with self-highlighting, attachments counter
+    -   Inline resource selectors for client, projects, documents, important URLs
+-   Comments with @mentions on tasks
+    -   Rich text with strict sanitization (only semantic tags/links)
+    -   Mention extraction supports usernames and full names (longest-prefix match)
+    -   Mentions rendered as inline badges at view-time; exact match only (no over-highlighting)
+    -   Filament database notifications for mentioned users with deep-link to the task
+    -   Leading/trailing whitespace in comments is prevented and validated
+-   Activity & audit logging
+    -   Spatie Activitylog across core models; Task move events logged with old/new status and order
+    -   Filament Activitylog plugin page enabled in the admin panel
+-   Entities & management UIs: Users, Clients, Projects, Documents, Important URLs, Phone Numbers, Tasks
+-   Basic user authentication (Filament panel guarded) with database notifications (5s polling)
 -   Consistent environment template (`.env.example`) for quick onboarding
 
 ## In Progress / Planned
@@ -129,6 +139,17 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 
 Refer to the main `.env` for connecting Laravel to MCP (MCP_ENDPOINT, MCP_API_KEY).
 
+Example request:
+
+```bash
+curl -H "x-api-key: YOUR_KEY" http://127.0.0.1:5000/api/users
+```
+
+MCP API notes (current state):
+
+-   Users GET/POST/PUT/DELETE work against the shared SQLite DB.
+-   Some write endpoints for Tasks, Comments, Phone Numbers, and Important URLs are placeholders and reference column names that differ from the current Laravel schema. Prefer GET endpoints for these resources until aligned.
+
 ---
 
 ## Project Structure (Highlights)
@@ -140,8 +161,8 @@ app/
 resources/
 	views/             # Blade templates
 database/
-	migrations/        # Schema definitions (not tracked in repo)
-	seeders/           # (Add seeders for demo data, not tracked)
+	migrations/        # Schema definitions
+	seeders/           # Database seeders and examples
 mcp-server/           # Node.js MCP server (API endpoints, .env ignored)
 routes/
 	web.php            # Web routes (Filament auto-registers its own)
@@ -151,19 +172,35 @@ storage/             # Logs, cache, uploads (ignored from git)
 
 ---
 
-## Action Board (Kanban)
+## Selected Routes
 
-Implemented via a custom Filament Page extending a Kanban board component. Columns reflect task lifecycle. Each card shows due date color indicators and assignment status. Future upgrades: inline comment thread, drag ordering persistence optimization, filters & swimlanes.
+-   `GET /admin` Filament panel (auto-registered resources for Users, Clients, Projects, Documents, Important URLs, Phone Numbers, Tasks)
+-   `GET /admin/action-board` Action Board (Kanban)
+-   `GET /action-board/assigned-active-count` JSON count for current user’s active assignments (used for nav badge)
+-   Comments API (auth): `POST /comments`, `PATCH /comments/{comment}`, `DELETE /comments/{comment}`
+-   Notifications: `POST /notifications/{id}/mark-as-read`
 
 ---
 
-## Testing Strategy (Planned)
+## Action Board (Kanban)
 
--   Feature tests: CRUD for Projects, Documents, Important URLs
--   Livewire component tests: Task comments & board interactions
--   Policy tests once authorization is introduced
+Custom Filament Page (`admin/action-board`) powered by Flowforge. Cards display:
 
-Add seeds + factories to simplify realistic scenario coverage.
+-   **Due date badges**: red (<1 day), yellow (1–6 days), gray (7–13 days), green (≥14 days)
+-   **Assignee badge**: shows username/short name; highlighted when assigned to the current user
+-   **Attachments**: counter badge on the form, file storage under `storage/app/tasks`
+
+Create uses a streamlined modal; edit navigates to the Task Resource edit page.
+
+---
+
+## Testing
+
+-   Feature tests exist for the comment system, mentions extraction, and notifications
+-   Livewire interaction tests cover add/edit/delete flows and validation rules
+-   Run: `php artisan test`
+
+Future: add comprehensive CRUD tests for Projects, Documents, Important URLs, and policy tests.
 
 ---
 
@@ -184,7 +221,7 @@ Add seeds + factories to simplify realistic scenario coverage.
 ## Authentication & Security
 
 -   Laravel auth scaffolding + Filament guard
--   MCP server password hashes compatible with Laravel (bcrypt $2b$ → $2y$)
+-   MCP server password hashes compatible with Laravel (bcrypt `$2b$` → `$2y$`)
 -   Sensitive files/folders (`.env`, `database/`, `storage/`, etc.) are ignored from git tracking
 -   Next steps: add Policies (Project, Document, URL) & roles field on `users` table
 -   Consider rate limiting if public endpoints added later
@@ -204,12 +241,34 @@ Legend: ✅ Done · 🛠 In Progress · 🔜 Planned
 | Basic Auth (Filament)   | ✅     | Panel restricted                  |
 | Environment template    | ✅     | `.env.example` structured         |
 | Tagging system          | 🔜     | Polymorphic (tags)                |
-| Activity / Audit Log    | 🔜     | Wire spatie/activitylog           |
+| Activity / Audit Log    | ✅     | Spatie + Filament plugin enabled  |
 | Role-based Policies     | 🔜     | Granular access control           |
 | Full‑text / AI Search   | 🔜     | Scout + embeddings layer          |
 | Bulk Import / Export    | 🔜     | CSV/XLSX via Laravel Excel        |
 | Background Queue        | 🔜     | For heavy file ops                |
 | S3 Integration          | 🔜     | Move FILESYSTEM_DRIVER to s3      |
+
+---
+
+## Local Development
+
+In one terminal (Laravel app, queue worker, logs, Vite):
+
+```bash
+composer dev
+```
+
+In another terminal (MCP server):
+
+```bash
+cd mcp-server && node index.js
+```
+
+Notes:
+
+-   Filament database notifications are enabled with 5s polling.
+-   Comments sanitize HTML and strictly disallow leading/trailing whitespace.
+-   Task resources include client/project/document/URL linkages stored as JSON arrays on the task.
 
 ---
 
