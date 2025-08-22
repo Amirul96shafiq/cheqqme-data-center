@@ -50,11 +50,11 @@ class TaskComments extends Component implements HasForms
     #[On('mentionSelected')]
     public function onMentionSelected(?array $payload = null): void
     {
-        if (! $payload) {
+        if (!$payload) {
             return;
         }
         $userId = (int) ($payload['userId'] ?? 0);
-        if ($userId > 0 && ! in_array($userId, $this->pendingMentionUserIds, true)) {
+        if ($userId > 0 && !in_array($userId, $this->pendingMentionUserIds, true)) {
             $this->pendingMentionUserIds[] = $userId;
         }
     }
@@ -65,11 +65,11 @@ class TaskComments extends Component implements HasForms
         $this->task = Task::findOrFail($taskId);
         // Ensure base form array keys exist before Filament/Livewire entangle
         $this->composerData = $this->composerData ?? [];
-        if (! array_key_exists('newComment', $this->composerData)) {
+        if (!array_key_exists('newComment', $this->composerData)) {
             $this->composerData['newComment'] = '';
         }
         $this->editData = $this->editData ?? [];
-        if (! array_key_exists('editingText', $this->editData)) {
+        if (!array_key_exists('editingText', $this->editData)) {
             $this->editData['editingText'] = '';
         }
         if (method_exists($this, 'composerForm')) {
@@ -137,7 +137,7 @@ class TaskComments extends Component implements HasForms
         // Extract mentions from comment text
         $mentions = Comment::extractMentions($sanitized);
         // Merge with any user IDs selected via the dropdown tracking
-        if (! empty($this->pendingMentionUserIds)) {
+        if (!empty($this->pendingMentionUserIds)) {
             $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
         }
 
@@ -199,7 +199,7 @@ class TaskComments extends Component implements HasForms
     // Save editing a comment
     public function saveEdit(): void
     {
-        if (! $this->editingId) {
+        if (!$this->editingId) {
             return;
         }
         if (method_exists($this, 'editForm')) {
@@ -270,7 +270,7 @@ class TaskComments extends Component implements HasForms
 
         // Extract mentions from updated comment text
         $mentions = Comment::extractMentions($sanitized);
-        if (! empty($this->pendingMentionUserIds)) {
+        if (!empty($this->pendingMentionUserIds)) {
             $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
         }
 
@@ -351,7 +351,7 @@ class TaskComments extends Component implements HasForms
     // Perform deleting a comment
     public function performDelete(): void
     {
-        if (! $this->confirmingDeleteId) {
+        if (!$this->confirmingDeleteId) {
             return;
         }
         $this->deleteComment($this->confirmingDeleteId);
@@ -466,7 +466,7 @@ class TaskComments extends Component implements HasForms
             ])->statePath('composerData'),
             // Edit form
             'editForm' => $this->makeForm()->schema([
-            RichEditor::make('editingText')
+                RichEditor::make('editingText')
                     ->label('')
                     ->placeholder(__('comments.composer.edit_placeholder'))
                     ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
@@ -489,7 +489,7 @@ class TaskComments extends Component implements HasForms
                         return $state;
                     })
                     ->columnSpanFull(),
-        ])->statePath('editData'),
+            ])->statePath('editData'),
         ];
     }
 
@@ -527,12 +527,12 @@ class TaskComments extends Component implements HasForms
                 } elseif (preg_match("/href\s*=\s*'([^']*)'/i", $attr, $hrefMatch)) {
                     $href = $hrefMatch[1];
                 }
-                if ($href && ! preg_match('/^https?:\/\//i', $href)) {
-                    $href = 'https://'.ltrim($href);
+                if ($href && !preg_match('/^https?:\/\//i', $href)) {
+                    $href = 'https://' . ltrim($href);
                 }
                 $safe = htmlspecialchars($href, ENT_QUOTES, 'UTF-8');
 
-                return '<a href="'.$safe.'" target="_blank" rel="nofollow noopener">';
+                return '<a href="' . $safe . '" target="_blank" rel="nofollow noopener">';
             }, $html);
             // Drop event handlers / javascript: remnants just in case
             $html = preg_replace('/<a([^>]*)(on[a-z]+\s*=\s*"[^"]*")([^>]*)>/i', '<a$1$3>', $html);
@@ -541,7 +541,7 @@ class TaskComments extends Component implements HasForms
 
         // 6) Strip attributes from all other allowed tags
         $html = preg_replace_callback('/<(?!a\b)(strong|em|s|code|pre|ul|ol|li|br|p)([^>]*)>/i', function ($m) {
-            return '<'.strtolower($m[1]).'>';
+            return '<' . strtolower($m[1]) . '>';
         }, $html);
 
         // 7) Collapse excessive <br>

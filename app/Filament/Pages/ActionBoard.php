@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Models\Task;
 use App\Models\User;
 use Closure;
+use App\Filament\Resources\TaskResource;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms;
@@ -133,30 +134,20 @@ class ActionBoard extends KanbanBoardPage
 
     public function editAction(Action $action): Action
     {
+        // Redirect to the TaskResource edit page instead of opening an edit modal on the Action Board.
         return $action
-            ->modalHeading(__('action.modal.edit_title'))
-            ->modalWidth('7xl') // Increased width to accommodate sidebar
-            ->form(function (Forms\Form $form, Action $action) {
-                $args = method_exists($action, 'getArguments') ? $action->getArguments() : [];
-                $col = $args['column'] ?? $this->detectCreateColumn();
-                if (is_string($col) && in_array($col, ['todo', 'in_progress', 'toreview', 'completed', 'archived'])) {
-                    $form->fill(['status' => $col]);
-                }
+            ->icon('heroicon-o-pencil')
+            ->label(__('action.modal.edit_title'))
+            ->action(function (Task $record) {
+                $url = TaskResource::getUrl('edit', ['record' => $record->id]);
 
-                return $this->taskFormSchema($form, 'edit');
-            })
-            ->action(function (array $data, Task $record) {
-                // Update task data only (comments are handled separately)
-                $record->update($data);
-                Notification::make()
-                    ->title(__('action.notifications.updated'))
-                    ->success()
-                    ->send();
+                return redirect()->to($url);
             });
     }
 
     protected function taskFormSchema(Forms\Form $form, string $mode, $defaultStatus = null)
     {
+        // Only allow create flow in Action Board as requested; hide edit-specific UI.
         return $form->schema([
             // For edit mode, use grid with sidebar layout
             Forms\Components\Grid::make(5)
@@ -590,7 +581,7 @@ class ActionBoard extends KanbanBoardPage
                         ])
                         ->columnSpan(2),
                 ])
-                ->visible($mode === 'edit'),
+                ->visible(false),
 
             // For create mode, reuse the Tabs layout without the comments section
             Forms\Components\Grid::make(5)

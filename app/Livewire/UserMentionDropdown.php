@@ -65,9 +65,9 @@ class UserMentionDropdown extends Component
 
         // Search for users
         $query = User::query()
-            ->where('username', 'like', '%'.$this->search.'%')
-            ->orWhere('email', 'like', '%'.$this->search.'%')
-            ->orWhere('name', 'like', '%'.$this->search.'%')
+            ->where('username', 'like', '%' . $this->search . '%')
+            ->orWhere('email', 'like', '%' . $this->search . '%')
+            ->orWhere('name', 'like', '%' . $this->search . '%')
             ->orderBy('username')
             ->limit(10);
 
