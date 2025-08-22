@@ -91,6 +91,7 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                \App\Filament\Widgets\ChatbotWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -119,6 +120,9 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 'panels::body.end',
                 fn() => <<<'HTML'
+                            <!-- Chatbot Widget -->
+                            <div id="chatbot-container"></div>
+                            
                             <script>
                                 document.addEventListener('DOMContentLoaded', () => {
                                     // -----------------------------

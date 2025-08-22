@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ChatbotController;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -49,6 +50,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::patch('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+    // Chatbot routes
+    Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])->name('chatbot.chat');
+    Route::get('/chatbot/conversation', [ChatbotController::class, 'getConversationHistory'])->name('chatbot.conversation');
+    Route::delete('/chatbot/conversation', [ChatbotController::class, 'clearConversation'])->name('chatbot.clear');
 
     // Notification routes
     Route::post('/notifications/{id}/mark-as-read', function ($id) {

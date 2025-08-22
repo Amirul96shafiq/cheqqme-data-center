@@ -39,6 +39,11 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 
 ## Major Features (Current)
 
+-   **AI-Powered Chatbot** with OpenAI integration
+    -   Floating chat button accessible from anywhere in the app
+    -   Context-aware responses about platform features and navigation
+    -   Conversation memory and intelligent assistance
+    -   Custom CheQQme persona for platform-specific help
 -   MCP server integration (Node/Express) reading the same SQLite DB as Laravel
     -   Auth via `x-api-key` header; endpoints for users, tasks, comments, clients, projects, documents, important-urls, phone-numbers
     -   Password hash compatible: bcrypt `$2b$` is converted to `$2y$` for Laravel
@@ -234,6 +239,7 @@ Legend: ✅ Done · 🛠 In Progress · 🔜 Planned
 
 | Feature                 | Status | Notes                             |
 | ----------------------- | ------ | --------------------------------- |
+| **AI-Powered Chatbot** | ✅     | OpenAI integration with custom persona |
 | CRUD for Important URLs | ✅     | Core implemented                  |
 | Projects & Clients      | ✅     | Base models & forms               |
 | Documents storage       | ✅     | Local disk; S3 planned            |
