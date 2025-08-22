@@ -42,8 +42,9 @@ class DocumentResource extends Resource
     public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
     {
         return [
-            __('document.search.title') => $record->title,
             __('document.search.project') => optional($record->project)->title,
+            __('document.search.type') => ucfirst($record->type),
+            __('document.search.url') => $record->url ?? '-',
         ];
     }
 

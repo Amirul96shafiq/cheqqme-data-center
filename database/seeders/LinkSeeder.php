@@ -14,6 +14,7 @@ class LinkSeeder extends Seeder
      */
     public function run(): void
     {
+        /*
         DB::table('links')->insert([
             [
                 'title' => 'Company SharePoint',
@@ -58,5 +59,6 @@ class LinkSeeder extends Seeder
                 'updated_at' => now(),
             ],
         ]);
+        */
     }
 };
