@@ -73,7 +73,7 @@
                             <!-- Edit form -->
                             @if($this->editingId === $comment->id)
                                 <div class="space-y-2">
-                                    <div class="fi-form" wire:ignore>{{ $this->editForm }}</div>
+                                    <div class="fi-form edit-form" wire:ignore data-edit-form="true">{{ $this->editForm }}</div>
                                     <div class="flex items-center gap-2">
                                         <!-- Save Edit form button -->
                                         <button wire:click="saveEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-white hover:bg-primary-500 hover:dark:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.save') }}</button>
@@ -330,7 +330,7 @@
         }
         // Wait for Livewire to be available
         document.addEventListener('DOMContentLoaded', function() {
-            waitForLivewire();            
+            waitForLivewire();
             // Re-initialize after Livewire updates
             document.addEventListener('livewire:update', function() {
                 setTimeout(initializeMentions, 500);
@@ -339,11 +339,66 @@
             document.addEventListener('livewire:navigated', function() {
                 setTimeout(initializeMentions, 500);
             });
+
+            // Watch for edit form being added to DOM
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        // Check if any added nodes contain an edit form
+                        mutation.addedNodes.forEach(function(node) {
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                const editForm = node.querySelector ?
+                                    node.querySelector('.fi-form:not([data-composer] .fi-form)') :
+                                    null;
+                                if (editForm || (node.classList && node.classList.contains('fi-form') && !node.closest('[data-composer]'))) {
+                                    // Wait longer for the edit form to be fully rendered
+                                    setTimeout(initializeMentions, 1500);
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Start observing
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+
+            // Also listen for focus events on potential edit form editors
+            document.addEventListener('focusin', function(e) {
+                const target = e.target;
+                if (target && (target.tagName === 'TRIX-EDITOR' || target.contentEditable === 'true' || target.getAttribute('role') === 'textbox')) {
+                    // Check if this editor is in an edit form (not composer)
+                    const editForm = target.closest('.fi-form');
+                    if (editForm && !editForm.closest('[data-composer]')) {
+                        // Small delay to ensure the editor is fully ready
+                        setTimeout(function() {
+                            if (!target.hasAttribute('data-mentions-initialized')) {
+                                initializeEditor(target);
+                            }
+                        }, 100);
+                    }
+                }
+            });
+
+
         });
         // Initialize mentions
         function initializeMentions() {
+            // First, check if there's an edit form present
+            const editForm = document.querySelector('.edit-form[data-edit-form="true"]');
+            if (editForm) {
+                let editor = findEditEditor();
+                if (editor) {
+                    initializeEditor(editor);
+                    return;
+                }
+            }
+
+            // Otherwise, find the regular editor (composer)
             let editor = findEditor();
-            // If the editor is found, initialize it
             if (editor) {
                 initializeEditor(editor);
                 return;
@@ -351,33 +406,81 @@
             // Wait for the editor to be available
             waitForEditor();
         }
-        // Find the editor
+        // Find the edit form editor specifically
+        function findEditEditor() {
+            // Look for Trix editor in edit form (when editing a comment)
+            // Try different selectors to find the edit form
+            let editForm = document.querySelector('.edit-form[data-edit-form="true"]');
+
+            if (!editForm) {
+                // Try alternative selectors
+                editForm = document.querySelector('.edit-form');
+            }
+
+            if (!editForm) {
+                // Try to find any fi-form that's not the composer
+                const allForms = document.querySelectorAll('.fi-form');
+                for (let form of allForms) {
+                    if (!form.closest('[data-composer]')) {
+                        editForm = form;
+                        break;
+                    }
+                }
+            }
+
+            if (editForm) {
+                const richEditor = editForm.querySelector('.fi-fo-rich-editor, .fi-fo-rich-editor-container');
+                if (richEditor) {
+                    let editor = richEditor.querySelector('trix-editor');
+                    if (editor) {
+                        return editor;
+                    }
+
+                    editor = richEditor.querySelector('.ProseMirror, [contenteditable="true"], [role="textbox"]');
+                    if (editor) {
+                        return editor;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        // Find the composer editor
         function findEditor() {
             let editor = null;
-            
-            // Look for Trix editor in minimal-comment-editor class
+
+            // Look for Trix editor in minimal-comment-editor class (composer)
             const minimalCommentEditor = document.querySelector('.minimal-comment-editor');
             if (minimalCommentEditor) {
                 editor = minimalCommentEditor.querySelector('trix-editor');
-                if (editor) return editor;
-                
+                if (editor) {
+                    return editor;
+                }
+
                 editor = minimalCommentEditor.querySelector('.ProseMirror, [contenteditable="true"], [role="textbox"]');
-                if (editor) return editor;
+                if (editor) {
+                    return editor;
+                }
             }
-            
+
             // Look for Trix editor in comment composer
             const commentComposer = document.querySelector('[data-composer]');
             if (commentComposer) {
                 const richEditor = commentComposer.querySelector('.fi-fo-rich-editor, .fi-fo-rich-editor-container');
                 if (richEditor) {
                     editor = richEditor.querySelector('trix-editor');
-                    if (editor) return editor;
-                    
+                    if (editor) {
+                        return editor;
+                    }
+
                     editor = richEditor.querySelector('.ProseMirror, [contenteditable="true"], [role="textbox"]');
-                    if (editor) return editor;
+                    if (editor) {
+                        return editor;
+                    }
                 }
             }
-            
+
             return null;
         }
         // Wait for the editor to be available
@@ -406,7 +509,7 @@
             if (editor.dataset.mentionsInitialized) {
                 return;
             }
-            
+
             editor.dataset.mentionsInitialized = 'true';
             
             // Add event listeners
@@ -431,7 +534,7 @@
                 atSymbolPosition = null;
                 lastSelectedPosition = getCursorPosition(editor);
                 
-                if (data.inputId === 'composerData.newComment' || data.inputId === editor.id) {
+                if (data.inputId === 'composerData.newComment' || data.inputId === 'editData.editingText' || data.inputId === editor.id) {
                     // Notify server of selected user id to track mentions robustly
                     if (typeof data.userId !== 'undefined') {
                         Livewire.dispatch('mentionSelected', { userId: data.userId });
@@ -543,21 +646,40 @@
             if (!dropdownActive) {
                 // Show new dropdown
                 const atPosition = getCaretCoordinatesAtIndex(editor, atIndex);
-                if (atPosition && atPosition.left !== 0 && atPosition.top !== 0) {
-                    atSymbolPosition = atPosition;
+
+                // Try to get position, with fallbacks
+                let finalPosition = atPosition;
+
+                if (!finalPosition || finalPosition.left === 0 || finalPosition.top === 0) {
+                    // Fallback 1: Try to get editor's bounding rect
+                    const editorRect = editor.getBoundingClientRect();
+                    if (editorRect) {
+                        finalPosition = {
+                            left: editorRect.left,
+                            top: editorRect.bottom + 5
+                        };
+                    }
+                }
+
+                if (finalPosition && finalPosition.left !== 0 && finalPosition.top !== 0) {
+                    atSymbolPosition = finalPosition;
                     dropdownActive = true;
-                    
+
+                    // Determine the input ID based on the editor element
+                    const inputId = editor.closest('[data-composer]') ? 'composerData.newComment' : 'editData.editingText';
                     Livewire.dispatch('showMentionDropdown', {
-                        inputId: 'composerData.newComment',
+                        inputId: inputId,
                         searchTerm: searchTerm,
-                        x: atPosition.left,
-                        y: atPosition.top
+                        x: finalPosition.left,
+                        y: finalPosition.top
                     });
                 }
             } else {
                 // Update existing dropdown with new search term
+                // Determine the input ID based on the editor element
+                const inputId = editor.closest('[data-composer]') ? 'composerData.newComment' : 'editData.editingText';
                 Livewire.dispatch('showMentionDropdown', {
-                    inputId: 'composerData.newComment',
+                    inputId: inputId,
                     searchTerm: searchTerm,
                     x: atSymbolPosition.left,
                     y: atSymbolPosition.top
@@ -892,7 +1014,6 @@
                     console.error('Error inserting mention in ProseMirror:', error);
                 }
             } else if (editor.tagName === 'TRIX-EDITOR') {
-                console.log('Using Trix editor insertion');
                 try {
                     const trixEditor = editor.editor;
                     
@@ -1013,17 +1134,9 @@
             
             // Reset flag and restore Livewire functionality after insertion
             setTimeout(() => {
-                console.log('🔄 Resetting insertingMention flag after insertion');
                 insertingMention = false;
-                
+
                 // No Livewire method overrides to restore
-                
-                // CRITICAL: Also ensure dropdown state is reset after insertion
-                console.log('🔄 Final state after insertion:', {
-                    insertingMention: insertingMention,
-                    dropdownActive: dropdownActive,
-                    atSymbolPosition: atSymbolPosition
-                });
             }, 500); // Longer delay to ensure cursor positioning is stable
         }
 
