@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\CommentController;
 use App\Models\Comment;
 use Illuminate\Http\Request;
@@ -49,6 +50,25 @@ Route::middleware('auth')->group(function () {
     Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::patch('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+    // Chatbot routes
+    Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])->name('chatbot.chat');
+    Route::get('/chatbot/conversation', [ChatbotController::class, 'getConversation'])->name('chatbot.conversation');
+    Route::delete('/chatbot/conversation', [ChatbotController::class, 'clearConversation'])->name('chatbot.clear');
+    Route::get('/chatbot/conversations', [ChatbotController::class, 'listConversations'])->name('chatbot.list');
+    Route::post('/chatbot/new-conversation', [ChatbotController::class, 'startNewConversation'])->name('chatbot.new');
+    Route::delete('/chatbot/cleanup', [ChatbotController::class, 'cleanupOldConversations'])->name('chatbot.cleanup');
+    Route::get('/chatbot/stats', [ChatbotController::class, 'getConversationStats'])->name('chatbot.stats');
+    Route::get('/chatbot/debug', [ChatbotController::class, 'debug'])->name('chatbot.debug');
+    Route::get('/chatbot/test-conversation', function () {
+        $conversation = \App\Models\ChatbotConversation::where('conversation_id', 'conv_1755956154123_t2zhg82k6')->first();
+        return response()->json([
+            'found' => $conversation ? true : false,
+            'conversation_id' => $conversation->conversation_id ?? null,
+            'messages_count' => $conversation ? count($conversation->messages) : 0,
+            'messages' => $conversation ? $conversation->messages : []
+        ]);
+    })->name('chatbot.test');
 
     // Notification routes
     Route::post('/notifications/{id}/mark-as-read', function ($id) {
