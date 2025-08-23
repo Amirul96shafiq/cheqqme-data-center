@@ -21,6 +21,30 @@
         // console.log('Saved new conversation ID to localStorage:', conversationId);
     }
 
+    // Initialize chatbot state from localStorage
+    function initializeChatbotState() {
+        const interfaceEl = document.getElementById("chatbot-interface");
+        if (!interfaceEl) return;
+
+        // Check if chatbot should be open (default to open if no state is saved)
+        const shouldBeOpen = localStorage.getItem("chatbot_open") !== "false";
+
+        if (shouldBeOpen) {
+            interfaceEl.classList.remove("hidden");
+            // Load conversation history when opening chat
+            if (!isLoadingConversation) {
+                loadConversationHistory();
+            }
+        } else {
+            interfaceEl.classList.add("hidden");
+        }
+
+        // console.log('Initialized chatbot state:', { shouldBeOpen, currentState: interfaceEl.classList.contains("hidden") });
+    }
+
+    // Initialize chatbot state on page load
+    initializeChatbotState();
+
     // Try to load conversation history immediately if we have a conversation ID
     if (conversationId) {
         // console.log('Attempting to load conversation history on page load');
@@ -37,6 +61,9 @@
 
         interfaceEl.classList.toggle("hidden");
         const isNowHidden = interfaceEl.classList.contains("hidden");
+
+        // Save chatbot state to localStorage
+        localStorage.setItem("chatbot_open", isNowHidden ? "false" : "true");
 
         // console.log('Toggling chatbot:', { wasHidden: isHidden, isNowHidden, conversationId });
 
@@ -129,24 +156,24 @@
 
         const messageClass =
             role === "user"
-                ? "bg-primary-600 text-white"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200";
+                ? "fi-section bg-primary-600 text-white border-primary-600"
+                : "fi-section bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200";
 
         const timeClass =
             role === "user"
-                ? "text-primary-100"
+                ? "text-primary-100/80"
                 : "text-gray-500 dark:text-gray-400";
 
         messageDiv.innerHTML =
-            '<div class="max-w-xs lg:max-w-md ' +
+            '<div class="max-w-[80%] ' +
             messageClass +
-            ' rounded-lg px-3 py-2 shadow-sm">' +
-            '<p class="text-sm whitespace-pre-wrap">' +
+            ' rounded-xl px-4 py-3 shadow-sm border">' +
+            '<p class="text-sm whitespace-pre-wrap leading-relaxed">' +
             content +
             "</p>" +
             '<p class="text-xs ' +
             timeClass +
-            ' mt-1">' +
+            ' mt-2 font-medium">' +
             (timestamp ||
                 new Date().toLocaleTimeString("en-US", {
                     hour: "2-digit",
@@ -167,14 +194,14 @@
         loadingDiv.id = "loading-message";
         loadingDiv.className = "flex justify-start";
         loadingDiv.innerHTML =
-            '<div class="bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 shadow-sm">' +
-            '<div class="flex items-center space-x-2">' +
+            '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%]">' +
+            '<div class="flex items-center space-x-3">' +
             '<div class="flex space-x-1">' +
             '<div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>' +
             '<div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>' +
             '<div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>' +
             "</div>" +
-            '<span class="text-sm text-gray-500 dark:text-gray-400">Arem is thinking...</span>' +
+            '<span class="text-sm text-gray-600 dark:text-gray-300 font-medium">Arem is thinking...</span>' +
             "</div>" +
             "</div>";
         chatMessages.appendChild(loadingDiv);
@@ -287,8 +314,8 @@
         if (chatMessages) {
             chatMessages.innerHTML =
                 '<div class="flex justify-start">' +
-                '<div class="bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2 shadow-sm">' +
-                '<p class="text-sm text-gray-800 dark:text-gray-200">Type anything to start a new conversation!</p>';
+                '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%]">' +
+                '<p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">Type anything to start a new conversation!</p>';
             "</div>" + "</div>";
         }
 
@@ -299,6 +326,10 @@
             "_" +
             Math.random().toString(36).substr(2, 9);
         localStorage.setItem("chatbot_conversation_id", conversationId);
+
+        // Keep chatbot open for new conversation
+        localStorage.setItem("chatbot_open", "true");
+
         conversation = [];
         conversationLoaded = false;
     }
