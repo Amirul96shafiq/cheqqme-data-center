@@ -24,19 +24,27 @@
     // Initialize chatbot state from localStorage
     function initializeChatbotState() {
         const interfaceEl = document.getElementById("chatbot-interface");
-        if (!interfaceEl) return;
+        const chatIcon = document.getElementById("chat-icon");
+        const closeIcon = document.getElementById("close-icon");
+        if (!interfaceEl || !chatIcon || !closeIcon) return;
 
         // Check if chatbot should be open (default to open if no state is saved)
         const shouldBeOpen = localStorage.getItem("chatbot_open") !== "false";
 
         if (shouldBeOpen) {
             interfaceEl.classList.remove("hidden");
+            // Set close icon when chat is open
+            chatIcon.classList.add("hidden");
+            closeIcon.classList.remove("hidden");
             // Load conversation history when opening chat
             if (!isLoadingConversation) {
                 loadConversationHistory();
             }
         } else {
             interfaceEl.classList.add("hidden");
+            // Set chat icon when chat is closed
+            chatIcon.classList.remove("hidden");
+            closeIcon.classList.add("hidden");
         }
 
         // console.log('Initialized chatbot state:', { shouldBeOpen, currentState: interfaceEl.classList.contains("hidden") });
@@ -55,12 +63,25 @@
 
     function toggleChatbot() {
         const interfaceEl = document.getElementById("chatbot-interface");
-        if (!interfaceEl) return;
+        const chatIcon = document.getElementById("chat-icon");
+        const closeIcon = document.getElementById("close-icon");
+        if (!interfaceEl || !chatIcon || !closeIcon) return;
 
         const isHidden = interfaceEl.classList.contains("hidden");
 
         interfaceEl.classList.toggle("hidden");
         const isNowHidden = interfaceEl.classList.contains("hidden");
+
+        // Toggle between chat icon and close icon
+        if (isNowHidden) {
+            // Chat is closed - show chat icon, hide close icon
+            chatIcon.classList.remove("hidden");
+            closeIcon.classList.add("hidden");
+        } else {
+            // Chat is open - show close icon, hide chat icon
+            chatIcon.classList.add("hidden");
+            closeIcon.classList.remove("hidden");
+        }
 
         // Save chatbot state to localStorage
         localStorage.setItem("chatbot_open", isNowHidden ? "false" : "true");
@@ -146,25 +167,60 @@
         }
     }
 
+    function shortenName(fullName) {
+        const nameParts = fullName.trim().split(/\s+/);
+        if (nameParts.length === 1) {
+            return fullName; // If only one name, return as is
+        } else if (nameParts.length === 2) {
+            return `${nameParts[0]} ${nameParts[1].charAt(0)}.`; // First name + first letter of last name
+        } else {
+            // For 3+ names: first name + first letters of middle names + last name
+            const firstName = nameParts[0];
+            const lastName = nameParts[nameParts.length - 1];
+            const middleInitials = nameParts
+                .slice(1, -1)
+                .map((name) => name.charAt(0) + ".")
+                .join(" ");
+            return `${firstName} ${middleInitials} ${lastName.charAt(0)}.`;
+        }
+    }
+
     function addMessage(content, role, timestamp = null) {
         const chatMessages = document.getElementById("chat-messages");
         if (!chatMessages) return;
 
         const messageDiv = document.createElement("div");
         messageDiv.className =
-            "flex " + (role === "user" ? "justify-end" : "justify-start");
+            "flex flex-col space-y-1 " +
+            (role === "user" ? "items-end" : "items-start");
+
+        const fullUserName = window.chatbotUserName || "You";
+        const userName =
+            fullUserName === "You"
+                ? "You"
+                : `You (${shortenName(fullUserName)})`;
+        const nameTag = role === "user" ? userName : "Arem AI";
+        const nameTagClass =
+            role === "user"
+                ? "text-gray-600 dark:text-gray-400 font-semibold text-sm"
+                : "text-gray-600 dark:text-gray-400 font-semibold text-sm";
 
         const messageClass =
             role === "user"
-                ? "fi-section bg-primary-600 text-white border-primary-600"
+                ? "fi-section bg-[#00AE9F] text-white border-[#00AE9F]"
                 : "fi-section bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200";
 
         const timeClass =
             role === "user"
-                ? "text-primary-100/80"
+                ? "text-white/80"
                 : "text-gray-500 dark:text-gray-400";
 
         messageDiv.innerHTML =
+            '<div class="' +
+            nameTagClass +
+            ' px-1">' +
+            nameTag +
+            "</div>" +
             '<div class="max-w-[80%] ' +
             messageClass +
             ' rounded-xl px-4 py-3 shadow-sm border">' +
@@ -192,8 +248,9 @@
 
         const loadingDiv = document.createElement("div");
         loadingDiv.id = "loading-message";
-        loadingDiv.className = "flex justify-start";
+        loadingDiv.className = "flex flex-col space-y-1 items-start";
         loadingDiv.innerHTML =
+            '<div class="text-gray-600 dark:text-gray-400 font-semibold text-sm px-1">Arem AI</div>' +
             '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%]">' +
             '<div class="flex items-center space-x-3">' +
             '<div class="flex space-x-1">' +
@@ -313,7 +370,8 @@
         const chatMessages = document.getElementById("chat-messages");
         if (chatMessages) {
             chatMessages.innerHTML =
-                '<div class="flex justify-start">' +
+                '<div class="flex flex-col space-y-1 items-start">' +
+                '<div class="text-gray-600 dark:text-gray-400 font-semibold text-sm px-1">Arem AI</div>' +
                 '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%]">' +
                 '<p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">Type anything to start a new conversation!</p>';
             "</div>" + "</div>";

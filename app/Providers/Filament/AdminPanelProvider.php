@@ -73,11 +73,6 @@ class AdminPanelProvider extends PanelProvider
                 'danger' => Color::Red,
             ])
             ->sidebarWidth('17rem')
-            // -----------------------------
-            // Load both the Filament admin theme and the main app Tailwind bundle so that
-            // all generated utilities (including danger reds) are guaranteed to be present
-            // even if purge / safelist changes or fallback overrides are removed later.
-            // -----------------------------
             ->viteTheme([
                 'resources/css/filament/admin/theme.css',
                 'resources/css/app.css',
@@ -120,7 +115,21 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 'panels::body.end',
-                fn() => view('partials.chatbot'),
+                function () {
+                    // Exclude chatbot from login, forgot password, and reset password pages
+                    $currentPath = request()->path();
+                    $authPages = ['/login', '/forgot-password', '/reset-password'];
+
+                    foreach ($authPages as $authPage) {
+                        if (str_contains($currentPath, $authPage)) {
+                            return null;
+                        }
+                    }
+
+                    return view('partials.chatbot', [
+                        'userName' => auth()->user()?->name ?? 'You'
+                    ]);
+                },
             )
             ->plugins([
                 LightSwitchPlugin::make()
