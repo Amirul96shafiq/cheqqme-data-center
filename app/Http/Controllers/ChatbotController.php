@@ -16,27 +16,34 @@ class ChatbotController extends Controller
 
   protected $systemPrompt;
 
+  // Constructor
   public function __construct()
   {
     $this->openaiApiKey = config('services.openai.api_key');
     $this->systemPrompt = $this->getSystemPrompt();
 
+    // Log initialization
     Log::info('ChatbotController initialized', [
       'config_key' => config('services.openai.api_key') ? 'found' : 'null',
       'env_key' => env('OPENAI_API_KEY') ? 'found' : 'null',
     ]);
   }
 
+  // Chat endpoint
   public function chat(Request $request)
   {
+    // Validate request
     $request->validate([
       'message' => 'required|string|max:1000',
       'conversation_id' => 'nullable|string',
     ]);
 
     try {
+      // Get user
       $user = auth()->user();
+      // Get message
       $message = $request->input('message');
+      // Get conversation ID
       $conversationId = $request->input('conversation_id') ?? $this->generateConversationId();
 
       // Get conversation history
@@ -53,7 +60,7 @@ class ChatbotController extends Controller
       $systemPromptForChat = $this->systemPrompt;
       $persona = $request->input('persona') ?? $request->header('X-PERSONA');
       if (strtolower($persona) === 'genius_kid') {
-        $systemPromptForChat .= "\n\nIn this persona, you talk to the user as if they are a genius kid: incredibly friendly, playful, curious, and patient. Use simple language, vivid analogies, and light humor. Ask clarifying questions and keep explanations short and engaging.";
+        $systemPromptForChat .= "\n\nIn this persona, you talk to the user as if you are a genius kid: incredibly friendly, playful, curious, and patient. Use simple language, vivid analogies, and light humor. Ask clarifying questions and keep explanations short and engaging.";
       }
       $messages = [
         ['role' => 'system', 'content' => $systemPromptForChat],
@@ -93,21 +100,26 @@ class ChatbotController extends Controller
     }
   }
 
+  // Call OpenAI API
   protected function callOpenAI($messages)
   {
+    // Log API key check
     Log::info('OpenAI API Key check', [
       'has_key' => !empty($this->openaiApiKey),
       'key_length' => $this->openaiApiKey ? strlen($this->openaiApiKey) : 0,
       'key_prefix' => $this->openaiApiKey ? substr($this->openaiApiKey, 0, 10) . '...' : 'null',
     ]);
 
+    // Check if API key is configured
     if (!$this->openaiApiKey) {
       Log::error('OpenAI API key not configured');
 
       return false;
     }
 
+    // Try to call OpenAI API
     try {
+      // Call OpenAI API
       $response = Http::withOptions([
         'verify' => config('app.env') === 'production', // Disable SSL verification in development
       ])->withHeaders([
@@ -137,11 +149,13 @@ class ChatbotController extends Controller
     }
   }
 
+  // Get system prompt
+  // AI PERSONA
   protected function getSystemPrompt()
   {
     return
 
-      "You are Arem, a helpful AI assistant for the CheQQme Data Center - an internal knowledge and operations hub. 
+      "You are Arem, a helpful AI assistant for the CheQQme Data Center - an internal knowledge and operations hub. You are also a genius kid, incredibly friendly, playful, curious, and patient. Use simple language, vivid analogies, and light humor. Ask clarifying questions and keep explanations short and engaging.
 
       Your role is to help users:
       - Navigate the web application
@@ -157,33 +171,35 @@ class ChatbotController extends Controller
       - Document information
       - Important URLs information
       - User information
-      - Platform navigation and features
-
-      You are also a genius kid, incredibly friendly, playful, curious, and patient. Use simple language, vivid analogies, and light humor. Ask clarifying questions and keep explanations short and engaging.";
+      - Platform navigation and features";
   }
 
+  // Generate conversation ID
   protected function generateConversationId()
   {
     return 'conv_' . uniqid() . '_' . time();
   }
 
+  // Get or create conversation
   protected function getOrCreateConversation($conversationId, $userId)
   {
     return ChatbotConversation::firstOrCreate(
-      ['conversation_id' => $conversationId],
+      ['user_id' => $userId, 'conversation_id' => $conversationId],
       [
-        'user_id' => $userId,
         'messages' => [],
         'is_active' => true,
       ]
     );
   }
 
+  // Get conversation history
   protected function getConversationHistory($conversationId, $userId = null)
   {
-    $conversation = ChatbotConversation::where('conversation_id', $conversationId)
-      ->when($userId, fn($query) => $query->where('user_id', $userId))
-      ->first();
+    $conversationQuery = ChatbotConversation::where('conversation_id', $conversationId);
+    if ($userId) {
+      $conversationQuery->where('user_id', $userId);
+    }
+    $conversation = $conversationQuery->first();
 
     if (!$conversation) {
       return [];
@@ -192,6 +208,7 @@ class ChatbotController extends Controller
     return $conversation->getFrontendMessages();
   }
 
+  // Store conversation history
   protected function storeConversationHistory($conversationId, $messages, $userId)
   {
     $conversation = $this->getOrCreateConversation($conversationId, $userId);
@@ -216,6 +233,7 @@ class ChatbotController extends Controller
     return $conversation;
   }
 
+  // Get conversation
   public function getConversation(Request $request)
   {
     $request->validate([
@@ -232,6 +250,7 @@ class ChatbotController extends Controller
     ]);
   }
 
+  // Clear conversation
   public function clearConversation(Request $request)
   {
     $request->validate([
@@ -254,6 +273,7 @@ class ChatbotController extends Controller
     ]);
   }
 
+  // List conversations
   public function listConversations(Request $request)
   {
     $user = auth()->user();
@@ -270,26 +290,43 @@ class ChatbotController extends Controller
     ]);
   }
 
+  // Start new conversation
   public function startNewConversation(Request $request)
   {
     $user = auth()->user();
-    $conversationId = $this->generateConversationId();
+    $maxAttempts = 5;
+    $conversation = null;
+    for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
+      $conversationId = $this->generateConversationId();
+      try {
+        $conversation = ChatbotConversation::create([
+          'user_id' => $user->id,
+          'conversation_id' => $conversationId,
+          'messages' => [],
+          'is_active' => true,
+          'title' => $request->input('title') ?: 'New Conversation',
+        ]);
+        break;
+      } catch (\Illuminate\Database\QueryException $e) {
+        if (strpos($e->getMessage(), 'UNIQUE constraint failed') !== false) {
+          // Try again with a new ID
+          continue;
+        }
+        throw $e;
+      }
+    }
 
-    // Create a new conversation
-    $conversation = ChatbotConversation::create([
-      'user_id' => $user->id,
-      'conversation_id' => $conversationId,
-      'messages' => [],
-      'is_active' => true,
-      'title' => $request->input('title') ?: 'New Conversation',
-    ]);
+    if (!$conversation) {
+      return response()->json(['error' => 'Unable to create new conversation after multiple retries'], 500);
+    }
 
     return response()->json([
-      'conversation_id' => $conversationId,
+      'conversation_id' => $conversation->conversation_id,
       'conversation' => $conversation,
     ]);
   }
 
+  // Cleanup old conversations
   public function cleanupOldConversations(Request $request)
   {
     $user = auth()->user();
@@ -305,6 +342,7 @@ class ChatbotController extends Controller
     ]);
   }
 
+  // Get conversation stats
   public function getConversationStats(Request $request)
   {
     $user = auth()->user();
@@ -326,6 +364,7 @@ class ChatbotController extends Controller
     return response()->json($stats);
   }
 
+  // Debug
   public function debug()
   {
     return response()->json([

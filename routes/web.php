@@ -10,14 +10,17 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+// Forgot password route
 Route::get('forgot-password', function () {
     App::setLocale(session('locale', config('app.locale')));
 
     return view('auth.forgot-password');
 })->name('password.request');
 
+// Forgot password route
 Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
+// Reset password route
 Route::get('reset-password/{token}', function ($token) {
     App::setLocale(session('locale', config('app.locale')));
 
@@ -26,6 +29,7 @@ Route::get('reset-password/{token}', function ($token) {
 
 Route::post('reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
+// Set locale route
 Route::post('/set-locale', function (Request $request) {
     $locale = $request->input('locale');
     session(['locale' => $locale]);
@@ -33,6 +37,7 @@ Route::post('/set-locale', function (Request $request) {
     return back();
 })->name('locale.set');
 
+// Home route
 Route::get('/', function () {
     if (Auth::check()) {
         return redirect('/admin');
@@ -41,6 +46,7 @@ Route::get('/', function () {
     return redirect('/admin/login');
 });
 
+// Login route
 Route::get('/login', function () {
     return redirect('/admin/login');
 })->name('login');
@@ -61,7 +67,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/chatbot/stats', [ChatbotController::class, 'getConversationStats'])->name('chatbot.stats');
     Route::get('/chatbot/debug', [ChatbotController::class, 'debug'])->name('chatbot.debug');
     Route::get('/chatbot/test-conversation', function () {
-        $conversation = \App\Models\ChatbotConversation::where('conversation_id', 'conv_1755956154123_t2zhg82k6')->first();
+        $user = auth()->user();
+        $conversation = \App\Models\ChatbotConversation::where('user_id', $user->id)->first();
         return response()->json([
             'found' => $conversation ? true : false,
             'conversation_id' => $conversation->conversation_id ?? null,
