@@ -81,7 +81,7 @@
     }
     
     .dark .chatbot-user-timestamp {
-        color: #00AE9F80 !important;
+        color: #FFFFFF80 !important;
     }
     
     .dark .chatbot-assistant-timestamp {
@@ -111,6 +111,52 @@
     .chatbot-assistant-content ol,
     .chatbot-assistant-content li {
         color: inherit !important;
+    }
+    
+    /* Remove bottom margins/padding from last elements to eliminate white space */
+    .chatbot-user-content > *:last-child,
+    .chatbot-assistant-content > *:last-child {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    
+    /* Remove top margins from first elements for consistency */
+    .chatbot-user-content > *:first-child,
+    .chatbot-assistant-content > *:first-child {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    
+    /* Ensure proper spacing for multiple paragraphs while removing excess */
+    .chatbot-user-content p,
+    .chatbot-assistant-content p {
+        margin: 0 0 0.5rem 0 !important;
+        line-height: 1.4 !important;
+    }
+    
+    .chatbot-user-content p:last-child,
+    .chatbot-assistant-content p:last-child {
+        margin-bottom: 0 !important;
+    }
+    
+    /* Control line breaks and spacing */
+    .chatbot-user-content br,
+    .chatbot-assistant-content br {
+        line-height: 1.2 !important;
+    }
+    
+    /* Reduce spacing for lists */
+    .chatbot-user-content ul,
+    .chatbot-assistant-content ul,
+    .chatbot-user-content ol,
+    .chatbot-assistant-content ol {
+        margin: 0.25rem 0 !important;
+        padding-left: 1rem !important;
+    }
+    
+    .chatbot-user-content li,
+    .chatbot-assistant-content li {
+        margin: 0.1rem 0 !important;
     }
     
     /* Link styling with custom colors and formatting */
@@ -160,7 +206,7 @@
     </div>
 
     <!-- Chat Interface -->
-    <div id="chatbot-interface" class="absolute bottom-20 right-0 w-96 h-[500px] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden">
+    <div id="chatbot-interface" class="absolute bottom-24 right-0 w-[380px] h-[680px] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden">
         <div class="flex flex-col h-full">
         <!-- Header -->
         <div class="bg-primary-600 text-white px-3 py-1 rounded-t-xl flex items-center justify-between">
@@ -197,12 +243,7 @@
         </div>
         <!-- Chat Messages -->
         <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/50 dark:bg-gray-900/50" id="chat-messages">
-            <div class="flex flex-col space-y-1 items-start">
-                <div class="text-gray-600 dark:text-gray-400 font-semibold text-sm px-1">Arem AI</div>
-                <div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%]">
-                    <p class="text-sm text-gray-800 dark:text-gray-200">Type anything to start a new conversation!</p>
-                </div>
-            </div>
+            <!-- Messages will be dynamically loaded here -->
         </div>
         <!-- Input Area -->
         <div class="border-t border-gray-200 dark:border-gray-700 p-5 bg-white dark:bg-gray-800 rounded-b-xl">

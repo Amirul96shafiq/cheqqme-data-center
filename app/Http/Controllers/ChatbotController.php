@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use PHPUnit\Framework\TestSize\Known;
 
 class ChatbotController extends Controller
 {
@@ -16,7 +17,7 @@ class ChatbotController extends Controller
     {
         try {
             $user = Auth::user();
-            if (! $user) {
+            if (!$user) {
                 return response()->json(['error' => 'Unauthenticated.'], 401);
             }
 
@@ -62,10 +63,10 @@ class ChatbotController extends Controller
 
                 // Send the tool result back to OpenAI to get the final natural language response
                 $finalResponse = $this->sendToOpenAI($messages);
-                $botReply = $finalResponse['choices'][0]['message']['content'];
+                $botReply = $this->normalizeContent($finalResponse['choices'][0]['message']['content']);
             } else {
                 // No tool call, just a regular response
-                $botReply = $response['choices'][0]['message']['content'];
+                $botReply = $this->normalizeContent($response['choices'][0]['message']['content']);
             }
 
             // Store user message
@@ -92,15 +93,86 @@ class ChatbotController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('ChatbotController@chat: An error occurred', ['error' => $e->getMessage()]);
-
             return response()->json(['error' => 'Internal server error'], 500);
         }
+    }
+
+    /**
+     * Normalize content to reduce excessive whitespace and line breaks
+     */
+    protected function normalizeContent(string $content): string
+    {
+        // Remove excessive line breaks (more than 2 consecutive)
+        $content = preg_replace('/\n{3,}/', "\n\n", $content);
+
+        // Remove excessive spaces (more than 2 consecutive)
+        $content = preg_replace('/ {3,}/', '  ', $content);
+
+        // Remove trailing whitespace from each line
+        $content = preg_replace('/[ \t]+$/m', '', $content);
+
+        // Remove leading whitespace that's excessive (more than 4 spaces)
+        $content = preg_replace('/^[ ]{5,}/m', '    ', $content);
+
+        // Trim overall content
+        return trim($content);
     }
 
     protected function buildMessages($conversationHistory, string $newMessage): array
     {
         $messages = [
-            ['role' => 'system', 'content' => 'You are a helpful assistant integrated into a project management tool. Your name is Cheqqbot. Be concise. If you are asked to do something that is not in your list of functions, respectfully decline.'],
+            [
+                'role' => 'system',
+                'content' => '
+                Identity
+                - You are Arem, the AI assistant for the CheQQme Data Center (internal knowledge + ops hub).
+                - Personality: a genius kid—friendly, playful, curious, patient. Keep it light without being too silly.
+
+                Prime Directive
+                - Help users find, understand, and do things fast. If an action is possible via tools, explain how to use the tool.
+                - Be concise. Default to bullet points, 1–2 short paragraphs, or step lists.
+
+                You can help with
+                - Navigation: jump users to panels/pages, filter views, open records.
+                - Search & lookup: Clients, Projects, Documents, Important URLs, Phone Numbers, Users.
+                - Action Board (Trello-like): function call "get_incomplete_task_count", "get_task_url_by_name" and "get_incomplete_tasks_by_status" to get a list of incomplete tasks and their URLs.
+                - How-to: explain platform features (Filament UI patterns), show minimal steps.
+                - General ops: light SOPs, best practices, definitions.
+                - Multilingual: English first; if user writes Malay/Indo/Chinese, reply in that language.
+
+                Data Boundaries
+                - Prefer verified data from your tools/context. Never invent IDs, URLs, or people. If uncertain, say so and propose a safe next step.
+                
+                Style & UX
+                - Tone: relaxed, clear, lightly playful. Avoid fluff.
+                - Teach with simple language, vivid analogies, micro-humor sparingly.
+                - Use structured outputs: bullets, checklists, tables when helpful.
+                - Offer next actions (“Want me to open that record?”).
+
+                Clarifying questions (only when needed)
+                - Ask max 2 targeted questions before acting. If defaults are reasonable, state the default and proceed.
+
+                Safety & Privacy
+                - Internal data only. Redact or summarize sensitive info. If user asks for data they don’t have permission to view (as per tool error/role), politely refuse and offer permitted alternatives.
+                - Never expose secrets, tokens, raw env data, or internal stack traces.
+
+                When you do not know
+                - Say “I’m not sure” briefly, then offer: (a) what you can do now, (b) what you need to proceed.
+                
+                Output shapes
+                - For lists: show top 3 with clear sorting/filter criteria. Offer to “show more”.
+                - For instructions: 3–6 steps, each a single line.
+                - For decisions: show brief rationale (1–2 lines) and recommendation.
+
+                Navigation macros (if no tool is available)
+                - Provide the exact in-app path, e.g., Dashboard → Data Management → Documents → Filters: Type=External
+
+                Micro-humour examples
+                - "On The Way, like how a Malay guy said to his friend"
+                - "Pape roger, literally means \"If you need anything, just let me know\""
+
+                '
+            ],
         ];
 
         foreach ($conversationHistory as $entry) {
@@ -122,7 +194,7 @@ class ChatbotController extends Controller
             'messages' => $messages,
         ];
 
-        if (! empty($tools)) {
+        if (!empty($tools)) {
             $payload['tools'] = $tools;
             $payload['tool_choice'] = 'auto';
         }
@@ -181,7 +253,7 @@ class ChatbotController extends Controller
             if ($firstMessage) {
                 $conversationDetails[] = [
                     'conversation_id' => $firstMessage->conversation_id,
-                    'title' => substr($firstMessage->content, 0, 50).'...', // Use the start of the first message as a title
+                    'title' => substr($firstMessage->content, 0, 50) . '...', // Use the start of the first message as a title
                     'last_activity' => $conv->last_message_at,
                 ];
             }
@@ -206,7 +278,7 @@ class ChatbotController extends Controller
             $conversationId = $lastConversation->conversation_id;
         } else {
             // Create a new conversation ID if no recent conversation exists
-            $conversationId = 'conv_'.uniqid().'_'.time();
+            $conversationId = 'conv_' . uniqid() . '_' . time();
         }
 
         return response()->json([
@@ -254,7 +326,7 @@ class ChatbotController extends Controller
     {
         // This will now just generate a new conversation ID for the client to use.
         // The old messages remain in the database but will be associated with old IDs.
-        $newConversationId = 'conv_'.uniqid();
+        $newConversationId = 'conv_' . uniqid();
 
         return response()->json([
             'message' => 'New conversation started.',

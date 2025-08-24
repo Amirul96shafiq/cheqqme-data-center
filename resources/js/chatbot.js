@@ -384,6 +384,23 @@
         }
     }
 
+    function normalizeContent(htmlContent) {
+        // Clean up excessive whitespace and line breaks from HTML content
+        return (
+            htmlContent
+                // Remove empty paragraphs
+                .replace(/<p>\s*<\/p>/g, "")
+                // Replace multiple consecutive line breaks with single ones
+                .replace(/(<br\s*\/?>|\n){3,}/g, "<br>")
+                // Remove excessive whitespace between HTML elements
+                .replace(/>\s+</g, "><")
+                // Normalize whitespace within text content but preserve intentional breaks
+                .replace(/\s{2,}/g, " ")
+                // Remove leading/trailing whitespace from the entire content
+                .trim()
+        );
+    }
+
     function addMessage(content, role, timestamp = null) {
         const chatMessages = document.getElementById("chat-messages");
         if (!chatMessages) return;
@@ -431,7 +448,7 @@
             '<div class="' +
             contentClass +
             '">' +
-            marked.parse(content) +
+            normalizeContent(marked.parse(content)) +
             "</div>" +
             '<p class="' +
             timeClass +
