@@ -2,6 +2,10 @@
 <script>
     window.chatbotUserName = "{{ $userName ?? 'You' }}";
 </script>
+<style>
+    #chatbot-interface{transform:translateY(20px);opacity:0;transition:transform 260ms ease,opacity 260ms ease}
+    #chatbot-interface.open{transform:translateY(0);opacity:1}
+</style>
 <div class="fixed bottom-4 right-4 z-[99]">
         <!-- Floating Chat Button -->
     <div class="relative">

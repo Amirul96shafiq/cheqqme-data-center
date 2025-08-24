@@ -67,30 +67,32 @@
         const closeIcon = document.getElementById("close-icon");
         if (!interfaceEl || !chatIcon || !closeIcon) return;
 
-        const isHidden = interfaceEl.classList.contains("hidden");
+        // Determine hidden by computed display value (not relying on Tailwind's hidden class)
+        const isCurrentlyHidden =
+            window.getComputedStyle(interfaceEl).display === "none";
 
-        interfaceEl.classList.toggle("hidden");
-        const isNowHidden = interfaceEl.classList.contains("hidden");
-
-        // Toggle between chat icon and close icon
-        if (isNowHidden) {
-            // Chat is closed - show chat icon, hide close icon
-            chatIcon.classList.remove("hidden");
-            closeIcon.classList.add("hidden");
+        if (isCurrentlyHidden) {
+            // Opening: reveal and animate in
+            interfaceEl.style.display = "flex";
+            requestAnimationFrame(() => {
+                interfaceEl.classList.add("open");
+            });
+            chatIcon.style.display = "none";
+            closeIcon.style.display = "inline-flex";
+            localStorage.setItem("chatbot_open", "true");
+            if (!isLoadingConversation) {
+                loadConversationHistory();
+            }
         } else {
-            // Chat is open - show close icon, hide chat icon
-            chatIcon.classList.add("hidden");
-            closeIcon.classList.remove("hidden");
-        }
-
-        // Save chatbot state to localStorage
-        localStorage.setItem("chatbot_open", isNowHidden ? "false" : "true");
-
-        // console.log('Toggling chatbot:', { wasHidden: isHidden, isNowHidden, conversationId });
-
-        // Load conversation history when opening chat (when it becomes visible)
-        if (isHidden && !isNowHidden && !isLoadingConversation) {
-            loadConversationHistory();
+            // Closing: animate out then hide
+            interfaceEl.classList.remove("open");
+            const transitionMs = 260;
+            setTimeout(() => {
+                interfaceEl.style.display = "none";
+            }, transitionMs);
+            chatIcon.style.display = "";
+            closeIcon.style.display = "none";
+            localStorage.setItem("chatbot_open", "false");
         }
     }
 
