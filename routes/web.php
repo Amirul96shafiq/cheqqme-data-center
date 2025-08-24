@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+// OpenAI logs endpoint (web UI)
+Route::get('/openai-logs', [\App\Http\Controllers\OpenaiLogController::class, 'index'])->name('openai.logs')->middleware('auth');
+
+// OpenAI logs API endpoint moved to routes/api.php ( Sanctum-protected )
+
 // Forgot password route
 Route::get('forgot-password', function () {
     App::setLocale(session('locale', config('app.locale')));

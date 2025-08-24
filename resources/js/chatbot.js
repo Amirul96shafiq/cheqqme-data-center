@@ -21,7 +21,7 @@
         // console.log('Saved new conversation ID to localStorage:', conversationId);
     }
 
-    // Initialize chatbot state from localStorage
+    // Initialize chatbot state will run when the DOM is ready
     function initializeChatbotState() {
         const interfaceEl = document.getElementById("chatbot-interface");
         const chatIcon = document.getElementById("chat-icon");
@@ -46,20 +46,94 @@
             chatIcon.classList.remove("hidden");
             closeIcon.classList.add("hidden");
         }
-
-        // console.log('Initialized chatbot state:', { shouldBeOpen, currentState: interfaceEl.classList.contains("hidden") });
     }
 
-    // Initialize chatbot state on page load
-    initializeChatbotState();
+    // Run initialization after the DOM is ready to ensure elements exist
+    function onDocumentReady(callback) {
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", callback);
+        } else {
+            callback();
+        }
+    }
 
-    // Try to load conversation history immediately if we have a conversation ID
-    if (conversationId) {
-        // console.log('Attempting to load conversation history on page load');
-        setTimeout(() => {
+    // Centralized visibility setter for chatbot UI
+    function setChatVisibility(isOpen) {
+        const interfaceEl = document.getElementById("chatbot-interface");
+        const chatIcon = document.getElementById("chat-icon");
+        const closeIcon = document.getElementById("close-icon");
+        if (!interfaceEl || !chatIcon || !closeIcon) return;
+        if (isOpen) {
+            interfaceEl.classList.remove("hidden");
+            interfaceEl.style.display = "flex";
+            chatIcon.style.display = "none";
+            chatIcon.classList.add("hidden");
+            closeIcon.style.display = "inline-flex";
+            closeIcon.classList.remove("hidden");
+        } else {
+            interfaceEl.style.display = "none";
+            interfaceEl.classList.add("hidden");
+            chatIcon.style.display = "";
+            chatIcon.classList.remove("hidden");
+            closeIcon.style.display = "none";
+            closeIcon.classList.add("hidden");
+        }
+        // Persist open state
+        localStorage.setItem("chatbot_open", isOpen ? "true" : "false");
+    }
+
+    // Apply chatbot open/close state when elements exist; safe for dynamic insertion
+    let chatbotUIInitialized = false;
+    function applyChatbotStateIfElementsPresent() {
+        const interfaceEl = document.getElementById("chatbot-interface");
+        const chatIcon = document.getElementById("chat-icon");
+        const closeIcon = document.getElementById("close-icon");
+        if (!interfaceEl || !chatIcon || !closeIcon) return;
+
+        const shouldBeOpen = localStorage.getItem("chatbot_open") !== "false";
+        setChatVisibility(shouldBeOpen);
+        // Load history if opening now and not yet loaded
+        if (shouldBeOpen && !isLoadingConversation) {
             loadConversationHistory();
-        }, 1000); // Small delay to ensure DOM is ready
+        }
+        chatbotUIInitialized = true;
     }
+
+    onDocumentReady(() => {
+        applyChatbotStateIfElementsPresent();
+        // Try to load conversation history after a short delay for DOM readiness
+        if (conversationId) {
+            setTimeout(() => loadConversationHistory(), 1000);
+        }
+    });
+
+    // Observe DOM changes to re-apply state when chat elements are inserted dynamically
+    const chatbotObserver = new MutationObserver(() => {
+        if (!chatbotUIInitialized) {
+            applyChatbotStateIfElementsPresent();
+        }
+    });
+    chatbotObserver.observe(document.body, { childList: true, subtree: true });
+
+    // Robust initializer: poll for chat elements if not yet present, then apply state
+    function pollForChatElements(retriesLeft, delayMs) {
+        const interfaceEl = document.getElementById("chatbot-interface");
+        const chatIcon = document.getElementById("chat-icon");
+        const closeIcon = document.getElementById("close-icon");
+        if (interfaceEl && chatIcon && closeIcon) {
+            applyChatbotStateIfElementsPresent();
+            return;
+        }
+        if (retriesLeft > 0) {
+            setTimeout(
+                () => pollForChatElements(retriesLeft - 1, delayMs),
+                delayMs
+            );
+        }
+    }
+
+    // Kick off polling as a fallback in case elements are injected later
+    pollForChatElements(20, 100);
 
     function toggleChatbot() {
         const interfaceEl = document.getElementById("chatbot-interface");
@@ -72,14 +146,12 @@
             window.getComputedStyle(interfaceEl).display === "none";
 
         if (isCurrentlyHidden) {
-            // Opening: reveal and animate in
-            interfaceEl.style.display = "flex";
+            // Opening: use centralized state setter and then animate
+            setChatVisibility(true);
+            interfaceEl.classList.add("open");
             requestAnimationFrame(() => {
-                interfaceEl.classList.add("open");
+                // ensure animation frame after state application
             });
-            chatIcon.style.display = "none";
-            closeIcon.style.display = "inline-flex";
-            localStorage.setItem("chatbot_open", "true");
             if (!isLoadingConversation) {
                 loadConversationHistory();
             }
@@ -88,11 +160,9 @@
             interfaceEl.classList.remove("open");
             const transitionMs = 260;
             setTimeout(() => {
-                interfaceEl.style.display = "none";
+                localStorage.setItem("chatbot_open", "false");
+                setChatVisibility(false);
             }, transitionMs);
-            chatIcon.style.display = "";
-            closeIcon.style.display = "none";
-            localStorage.setItem("chatbot_open", "false");
         }
     }
 
@@ -397,4 +467,29 @@
     window.toggleChatbot = toggleChatbot;
     window.sendMessage = sendMessage;
     window.clearConversation = clearConversation;
+
+    // Persist open state on page unload to help with navigation
+    window.addEventListener("beforeunload", function () {
+        const interfaceEl = document.getElementById("chatbot-interface");
+        const isOpenVisible =
+            interfaceEl &&
+            interfaceEl.style.display !== "none" &&
+            !interfaceEl.classList.contains("hidden");
+        localStorage.setItem("chatbot_open", isOpenVisible ? "true" : "false");
+    });
+
+    // Ensure state is not persisted across loads; on load, ensure chat is closed
+    window.addEventListener("load", function () {
+        setChatVisibility(false);
+    });
+
+    // Cross-tab persistence removed: no storage listener for chatbot_open
+
+    // BFCache resume: ensure state remains closed on resume
+    window.addEventListener("pageshow", function (event) {
+        if (event.persisted) {
+            // On BFCache resume, ensure the chat starts closed
+            setChatVisibility(false);
+        }
+    });
 })();

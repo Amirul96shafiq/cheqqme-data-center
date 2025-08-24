@@ -122,20 +122,20 @@ class DocumentResource extends Resource
                 Section::make()
                     ->heading(function (Get $get) {
                         $count = 0;
-                        
+
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
                         if (!blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
-                        
+
                         // Add count of extra_information items
                         $extraInfo = $get('extra_information') ?? [];
                         $count += count($extraInfo);
-                        
+
                         $title = __('document.section.document_extra_info');
                         $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
-                        
+
                         return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
                     })
                     ->collapsible(true)
@@ -281,10 +281,9 @@ class DocumentResource extends Resource
                     ->label(__('document.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
-                        if (
-                            !$record->updated_by ||
-                            $record->updated_at?->eq($record->created_at)
-                        ) {
+                        $updatedAt = $record->updated_at;
+                        $createdAt = $record->created_at;
+                        if (!$record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
                             return '-';
                         }
 
@@ -310,9 +309,9 @@ class DocumentResource extends Resource
                 SelectFilter::make('type')
                     ->label(__('document.table.type'))
                     ->options([
-                    'internal' => __('document.table.internal'),
-                    'external' => __('document.table.external'),
-                ])
+                        'internal' => __('document.table.internal'),
+                        'external' => __('document.table.external'),
+                    ])
                     ->multiple()
                     ->preload()
                     ->searchable(),

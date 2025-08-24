@@ -253,10 +253,9 @@ class UserResource extends Resource
                     ->label(__('user.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
-                        if (
-                            !$record->updated_by ||
-                            $record->updated_at?->eq($record->created_at)
-                        ) {
+                        $updatedAt = $record->updated_at;
+                        $createdAt = $record->created_at;
+                        if (!$record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
                             return '-';
                         }
 

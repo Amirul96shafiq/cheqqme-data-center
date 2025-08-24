@@ -63,7 +63,7 @@ class ImportantUrlResource extends Resource
                             ->preload()
                             ->searchable()
                             ->nullable(),
-                            
+
                         Select::make('project_id')
                             ->label(__('importanturl.form.project'))
                             ->relationship('project', 'title')
@@ -87,130 +87,130 @@ class ImportantUrlResource extends Resource
                         ->url(),
                 ]),
                 Section::make()
-                ->heading(function (Get $get) {
-                    $count = 0;
-                    
-                    // Add 1 if notes field is not empty
-                    $notes = $get('notes');
-                    if (!blank($notes) && trim(strip_tags($notes))) {
-                        $count++;
-                    }
-                    
-                    // Add count of extra_information items
-                    $extraInfo = $get('extra_information') ?? [];
-                    $count += count($extraInfo);
-                    
-                    $title = __('importanturl.section.important_url_extra_info');
-                    $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
-                    
-                    return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
-                })
+                    ->heading(function (Get $get) {
+                        $count = 0;
+
+                        // Add 1 if notes field is not empty
+                        $notes = $get('notes');
+                        if (!blank($notes) && trim(strip_tags($notes))) {
+                            $count++;
+                        }
+
+                        // Add count of extra_information items
+                        $extraInfo = $get('extra_information') ?? [];
+                        $count += count($extraInfo);
+
+                        $title = __('importanturl.section.important_url_extra_info');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+
+                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
+                    })
                     ->collapsible(true)
                     ->live()
-                ->schema([
-                    RichEditor::make('notes')
-                        ->label(__('importanturl.form.notes'))
-                        ->toolbarButtons([
-                            'bold',
-                            'italic',
-                            'strike',
-                            'bulletList',
-                            'orderedList',
-                            'link',
-                            'bulletList',
-                            'codeBlock',
-                        ])
-                        //->maxLength(500)
-                        ->extraAttributes([
-                            'style' => 'resize: vertical;',
-                        ])
-                        ->reactive()
-                        //Character limit reactive function
-                        ->helperText(function (Get $get) {
-                            $raw = $get('notes') ?? '';
-                            // 1. Strip all HTML tags
-                            $noHtml = strip_tags($raw);
-                            // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                            // 3. Count as-is — includes normal spaces, line breaks, etc.
-                            $remaining = 500 - mb_strlen($decoded);
-                            return __("importanturl.form.notes_helper", ['count' => $remaining]);
-                        })
-                        // Block save if over 500 visible characters
-                        ->rule(function (Get $get): Closure {
-                            return function (string $attribute, $value, Closure $fail) {
-                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                if (mb_strlen($textOnly) > 500) {
-                                    $fail(__('importanturl.form.notes_warning'));
-                                }
-                            };
-                        })
-                        ->nullable(),
+                    ->schema([
+                        RichEditor::make('notes')
+                            ->label(__('importanturl.form.notes'))
+                            ->toolbarButtons([
+                                'bold',
+                                'italic',
+                                'strike',
+                                'bulletList',
+                                'orderedList',
+                                'link',
+                                'bulletList',
+                                'codeBlock',
+                            ])
+                            //->maxLength(500)
+                            ->extraAttributes([
+                                'style' => 'resize: vertical;',
+                            ])
+                            ->reactive()
+                            //Character limit reactive function
+                            ->helperText(function (Get $get) {
+                                $raw = $get('notes') ?? '';
+                                // 1. Strip all HTML tags
+                                $noHtml = strip_tags($raw);
+                                // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
+                                $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                // 3. Count as-is — includes normal spaces, line breaks, etc.
+                                $remaining = 500 - mb_strlen($decoded);
+                                return __("importanturl.form.notes_helper", ['count' => $remaining]);
+                            })
+                            // Block save if over 500 visible characters
+                            ->rule(function (Get $get): Closure {
+                                return function (string $attribute, $value, Closure $fail) {
+                                    $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                    if (mb_strlen($textOnly) > 500) {
+                                        $fail(__('importanturl.form.notes_warning'));
+                                    }
+                                };
+                            })
+                            ->nullable(),
 
-                    Repeater::make('extra_information')
-                        ->label(__('importanturl.form.extra_information'))
-                        //->relationship('extra_information')
-                        ->schema([
-                            Grid::make()
-                                ->schema([
-                                    TextInput::make('title')
-                                        ->label(__('importanturl.form.extra_title'))
-                                        ->maxLength(100)
-                                        ->columnSpanFull(),
-                                    RichEditor::make('value')
-                                        ->label(__('importanturl.form.extra_value'))
-                                        ->toolbarButtons([
-                                            'bold',
-                                            'italic',
-                                            'strike',
-                                            'bulletList',
-                                            'orderedList',
-                                            'link',
-                                            'bulletList',
-                                            'codeBlock',
-                                        ])
-                                        ->extraAttributes([
-                                            'style' => 'resize: vertical;',
-                                        ])
-                                        ->reactive()
-                                        //Character limit reactive function
-                                        ->helperText(function (Get $get) {
-                                            $raw = $get('value') ?? '';
-                                            // 1. Strip all HTML tags
-                                            $noHtml = strip_tags($raw);
-                                            // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                            // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                            $remaining = 500 - mb_strlen($decoded);
-                                            return __("importanturl.form.notes_helper", ['count' => $remaining]);
-                                        })
-                                        // Block save if over 500 visible characters
-                                        ->rule(function (Get $get): Closure {
-                                            return function (string $attribute, $value, Closure $fail) {
-                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                if (mb_strlen($textOnly) > 500) {
-                                                    $fail(__("importanturl.form.notes_warning"));
-                                                }
-                                            };
-                                        })
-                                        ->nullable()
-                                        ->columnSpanFull(),
-                                ])
-                                ->columns(12),
-                        ])
-                        ->columns(1)
-                        ->defaultItems(1)
-                        ->addActionLabel(__('importanturl.form.add_extra_info'))
-                        ->addActionAlignment(Alignment::Start)
-                        ->cloneable()
-                        ->reorderable()
-                        ->collapsible(true)
-                        ->collapsed()
-                        ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('importanturl.form.title_placeholder_short'))
-                        ->live()
-                        ->columnSpanFull()
-                        ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
-                ]),
+                        Repeater::make('extra_information')
+                            ->label(__('importanturl.form.extra_information'))
+                            //->relationship('extra_information')
+                            ->schema([
+                                Grid::make()
+                                    ->schema([
+                                        TextInput::make('title')
+                                            ->label(__('importanturl.form.extra_title'))
+                                            ->maxLength(100)
+                                            ->columnSpanFull(),
+                                        RichEditor::make('value')
+                                            ->label(__('importanturl.form.extra_value'))
+                                            ->toolbarButtons([
+                                                'bold',
+                                                'italic',
+                                                'strike',
+                                                'bulletList',
+                                                'orderedList',
+                                                'link',
+                                                'bulletList',
+                                                'codeBlock',
+                                            ])
+                                            ->extraAttributes([
+                                                'style' => 'resize: vertical;',
+                                            ])
+                                            ->reactive()
+                                            //Character limit reactive function
+                                            ->helperText(function (Get $get) {
+                                                $raw = $get('value') ?? '';
+                                                // 1. Strip all HTML tags
+                                                $noHtml = strip_tags($raw);
+                                                // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
+                                                $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                // 3. Count as-is — includes normal spaces, line breaks, etc.
+                                                $remaining = 500 - mb_strlen($decoded);
+                                                return __("importanturl.form.notes_helper", ['count' => $remaining]);
+                                            })
+                                            // Block save if over 500 visible characters
+                                            ->rule(function (Get $get): Closure {
+                                                return function (string $attribute, $value, Closure $fail) {
+                                                    $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                    if (mb_strlen($textOnly) > 500) {
+                                                        $fail(__("importanturl.form.notes_warning"));
+                                                    }
+                                                };
+                                            })
+                                            ->nullable()
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(12),
+                            ])
+                            ->columns(1)
+                            ->defaultItems(1)
+                            ->addActionLabel(__('importanturl.form.add_extra_info'))
+                            ->addActionAlignment(Alignment::Start)
+                            ->cloneable()
+                            ->reorderable()
+                            ->collapsible(true)
+                            ->collapsed()
+                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('importanturl.form.title_placeholder_short'))
+                            ->live()
+                            ->columnSpanFull()
+                            ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                    ]),
             ]);
     }
 
@@ -247,10 +247,9 @@ class ImportantUrlResource extends Resource
                     ->label(__('importanturl.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
-                        if (
-                            !$record->updated_by ||
-                            $record->updated_at?->eq($record->created_at)
-                        ) {
+                        $updatedAt = $record->updated_at;
+                        $createdAt = $record->created_at;
+                        if (!$record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
                             return '-';
                         }
 

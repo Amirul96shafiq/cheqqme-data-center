@@ -24,15 +24,18 @@
             id="close-icon"
             onclick="toggleChatbot()"
             title="Close chat"
-            class="w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 animate-bounce cursor-pointer rounded-lg bg-primary-600 hover:bg-primary-500 text-white flex items-center justify-center hidden"
+            class="w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 animate-bounce cursor-pointer rounded-lg bg-primary-600 hover:bg-primary-500 text-white hidden"
             style="animation-duration: 2s;"
         >
-            @svg('heroicon-o-x-mark', 'w-8 h-8')
+            <div class="flex items-center justify-center w-full h-full">
+                @svg('heroicon-o-x-mark', 'w-8 h-8')
+            </div>
         </div>
     </div>
 
     <!-- Chat Interface -->
-    <div id="chatbot-interface" class="absolute bottom-20 right-0 w-96 h-[500px] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col hidden">
+    <div id="chatbot-interface" class="absolute bottom-20 right-0 w-96 h-[500px] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden">
+        <div class="flex flex-col h-full">
         <!-- Header -->
         <div class="bg-primary-600 text-white px-3 py-1 rounded-t-xl flex items-center justify-between">
             <div class="flex items-center space-x-3">

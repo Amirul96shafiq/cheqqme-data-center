@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Models\OpenaiLog;
 
 class ChatbotController extends Controller
 {
@@ -63,31 +64,54 @@ class ChatbotController extends Controller
             ];
 
             // Call OpenAI API
-            $response = $this->callOpenAI($messages);
+            $start = microtime(true);
+            $apiResponse = $this->callOpenAI($messages);
+            $duration = (int) ((microtime(true) - $start) * 1000);
+            $openaiData = $apiResponse['data'];
+            $statusCode = $apiResponse['status'];
 
-            if (! $response) {
+            $responseText = $openaiData['choices'][0]['message']['content'] ?? null;
+
+            if (!$responseText) {
                 return response()->json([
                     'error' => 'Failed to get response from AI assistant',
                 ], 500);
             }
 
+            // Log OpenAI interaction
+            try {
+                $modelUsed = $openaiData['model'] ?? config('services.openai.model', 'gpt-3.5-turbo');
+                OpenaiLog::create([
+                    'user_id' => $user->id ?? null,
+                    'conversation_id' => $conversationId,
+                    'model' => $modelUsed,
+                    'endpoint' => $this->openaiEndpoint,
+                    'request_payload' => $messages,
+                    'response_text' => json_encode($openaiData),
+                    'status_code' => $statusCode,
+                    'duration_ms' => $duration,
+                ]);
+            } catch (\Throwable $e) {
+                Log::error('OpenAI log write failed: ' . $e->getMessage());
+            }
+
             // Add AI response to conversation
             $conversation[] = [
                 'role' => 'assistant',
-                'content' => $response,
+                'content' => $responseText,
             ];
 
             // Store updated conversation
             $this->storeConversationHistory($conversationId, $conversation, $user->id);
 
             return response()->json([
-                'response' => $response,
+                'response' => $responseText,
                 'conversation_id' => $conversationId,
                 'timestamp' => now()->format('h:i A'),
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Chatbot error: '.$e->getMessage());
+            Log::error('Chatbot error: ' . $e->getMessage());
 
             return response()->json([
                 'error' => 'An error occurred while processing your request',
@@ -100,16 +124,16 @@ class ChatbotController extends Controller
     {
         // Log API key check
         Log::info('OpenAI API Key check', [
-            'has_key' => ! empty($this->openaiApiKey),
+            'has_key' => !empty($this->openaiApiKey),
             'key_length' => $this->openaiApiKey ? strlen($this->openaiApiKey) : 0,
-            'key_prefix' => $this->openaiApiKey ? substr($this->openaiApiKey, 0, 10).'...' : 'null',
+            'key_prefix' => $this->openaiApiKey ? substr($this->openaiApiKey, 0, 10) . '...' : 'null',
         ]);
 
         // Check if API key is configured
-        if (! $this->openaiApiKey) {
+        if (!$this->openaiApiKey) {
             Log::error('OpenAI API key not configured');
 
-            return false;
+            return ['data' => null, 'status' => 500];
         }
 
         // Try to call OpenAI API
@@ -118,29 +142,30 @@ class ChatbotController extends Controller
             $response = Http::withOptions([
                 'verify' => config('app.env') === 'production', // Disable SSL verification in development
             ])->withHeaders([
-                'Authorization' => 'Bearer '.$this->openaiApiKey,
-                'Content-Type' => 'application/json',
-            ])->post($this->openaiEndpoint, [
-                'model' => config('services.openai.model', 'gpt-3.5-turbo'),
-                'messages' => $messages,
-                'max_tokens' => (int) config('services.openai.max_tokens', 500),
-                'temperature' => config('services.openai.temperature', 1.2),
-            ]);
+                        'Authorization' => 'Bearer ' . $this->openaiApiKey,
+                        'Content-Type' => 'application/json',
+                    ])->post($this->openaiEndpoint, [
+                        'model' => config('services.openai.model', 'gpt-3.5-turbo'),
+                        'messages' => $messages,
+                        'max_tokens' => (int) config('services.openai.max_tokens', 500),
+                        'temperature' => config('services.openai.temperature', 1.2),
+                    ]);
 
             if ($response->successful()) {
-                $data = $response->json();
-
-                return $data['choices'][0]['message']['content'] ?? false;
+                return [
+                    'data' => $response->json(),
+                    'status' => $response->status(),
+                ];
             }
 
-            Log::error('OpenAI API error: '.$response->body());
+            Log::error('OpenAI API error: ' . $response->body());
 
-            return false;
+            return ['data' => null, 'status' => $response->status()];
 
         } catch (\Exception $e) {
-            Log::error('OpenAI API call failed: '.$e->getMessage());
+            Log::error('OpenAI API call failed: ' . $e->getMessage());
 
-            return false;
+            return ['data' => null, 'status' => 500];
         }
     }
 
@@ -201,7 +226,7 @@ class ChatbotController extends Controller
     // Generate conversation ID
     protected function generateConversationId()
     {
-        return 'conv_'.uniqid().'_'.time();
+        return 'conv_' . uniqid() . '_' . time();
     }
 
     // Get or create conversation
@@ -225,7 +250,7 @@ class ChatbotController extends Controller
         }
         $conversation = $conversationQuery->first();
 
-        if (! $conversation) {
+        if (!$conversation) {
             return [];
         }
 
@@ -250,7 +275,7 @@ class ChatbotController extends Controller
         ]);
 
         // Generate title if not exists
-        if (! $conversation->title) {
+        if (!$conversation->title) {
             $conversation->generateTitle();
         }
 
@@ -340,7 +365,7 @@ class ChatbotController extends Controller
             }
         }
 
-        if (! $conversation) {
+        if (!$conversation) {
             return response()->json(['error' => 'Unable to create new conversation after multiple retries'], 500);
         }
 
@@ -376,7 +401,7 @@ class ChatbotController extends Controller
             'active_conversations' => ChatbotConversation::forUser($user->id)->active()->count(),
             'total_messages' => ChatbotConversation::forUser($user->id)
                 ->get()
-                ->sum(fn ($conv) => count($conv->messages ?? [])),
+                ->sum(fn($conv) => count($conv->messages ?? [])),
             'oldest_conversation' => ChatbotConversation::forUser($user->id)
                 ->orderBy('created_at', 'asc')
                 ->first(['created_at']),
@@ -393,8 +418,8 @@ class ChatbotController extends Controller
     {
         return response()->json([
             'config_services_openai' => config('services.openai'),
-            'env_openai_api_key' => env('OPENAI_API_KEY') ? 'present (length: '.strlen(env('OPENAI_API_KEY')).')' : 'null',
-            'controller_api_key' => $this->openaiApiKey ? 'present (length: '.strlen($this->openaiApiKey).')' : 'null',
+            'env_openai_api_key' => env('OPENAI_API_KEY') ? 'present (length: ' . strlen(env('OPENAI_API_KEY')) . ')' : 'null',
+            'controller_api_key' => $this->openaiApiKey ? 'present (length: ' . strlen($this->openaiApiKey) . ')' : 'null',
         ]);
     }
 }
