@@ -11,11 +11,101 @@
         transform: translateY(20px);
         opacity: 0;
         transition: transform 260ms ease, opacity 260ms ease;
+        width: clamp(320px, 40vw, 420px);
+        min-width: 0;
+        max-width: 90vw;
+        height: 640px;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 420px) {
+        #chatbot-interface {
+            width: calc(100vw - 20px);
+            left: 10px;
+            right: 10px;
+            height: auto;
+        }
     }
     
     #chatbot-interface.open {
         transform: translateY(0);
         opacity: 1;
+    }
+    
+    /* Message bubble entrance animations */
+    .message-bubble {
+        animation: messageSlideIn 0.4s ease-out;
+        transform-origin: left center;
+    }
+    
+    .message-bubble.user-message {
+        animation: messageSlideInRight 0.4s ease-out;
+        transform-origin: right center;
+    }
+    
+    @keyframes messageSlideIn {
+        0% {
+            opacity: 0;
+            transform: translateX(-20px) scale(0.95);
+        }
+        50% {
+            opacity: 0.7;
+            transform: translateX(-5px) scale(0.98);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+    }
+    
+    @keyframes messageSlideInRight {
+        0% {
+            opacity: 0;
+            transform: translateX(20px) scale(0.95);
+        }
+        50% {
+            opacity: 0.7;
+            transform: translateX(5px) scale(0.98);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+    }
+    
+    /* Typing indicator animation */
+    .typing-indicator {
+        animation: messageSlideIn 0.3s ease-out;
+    }
+    
+    .typing-dots {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+    }
+    
+    .typing-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: currentColor;
+        opacity: 0.4;
+        animation: typingPulse 1.4s infinite;
+    }
+    
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes typingPulse {
+        0%, 60%, 100% {
+            opacity: 0.4;
+            transform: scale(1);
+        }
+        30% {
+            opacity: 1;
+            transform: scale(1.2);
+        }
     }
     
     /* ===== CHATBOT COLOR SCHEME ===== */
@@ -37,6 +127,7 @@
         word-wrap: break-word;
         overflow-wrap: break-word;
         hyphens: auto;
+        width: 100%;
     }
     
     /* AI message content: dark-800 */
@@ -45,6 +136,7 @@
         word-wrap: break-word;
         overflow-wrap: break-word;
         hyphens: auto;
+        width: 100%;
     }
     
     /* User timestamp: white */
@@ -242,7 +334,7 @@
             </div>
         </div>
         <!-- Chat Messages -->
-        <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/50 dark:bg-gray-900/50" id="chat-messages">
+        <div class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-6 space-y-4 bg-gray-50/50 dark:bg-gray-900/50" id="chat-messages" style="min-height: 180px; overflow-y: scroll; overflow-x: hidden;">
             <!-- Messages will be dynamically loaded here -->
         </div>
         <!-- Input Area -->

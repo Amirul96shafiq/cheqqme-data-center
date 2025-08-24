@@ -332,11 +332,12 @@
                     // Clear existing messages before loading history
                     if (chatMessages) chatMessages.innerHTML = "";
 
-                    data.conversation.forEach((message) => {
+                    data.conversation.forEach((message, index) => {
                         addMessage(
                             message.content,
                             message.role,
-                            message.timestamp
+                            message.timestamp,
+                            index * 100 // Stagger animations by 100ms each
                         );
                     });
 
@@ -349,8 +350,18 @@
                 } else {
                     // No conversation history found - this is normal for new conversations
                     conversationLoaded = true; // Mark as loaded to prevent re-loading
+                    // Initiate a friendly first message from the chatbot
+                    const welcomeTs = new Date().toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    });
+                    addMessage(
+                        "Hello! I'm Arem AI. The most genius AI assistant in the world. How can I assist you today?",
+                        "assistant",
+                        welcomeTs
+                    );
                     console.log(
-                        "No conversation messages found in database - empty conversation"
+                        "No conversation messages found in database - empty conversation; greeting posted"
                     );
                 }
             } else {
@@ -401,7 +412,7 @@
         );
     }
 
-    function addMessage(content, role, timestamp = null) {
+    function addMessage(content, role, timestamp = null, animationDelay = 0) {
         const chatMessages = document.getElementById("chat-messages");
         if (!chatMessages) return;
 
@@ -423,8 +434,8 @@
 
         const messageClass =
             role === "user"
-                ? "fi-section bg-[#00AE9F] border-[#00AE9F] chatbot-user-message"
-                : "fi-section bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 chatbot-assistant-message";
+                ? "fi-section bg-[#00AE9F] border-[#00AE9F] chatbot-user-message message-bubble user-message"
+                : "fi-section bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 chatbot-assistant-message message-bubble";
 
         const contentClass =
             role === "user"
@@ -442,7 +453,7 @@
             ' px-1">' +
             nameTag +
             "</div>" +
-            '<div class="max-w-[80%] ' +
+            '<div class="' +
             messageClass +
             ' rounded-xl px-4 py-3 shadow-sm border">' +
             '<div class="' +
@@ -450,16 +461,15 @@
             '">' +
             normalizeContent(marked.parse(content)) +
             "</div>" +
-            '<p class="' +
-            timeClass +
-            '">' +
-            (timestamp ||
-                new Date().toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                })) +
-            "</p>" +
             "</div>";
+
+        // Apply animation delay if specified
+        if (animationDelay > 0) {
+            const bubbleDiv = messageDiv.querySelector(".message-bubble");
+            if (bubbleDiv) {
+                bubbleDiv.style.animationDelay = `${animationDelay}ms`;
+            }
+        }
 
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -474,7 +484,7 @@
         loadingDiv.className = "flex flex-col space-y-1 items-start";
         loadingDiv.innerHTML =
             '<div class="text-gray-600 dark:text-gray-400 font-semibold text-sm px-1">Arem AI</div>' +
-            '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%]">' +
+            '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%] message-bubble typing-indicator">' +
             '<div class="flex items-center space-x-3">' +
             '<div class="flex space-x-1">' +
             '<div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>' +
@@ -509,63 +519,79 @@
         addMessage(message, "user");
         input.value = "";
 
-        // Show loading
-        showLoading();
+        // Show loading and start API call after a brief delay to let user see their message
+        setTimeout(async () => {
+            showLoading();
 
-        try {
-            const csrfToken =
-                document
-                    .querySelector('meta[name="csrf-token"]')
-                    ?.getAttribute("content") ||
-                document.querySelector('input[name="_token"]')?.value;
+            try {
+                const csrfToken =
+                    document
+                        .querySelector('meta[name="csrf-token"]')
+                        ?.getAttribute("content") ||
+                    document.querySelector('input[name="_token"]')?.value;
 
-            const response = await fetch("/chatbot/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": csrfToken,
-                    Accept: "application/json",
-                },
-                body: JSON.stringify({
-                    message: message,
-                    conversation_id: conversationId,
-                }),
-            });
+                const response = await fetch("/chatbot/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrfToken,
+                        Accept: "application/json",
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        conversation_id: conversationId,
+                    }),
+                });
 
-            hideLoading();
+                hideLoading();
 
-            if (response.ok) {
-                const data = await response.json();
+                if (response.ok) {
+                    const data = await response.json();
 
-                // Add AI response
-                addMessage(data.reply, "assistant", data.timestamp);
+                    // Add AI response
+                    addMessage(data.reply, "assistant", data.timestamp);
 
-                // Update conversation ID if provided
-                if (data.conversation_id) {
-                    conversationId = data.conversation_id;
-                    localStorage.setItem(
-                        getUserConversationKey(),
-                        conversationId
+                    // Update conversation ID if provided
+                    if (data.conversation_id) {
+                        conversationId = data.conversation_id;
+                        localStorage.setItem(
+                            getUserConversationKey(),
+                            conversationId
+                        );
+                        // console.log('Updated conversation ID after message:', conversationId);
+                    }
+                } else {
+                    addMessage(
+                        "Sorry, I encountered an error. Please try again.",
+                        "assistant"
                     );
-                    // console.log('Updated conversation ID after message:', conversationId);
                 }
-            } else {
+            } catch (error) {
+                hideLoading();
                 addMessage(
                     "Sorry, I encountered an error. Please try again.",
                     "assistant"
                 );
+                console.error("Chatbot error:", error);
             }
-        } catch (error) {
-            hideLoading();
-            addMessage(
-                "Sorry, I encountered an error. Please try again.",
-                "assistant"
-            );
-            console.error("Chatbot error:", error);
-        }
+        }, 800); // Delay chatbot response to let user see their message
     }
 
     async function clearConversation() {
+        console.log("Clearing conversation...");
+
+        // Show immediate feedback to user
+        const chatMessages = document.getElementById("chat-messages");
+        if (chatMessages) {
+            chatMessages.innerHTML =
+                '<div class="flex flex-col space-y-1 items-start">' +
+                '<div class="text-gray-600 dark:text-gray-400 font-semibold text-sm px-1">Arem AI</div>' +
+                '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%] message-bubble">' +
+                '<p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">Clearing conversation...</p>' +
+                "</div>" +
+                "</div>";
+        }
+
         try {
             const csrfToken =
                 document
@@ -573,7 +599,7 @@
                     ?.getAttribute("content") ||
                 document.querySelector('input[name="_token"]')?.value;
 
-            // Get a new conversation ID from the backend
+            // Get a new conversation ID from the backend; pass current conversation to allow server-side cleanup
             const response = await fetch("/chatbot/clear", {
                 method: "POST",
                 headers: {
@@ -581,39 +607,58 @@
                     "X-CSRF-TOKEN": csrfToken,
                     Accept: "application/json",
                 },
+                body: JSON.stringify({ conversation_id: conversationId }),
             });
 
             if (response.ok) {
                 const data = await response.json();
                 conversationId = data.conversation_id; // Set the new ID from the server
+                console.log("New conversation ID:", conversationId);
+
+                // Update localStorage with new conversation ID
+                localStorage.setItem(getUserConversationKey(), conversationId);
             } else {
-                console.error("Failed to clear conversation on the server.");
-                return; // Stop if we can't get a new ID
+                console.error(
+                    "Failed to clear conversation on the server:",
+                    response.status,
+                    response.statusText
+                );
+                // Still proceed with local clearing even if server fails
+                conversationId = "conv_" + Date.now(); // Generate local fallback ID
+                localStorage.setItem(getUserConversationKey(), conversationId);
             }
         } catch (error) {
             console.error("Error clearing conversation:", error);
-            return; // Stop on error
+            // Still proceed with local clearing even if server fails
+            conversationId = "conv_" + Date.now(); // Generate local fallback ID
+            localStorage.setItem(getUserConversationKey(), conversationId);
         }
 
-        // Clear local conversation UI
-        const chatMessages = document.getElementById("chat-messages");
-        if (chatMessages) {
-            chatMessages.innerHTML =
-                '<div class="flex flex-col space-y-1 items-start">' +
-                '<div class="text-gray-600 dark:text-gray-400 font-semibold text-sm px-1">Arem AI</div>' +
-                '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%]">' +
-                '<p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">Type anything to start a new conversation!</p>';
-            "</div>" + "</div>";
-        }
+        // Clear local conversation UI with a short delay for better UX
+        setTimeout(() => {
+            const chatMessages = document.getElementById("chat-messages");
+            if (chatMessages) {
+                chatMessages.innerHTML =
+                    '<div class="flex flex-col space-y-1 items-start">' +
+                    '<div class="text-gray-600 dark:text-gray-400 font-semibold text-sm px-1">Arem AI</div>' +
+                    '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%] message-bubble">' +
+                    '<p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">Ready for a fresh start! What would you like to know or work on?</p>' +
+                    "</div>" +
+                    "</div>";
+            }
+        }, 500); // 500ms delay
 
         // Keep chatbot open for new conversation
         localStorage.setItem(getUserChatStateKey(), "true");
 
-        // Clear the current conversation ID since we're starting fresh
-        localStorage.removeItem(getUserConversationKey());
-
+        // Reset conversation state
         conversation = [];
         conversationLoaded = false;
+
+        console.log(
+            "Conversation cleared successfully. New ID:",
+            conversationId
+        );
     }
 
     window.toggleChatbot = toggleChatbot;

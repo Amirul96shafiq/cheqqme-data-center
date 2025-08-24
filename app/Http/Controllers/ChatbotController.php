@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use PHPUnit\Framework\TestSize\Known;
 
 class ChatbotController extends Controller
 {
@@ -93,6 +92,7 @@ class ChatbotController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('ChatbotController@chat: An error occurred', ['error' => $e->getMessage()]);
+
             return response()->json(['error' => 'Internal server error'], 500);
         }
     }
@@ -171,7 +171,7 @@ class ChatbotController extends Controller
                 - "On The Way, like how a Malay guy said to his friend"
                 - "Pape roger, literally means \"If you need anything, just let me know\""
 
-                '
+                ',
             ],
         ];
 
@@ -324,8 +324,23 @@ class ChatbotController extends Controller
 
     public function clearConversation(Request $request)
     {
-        // This will now just generate a new conversation ID for the client to use.
-        // The old messages remain in the database but will be associated with old IDs.
+        // If a specific conversation_id is provided, delete its history for the current user
+        try {
+            $user = Auth::user();
+            if ($user) {
+                $conversationId = $request->input('conversation_id');
+                if ($conversationId) {
+                    ChatbotConversation::where('conversation_id', $conversationId)
+                        ->where('user_id', $user->id)
+                        ->delete();
+                }
+            }
+        } catch (\Exception $e) {
+            // Best-effort cleanup; do not fail the request
+            \Log::error('ChatbotController@clearConversation cleanup failed', ['error' => $e->getMessage()]);
+        }
+
+        // Create a new conversation ID for the client to use going forward
         $newConversationId = 'conv_' . uniqid();
 
         return response()->json([
