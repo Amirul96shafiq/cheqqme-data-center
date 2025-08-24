@@ -1,10 +1,136 @@
 <!-- Chatbot Widget -->
 <script>
     window.chatbotUserName = "{{ $userName ?? 'You' }}";
+    window.chatbotUserId = "{{ Auth::id() ?? 'anonymous' }}";
 </script>
 <style>
-    #chatbot-interface{transform:translateY(20px);opacity:0;transition:transform 260ms ease,opacity 260ms ease}
-    #chatbot-interface.open{transform:translateY(0);opacity:1}
+    /* ===== CHATBOT BASE STYLES ===== */
+    
+    /* Chat interface animation */
+    #chatbot-interface {
+        transform: translateY(20px);
+        opacity: 0;
+        transition: transform 260ms ease, opacity 260ms ease;
+    }
+    
+    #chatbot-interface.open {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    
+    /* ===== CHATBOT COLOR SCHEME ===== */
+    
+    /* === LIGHT MODE === */
+    /* User name tag: dark-800 */
+    .chatbot-user-name-tag {
+        color: #1f2937 !important;
+    }
+    
+    /* AI name tag: dark-400 */
+    .chatbot-ai-name-tag {
+        color: #9ca3af !important;
+    }
+    
+    /* User message content: white */
+    .chatbot-user-content {
+        color: white !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+    }
+    
+    /* AI message content: dark-800 */
+    .chatbot-assistant-content {
+        color: #1f2937 !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+    }
+    
+    /* User timestamp: white */
+    .chatbot-user-timestamp {
+        color: white !important;
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+    
+    /* AI timestamp: #00000050 */
+    .chatbot-assistant-timestamp {
+        color: #00000080 !important;
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+    
+    /* === DARK MODE (Class-based) === */
+    .dark .chatbot-user-name-tag {
+        color: #6b7280 !important;
+    }
+    
+    .dark .chatbot-ai-name-tag {
+        color: #9ca3af !important;
+    }
+    
+    .dark .chatbot-user-content {
+        color: white !important;
+    }
+    
+    .dark .chatbot-assistant-content {
+        color: white !important;
+    }
+    
+    .dark .chatbot-user-timestamp {
+        color: #00AE9F80 !important;
+    }
+    
+    .dark .chatbot-assistant-timestamp {
+        color: #FFFFFF80 !important;
+    }
+    
+    /* ===== MARKDOWN CONTENT STYLING ===== */
+    
+    /* Ensure markdown elements inherit message content colors */
+    .chatbot-user-content p,
+    .chatbot-user-content div,
+    .chatbot-user-content span,
+    .chatbot-user-content strong,
+    .chatbot-user-content em,
+    .chatbot-user-content ul,
+    .chatbot-user-content ol,
+    .chatbot-user-content li {
+        color: inherit !important;
+    }
+    
+    .chatbot-assistant-content p,
+    .chatbot-assistant-content div,
+    .chatbot-assistant-content span,
+    .chatbot-assistant-content strong,
+    .chatbot-assistant-content em,
+    .chatbot-assistant-content ul,
+    .chatbot-assistant-content ol,
+    .chatbot-assistant-content li {
+        color: inherit !important;
+    }
+    
+    /* Link styling with custom colors and formatting */
+    .chatbot-assistant-content a {
+        color: #00AE9F !important;
+        font-weight: bold !important;
+        text-decoration: underline;
+        word-break: break-all;
+        line-break: anywhere;
+        display: inline-block;
+        max-width: 100%;
+    }
+    .dark .chatbot-assistant-content a {
+        color: rgb(230 161 53 / var(--tw-bg-opacity, 1)) !important;
+    }
+    .chatbot-user-content a:hover,
+    .chatbot-assistant-content a:hover {
+        opacity: 0.8;
+        text-decoration: none;
+    }
 </style>
 <div class="fixed bottom-4 right-4 z-[99]">
         <!-- Floating Chat Button -->
@@ -103,3 +229,16 @@
         </div>
     </div>
 </div>
+
+<!-- Marked.js for Markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- Chatbot toggler button -->
+<!-- <div id="chatbot-toggler"
+     class="fixed bottom-5 right-5 h-14 w-14 cursor-pointer rounded-full bg-primary-600 text-white flex items-center justify-center shadow-lg transition-transform transform hover:scale-110"> -->
+
+
+
+
+
+

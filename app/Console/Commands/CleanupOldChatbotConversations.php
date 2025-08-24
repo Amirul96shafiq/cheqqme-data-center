@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\ChatbotConversation;
-use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class CleanupOldChatbotConversations extends Command
 {
@@ -14,7 +14,7 @@ class CleanupOldChatbotConversations extends Command
      * @var string
      */
     protected $signature = 'chatbot:cleanup
-                            {--days=90 : Number of days to keep conversations (default: 90)}
+                            {--hours=24 : Number of hours to keep conversations (default: 24)}
                             {--dry-run : Show what would be deleted without actually deleting}';
 
     /**
@@ -29,11 +29,11 @@ class CleanupOldChatbotConversations extends Command
      */
     public function handle()
     {
-        $days = (int) $this->option('days');
+        $hours = (int) $this->option('hours');
         $dryRun = $this->option('dry-run');
-        $cutoffDate = Carbon::now()->subDays($days);
+        $cutoffDate = Carbon::now()->subHours($hours);
 
-        $this->info("Cleaning up chatbot conversations older than {$days} days ({$cutoffDate->format('Y-m-d')})");
+        $this->info("Cleaning up chatbot conversations older than {$hours} hours ({$cutoffDate->format('Y-m-d H:i:s')})");
 
         // Get conversations to be deleted
         $conversationsToDelete = ChatbotConversation::where('last_activity', '<', $cutoffDate);
@@ -42,6 +42,7 @@ class CleanupOldChatbotConversations extends Command
 
         if ($totalCount === 0) {
             $this->info('No old conversations found to delete.');
+
             return 0;
         }
 
@@ -51,24 +52,24 @@ class CleanupOldChatbotConversations extends Command
             $this->warn('DRY RUN MODE - No conversations will be actually deleted.');
 
             // Show some sample conversations
-            $samples = $conversationsToDelete->limit(5)->get(['id', 'conversation_id', 'title', 'last_activity']);
+            $samples = $conversationsToDelete->limit(5)->get(['id', 'conversation_id', 'last_activity']);
             if ($samples->count() > 0) {
                 $this->table(
-                    ['ID', 'Conversation ID', 'Title', 'Last Activity'],
+                    ['ID', 'Conversation ID', 'Last Activity'],
                     $samples->map(function ($conv) {
                         return [
                             $conv->id,
                             $conv->conversation_id,
-                            $conv->title ?: 'Untitled',
-                            $conv->last_activity->format('Y-m-d H:i:s')
+                            $conv->last_activity->format('Y-m-d H:i:s'),
                         ];
                     })
                 );
             }
         } else {
-            // Ask for confirmation
-            if (!$this->confirm("Are you sure you want to delete {$totalCount} conversations?")) {
+            // Ask for confirmation only in interactive mode
+            if ($this->input->isInteractive() && ! $this->confirm("Are you sure you want to delete {$totalCount} conversations?")) {
                 $this->info('Operation cancelled.');
+
                 return 0;
             }
 

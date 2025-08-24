@@ -13,11 +13,23 @@ class ChatbotConversation extends Model
     protected $fillable = [
         'user_id',
         'conversation_id',
-        'title',
-        'messages',
+        'role',
+        'content',
         'last_activity',
         'is_active',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (request()->has('message')) {
+                $model->role = $model->role ?? 'user';
+                $model->content = $model->content ?? request()->input('message');
+            }
+        });
+    }
 
     protected $casts = [
         'messages' => 'array',
@@ -87,6 +99,7 @@ class ChatbotConversation extends Model
                 'content' => $message['content'],
             ];
         }
+
         return $messages;
     }
 
@@ -103,6 +116,7 @@ class ChatbotConversation extends Model
                 'timestamp' => $message['timestamp'] ?? now()->format('h:i A'),
             ];
         }
+
         return $messages;
     }
 
@@ -111,8 +125,9 @@ class ChatbotConversation extends Model
      */
     public function generateTitle(): void
     {
-        if ($this->title)
+        if ($this->title) {
             return;
+        }
 
         $firstUserMessage = collect($this->messages ?? [])
             ->where('role', 'user')

@@ -64,35 +64,18 @@ Route::middleware('auth')->group(function () {
 
     // Chatbot routes
     Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])->name('chatbot.chat');
-    Route::get('/chatbot/conversation', [ChatbotController::class, 'getConversation'])->name('chatbot.conversation');
-    Route::delete('/chatbot/conversation', [ChatbotController::class, 'clearConversation'])->name('chatbot.clear');
     Route::get('/chatbot/conversations', [ChatbotController::class, 'listConversations'])->name('chatbot.list');
-    Route::post('/chatbot/new-conversation', [ChatbotController::class, 'startNewConversation'])->name('chatbot.new');
-    Route::delete('/chatbot/cleanup', [ChatbotController::class, 'cleanupOldConversations'])->name('chatbot.cleanup');
-    Route::get('/chatbot/stats', [ChatbotController::class, 'getConversationStats'])->name('chatbot.stats');
-    Route::get('/chatbot/debug', [ChatbotController::class, 'debug'])->name('chatbot.debug');
-    Route::get('/chatbot/test-conversation', function () {
-        $user = auth()->user();
-        $conversation = \App\Models\ChatbotConversation::where('user_id', $user->id)->first();
-        return response()->json([
-            'found' => $conversation ? true : false,
-            'conversation_id' => $conversation->conversation_id ?? null,
-            'messages_count' => $conversation ? count($conversation->messages) : 0,
-            'messages' => $conversation ? $conversation->messages : []
-        ]);
-    })->name('chatbot.test');
+    Route::get('/chatbot/session', [ChatbotController::class, 'getSessionInfo'])->name('chatbot.session');
+    Route::get('/chatbot/conversation', [ChatbotController::class, 'getConversationHistory'])->name('chatbot.history');
+    Route::post('/chatbot/clear', [ChatbotController::class, 'clearConversation'])->name('chatbot.clear');
 
-    // Notification routes
-    Route::post('/notifications/{id}/mark-as-read', function ($id) {
-        $notification = auth()->user()->notifications()->findOrFail($id);
-        $notification->markAsRead();
-
-        return response()->json(['success' => true]);
-    })->name('notifications.mark-as-read');
+    // Notification routes (commented out - controller doesn't exist)
+    // Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    // Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
 
     // Live badge polling endpoint for Action Board navigation badge
     Route::get('/action-board/assigned-active-count', function () {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return response()->json(['count' => 0]);
         }
         $count = \App\Models\Task::query()

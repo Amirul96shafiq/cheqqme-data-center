@@ -2,9 +2,7 @@
 // Chatbot functionality
 // -----------------------------
 (function () {
-    let conversationId =
-        localStorage.getItem("chatbot_conversation_id") ||
-        "conv_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+    let conversationId = null; // Start with null ID
     let conversation = [];
     let isLoadingConversation = false;
     let conversationLoaded = false;
@@ -15,10 +13,91 @@
     //     isNewConversation: !localStorage.getItem('chatbot_conversation_id')
     // });
 
-    // Save conversation ID to localStorage if it's newly generated
-    if (!localStorage.getItem("chatbot_conversation_id")) {
-        localStorage.setItem("chatbot_conversation_id", conversationId);
-        // console.log('Saved new conversation ID to localStorage:', conversationId);
+    // Get user-specific conversation ID from localStorage
+    function getUserConversationKey() {
+        const userId = window.chatbotUserId || "anonymous";
+        return `chatbot_conversation_id_${userId}`;
+    }
+
+    // Get user-specific chatbot open state key
+    function getUserChatStateKey() {
+        const userId = window.chatbotUserId || "anonymous";
+        return `chatbot_open_${userId}`;
+    }
+
+    // Check if user has changed and reset UI state if needed
+    function handleUserChange() {
+        const currentUserId = window.chatbotUserId || "anonymous";
+        const lastUserId = localStorage.getItem("chatbot_last_user_id");
+
+        console.log(
+            `handleUserChange: currentUserId=${currentUserId}, lastUserId=${lastUserId}`
+        );
+
+        if (lastUserId && lastUserId !== currentUserId) {
+            // User has changed (logout/login), reset conversation loading state
+            // But DON'T clear the conversation IDs - they should persist in localStorage
+            // and be matched with database records by user_id
+            conversationLoaded = false;
+            conversation = [];
+
+            console.log(`User changed from ${lastUserId} to ${currentUserId}`);
+        } else {
+            console.log(`Same user or first load: ${currentUserId}`);
+        }
+
+        // Update the last user ID
+        localStorage.setItem("chatbot_last_user_id", currentUserId);
+    }
+
+    // Handle user change detection
+    handleUserChange();
+
+    // Load conversation ID from user-specific localStorage
+    conversationId = localStorage.getItem(getUserConversationKey());
+
+    // Fetches the latest or a new conversation session from the backend
+    async function initializeSession() {
+        try {
+            const csrfToken = document
+                .querySelector('meta[name="csrf-token"]')
+                ?.getAttribute("content");
+            const response = await fetch("/chatbot/session", {
+                method: "GET",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken,
+                    Accept: "application/json",
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                conversationId = data.conversation_id;
+
+                // Store the conversation ID with user-specific key
+                localStorage.setItem(getUserConversationKey(), conversationId);
+
+                console.log(
+                    "Chatbot session initialized with conversation ID:",
+                    conversationId,
+                    "for user:",
+                    window.chatbotUserId
+                );
+
+                // Load the history automatically after getting session info
+                // Add a small delay to ensure the conversation ID is properly set
+                setTimeout(() => {
+                    loadConversationHistory();
+                }, 200);
+            } else {
+                console.error(
+                    "Failed to initialize chatbot session",
+                    response.status,
+                    response.statusText
+                );
+            }
+        } catch (error) {
+            console.error("Error initializing chatbot session:", error);
+        }
     }
 
     // Initialize chatbot state will run when the DOM is ready
@@ -28,23 +107,22 @@
         const closeIcon = document.getElementById("close-icon");
         if (!interfaceEl || !chatIcon || !closeIcon) return;
 
-        // Check if chatbot should be open (default to open if no state is saved)
-        const shouldBeOpen = localStorage.getItem("chatbot_open") !== "false";
+        // Restore previous state from localStorage (defaults to closed if no previous state)
+        const chatState = localStorage.getItem(getUserChatStateKey());
+        const shouldBeOpen = chatState === "true";
 
-        if (shouldBeOpen) {
-            interfaceEl.classList.remove("hidden");
-            // Set close icon when chat is open
-            chatIcon.classList.add("hidden");
-            closeIcon.classList.remove("hidden");
-            // Load conversation history when opening chat
-            if (!isLoadingConversation) {
+        console.log(
+            `Initializing chatbot state - chatState: ${chatState}, shouldBeOpen: ${shouldBeOpen}`
+        );
+
+        // Use the centralized visibility setter for consistency
+        setChatVisibility(shouldBeOpen);
+
+        // If the chatbox should be open, ensure conversation history is loaded
+        if (shouldBeOpen && conversationId && !conversationLoaded) {
+            setTimeout(() => {
                 loadConversationHistory();
-            }
-        } else {
-            interfaceEl.classList.add("hidden");
-            // Set chat icon when chat is closed
-            chatIcon.classList.remove("hidden");
-            closeIcon.classList.add("hidden");
+            }, 300);
         }
     }
 
@@ -63,23 +141,35 @@
         const chatIcon = document.getElementById("chat-icon");
         const closeIcon = document.getElementById("close-icon");
         if (!interfaceEl || !chatIcon || !closeIcon) return;
+
         if (isOpen) {
+            // Show chatbot interface
             interfaceEl.classList.remove("hidden");
+            interfaceEl.classList.add("open");
             interfaceEl.style.display = "flex";
+
+            // Hide chat icon, show close icon
             chatIcon.style.display = "none";
             chatIcon.classList.add("hidden");
             closeIcon.style.display = "inline-flex";
             closeIcon.classList.remove("hidden");
         } else {
-            interfaceEl.style.display = "none";
+            // Hide chatbot interface
             interfaceEl.classList.add("hidden");
-            chatIcon.style.display = "";
+            interfaceEl.classList.remove("open");
+            interfaceEl.style.display = "none";
+
+            // Show chat icon, hide close icon
+            chatIcon.style.display = "inline-flex";
             chatIcon.classList.remove("hidden");
             closeIcon.style.display = "none";
             closeIcon.classList.add("hidden");
         }
+
         // Persist open state
-        localStorage.setItem("chatbot_open", isOpen ? "true" : "false");
+        localStorage.setItem(getUserChatStateKey(), isOpen ? "true" : "false");
+
+        // console.log(`Chat visibility set to: ${isOpen ? "open" : "closed"}`);
     }
 
     // Apply chatbot open/close state when elements exist; safe for dynamic insertion
@@ -90,21 +180,34 @@
         const closeIcon = document.getElementById("close-icon");
         if (!interfaceEl || !chatIcon || !closeIcon) return;
 
-        const shouldBeOpen = localStorage.getItem("chatbot_open") !== "false";
+        const chatState = localStorage.getItem(getUserChatStateKey());
+        const shouldBeOpen = chatState === "true";
+
+        console.log(
+            `Applying chatbot state - chatState: ${chatState}, shouldBeOpen: ${shouldBeOpen}`
+        );
+
         setChatVisibility(shouldBeOpen);
-        // Load history if opening now and not yet loaded
-        if (shouldBeOpen && !isLoadingConversation) {
-            loadConversationHistory();
+
+        // If the chatbox should be open, ensure conversation history is loaded
+        if (shouldBeOpen && conversationId && !conversationLoaded) {
+            setTimeout(() => {
+                loadConversationHistory();
+            }, 400);
         }
+
+        // History will be loaded automatically after session initialization
         chatbotUIInitialized = true;
     }
 
     onDocumentReady(() => {
-        applyChatbotStateIfElementsPresent();
-        // Try to load conversation history after a short delay for DOM readiness
-        if (conversationId) {
-            setTimeout(() => loadConversationHistory(), 1000);
-        }
+        initializeSession(); // Fetch session info on document ready
+
+        // Use a small delay to ensure DOM elements are ready
+        setTimeout(() => {
+            initializeChatbotState(); // Initialize state first
+            applyChatbotStateIfElementsPresent(); // Apply saved state from localStorage as fallback
+        }, 100);
     });
 
     // Observe DOM changes to re-apply state when chat elements are inserted dynamically
@@ -160,22 +263,38 @@
             interfaceEl.classList.remove("open");
             const transitionMs = 260;
             setTimeout(() => {
-                localStorage.setItem("chatbot_open", "false");
+                localStorage.setItem(getUserChatStateKey(), "false");
                 setChatVisibility(false);
             }, transitionMs);
         }
     }
 
     async function loadConversationHistory() {
-        // console.log('Loading conversation history:', {
-        //     conversationId,
-        //     conversationLength: conversation.length,
-        //     conversationLoaded,
-        //     isLoadingConversation
-        // });
+        console.log("Loading conversation history:", {
+            conversationId,
+            conversationLength: conversation.length,
+            conversationLoaded,
+            isLoadingConversation,
+            userId: window.chatbotUserId,
+        });
 
-        if (!conversationId || conversationLoaded || isLoadingConversation) {
-            // console.log('Skipping load - conversation already loaded or loading in progress');
+        if (!conversationId || isLoadingConversation) {
+            console.log(
+                "Skipping load - no conversation ID or loading in progress"
+            );
+            return;
+        }
+
+        // Reset conversation loaded flag if conversation ID changed
+        const storedConversationId = localStorage.getItem(
+            getUserConversationKey()
+        );
+        if (storedConversationId !== conversationId) {
+            conversationLoaded = false;
+        }
+
+        if (conversationLoaded) {
+            console.log("Conversation already loaded");
             return;
         }
 
@@ -200,17 +319,17 @@
                 }
             );
 
-            // console.log('Conversation history response:', response.status);
+            console.log("Conversation history response:", response.status);
 
             if (response.ok) {
                 const data = await response.json();
-                // console.log('Conversation data:', data);
+                console.log("Conversation data:", data);
 
                 if (data.conversation && data.conversation.length > 0) {
                     // Load conversation messages
                     const chatMessages =
                         document.getElementById("chat-messages");
-                    // Clear welcome message
+                    // Clear existing messages before loading history
                     if (chatMessages) chatMessages.innerHTML = "";
 
                     data.conversation.forEach((message) => {
@@ -222,9 +341,17 @@
                     });
 
                     conversationLoaded = true;
-                    // console.log('Loaded', data.conversation.length, 'messages from conversation');
+                    console.log(
+                        "Loaded",
+                        data.conversation.length,
+                        "messages from conversation"
+                    );
                 } else {
-                    // console.log('No conversation messages found in database');
+                    // No conversation history found - this is normal for new conversations
+                    conversationLoaded = true; // Mark as loaded to prevent re-loading
+                    console.log(
+                        "No conversation messages found in database - empty conversation"
+                    );
                 }
             } else {
                 console.error(
@@ -274,18 +401,23 @@
         const nameTag = role === "user" ? userName : "Arem AI";
         const nameTagClass =
             role === "user"
-                ? "text-gray-600 dark:text-gray-400 font-semibold text-sm"
-                : "text-gray-600 dark:text-gray-400 font-semibold text-sm";
+                ? "font-semibold text-xs chatbot-user-name-tag"
+                : "font-semibold text-xs chatbot-ai-name-tag";
 
         const messageClass =
             role === "user"
-                ? "fi-section bg-[#00AE9F] text-white border-[#00AE9F]"
-                : "fi-section bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200";
+                ? "fi-section bg-[#00AE9F] border-[#00AE9F] chatbot-user-message"
+                : "fi-section bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 chatbot-assistant-message";
+
+        const contentClass =
+            role === "user"
+                ? "text-sm whitespace-pre-wrap leading-relaxed chatbot-user-content"
+                : "text-sm whitespace-pre-wrap leading-relaxed chatbot-assistant-content";
 
         const timeClass =
             role === "user"
-                ? "text-white/80"
-                : "text-gray-500 dark:text-gray-400";
+                ? "chatbot-user-timestamp"
+                : "chatbot-assistant-timestamp";
 
         messageDiv.innerHTML =
             '<div class="' +
@@ -296,12 +428,14 @@
             '<div class="max-w-[80%] ' +
             messageClass +
             ' rounded-xl px-4 py-3 shadow-sm border">' +
-            '<p class="text-sm whitespace-pre-wrap leading-relaxed">' +
-            content +
-            "</p>" +
-            '<p class="text-xs ' +
+            '<div class="' +
+            contentClass +
+            '">' +
+            marked.parse(content) +
+            "</div>" +
+            '<p class="' +
             timeClass +
-            ' mt-2 font-medium">' +
+            '">' +
             (timestamp ||
                 new Date().toLocaleTimeString("en-US", {
                     hour: "2-digit",
@@ -387,13 +521,13 @@
                 const data = await response.json();
 
                 // Add AI response
-                addMessage(data.response, "assistant", data.timestamp);
+                addMessage(data.reply, "assistant", data.timestamp);
 
                 // Update conversation ID if provided
                 if (data.conversation_id) {
                     conversationId = data.conversation_id;
                     localStorage.setItem(
-                        "chatbot_conversation_id",
+                        getUserConversationKey(),
                         conversationId
                     );
                     // console.log('Updated conversation ID after message:', conversationId);
@@ -422,23 +556,29 @@
                     ?.getAttribute("content") ||
                 document.querySelector('input[name="_token"]')?.value;
 
-            // Clear conversation from server
-            await fetch("/chatbot/conversation", {
-                method: "DELETE",
+            // Get a new conversation ID from the backend
+            const response = await fetch("/chatbot/clear", {
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": csrfToken,
                     Accept: "application/json",
                 },
-                body: JSON.stringify({
-                    conversation_id: conversationId,
-                }),
             });
+
+            if (response.ok) {
+                const data = await response.json();
+                conversationId = data.conversation_id; // Set the new ID from the server
+            } else {
+                console.error("Failed to clear conversation on the server.");
+                return; // Stop if we can't get a new ID
+            }
         } catch (error) {
             console.error("Error clearing conversation:", error);
+            return; // Stop on error
         }
 
-        // Clear local conversation
+        // Clear local conversation UI
         const chatMessages = document.getElementById("chat-messages");
         if (chatMessages) {
             chatMessages.innerHTML =
@@ -449,16 +589,11 @@
             "</div>" + "</div>";
         }
 
-        // Generate new conversation ID and save to localStorage
-        conversationId =
-            "conv_" +
-            Date.now() +
-            "_" +
-            Math.random().toString(36).substr(2, 9);
-        localStorage.setItem("chatbot_conversation_id", conversationId);
-
         // Keep chatbot open for new conversation
-        localStorage.setItem("chatbot_open", "true");
+        localStorage.setItem(getUserChatStateKey(), "true");
+
+        // Clear the current conversation ID since we're starting fresh
+        localStorage.removeItem(getUserConversationKey());
 
         conversation = [];
         conversationLoaded = false;
@@ -475,21 +610,55 @@
             interfaceEl &&
             interfaceEl.style.display !== "none" &&
             !interfaceEl.classList.contains("hidden");
-        localStorage.setItem("chatbot_open", isOpenVisible ? "true" : "false");
-    });
-
-    // Ensure state is not persisted across loads; on load, ensure chat is closed
-    window.addEventListener("load", function () {
-        setChatVisibility(false);
+        localStorage.setItem(
+            getUserChatStateKey(),
+            isOpenVisible ? "true" : "false"
+        );
     });
 
     // Cross-tab persistence removed: no storage listener for chatbot_open
 
-    // BFCache resume: ensure state remains closed on resume
+    // BFCache resume: restore saved state on resume
     window.addEventListener("pageshow", function (event) {
         if (event.persisted) {
-            // On BFCache resume, ensure the chat starts closed
-            setChatVisibility(false);
+            // On BFCache resume, restore the saved state from localStorage
+            const shouldBeOpen =
+                localStorage.getItem(getUserChatStateKey()) === "true";
+            setChatVisibility(shouldBeOpen);
+        }
+    });
+
+    // --- Event Listeners ---
+    // Use a more robust way to attach event listeners that works with dynamically loaded content.
+    // We'll use event delegation on the body.
+
+    document.body.addEventListener("click", function (event) {
+        // Toggle chatbot visibility
+        if (event.target.closest("#chatbot-toggler")) {
+            toggleChatbot();
+        }
+        // Clear conversation
+        if (event.target.closest("#clear-chat")) {
+            clearConversation();
+        }
+    });
+
+    document.body.addEventListener("submit", function (event) {
+        // Send message
+        if (event.target.id === "chat-form") {
+            sendMessage(event);
+        }
+    });
+
+    document.body.addEventListener("keydown", function (event) {
+        // Send message on Enter key press in the input field
+        if (
+            event.target.id === "chat-input" &&
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+            event.preventDefault();
+            sendMessage(new Event("submit", { cancelable: true }));
         }
     });
 })();
