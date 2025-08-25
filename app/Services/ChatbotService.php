@@ -3,6 +3,11 @@
 namespace App\Services;
 
 use App\Filament\Resources\TaskResource;
+use App\Models\Client;
+use App\Models\Document;
+use App\Models\ImportantUrl;
+use App\Models\PhoneNumber;
+use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 
@@ -38,12 +43,13 @@ class ChatbotService
             'show_help' => [$this, 'showHelp'], // Show all available shortcuts and commands. Shortcut: /help
             'get_incomplete_tasks' => [$this, 'getIncompleteTasks'], // Get incomplete tasks with count and/or detailed breakdown by status with URLs. Shortcut: /mytask
             'get_task_url_by_name' => [$this, 'getTaskUrlByName'], // Find tasks by name for the current user and get a list of URLs to edit them. Can return multiple results. Shortcut: /task "user search task name"
-            'get_client_urls' => [$this, 'getClientUrls'], // Get URLs for client management (create new, list all). Shortcut: /client
-            'get_project_urls' => [$this, 'getProjectUrls'], // Get URLs for project management (create new, list all). Shortcut: /project
-            'get_document_urls' => [$this, 'getDocumentUrls'], // Get URLs for document management (create new, list all). Shortcut: /document
-            'get_important_url_urls' => [$this, 'getImportantUrlUrls'], // Get URLs for important URL management (create new, list all). Shortcut: /important-url
-            'get_phone_number_urls' => [$this, 'getPhoneNumberUrls'], // Get URLs for phone number management (create new, list all). Shortcut: /phone-number
-            'get_user_urls' => [$this, 'getUserUrls'], // Get URLs for user management (create new, list all). Shortcut: /user
+            'get_client_urls' => [$this, 'getClientUrls'], // Get URLs for client management (create new, list all) with total count. Shortcut: /client
+            'get_project_urls' => [$this, 'getProjectUrls'], // Get URLs for project management (create new, list all) with total count. Shortcut: /project
+            'get_document_urls' => [$this, 'getDocumentUrls'], // Get URLs for document management (create new, list all) with total count. Shortcut: /document
+            'get_important_url_urls' => [$this, 'getImportantUrlUrls'], // Get URLs for important URL management (create new, list all) with total count. Shortcut: /important-url
+            'get_phone_number_urls' => [$this, 'getPhoneNumberUrls'], // Get URLs for phone number management (create new, list all) with total count. Shortcut: /phone-number
+            'get_user_urls' => [$this, 'getUserUrls'], // Get URLs for user management (create new, list all) with total count. Shortcut: /user
+            'get_resource_counts' => [$this, 'getResourceCounts'], // Get total counts for all resources. Shortcut: /resources
         ];
     }
 
@@ -107,7 +113,7 @@ class ChatbotService
                 'type' => 'function',
                 'function' => [
                     'name' => 'get_client_urls',
-                    'description' => 'Get URLs for client management including create new client and list all clients. Shortcut: /client',
+                    'description' => 'Get URLs for client management including create new client and list all clients with total count. Shortcut: /client',
                     'parameters' => [
                         'type' => 'object',
                         'properties' => (object) [],
@@ -119,7 +125,7 @@ class ChatbotService
                 'type' => 'function',
                 'function' => [
                     'name' => 'get_project_urls',
-                    'description' => 'Get URLs for project management including create new project and list all projects. Shortcut: /project',
+                    'description' => 'Get URLs for project management including create new project and list all projects with total count. Shortcut: /project',
                     'parameters' => [
                         'type' => 'object',
                         'properties' => (object) [],
@@ -131,7 +137,7 @@ class ChatbotService
                 'type' => 'function',
                 'function' => [
                     'name' => 'get_document_urls',
-                    'description' => 'Get URLs for document management including create new document and list all documents. Shortcut: /document',
+                    'description' => 'Get URLs for document management including create new document and list all documents with total count. Shortcut: /document',
                     'parameters' => [
                         'type' => 'object',
                         'properties' => (object) [],
@@ -143,7 +149,7 @@ class ChatbotService
                 'type' => 'function',
                 'function' => [
                     'name' => 'get_important_url_urls',
-                    'description' => 'Get URLs for important URL management including create new important URL and list all important URLs. Shortcut: /important-url',
+                    'description' => 'Get URLs for important URL management including create new important URL and list all important URLs with total count. Shortcut: /important-url',
                     'parameters' => [
                         'type' => 'object',
                         'properties' => (object) [],
@@ -155,7 +161,7 @@ class ChatbotService
                 'type' => 'function',
                 'function' => [
                     'name' => 'get_phone_number_urls',
-                    'description' => 'Get URLs for phone number management including create new phone number and list all phone numbers. Shortcut: /phone-number',
+                    'description' => 'Get URLs for phone number management including create new phone number and list all phone numbers with total count. Shortcut: /phone-number',
                     'parameters' => [
                         'type' => 'object',
                         'properties' => (object) [],
@@ -167,7 +173,19 @@ class ChatbotService
                 'type' => 'function',
                 'function' => [
                     'name' => 'get_user_urls',
-                    'description' => 'Get URLs for user management including create new user and list all users. Shortcut: /user',
+                    'description' => 'Get URLs for user management including create new user and list all users with total count. Shortcut: /user',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
+                        'required' => [],
+                    ],
+                ],
+            ],
+            'get_resource_counts' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_resource_counts',
+                    'description' => 'Get total counts for all resources in the system. Shortcut: /resources',
                     'parameters' => [
                         'type' => 'object',
                         'properties' => (object) [],
@@ -213,12 +231,13 @@ class ChatbotService
             '/help' => 'Show this help message with all available shortcuts',
             '/mytask' => 'Get your incomplete tasks with detailed breakdown by status',
             '/task "task name"' => 'Find tasks by name and get edit URLs',
-            '/client' => 'Get URLs for creating new clients and listing all clients',
-            '/project' => 'Get URLs for creating new projects and listing all projects',
-            '/document' => 'Get URLs for creating new documents and listing all documents',
-            '/important-url' => 'Get URLs for creating new important URLs and listing all important URLs',
-            '/phone-number' => 'Get URLs for creating new phone numbers and listing all phone numbers',
-            '/user' => 'Get URLs for creating new users and listing all users',
+            '/client' => 'Get URLs for client management with total count',
+            '/project' => 'Get URLs for project management with total count',
+            '/document' => 'Get URLs for document management with total count',
+            '/important-url' => 'Get URLs for important URL management with total count',
+            '/phone-number' => 'Get URLs for phone number management with total count',
+            '/user' => 'Get URLs for user management with total count',
+            '/resources' => 'Get total counts for all resources in the system',
         ];
 
         $counter = 1;
@@ -377,12 +396,15 @@ class ChatbotService
     }
 
     /**
-     * Tool: Get URLs for client management (create new, list all).
+     * Tool: Get URLs for client management (create new, list all) with total count.
      * Shortcut: /client
      */
     public function getClientUrls(): string
     {
-        $output = "**Client Management URLs** 👥\n\n";
+        $count = Client::whereNull('deleted_at')->count();
+
+        $output = "**Client Management** 👥\n\n";
+        $output .= "There are **{$count}** clients in the system right now.\n\n";
         $output .= "Here are the direct links to manage clients:\n\n";
 
         $createUrl = \App\Filament\Resources\ClientResource::getUrl('create');
@@ -406,12 +428,15 @@ class ChatbotService
     }
 
     /**
-     * Tool: Get URLs for project management (create new, list all).
+     * Tool: Get URLs for project management (create new, list all) with total count.
      * Shortcut: /project
      */
     public function getProjectUrls(): string
     {
-        $output = "**Project Management URLs** 📁\n\n";
+        $count = Project::whereNull('deleted_at')->count();
+
+        $output = "**Project Management** 📁\n\n";
+        $output .= "There are **{$count}** projects in the system right now.\n\n";
         $output .= "Here are the direct links to manage projects:\n\n";
 
         $createUrl = \App\Filament\Resources\ProjectResource::getUrl('create');
@@ -436,12 +461,15 @@ class ChatbotService
     }
 
     /**
-     * Tool: Get URLs for document management (create new, list all).
+     * Tool: Get URLs for document management (create new, list all) with total count.
      * Shortcut: /document
      */
     public function getDocumentUrls(): string
     {
-        $output = "**Document Management URLs** 📄\n\n";
+        $count = Document::whereNull('deleted_at')->count();
+
+        $output = "**Document Management** 📄\n\n";
+        $output .= "There are **{$count}** documents in the system right now.\n\n";
         $output .= "Here are the direct links to manage documents:\n\n";
 
         $createUrl = \App\Filament\Resources\DocumentResource::getUrl('create');
@@ -466,12 +494,15 @@ class ChatbotService
     }
 
     /**
-     * Tool: Get URLs for important URL management (create new, list all).
+     * Tool: Get URLs for important URL management (create new, list all) with total count.
      * Shortcut: /important-url
      */
     public function getImportantUrlUrls(): string
     {
-        $output = "**Important URL Management URLs** 🔗\n\n";
+        $count = ImportantUrl::whereNull('deleted_at')->count();
+
+        $output = "**Important URL Management** 🔗\n\n";
+        $output .= "There are **{$count}** important URLs in the system right now.\n\n";
         $output .= "Here are the direct links to manage important URLs:\n\n";
 
         $createUrl = \App\Filament\Resources\ImportantUrlResource::getUrl('create');
@@ -495,12 +526,15 @@ class ChatbotService
     }
 
     /**
-     * Tool: Get URLs for phone number management (create new, list all).
+     * Tool: Get URLs for phone number management (create new, list all) with total count.
      * Shortcut: /phone-number
      */
     public function getPhoneNumberUrls(): string
     {
-        $output = "**Phone Number Management URLs** 📞\n\n";
+        $count = PhoneNumber::whereNull('deleted_at')->count();
+
+        $output = "**Phone Number Management** 📞\n\n";
+        $output .= "There are **{$count}** phone numbers in the system right now.\n\n";
         $output .= "Here are the direct links to manage phone numbers:\n\n";
 
         $createUrl = \App\Filament\Resources\PhoneNumberResource::getUrl('create');
@@ -524,12 +558,15 @@ class ChatbotService
     }
 
     /**
-     * Tool: Get URLs for user management (create new, list all).
+     * Tool: Get URLs for user management (create new, list all) with total count.
      * Shortcut: /user
      */
     public function getUserUrls(): string
     {
-        $output = "**User Management URLs** 👤\n\n";
+        $count = User::whereNull('deleted_at')->count();
+
+        $output = "**User Management** 👤\n\n";
+        $output .= "There are **{$count}** users in the system right now.\n\n";
         $output .= "Here are the direct links to manage users:\n\n";
 
         $createUrl = \App\Filament\Resources\UserResource::getUrl('create');
@@ -544,6 +581,36 @@ class ChatbotService
         $output .= "View, search, and manage all system users.\n\n";
 
         $output .= 'Need help with something else? Just ask! 🚀';
+
+        return $output;
+    }
+
+    /**
+     * Tool: Get total counts for all resources in the system.
+     * Shortcut: /resources
+     */
+    public function getResourceCounts(): string
+    {
+        $counts = [
+            'users' => User::whereNull('deleted_at')->count(),
+            'clients' => Client::whereNull('deleted_at')->count(),
+            'projects' => Project::whereNull('deleted_at')->count(),
+            'documents' => Document::whereNull('deleted_at')->count(),
+            'important_urls' => ImportantUrl::whereNull('deleted_at')->count(),
+            'phone_numbers' => PhoneNumber::whereNull('deleted_at')->count(),
+        ];
+
+        $output = "**Resource Counts Overview** 📊\n\n";
+        $output .= "Here's the current count of all resources in your system:\n\n";
+
+        $output .= "**👤 Users:** {$counts['users']}\n";
+        $output .= "**👥 Clients:** {$counts['clients']}\n";
+        $output .= "**📁 Projects:** {$counts['projects']}\n";
+        $output .= "**📄 Documents:** {$counts['documents']}\n";
+        $output .= "**🔗 Important URLs:** {$counts['important_urls']}\n";
+        $output .= "**📞 Phone Numbers:** {$counts['phone_numbers']}\n\n";
+
+        $output .= 'Want to see details for a specific resource? Use the individual shortcuts like /users or /clients! 🚀';
 
         return $output;
     }

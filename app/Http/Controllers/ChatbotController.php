@@ -30,8 +30,27 @@ class ChatbotController extends Controller
             // Get the message
             $message = $request->input('message');
 
-            // Get the conversation ID
+            // Get the conversation ID first
             $conversationId = $request->input('conversation_id') ?? uniqid('conv_');
+
+            // Check for direct commands that should bypass OpenAI
+            $directCommandResult = $this->handleDirectCommands($message, $user);
+            if ($directCommandResult !== null) {
+                // Store user message
+                ChatbotConversation::create([
+                    'user_id' => $user->id,
+                    'conversation_id' => $conversationId,
+                    'role' => 'user',
+                    'content' => $message,
+                    'last_activity' => now(),
+                ]);
+
+                // Return the direct command result
+                return response()->json([
+                    'reply' => $directCommandResult,
+                    'conversation_id' => $conversationId,
+                ]);
+            }
 
             // Get the conversation history
             $conversationHistory = ChatbotConversation::where('conversation_id', $conversationId)
@@ -46,7 +65,7 @@ class ChatbotController extends Controller
             $tools = $chatbotService->getAllToolDefinitions();
 
             // Initial request to OpenAI
-            $response = $this->sendToOpenAI($messages, $tools);
+            $response = $this->sendToOpenAI($messages, $tools, $conversationId);
 
             // Get the response choice
             $responseChoice = $response['choices'][0]['message'];
@@ -75,7 +94,7 @@ class ChatbotController extends Controller
                 ];
 
                 // Send the tool result back to OpenAI to get the final natural language response
-                $finalResponse = $this->sendToOpenAI($messages);
+                $finalResponse = $this->sendToOpenAI($messages, null, $conversationId);
                 $botReply = $this->normalizeContent($finalResponse['choices'][0]['message']['content']);
             } else {
                 // No tool call, just a regular response
@@ -213,7 +232,7 @@ class ChatbotController extends Controller
     /**
      * Send the messages to OpenAI
      */
-    protected function sendToOpenAI(array $messages, ?array $tools = null): array
+    protected function sendToOpenAI(array $messages, ?array $tools = null, ?string $conversationId = null): array
     {
         // Set the endpoint
         $endpoint = 'https://api.openai.com/v1/chat/completions';
@@ -248,7 +267,7 @@ class ChatbotController extends Controller
         // Store the log
         OpenaiLog::create([
             'user_id' => Auth::id(),
-            'conversation_id' => null, // Simplified for this example
+            'conversation_id' => $conversationId ?? null,
             'model' => $payload['model'],
             'endpoint' => $endpoint,
             'request_payload' => json_encode($payload),
@@ -372,6 +391,66 @@ class ChatbotController extends Controller
     }
 
     /**
+     * Handle direct commands that should bypass OpenAI
+     */
+    protected function handleDirectCommands(string $message, $user): ?string
+    {
+        $message = trim($message);
+
+        // Instantiate the chatbot service
+        $chatbotService = new ChatbotService($user);
+
+        // Check for direct commands (handle variations with optional space)
+        if (strtolower($message) === '/help' || $message === '/help ') {
+            return $chatbotService->executeTool('show_help', []);
+        }
+
+        if (strtolower($message) === '/mytask' || $message === '/mytask ') {
+            return $chatbotService->executeTool('get_incomplete_tasks', []);
+        }
+
+        // Handle /task with quotes: /task "task name"
+        if (preg_match('/^\/task\s+"(.+)"$/i', $message, $matches)) {
+            return $chatbotService->executeTool('get_task_url_by_name', ['task_name' => $matches[1]]);
+        }
+
+        // Handle /task without quotes: /task task name
+        if (preg_match('/^\/task\s+(.+)$/i', $message, $matches)) {
+            return $chatbotService->executeTool('get_task_url_by_name', ['task_name' => $matches[1]]);
+        }
+
+        if (strtolower($message) === '/client' || $message === '/client ') {
+            return $chatbotService->executeTool('get_client_urls', []);
+        }
+
+        if (strtolower($message) === '/project' || $message === '/project ') {
+            return $chatbotService->executeTool('get_project_urls', []);
+        }
+
+        if (strtolower($message) === '/document' || $message === '/document ') {
+            return $chatbotService->executeTool('get_document_urls', []);
+        }
+
+        if (strtolower($message) === '/important-url' || $message === '/important-url ') {
+            return $chatbotService->executeTool('get_important_url_urls', []);
+        }
+
+        if (strtolower($message) === '/phone-number' || $message === '/phone-number ') {
+            return $chatbotService->executeTool('get_phone_number_urls', []);
+        }
+
+        if (strtolower($message) === '/user' || $message === '/user ') {
+            return $chatbotService->executeTool('get_user_urls', []);
+        }
+
+        if (strtolower($message) === '/resources' || $message === '/resources ') {
+            return $chatbotService->executeTool('get_resource_counts', []);
+        }
+
+        return null; // No direct command found, continue with normal processing
+    }
+
+    /**
      * Clean up conversations older than 24 hours for a specific user
      */
     protected function cleanupOldConversations(int $userId): void
@@ -382,19 +461,38 @@ class ChatbotController extends Controller
     }
 
     /**
-     * Clear a conversation for the user
+     * Clear a conversation for the user and flush AI cache and history cache
      */
     public function clearConversation(Request $request)
     {
-        // If a specific conversation_id is provided, delete its history for the current user
         try {
             $user = Auth::user();
             if ($user) {
                 $conversationId = $request->input('conversation_id');
+
                 if ($conversationId) {
+                    // Clear chatbot conversation history
                     ChatbotConversation::where('conversation_id', $conversationId)
                         ->where('user_id', $user->id)
                         ->delete();
+
+                    // Clear OpenAI logs for this conversation
+                    OpenaiLog::where('conversation_id', $conversationId)
+                        ->where('user_id', $user->id)
+                        ->delete();
+
+                    // Clear any cached data for this conversation
+                    $this->flushConversationCache($conversationId, $user->id);
+
+                    \Log::info('Chatbot conversation cleared', [
+                        'conversation_id' => $conversationId,
+                        'user_id' => $user->id
+                    ]);
+                }
+
+                // Clear all user's chatbot caches if no specific conversation
+                if (!$conversationId) {
+                    $this->flushUserCache($user->id);
                 }
             }
         } catch (\Exception $e) {
@@ -403,12 +501,82 @@ class ChatbotController extends Controller
         }
 
         // Create a new conversation ID for the client to use going forward
-        $newConversationId = 'conv_' . uniqid();
+        $newConversationId = 'conv_' . uniqid() . '_' . time();
 
         // Return the new conversation ID
         return response()->json([
-            'message' => 'New conversation started.',
+            'message' => 'Conversation cleared and cache flushed successfully.',
             'conversation_id' => $newConversationId,
         ]);
+    }
+
+    /**
+     * Flush cache for a specific conversation
+     */
+    protected function flushConversationCache(string $conversationId, int $userId): void
+    {
+        try {
+            // Clear Laravel cache for this conversation
+            \Cache::forget("chatbot_conversation_{$conversationId}");
+            \Cache::forget("chatbot_messages_{$conversationId}");
+
+            // Clear user-specific conversation cache
+            \Cache::forget("user_{$userId}_conversation_{$conversationId}");
+
+            // Clear any cached tool responses for this conversation
+            \Cache::forget("tools_{$conversationId}");
+
+            // Clear session-based conversation data
+            if (\Session::has("chatbot_{$conversationId}")) {
+                \Session::forget("chatbot_{$conversationId}");
+            }
+
+            \Log::info('Conversation cache flushed', [
+                'conversation_id' => $conversationId,
+                'user_id' => $userId
+            ]);
+        } catch (\Exception $e) {
+            \Log::warning('Failed to flush conversation cache', [
+                'conversation_id' => $conversationId,
+                'user_id' => $userId,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Flush all cache for a user
+     */
+    protected function flushUserCache(int $userId): void
+    {
+        try {
+            // Get all conversation IDs for this user from the last 24 hours
+            $recentConversations = ChatbotConversation::where('user_id', $userId)
+                ->where('last_activity', '>', now()->subHours(24))
+                ->distinct('conversation_id')
+                ->pluck('conversation_id');
+
+            // Clear cache for each recent conversation
+            foreach ($recentConversations as $conversationId) {
+                $this->flushConversationCache($conversationId, $userId);
+            }
+
+            // Clear user-specific caches
+            \Cache::forget("user_{$userId}_chatbot");
+            \Cache::forget("user_{$userId}_conversations");
+
+            // Clear session data
+            \Session::forget("user_{$userId}_chatbot");
+
+            // Clear any cached tool responses for this user
+            \Cache::forget("user_tools_{$userId}");
+
+            \Log::info('User cache flushed', ['user_id' => $userId]);
+        } catch (\Exception $e) {
+            \Log::warning('Failed to flush user cache', [
+                'user_id' => $userId,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }
