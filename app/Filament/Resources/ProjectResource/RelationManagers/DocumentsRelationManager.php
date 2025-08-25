@@ -43,7 +43,33 @@ class DocumentsRelationManager extends RelationManager
                     ->label(__('document.table.title'))
                     ->sortable()
                     ->searchable()
-                    ->limit(20),
+                    ->limit(20)
+                    ->url(function ($record) {
+                        if ($record->type === 'external' && $record->url) {
+                            return $record->url;
+                        }
+
+                        if ($record->type === 'internal' && $record->file_path) {
+                            return asset('storage/'.ltrim($record->file_path, '/'));
+                        }
+
+                        return null;
+                    })
+                    ->openUrlInNewTab()
+                    ->tooltip(function ($record) {
+                        if ($record->type === 'external' && $record->url) {
+                            $url = $record->url;
+                            return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
+                        }
+
+                        if ($record->type === 'internal' && $record->file_path) {
+                            $url = asset('storage/'.ltrim($record->file_path, '/'));
+                            return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
+                        }
+
+                        return null;
+                    })
+                    ->limit(40),
                 TextColumn::make('type')
                     ->label(__('document.table.type'))
                     ->badge()
@@ -76,6 +102,7 @@ class DocumentsRelationManager extends RelationManager
                         return null;
                     })
                     ->openUrlInNewTab()
+                    ->copyable()
                     ->limit(40),
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))

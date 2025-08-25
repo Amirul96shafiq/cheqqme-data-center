@@ -269,7 +269,7 @@ class PhoneNumberResource extends Resource
                     ->label(__('phonenumber.table.title'))
                     ->searchable()
                     ->sortable()
-                    ->limit(10),
+                    ->limit(20),
                 TextColumn::make('phone')
                     ->label(__('phonenumber.table.phone_number'))->searchable(),
                 TextColumn::make('created_at')

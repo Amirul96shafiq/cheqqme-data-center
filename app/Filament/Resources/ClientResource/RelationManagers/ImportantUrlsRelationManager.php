@@ -32,7 +32,7 @@ class ImportantUrlsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordUrl(fn ($record) => $record->trashed() ? null : ImportantUrlResource::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn($record) => $record->trashed() ? null : ImportantUrlResource::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
@@ -42,7 +42,13 @@ class ImportantUrlsRelationManager extends RelationManager
                     ->label(__('importanturl.table.title'))
                     ->searchable()
                     ->sortable()
-                    ->limit(30),
+                    ->limit(30)
+                    ->url(fn($record) => $record->url, true)
+                    ->openUrlInNewTab()
+                    ->tooltip(function ($record) {
+                        $url = $record->url;
+                        return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
+                    }),
                 TextColumn::make('project.title')
                     ->label(__('importanturl.table.project'))
                     ->sortable()
@@ -53,10 +59,7 @@ class ImportantUrlsRelationManager extends RelationManager
                     ->state(function ($record) {
                         return $record->url ?: '-';
                     })
-                    ->url(function ($record) {
-                        return $record->url;
-                    })
-                    ->openUrlInNewTab()
+                    ->copyable()
                     ->limit(40),
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))
@@ -76,37 +79,37 @@ class ImportantUrlsRelationManager extends RelationManager
                 TextColumn::make('updated_at')
                     ->label(__('importanturl.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
-                        if (! $record->updated_by || $record->updated_at?->eq($record->created_at)) {
+                        if (!$record->updated_by || $record->updated_at?->eq($record->created_at)) {
                             return '-';
                         }
 
                         $user = $record->updatedBy;
                         $formattedName = $user ? $user->short_name : 'Unknown';
 
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
             ])
             ->filters([
-            SelectFilter::make('project_id')
+                SelectFilter::make('project_id')
                     ->label(__('importanturl.table.project'))
                     ->relationship('project', 'title')
                     ->preload()
                     ->searchable()
                     ->multiple(),
-        ])
+            ])
             ->headerActions([])
             ->actions([
-            Tables\Actions\EditAction::make()
-                    ->url(fn ($record) => ImportantUrlResource::getUrl('edit', ['record' => $record]))
-                    ->hidden(fn ($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()
+                    ->url(fn($record) => ImportantUrlResource::getUrl('edit', ['record' => $record]))
+                    ->hidden(fn($record) => $record->trashed()),
 
-            Tables\Actions\ActionGroup::make([
+                Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\DeleteAction::make(),
-            ]),
-        ])
+                ]),
+            ])
             ->bulkActions([])
             ->defaultSort('created_at', 'desc');
     }

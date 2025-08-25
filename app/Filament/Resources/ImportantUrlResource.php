@@ -228,7 +228,13 @@ class ImportantUrlResource extends Resource
                     ->label(__('importanturl.table.title'))
                     ->sortable()
                     ->searchable()
-                    ->limit(20),
+                    ->limit(20)
+                    ->url(fn ($record) => $record->url, true)
+                    ->openUrlInNewTab()
+                    ->tooltip(function ($record) {
+                        $url = $record->url;
+                        return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
+                    }),
                 TextColumn::make('url')
                     ->label(__('importanturl.table.link'))
                     ->url(fn ($record) => $record->url, true)
