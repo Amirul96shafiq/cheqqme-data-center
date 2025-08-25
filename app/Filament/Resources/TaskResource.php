@@ -294,6 +294,7 @@ return false;
                                                                 ])
                                                                 ->toArray();
                                                         })
+                                                        ->helperText(__('task.form.project_helper'))
                                                         ->searchable()
                                                         ->preload()
                                                         ->native(false)
@@ -379,7 +380,8 @@ return false;
                                                         ->default(fn (?Task $record) => $record?->document)
                                                         ->dehydrated()
                                                         ->live()
-                                                        ->reactive(),
+                                                        ->reactive()
+                                                        ->helperText(__('task.form.document_helper')),
                                                     // Important URLs
                                                     Forms\Components\Select::make('important_url')
                                                         ->label(__('task.form.important_url'))
@@ -409,7 +411,34 @@ return false;
                                                         ->nullable()
                                                         ->multiple()
                                                         ->default(fn (?Task $record) => $record?->important_url)
-                                                        ->dehydrated(),
+                                                        ->dehydrated()
+                                                        ->live()
+                                                        ->reactive()
+                                                        ->helperText(__('task.form.important_url_helper')),
+
+                                                    // Display selected items with clickable links
+                                                    Forms\Components\ViewField::make('selected_items_links')
+                                                        ->view('filament.components.selected-items-links')
+                                                        ->viewData(function (Forms\Get $get) {
+                                                            $clientId = $get('client');
+                                                            $selectedProjects = $get('project') ?? [];
+                                                            $selectedDocuments = $get('document') ?? [];
+                                                            $selectedUrls = $get('important_url') ?? [];
+
+                                                            return [
+                                                                'clientId' => $clientId,
+                                                                'selectedProjects' => $selectedProjects,
+                                                                'selectedDocuments' => $selectedDocuments,
+                                                                'selectedUrls' => $selectedUrls,
+                                                            ];
+                                                        })
+                                                        ->visible(
+                                                            fn (Forms\Get $get) => ! empty($get('project')) ||
+                                                            ! empty($get('document')) ||
+                                                            ! empty($get('important_url'))
+                                                        )
+                                                        ->live()
+                                                        ->columnSpanFull(),
                                                 ]),
 
                                         ]),
