@@ -38,6 +38,12 @@ class ChatbotService
             'show_help' => [$this, 'showHelp'], // Show all available shortcuts and commands. Shortcut: /help
             'get_incomplete_tasks' => [$this, 'getIncompleteTasks'], // Get incomplete tasks with count and/or detailed breakdown by status with URLs. Shortcut: /mytask
             'get_task_url_by_name' => [$this, 'getTaskUrlByName'], // Find tasks by name for the current user and get a list of URLs to edit them. Can return multiple results. Shortcut: /task "user search task name"
+            'get_client_urls' => [$this, 'getClientUrls'], // Get URLs for client management (create new, list all). Shortcut: /client
+            'get_project_urls' => [$this, 'getProjectUrls'], // Get URLs for project management (create new, list all). Shortcut: /project
+            'get_document_urls' => [$this, 'getDocumentUrls'], // Get URLs for document management (create new, list all). Shortcut: /document
+            'get_important_url_urls' => [$this, 'getImportantUrlUrls'], // Get URLs for important URL management (create new, list all). Shortcut: /important-url
+            'get_phone_number_urls' => [$this, 'getPhoneNumberUrls'], // Get URLs for phone number management (create new, list all). Shortcut: /phone-number
+            'get_user_urls' => [$this, 'getUserUrls'], // Get URLs for user management (create new, list all). Shortcut: /user
         ];
     }
 
@@ -97,6 +103,78 @@ class ChatbotService
                     ],
                 ],
             ],
+            'get_client_urls' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_client_urls',
+                    'description' => 'Get URLs for client management including create new client and list all clients. Shortcut: /client',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
+                        'required' => [],
+                    ],
+                ],
+            ],
+            'get_project_urls' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_project_urls',
+                    'description' => 'Get URLs for project management including create new project and list all projects. Shortcut: /project',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
+                        'required' => [],
+                    ],
+                ],
+            ],
+            'get_document_urls' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_document_urls',
+                    'description' => 'Get URLs for document management including create new document and list all documents. Shortcut: /document',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
+                        'required' => [],
+                    ],
+                ],
+            ],
+            'get_important_url_urls' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_important_url_urls',
+                    'description' => 'Get URLs for important URL management including create new important URL and list all important URLs. Shortcut: /important-url',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
+                        'required' => [],
+                    ],
+                ],
+            ],
+            'get_phone_number_urls' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_phone_number_urls',
+                    'description' => 'Get URLs for phone number management including create new phone number and list all phone numbers. Shortcut: /phone-number',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
+                        'required' => [],
+                    ],
+                ],
+            ],
+            'get_user_urls' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_user_urls',
+                    'description' => 'Get URLs for user management including create new user and list all users. Shortcut: /user',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
+                        'required' => [],
+                    ],
+                ],
+            ],
         ];
 
         return $definitions[$name] ?? null;
@@ -135,6 +213,12 @@ class ChatbotService
             '/help' => 'Show this help message with all available shortcuts',
             '/mytask' => 'Get your incomplete tasks with detailed breakdown by status',
             '/task "task name"' => 'Find tasks by name and get edit URLs',
+            '/client' => 'Get URLs for creating new clients and listing all clients',
+            '/project' => 'Get URLs for creating new projects and listing all projects',
+            '/document' => 'Get URLs for creating new documents and listing all documents',
+            '/important-url' => 'Get URLs for creating new important URLs and listing all important URLs',
+            '/phone-number' => 'Get URLs for creating new phone numbers and listing all phone numbers',
+            '/user' => 'Get URLs for creating new users and listing all users',
         ];
 
         $counter = 1;
@@ -144,7 +228,7 @@ class ChatbotService
             $counter++;
         }
 
-        $output .= "Just type any of these shortcuts in your message to use them quickly! 🚀";
+        $output .= 'Just type any of these shortcuts in your message to use them quickly! 🚀';
 
         return $output;
     }
@@ -244,7 +328,7 @@ class ChatbotService
                         $dueDate = date('j/n/y', strtotime($task['due_date']));
                         $output .= " - Due date: {$dueDate}";
                     } else {
-                        $output .= " - Due date: -";
+                        $output .= ' - Due date: -';
                     }
 
                     $output .= "\n";
@@ -290,5 +374,177 @@ class ChatbotService
         });
 
         return json_encode(['tasks' => $results->toArray()]);
+    }
+
+    /**
+     * Tool: Get URLs for client management (create new, list all).
+     * Shortcut: /client
+     */
+    public function getClientUrls(): string
+    {
+        $output = "**Client Management URLs** 👥\n\n";
+        $output .= "Here are the direct links to manage clients:\n\n";
+
+        $createUrl = \App\Filament\Resources\ClientResource::getUrl('create');
+        $listUrl = \App\Filament\Resources\ClientResource::getUrl('index');
+
+        $output .= "**Create New Client**\n";
+        $output .= "📝 [{$createUrl}]({$createUrl})\n";
+        $output .= "Add a new client with company details, contact information, and project associations.\n\n";
+
+        $output .= "**List All Clients**\n";
+        $output .= "📋 [{$listUrl}]({$listUrl})\n";
+        $output .= "View, search, and manage all existing clients in your database.\n\n";
+
+        $output .= "💡 **Pro Tips:**\n";
+        $output .= "• Use the global search to quickly find clients by name or email\n";
+        $output .= "• Filter clients by status or creation date\n";
+
+        $output .= 'Need help with something else? Just ask! 🚀';
+
+        return $output;
+    }
+
+    /**
+     * Tool: Get URLs for project management (create new, list all).
+     * Shortcut: /project
+     */
+    public function getProjectUrls(): string
+    {
+        $output = "**Project Management URLs** 📁\n\n";
+        $output .= "Here are the direct links to manage projects:\n\n";
+
+        $createUrl = \App\Filament\Resources\ProjectResource::getUrl('create');
+        $listUrl = \App\Filament\Resources\ProjectResource::getUrl('index');
+
+        $output .= "**Create New Project**\n";
+        $output .= "📝 [{$createUrl}]({$createUrl})\n";
+        $output .= "Start a new project with client assignment, document attachments, and important URLs.\n\n";
+
+        $output .= "**List All Projects**\n";
+        $output .= "📋 [{$listUrl}]({$listUrl})\n";
+        $output .= "View, search, and manage all existing projects with filtering options.\n\n";
+
+        $output .= "💡 **Pro Tips:**\n";
+        $output .= "• Projects can be linked to clients and contain multiple documents\n";
+        $output .= "• Use status filters to track project progress\n";
+        $output .= "• Attach important URLs for quick reference\n\n";
+
+        $output .= 'Need help with something else? Just ask! 🚀';
+
+        return $output;
+    }
+
+    /**
+     * Tool: Get URLs for document management (create new, list all).
+     * Shortcut: /document
+     */
+    public function getDocumentUrls(): string
+    {
+        $output = "**Document Management URLs** 📄\n\n";
+        $output .= "Here are the direct links to manage documents:\n\n";
+
+        $createUrl = \App\Filament\Resources\DocumentResource::getUrl('create');
+        $listUrl = \App\Filament\Resources\DocumentResource::getUrl('index');
+
+        $output .= "**Create New Document**\n";
+        $output .= "📝 [{$createUrl}]({$createUrl})\n";
+        $output .= "Upload and organize new documents with project associations.\n\n";
+
+        $output .= "**List All Documents**\n";
+        $output .= "📋 [{$listUrl}]({$listUrl})\n";
+        $output .= "View, search, and manage all uploaded documents.\n\n";
+
+        $output .= "💡 **Pro Tips:**\n";
+        $output .= "• Documents can be linked to specific projects\n";
+        $output .= "• Use file type filters to find documents quickly\n";
+        $output .= "• Preview documents directly in the admin panel\n\n";
+
+        $output .= 'Need help with something else? Just ask! 🚀';
+
+        return $output;
+    }
+
+    /**
+     * Tool: Get URLs for important URL management (create new, list all).
+     * Shortcut: /important-url
+     */
+    public function getImportantUrlUrls(): string
+    {
+        $output = "**Important URL Management URLs** 🔗\n\n";
+        $output .= "Here are the direct links to manage important URLs:\n\n";
+
+        $createUrl = \App\Filament\Resources\ImportantUrlResource::getUrl('create');
+        $listUrl = \App\Filament\Resources\ImportantUrlResource::getUrl('index');
+
+        $output .= "**Create New Important URL**\n";
+        $output .= "📝 [{$createUrl}]({$createUrl})\n";
+        $output .= "Add important URLs with descriptions for quick reference and organization.\n\n";
+
+        $output .= "**List All Important URLs**\n";
+        $output .= "📋 [{$listUrl}]({$listUrl})\n";
+        $output .= "View, search, and manage all important URLs with categories.\n\n";
+
+        $output .= "💡 **Pro Tips:**\n";
+        $output .= "• Categorize URLs for better organization\n";
+        $output .= "• URLs can be linked to clients and projects\n";
+
+        $output .= 'Need help with something else? Just ask! 🚀';
+
+        return $output;
+    }
+
+    /**
+     * Tool: Get URLs for phone number management (create new, list all).
+     * Shortcut: /phone-number
+     */
+    public function getPhoneNumberUrls(): string
+    {
+        $output = "**Phone Number Management URLs** 📞\n\n";
+        $output .= "Here are the direct links to manage phone numbers:\n\n";
+
+        $createUrl = \App\Filament\Resources\PhoneNumberResource::getUrl('create');
+        $listUrl = \App\Filament\Resources\PhoneNumberResource::getUrl('index');
+
+        $output .= "**Create New Phone Number**\n";
+        $output .= "📝 [{$createUrl}]({$createUrl})\n";
+        $output .= "Add new phone numbers with country codes and descriptions.\n\n";
+
+        $output .= "**List All Phone Numbers**\n";
+        $output .= "📋 [{$listUrl}]({$listUrl})\n";
+        $output .= "View, search, and manage all phone numbers in your database.\n\n";
+
+        $output .= "💡 **Pro Tips:**\n";
+        $output .= "• Phone numbers include automatic country code formatting\n";
+        $output .= "• Use search to find numbers by country or description\n";
+
+        $output .= 'Need help with something else? Just ask! 🚀';
+
+        return $output;
+    }
+
+    /**
+     * Tool: Get URLs for user management (create new, list all).
+     * Shortcut: /user
+     */
+    public function getUserUrls(): string
+    {
+        $output = "**User Management URLs** 👤\n\n";
+        $output .= "Here are the direct links to manage users:\n\n";
+
+        $createUrl = \App\Filament\Resources\UserResource::getUrl('create');
+        $listUrl = \App\Filament\Resources\UserResource::getUrl('index');
+
+        $output .= "**Create New User**\n";
+        $output .= "📝 [{$createUrl}]({$createUrl})\n";
+        $output .= "Add new users with roles, permissions, and access control.\n\n";
+
+        $output .= "**List All Users**\n";
+        $output .= "📋 [{$listUrl}]({$listUrl})\n";
+        $output .= "View, search, and manage all system users.\n\n";
+
+        $output .= 'Need help with something else? Just ask! 🚀';
+
+        return $output;
     }
 }
