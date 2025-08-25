@@ -355,14 +355,16 @@
                         minute: "2-digit",
                     });
                     addMessage(
-                        "Hello! I'm <b>Arem AI</b>. The most genius AI assistant in the world. How can I assist you today?",
+                        window.chatbot?.welcome_message ||
+                            "Hello! I'm :ai_name. The most genius AI assistant in the world. How can I assist you today?",
                         "assistant",
                         welcomeTs
                     );
                     // Add help information message
                     setTimeout(() => {
                         addMessage(
-                            "Use <b>/help</b> to call my available functions!",
+                            window.chatbot?.help_message ||
+                                "Use :help_command to call my available functions!",
                             "assistant",
                             welcomeTs
                         );
@@ -382,6 +384,32 @@
         } finally {
             isLoadingConversation = false;
         }
+    }
+
+    // Process translation strings with placeholders
+    function processTranslation(text, replacements = {}) {
+        if (!text) return text;
+
+        let processedText = text;
+
+        // Replace :ai_name with styled AI name
+        if (processedText.includes(":ai_name")) {
+            const aiName = window.chatbot?.ai_name || "Arem AI";
+            const styledAiName = `<span class="chatbot-ai-name">${aiName}</span>`;
+            processedText = processedText.replace(/:ai_name/g, styledAiName);
+        }
+
+        // Replace :help_command with styled help command
+        if (processedText.includes(":help_command")) {
+            const helpCommand = window.chatbot?.help_command || "/help";
+            const styledHelpCommand = `<span class="chatbot-help-command">${helpCommand}</span>`;
+            processedText = processedText.replace(
+                /:help_command/g,
+                styledHelpCommand
+            );
+        }
+
+        return processedText;
     }
 
     // Shorten user name to first name + first letter of last name
@@ -479,7 +507,7 @@
             '<div class="' +
             contentClass +
             '">' +
-            normalizeContent(marked.parse(content)) +
+            normalizeContent(marked.parse(processTranslation(content))) +
             "</div>" +
             '<div class="' +
             timeClass +
@@ -522,7 +550,9 @@
             '<div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>' +
             '<div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>' +
             "</div>" +
-            '<span class="text-sm text-gray-600 dark:text-gray-300 font-medium">Arem is thinking...</span>' +
+            '<span class="text-sm text-gray-600 dark:text-gray-300 font-medium">' +
+            (window.chatbot?.thinking_message || "Arem is thinking...") +
+            "</span>" +
             "</div>" +
             "</div>";
         chatMessages.appendChild(loadingDiv);
@@ -594,14 +624,16 @@
                     }
                 } else {
                     addMessage(
-                        "Sorry, I encountered an error. Please try again.",
+                        window.chatbot?.error_message ||
+                            "Sorry, I encountered an error. Please try again.",
                         "assistant"
                     );
                 }
             } catch (error) {
                 hideLoading();
                 addMessage(
-                    "Sorry, I encountered an error. Please try again.",
+                    window.chatbot?.error_message ||
+                        "Sorry, I encountered an error. Please try again.",
                     "assistant"
                 );
                 console.error("Chatbot error:", error);
@@ -620,7 +652,10 @@
                 '<div class="flex flex-col space-y-1 items-start">' +
                 '<div class="text-gray-600 dark:text-gray-400 font-semibold text-sm px-1">Arem AI</div>' +
                 '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%] message-bubble">' +
-                '<p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">Clearing conversation...</p>' +
+                '<p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">' +
+                (window.chatbot?.clearing_message ||
+                    "Clearing conversation...") +
+                "</p>" +
                 "</div>" +
                 "</div>";
         }
@@ -675,15 +710,21 @@
                     '<div class="flex flex-col space-y-1 items-start">' +
                     '<div class="text-gray-600 dark:text-gray-400 font-semibold text-sm px-1">Arem AI</div>' +
                     '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%] message-bubble">' +
-                    '<p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">Ready for a fresh start! What would you like to know or work on?</p>' +
+                    '<p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">' +
+                    processTranslation(
+                        window.chatbot?.ready_message ||
+                            "Ready for a fresh start! What would you like to know or work on?"
+                    ) +
+                    "</p>" +
                     "</div>" +
                     "</div>";
 
                 // Add help information message
                 setTimeout(() => {
                     addMessage(
-                        "Use <b>/help</b> to call my available functions!",
-                        "assistant",
+                        window.chatbot?.help_message ||
+                            "Use :help_command to call my available functions!",
+                        "assistant"
                     );
                 }, 1000); // Delay to show after initial message
             }

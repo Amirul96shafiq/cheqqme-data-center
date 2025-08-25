@@ -2,10 +2,41 @@
 <script>
     window.chatbotUserName = "{{ $userName ?? 'You' }}";
     window.chatbotUserId = "{{ Auth::id() ?? 'anonymous' }}";
+    window.chatbot = {
+        welcome_message: "{{ __('chatbot.welcome_message') }}",
+        ai_name: "{{ __('chatbot.ai_name') }}",
+        help_message: "{{ __('chatbot.help_message') }}",
+        help_command: "{{ __('chatbot.help_command') }}",
+        ready_message: "{{ __('chatbot.ready_message') }}",
+        thinking_message: "{{ __('chatbot.thinking_message') }}",
+        error_message: "{{ __('chatbot.error_message') }}",
+        clearing_message: "{{ __('chatbot.clearing_message') }}",
+    };
 </script>
 <style>
     /* ===== CHATBOT BASE STYLES ===== */
     
+    /* ===== CHATBOT STYLING CLASSES ===== */
+
+    /* AI name styling */
+    .chatbot-ai-name {
+        font-weight: bold;
+        color: #00AE9F;
+    }
+
+    /* Help command styling */
+    .chatbot-help-command {
+        font-weight: bold;
+        background-color: #fbb43e;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: monospace;
+    }
+    .dark .chatbot-help-command {
+        background-color: #00AE9F;
+        color: #d1d5db;
+    }
+
     /* Chat interface animation */
     #chatbot-interface {
         transform: translateY(20px);
