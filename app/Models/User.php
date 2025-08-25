@@ -3,22 +3,20 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
-use Filament\Models\Contracts\HasAvatar;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable implements HasAvatar
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes, LogsActivity, HasApiTokens;
+    use HasApiTokens, HasFactory, LogsActivity, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -63,6 +61,7 @@ class User extends Authenticatable implements HasAvatar
             'password' => 'hashed',
         ];
     }
+
     protected static function booted()
     {
         static::saving(function ($user) {
@@ -72,14 +71,17 @@ class User extends Authenticatable implements HasAvatar
         });
 
     }
+
     public function getNameAttribute($value): string
     {
         return $value ?? $this->username ?? 'name';
     }
+
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->avatar ? Storage::url($this->avatar) : null;
@@ -89,16 +91,20 @@ class User extends Authenticatable implements HasAvatar
     public function getShortNameAttribute(): string
     {
         $full = trim($this->attributes['name'] ?? '') ?: trim($this->username ?? '');
-        if ($full === '')
+        if ($full === '') {
             return 'Unknown';
+        }
         $parts = preg_split('/\s+/', $full, -1, PREG_SPLIT_NO_EMPTY);
-        if (count($parts) === 1)
+        if (count($parts) === 1) {
             return $parts[0];
+        }
         $first = array_shift($parts);
         $initials = array_map(function ($p) {
             $ch = mb_substr($p, 0, 1);
-            return mb_strtoupper($ch) . '.';
+
+            return mb_strtoupper($ch).'.';
         }, $parts);
-        return $first . ' ' . implode(' ', $initials);
+
+        return $first.' '.implode(' ', $initials);
     }
 }

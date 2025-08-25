@@ -38,7 +38,7 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
+            ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
             ->favicon(asset('images/favicon.png'))
@@ -127,7 +127,7 @@ class AdminPanelProvider extends PanelProvider
                     }
 
                     return view('partials.chatbot', [
-                        'userName' => auth()->user()?->name ?? 'You'
+                        'userName' => auth()->user()?->name ?? 'You',
                     ]);
                 },
             )
@@ -143,7 +143,7 @@ class AdminPanelProvider extends PanelProvider
                     ->expandedUrlTarget(enabled: false),
 
                 ActivitylogPlugin::make()
-                    ->navigationGroup(fn() => __('activitylog.navigation_group'))
+                    ->navigationGroup(fn () => __('activitylog.navigation_group'))
                     ->navigationSort(11),
             ]);
     }

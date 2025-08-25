@@ -2,11 +2,11 @@
 
 return [
 
-  'navigation_group' => 'Tools',
-  'navigation_label' => 'Activity Logs',
+    'navigation_group' => 'Tools',
+    'navigation_label' => 'Activity Logs',
 
-  'labels' => [
-    'singular' => 'Activity Log',
-    'plural' => 'Activity Logs',
-  ],
+    'labels' => [
+        'singular' => 'Activity Log',
+        'plural' => 'Activity Logs',
+    ],
 ];

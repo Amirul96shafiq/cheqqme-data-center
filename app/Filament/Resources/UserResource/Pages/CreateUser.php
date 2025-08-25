@@ -2,12 +2,9 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
-use App\Filament\Resources\UserResource;
-use Filament\Actions;
 use App\Filament\Pages\Base\BaseCreateRecord;
+use App\Filament\Resources\UserResource;
 use App\Models\User;
-use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 
 class CreateUser extends BaseCreateRecord

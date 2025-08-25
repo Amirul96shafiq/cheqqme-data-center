@@ -10,6 +10,7 @@ abstract class BaseCreateRecord extends CreateRecord
     {
         return static::getResource()::getUrl('index');
     }
+
     public static function getCreateButtonLabel(): string
     {
         return static::$createButtonLabel ?? __('filament::resources/pages/create-record.form.actions.create.label');

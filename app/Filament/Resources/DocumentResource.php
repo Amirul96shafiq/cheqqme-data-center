@@ -8,9 +8,7 @@ use Closure;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
-use Filament\Support\Enums\Alignment;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -18,6 +16,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -82,14 +81,14 @@ class DocumentResource extends Resource
                         TextInput::make('url')
                             ->label(__('document.form.document_url'))
                             ->helperText(__('document.form.document_url_note'))
-                            ->visible(fn(Get $get) => $get('type') === 'external')
+                            ->visible(fn (Get $get) => $get('type') === 'external')
                             ->hintAction(
-                                fn(Get $get) => blank($get('url')) ? null : Action::make('openUrl')
+                                fn (Get $get) => blank($get('url')) ? null : Action::make('openUrl')
                                     ->icon('heroicon-m-arrow-top-right-on-square')
                                     ->label(__('document.form.open_url'))
-                                    ->url(fn() => $get('url'), true)
+                                    ->url(fn () => $get('url'), true)
                                     ->tooltip(__('document.form.document_url_helper'))
-                                    ->visible(fn(Get $get) => !blank($get('url')) && filter_var($get('url'), FILTER_VALIDATE_URL))
+                                    ->visible(fn (Get $get) => ! blank($get('url')) && filter_var($get('url'), FILTER_VALIDATE_URL))
                             )
                             ->url()
                             ->nullable(),
@@ -97,7 +96,7 @@ class DocumentResource extends Resource
                         FileUpload::make('file_path')
                             ->label(__('document.form.document_upload'))
                             ->helperText(__('document.form.document_upload_helper'))
-                            ->visible(fn(Get $get) => $get('type') === 'internal')
+                            ->visible(fn (Get $get) => $get('type') === 'internal')
                             ->directory('documents')
                             ->disk('public')
                             ->visibility('public')
@@ -125,7 +124,7 @@ class DocumentResource extends Resource
 
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
-                        if (!blank($notes) && trim(strip_tags($notes))) {
+                        if (! blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
 
@@ -134,9 +133,9 @@ class DocumentResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('document.section.document_extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -243,7 +242,7 @@ class DocumentResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('document.form.title_placeholder_short'))
+                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('document.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -255,7 +254,7 @@ class DocumentResource extends Resource
     {
         return $table
             // Disable record URL for trashed records
-            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn ($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
@@ -268,7 +267,7 @@ class DocumentResource extends Resource
                 TextColumn::make('type')
                     ->label(__('document.table.type'))
                     ->badge()
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'internal' => __('document.table.internal'),
                         'external' => __('document.table.external'),
                     }),
@@ -283,7 +282,7 @@ class DocumentResource extends Resource
                         // Show '-' if there's no update or updated_by
                         $updatedAt = $record->updated_at;
                         $createdAt = $record->created_at;
-                        if (!$record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
+                        if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
                             return '-';
                         }
 
@@ -294,7 +293,7 @@ class DocumentResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -320,7 +319,7 @@ class DocumentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),

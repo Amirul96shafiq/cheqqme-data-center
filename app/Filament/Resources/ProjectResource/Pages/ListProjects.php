@@ -3,9 +3,8 @@
 namespace App\Filament\Resources\ProjectResource\Pages;
 
 use App\Filament\Resources\ProjectResource;
-use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
 use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
 
 class ListProjects extends ListRecords
 {

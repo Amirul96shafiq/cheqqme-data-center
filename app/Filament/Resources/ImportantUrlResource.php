@@ -3,27 +3,26 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ImportantUrlResource\Pages;
-use App\Filament\Resources\ImportantUrlResource\RelationManagers;
 use App\Models\ImportantUrl;
-
-use Filament\Forms;
-use Filament\Forms\Get;
-use Filament\Forms\Form;
-use Filament\Forms\Components\Section;
 use Closure;
-use Filament\Forms\Components\{TextInput, Select, FileUpload, Radio, Textarea, Grid, RichEditor, Repeater};
-use Filament\Support\Enums\Alignment;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
-
+use Filament\Support\Enums\Alignment;
 use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
-
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
+use Filament\Tables\Table;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 
 class ImportantUrlResource extends Resource
 {
@@ -59,7 +58,7 @@ class ImportantUrlResource extends Resource
                         Select::make('client_id')
                             ->label(__('importanturl.form.client'))
                             ->relationship('client', 'pic_name')
-                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
+                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->pic_name} ({$record->company_name})")
                             ->preload()
                             ->searchable()
                             ->nullable(),
@@ -78,10 +77,10 @@ class ImportantUrlResource extends Resource
                         ->helperText(__('importanturl.form.important_url_note'))
                         ->required()
                         ->hintAction(
-                            fn(Get $get) => blank($get('url')) ? null : Action::make('openUrl')
+                            fn (Get $get) => blank($get('url')) ? null : Action::make('openUrl')
                                 ->icon('heroicon-m-arrow-top-right-on-square')
                                 ->label(__('importanturl.form.open_url'))
-                                ->url(fn() => $get('url'), true)
+                                ->url(fn () => $get('url'), true)
                                 ->tooltip(__('importanturl.form.important_url_helper'))
                         )
                         ->url(),
@@ -92,7 +91,7 @@ class ImportantUrlResource extends Resource
 
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
-                        if (!blank($notes) && trim(strip_tags($notes))) {
+                        if (! blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
 
@@ -101,9 +100,9 @@ class ImportantUrlResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('importanturl.section.important_url_extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -120,12 +119,12 @@ class ImportantUrlResource extends Resource
                                 'bulletList',
                                 'codeBlock',
                             ])
-                            //->maxLength(500)
+                            // ->maxLength(500)
                             ->extraAttributes([
                                 'style' => 'resize: vertical;',
                             ])
                             ->reactive()
-                            //Character limit reactive function
+                            // Character limit reactive function
                             ->helperText(function (Get $get) {
                                 $raw = $get('notes') ?? '';
                                 // 1. Strip all HTML tags
@@ -134,7 +133,8 @@ class ImportantUrlResource extends Resource
                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                 $remaining = 500 - mb_strlen($decoded);
-                                return __("importanturl.form.notes_helper", ['count' => $remaining]);
+
+                                return __('importanturl.form.notes_helper', ['count' => $remaining]);
                             })
                             // Block save if over 500 visible characters
                             ->rule(function (Get $get): Closure {
@@ -149,7 +149,7 @@ class ImportantUrlResource extends Resource
 
                         Repeater::make('extra_information')
                             ->label(__('importanturl.form.extra_information'))
-                            //->relationship('extra_information')
+                            // ->relationship('extra_information')
                             ->schema([
                                 Grid::make()
                                     ->schema([
@@ -173,7 +173,7 @@ class ImportantUrlResource extends Resource
                                                 'style' => 'resize: vertical;',
                                             ])
                                             ->reactive()
-                                            //Character limit reactive function
+                                            // Character limit reactive function
                                             ->helperText(function (Get $get) {
                                                 $raw = $get('value') ?? '';
                                                 // 1. Strip all HTML tags
@@ -182,14 +182,15 @@ class ImportantUrlResource extends Resource
                                                 $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                                                 // 3. Count as-is — includes normal spaces, line breaks, etc.
                                                 $remaining = 500 - mb_strlen($decoded);
-                                                return __("importanturl.form.notes_helper", ['count' => $remaining]);
+
+                                                return __('importanturl.form.notes_helper', ['count' => $remaining]);
                                             })
                                             // Block save if over 500 visible characters
                                             ->rule(function (Get $get): Closure {
                                                 return function (string $attribute, $value, Closure $fail) {
                                                     $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
                                                     if (mb_strlen($textOnly) > 500) {
-                                                        $fail(__("importanturl.form.notes_warning"));
+                                                        $fail(__('importanturl.form.notes_warning'));
                                                     }
                                                 };
                                             })
@@ -206,7 +207,7 @@ class ImportantUrlResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('importanturl.form.title_placeholder_short'))
+                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('importanturl.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -218,7 +219,7 @@ class ImportantUrlResource extends Resource
     {
         return $table
             // Disable record URL for trashed records
-            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn ($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
@@ -230,7 +231,7 @@ class ImportantUrlResource extends Resource
                     ->limit(20),
                 TextColumn::make('url')
                     ->label(__('importanturl.table.link'))
-                    ->url(fn($record) => $record->url, true)
+                    ->url(fn ($record) => $record->url, true)
                     ->openUrlInNewTab()
                     ->copyable()
                     ->limit(20),
@@ -249,7 +250,7 @@ class ImportantUrlResource extends Resource
                         // Show '-' if there's no update or updated_by
                         $updatedAt = $record->updated_at;
                         $createdAt = $record->created_at;
-                        if (!$record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
+                        if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
                             return '-';
                         }
 
@@ -260,7 +261,7 @@ class ImportantUrlResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -269,7 +270,7 @@ class ImportantUrlResource extends Resource
                 SelectFilter::make('client_id')
                     ->label(__('importanturl.filters.client_id'))
                     ->relationship('client', 'pic_name')
-                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
+                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->pic_name} ({$record->company_name})")
                     ->preload()
                     ->searchable()
                     ->multiple(),
@@ -284,14 +285,14 @@ class ImportantUrlResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
@@ -315,6 +316,7 @@ class ImportantUrlResource extends Resource
             'edit' => Pages\EditImportantUrl::route('/{record}/edit'),
         ];
     }
+
     public static function getNavigationLabel(): string
     {
         return __('importanturl.navigation_label');

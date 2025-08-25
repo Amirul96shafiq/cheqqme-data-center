@@ -3,12 +3,11 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Project;
-use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Widgets\TableWidget;
-use Filament\Tables\Actions\EditAction;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Actions\Action;
 
 class RecentProjectsWidget extends TableWidget
 {
@@ -23,7 +22,7 @@ class RecentProjectsWidget extends TableWidget
             TextColumn::make('id')
                 ->label(__('dashboard.recent_projects.id'))
                 ->sortable()
-                ->url(fn($record) => route('filament.admin.resources.projects.edit', $record)),
+                ->url(fn ($record) => route('filament.admin.resources.projects.edit', $record)),
             TextColumn::make('title')->label(__('dashboard.recent_projects.project_title'))->limit(10),
             TextColumn::make('status')
                 ->badge()
@@ -32,7 +31,7 @@ class RecentProjectsWidget extends TableWidget
                     'info' => 'In Progress',
                     'success' => 'Completed',
                 ])
-                ->formatStateUsing(fn(string $state): string => match ($state) {
+                ->formatStateUsing(fn (string $state): string => match ($state) {
                     'Planning' => __('dashboard.recent_projects.planning'),
                     'In Progress' => __('dashboard.recent_projects.in_progress'),
                     'Completed' => __('dashboard.recent_projects.completed'),
@@ -41,18 +40,21 @@ class RecentProjectsWidget extends TableWidget
             TextColumn::make('created_at')->label(__('dashboard.recent_projects.created_at'))->dateTime('j/n/y, h:i A'),
         ];
     }
+
     protected function getTableActions(): array
     {
         return [
             EditAction::make()
                 ->label(__('dashboard.actions.edit'))
-                ->url(fn(Project $record) => route('filament.admin.resources.projects.edit', $record)),
+                ->url(fn (Project $record) => route('filament.admin.resources.projects.edit', $record)),
         ];
     }
+
     protected function isTablePaginationEnabled(): bool
     {
         return false;
     }
+
     protected function getTableHeaderActions(): array
     {
         return [

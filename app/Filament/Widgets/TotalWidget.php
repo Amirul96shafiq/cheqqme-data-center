@@ -3,14 +3,10 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Client;
-use App\Models\Project;
 use App\Models\Document;
-use App\Models\ImportantUrl;
-use App\Models\PhoneNumber;
-use Filament\Widgets\Widget;
+use App\Models\Project;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Filament\Actions\Action;
 
 class TotalWidget extends BaseWidget
 {

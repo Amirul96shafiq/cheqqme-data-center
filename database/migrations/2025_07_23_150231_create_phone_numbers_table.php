@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('phone');
             $table->text('notes')->nullable(); // Additional notes about the phone number
-            
+
             // Add any additional fields as necessary
             $table->timestamps();
         });

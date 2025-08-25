@@ -3,12 +3,10 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Document;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Widgets\TableWidget;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
-
 
 class RecentDocumentsWidget extends TableWidget
 {
@@ -23,26 +21,29 @@ class RecentDocumentsWidget extends TableWidget
             TextColumn::make('id')
                 ->label(__('dashboard.recent_documents.id'))
                 ->sortable()
-                ->url(fn($record) => route('filament.admin.resources.documents.edit', $record)),
+                ->url(fn ($record) => route('filament.admin.resources.documents.edit', $record)),
             TextColumn::make('title')->label(__('dashboard.recent_documents.document_title'))->limit(10),
             TextColumn::make('project.title')->label(__('dashboard.recent_documents.project_title'))->limit(10),
             TextColumn::make('created_at')->label(__('dashboard.recent_documents.created_at'))->dateTime('j/n/y, h:i A'),
         ];
     }
+
     protected function getTableActions(): array
     {
         return [
             Action::make('view')
                 ->label(__('dashboard.actions.view'))
                 ->icon('heroicon-o-eye')
-                ->url(fn(Document $record) => $record->url ?? asset('storage/' . $record->file_path))
+                ->url(fn (Document $record) => $record->url ?? asset('storage/'.$record->file_path))
                 ->openUrlInNewTab(),
         ];
     }
+
     protected function isTablePaginationEnabled(): bool
     {
         return false;
     }
+
     protected function getTableHeaderActions(): array
     {
         return [
@@ -54,6 +55,7 @@ class RecentDocumentsWidget extends TableWidget
                 ->color('gray'),
         ];
     }
+
     // Heading for the widget
     protected function getTableHeading(): string|\Illuminate\Contracts\Support\Htmlable|null
     {

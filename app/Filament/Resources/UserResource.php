@@ -3,33 +3,27 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
-
 use Filament\Forms;
-use Filament\Forms\Get;
-use Filament\Forms\Form;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\{TextInput, Toggle, Grid, Group, Hidden};
-use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\PasswordInput;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Password;
-use Illuminate\Support\Facades\Hash;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
-use Illuminate\Validation\Rules\Unique;
-
 use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
+use Filament\Tables\Table;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Unique;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 
 class UserResource extends Resource
 {
@@ -68,7 +62,7 @@ class UserResource extends Resource
                                 ->nullable()
                                 ->extraAlpineAttributes(['x-ref' => 'name'])
                                 ->helperText(__('user.form.name_helper'))
-                                ->placeholder(fn(callable $get) => $get('username'))
+                                ->placeholder(fn (callable $get) => $get('username'))
                                 ->maxLength(50),
 
                             TextInput::make('email')
@@ -80,15 +74,15 @@ class UserResource extends Resource
                                     table: 'users',
                                     column: 'email',
                                     ignoreRecord: true,
-                                    modifyRuleUsing: fn(Unique $rule) => $rule->whereNull('deleted_at')
+                                    modifyRuleUsing: fn (Unique $rule) => $rule->whereNull('deleted_at')
                                 ),
 
-                            Hidden::make('Updated_by')->default(fn() => auth()->id())->dehydrated(),
-                        ])
+                            Hidden::make('Updated_by')->default(fn () => auth()->id())->dehydrated(),
+                        ]),
                     ]),
 
                 Section::make(heading: __('user.section.password_info'))
-                    ->description(fn(string $context) => $context === 'edit' ? __('user.section.password_info_description') : null)
+                    ->description(fn (string $context) => $context === 'edit' ? __('user.section.password_info_description') : null)
                     ->schema([
 
                         // Only show "Change password?" during editing
@@ -96,13 +90,13 @@ class UserResource extends Resource
                             ->label(__('user.form.change_password'))
                             ->live()
                             ->afterStateUpdated(function (bool $state, callable $set) {
-                                if (!$state) {
+                                if (! $state) {
                                     $set('old_password', null);
                                     $set('password', null);
                                     $set('password_confirmation', null);
                                 }
                             })
-                            ->visible(fn(string $context) => $context === 'edit'),
+                            ->visible(fn (string $context) => $context === 'edit'),
 
                         // Generate password feature
                         Forms\Components\Actions::make([
@@ -115,8 +109,7 @@ class UserResource extends Resource
                                     $set('password', $generated);
                                 })
                                 ->visible(
-                                    fn(Get $get, string $context) =>
-                                    $context === 'create' || $get('change_password')
+                                    fn (Get $get, string $context) => $context === 'create' || $get('change_password')
                                 ),
                         ]),
 
@@ -129,12 +122,11 @@ class UserResource extends Resource
                                 ->revealable()
                                 ->dehydrated(false)
                                 ->visible(
-                                    fn(Get $get, string $context) =>
-                                    $context === 'edit' && $get('change_password') === true
+                                    fn (Get $get, string $context) => $context === 'edit' && $get('change_password') === true
                                 )
                                 ->rule(function () {
                                     return function (string $attribute, $value, $fail) {
-                                        if ($value && !Hash::check($value, auth()->user()->password)) {
+                                        if ($value && ! Hash::check($value, auth()->user()->password)) {
                                             $fail('The old password is incorrect.');
                                         }
                                     };
@@ -142,17 +134,16 @@ class UserResource extends Resource
 
                             // NEW PASSWORD
                             TextInput::make('password')
-                                ->label(fn(string $context) => $context === 'edit' ? __('user.form.new_password') : __('user.form.new_password'))
+                                ->label(fn (string $context) => $context === 'edit' ? __('user.form.new_password') : __('user.form.new_password'))
                                 ->helperText(__('user.form.password_helper'))
                                 ->password()
                                 ->revealable()
                                 ->minLength(5)
-                                ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
-                                ->dehydrated(fn($state) => filled($state))
-                                ->required(fn(string $context) => $context === 'create')
+                                ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
+                                ->dehydrated(fn ($state) => filled($state))
+                                ->required(fn (string $context) => $context === 'create')
                                 ->visible(
-                                    fn(Get $get, string $context) =>
-                                    $context === 'create' || $get('change_password')
+                                    fn (Get $get, string $context) => $context === 'create' || $get('change_password')
                                 )
                                 ->same('password_confirmation'),
 
@@ -162,12 +153,10 @@ class UserResource extends Resource
                                 ->password()
                                 ->revealable()
                                 ->required(
-                                    fn(Get $get, string $context) =>
-                                    $context === 'create' || filled($get('password'))
+                                    fn (Get $get, string $context) => $context === 'create' || filled($get('password'))
                                 )
                                 ->visible(
-                                    fn(Get $get, string $context) =>
-                                    $context === 'create' || $get('change_password')
+                                    fn (Get $get, string $context) => $context === 'create' || $get('change_password')
                                 ),
                         ]),
                     ]),
@@ -175,7 +164,7 @@ class UserResource extends Resource
                 // Account deletion
                 Section::make(heading: __('user.section.danger_zone'))
                     ->description(__('user.section.danger_zone_description'))
-                    ->visible(fn(string $context) => $context === 'edit') // hide entire section when creating
+                    ->visible(fn (string $context) => $context === 'edit') // hide entire section when creating
                     ->Schema([
                         // Only show "User Deletion?" during editing
                         Toggle::make('user_delete')
@@ -183,9 +172,9 @@ class UserResource extends Resource
                             ->onColor('danger')
                             ->offColor('gray')
                             ->live()
-                            ->visible(fn(string $context) => $context === 'edit')
+                            ->visible(fn (string $context) => $context === 'edit')
                             ->afterStateUpdated(function (bool $state, callable $set) {
-                                if (!$state) {
+                                if (! $state) {
                                     $set('delete_confirmation', null);
                                 }
                             }),
@@ -196,8 +185,7 @@ class UserResource extends Resource
                             ->placeholder(__('user.form.user_confirm_placeholder'))
                             ->helperText(__('user.form.user_confirm_helpertext'))
                             ->visible(
-                                fn(Get $get, string $context) =>
-                                $context === 'edit' && $get('user_delete') === true
+                                fn (Get $get, string $context) => $context === 'edit' && $get('user_delete') === true
                             )
                             ->live()
                             ->dehydrated(false),
@@ -208,8 +196,8 @@ class UserResource extends Resource
                                 ->icon('heroicon-o-trash')
                                 ->color('danger')
                                 ->requiresConfirmation()
-                                ->visible(fn(Get $get) => $get('user_delete') === true)
-                                ->disabled(fn(Get $get) => $get('delete_confirmation') !== 'CONFIRM DELETE USER')
+                                ->visible(fn (Get $get) => $get('user_delete') === true)
+                                ->disabled(fn (Get $get) => $get('delete_confirmation') !== 'CONFIRM DELETE USER')
                                 ->action(function ($record, $livewire) {
                                     $record->delete();
 
@@ -225,7 +213,7 @@ class UserResource extends Resource
     {
         return $table
             // Disable record URL for trashed records
-            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn ($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('user.table.id'))
@@ -255,7 +243,7 @@ class UserResource extends Resource
                         // Show '-' if there's no update or updated_by
                         $updatedAt = $record->updated_at;
                         $createdAt = $record->created_at;
-                        if (!$record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
+                        if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
                             return '-';
                         }
 
@@ -266,7 +254,7 @@ class UserResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -275,13 +263,13 @@ class UserResource extends Resource
                 TrashedFilter::make(), // To show trashed or only active
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 /*Tables\Actions\BulkActionGroup::make([
@@ -307,6 +295,7 @@ class UserResource extends Resource
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
+
     public static function getNavigationLabel(): string
     {
         return __('user.navigation_label');
@@ -326,6 +315,7 @@ class UserResource extends Resource
     {
         return __('user.navigation_group'); // Grouping imporant url under Data Management
     }
+
     public static function getNavigationSort(): ?int
     {
         return 11; // Adjust the navigation sort order as needed

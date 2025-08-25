@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\Rules;
 
 class ResetPasswordController extends Controller
 {
@@ -28,7 +27,7 @@ class ResetPasswordController extends Controller
     {
         $request->validate([
             'token' => ['required'],
-            //'email' => ['required', 'email'],
+            // 'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', 'min:5'],
         ]);
 

@@ -35,7 +35,7 @@ return [
         'api_key' => env('OPENAI_API_KEY'),
         'model' => env('OPENAI_MODEL', 'gpt-3.5-turbo'),
         'max_tokens' => (int) env('OPENAI_MAX_TOKENS', 500),
-        'temperature' => (double) env('OPENAI_TEMPERATURE', 1.2),
+        'temperature' => (float) env('OPENAI_TEMPERATURE', 1.2),
         'organization' => env('OPENAI_ORGANIZATION'),
     ],
 

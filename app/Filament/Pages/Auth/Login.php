@@ -3,19 +3,16 @@
 namespace App\Filament\Pages\Auth;
 
 use Filament\Forms;
-use FIlament\Forms\Form;
-use Filament\Pages\Auth\Login as BaseLogin;
-use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Redirect;
 use Filament\Forms\Components\Actions\Action;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Auth;
+use FIlament\Forms\Form;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
-
+use Filament\Notifications\Notification;
+use Filament\Pages\Auth\Login as BaseLogin;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class Login extends BaseLogin
 {
-    
     protected static bool $shouldRegisterNavigation = false;
 
     // Remove Default Form Action (Form buttons)
@@ -93,7 +90,7 @@ class Login extends BaseLogin
 
     public function mount(): void
     {
-        //dd('Custom Login Loaded'); // For testing loading
+        // dd('Custom Login Loaded'); // For testing loading
         parent::mount();
 
         $status = session()->pull('status');

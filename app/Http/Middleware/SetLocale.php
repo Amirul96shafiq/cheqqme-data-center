@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Session;
 
 class SetLocale
 {
-  public function handle($request, Closure $next)
-  {
-    // Default fallback
-    $locale = Session::get('locale', config('app.locale'));
+    public function handle($request, Closure $next)
+    {
+        // Default fallback
+        $locale = Session::get('locale', config('app.locale'));
 
-    // Apply the locale
-    App::setLocale($locale);
+        // Apply the locale
+        App::setLocale($locale);
 
-    return $next($request);
-  }
+        return $next($request);
+    }
 }

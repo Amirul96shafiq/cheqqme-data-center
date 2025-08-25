@@ -2,10 +2,9 @@
 
 namespace App\Filament\Resources\DocumentResource\Pages;
 
+use App\Filament\Pages\Base\BaseEditRecord;
 use App\Filament\Resources\DocumentResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
-use App\Filament\Pages\Base\BaseEditRecord;
 
 class EditDocument extends BaseEditRecord
 {
@@ -17,9 +16,11 @@ class EditDocument extends BaseEditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $data['updated_by'] = auth()->id();
+
         return $data;
     }
 }

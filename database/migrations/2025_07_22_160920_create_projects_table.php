@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('status')->default('Choose Project Status')->nullable(); // Default status // e.g. Planning, In Progress, Completed
             $table->text('notes')->nullable(); // Additional notes for the project
-            
+
             $table->timestamps();
             $table->softDeletes(); // Enable trash/restore functionality
         });
