@@ -20,8 +20,8 @@ class ClientFactory extends Factory
             'company_name' => $this->faker->company(),
             'pic_name' => $this->faker->name(),
             'pic_email' => $this->faker->email(),
-            'pic_phone' => $this->faker->phoneNumber(),
-            'address' => $this->faker->address(),
+            'pic_contact_number' => $this->faker->phoneNumber(),
+            'company_address' => $this->faker->address(),
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'updated_at' => function (array $attributes) {
                 return $attributes['created_at'];

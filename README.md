@@ -22,18 +22,18 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 
 ## Tech Stack
 
-| Area         | Tools / Frameworks                                              |
-| ------------ | --------------------------------------------------------------- |
-| Language     | PHP 8.2                                                         |
-| Backend      | Laravel 12.20.0                                                 |
-| Admin / UI   | Filament v3.3.31, Tailwind CSS v3.4                             |
-| Realtime UX  | Livewire v3.6 (Filament integrated)                             |
-| Database     | SQLite (dev) → MySQL/PostgreSQL (future)                        |
-| MCP Server   | Node.js (Express 5), SQLite, bcrypt 6, dotenv 17                |
-| Build Tools  | Vite, NPM                                                       |
-| Testing      | PHPUnit 11, Laravel testing utilities, Livewire component tests |
-| Activity Log | Spatie Activitylog + Filament Activitylog plugin (enabled)      |
-| Kanban Board | Relaticle Flowforge v0.2 (custom Action Board page)             |
+| Area         | Tools / Frameworks                                                   |
+| ------------ | -------------------------------------------------------------------- |
+| Language     | PHP 8.2.29                                                           |
+| Backend      | Laravel 12.20.0                                                      |
+| Admin / UI   | Filament v3.3.37, Tailwind CSS v3.4                                  |
+| Realtime UX  | Livewire v3.6.4 (Filament integrated)                                |
+| Database     | SQLite (dev) → MySQL/PostgreSQL (future)                             |
+| MCP Server   | Node.js (Express 5), SQLite, bcrypt 6, dotenv 17                     |
+| Build Tools  | Vite v7.1.3, Laravel Vite Plugin v2.0.0, NPM                         |
+| Testing      | PHPUnit 11.5.34, Laravel testing utilities, Livewire component tests |
+| Activity Log | Spatie Activitylog + Filament Activitylog plugin (enabled)           |
+| Kanban Board | Relaticle Flowforge v0.2 (custom Action Board page)                  |
 
 ---
 

@@ -6,7 +6,7 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.2.29",
         "awcodes/light-switch": "^1.0",
         "bezhansalleh/filament-language-switch": "^3.1",
         "blade-ui-kit/blade-heroicons": "^2.6",
@@ -19,19 +19,19 @@
         "mokhosh/filament-jalali": "^4.10",
         "relaticle/flowforge": "^0.2.1",
         "rmsramos/activitylog": "^1.0",
-        "spatie/eloquent-sortable": "^4.5",
+        "spatie/eloquent-sortable": "^4.5.2",
         "spatie/laravel-activitylog": "^4.10",
         "ysfkaya/filament-phone-input": "^3.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
-        "laravel/boost": "^1.0",
+        "laravel/boost": "^1.0.18",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
-        "laravel/sail": "^1.41",
+        "laravel/sail": "^1.44",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "phpunit/phpunit": "^11.5.3"
+        "phpunit/phpunit": "^11.5.34"
     },
     "autoload": {
         "psr-4": {
