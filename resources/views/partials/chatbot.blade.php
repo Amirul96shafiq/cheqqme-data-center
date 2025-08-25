@@ -18,6 +18,7 @@
         box-sizing: border-box;
     }
 
+    /* Mobile view */
     @media (max-width: 420px) {
         #chatbot-interface {
             width: calc(100vw - 20px);
@@ -27,6 +28,7 @@
         }
     }
     
+    /* Open chatbot interface */
     #chatbot-interface.open {
         transform: translateY(0);
         opacity: 1;
@@ -142,7 +144,7 @@
     /* User timestamp: white */
     .chatbot-user-timestamp {
         color: white !important;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         margin-top: 0.5rem;
         font-weight: 500;
     }
@@ -150,38 +152,31 @@
     /* AI timestamp: #00000050 */
     .chatbot-assistant-timestamp {
         color: #00000080 !important;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         margin-top: 0.5rem;
         font-weight: 500;
     }
     
     /* === DARK MODE (Class-based) === */
     .dark .chatbot-user-name-tag {
-        color: #6b7280 !important;
+        color: rgba(255, 255, 255) !important;
     }
     
     .dark .chatbot-ai-name-tag {
-        color: #9ca3af !important;
+        color: rgba(255, 255, 255, 0.60) !important;
     }
     
-    .dark .chatbot-user-content {
-        color: white !important;
-    }
-    
+    .dark .chatbot-user-content,
     .dark .chatbot-assistant-content {
         color: white !important;
     }
-    
-    .dark .chatbot-user-timestamp {
-        color: #FFFFFF80 !important;
-    }
-    
+
+    .dark .chatbot-user-timestamp,
     .dark .chatbot-assistant-timestamp {
-        color: #FFFFFF80 !important;
+        color: rgba(255, 255, 255, 0.80) !important;
     }
     
     /* ===== MARKDOWN CONTENT STYLING ===== */
-    
     /* Ensure markdown elements inherit message content colors */
     .chatbot-user-content p,
     .chatbot-user-content div,
@@ -270,6 +265,7 @@
         text-decoration: none;
     }
 </style>
+<!-- Chatbot Widget -->
 <div class="fixed bottom-4 right-4 z-[99]">
         <!-- Floating Chat Button -->
     <div class="relative">
@@ -299,7 +295,7 @@
 
     <!-- Chat Interface -->
     <div id="chatbot-interface" class="absolute bottom-24 right-0 w-[380px] h-[680px] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden">
-        <div class="flex flex-col h-full">
+        <div class="flex flex-col h-full w-full">
         <!-- Header -->
         <div class="bg-primary-600 text-white px-3 py-1 rounded-t-xl flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -365,13 +361,3 @@
 
 <!-- Marked.js for Markdown rendering -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-<!-- Chatbot toggler button -->
-<!-- <div id="chatbot-toggler"
-     class="fixed bottom-5 right-5 h-14 w-14 cursor-pointer rounded-full bg-primary-600 text-white flex items-center justify-center shadow-lg transition-transform transform hover:scale-110"> -->
-
-
-
-
-
-

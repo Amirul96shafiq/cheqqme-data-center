@@ -29,25 +29,35 @@ class CleanupOldChatbotConversations extends Command
      */
     public function handle()
     {
+        // Get the hours option
         $hours = (int) $this->option('hours');
+
+        // Get the dry-run option
         $dryRun = $this->option('dry-run');
+
+        // Calculate the cutoff date
         $cutoffDate = Carbon::now()->subHours($hours);
 
+        // Show the cutoff date
         $this->info("Cleaning up chatbot conversations older than {$hours} hours ({$cutoffDate->format('Y-m-d H:i:s')})");
 
-        // Get conversations to be deleted
+        // Get conversations to be deleted (where last_activity is before the cutoff date)
         $conversationsToDelete = ChatbotConversation::where('last_activity', '<', $cutoffDate);
 
+        // Get the total count of conversations to be deleted
         $totalCount = $conversationsToDelete->count();
 
+        // If there are no conversations to delete, show a message and return
         if ($totalCount === 0) {
             $this->info('No old conversations found to delete.');
 
             return 0;
         }
 
+        // Show the total count of conversations to be deleted
         $this->info("Found {$totalCount} conversations to delete.");
 
+        // If dry run is enabled, show some sample conversations
         if ($dryRun) {
             $this->warn('DRY RUN MODE - No conversations will be actually deleted.');
 

@@ -7,12 +7,6 @@
     let isLoadingConversation = false;
     let conversationLoaded = false;
 
-    // console.log('Initializing chatbot:', {
-    //     conversationIdFromStorage: localStorage.getItem('chatbot_conversation_id'),
-    //     finalConversationId: conversationId,
-    //     isNewConversation: !localStorage.getItem('chatbot_conversation_id')
-    // });
-
     // Get user-specific conversation ID from localStorage
     function getUserConversationKey() {
         const userId = window.chatbotUserId || "anonymous";
@@ -200,6 +194,7 @@
         chatbotUIInitialized = true;
     }
 
+    // Initialize chatbot state when the DOM is ready
     onDocumentReady(() => {
         initializeSession(); // Fetch session info on document ready
 
@@ -238,6 +233,7 @@
     // Kick off polling as a fallback in case elements are injected later
     pollForChatElements(20, 100);
 
+    // Toggle chatbot visibility
     function toggleChatbot() {
         const interfaceEl = document.getElementById("chatbot-interface");
         const chatIcon = document.getElementById("chat-icon");
@@ -269,6 +265,7 @@
         }
     }
 
+    // Load conversation history from the backend
     async function loadConversationHistory() {
         console.log("Loading conversation history:", {
             conversationId,
@@ -377,6 +374,7 @@
         }
     }
 
+    // Shorten user name to first name + first letter of last name
     function shortenName(fullName) {
         const nameParts = fullName.trim().split(/\s+/);
         if (nameParts.length === 1) {
@@ -395,6 +393,7 @@
         }
     }
 
+    // Normalize content to remove excessive whitespace and line breaks from HTML content
     function normalizeContent(htmlContent) {
         // Clean up excessive whitespace and line breaks from HTML content
         return (
@@ -412,41 +411,52 @@
         );
     }
 
+    // Add a message to the chatbot UI
     function addMessage(content, role, timestamp = null, animationDelay = 0) {
         const chatMessages = document.getElementById("chat-messages");
         if (!chatMessages) return;
 
+        // Create message container
         const messageDiv = document.createElement("div");
         messageDiv.className =
             "flex flex-col space-y-1 " +
             (role === "user" ? "items-end" : "items-start");
 
+        // Get user name
         const fullUserName = window.chatbotUserName || "You";
         const userName =
             fullUserName === "You"
                 ? "You"
                 : `You (${shortenName(fullUserName)})`;
+
+        // Get name tag
         const nameTag = role === "user" ? userName : "Arem AI";
+
+        // Get name tag class
         const nameTagClass =
             role === "user"
                 ? "font-semibold text-xs chatbot-user-name-tag"
                 : "font-semibold text-xs chatbot-ai-name-tag";
 
+        // Get message class
         const messageClass =
             role === "user"
                 ? "fi-section bg-[#00AE9F] border-[#00AE9F] chatbot-user-message message-bubble user-message"
                 : "fi-section bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 chatbot-assistant-message message-bubble";
 
+        // Get content class
         const contentClass =
             role === "user"
                 ? "text-sm whitespace-pre-wrap leading-relaxed chatbot-user-content"
                 : "text-sm whitespace-pre-wrap leading-relaxed chatbot-assistant-content";
 
+        // Get time class
         const timeClass =
             role === "user"
                 ? "chatbot-user-timestamp"
                 : "chatbot-assistant-timestamp";
 
+        // Add message to the chatbot UI
         messageDiv.innerHTML =
             '<div class="' +
             nameTagClass +
@@ -455,11 +465,16 @@
             "</div>" +
             '<div class="' +
             messageClass +
-            ' rounded-xl px-4 py-3 shadow-sm border">' +
+            ' rounded-xl px-4 py-3 shadow-sm border max-w-[80%]">' +
             '<div class="' +
             contentClass +
             '">' +
             normalizeContent(marked.parse(content)) +
+            "</div>" +
+            '<div class="' +
+            timeClass +
+            '">' +
+            (timestamp || new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })) +
             "</div>" +
             "</div>";
 
@@ -475,6 +490,7 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    // Show loading indicator
     function showLoading() {
         const chatMessages = document.getElementById("chat-messages");
         if (!chatMessages) return;
@@ -487,9 +503,9 @@
             '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%] message-bubble typing-indicator">' +
             '<div class="flex items-center space-x-3">' +
             '<div class="flex space-x-1">' +
-            '<div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>' +
-            '<div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>' +
-            '<div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>' +
+            '<div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce"></div>' +
+            '<div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>' +
+            '<div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>' +
             "</div>" +
             '<span class="text-sm text-gray-600 dark:text-gray-300 font-medium">Arem is thinking...</span>' +
             "</div>" +
@@ -498,6 +514,7 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    // Hide loading indicator
     function hideLoading() {
         const loadingMessage = document.getElementById("loading-message");
         if (loadingMessage) {
@@ -505,6 +522,7 @@
         }
     }
 
+    // Send message to the chatbot
     async function sendMessage(event) {
         event.preventDefault();
 
@@ -558,7 +576,6 @@
                             getUserConversationKey(),
                             conversationId
                         );
-                        // console.log('Updated conversation ID after message:', conversationId);
                     }
                 } else {
                     addMessage(
@@ -577,6 +594,7 @@
         }, 800); // Delay chatbot response to let user see their message
     }
 
+    // Clear conversation
     async function clearConversation() {
         console.log("Clearing conversation...");
 
@@ -661,6 +679,7 @@
         );
     }
 
+    // Export functions to the window object
     window.toggleChatbot = toggleChatbot;
     window.sendMessage = sendMessage;
     window.clearConversation = clearConversation;
@@ -678,8 +697,6 @@
         );
     });
 
-    // Cross-tab persistence removed: no storage listener for chatbot_open
-
     // BFCache resume: restore saved state on resume
     window.addEventListener("pageshow", function (event) {
         if (event.persisted) {
@@ -691,9 +708,7 @@
     });
 
     // --- Event Listeners ---
-    // Use a more robust way to attach event listeners that works with dynamically loaded content.
-    // We'll use event delegation on the body.
-
+    // Use event delegation on the body.
     document.body.addEventListener("click", function (event) {
         // Toggle chatbot visibility
         if (event.target.closest("#chatbot-toggler")) {
@@ -705,6 +720,7 @@
         }
     });
 
+    // Send message on submit
     document.body.addEventListener("submit", function (event) {
         // Send message
         if (event.target.id === "chat-form") {
@@ -712,6 +728,7 @@
         }
     });
 
+    // Send message on Enter key press in the input field
     document.body.addEventListener("keydown", function (event) {
         // Send message on Enter key press in the input field
         if (

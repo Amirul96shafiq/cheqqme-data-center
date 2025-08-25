@@ -4,16 +4,14 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\CommentController;
-use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // OpenAI logs endpoint (web UI)
-Route::get('/openai-logs', [\App\Http\Controllers\OpenaiLogController::class, 'index'])->name('openai.logs')->middleware('auth');
-
 // OpenAI logs API endpoint moved to routes/api.php ( Sanctum-protected )
+Route::get('/openai-logs', [\App\Http\Controllers\OpenaiLogController::class, 'index'])->name('openai.logs')->middleware('auth');
 
 // Forgot password route
 Route::get('forgot-password', function () {
@@ -22,7 +20,7 @@ Route::get('forgot-password', function () {
     return view('auth.forgot-password');
 })->name('password.request');
 
-// Forgot password route
+// Forgot password route (post)
 Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
 // Reset password route
@@ -32,6 +30,7 @@ Route::get('reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
 })->name('password.reset');
 
+// Reset password route (post)
 Route::post('reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Set locale route
@@ -68,10 +67,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/chatbot/session', [ChatbotController::class, 'getSessionInfo'])->name('chatbot.session');
     Route::get('/chatbot/conversation', [ChatbotController::class, 'getConversationHistory'])->name('chatbot.history');
     Route::post('/chatbot/clear', [ChatbotController::class, 'clearConversation'])->name('chatbot.clear');
-
-    // Notification routes (commented out - controller doesn't exist)
-    // Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    // Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
 
     // Live badge polling endpoint for Action Board navigation badge
     Route::get('/action-board/assigned-active-count', function () {

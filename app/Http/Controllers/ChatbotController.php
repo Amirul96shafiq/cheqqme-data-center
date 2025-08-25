@@ -12,21 +12,33 @@ use Illuminate\Support\Facades\Log;
 
 class ChatbotController extends Controller
 {
+    /**
+     * Chat with the chatbot
+     */
     public function chat(Request $request)
     {
+        // Try to chat with the chatbot
         try {
+            // Get the user
             $user = Auth::user();
+
+            // If the user is not authenticated, return an error
             if (!$user) {
                 return response()->json(['error' => 'Unauthenticated.'], 401);
             }
 
+            // Get the message
             $message = $request->input('message');
+
+            // Get the conversation ID
             $conversationId = $request->input('conversation_id') ?? uniqid('conv_');
 
+            // Get the conversation history
             $conversationHistory = ChatbotConversation::where('conversation_id', $conversationId)
                 ->orderBy('created_at')
                 ->get();
 
+            // Build the messages
             $messages = $this->buildMessages($conversationHistory, $message);
 
             // Instantiate the service with the current user
@@ -36,6 +48,7 @@ class ChatbotController extends Controller
             // Initial request to OpenAI
             $response = $this->sendToOpenAI($messages, $tools);
 
+            // Get the response choice
             $responseChoice = $response['choices'][0]['message'];
 
             // Check if the model wants to call a tool
@@ -48,10 +61,11 @@ class ChatbotController extends Controller
                 $toolResult = $chatbotService->executeTool($toolName, $arguments);
 
                 // Add the tool call and result to the message history
-                // IMPORTANT: We must add the 'role' to the tool call message BEFORE appending it
+                // IMPORTANT: Must add the 'role' to the tool call message BEFORE appending it to the messages array
                 $toolCallMessage = $responseChoice;
                 $toolCallMessage['role'] = 'assistant';
 
+                // Add the tool call and result to the message history
                 $messages[] = $toolCallMessage;
                 $messages[] = [
                     'tool_call_id' => $toolCall['id'],
@@ -86,13 +100,16 @@ class ChatbotController extends Controller
                 'last_activity' => now(),
             ]);
 
+            // Return the reply and conversation ID
             return response()->json([
                 'reply' => $botReply,
                 'conversation_id' => $conversationId,
             ]);
         } catch (\Exception $e) {
+            // Log the error
             Log::error('ChatbotController@chat: An error occurred', ['error' => $e->getMessage()]);
 
+            // Return an error response
             return response()->json(['error' => 'Internal server error'], 500);
         }
     }
@@ -118,8 +135,13 @@ class ChatbotController extends Controller
         return trim($content);
     }
 
+    /**
+     * Build the messages for the chatbot
+     */
     protected function buildMessages($conversationHistory, string $newMessage): array
     {
+        // Build the messages\
+        // AI PERSONALITY
         $messages = [
             [
                 'role' => 'system',
@@ -130,7 +152,7 @@ class ChatbotController extends Controller
 
                 Prime Directive
                 - Help users find, understand, and do things fast. If an action is possible via tools, explain how to use the tool.
-                - Default to bullet points, max 2-3 sentences with no lengthy paragraphs, use words that are easy to understand.
+                - Default to bullet points, max 1-2 sentences with no lengthy paragraphs, use words that are easy to understand.
                 - Use bullet points for lists.
 
                 You can help with
@@ -176,39 +198,54 @@ class ChatbotController extends Controller
             ],
         ];
 
+        // Add the conversation history
         foreach ($conversationHistory as $entry) {
             $messages[] = ['role' => $entry->role, 'content' => $entry->content];
         }
 
+        // Add the new message
         $messages[] = ['role' => 'user', 'content' => $newMessage];
 
+        // Return the messages
         return $messages;
     }
 
+    /**
+     * Send the messages to OpenAI
+     */
     protected function sendToOpenAI(array $messages, ?array $tools = null): array
     {
+        // Set the endpoint
         $endpoint = 'https://api.openai.com/v1/chat/completions';
+
+        // Get the API key
         $apiKey = env('OPENAI_API_KEY');
 
+        // Set the payload
         $payload = [
             'model' => 'gpt-4-turbo-preview',
             'messages' => $messages,
         ];
 
+        // If tools are provided, add them to the payload
         if (!empty($tools)) {
             $payload['tools'] = $tools;
             $payload['tool_choice'] = 'auto';
         }
 
+        // Get the start time
         $startTime = microtime(true);
 
+        // Send the request to OpenAI
         $response = Http::withToken($apiKey)
             ->withoutVerifying()
             ->timeout(120)
             ->post($endpoint, $payload);
 
+        // Get the duration
         $duration = (microtime(true) - $startTime) * 1000;
 
+        // Store the log
         OpenaiLog::create([
             'user_id' => Auth::id(),
             'conversation_id' => null, // Simplified for this example
@@ -220,6 +257,7 @@ class ChatbotController extends Controller
             'duration_ms' => $duration,
         ]);
 
+        // If the request failed, log the error and throw an exception
         if ($response->failed()) {
             Log::error('OpenAI API request failed', [
                 'status' => $response->status(),
@@ -228,12 +266,19 @@ class ChatbotController extends Controller
             throw new \Exception('Failed to communicate with OpenAI.');
         }
 
+        // Return the response
         return $response->json();
     }
 
+    /**
+     * List the conversations for the user
+     */
     public function listConversations(Request $request)
     {
+        // Get the user
         $user = Auth::user();
+
+        // Get the limit
         $limit = $request->input('limit', 15);
 
         // Get the most recent message for each conversation
@@ -260,13 +305,18 @@ class ChatbotController extends Controller
             }
         }
 
+        // Return the conversations
         return response()->json([
             'conversations' => $conversationDetails,
         ]);
     }
 
+    /**
+     * Get the session info for the user
+     */
     public function getSessionInfo(Request $request)
     {
+        // Get the user
         $user = Auth::user();
 
         // Find the most recent active conversation for the user within 24 hours
@@ -275,6 +325,7 @@ class ChatbotController extends Controller
             ->orderBy('last_activity', 'desc')
             ->first();
 
+        // If a recent conversation exists, use it, otherwise create a new one
         if ($lastConversation) {
             $conversationId = $lastConversation->conversation_id;
         } else {
@@ -282,26 +333,33 @@ class ChatbotController extends Controller
             $conversationId = 'conv_' . uniqid() . '_' . time();
         }
 
+        // Return the conversation ID and user ID
         return response()->json([
             'conversation_id' => $conversationId,
             'user_id' => $user->id,
         ]);
     }
 
+    /**
+     * Get the conversation history for the user
+     */
     public function getConversationHistory(Request $request)
     {
+        // Get the user
         $user = Auth::user();
         $conversationId = $request->input('conversation_id');
 
         // Clean up old conversations (older than 24 hours) before loading
         $this->cleanupOldConversations($user->id);
 
+        // Get the conversation history
         $messages = ChatbotConversation::where('user_id', $user->id)
             ->where('conversation_id', $conversationId)
             ->where('last_activity', '>', now()->subHours(24)) // Only load recent messages
             ->orderBy('created_at', 'asc')
             ->get(['role', 'content', 'created_at']);
 
+        // Return the conversation history
         return response()->json([
             'conversation' => $messages->map(function ($msg) {
                 return [
@@ -323,6 +381,9 @@ class ChatbotController extends Controller
             ->delete();
     }
 
+    /**
+     * Clear a conversation for the user
+     */
     public function clearConversation(Request $request)
     {
         // If a specific conversation_id is provided, delete its history for the current user
@@ -344,6 +405,7 @@ class ChatbotController extends Controller
         // Create a new conversation ID for the client to use going forward
         $newConversationId = 'conv_' . uniqid();
 
+        // Return the new conversation ID
         return response()->json([
             'message' => 'New conversation started.',
             'conversation_id' => $newConversationId,

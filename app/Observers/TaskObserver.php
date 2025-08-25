@@ -4,9 +4,6 @@ namespace App\Observers;
 
 use App\Models\Task;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
-use Spatie\Activitylog\Models\Activity;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Filament\Notifications\Notification;
 use Filament\Notifications\Actions\Action;
 

@@ -19,9 +19,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-
+        // Trigger the database notifications trigger
         DatabaseNotifications::trigger('filament.notifications.database-notifications-trigger');
-
     }
 
     /**
@@ -55,7 +54,7 @@ class AppServiceProvider extends ServiceProvider
             \Filament\Facades\Filament::registerRenderHook('panels::scripts.after', function () {
                 return <<<'HTML'
                     <script>
-                    // Adaptive Action Board badge polling (authenticated admin only)
+                    // Adaptive Action Board badge polling (authenticated users only)
                     if(!window.__globalActionBoardBadge){
                         window.__globalActionBoardBadge = true;
                         let inFlight = false;
@@ -70,6 +69,7 @@ class AppServiceProvider extends ServiceProvider
                             }
                             return link;
                         }
+                        // Ensure the badge is present
                         function ensureBadge(link){
                             if(!link) return null;
                             let badge = link.querySelector('.ab-dynamic-badge');
@@ -81,22 +81,30 @@ class AppServiceProvider extends ServiceProvider
                             }
                             return badge;
                         }
+                        // Refresh the badge
                         async function refresh(forceFast=false){
                             if(document.hidden) return; // Skip when tab not visible
                             if(inFlight) return; inFlight=true;
                             try{
+                                // Fetch the count
                                 const res = await fetch('/action-board/assigned-active-count',{headers:{'Accept':'application/json','Cache-Control':'no-cache'}});
                                 if(!res.ok){
                                     // Backoff on auth / server errors
                                     intervalMs = Math.min(maxInterval, intervalMs * 1.5);
                                     return;
                                 }
+                                // Get the data
                                 const data = await res.json();
+                                // Get the count
                                 const count = typeof data.count==='number'? data.count:0;
+                                // Get the link
                                 const link = findLink();
+                                // Get the badge
                                 const badge = ensureBadge(link);
                                 if(!badge) return;
+                                // Get the next count
                                 const next = String(count);
+                                // If the badge text content is not the same as the next count, update the badge
                                 if(badge.textContent.trim()!==next){
                                     badge.textContent = next;
                                     badge.classList.add('ab-badge-pulse');
@@ -105,30 +113,40 @@ class AppServiceProvider extends ServiceProvider
                                     intervalMs = Math.max(minInterval, 1500);
                                     idleCycles = 0;
                                 } else {
+                                    // Increment the idle cycles
                                     idleCycles++;
+                                    // Gradually slow down while idle
                                     if(idleCycles % 5 === 0){
                                         // Gradually slow down while idle
                                         intervalMs = Math.min(maxInterval, intervalMs + 1000);
                                     }
                                 }
+                                // If the count is 0, update the badge to the gray color
                                 if(count === 0){
                                     badge.classList.remove('bg-primary-100','text-primary-700','border-primary-500');
                                     badge.classList.add('bg-gray-200','text-gray-600','border','border-gray-300');
                                 } else {
+                                    // If the count is not 0, update the badge to the primary color
                                     badge.classList.remove('bg-gray-200','text-gray-600','border-gray-300');
                                     badge.classList.add('bg-primary-100','text-primary-700','border','border-primary-500');
                                 }
                             }catch(e){
+                                // Backoff on errors
                                 intervalMs = Math.min(maxInterval, intervalMs * 1.5);
                             } finally { inFlight=false; }
                         }
+                        // Schedule the loop
                         function scheduleLoop(){
                             refresh();
                             setTimeout(scheduleLoop, intervalMs);
                         }
+                        // Listen for visibility changes
                         document.addEventListener('visibilitychange', ()=>{ if(!document.hidden){ intervalMs = Math.max(minInterval, 2000); refresh(); }});
+                        // Listen for task events
                         ['task-created','task-updated','task-moved','task-status-updated'].forEach(ev=>document.addEventListener(ev, ()=>refresh(true)));
+                        // Force a refresh
                         window.forceActionBoardBadgeRefresh = ()=>refresh(true);
+                        // Listen for DOMContentLoaded
                         document.addEventListener('DOMContentLoaded', scheduleLoop);
                     }
                     </script>
