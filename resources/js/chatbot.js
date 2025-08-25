@@ -257,8 +257,10 @@
         } else {
             // Closing: animate out then hide
             interfaceEl.classList.remove("open");
+            interfaceEl.classList.add("closing");
             const transitionMs = 260;
             setTimeout(() => {
+                interfaceEl.classList.remove("closing");
                 localStorage.setItem(getUserChatStateKey(), "false");
                 setChatVisibility(false);
             }, transitionMs);
@@ -474,7 +476,12 @@
             '<div class="' +
             timeClass +
             '">' +
-            (timestamp || new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })) +
+            (timestamp ||
+                new Date().toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
+                })) +
             "</div>" +
             "</div>";
 

@@ -32,6 +32,24 @@
     #chatbot-interface.open {
         transform: translateY(0);
         opacity: 1;
+        animation: chatEntrance 260ms ease;
+    }
+
+    /* Closing animation */
+    #chatbot-interface.closing {
+        transform: translateY(15px);
+        opacity: 0;
+    }
+
+    @keyframes chatEntrance {
+        0% {
+            transform: translateY(15px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
     }
     
     /* Message bubble entrance animations */
