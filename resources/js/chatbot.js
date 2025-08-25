@@ -355,10 +355,18 @@
                         minute: "2-digit",
                     });
                     addMessage(
-                        "Hello! I'm Arem AI. The most genius AI assistant in the world. How can I assist you today?",
+                        "Hello! I'm <b>Arem AI</b>. The most genius AI assistant in the world. How can I assist you today?",
                         "assistant",
                         welcomeTs
                     );
+                    // Add help information message
+                    setTimeout(() => {
+                        addMessage(
+                            "Use <b>/help</b> to call my available functions!",
+                            "assistant",
+                            welcomeTs
+                        );
+                    }, 1000); // Delay to show after welcome message
                     console.log(
                         "No conversation messages found in database - empty conversation; greeting posted"
                     );
@@ -670,6 +678,14 @@
                     '<p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">Ready for a fresh start! What would you like to know or work on?</p>' +
                     "</div>" +
                     "</div>";
+
+                // Add help information message
+                setTimeout(() => {
+                    addMessage(
+                        "Use <b>/help</b> to call my available functions!",
+                        "assistant",
+                    );
+                }, 1000); // Delay to show after initial message
             }
         }, 500); // 500ms delay
 

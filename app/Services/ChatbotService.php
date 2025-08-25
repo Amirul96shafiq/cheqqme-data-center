@@ -35,8 +35,9 @@ class ChatbotService
     protected function registerTools(): void
     {
         $this->tools = [
-            'get_incomplete_tasks' => [$this, 'getIncompleteTasks'], // Get incomplete tasks with count and/or detailed breakdown by status with URLs.
-            'get_task_url_by_name' => [$this, 'getTaskUrlByName'], // Find tasks by name for the current user and get a list of URLs to edit them. Can return multiple results.
+            'show_help' => [$this, 'showHelp'], // Show all available shortcuts and commands. Shortcut: /help
+            'get_incomplete_tasks' => [$this, 'getIncompleteTasks'], // Get incomplete tasks with count and/or detailed breakdown by status with URLs. Shortcut: /mytask
+            'get_task_url_by_name' => [$this, 'getTaskUrlByName'], // Find tasks by name for the current user and get a list of URLs to edit them. Can return multiple results. Shortcut: /task "user search task name"
         ];
     }
 
@@ -50,7 +51,7 @@ class ChatbotService
                 'type' => 'function',
                 'function' => [
                     'name' => 'get_incomplete_tasks',
-                    'description' => 'Get incomplete tasks assigned to the current user. Can return just the count, detailed breakdown by status, or both.',
+                    'description' => 'Get incomplete tasks assigned to the current user. Can return just the count, detailed breakdown by status, or both. Shortcut: /mytask',
                     'parameters' => [
                         'type' => 'object',
                         'properties' => [
@@ -71,7 +72,7 @@ class ChatbotService
                 'type' => 'function',
                 'function' => [
                     'name' => 'get_task_url_by_name',
-                    'description' => 'Find tasks by name for the current user and get a list of URLs to edit them. Can return multiple results.',
+                    'description' => 'Find tasks by name for the current user and get a list of URLs to edit them. Can return multiple results, without the quotes. Shortcut: /task "user search task name"',
                     'parameters' => [
                         'type' => 'object',
                         'properties' => [
@@ -84,16 +85,34 @@ class ChatbotService
                     ],
                 ],
             ],
+            'show_help' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'show_help',
+                    'description' => 'Show all available shortcuts and commands. Shortcut: /help',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
+                        'required' => [],
+                    ],
+                ],
+            ],
         ];
 
         return $definitions[$name] ?? null;
     }
 
+    /**
+     * Get all tool definitions
+     */
     public function getAllToolDefinitions(): array
     {
         return array_map([$this, 'getToolDefinition'], array_keys($this->tools));
     }
 
+    /**
+     * Execute a tool
+     */
     public function executeTool(string $toolName, array $arguments): ?string
     {
         if (isset($this->tools[$toolName])) {
@@ -104,7 +123,35 @@ class ChatbotService
     }
 
     /**
+     * Tool: Show all available shortcuts and commands.
+     * Shortcut: /help
+     */
+    public function showHelp(): string
+    {
+        $output = "**Available Shortcuts and Commands** 🤖\n\n";
+        $output .= "Here are the shortcuts you can use to quickly access features:\n\n";
+
+        $shortcuts = [
+            '/help' => 'Show this help message with all available shortcuts',
+            '/mytask' => 'Get your incomplete tasks with detailed breakdown by status',
+            '/task "task name"' => 'Find tasks by name and get edit URLs',
+        ];
+
+        $counter = 1;
+        foreach ($shortcuts as $shortcut => $description) {
+            $output .= "{$counter}. **{$shortcut}**\n";
+            $output .= "   {$description}\n\n";
+            $counter++;
+        }
+
+        $output .= "Just type any of these shortcuts in your message to use them quickly! 🚀";
+
+        return $output;
+    }
+
+    /**
      * Tool: Get incomplete tasks with count and/or detailed breakdown by status.
+     * Shortcut: /mytask
      */
     public function getIncompleteTasks(bool $includeDetails = true, bool $includeCount = true): string
     {
@@ -112,7 +159,7 @@ class ChatbotService
             ->whereIn('status', ['todo', 'in_progress', 'toreview']);
 
         // If only count is needed, return early
-        if (! $includeDetails && $includeCount) {
+        if (!$includeDetails && $includeCount) {
             $count = $query->count();
 
             return json_encode(['task_count' => $count]);
@@ -129,7 +176,7 @@ class ChatbotService
             $result['task_count'] = $tasks->count();
         }
 
-        if (! $includeDetails) {
+        if (!$includeDetails) {
             return json_encode($result);
         }
 
@@ -159,12 +206,12 @@ class ChatbotService
         $result['tasks_by_status'] = $tasksByStatus;
 
         // If count only, return JSON
-        if (! $includeDetails) {
+        if (!$includeDetails) {
             return json_encode($result);
         }
 
         // Format as structured text with proper styling
-        $output = "You've got ".$tasks->count()." incomplete tasks grouped by their current status. Here's a quick peek:\n\n";
+        $output = "You've got " . $tasks->count() . " incomplete tasks grouped by their current status. Here's a quick peek:\n\n";
 
         // Define status labels and their counts
         $statusLabels = [
@@ -187,15 +234,17 @@ class ChatbotService
                 foreach ($displayTasks as $task) {
                     // Truncate task name to 30 characters
                     $truncatedName = strlen($task['task_name']) > 30
-                        ? substr($task['task_name'], 0, 30).'...'
+                        ? substr($task['task_name'], 0, 30) . '...'
                         : $task['task_name'];
 
-                    $output .= "{$counter}. **{$truncatedName}** - [Task Details]({$task['url']})";
+                    $output .= "{$counter}. [**{$truncatedName}**]({$task['url']})";
 
                     if ($task['due_date']) {
                         // Format date as d/m/y
                         $dueDate = date('j/n/y', strtotime($task['due_date']));
-                        $output .= " - Due: {$dueDate}";
+                        $output .= " - Due date: {$dueDate}";
+                    } else {
+                        $output .= " - Due date: -";
                     }
 
                     $output .= "\n";
@@ -219,13 +268,14 @@ class ChatbotService
 
     /**
      * Tool: Get the URL for a task by its name.
+     * Shortcut: /task "user search task name"
      */
     public function getTaskUrlByName(string $taskName): string
     {
         // Limit search to tasks assigned to the current user for privacy and relevance
         $tasks = Task::where('title', 'like', "%{$taskName}%")
             ->where('assigned_to', $this->user->id)
-            ->limit(5) // Limit to 5 results to avoid overwhelming the user
+            ->limit(3) // Limit to 5 results to avoid overwhelming the user
             ->get();
 
         if ($tasks->isEmpty()) {
