@@ -65,15 +65,27 @@
                         <!-- User Avatar -->
                         <div class="flex-shrink-0 user-mention-avatar">
                             @if($user['avatar'])
-                                <img 
-                                    src="{{ Storage::url($user['avatar']) }}" 
+                                <img
+                                    src="{{ Storage::url($user['avatar']) }}"
                                     alt="{{ $user['username'] }}"
                                     class="w-8 h-8 rounded-full object-cover"
                                 />
                             @else
-                                <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                                    {{ substr($user['username'] ?? 'U', 0, 1) }}
-                                </div>
+                                @php
+                                    $userModel = \App\Models\User::find($user['id']);
+                                    $defaultAvatarUrl = $userModel ? (new \Filament\AvatarProviders\UiAvatarsProvider())->get($userModel) : null;
+                                @endphp
+                                @if($defaultAvatarUrl)
+                                    <img
+                                        src="{{ $defaultAvatarUrl }}"
+                                        alt="{{ $user['username'] }}"
+                                        class="w-8 h-8 rounded-full object-cover"
+                                    />
+                                @else
+                                    <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                        {{ substr($user['username'] ?? 'U', 0, 1) }}
+                                    </div>
+                                @endif
                             @endif
                         </div>
                         

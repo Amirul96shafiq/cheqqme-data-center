@@ -10,7 +10,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
-class TaskCommentsNewTest extends TestCase
+class TaskCommentsTest extends TestCase
 {
     use RefreshDatabase;
 

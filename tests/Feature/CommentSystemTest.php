@@ -35,7 +35,7 @@ class CommentSystemTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        Livewire::test('task-comments-new', ['task' => $this->task])
+        Livewire::test('task-comments', ['taskId' => $this->task->id])
             ->set('newComment', 'This is a test comment')
             ->call('addComment')
             ->assertSet('newComment', '')
@@ -58,7 +58,7 @@ class CommentSystemTest extends TestCase
             'comment' => 'Original comment',
         ]);
 
-        Livewire::test('task-comments-new', ['task' => $this->task])
+        Livewire::test('task-comments', ['taskId' => $this->task->id])
             ->call('startEdit', $comment->id)
             ->assertSet('editingId', $comment->id)
             ->assertSet('editingText', 'Original comment')
@@ -83,7 +83,7 @@ class CommentSystemTest extends TestCase
             'comment' => 'Comment to delete',
         ]);
 
-        Livewire::test('task-comments-new', ['task' => $this->task])
+        Livewire::test('task-comments', ['taskId' => $this->task->id])
             ->call('confirmDelete', $comment->id)
             ->assertSet('confirmingDeleteId', $comment->id)
             ->call('performDelete')
@@ -106,7 +106,7 @@ class CommentSystemTest extends TestCase
             'comment' => 'Other user comment',
         ]);
 
-        Livewire::test('task-comments-new', ['task' => $this->task])
+        Livewire::test('task-comments', ['taskId' => $this->task->id])
             ->call('startEdit', $comment->id)
             ->assertSet('editingId', null);
     }
@@ -122,7 +122,7 @@ class CommentSystemTest extends TestCase
             'comment' => 'Other user comment',
         ]);
 
-        Livewire::test('task-comments-new', ['task' => $this->task])
+        Livewire::test('task-comments', ['taskId' => $this->task->id])
             ->call('confirmDelete', $comment->id)
             ->assertSet('confirmingDeleteId', null);
     }
@@ -136,7 +136,7 @@ class CommentSystemTest extends TestCase
             'name' => 'Mentioned User',
         ]);
 
-        Livewire::test('task-comments-new', ['task' => $this->task])
+        Livewire::test('task-comments', ['taskId' => $this->task->id])
             ->set('newComment', 'Hello @mentioneduser, please check this task')
             ->call('addComment');
 
@@ -154,12 +154,12 @@ class CommentSystemTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        Livewire::test('task-comments-new', ['task' => $this->task])
+        Livewire::test('task-comments', ['taskId' => $this->task->id])
             ->set('newComment', '')
             ->call('addComment')
             ->assertHasErrors(['newComment' => 'required']);
 
-        Livewire::test('task-comments-new', ['task' => $this->task])
+        Livewire::test('task-comments', ['taskId' => $this->task->id])
             ->set('newComment', str_repeat('a', 2001))
             ->call('addComment')
             ->assertHasErrors(['newComment' => 'max']);

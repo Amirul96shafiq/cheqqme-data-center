@@ -67,7 +67,7 @@ This project now includes a comprehensive comment system that functions similar 
 
 ### Components
 
--   **TaskCommentsNew**: Main Livewire component
+-   **TaskComments**: Main Livewire component
 -   **Comment Model**: Enhanced with mention handling
 -   **UserMentionedInComment**: Notification class
 
@@ -124,7 +124,7 @@ The comment system uses a specific architecture to prevent DOM corruption:
 ```
 app/
 ├── Livewire/
-│   └── TaskCommentsNew.php          # Main comment component
+│   └── TaskComments.php             # Main comment component
 ├── Models/
 │   └── Comment.php                   # Enhanced comment model
 └── Notifications/
@@ -133,7 +133,7 @@ app/
 resources/
 ├── views/
 │   └── livewire/
-│       └── task-comments-new.blade.php  # Comment UI
+│       └── task-comments.blade.php      # Comment UI
 └── css/
     └── filament/admin/theme.css      # Custom styles
 

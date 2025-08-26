@@ -34,11 +34,15 @@
 						@php
 							$defaultAvatarUrl = (new \Filament\AvatarProviders\UiAvatarsProvider())->get($comment->user);
 						@endphp
-						<div class="w-10 h-10 rounded-full bg-primary-500 ring-1 ring-white/20 dark:ring-gray-800 shadow-sm flex items-center justify-center">
-							<span class="text-sm font-medium text-white">
-								{{ substr($comment->user->username ?? __('comments.meta.user_fallback'), 0, 1) }}
-							</span>
-						</div>
+						@if($defaultAvatarUrl)
+							<img src="{{ $defaultAvatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm" loading="lazy">
+						@else
+							<div class="w-10 h-10 rounded-full bg-primary-500 ring-1 ring-white/20 dark:ring-gray-800 shadow-sm flex items-center justify-center">
+								<span class="text-sm font-medium text-white">
+									{{ substr($comment->user->username ?? __('comments.meta.user_fallback'), 0, 1) }}
+								</span>
+							</div>
+						@endif
 					@endif
                     </div>
                     <!-- Comment content -->
