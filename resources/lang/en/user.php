@@ -7,6 +7,7 @@ return [
     'labels' => [
         'singular' => 'User',
         'plural' => 'Users',
+        'edit-user' => 'Edit User',
     ],
 
     'navigation' => [

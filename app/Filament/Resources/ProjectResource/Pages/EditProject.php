@@ -10,9 +10,11 @@ class EditProject extends BaseEditRecord
 {
     protected static string $resource = ProjectResource::class;
 
-    protected function getHeaderActions(): array
+    protected function getFormActions(): array
     {
         return [
+            $this->getSaveFormAction(),
+            $this->getCancelFormAction(),
             Actions\DeleteAction::make(),
         ];
     }
@@ -22,5 +24,15 @@ class EditProject extends BaseEditRecord
         $data['updated_by'] = auth()->id();
 
         return $data;
+    }
+
+    public function getContentTabLabel(): ?string
+    {
+        return __('project.labels.edit-project');
+    }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
     }
 }

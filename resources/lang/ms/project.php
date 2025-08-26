@@ -7,6 +7,7 @@ return [
     'labels' => [
         'singular' => 'Projek',
         'plural' => 'Projek',
+        'edit-project' => 'Kemaskini Projek',
     ],
 
     'navigation' => [

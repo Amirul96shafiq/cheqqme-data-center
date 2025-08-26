@@ -7,6 +7,7 @@ return [
     'labels' => [
         'singular' => 'Project',
         'plural' => 'Projects',
+        'edit-project' => 'Edit Project',
     ],
 
     'navigation' => [

@@ -7,6 +7,7 @@ return [
     'labels' => [
         'singular' => 'Client',
         'plural' => 'Clients',
+        'edit-client' => 'Edit Client',
     ],
 
     'navigation' => [

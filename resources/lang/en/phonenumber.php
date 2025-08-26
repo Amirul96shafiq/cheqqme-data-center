@@ -7,6 +7,7 @@ return [
     'labels' => [
         'singular' => 'Phone Number',
         'plural' => 'Phone Numbers',
+        'edit-phone-number' => 'Edit Phone Number',
     ],
 
     'navigation' => [

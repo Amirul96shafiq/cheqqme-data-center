@@ -7,6 +7,7 @@ return [
     'labels' => [
         'singular' => 'Dokumen',
         'plural' => 'Dokumen',
+        'edit-document' => 'Kemaskini Dokumen',
     ],
 
     'navigation' => [

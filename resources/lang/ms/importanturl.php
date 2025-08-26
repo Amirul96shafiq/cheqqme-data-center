@@ -7,6 +7,7 @@ return [
     'labels' => [
         'singular' => 'URL Penting',
         'plural' => 'URL Penting',
+        'edit-important-url' => 'Kemaskini URL Penting',
     ],
 
     'navigation' => [

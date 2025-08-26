@@ -7,6 +7,7 @@ return [
     'labels' => [
         'singular' => 'Nombor Telefon',
         'plural' => 'Nombor Telefon',
+        'edit-phone-number' => 'Kemaskini Nombor Telefon',
     ],
 
     'navigation' => [

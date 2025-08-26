@@ -7,6 +7,7 @@ return [
     'labels' => [
         'singular' => 'Important URL',
         'plural' => 'Important URLs',
+        'edit-important-url' => 'Edit Important URL',
     ],
 
     'navigation' => [

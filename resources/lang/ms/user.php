@@ -7,6 +7,7 @@ return [
     'labels' => [
         'singular' => 'Pengguna',
         'plural' => 'Pengguna',
+        'edit-user' => 'Kemaskini Pengguna',
     ],
 
     'navigation' => [

@@ -7,6 +7,7 @@ return [
     'labels' => [
         'singular' => 'Document',
         'plural' => 'Documents',
+        'edit-document' => 'Edit Document',
     ],
 
     'navigation' => [

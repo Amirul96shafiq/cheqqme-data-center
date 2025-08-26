@@ -7,6 +7,7 @@ return [
     'labels' => [
         'singular' => 'Pelanggan',
         'plural' => 'Pelanggan',
+        'edit-client' => 'Kemaskini Pelanggan',
     ],
 
     'navigation' => [
