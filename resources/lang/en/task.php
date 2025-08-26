@@ -62,7 +62,7 @@ return [
     ],
     'notifications' => [
         'created_title' => 'Task Created',
-        'created_body' => 'The task was created successfully.',
+        'created_body' => 'Task :title was created successfully.',
         'updated_title' => 'Task Updated',
         'updated_body' => 'The task was updated successfully.',
         'assigned_title' => 'Task Assigned',
@@ -72,5 +72,7 @@ return [
         'mentioned_body' => ':username mentioned you on ":task_title"',
         'mentioned_someone' => 'Someone',
         'mentioned_task_fallback' => 'a task',
+        'deleted_title' => 'Task Deleted',
+        'deleted_body' => 'Redirecting to Action Board...',
     ],
 ];

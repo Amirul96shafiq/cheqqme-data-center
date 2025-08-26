@@ -127,6 +127,8 @@ class ActionBoard extends KanbanBoardPage
                 $task->update(['order_column' => Task::max('order_column') + 1]); // Ensure new task is listed at the bottom
                 Notification::make()
                     ->title(__('action.notifications.created'))
+                    ->body(__('task.notifications.created_body', ['title' => $task->title]))
+                    ->icon('heroicon-o-check-circle')
                     ->success()
                     ->send();
             });
@@ -149,447 +151,7 @@ class ActionBoard extends KanbanBoardPage
     {
         // Only allow create flow in Action Board as requested; hide edit-specific UI.
         return $form->schema([
-            // For edit mode, use grid with sidebar layout
-            Forms\Components\Grid::make(5)
-                ->schema([
-                    // Main content (left side) - spans 2 columns
-                    Forms\Components\Grid::make(1)
-                        ->schema([
-                            Forms\Components\Tabs::make('taskTabs')
-                                ->tabs([
-                                    // -----------------------------
-                                    // Task Information
-                                    // -----------------------------
-                                    Forms\Components\Tabs\Tab::make(__('task.form.task_information'))
-                                        ->schema([
-                                            Forms\Components\Hidden::make('id')
-                                                ->disabled()
-                                                ->visible(false),
-                                            Forms\Components\TextInput::make('title')
-                                                ->label(__('task.form.title'))
-                                                ->required()
-                                                ->placeholder(__('task.form.title_placeholder'))
-                                                ->columnSpanFull(),
-                                            Forms\Components\Grid::make(3)
-                                                ->schema([
-                                                    Forms\Components\Select::make('assigned_to')
-                                                        ->label(__('task.form.assign_to'))
-                                                        ->options(function () {
-                                                            return User::withTrashed()
-                                                                ->orderBy('username')
-                                                                ->get()
-                                                                ->mapWithKeys(fn($u) => [
-                                                                    $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
-                                                                ])
-                                                                ->toArray();
-                                                        })
-                                                        ->searchable()
-                                                        ->preload()
-                                                        ->native(false)
-                                                        ->nullable()
-                                                        ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
-                                                        ->default(fn(?Task $record) => $record?->assigned_to)
-                                                        ->dehydrated(),
-                                                    Forms\Components\DatePicker::make('due_date')
-                                                        ->label(__('task.form.due_date'))
-                                                        ->placeholder('dd/mm/yyyy')
-                                                        ->native(false)
-                                                        ->displayFormat('j/n/y'),
-                                                    Forms\Components\Select::make('status')
-                                                        ->label(__('task.form.status'))
-                                                        ->options([
-                                                            'todo' => __('task.status.todo'),
-                                                            'in_progress' => __('task.status.in_progress'),
-                                                            'toreview' => __('task.status.toreview'),
-                                                            'completed' => __('task.status.completed'),
-                                                            'archived' => __('task.status.archived'),
-                                                        ])
-                                                        ->searchable()
-                                                        ->default($defaultStatus),
-                                                ]),
-                                            Forms\Components\RichEditor::make('description')
-                                                ->label(__('task.form.description'))
-                                                ->toolbarButtons([
-                                                    'bold',
-                                                    'italic',
-                                                    'strike',
-                                                    'bulletList',
-                                                    'orderedList',
-                                                    'link',
-                                                    'codeBlock',
-                                                ])
-                                                ->extraAttributes(['style' => 'resize: vertical;'])
-                                                ->reactive()
-                                                ->helperText(function (Forms\Get $get) {
-                                                    $raw = $get('description') ?? '';
-                                                    $noHtml = strip_tags($raw);
-                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                    $remaining = 500 - mb_strlen($decoded);
-
-                                                    return __('task.edit.description_helper', ['count' => $remaining]);
-                                                })
-                                                ->rule(function (Forms\Get $get): Closure {
-                                                    return function (string $attribute, $value, Closure $fail) {
-                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                        if (mb_strlen($textOnly) > 500) {
-                                                            $fail(__('task.edit.description_warning'));
-                                                        }
-                                                    };
-                                                })
-                                                ->nullable()
-                                                ->columnSpanFull(),
-                                            Forms\Components\FileUpload::make('attachments')
-                                                ->label(function (Forms\Get $get) {
-                                                    $attachments = $get('attachments') ?? [];
-                                                    $count = count($attachments);
-                                                    $label = __('task.form.attachments');
-
-                                                    if ($count > 0) {
-                                                        return new \Illuminate\Support\HtmlString(
-                                                            $label . ' <span class="ml-1 inline-flex items-center rounded-full bg-primary-500/15 px-3 py-0.5 text-xs font-bold text-primary-600 dark:bg-primary-800/5 border border-primary-600 dark:border-primary-700 dark:text-primary-500">' . $count . '</span>'
-                                                        );
-                                                    }
-
-                                                    return $label;
-                                                })
-                                                ->helperText(__('task.form.attachments_helper'))
-                                                ->multiple()
-                                                ->openable()
-                                                ->panelLayout('grid')
-                                                ->reorderable()
-                                                ->appendFiles()
-                                                ->acceptedFileTypes(['image/*', 'video/*', 'application/pdf'])
-                                                ->directory('tasks')
-                                                ->preserveFilenames()
-                                                ->moveFiles()
-                                                ->live()
-                                                ->nullable(),
-                                        ]),
-
-                                    // -----------------------------
-                                    // Task Resources
-                                    // -----------------------------
-                                    Forms\Components\Tabs\Tab::make(__('task.form.task_resources'))
-                                        // Badge for the tab
-                                        ->badge(function (Get $get) {
-                                            // Count the number of resources selected
-                                            $client = $get('client') ? 1 : 0;
-                                            $project = $get('project') ?? [];
-                                            $document = $get('document') ?? [];
-                                            $importantUrl = $get('important_url') ?? [];
-
-                                            return $client + count($project) + count($document) + count($importantUrl) ?: null;
-                                        })
-                                        ->schema([
-                                            // Client
-                                            Forms\Components\Select::make('client')
-                                                ->label(__('task.form.client'))
-                                                ->options(function () {
-                                                    return \App\Models\Client::withTrashed()
-                                                        ->orderBy('company_name')
-                                                        ->get()
-                                                        ->mapWithKeys(fn($c) => [
-                                                            $c->id => $c->pic_name . ' (' . ($c->company_name ?: 'Company #' . $c->id) . ')' . ($c->deleted_at ? ' (deleted)' : ''),
-                                                        ])
-                                                        ->toArray();
-                                                })
-                                                ->searchable()
-                                                ->preload()
-                                                ->native(false)
-                                                ->nullable()
-                                                ->default(fn(?Task $record) => $record?->client)
-                                                ->dehydrated()
-                                                ->live()
-                                                ->reactive()
-                                                ->suffixAction(
-                                                    // Open the client in a new tab
-                                                    Forms\Components\Actions\Action::make('openClient')
-                                                        ->icon('heroicon-o-arrow-top-right-on-square')
-                                                        ->url(function (Forms\Get $get) {
-                                                            $clientId = $get('client');
-                                                            if (!$clientId) {
-                                                                return null;
-                                                            }
-
-                                                            return \App\Filament\Resources\ClientResource::getUrl('edit', ['record' => $clientId]);
-                                                        })
-                                                        ->openUrlInNewTab()
-                                                        ->visible(fn(Forms\Get $get) => (bool) $get('client'))
-                                                )
-                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                                    // If a client is selected, get all projects, documents, and important URLs for selected client
-                                                    if ($state) {
-                                                        // Get projects for selected client
-                                                        $projects = \App\Models\Project::where('client_id', $state)
-                                                            ->withTrashed()
-                                                            ->orderBy('title')
-                                                            ->get()
-                                                            ->pluck('id')
-                                                            ->toArray();
-
-                                                        // Get documents for projects of selected client
-                                                        $documents = \App\Models\Document::whereHas('project', function ($query) use ($state) {
-                                                            $query->where('client_id', $state);
-                                                        })
-                                                            ->withTrashed()
-                                                            ->orderBy('title')
-                                                            ->get()
-                                                            ->pluck('id')
-                                                            ->toArray();
-
-                                                        // Get important URLs for projects of selected client
-                                                        $importantUrls = \App\Models\ImportantUrl::whereHas('project', function ($query) use ($state) {
-                                                            $query->where('client_id', $state);
-                                                        })
-                                                            ->withTrashed()
-                                                            ->orderBy('title')
-                                                            ->get()
-                                                            ->pluck('id')
-                                                            ->toArray();
-
-                                                        // Auto-select all projects, documents, and important URLs for the client
-                                                        $set('project', $projects);
-                                                        $set('document', $documents);
-                                                        $set('important_url', $importantUrls);
-                                                    } else {
-                                                        // Clear selections when no client is selected
-                                                        $set('project', []);
-                                                        $set('document', []);
-                                                        $set('important_url', []);
-                                                    }
-                                                }),
-                                            // Projects
-                                            Forms\Components\Grid::make(1)
-                                                ->schema([
-                                                    Forms\Components\Select::make('project')
-                                                        ->label(__('task.form.project'))
-                                                        ->helperText(__('task.form.project_helper'))
-                                                        ->options(function (Forms\Get $get) {
-                                                            // If no client is selected, return an empty array
-                                                            $clientId = $get('client');
-                                                            if (!$clientId) {
-                                                                return [];
-                                                            }
-
-                                                            return \App\Models\Project::where('client_id', $clientId)
-                                                                ->withTrashed()
-                                                                ->orderBy('title')
-                                                                ->get()
-                                                                ->mapWithKeys(fn($p) => [
-                                                                    $p->id => str($p->title)->limit(25) . ($p->deleted_at ? ' (deleted)' : ''),
-                                                                ])
-                                                                ->toArray();
-                                                        })
-                                                        ->searchable()
-                                                        ->preload()
-                                                        ->native(false)
-                                                        ->nullable()
-                                                        ->multiple()
-                                                        ->default(fn(?Task $record) => $record?->project)
-                                                        ->dehydrated()
-                                                        ->live()
-                                                        ->reactive()
-                                                        ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                            // If no projects are selected, clear all documents
-                                                            $selectedProjects = $state ?? [];
-                                                            $currentDocuments = $get('document') ?? [];
-
-                                                            if (empty($selectedProjects)) {
-                                                                // No projects selected, clear all documents
-                                                                $set('document', []);
-
-                                                                return;
-                                                            }
-
-                                                            // Get all documents for the selected projects
-                                                            $availableDocuments = \App\Models\Document::whereIn('project_id', $selectedProjects)
-                                                                ->withTrashed()
-                                                                ->pluck('id')
-                                                                ->toArray();
-
-                                                            // Keep existing documents that are still valid + add new ones for newly selected projects
-                                                            $validCurrentDocuments = array_intersect($currentDocuments, $availableDocuments);
-
-                                                            // Auto-add documents for newly selected projects if they weren't already selected
-                                                            $newDocuments = array_diff($availableDocuments, $currentDocuments);
-
-                                                            // Merge the valid documents with the new documents
-                                                            $finalDocuments = array_unique(array_merge($validCurrentDocuments, $newDocuments));
-
-                                                            // Set the documents
-                                                            $set('document', $finalDocuments);
-                                                        }),
-                                                    // Documents
-                                                    Forms\Components\Select::make('document')
-                                                        ->label(__('task.form.document'))
-                                                        ->helperText(__('task.form.document_helper'))
-                                                        ->options(function (Forms\Get $get) {
-                                                            // If no projects are selected, return an empty array
-                                                            $selectedProjects = $get('project') ?? [];
-
-                                                            if (empty($selectedProjects)) {
-                                                                // If no projects are selected, get all documents for the client
-                                                                $clientId = $get('client');
-                                                                if (!$clientId) {
-                                                                    return [];
-                                                                }
-
-                                                                // Get all documents for the client
-                                                                return \App\Models\Document::whereHas('project', function ($query) use ($clientId) {
-                                                                    $query->where('client_id', $clientId);
-                                                                })
-                                                                    ->withTrashed()
-                                                                    ->orderBy('title')
-                                                                    ->get()
-                                                                    ->mapWithKeys(fn($d) => [
-                                                                        $d->id => str($d->title)->limit(25) . ($d->deleted_at ? ' (deleted)' : ''),
-                                                                    ])
-                                                                    ->toArray();
-                                                            }
-
-                                                            // Get all documents for the selected projects
-                                                            return \App\Models\Document::whereIn('project_id', $selectedProjects)
-                                                                ->withTrashed()
-                                                                ->orderBy('title')
-                                                                ->get()
-                                                                ->mapWithKeys(fn($d) => [
-                                                                    $d->id => str($d->title)->limit(25) . ($d->deleted_at ? ' (deleted)' : ''),
-                                                                ])
-                                                                ->toArray();
-                                                        })
-                                                        ->searchable()
-                                                        ->preload()
-                                                        ->native(false)
-                                                        ->nullable()
-                                                        ->multiple()
-                                                        ->default(fn(?Task $record) => $record?->document)
-                                                        ->dehydrated()
-                                                        ->live()
-                                                        ->reactive(),
-                                                    // Important URLs
-                                                    Forms\Components\Select::make('important_url')
-                                                        ->label(__('task.form.important_url'))
-                                                        ->helperText(__('task.form.important_url_helper'))
-                                                        ->options(function (Forms\Get $get) {
-                                                            // If no client is selected, return an empty array
-                                                            return \App\Models\ImportantUrl::whereHas('project', function ($query) use ($get) {
-                                                                $clientId = $get('client');
-                                                                if (!$clientId) {
-                                                                    return $query;
-                                                                }
-
-                                                                // Get all important URLs for the client
-                                                                return $query->where('client_id', $clientId);
-                                                            })
-                                                                ->withTrashed()
-                                                                ->orderBy('title')
-                                                                ->get()
-                                                                ->mapWithKeys(fn($i) => [
-                                                                    $i->id => str($i->title)->limit(25) . ($i->deleted_at ? ' (deleted)' : ''),
-                                                                ])
-                                                                ->toArray();
-                                                        })
-                                                        ->searchable()
-                                                        ->preload()
-                                                        ->native(false)
-                                                        ->nullable()
-                                                        ->multiple()
-                                                        ->default(fn(?Task $record) => $record?->important_url)
-                                                        ->dehydrated(),
-                                                ]),
-
-                                        ]),
-
-                                    // -----------------------------
-                                    // Task Additional Information
-                                    // -----------------------------
-                                    Forms\Components\Tabs\Tab::make(__('task.form.additional_information'))
-                                        ->badge(function (Get $get) {
-                                            $extraInfo = $get('extra_information') ?? [];
-
-                                            return count($extraInfo) ?: null;
-                                        })
-                                        ->schema([
-                                            Forms\Components\Repeater::make('extra_information')
-                                                ->label(__('task.form.extra_information'))
-                                                ->schema([
-                                                    Forms\Components\TextInput::make('title')
-                                                        ->label(__('task.form.title'))
-                                                        ->maxLength(100)
-                                                        ->columnSpanFull(),
-                                                    Forms\Components\RichEditor::make('value')
-                                                        ->label(__('task.form.value'))
-                                                        ->toolbarButtons([
-                                                            'bold',
-                                                            'italic',
-                                                            'strike',
-                                                            'bulletList',
-                                                            'orderedList',
-                                                            'link',
-                                                            'codeBlock',
-                                                        ])
-                                                        ->extraAttributes(['style' => 'resize: vertical;'])
-                                                        ->reactive()
-                                                        ->helperText(function (Forms\Get $get) {
-                                                            $raw = $get('value') ?? '';
-                                                            $noHtml = strip_tags($raw);
-                                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                            $remaining = 500 - mb_strlen($decoded);
-
-                                                            return __('task.edit.extra_information_helper', ['count' => $remaining]);
-                                                        })
-                                                        ->rule(function (Forms\Get $get): Closure {
-                                                            return function (string $attribute, $value, Closure $fail) {
-                                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                                if (mb_strlen($textOnly) > 500) {
-                                                                    $fail(__('task.edit.extra_information_warning'));
-                                                                }
-                                                            };
-                                                        })
-                                                        ->columnSpanFull(),
-                                                ])
-                                                ->defaultItems(1)
-                                                ->addActionLabel(__('task.form.add_extra_info'))
-                                                ->addActionAlignment(Alignment::Start)
-                                                ->cloneable()
-                                                ->reorderable()
-                                                ->collapsible(true)
-                                                ->collapsed()
-                                                ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
-                                                ->live()
-                                                ->columnSpanFull()
-                                                ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
-                                        ]),
-                                ]),
-                        ])
-                        ->columnSpan(3),
-
-                    // Comments sidebar (right side) - spans 1 column
-                    Forms\Components\Section::make(__('action.form.comments'))
-                        ->schema([
-                            Forms\Components\ViewField::make('task_comments')
-                                ->view('filament.components.comments-sidebar-livewire-wrapper')
-                                ->viewData(function ($get, $record) {
-                                    return ['taskId' => $record instanceof Task ? $record->id : null];
-                                })
-                                ->extraAttributes([
-                                    // Allow the Livewire root to stretch and enable internal flex scrolling
-                                    'class' => 'flex-1 flex flex-col min-h-0',
-                                    'style' => 'height:100%; display:flex; flex-direction:column;',
-                                ])
-                                ->dehydrated(false),
-                        ])
-                        ->extraAttributes([
-                            // Fixed height; internal Livewire component handles its own scrolling; hide any accidental overflow outside border.
-                            ' wire:ignore' => true,
-                            'style' => 'height:68vh; max-height:68vh; position:sticky; top:9vh; display:flex; flex-direction:column; align-self:flex-start; overflow:hidden;',
-                            'class' => 'comments-pane',
-                        ])
-                        ->columnSpan(2),
-                ])
-                ->visible(false),
-
-            // For create mode, reuse the Tabs layout without the comments section
+            // Create mode, reuse the Tabs layout without the comments section
             Forms\Components\Grid::make(5)
                 ->schema([
                     Forms\Components\Grid::make(1)
@@ -819,6 +381,7 @@ class ActionBoard extends KanbanBoardPage
                                                                 ])
                                                                 ->toArray();
                                                         })
+                                                        ->helperText(__('task.form.project_helper'))
                                                         ->searchable()
                                                         ->preload()
                                                         ->native(false)
@@ -904,7 +467,8 @@ class ActionBoard extends KanbanBoardPage
                                                         ->default(fn(?Task $record) => $record?->document)
                                                         ->dehydrated()
                                                         ->live()
-                                                        ->reactive(),
+                                                        ->reactive()
+                                                        ->helperText(__('task.form.document_helper')),
                                                     // Important URLs
                                                     Forms\Components\Select::make('important_url')
                                                         ->label(__('task.form.important_url'))
@@ -934,7 +498,34 @@ class ActionBoard extends KanbanBoardPage
                                                         ->nullable()
                                                         ->multiple()
                                                         ->default(fn(?Task $record) => $record?->important_url)
-                                                        ->dehydrated(),
+                                                        ->dehydrated()
+                                                        ->live()
+                                                        ->reactive()
+                                                        ->helperText(__('task.form.important_url_helper')),
+
+                                                    // Display selected items with clickable links
+                                                    Forms\Components\ViewField::make('selected_items_links')
+                                                        ->view('filament.components.selected-items-links')
+                                                        ->viewData(function (Forms\Get $get) {
+                                                            $clientId = $get('client');
+                                                            $selectedProjects = $get('project') ?? [];
+                                                            $selectedDocuments = $get('document') ?? [];
+                                                            $selectedUrls = $get('important_url') ?? [];
+
+                                                            return [
+                                                                'clientId' => $clientId,
+                                                                'selectedProjects' => $selectedProjects,
+                                                                'selectedDocuments' => $selectedDocuments,
+                                                                'selectedUrls' => $selectedUrls,
+                                                            ];
+                                                        })
+                                                        ->visible(
+                                                            fn(Forms\Get $get) => !empty($get('project')) ||
+                                                            !empty($get('document')) ||
+                                                            !empty($get('important_url'))
+                                                        )
+                                                        ->live()
+                                                        ->columnSpanFull(),
                                                 ]),
 
                                         ]),
@@ -1000,7 +591,7 @@ class ActionBoard extends KanbanBoardPage
                                                 ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
                                         ]),
                                 ]),
-                        ]),
+                        ])
                 ])
                 ->visible($mode === 'create'),
         ]);

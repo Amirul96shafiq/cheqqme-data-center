@@ -3,7 +3,7 @@
 return [
     'user-menu' => [
         'profile-label' => 'Profil',
-        'settings-label' => 'Tetapan',
+        'settings-label' => 'Tetapan (Akan Datang)',
         'logout-label' => 'Log Keluar',
     ],
 

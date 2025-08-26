@@ -6,6 +6,7 @@ use App\Filament\Pages\ActionBoard;
 use App\Filament\Resources\TaskResource;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Notifications\Notification;
 
 class EditTask extends EditRecord
 {
@@ -60,7 +61,16 @@ class EditTask extends EditRecord
                 ->label(__('task.action.cancel'))
                 ->url('/admin/action-board')
                 ->color('gray'),
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->successRedirectUrl(ActionBoard::getUrl())
+                ->successNotification(
+                    Notification::make()
+                        ->title(__('task.notifications.deleted_title'))
+                        ->body(__('task.notifications.deleted_body', ['title' => $this->record->title]))
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->success()
+                ),
         ];
     }
 }

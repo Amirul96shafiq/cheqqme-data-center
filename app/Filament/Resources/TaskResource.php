@@ -43,16 +43,6 @@ return false;
         return ['title', 'description'];
     }
 
-    /**
-     * Redirect global search result to Action Board and open the selected Task.
-     */
-    /*
-    public static function getGlobalSearchResultUrl($record): string
-    {
-        // Replace with your Action Board route and pass the Task ID as a query param
-        return route('filament.pages.action-board', ['task' => $record->id]);
-    }*/
-
     public static function getGlobalSearchResultDetails($record): array
     {
         return [

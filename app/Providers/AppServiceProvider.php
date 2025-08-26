@@ -31,10 +31,6 @@ class AppServiceProvider extends ServiceProvider
         // Register Task observer to ensure activity logging on order/status changes
         Task::observe(TaskObserver::class);
 
-        // Configure notification positioning to bottom right
-        Notifications::alignment(Alignment::End);
-        Notifications::verticalAlignment(VerticalAlignment::End);
-
         // Register custom KanbanBoard Livewire component alias
         if (class_exists(\Livewire\Livewire::class)) {
             \Livewire\Livewire::component('relaticle.flowforge.kanban-board', \App\Http\Livewire\Relaticle\Flowforge\KanbanBoard::class);

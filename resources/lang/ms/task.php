@@ -62,7 +62,7 @@ return [
     ],
     'notifications' => [
         'created_title' => 'Tugasan Dicipta',
-        'created_body' => 'Tugasan berjaya dicipta',
+        'created_body' => 'Tugasan :title berjaya dicipta',
         'updated_title' => 'Tugasam Dikemas Kini',
         'updated_body' => 'Tugasan berjaya dikemas kini.',
         'assigned_title' => 'Tugasan Ditugaskan',
@@ -73,5 +73,7 @@ return [
         'mentioned_someone' => 'Seseorang',
         'mentioned_task_fallback' => 'tugasan',
         'mentioned_actions_view_task' => 'Papar Tugasan',
+        'deleted_title' => 'Tugasan Dihapus',
+        'deleted_body' => 'Bergegas ke Papan Tindakan...',
     ],
 ];
