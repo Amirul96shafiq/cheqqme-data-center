@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'user-menu' => [
+        'profile-label' => 'Profil',
+        'settings-label' => 'Tetapan',
+        'logout-label' => 'Log Keluar',
+    ],
+
     'recent_documents' => [
         'title' => 'Dokumen Terkini',
         'id' => 'ID',

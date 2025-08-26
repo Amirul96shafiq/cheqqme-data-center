@@ -110,17 +110,17 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn() => 'Hello ' . collect(explode(' ', auth()->user()?->name ?? ''))->map(fn($part, $index) => $index === 0 ? $part : substr($part, 0, 1) . '.')->implode(' ') ?: 'Profile')
                     ->url(fn() => '#'),
                 MenuItem::make()
-                    ->label('Profile')
+                    ->label(fn() => __('dashboard.user-menu.profile-label'))
                     ->icon('heroicon-o-user')
                     ->url(fn() => filament()->getProfileUrl())
                     ->sort(-1),
                 MenuItem::make()
-                    ->label('Settings')
+                    ->label(fn() => __('dashboard.user-menu.settings-label'))
                     ->icon('heroicon-o-cog-6-tooth')
                     ->url(fn() => '#')
                     ->sort(0),
                 'logout' => MenuItem::make()
-                    ->label('Logout')
+                    ->label(fn() => __('dashboard.user-menu.logout-label'))
                     ->icon('heroicon-o-arrow-right-on-rectangle')
                     ->color('danger')
                     ->url(fn() => filament()->getLogoutUrl())
