@@ -493,6 +493,58 @@ return false;
                                                 ->columnSpanFull()
                                                 ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
                                         ]),
+
+                                    // -----------------------------
+                                    // Activity Log
+                                    // -----------------------------
+                                    Forms\Components\Tabs\Tab::make(__('task.form.activity_log'))
+                                        ->badge(function ($record) {
+                                            if (!$record instanceof Task) {
+                                                return null;
+                                            }
+
+                                            $activityCount = \Spatie\Activitylog\Models\Activity::where('subject_type', Task::class)
+                                                ->where('subject_id', $record->id)
+                                                ->where('log_name', 'Tasks')
+                                                ->count();
+
+                                            return $activityCount ?: null;
+                                        })
+                                        ->schema([
+                                            // Activity log entries in a compact list
+                                            Forms\Components\ViewField::make('activity_log_entries')
+                                                ->view('filament.components.task-activity-log')
+                                                ->viewData(function ($record) {
+                                                    if (!$record instanceof Task) {
+                                                        return ['activities' => []];
+                                                    }
+
+                                                    // Get all activities for this task
+                                                    $activities = \Spatie\Activitylog\Models\Activity::with(['causer'])
+                                                        ->where('subject_type', Task::class)
+                                                        ->where('subject_id', $record->id)
+                                                        ->where('log_name', 'Tasks')
+                                                        ->orderBy('created_at', 'desc')
+                                                        ->get()
+                                                        ->map(function ($activity) {
+                                                        return [
+                                                            'id' => $activity->id,
+                                                            'description' => $activity->description,
+                                                            'properties' => $activity->properties,
+                                                            'created_at' => $activity->created_at,
+                                                            'causer_name' => $activity->causer?->username ?? $activity->causer?->name ?? 'System',
+                                                            'causer_id' => $activity->causer_id,
+                                                        ];
+                                                    });
+
+                                                    return ['activities' => $activities];
+                                                })
+                                                ->extraAttributes([
+                                                    'style' => 'max-height: 600px; overflow-y: auto; padding: 1rem;',
+                                                ])
+                                                ->dehydrated(false),
+                                        ]),
+
                                 ]),
                         ])
                         ->columnSpan(3),

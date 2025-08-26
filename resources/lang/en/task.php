@@ -37,6 +37,8 @@ return [
         'download_document_file' => 'Download Document File',
         'open_important_url' => 'Open Important URL',
         'item' => 'item(s)',
+        'activity_log' => 'Activity Log',
+        'recent_activity' => 'Recent Activity',
     ],
     'search' => [
         'status' => 'Status',
@@ -74,5 +76,10 @@ return [
         'mentioned_task_fallback' => 'a task',
         'deleted_title' => 'Task Deleted',
         'deleted_body' => 'Redirecting to Action Board...',
+    ],
+    'activity_log' => [
+        'no_activities' => 'No recent activities found.',
+        'showing_recent' => 'Showing :count most recent activities',
+        'showing_all' => 'Showing all :count activities',
     ],
 ];

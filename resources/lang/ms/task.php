@@ -37,6 +37,8 @@ return [
         'download_document_file' => 'Muat Turun Fail Dokumen',
         'open_important_url' => 'Papar URL Penting',
         'item' => 'item',
+        'activity_log' => 'Log Aktiviti',
+        'recent_activity' => 'Aktiviti Terkini',
     ],
     'search' => [
         'status' => 'Status',
@@ -75,5 +77,10 @@ return [
         'mentioned_actions_view_task' => 'Papar Tugasan',
         'deleted_title' => 'Tugasan Dihapus',
         'deleted_body' => 'Bergegas ke Papan Tindakan...',
+    ],
+    'activity_log' => [
+        'no_activities' => 'Tiada aktiviti terkini ditemui.',
+        'showing_recent' => 'Menunjukkan :count aktiviti terkini',
+        'showing_all' => 'Menunjukkan semua :count aktiviti',
     ],
 ];
