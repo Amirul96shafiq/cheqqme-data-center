@@ -782,6 +782,23 @@
         if (event.target.closest("#clear-chat")) {
             clearConversation();
         }
+
+        // Close chatbot when clicking outside
+        const chatbotInterface = document.getElementById("chatbot-interface");
+        const chatIcon = document.getElementById("chat-icon");
+        const closeIcon = document.getElementById("close-icon");
+
+        // Only close if chatbot is currently open and click is outside the chatbot elements
+        if (
+            chatbotInterface &&
+            chatbotInterface.style.display !== "none" &&
+            !chatbotInterface.classList.contains("hidden") &&
+            !event.target.closest("#chatbot-interface") &&
+            !event.target.closest("#chat-icon") &&
+            !event.target.closest("#close-icon")
+        ) {
+            toggleChatbot();
+        }
     });
 
     // Send message on submit
