@@ -325,16 +325,14 @@
             alt="Chat with Arem"
             onclick="toggleChatbot()"
             title="Chat with Arem"
-            class="w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 animate-bounce cursor-pointer rounded-lg opacity-80 hover:opacity-100"
-            style="animation-duration: 2s;"
+            class="w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg opacity-80 hover:opacity-100"
         >
         <!-- Close Icon (shown when chat is open) -->
         <div
             id="close-icon"
             onclick="toggleChatbot()"
             title="Close chat"
-            class="w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 animate-bounce cursor-pointer rounded-lg bg-primary-600 hover:bg-primary-500 text-white hidden"
-            style="animation-duration: 2s;"
+            class="w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg bg-primary-600 hover:bg-primary-500 text-white hidden"
         >
             <div class="flex items-center justify-center w-full h-full">
                 @svg('heroicon-o-x-mark', 'w-8 h-8')
