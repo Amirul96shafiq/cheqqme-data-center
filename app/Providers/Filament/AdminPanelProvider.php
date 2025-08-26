@@ -11,6 +11,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -38,7 +39,7 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
+            ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
             ->favicon(asset('images/favicon.png'))
@@ -103,6 +104,28 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->userMenuItems([
+                'profile' => MenuItem::make()
+                    ->icon('heroicon-o-face-smile')
+                    ->label(fn() => 'Hello ' . collect(explode(' ', auth()->user()?->name ?? ''))->map(fn($part, $index) => $index === 0 ? $part : substr($part, 0, 1) . '.')->implode(' ') ?: 'Profile')
+                    ->url(fn() => '#'),
+                MenuItem::make()
+                    ->label('Profile')
+                    ->icon('heroicon-o-user')
+                    ->url(fn() => filament()->getProfileUrl())
+                    ->sort(-1),
+                MenuItem::make()
+                    ->label('Settings')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->url(fn() => '#')
+                    ->sort(0),
+                'logout' => MenuItem::make()
+                    ->label('Logout')
+                    ->icon('heroicon-o-arrow-right-on-rectangle')
+                    ->color('danger')
+                    ->url(fn() => filament()->getLogoutUrl())
+                    ->sort(1),
+            ])
             ->navigationGroups([
                 NavigationGroup::make()
                     ->label('Data Management'),
@@ -143,7 +166,7 @@ class AdminPanelProvider extends PanelProvider
                     ->expandedUrlTarget(enabled: false),
 
                 ActivitylogPlugin::make()
-                    ->navigationGroup(fn () => __('activitylog.navigation_group'))
+                    ->navigationGroup(fn() => __('activitylog.navigation_group'))
                     ->navigationSort(11),
             ]);
     }
