@@ -4,9 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use App\Http\Resources\CommentApiResource;
 
 class CommentController extends Controller
 {
+    // Retrieve a single comment by ID (supports soft-deleted via withTrashed)
+    public function show($comment)
+    {
+        $commentModel = Comment::withTrashed()->findOrFail($comment);
+        return response()->json(['comment' => new CommentApiResource($commentModel)]);
+    }
+    public function index(Request $request)
+    {
+        $query = Comment::query()
+            ->with(['task', 'user']);
+
+        $limit = (int) $request->input('limit', 50);
+        $comments = $query->limit($limit)->get();
+
+        return response()->json(['comments' => CommentApiResource::collection($comments)]);
+    }
+
     /**
      * Store a new comment
      */

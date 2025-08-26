@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Models\Contracts\HasAvatar;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -82,6 +83,22 @@ class User extends Authenticatable implements HasAvatar
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    // Relations for common user-owned resources
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    public function phoneNumbers(): HasMany
+    {
+        return $this->hasMany(PhoneNumber::class);
+    }
+
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->avatar ? Storage::url($this->avatar) : null;
@@ -102,9 +119,9 @@ class User extends Authenticatable implements HasAvatar
         $initials = array_map(function ($p) {
             $ch = mb_substr($p, 0, 1);
 
-            return mb_strtoupper($ch).'.';
+            return mb_strtoupper($ch) . '.';
         }, $parts);
 
-        return $first.' '.implode(' ', $initials);
+        return $first . ' ' . implode(' ', $initials);
     }
 }
