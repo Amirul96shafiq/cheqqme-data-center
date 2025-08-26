@@ -33,9 +33,17 @@ class ChatbotController extends Controller
             // Get the conversation ID first
             $conversationId = $request->input('conversation_id') ?? uniqid('conv_');
 
-            // Check for direct commands that should bypass OpenAI
-            $directCommandResult = $this->handleDirectCommands($message, $user);
-            if ($directCommandResult !== null) {
+            // Get the conversation history
+            $conversationHistory = ChatbotConversation::where('conversation_id', $conversationId)
+                ->orderBy('created_at')
+                ->get();
+
+            // Check for direct commands that should bypass OpenAI (e.g., /help)
+            $directResponse = $this->handleDirectCommands($message, $user);
+            if (!is_null($directResponse)) {
+                // Normalize the direct response
+                $botReply = $this->normalizeContent($directResponse);
+
                 // Store user message
                 ChatbotConversation::create([
                     'user_id' => $user->id,
@@ -45,17 +53,21 @@ class ChatbotController extends Controller
                     'last_activity' => now(),
                 ]);
 
-                // Return the direct command result
+                // Store bot reply
+                ChatbotConversation::create([
+                    'user_id' => $user->id,
+                    'conversation_id' => $conversationId,
+                    'role' => 'assistant',
+                    'content' => $botReply,
+                    'last_activity' => now(),
+                ]);
+
+                // Return the direct response immediately without calling OpenAI
                 return response()->json([
-                    'reply' => $directCommandResult,
+                    'reply' => $botReply,
                     'conversation_id' => $conversationId,
                 ]);
             }
-
-            // Get the conversation history
-            $conversationHistory = ChatbotConversation::where('conversation_id', $conversationId)
-                ->orderBy('created_at')
-                ->get();
 
             // Build the messages
             $messages = $this->buildMessages($conversationHistory, $message);
@@ -177,7 +189,7 @@ class ChatbotController extends Controller
                 You can help with
                 - Navigation: jump to panels/pages, filter views
                 - Search: Clients, Projects, Documents, URLs, Phone Numbers
-                - Action Board: get tasks via "get_incomplete_task_count", "get_task_url_by_name", "get_incomplete_tasks_by_status"
+                - Action Board: get tasks via "get_incomplete_task_count", "get_incomplete_tasks_by_status"
                 - How-to: explain features in minimal steps
                 - General ops: quick SOPs, definitions
                 - Multilingual: match user language
@@ -409,15 +421,7 @@ class ChatbotController extends Controller
             return $chatbotService->executeTool('get_incomplete_tasks', []);
         }
 
-        // Handle /task with quotes: /task "task name"
-        if (preg_match('/^\/task\s+"(.+)"$/i', $message, $matches)) {
-            return $chatbotService->executeTool('get_task_url_by_name', ['task_name' => $matches[1]]);
-        }
-
-        // Handle /task without quotes: /task task name
-        if (preg_match('/^\/task\s+(.+)$/i', $message, $matches)) {
-            return $chatbotService->executeTool('get_task_url_by_name', ['task_name' => $matches[1]]);
-        }
+        // '/task' command removed: users can search tasks using the header search field
 
         if (strtolower($message) === '/client' || $message === '/client ') {
             return $chatbotService->executeTool('get_client_urls', []);

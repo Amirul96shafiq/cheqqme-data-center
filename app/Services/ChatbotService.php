@@ -42,7 +42,6 @@ class ChatbotService
         $this->tools = [
             'show_help' => [$this, 'showHelp'], // Show all available shortcuts and commands. Shortcut: /help
             'get_incomplete_tasks' => [$this, 'getIncompleteTasks'], // Get incomplete tasks with count and/or detailed breakdown by status with URLs. Shortcut: /mytask
-            'get_task_url_by_name' => [$this, 'getTaskUrlByName'], // Find tasks by name for the current user and get a list of URLs to edit them. Can return multiple results. Shortcut: /task "user search task name"
             'get_client_urls' => [$this, 'getClientUrls'], // Get URLs for client management (create new, list all) with total count. Shortcut: /client
             'get_project_urls' => [$this, 'getProjectUrls'], // Get URLs for project management (create new, list all) with total count. Shortcut: /project
             'get_document_urls' => [$this, 'getDocumentUrls'], // Get URLs for document management (create new, list all) with total count. Shortcut: /document
@@ -80,23 +79,7 @@ class ChatbotService
                     ],
                 ],
             ],
-            'get_task_url_by_name' => [
-                'type' => 'function',
-                'function' => [
-                    'name' => 'get_task_url_by_name',
-                    'description' => 'Find tasks by name for the current user and get a list of URLs to edit them. Can return multiple results, without the quotes. Shortcut: /task "user search task name"',
-                    'parameters' => [
-                        'type' => 'object',
-                        'properties' => [
-                            'task_name' => [
-                                'type' => 'string',
-                                'description' => 'The name or title of the task to search for.',
-                            ],
-                        ],
-                        'required' => ['task_name'],
-                    ],
-                ],
-            ],
+            // 'get_task_url_by_name' removed: task searching available via header search
             'show_help' => [
                 'type' => 'function',
                 'function' => [
@@ -230,7 +213,6 @@ class ChatbotService
         $shortcuts = [
             '/help' => 'Show this help message with all available shortcuts',
             '/mytask' => 'Get your incomplete tasks with detailed breakdown by status',
-            '/task "task name"' => 'Find tasks by name and get edit URLs',
             '/client' => 'Get URLs for client management with total count',
             '/project' => 'Get URLs for project management with total count',
             '/document' => 'Get URLs for document management with total count',
@@ -368,33 +350,6 @@ class ChatbotService
 
         return $output;
     }
-
-    /**
-     * Tool: Get the URL for a task by its name.
-     * Shortcut: /task "user search task name"
-     */
-    public function getTaskUrlByName(string $taskName): string
-    {
-        // Limit search to tasks assigned to the current user for privacy and relevance
-        $tasks = Task::where('title', 'like', "%{$taskName}%")
-            ->where('assigned_to', $this->user->id)
-            ->limit(3) // Limit to 5 results to avoid overwhelming the user
-            ->get();
-
-        if ($tasks->isEmpty()) {
-            return json_encode(['error' => 'No tasks found with that name assigned to you.']);
-        }
-
-        $results = $tasks->map(function ($task) {
-            return [
-                'task_name' => $task->title,
-                'url' => TaskResource::getUrl('edit', ['record' => $task]),
-            ];
-        });
-
-        return json_encode(['tasks' => $results->toArray()]);
-    }
-
     /**
      * Tool: Get URLs for client management (create new, list all) with total count.
      * Shortcut: /client
