@@ -81,5 +81,12 @@ return [
         'no_activities' => 'No recent activities found.',
         'showing_recent' => 'Showing :count most recent activities',
         'showing_all' => 'Showing all :count activities',
+        'you' => 'You',
+        'activity_created' => 'Created',
+        'activity_updated' => 'Updated',
+        'activity_assigned' => 'Assigned',
+        'activity_mentioned' => 'Mentioned',
+        'activity_deleted' => 'Deleted',
+        'activity_task_moved' => 'Task Moved',
     ],
 ];

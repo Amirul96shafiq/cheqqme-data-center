@@ -82,5 +82,12 @@ return [
         'no_activities' => 'Tiada aktiviti terkini ditemui.',
         'showing_recent' => 'Menunjukkan :count aktiviti terkini',
         'showing_all' => 'Menunjukkan semua :count aktiviti',
+        'you' => 'Anda',
+        'activity_created' => 'Dicipta',
+        'activity_updated' => 'Dikemas kini',
+        'activity_assigned' => 'Ditugaskan',
+        'activity_mentioned' => 'Dinyatakan',
+        'activity_deleted' => 'Dihapus',
+        'activity_task_moved' => 'Tugasan Dipindahkan',
     ],
 ];

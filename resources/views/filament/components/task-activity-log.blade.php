@@ -33,21 +33,29 @@
                     </div>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <!-- Activity Details -->
+                    @php
+                        $descKey = 'activity_' . \Illuminate\Support\Str::of($activity['description'])->lower()->replace(' ', '_');
+                        $relative = \Carbon\Carbon::parse($activity['created_at'])->locale(app()->getLocale())->diffForHumans();
+                        $formatted = \Carbon\Carbon::parse($activity['created_at'])->translatedFormat('j/n/y, h:i A');
+                    @endphp
                     <div class="flex items-center justify-between">
                         <!-- Activity Causer -->
                         <p class="text-xs font-medium {{ $activity['causer_id'] === auth()->id() ? 'text-primary-600 dark:text-primary-300' : 'text-gray-900 dark:text-white' }}">
-                            {{ $activity['causer_id'] === auth()->id() ? 'You' : $activity['causer_name'] }}
+                            {{ $activity['causer_id'] === auth()->id() ? __('task.activity_log.you') : $activity['causer_name'] }}
                         </p>
                         <!-- Activity Timestamp -->
                         <div class="flex flex-col items-end justify-center text-[11px] text-gray-500 dark:text-gray-400 leading-tight">
-                            <span>{{ \Carbon\Carbon::parse($activity['created_at'])->diffForHumans() }}</span>
-                            <span>{{ \Carbon\Carbon::parse($activity['created_at'])->format('j/n/y, h:i A') }}</span>
+                            <span>{{ $relative }}</span>
+                            <span>{{ $formatted }}</span>
                         </div>
                     </div>
                     <!-- Activity Description -->
                     <p class="text-xs text-gray-700 dark:text-gray-300 mt-[-5px]">
-                        {{ ucfirst($activity['description']) }}
+                        @if(\Illuminate\Support\Facades\Lang::has("task.activity_log.{$descKey}"))
+                            {{ __("task.activity_log.{$descKey}") }}
+                        @else
+                            {{ ucfirst($activity['description']) }}
+                        @endif
                         <!-- Activity Changes -->
                         @if($activity['properties'] && $activity['properties']->count() > 0)
                             <span class="text-xs text-gray-500 dark:text-gray-400">
