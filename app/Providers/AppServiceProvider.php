@@ -40,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
                 ->locales(['en', 'ms'])
                 ->visible(
                     insidePanels: true,
-                    outsidePanels: fn () => request()->is('admin/login')
+                    outsidePanels: fn() => request()->is('admin/login')
                 )
                 ->outsidePanelPlacement(Placement::BottomCenter);
         });

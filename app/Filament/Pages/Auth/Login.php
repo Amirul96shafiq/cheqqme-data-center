@@ -8,6 +8,7 @@ use FIlament\Forms\Form;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\Login as BaseLogin;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -74,11 +75,16 @@ class Login extends BaseLogin
             'password' => $data['password'],
         ];
 
-        if (! Auth::attempt($credentials, $data['remember'] ?? false)) {
+        if (!Auth::attempt($credentials, $data['remember'] ?? false)) {
             $this->throwFailureValidationException();
         }
 
-        return app(LoginResponse::class);
+        return new class implements LoginResponse {
+            public function toResponse($request)
+            {
+                return redirect()->route('filament.admin.pages.dashboard');
+            }
+        };
     }
 
     protected function throwFailureValidationException(): never
