@@ -42,13 +42,31 @@ class User extends Authenticatable implements HasAvatar
                 'email',
                 'avatar',
                 'email_verified_at',
-                'created_at',
-                'updated_at',
-                'updated_by',
                 'deleted_at',
             ])
             ->logOnlyDirty() // Only log when values actually change
             ->useLogName('Users');
+    }
+
+    /**
+     * Prevent logging when no meaningful changes occur
+     */
+    public function shouldLogEvent(string $eventName): bool
+    {
+        // Don't log updates if no tracked fields actually changed
+        if ($eventName === 'updated') {
+            $dirtyFields = $this->getDirty();
+            $trackedFields = ['username', 'name', 'email', 'avatar', 'email_verified_at', 'deleted_at'];
+
+            // Check if any tracked fields actually changed
+            $trackedFieldsChanged = !empty(array_intersect(array_keys($dirtyFields), $trackedFields));
+
+            if (!$trackedFieldsChanged) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
