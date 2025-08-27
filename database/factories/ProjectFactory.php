@@ -21,7 +21,7 @@ class ProjectFactory extends Factory
             'title' => $this->faker->sentence(3),
             'description' => $this->faker->paragraph(2),
             'client_id' => Client::factory(),
-            'status' => $this->faker->randomElement(['active', 'completed', 'on_hold']),
+            'status' => $this->faker->randomElement(['Planning', 'In Progress', 'Completed']),
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'updated_at' => function (array $attributes) {
                 return $attributes['created_at'];

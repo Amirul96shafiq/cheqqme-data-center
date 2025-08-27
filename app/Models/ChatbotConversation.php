@@ -22,13 +22,6 @@ class ChatbotConversation extends Model
     protected static function boot()
     {
         parent::boot();
-
-        static::creating(function ($model) {
-            if (request()->has('message')) {
-                $model->role = $model->role ?? 'user';
-                $model->content = $model->content ?? request()->input('message');
-            }
-        });
     }
 
     protected $casts = [
