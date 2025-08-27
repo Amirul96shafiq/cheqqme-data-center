@@ -8,6 +8,7 @@ return [
     'send_link' => 'Send Password Reset Link',
 
     // Reset Password
+    'email' => 'Email Address',
     'reset_password' => 'Reset Password',
     'description_reset_password' => 'Enter your new password',
     'new_password' => 'New Password',

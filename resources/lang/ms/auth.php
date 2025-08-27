@@ -8,6 +8,7 @@ return [
     'send_link' => 'Hantar Pautan Tetapan Semula',
 
     // Reset Password
+    'email' => 'Alamat Emel',
     'reset_password' => 'Tetapkan Semula Kata Laluan',
     'description_reset_password' => 'Masukkan kata laluan baharu anda',
     'new_password' => 'Kata Laluan Baharu',

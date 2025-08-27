@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\App;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class ResetPasswordController extends Controller
 {
@@ -14,6 +16,8 @@ class ResetPasswordController extends Controller
      */
     public function showResetForm(Request $request, $token)
     {
+        // Ensure the locale from the user's session is applied when rendering the reset form
+        App::setLocale(session('locale', config('app.locale')));
         return view('auth.reset-password', [
             'token' => $token,
             'email' => $request->input('email'),
@@ -27,7 +31,7 @@ class ResetPasswordController extends Controller
     {
         $request->validate([
             'token' => ['required'],
-            // 'email' => ['required', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', 'min:5'],
         ]);
 
@@ -35,8 +39,12 @@ class ResetPasswordController extends Controller
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->forceFill([
-                    'password' => Hash::make($password),
-                ])->save();
+                    'password' => $password,
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+
+                event(new PasswordReset($user));
             }
         );
 

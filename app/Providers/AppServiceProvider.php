@@ -3,13 +3,13 @@
 namespace App\Providers;
 
 use App\Models\Task;
+use App\Models\User;
 use App\Observers\TaskObserver;
 use BezhanSalleh\FilamentLanguageSwitch\Enums\Placement;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Filament\Notifications\Livewire\DatabaseNotifications;
 use Filament\Notifications\Livewire\Notifications;
-use Filament\Support\Enums\Alignment;
-use Filament\Support\Enums\VerticalAlignment;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,6 +31,14 @@ class AppServiceProvider extends ServiceProvider
         // Register Task observer to ensure activity logging on order/status changes
         Task::observe(TaskObserver::class);
 
+        // Customize password reset URLs to include email parameter
+        ResetPassword::createUrlUsing(function (User $user, string $token) {
+            return url(route('password.reset', [
+                'token' => $token,
+                'email' => $user->email,
+            ], false));
+        });
+
         // Register custom KanbanBoard Livewire component alias
         if (class_exists(\Livewire\Livewire::class)) {
             \Livewire\Livewire::component('relaticle.flowforge.kanban-board', \App\Http\Livewire\Relaticle\Flowforge\KanbanBoard::class);
@@ -40,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
                 ->locales(['en', 'ms'])
                 ->visible(
                     insidePanels: true,
-                    outsidePanels: fn() => request()->is('admin/login')
+                    outsidePanels: fn () => request()->is('admin/login')
                 )
                 ->outsidePanelPlacement(Placement::BottomCenter);
         });

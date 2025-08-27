@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" href="/images/favicon.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@tabler/icons@latest/iconfont/tabler-icons.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 
   <style>
@@ -22,12 +22,13 @@
       transition: all 0.2s ease-in-out;
     }
 
-    .theme-toggle-btn.active {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
+    .theme-toggle-btn.active { background-color: rgba(255,255,255,0.1); }
+    .theme-toggle-btn.active svg { color: #fbb43e; /* match brand primary-500 like login/reset */ }
 
-    .theme-toggle-btn.active svg {
-      color: #facc15;
+    .password-toggle-btn {
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease-in-out;
     }
   </style>
 
@@ -187,7 +188,15 @@
         @csrf
 
         <input type="hidden" name="token" value="{{ $token }}">
-        <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
+
+        <!-- Email Field -->
+        <div class="mb-5">
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {{ __('auth.email') }} <span class="text-red-500">*</span>
+          </label>
+          <input id="email" type="email" name="email" value="{{ $email ?? old('email') }}" required readonly
+            class="w-full px-4 py-2 bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 rounded-lg border border-neutral-300 dark:border-neutral-700 text-sm cursor-not-allowed" />
+        </div>
 
         <!-- New Password Field -->
         <div class="mb-5 relative">
@@ -198,7 +207,7 @@
             class="w-full px-4 py-2 bg-white text-black dark:bg-[rgb(255_255_255_/_0.05)] dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
 
           <button type="button" onclick="togglePassword('password')"
-            class="absolute top-7 right-3 theme-toggle-btn text-gray-500 hover:text-gray-700 dark:hover:text-white">
+            class="absolute top-7 right-1 password-toggle-btn text-gray-500 hover:text-gray-700 dark:hover:text-white">
             <x-heroicon-s-eye-slash class="h-5 w-5" id="password-eye-slash" />
             <x-heroicon-s-eye class="h-5 w-5 hidden" id="password-eye" />
           </button>
@@ -213,7 +222,7 @@
             class="w-full px-4 py-2 bg-white text-black dark:bg-[rgb(255_255_255_/_0.05)] dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
 
           <button type="button" onclick="togglePassword('password_confirmation')"
-            class="absolute top-7 right-3 theme-toggle-btn text-gray-500 hover:text-gray-700 dark:hover:text-white">
+            class="absolute top-7 right-1 password-toggle-btn text-gray-500 hover:text-gray-700 dark:hover:text-white">
             <x-heroicon-s-eye-slash class="h-5 w-5" id="password_confirmation-eye-slash" />
             <x-heroicon-s-eye class="h-5 w-5 hidden" id="password_confirmation-eye" />
           </button>

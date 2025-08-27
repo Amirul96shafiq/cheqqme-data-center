@@ -24,11 +24,7 @@ Route::get('forgot-password', function () {
 Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
 // Reset password route
-Route::get('reset-password/{token}', function ($token) {
-    App::setLocale(session('locale', config('app.locale')));
-
-    return view('auth.reset-password', ['token' => $token]);
-})->name('password.reset');
+Route::get('reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 
 // Reset password route (post)
 Route::post('reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
@@ -70,7 +66,7 @@ Route::middleware('auth')->group(function () {
 
     // Live badge polling endpoint for Action Board navigation badge
     Route::get('/action-board/assigned-active-count', function () {
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             return response()->json(['count' => 0]);
         }
         $count = \App\Models\Task::query()
