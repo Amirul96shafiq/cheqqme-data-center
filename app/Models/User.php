@@ -30,6 +30,8 @@ class User extends Authenticatable implements HasAvatar
         'name',
         'email',
         'password',
+        'api_key',
+        'api_key_generated_at',
         'updated_by',
     ];
 
@@ -152,5 +154,51 @@ class User extends Authenticatable implements HasAvatar
         }, $parts);
 
         return $first . ' ' . implode(' ', $initials);
+    }
+
+    /**
+     * Generate a new API key for the user
+     */
+    public function generateApiKey(): string
+    {
+        $apiKey = 'ak_' . bin2hex(random_bytes(32));
+
+        $this->update([
+            'api_key' => $apiKey,
+            'api_key_generated_at' => now(),
+        ]);
+
+        return $apiKey;
+    }
+
+    /**
+     * Check if the user has a valid API key
+     */
+    public function hasApiKey(): bool
+    {
+        return !empty($this->api_key);
+    }
+
+    /**
+     * Get the masked API key for display (shows first 8 and last 4 characters)
+     */
+    public function getMaskedApiKey(): ?string
+    {
+        if (!$this->api_key) {
+            return null;
+        }
+
+        $prefix = substr($this->api_key, 0, 8);
+        $suffix = substr($this->api_key, -4);
+
+        return $prefix . '********************' . $suffix;
+    }
+
+    /**
+     * Validate API key against user's stored key
+     */
+    public function validateApiKey(string $apiKey): bool
+    {
+        return $this->api_key === $apiKey;
     }
 }

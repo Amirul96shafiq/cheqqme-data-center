@@ -3,7 +3,7 @@
 return [
     'user-menu' => [
         'profile-label' => 'Profile',
-        'settings-label' => 'Settings (Coming Soon)',
+        'settings-label' => 'Settings',
         'logout-label' => 'Logout',
     ],
 

@@ -51,9 +51,10 @@ class Kernel extends HttpKernel
                 SubstituteBindings::class,
             ],
 
+            // API routes middleware stack
             'api' => [
-                SubstituteBindings::class,
-                ThrottleRequests::class.':api',
+                SubstituteBindings::class, // Binds the request parameters to the route parameters
+                ThrottleRequests::class . ':api', // Throttle requests to the API
             ],
         ];
     }
@@ -74,6 +75,7 @@ class Kernel extends HttpKernel
             'signed' => ValidateSignature::class,
             'throttle' => ThrottleRequests::class,
             'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+            'api.key.auth' => \App\Http\Middleware\ApiKeyAuth::class, // Middleware to authenticate API requests using API key
         ];
     }
 

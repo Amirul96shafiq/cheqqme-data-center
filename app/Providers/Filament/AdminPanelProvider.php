@@ -218,7 +218,7 @@ class AdminPanelProvider extends PanelProvider
                             return 'heroicon-o-moon';
                         } // Evening
             
-                        return 'heroicon-o-moon-stars'; // Goodnight (12AM-6AM)
+                        return 'heroicon-o-moon'; // Goodnight (12AM-6AM)
                     })
                     ->label(function () {
                         $userName = auth()->user()?->name ?? '';
@@ -241,7 +241,8 @@ class AdminPanelProvider extends PanelProvider
 
                         return "{$greeting}, {$formattedName}";
                     })
-                    ->url(fn() => 'https://motivation.app/')
+                    ->color('primary')
+                    ->url(fn() => 'https://www.dailymotivation.site/motivations/')
                     ->openUrlInNewTab(),
                 MenuItem::make()
                     ->label(fn() => __('dashboard.user-menu.profile-label'))
@@ -251,7 +252,7 @@ class AdminPanelProvider extends PanelProvider
                 MenuItem::make()
                     ->label(fn() => __('dashboard.user-menu.settings-label'))
                     ->icon('heroicon-o-cog-6-tooth')
-                    ->url(fn() => '#')
+                    ->url(fn() => route('filament.admin.pages.settings'))
                     ->sort(0),
                 'logout' => MenuItem::make()
                     ->label(fn() => __('dashboard.user-menu.logout-label'))
