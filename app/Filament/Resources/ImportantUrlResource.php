@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ImportantUrlResource\Pages;
+use App\Filament\Resources\ImportantUrlResource\RelationManagers\ImportantUrlActivityLogRelationManager;
 use App\Models\ImportantUrl;
 use Closure;
 use Filament\Forms\Components\Actions\Action;
@@ -22,7 +23,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 
 class ImportantUrlResource extends Resource
 {
@@ -233,7 +233,8 @@ class ImportantUrlResource extends Resource
                     ->openUrlInNewTab()
                     ->tooltip(function ($record) {
                         $url = $record->url;
-                        return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
+
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     }),
                 TextColumn::make('url')
                     ->label(__('importanturl.table.link'))
@@ -310,7 +311,7 @@ class ImportantUrlResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ActivitylogRelationManager::class,
+            ImportantUrlActivityLogRelationManager::class,
         ];
     }
 

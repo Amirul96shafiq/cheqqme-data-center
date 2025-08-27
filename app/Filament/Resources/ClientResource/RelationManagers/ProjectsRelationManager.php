@@ -24,6 +24,13 @@ class ProjectsRelationManager extends RelationManager
         return __('client.section.company_projects');
     }
 
+    public static function getBadge(Model $ownerRecord, string $pageClass): ?string
+    {
+        $count = $ownerRecord->projects()->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
         // Show on both Edit and View (modal)
@@ -83,7 +90,7 @@ class ProjectsRelationManager extends RelationManager
                     ->limit(30),
             ])
             ->filters([
-            SelectFilter::make(__('project.filter.status'))
+                SelectFilter::make(__('project.filter.status'))
                     ->options([
                         'Planning' => __('project.filter.planning'),
                         'In Progress' => __('project.filter.in_progress'),
@@ -92,25 +99,25 @@ class ProjectsRelationManager extends RelationManager
                     ->multiple()
                     ->preload()
                     ->searchable(),
-        ])
+            ])
             ->headerActions([
-            // Intentionally empty to avoid creating from here unless needed
-        ])
+                // Intentionally empty to avoid creating from here unless needed
+            ])
             ->actions([
-            /*Tables\Actions\ViewAction::make()
-          ->url(fn($record) => ProjectResource::getUrl('view', ['record' => $record])),*/
-            Tables\Actions\EditAction::make()
+                /*Tables\Actions\ViewAction::make()
+              ->url(fn($record) => ProjectResource::getUrl('view', ['record' => $record])),*/
+                Tables\Actions\EditAction::make()
                     ->url(fn ($record) => ProjectResource::getUrl('edit', ['record' => $record]))
                     ->hidden(fn ($record) => $record->trashed()),
 
-            Tables\Actions\ActionGroup::make([
+                Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\DeleteAction::make(),
-            ]),
-        ])
+                ]),
+            ])
             ->bulkActions([
-            // None for now
-        ])
+                // None for now
+            ])
             ->defaultSort('created_at', 'desc');
     }
 }

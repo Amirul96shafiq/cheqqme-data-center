@@ -21,6 +21,9 @@ return [
         'client_info' => 'Informasi Klien',
         'company_info' => 'Informasi Perusahaan Klien',
         'extra_info' => 'Informasi Tambahan Klien',
+        'company_projects' => 'Proyek Klien',
+        'important_urls' => 'URL Penting Klien',
+        'activity_logs' => 'Log Aktivitas',
     ],
 
     'form' => [

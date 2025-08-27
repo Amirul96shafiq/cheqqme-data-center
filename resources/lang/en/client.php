@@ -24,6 +24,7 @@ return [
         'company_projects' => 'Client Projects',
         'extra_info' => 'Client Additional Information',
         'important_urls' => 'Client Important URLs',
+        'activity_logs' => 'Activity Logs',
     ],
 
     'form' => [

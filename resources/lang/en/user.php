@@ -28,6 +28,7 @@ return [
         'password_info_description_profile' => 'Leave blank if you don\'t want to change your password',
         'danger_zone' => 'Danger Zone',
         'danger_zone_description' => 'Enable User Deletion? toggle to view this field',
+        'activity_logs' => 'Activity Logs',
     ],
 
     'form' => [

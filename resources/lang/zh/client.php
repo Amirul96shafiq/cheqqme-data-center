@@ -4,6 +4,9 @@ return [
     'section.client_info' => '客户信息',
     'section.company_info' => '客户公司信息',
     'section.extra_info' => '客户附加信息',
+    'section.company_projects' => '客户项目',
+    'section.important_urls' => '客户重要链接',
+    'section.activity_logs' => '活动日志',
 
     'pic_name' => '负责人姓名',
     'pic_email' => '负责人邮箱',

@@ -24,6 +24,13 @@ class DocumentsRelationManager extends RelationManager
         return __('project.section.project_documents');
     }
 
+    public static function getBadge(Model $ownerRecord, string $pageClass): ?string
+    {
+        $count = $ownerRecord->documents()->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
         // Show on both Edit and View (modal)
@@ -59,12 +66,14 @@ class DocumentsRelationManager extends RelationManager
                     ->tooltip(function ($record) {
                         if ($record->type === 'external' && $record->url) {
                             $url = $record->url;
-                            return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
+
+                            return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                         }
 
                         if ($record->type === 'internal' && $record->file_path) {
                             $url = asset('storage/'.ltrim($record->file_path, '/'));
-                            return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
+
+                            return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                         }
 
                         return null;
@@ -131,7 +140,7 @@ class DocumentsRelationManager extends RelationManager
                     ->limit(30),
             ])
             ->filters([
-            SelectFilter::make('type')
+                SelectFilter::make('type')
                     ->label(__('document.table.type'))
                     ->options([
                         'internal' => __('document.table.internal'),
@@ -140,25 +149,25 @@ class DocumentsRelationManager extends RelationManager
                     ->multiple()
                     ->preload()
                     ->searchable(),
-        ])
+            ])
             ->headerActions([
-            // Intentionally empty to avoid creating from here unless needed
-        ])
+                // Intentionally empty to avoid creating from here unless needed
+            ])
             ->actions([
-            /*Tables\Actions\ViewAction::make()
+                /*Tables\Actions\ViewAction::make()
       ->url(fn($record) => DocumentResource::getUrl('view', ['record' => $record])),*/
-            Tables\Actions\EditAction::make()
+                Tables\Actions\EditAction::make()
                     ->url(fn ($record) => DocumentResource::getUrl('edit', ['record' => $record]))
                     ->hidden(fn ($record) => $record->trashed()),
 
-            Tables\Actions\ActionGroup::make([
+                Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\DeleteAction::make(),
-            ]),
-        ])
+                ]),
+            ])
             ->bulkActions([
-            // None for now
-        ])
+                // None for now
+            ])
             ->defaultSort('created_at', 'desc');
     }
 }

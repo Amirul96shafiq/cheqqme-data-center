@@ -23,6 +23,7 @@ return [
         'project_extra_info' => 'Project Extra Information',
         'project_documents' => 'Project Documents',
         'important_urls' => 'Project Important URLs',
+        'activity_logs' => 'Activity Logs',
     ],
 
     'form' => [

@@ -24,6 +24,7 @@ return [
         'company_projects' => 'Projek Syarikat Pelanggan',
         'extra_info' => 'Maklumat Tambahan Pelanggan',
         'important_urls' => 'URL Penting Pelanggan',
+        'activity_logs' => 'Log Aktiviti',
     ],
 
     'form' => [

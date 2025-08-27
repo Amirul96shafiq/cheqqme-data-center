@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers;
+use App\Filament\Resources\ClientResource\RelationManagers\ClientActivityLogRelationManager;
 use App\Models\Client;
 use Closure;
 use Filament\Forms\Components\Grid;
@@ -22,7 +23,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class ClientResource extends Resource
@@ -370,7 +370,7 @@ class ClientResource extends Resource
         return [
             RelationManagers\ProjectsRelationManager::class,
             RelationManagers\ImportantUrlsRelationManager::class,
-            ActivitylogRelationManager::class,
+            ClientActivityLogRelationManager::class,
         ];
     }
 

@@ -21,6 +21,7 @@ return [
     'section' => [
         'phone_number_info' => 'Maklumat Nombor Telefon',
         'phone_number_extra_info' => 'Maklumat Tambahan Nombor Telefon',
+        'activity_logs' => 'Log Aktiviti',
     ],
 
     'form' => [

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PhoneNumberResource\Pages;
+use App\Filament\Resources\PhoneNumberResource\RelationManagers\PhoneNumberActivityLogRelationManager;
 use App\Models\PhoneNumber;
 use Closure;
 use Filament\Forms\Components\Grid;
@@ -21,7 +22,6 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class PhoneNumberResource extends Resource
@@ -89,10 +89,10 @@ class PhoneNumberResource extends Resource
                                     default => '60',
                                 };
 
-                                if (! str_starts_with($digits, $dialCode)) {
+                                if (!str_starts_with($digits, $dialCode)) {
                                     $digits = ltrim($digits, '0');
-                                    if (! str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode.$digits;
+                                    if (!str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode . $digits;
                                     }
                                 }
 
@@ -114,10 +114,10 @@ class PhoneNumberResource extends Resource
                                     default => '60',
                                 };
 
-                                if (! str_starts_with($digits, $dialCode)) {
+                                if (!str_starts_with($digits, $dialCode)) {
                                     $digits = ltrim($digits, '0');
-                                    if (! str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode.$digits;
+                                    if (!str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode . $digits;
                                     }
                                 }
 
@@ -132,7 +132,7 @@ class PhoneNumberResource extends Resource
 
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
-                        if (! blank($notes) && trim(strip_tags($notes))) {
+                        if (!blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
 
@@ -141,9 +141,9 @@ class PhoneNumberResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('phonenumber.section.phone_number_extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
 
-                        return new HtmlString($title.' '.$badge);
+                        return new HtmlString($title . ' ' . $badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -248,7 +248,7 @@ class PhoneNumberResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('phonenumber.form.title_placeholder_short'))
+                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('phonenumber.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -260,7 +260,7 @@ class PhoneNumberResource extends Resource
     {
         return $table
             // Disable record URL for trashed records
-            ->recordUrl(fn ($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('phonenumber.table.id'))
@@ -281,7 +281,7 @@ class PhoneNumberResource extends Resource
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
-                            ! $record->updated_by ||
+                            !$record->updated_by ||
                             $record->updated_at?->eq($record->created_at)
                         ) {
                             return '-';
@@ -294,7 +294,7 @@ class PhoneNumberResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -306,7 +306,7 @@ class PhoneNumberResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
-                    ->hidden(fn ($record) => $record->trashed()),
+                    ->hidden(fn($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
@@ -327,7 +327,7 @@ class PhoneNumberResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ActivitylogRelationManager::class,
+            PhoneNumberActivityLogRelationManager::class,
         ];
     }
 

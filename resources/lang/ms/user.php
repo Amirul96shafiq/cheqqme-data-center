@@ -26,6 +26,7 @@ return [
         'password_info_description_profile' => 'Jika tidak ingin mengubah kata laluan, biarkan kosong',
         'danger_zone' => 'Zon Bahaya',
         'danger_zone_description' => 'Aktifkan toggle Padam Pengguna? untuk melihat bahagian ini',
+        'activity_logs' => 'Log Aktiviti',
     ],
 
     'form' => [

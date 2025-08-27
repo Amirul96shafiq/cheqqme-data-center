@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProjectResource\Pages;
 use App\Filament\Resources\ProjectResource\RelationManagers;
+use App\Filament\Resources\ProjectResource\RelationManagers\ProjectActivityLogRelationManager;
 use App\Models\Project;
 use Closure;
 use Filament\Forms\Components\Grid;
@@ -23,7 +24,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
-use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 
 class ProjectResource extends Resource
 {
@@ -322,7 +322,7 @@ class ProjectResource extends Resource
         return [
             RelationManagers\DocumentsRelationManager::class,
             RelationManagers\ImportantUrlsRelationManager::class,
-            ActivitylogRelationManager::class,
+            ProjectActivityLogRelationManager::class,
         ];
     }
 

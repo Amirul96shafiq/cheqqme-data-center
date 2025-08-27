@@ -23,6 +23,7 @@ return [
         'project_extra_info' => 'Maklumat Tambahan Projek',
         'project_documents' => 'Dokumen Projek',
         'important_urls' => 'URL Penting Projek',
+        'activity_logs' => 'Log Aktiviti',
     ],
 
     'form' => [
