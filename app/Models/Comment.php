@@ -41,7 +41,7 @@ class Comment extends Model
      */
     public function getMentionedUsersAttribute()
     {
-        if (! $this->mentions || ! is_array($this->mentions)) {
+        if (!$this->mentions || !is_array($this->mentions)) {
             return collect();
         }
 
@@ -53,7 +53,7 @@ class Comment extends Model
      */
     public function processMentions()
     {
-        if (! $this->mentions || ! is_array($this->mentions)) {
+        if (!$this->mentions || !is_array($this->mentions)) {
             return;
         }
 
@@ -91,7 +91,7 @@ class Comment extends Model
         foreach ($allMatches[1] as $match) {
             [$value, $offset] = $match; // value without leading '@'
             $parts = preg_split('/\s+/', trim($value), -1, PREG_SPLIT_NO_EMPTY);
-            if (! $parts) {
+            if (!$parts) {
                 continue;
             }
             $variants = [];
@@ -127,10 +127,10 @@ class Comment extends Model
         $byUsername = [];
         $byName = [];
         foreach ($users as $u) {
-            if (! empty($u->username)) {
+            if (!empty($u->username)) {
                 $byUsername[$u->username] = (int) $u->id;
             }
-            if (! empty($u->name)) {
+            if (!empty($u->name)) {
                 $byName[$u->name] = (int) $u->id;
             }
         }
@@ -162,6 +162,7 @@ class Comment extends Model
     {
         return LogOptions::defaults()
             ->logOnly(['task_id', 'user_id', 'comment', 'mentions'])
+            ->logOnlyDirty() // Only log when values actually change
             ->useLogName('Comments');
     }
 
@@ -173,22 +174,22 @@ class Comment extends Model
         // Resolve mentioned users from stored IDs
         $mentionIds = is_array($this->mentions) ? $this->mentions : [];
         $mentionUsers = empty($mentionIds)
-          ? collect()
-          : User::query()->whereIn('id', $mentionIds)->get(['username', 'name']);
+            ? collect()
+            : User::query()->whereIn('id', $mentionIds)->get(['username', 'name']);
 
         // Build alternatives to match exactly (prefer longer names first)
         $terms = [];
         foreach ($mentionUsers as $u) {
-            if (! empty($u->name)) {
-                $terms[] = '@'.$u->name;
+            if (!empty($u->name)) {
+                $terms[] = '@' . $u->name;
             }
-            if (! empty($u->username)) {
-                $terms[] = '@'.$u->username;
+            if (!empty($u->username)) {
+                $terms[] = '@' . $u->username;
             }
         }
         // Deduplicate and sort by length desc to avoid partial overlaps
-        $terms = array_values(array_unique(array_filter($terms, static fn ($t) => $t !== '')));
-        usort($terms, static fn ($a, $b) => mb_strlen($b) <=> mb_strlen($a));
+        $terms = array_values(array_unique(array_filter($terms, static fn($t) => $t !== '')));
+        usort($terms, static fn($a, $b) => mb_strlen($b) <=> mb_strlen($a));
 
         // If no known terms, fall back to original content
         if (empty($terms)) {
@@ -196,7 +197,7 @@ class Comment extends Model
         }
 
         // Escape terms for regex
-        $escapedTerms = array_map(static fn ($t) => preg_quote($t, '/'), $terms);
+        $escapedTerms = array_map(static fn($t) => preg_quote($t, '/'), $terms);
         $alternation = implode('|', $escapedTerms);
 
         $parts = preg_split('/(<[^>]+>)/', $html, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
@@ -223,10 +224,10 @@ class Comment extends Model
                     $out .= $part;
                 } else {
                     // Only wrap exact known terms with trailing boundary
-                    $out .= preg_replace_callback('/('.$alternation.')(?=[\s\.,;:!\?\)]|$|<)/u', function ($m) {
+                    $out .= preg_replace_callback('/(' . $alternation . ')(?=[\s\.,;:!\?\)]|$|<)/u', function ($m) {
                         $text = $m[1]; // e.g., @Full Name or @username
 
-                        return '<span class="mention">'.htmlspecialchars($text, ENT_QUOTES, 'UTF-8').'</span>';
+                        return '<span class="mention">' . htmlspecialchars($text, ENT_QUOTES, 'UTF-8') . '</span>';
                     }, $part);
                 }
             }

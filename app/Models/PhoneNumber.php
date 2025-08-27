@@ -31,6 +31,7 @@ class PhoneNumber extends Model
                 'updated_at',
                 'updated_by',
             ])
+            ->logOnlyDirty() // Only log when values actually change
             ->useLogName('Phone Numbers');
     }
 

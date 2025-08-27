@@ -43,6 +43,7 @@ class Client extends Model
                 'created_at',
                 'updated_by',
             ])
+            ->logOnlyDirty() // Only log when values actually change
             ->useLogName('Clients');
     }
 
