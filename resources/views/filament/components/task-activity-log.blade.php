@@ -9,7 +9,7 @@
     <!-- Recent Activity Log -->
     <div class="space-y-2">
         @foreach($activities as $activity)
-            <div class="flex items-center justify-center space-x-3 py-2 px-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-center space-x-3 py-2 px-3 bg-gray-100/20 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
                 <div class="flex-shrink-0">
                     <!-- Activity Icon -->
                     <div class="w-8 h-8 rounded-full flex items-center justify-center
@@ -40,12 +40,13 @@
                             {{ $activity['causer_id'] === auth()->id() ? 'You' : $activity['causer_name'] }}
                         </p>
                         <!-- Activity Timestamp -->
-                        <p class="text-[11px] text-gray-500 dark:text-gray-400">
-                            {{ \Carbon\Carbon::parse($activity['created_at'])->diffForHumans() }} • {{ \Carbon\Carbon::parse($activity['created_at'])->format('j/n/y, h:i A') }} 
-                        </p>
+                        <div class="flex flex-col items-end justify-center text-[11px] text-gray-500 dark:text-gray-400 leading-tight">
+                            <span>{{ \Carbon\Carbon::parse($activity['created_at'])->diffForHumans() }}</span>
+                            <span>{{ \Carbon\Carbon::parse($activity['created_at'])->format('j/n/y, h:i A') }}</span>
+                        </div>
                     </div>
                     <!-- Activity Description -->
-                    <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                    <p class="text-xs text-gray-700 dark:text-gray-300 mt-[-5px]">
                         {{ ucfirst($activity['description']) }}
                         <!-- Activity Changes -->
                         @if($activity['properties'] && $activity['properties']->count() > 0)
