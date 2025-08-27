@@ -81,7 +81,7 @@ class AdminPanelProvider extends PanelProvider
                 'resources/js/app-custom.js',
             ])
             ->pages([
-                \Filament\Pages\Dashboard::class,
+                \App\Filament\Pages\Dashboard::class,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
