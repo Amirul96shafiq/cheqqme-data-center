@@ -141,7 +141,8 @@ class AdminPanelProvider extends PanelProvider
 
                         return "{$greeting}, {$formattedName}";
                     })
-                    ->url(fn () => 'https://motivation.app/'),
+                    ->url(fn () => 'https://motivation.app/')
+                    ->openUrlInNewTab(),
                 MenuItem::make()
                     ->label(fn () => __('dashboard.user-menu.profile-label'))
                     ->icon('heroicon-o-user')

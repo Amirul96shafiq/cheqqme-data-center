@@ -25,15 +25,15 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 | Area         | Tools / Frameworks                                                   |
 | ------------ | -------------------------------------------------------------------- |
 | Language     | PHP 8.2.29                                                           |
-| Backend      | Laravel 12.20.0                                                      |
-| Admin / UI   | Filament v3.3.37, Tailwind CSS v3.4                                  |
+| Backend      | Laravel 12.25.0                                                      |
+| Admin / UI   | Filament v3.3.37, Tailwind CSS v3.4.17                               |
 | Realtime UX  | Livewire v3.6.4 (Filament integrated)                                |
 | Database     | SQLite (dev) → MySQL/PostgreSQL (future)                             |
-| MCP Server   | Node.js (Express 5), SQLite, bcrypt 6, dotenv 17                     |
+| MCP Server   | Node.js, SQLite, bcrypt 6.0.0, dotenv 17.2.1                         |
 | Build Tools  | Vite v7.1.3, Laravel Vite Plugin v2.0.0, NPM                         |
 | Testing      | PHPUnit 11.5.34, Laravel testing utilities, Livewire component tests |
 | Activity Log | Spatie Activitylog + Filament Activitylog plugin (enabled)           |
-| Kanban Board | Relaticle Flowforge v0.2 (custom Action Board page)                  |
+| Kanban Board | Relaticle Flowforge v0.2.1 (custom Action Board page)                |
 
 ---
 
@@ -68,7 +68,6 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 
 -   Tagging system (polymorphic tags across Projects / Documents / Links)
 -   Advanced authorization (policies & role-based access control)
--   Activity & audit logging (create/update/delete trails)
 -   Full‑text / Scout based search + AI powered semantic layer (MCP integration)
 -   Bulk import/export (CSV / XLSX)
 -   Background job queue (async file processing & notifications)
@@ -77,6 +76,111 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 ---
 
 ## First-Time Setup: CheQQme Data Center
+
+### **Prerequisites (If Programming Tools Not Installed)**
+
+**For Windows:**
+
+1. Install **Chocolatey** (Package Manager):
+
+    ```bash
+    # Run in PowerShell as Administrator
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    ```
+
+2. Install **PHP 8.2+**:
+
+    ```bash
+    choco install php
+    choco install composer
+    ```
+
+3. Install **Node.js**:
+
+    ```bash
+    choco install nodejs
+    ```
+
+4. Install **Git**:
+    ```bash
+    choco install git
+    ```
+
+**For macOS:**
+
+1. Install **Homebrew** (Package Manager):
+
+    ```bash
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    ```
+
+2. Install **PHP 8.2+**:
+
+    ```bash
+    brew install php@8.2
+    brew install composer
+    ```
+
+3. Install **Node.js**:
+
+    ```bash
+    brew install node
+    ```
+
+4. Install **Git**:
+    ```bash
+    brew install git
+    ```
+
+**For Ubuntu/Debian Linux:**
+
+1. Update system:
+
+    ```bash
+    sudo apt update && sudo apt upgrade -y
+    ```
+
+2. Install **PHP 8.2+**:
+
+    ```bash
+    sudo apt install software-properties-common
+    sudo add-apt-repository ppa:ondrej/php
+    sudo apt update
+    sudo apt install php8.2 php8.2-cli php8.2-common php8.2-mbstring php8.2-xml php8.2-zip php8.2-sqlite3 php8.2-curl php8.2-gd php8.2-bcmath
+    ```
+
+3. Install **Composer**:
+
+    ```bash
+    curl -sS https://getcomposer.org/installer | php
+    sudo mv composer.phar /usr/local/bin/composer
+    ```
+
+4. Install **Node.js**:
+
+    ```bash
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    ```
+
+5. Install **Git**:
+    ```bash
+    sudo apt install git
+    ```
+
+**For All Systems - Verify Installation:**
+
+```bash
+php --version      # Should show PHP 8.2+
+composer --version # Should show Composer version
+node --version    # Should show Node.js version
+npm --version     # Should show npm version
+git --version     # Should show Git version
+```
+
+---
+
+### **Project Setup (After Tools Are Installed)**
 
 1. Clone the repository:
     ```bash
@@ -95,11 +199,43 @@ It improves discoverability, reduces context switching, and lays groundwork for 
     # Edit .env and fill in any required values (DB, mail, MCP details)
     ```
 4. Prepare the database and storage:
+
     ```bash
-    php artisan migrate --seed   # if seeders available
+    # Create SQLite database file
+    touch database/database.sqlite
+
+    # Run migrations to create table structures
+    php artisan migrate --no-interaction
+
+    # Run seeders to populate with sample data
+    php artisan db:seed --no-interaction
+
+    # Create storage link
     php artisan storage:link
-    # If using SQLite, ensure database/database.sqlite exists
     ```
+
+    **What gets created:**
+
+    - **1 Test User** (email: `test@example.com`, password: `password`)
+    - **5 Additional Users** with random data
+    - **3 Sample Clients** with company information
+    - **Multiple Projects** (1-3 per client)
+    - **Documents** (1-2 per project)
+    - **Important URLs** (1-2 per client)
+    - **Phone Numbers** (1-2 per client)
+    - **Tasks** (2-5 per project) with Kanban statuses
+    - **Comments** (1-3 per task) with @mention support
+
+    **Alternative seeding options:**
+
+    ```bash
+    # Run only specific seeder
+    php artisan db:seed --class=SampleDataSeeder --no-interaction
+
+    # Run only basic user seeder
+    php artisan db:seed --class=DatabaseSeeder --no-interaction
+    ```
+
 5. (Optional) Set up mail service for local testing:
     - The default `.env` uses [Mailtrap](https://mailtrap.io/) for safe email testing.
     - Sign up at Mailtrap and copy your SMTP credentials.
@@ -116,6 +252,9 @@ It improves discoverability, reduces context switching, and lays groundwork for 
         ```
     - Emails sent by the app will appear in your Mailtrap inbox.
 6. Access the app at [http://127.0.0.1:8000](http://127.0.0.1:8000) (Filament admin panel at /admin).
+7. **Default Login Credentials:**
+    - **Email:** `test@example.com`
+    - **Password:** `password`
 
 ---
 
@@ -153,7 +292,9 @@ curl -H "x-api-key: YOUR_KEY" http://127.0.0.1:5000/api/users
 MCP API notes (current state):
 
 -   Users GET/POST/PUT/DELETE work against the shared SQLite DB.
--   Some write endpoints for Tasks, Comments, Phone Numbers, and Important URLs are placeholders and reference column names that differ from the current Laravel schema. Prefer GET endpoints for these resources until aligned.
+-   Core endpoints for Tasks, Comments, Phone Numbers, and Important URLs are functional.
+-   Password hash compatibility: bcrypt `$2b$` is converted to `$2y$` for Laravel.
+-   All endpoints use `x-api-key` header authentication.
 
 ---
 
@@ -203,23 +344,74 @@ Create uses a streamlined modal; edit navigates to the Task Resource edit page.
 
 -   Feature tests exist for the comment system, mentions extraction, and notifications
 -   Livewire interaction tests cover add/edit/delete flows and validation rules
--   Run: `php artisan test`
+-   Unit tests for core functionality
+-   Run: `php artisan test` or `composer test`
 
-Future: add comprehensive CRUD tests for Projects, Documents, Important URLs, and policy tests.
+**Current Test Coverage:**
+
+-   Comment system with @mentions
+-   Task management and Kanban operations
+-   User authentication and authorization
+-   Livewire component interactions
+-   Database operations and relationships
+
+**Future Testing Goals:**
+
+-   Comprehensive CRUD tests for Projects, Documents, Important URLs
+-   Policy-based authorization tests
+-   API endpoint testing for MCP integration
+-   Performance and load testing
 
 ---
 
 ## Deployment (Basic Outline)
 
-1. Provision server (Linux) with PHP 8.x + Nginx + database
-2. Clone repo & run `composer install --no-dev`
-3. Copy `.env.example` → `.env`, configure production values
-4. Run: `php artisan key:generate` (one time)
-5. Run migrations: `php artisan migrate --force`
-6. Build assets: `npm ci && npm run build`
-7. Set correct permissions for `storage` & `bootstrap/cache`
-8. Configure queue worker & scheduler (cron: `* * * * * php /path/artisan schedule:run >> /dev/null 2>&1`)
-9. Use a process manager (Supervisor) for `php artisan queue:work`
+1. **Server Requirements:**
+
+    - Linux server with PHP 8.2+ and required extensions
+    - Nginx/Apache web server
+    - Database (MySQL/PostgreSQL recommended for production)
+    - Redis (optional, for caching and queues)
+
+2. **Application Setup:**
+
+    ```bash
+    git clone <repo-url>
+    cd cheqqme-data-center
+    composer install --no-dev --optimize-autoloader
+    cp .env.example .env
+    php artisan key:generate
+    ```
+
+3. **Database & Storage:**
+
+    ```bash
+    php artisan migrate --force
+    php artisan storage:link
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+    ```
+
+4. **Build Assets:**
+
+    ```bash
+    npm ci
+    npm run build
+    ```
+
+5. **Permissions & Security:**
+
+    ```bash
+    chmod -R 755 storage bootstrap/cache
+    chown -R www-data:www-data storage bootstrap/cache
+    ```
+
+6. **Production Services:**
+    - Queue worker: `php artisan queue:work --daemon`
+    - Scheduler: `* * * * * cd /path/to/app && php artisan schedule:run >> /dev/null 2>&1`
+    - Process manager: Use Supervisor for queue workers
+    - Cache: Configure Redis or file-based caching
 
 ---
 
@@ -246,8 +438,9 @@ Legend: ✅ Done · 🛠 In Progress · 🔜 Planned
 | Action Board (Tasks)    | ✅     | Kanban columns + attribute badges      |
 | Basic Auth (Filament)   | ✅     | Panel restricted                       |
 | Environment template    | ✅     | `.env.example` structured              |
-| Tagging system          | 🔜     | Polymorphic (tags)                     |
+| MCP Server Integration  | ✅     | Node.js API with Laravel compatibility |
 | Activity / Audit Log    | ✅     | Spatie + Filament plugin enabled       |
+| Tagging system          | 🔜     | Polymorphic (tags)                     |
 | Role-based Policies     | 🔜     | Granular access control                |
 | Full‑text / AI Search   | 🔜     | Scout + embeddings layer               |
 | Bulk Import / Export    | 🔜     | CSV/XLSX via Laravel Excel             |
@@ -263,6 +456,13 @@ In one terminal (Laravel app, queue worker, logs, Vite):
 ```bash
 composer dev
 ```
+
+**What `composer dev` runs:**
+
+-   Laravel development server (`php artisan serve`)
+-   Queue listener (`php artisan queue:listen --tries=1`)
+-   Log viewer (`php artisan pail --timeout=0`)
+-   Vite dev server (`npm run dev`)
 
 In another terminal (MCP server):
 
