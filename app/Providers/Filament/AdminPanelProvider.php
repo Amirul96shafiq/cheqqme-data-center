@@ -35,23 +35,123 @@ use Rmsramos\Activitylog\ActivitylogPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
+    /**
+     * Determine if the current request is for a login page
+     */
+    protected function isLoginPage(): bool
+    {
+        if (auth()->check()) {
+            return false;
+        }
+
+        $currentUrl = request()->fullUrl();
+
+        // Direct URL and path matching
+        if (request()->is('admin/login') || ($currentUrl && str_contains($currentUrl, '/admin/login'))) {
+            return true;
+        }
+
+        // Livewire login component detection
+        if (request()->hasHeader('X-Livewire')) {
+            $livewireData = json_decode(request()->header('X-Livewire'), true);
+            if ($livewireData && isset($livewireData['name'])) {
+                $componentName = $livewireData['name'];
+                if (
+                    str_contains($componentName, 'Auth\\Login') ||
+                    str_contains($componentName, 'Login') ||
+                    $componentName === 'App\\Filament\\Pages\\Auth\\Login'
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        // Login form submissions
+        if (request()->isMethod('post') && request()->has(['email', 'password'])) {
+            return true;
+        }
+
+        // Livewire form submission detection
+        $requestData = request()->all();
+        if (isset($requestData['components']) && is_array($requestData['components'])) {
+            foreach ($requestData['components'] as $component) {
+                if (
+                    (isset($component['snapshot']) && str_contains($component['snapshot'], 'Auth\\Login')) ||
+                    (isset($component['name']) && str_contains($component['name'], 'Login'))
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        // Session validation errors (crucial for failed logins)
+        if (session()->has('errors')) {
+            $errors = session()->get('errors');
+            if ($errors) {
+                // Check specific field errors
+                if ($errors->has('data.email') || $errors->has('email') || $errors->has('password')) {
+                    return true;
+                }
+                // Check error messages for login-related terms
+                foreach ($errors->all() as $error) {
+                    if (
+                        str_contains($error, 'email') || str_contains($error, 'password') ||
+                        str_contains($error, 'credentials') || str_contains($error, 'login')
+                    ) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // Livewire update requests
+        if (request()->is('livewire/update') && request()->isMethod('post')) {
+            $requestData = request()->all();
+            if (isset($requestData['components']) && is_array($requestData['components'])) {
+                foreach ($requestData['components'] as $component) {
+                    if (
+                        isset($component['snapshot']) &&
+                        (str_contains($component['snapshot'], 'login') || str_contains($component['snapshot'], 'Auth'))
+                    ) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // Fallback route-based check
+        if (request()->routeIs('filament.*.login')) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function panel(Panel $panel): Panel
     {
+        // More reliable login page detection that works throughout the request lifecycle
+        $isLoginPage = $this->isLoginPage();
+
+        // Logo configurations
+        $loginLogo = asset('logos/logo-light.png');
+        $loginDarkLogo = asset('logos/logo-dark.png');
+        $headerLogo = asset('logos/logo-light-vertical.png');
+        $headerDarkLogo = asset('logos/logo-dark-vertical.png');
+
+        // Determine which logo to use based on current page
+        $currentLogo = $isLoginPage ? $loginLogo : $headerLogo;
+        $currentDarkLogo = $isLoginPage ? $loginDarkLogo : $headerDarkLogo;
+        $currentLogoHeight = $isLoginPage ? '8rem' : '2.75rem';
+
         return $panel
             ->default()
-            ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
+            ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
             ->favicon(asset('images/favicon.png'))
-            ->brandLogo(Request::is('admin/login')
-                ? asset('logos/logo-light.png')
-                : asset('logos/logo-light-vertical.png'))
-
-            ->darkModeBrandLogo(Request::is('admin/login')
-                ? asset('logos/logo-dark.png')
-                : asset('logos/logo-dark-vertical.png'))
-
-            ->brandLogoHeight(Request::is('admin/login') ? '8rem' : '2.75rem')
+            ->brandLogo($currentLogo)
+            ->darkModeBrandLogo($currentDarkLogo)
+            ->brandLogoHeight($currentLogoHeight)
             ->font('Roboto')
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->profile(Profile::class, isSimple: false)
@@ -117,18 +217,18 @@ class AdminPanelProvider extends PanelProvider
                         if ($hour >= 20 && $hour <= 23) {
                             return 'heroicon-o-moon';
                         } // Evening
-
+            
                         return 'heroicon-o-moon-stars'; // Goodnight (12AM-6AM)
                     })
                     ->label(function () {
                         $userName = auth()->user()?->name ?? '';
-                        if (! $userName) {
+                        if (!$userName) {
                             return 'Profile';
                         }
 
                         // Format name: First name + initials for remaining parts
                         $formattedName = collect(explode(' ', $userName))
-                            ->map(fn ($part, $index) => $index === 0 ? $part : substr($part, 0, 1).'.')
+                            ->map(fn($part, $index) => $index === 0 ? $part : substr($part, 0, 1) . '.')
                             ->implode(' ');
 
                         $hour = now()->hour;
@@ -141,23 +241,23 @@ class AdminPanelProvider extends PanelProvider
 
                         return "{$greeting}, {$formattedName}";
                     })
-                    ->url(fn () => 'https://motivation.app/')
+                    ->url(fn() => 'https://motivation.app/')
                     ->openUrlInNewTab(),
                 MenuItem::make()
-                    ->label(fn () => __('dashboard.user-menu.profile-label'))
+                    ->label(fn() => __('dashboard.user-menu.profile-label'))
                     ->icon('heroicon-o-user')
-                    ->url(fn () => filament()->getProfileUrl())
+                    ->url(fn() => filament()->getProfileUrl())
                     ->sort(-1),
                 MenuItem::make()
-                    ->label(fn () => __('dashboard.user-menu.settings-label'))
+                    ->label(fn() => __('dashboard.user-menu.settings-label'))
                     ->icon('heroicon-o-cog-6-tooth')
-                    ->url(fn () => '#')
+                    ->url(fn() => '#')
                     ->sort(0),
                 'logout' => MenuItem::make()
-                    ->label(fn () => __('dashboard.user-menu.logout-label'))
+                    ->label(fn() => __('dashboard.user-menu.logout-label'))
                     ->icon('heroicon-o-arrow-right-on-rectangle')
                     ->color('danger')
-                    ->url(fn () => filament()->getLogoutUrl())
+                    ->url(fn() => filament()->getLogoutUrl())
                     ->sort(1),
             ])
             ->navigationGroups([
@@ -200,7 +300,7 @@ class AdminPanelProvider extends PanelProvider
                     ->expandedUrlTarget(enabled: false),
 
                 ActivitylogPlugin::make()
-                    ->navigationGroup(fn () => __('activitylog.navigation_group'))
+                    ->navigationGroup(fn() => __('activitylog.navigation_group'))
                     ->navigationSort(11),
             ]);
     }
