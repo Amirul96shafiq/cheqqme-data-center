@@ -20,7 +20,7 @@ return [
 
     'section' => [
         'document_info' => 'Document Information',
-        'document_extra_info' => 'Document Extra Information',
+        'extra_info' => 'Document Extra Information',
         'activity_logs' => 'Activity Logs',
     ],
 

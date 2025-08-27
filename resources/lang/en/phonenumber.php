@@ -20,7 +20,7 @@ return [
 
     'section' => [
         'phone_number_info' => 'Phone Number Information',
-        'phone_number_extra_info' => 'Phone Number Extra Information',
+        'extra_info' => 'Phone Number Extra Information',
         'activity_logs' => 'Activity Logs',
     ],
 

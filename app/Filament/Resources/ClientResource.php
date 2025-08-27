@@ -101,10 +101,10 @@ class ClientResource extends Resource
                                     default => '60',
                                 };
 
-                                if (! str_starts_with($digits, $dialCode)) {
+                                if (!str_starts_with($digits, $dialCode)) {
                                     $digits = ltrim($digits, '0');
-                                    if (! str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode.$digits;
+                                    if (!str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode . $digits;
                                     }
                                 }
 
@@ -126,10 +126,10 @@ class ClientResource extends Resource
                                     default => '60',
                                 };
 
-                                if (! str_starts_with($digits, $dialCode)) {
+                                if (!str_starts_with($digits, $dialCode)) {
                                     $digits = ltrim($digits, '0');
-                                    if (! str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode.$digits;
+                                    if (!str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode . $digits;
                                     }
                                 }
 
@@ -145,7 +145,7 @@ class ClientResource extends Resource
                             ->nullable()
                             ->extraAlpineAttributes(['x-ref' => 'companyName'])
                             ->helperText(__('client.form.company_name_helper'))
-                            ->placeholder(fn (callable $get) => $get('pic_name')),
+                            ->placeholder(fn(callable $get) => $get('pic_name')),
 
                         TextInput::make('company_email')->label(__('client.form.company_email'))
                             ->email()
@@ -169,7 +169,7 @@ class ClientResource extends Resource
 
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
-                        if (! blank($notes) && trim(strip_tags($notes))) {
+                        if (!blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
 
@@ -178,9 +178,9 @@ class ClientResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('client.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
+                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -201,23 +201,30 @@ class ClientResource extends Resource
                             ->extraAttributes([
                                 'style' => 'resize: vertical;',
                             ])
-                            ->reactive()
-                            // Character limit reactive function
+                            ->live(onBlur: true)
+                            // Character limit helper text - only updates on blur to prevent focus loss
                             ->helperText(function (Get $get) {
                                 $raw = $get('notes') ?? '';
-                                // 1. Strip all HTML tags
-                                $noHtml = strip_tags($raw);
-                                // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                $remaining = 500 - mb_strlen($decoded);
+                                if (empty($raw)) {
+                                    return __('client.form.notes_helper', ['count' => 500]);
+                                }
+
+                                // Optimized character counting - strip tags and count
+                                $textOnly = strip_tags($raw);
+                                $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                $remaining = max(0, 500 - mb_strlen($textOnly));
 
                                 return __('client.form.notes_helper', ['count' => $remaining]);
                             })
                             // Block save if over 500 visible characters
                             ->rule(function (Get $get): Closure {
                                 return function (string $attribute, $value, Closure $fail) {
-                                    $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                    if (empty($value)) {
+                                        return;
+                                    }
+                                    $textOnly = strip_tags($value);
+                                    $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                    $textOnly = trim(preg_replace('/\s+/', ' ', $textOnly));
                                     if (mb_strlen($textOnly) > 500) {
                                         $fail(__('client.form.notes_warning'));
                                     }
@@ -234,6 +241,7 @@ class ClientResource extends Resource
                                         TextInput::make('title')
                                             ->label(__('client.form.extra_title'))
                                             ->maxLength(100)
+                                            ->debounce(1000)
                                             ->columnSpanFull(),
                                         RichEditor::make('value')
                                             ->label(__('client.form.extra_value'))
@@ -250,23 +258,31 @@ class ClientResource extends Resource
                                             ->extraAttributes([
                                                 'style' => 'resize: vertical;',
                                             ])
+                                            ->debounce(300)
                                             ->reactive()
                                             // Character limit reactive function
                                             ->helperText(function (Get $get) {
                                                 $raw = $get('value') ?? '';
-                                                // 1. Strip all HTML tags
-                                                $noHtml = strip_tags($raw);
-                                                // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                                $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                                $remaining = 500 - mb_strlen($decoded);
+                                                if (empty($raw)) {
+                                                    return __('client.form.notes_helper', ['count' => 500]);
+                                                }
+
+                                                // Optimized character counting - strip tags and count
+                                                $textOnly = strip_tags($raw);
+                                                $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                $remaining = max(0, 500 - mb_strlen($textOnly));
 
                                                 return __('client.form.notes_helper', ['count' => $remaining]);
                                             })
                                             // Block save if over 500 visible characters
                                             ->rule(function (Get $get): Closure {
                                                 return function (string $attribute, $value, Closure $fail) {
-                                                    $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                    if (empty($value)) {
+                                                        return;
+                                                    }
+                                                    $textOnly = strip_tags($value);
+                                                    $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                    $textOnly = trim(preg_replace('/\s+/', ' ', $textOnly));
                                                     if (mb_strlen($textOnly) > 500) {
                                                         $fail(__('client.form.notes_warning'));
                                                     }
@@ -284,7 +300,7 @@ class ClientResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('client.form.title_placeholder_short'))
+                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('client.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -297,7 +313,7 @@ class ClientResource extends Resource
     {
         return $table
             // Disable record URL for trashed records
-            ->recordUrl(fn ($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('client.table.id'))
@@ -324,7 +340,7 @@ class ClientResource extends Resource
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
-                            ! $record->updated_by ||
+                            !$record->updated_by ||
                             $record->updated_at?->eq($record->created_at)
                         ) {
                             return '-';
@@ -337,7 +353,7 @@ class ClientResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -348,7 +364,7 @@ class ClientResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),

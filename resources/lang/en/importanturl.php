@@ -20,7 +20,7 @@ return [
 
     'section' => [
         'important_url_info' => 'Important URL Information',
-        'important_url_extra_info' => 'Important URL Extra Information',
+        'extra_info' => 'Important URL Extra Information',
         'activity_logs' => 'Activity Logs',
     ],
 

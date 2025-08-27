@@ -20,7 +20,7 @@ return [
 
     'section' => [
         'important_url_info' => 'Maklumat URL Penting',
-        'important_url_extra_info' => 'Maklumat Tambahan URL Penting',
+        'extra_info' => 'Maklumat Tambahan URL Penting',
         'activity_logs' => 'Log Aktiviti',
     ],
 

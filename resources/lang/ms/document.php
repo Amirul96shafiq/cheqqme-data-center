@@ -20,7 +20,7 @@ return [
 
     'section' => [
         'document_info' => 'Maklumat Dokumen',
-        'document_extra_info' => 'Maklumat Tambahan Dokumen',
+        'extra_info' => 'Maklumat Tambahan Dokumen',
         'activity_logs' => 'Log Aktiviti',
     ],
 

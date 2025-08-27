@@ -126,7 +126,7 @@ class PhoneNumberResource extends Resource
                     ])
                     ->columns(2),
 
-                Section::make()
+                    Section::make()
                     ->heading(function (Get $get) {
                         $count = 0;
 
@@ -140,7 +140,7 @@ class PhoneNumberResource extends Resource
                         $extraInfo = $get('extra_information') ?? [];
                         $count += count($extraInfo);
 
-                        $title = __('phonenumber.section.phone_number_extra_info');
+                        $title = __('phonenumber.section.extra_info');
                         $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
 
                         return new HtmlString($title . ' ' . $badge);
@@ -164,23 +164,30 @@ class PhoneNumberResource extends Resource
                             ->extraAttributes([
                                 'style' => 'resize: vertical;',
                             ])
-                            ->reactive()
-                            // Character limit reactive function
+                            ->live(onBlur: true)
+                            // Character limit helper text - only updates on blur to prevent focus loss
                             ->helperText(function (Get $get) {
                                 $raw = $get('notes') ?? '';
-                                // 1. Strip all HTML tags
-                                $noHtml = strip_tags($raw);
-                                // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                $remaining = 500 - mb_strlen($decoded);
+                                if (empty($raw)) {
+                                    return __('phonenumber.form.notes_helper', ['count' => 500]);
+                                }
+
+                                // Optimized character counting - strip tags and count
+                                $textOnly = strip_tags($raw);
+                                $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                $remaining = max(0, 500 - mb_strlen($textOnly));
 
                                 return __('phonenumber.form.notes_helper', ['count' => $remaining]);
                             })
                             // Block save if over 500 visible characters
                             ->rule(function (Get $get): Closure {
                                 return function (string $attribute, $value, Closure $fail) {
-                                    $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                    if (empty($value)) {
+                                        return;
+                                    }
+                                    $textOnly = strip_tags($value);
+                                    $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                    $textOnly = trim(preg_replace('/\s+/', ' ', $textOnly));
                                     if (mb_strlen($textOnly) > 500) {
                                         $fail(__('phonenumber.form.notes_warning'));
                                     }
@@ -197,6 +204,7 @@ class PhoneNumberResource extends Resource
                                         TextInput::make('title')
                                             ->label(__('phonenumber.form.extra_title'))
                                             ->maxLength(100)
+                                            ->debounce(1000)
                                             ->columnSpanFull(),
                                         RichEditor::make('value')
                                             ->label(__('phonenumber.form.extra_value'))
@@ -213,23 +221,31 @@ class PhoneNumberResource extends Resource
                                             ->extraAttributes([
                                                 'style' => 'resize: vertical;',
                                             ])
+                                            ->debounce(300)
                                             ->reactive()
                                             // Character limit reactive function
                                             ->helperText(function (Get $get) {
                                                 $raw = $get('value') ?? '';
-                                                // 1. Strip all HTML tags
-                                                $noHtml = strip_tags($raw);
-                                                // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                                $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                                $remaining = 500 - mb_strlen($decoded);
+                                                if (empty($raw)) {
+                                                    return __('phonenumber.form.notes_helper', ['count' => 500]);
+                                                }
+
+                                                // Optimized character counting - strip tags and count
+                                                $textOnly = strip_tags($raw);
+                                                $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                $remaining = max(0, 500 - mb_strlen($textOnly));
 
                                                 return __('phonenumber.form.notes_helper', ['count' => $remaining]);
                                             })
                                             // Block save if over 500 visible characters
                                             ->rule(function (Get $get): Closure {
                                                 return function (string $attribute, $value, Closure $fail) {
-                                                    $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                    if (empty($value)) {
+                                                        return;
+                                                    }
+                                                    $textOnly = strip_tags($value);
+                                                    $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                    $textOnly = trim(preg_replace('/\s+/', ' ', $textOnly));
                                                     if (mb_strlen($textOnly) > 500) {
                                                         $fail(__('phonenumber.form.notes_warning'));
                                                     }
@@ -237,8 +253,7 @@ class PhoneNumberResource extends Resource
                                             })
                                             ->nullable()
                                             ->columnSpanFull(),
-                                    ])
-                                    ->columns(12),
+                                    ]),
                             ])
                             ->columns(1)
                             ->defaultItems(1)
@@ -252,7 +267,8 @@ class PhoneNumberResource extends Resource
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
-                    ]),
+                    ])
+                    ->collapsible(),
             ]);
     }
 

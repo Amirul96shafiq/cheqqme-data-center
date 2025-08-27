@@ -63,7 +63,7 @@ class ProjectResource extends Resource
                                 Select::make('client_id')
                                     ->label(__('project.form.client'))
                                     ->relationship('client', 'pic_name')
-                                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->pic_name} ({$record->company_name})")
+                                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
                                     ->searchable()
                                     ->preload()
                                     ->nullable(),
@@ -87,13 +87,14 @@ class ProjectResource extends Resource
                             ->nullable()
                             ->maxLength(200),
                     ]),
+
                 Section::make()
                     ->heading(function (Get $get) {
                         $count = 0;
 
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
-                        if (! blank($notes) && trim(strip_tags($notes))) {
+                        if (!blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
 
@@ -101,10 +102,10 @@ class ProjectResource extends Resource
                         $extraInfo = $get('extra_information') ?? [];
                         $count += count($extraInfo);
 
-                        $title = __('project.section.project_extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+                        $title = __('project.section.extra_info');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
+                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -125,23 +126,30 @@ class ProjectResource extends Resource
                             ->extraAttributes([
                                 'style' => 'resize: vertical;',
                             ])
-                            ->reactive()
-                            // Character limit reactive function
+                            ->live(onBlur: true)
+                            // Character limit helper text - only updates on blur to prevent focus loss
                             ->helperText(function (Get $get) {
                                 $raw = $get('notes') ?? '';
-                                // 1. Strip all HTML tags
-                                $noHtml = strip_tags($raw);
-                                // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                $remaining = 500 - mb_strlen($decoded);
+                                if (empty($raw)) {
+                                    return __('project.form.notes_helper', ['count' => 500]);
+                                }
 
-                                return __(__('project.form.notes_helper', ['count' => $remaining]));
+                                // Optimized character counting - strip tags and count
+                                $textOnly = strip_tags($raw);
+                                $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                $remaining = max(0, 500 - mb_strlen($textOnly));
+
+                                return __('project.form.notes_helper', ['count' => $remaining]);
                             })
                             // Block save if over 500 visible characters
                             ->rule(function (Get $get): Closure {
                                 return function (string $attribute, $value, Closure $fail) {
-                                    $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                    if (empty($value)) {
+                                        return;
+                                    }
+                                    $textOnly = strip_tags($value);
+                                    $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                    $textOnly = trim(preg_replace('/\s+/', ' ', $textOnly));
                                     if (mb_strlen($textOnly) > 500) {
                                         $fail(__('project.form.notes_warning'));
                                     }
@@ -158,6 +166,7 @@ class ProjectResource extends Resource
                                         TextInput::make('title')
                                             ->label(__('project.form.extra_title'))
                                             ->maxLength(100)
+                                            ->debounce(1000)
                                             ->columnSpanFull(),
                                         RichEditor::make('value')
                                             ->label(__('project.form.extra_value'))
@@ -174,23 +183,31 @@ class ProjectResource extends Resource
                                             ->extraAttributes([
                                                 'style' => 'resize: vertical;',
                                             ])
+                                            ->debounce(300)
                                             ->reactive()
                                             // Character limit reactive function
                                             ->helperText(function (Get $get) {
                                                 $raw = $get('value') ?? '';
-                                                // 1. Strip all HTML tags
-                                                $noHtml = strip_tags($raw);
-                                                // 2. Decode HTML entities (e.g., &nbsp; -> actual space)
-                                                $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                // 3. Count as-is — includes normal spaces, line breaks, etc.
-                                                $remaining = 500 - mb_strlen($decoded);
+                                                if (empty($raw)) {
+                                                    return __('project.form.notes_helper', ['count' => 500]);
+                                                }
+
+                                                // Optimized character counting - strip tags and count
+                                                $textOnly = strip_tags($raw);
+                                                $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                $remaining = max(0, 500 - mb_strlen($textOnly));
 
                                                 return __('project.form.notes_helper', ['count' => $remaining]);
                                             })
                                             // Block save if over 500 visible characters
                                             ->rule(function (Get $get): Closure {
                                                 return function (string $attribute, $value, Closure $fail) {
-                                                    $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
+                                                    if (empty($value)) {
+                                                        return;
+                                                    }
+                                                    $textOnly = strip_tags($value);
+                                                    $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                                    $textOnly = trim(preg_replace('/\s+/', ' ', $textOnly));
                                                     if (mb_strlen($textOnly) > 500) {
                                                         $fail(__('project.form.notes_warning'));
                                                     }
@@ -198,8 +215,7 @@ class ProjectResource extends Resource
                                             })
                                             ->nullable()
                                             ->columnSpanFull(),
-                                    ])
-                                    ->columns(12),
+                                    ]),
                             ])
                             ->columns(1)
                             ->defaultItems(1)
@@ -209,11 +225,12 @@ class ProjectResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('project.form.title_placeholder_short'))
+                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('project.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
-                    ]),
+                    ])
+                    ->collapsible(),
             ]);
     }
 
@@ -221,7 +238,7 @@ class ProjectResource extends Resource
     {
         return $table
             // Disable record URL for trashed records
-            ->recordUrl(fn ($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('project.table.id'))
@@ -239,13 +256,13 @@ class ProjectResource extends Resource
                     ->limit(20),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'Planning' => 'primary',
                         'In Progress' => 'info',
                         'Completed' => 'success',
                         default => 'secondary',
                     })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
                         'Planning' => __('project.table.planning'),
                         'In Progress' => __('project.table.in_progress'),
                         'Completed' => __('project.table.completed'),
@@ -261,7 +278,7 @@ class ProjectResource extends Resource
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
-                            ! $record->updated_by ||
+                            !$record->updated_by ||
                             $record->updated_at?->eq($record->created_at)
                         ) {
                             return '-';
@@ -274,7 +291,7 @@ class ProjectResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -283,7 +300,7 @@ class ProjectResource extends Resource
                 SelectFilter::make('client_id')
                     ->label(__('project.table.client'))
                     ->relationship('client', 'pic_name')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->pic_name} ({$record->company_name})")
+                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
                     ->preload()
                     ->searchable()
                     ->multiple(),
@@ -301,7 +318,7 @@ class ProjectResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
