@@ -42,6 +42,7 @@ return [
     'regenerate' => 'Jana Semula',
     'delete' => 'Padam',
     'api_documentation' => 'Dokumentasi API',
+    'api_documentation_description' => 'Lihat titik akhir API, kaedah pengesahan, dan contoh penggunaan.',
     'api_documentation_content' => '
           <code class="bg-gray-50 dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4 block text-gray-500 dark-text-gray-700 dark:text-gray-400">
             <div class="space-y-4">

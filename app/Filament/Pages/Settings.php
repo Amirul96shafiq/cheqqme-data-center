@@ -68,6 +68,7 @@ class Settings extends Page
         // API section
         Forms\Components\Section::make(__('settings.section.api'))
           ->description(__('settings.section.api_description'))
+          ->collapsible()
           ->schema([
             // Current API key row
             Forms\Components\Grid::make(12)
@@ -103,7 +104,7 @@ class Settings extends Page
                   // Copy API key
                   \Filament\Forms\Components\Actions\Action::make('copy_api_key')
                     ->label(__('settings.form.copy_api_key'))
-                    ->icon('heroicon-o-clipboard-document')
+                    ->icon('heroicon-o-clipboard')
                     ->color('gray')
                     ->visible(fn() => auth()->user()->hasApiKey())
                     ->action(function () {
@@ -191,21 +192,22 @@ class Settings extends Page
                   ->columnSpan(8),
               ]),
 
-            // API documentation row
-            Forms\Components\Grid::make(12)
+            // API documentation section
+            Forms\Components\Section::make(__('settings.form.api_documentation'))
+              ->collapsible()
+              ->collapsed()
+              ->description(__('settings.form.api_documentation_description'))
               ->schema([
-                Forms\Components\Placeholder::make('api_documentation_label')
-                  ->label(__('settings.form.api_documentation'))
-                  ->content('')
-                  ->columnSpan(4),
-
-                Forms\Components\Placeholder::make('api_documentation')
-                  ->label('')
-                  ->content(new \Illuminate\Support\HtmlString(__('settings.form.api_documentation_content', [
-                    'base_url' => config('app.url') . '/api',
-                    'api_docs_url' => route('api.documentation', [], false),
-                  ])))
-                  ->columnSpan(8),
+                Forms\Components\Grid::make(12)
+                  ->schema([
+                    Forms\Components\Placeholder::make('api_documentation_content')
+                      ->label('')
+                      ->content(new \Illuminate\Support\HtmlString(__('settings.form.api_documentation_content', [
+                        'base_url' => config('app.url') . '/api',
+                        'api_docs_url' => route('api.documentation', [], false),
+                      ])))
+                      ->columnSpan(12),
+                  ]),
               ]),
           ]),
       ])

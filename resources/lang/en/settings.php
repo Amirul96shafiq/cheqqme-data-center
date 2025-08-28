@@ -42,6 +42,7 @@ return [
     'regenerate' => 'Regenerate',
     'delete' => 'Delete',
     'api_documentation' => 'API Documentation',
+    'api_documentation_description' => 'View API endpoints, authentication methods, and usage examples.',
     'api_documentation_content' => '
           <code class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4 block text-gray-500 dark-text-gray-700 dark:text-gray-400">
             <div class="space-y-4">
