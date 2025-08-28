@@ -2,14 +2,14 @@
 
 use App\Http\Controllers\Api\UserController as ApiUserController;
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\OpenaiLogController;
-use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ImportantUrlController;
+use App\Http\Controllers\OpenaiLogController;
 use App\Http\Controllers\PhoneNumberController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
-use App\Http\Controllers\CommentController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // API endpoints protected by Sanctum
@@ -32,7 +32,7 @@ Route::get('/documentation', function () {
         'success' => true,
         'message' => 'API Documentation',
         'documentation' => [
-            'base_url' => config('app.url') . '/api',
+            'base_url' => config('app.url').'/api',
             'authentication' => 'Bearer token in Authorization header',
             'endpoints' => [
                 // User endpoints
@@ -50,12 +50,12 @@ Route::get('/documentation', function () {
                 'GET /comments' => 'Get all comments',
                 'GET /comments/{comment}' => 'Get specific comment by ID',
             ],
-            'example_request' => 'GET ' . config('app.url') . '/api/profile',
+            'example_request' => 'GET '.config('app.url').'/api/profile',
             'headers' => [
                 'Authorization' => 'Bearer YOUR_API_KEY',
                 'Accept' => 'application/json',
-            ]
-        ]
+            ],
+        ],
     ]);
 })->name('api.documentation');
 
@@ -63,8 +63,10 @@ Route::get('/documentation', function () {
 Route::middleware([\App\Http\Middleware\ApiKeyAuth::class])->group(function () {
     // User endpoints
     Route::get('/profile', [ApiUserController::class, 'profile'])->name('api.user.profile');
-    Route::get('/tasks', [ApiUserController::class, 'tasks'])->name('api.user.tasks');
-    Route::get('/projects', [ApiUserController::class, 'projects'])->name('api.user.projects');
+    // Route::get('/tasks', [ApiUserController::class, 'tasks'])->name('api.user.tasks');
+    Route::get('/tasks', [TaskController::class, 'index'])->name('api.tasks');
+    // Route::get('/projects', [ApiUserController::class, 'projects'])->name('api.user.projects');
+    Route::get('/projects', [ProjectController::class, 'index'])->name('api.projects');
     Route::get('/api-key-info', [ApiUserController::class, 'apiKeyInfo'])->name('api.user.api-key-info');
 
     // Resource endpoints

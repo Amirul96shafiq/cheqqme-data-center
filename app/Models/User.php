@@ -161,7 +161,8 @@ class User extends Authenticatable implements HasAvatar
      */
     public function generateApiKey(): string
     {
-        $apiKey = 'ak_' . bin2hex(random_bytes(32));
+        // $apiKey = 'ak_' . bin2hex(random_bytes(32));
+        $apiKey = 'cheqqme_' . bin2hex(random_bytes(32));
 
         $this->update([
             'api_key' => $apiKey,
@@ -191,7 +192,7 @@ class User extends Authenticatable implements HasAvatar
         $prefix = substr($this->api_key, 0, 8);
         $suffix = substr($this->api_key, -4);
 
-        return $prefix . '********************' . $suffix;
+        return $prefix . '****************************' . $suffix;
     }
 
     /**

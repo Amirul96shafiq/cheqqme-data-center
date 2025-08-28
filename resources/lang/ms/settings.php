@@ -3,7 +3,6 @@
 return [
   // Navigation
   'navigation_label' => 'Tetapan',
-  'navigation_group' => 'Pengurusan Pengguna',
 
   // Page titles and descriptions
   'title' => 'Tetapan',
@@ -11,77 +10,22 @@ return [
 
   // Sections
   'section' => [
-    'general' => 'Tetapan Umum',
-    'general_description' => 'Konfigurasi pilihan aplikasi umum anda.',
-
-    'appearance' => 'Penampilan',
-    'appearance_description' => 'Sesuaikan bagaimana aplikasi kelihatan dan berasa.',
-
-    'notifications' => 'Pemberitahuan',
-    'notifications_description' => 'Urus pilihan pemberitahuan anda.',
-
-    'privacy' => 'Privasi & Keselamatan',
-    'privacy_description' => 'Kawal tetapan privasi dan keselamatan anda.',
-
     'api' => 'Akses API',
     'api_description' => 'Urus kunci API anda untuk akses luaran ke data anda.',
   ],
 
   // Form fields
   'form' => [
-    // General
-    'timezone' => 'Zon Masa',
-    'timezone_helper' => 'Zon masa pilihan anda untuk memaparkan tarikh dan masa.',
-
-    'language' => 'Bahasa',
-    'language_helper' => 'Pilih bahasa pilihan anda untuk antara muka.',
-
-    'email_notifications' => 'Pemberitahuan E-mel',
-    'email_notifications_helper' => 'Terima pemberitahuan melalui e-mel.',
-
-    // Appearance
-    'theme' => 'Tema',
-    'theme_light' => 'Terang',
-    'theme_dark' => 'Gelap',
-    'theme_system' => 'Sistem',
-    'theme_helper' => 'Pilih tema warna pilihan anda.',
-
-    'compact_mode' => 'Mod Padat',
-    'compact_mode_helper' => 'Gunakan susun atur yang lebih padat untuk memuatkan lebih banyak kandungan.',
-
-    'show_sidebar' => 'Tunjuk Bar Sisi',
-    'show_sidebar_helper' => 'Papar navigasi bar sisi.',
-
-    // Notifications
-    'task_notifications' => 'Pemberitahuan Tugas',
-    'task_notifications_helper' => 'Dapatkan pemberitahuan tentang kemas kini tugas.',
-
-    'comment_notifications' => 'Pemberitahuan Komen',
-    'comment_notifications_helper' => 'Dapatkan pemberitahuan tentang komen baru.',
-
-    'mention_notifications' => 'Pemberitahuan Sebutan',
-    'mention_notifications_helper' => 'Dapatkan pemberitahuan apabila anda disebut.',
-
-    'notification_frequency' => 'Kekerapan Pemberitahuan',
-    'frequency_immediate' => 'Segera',
-    'frequency_hourly' => 'Setiap Jam',
-    'frequency_daily' => 'Harian',
-    'notification_frequency_helper' => 'Berapa kerap anda mahu menerima pemberitahuan.',
-
-    // Privacy
-    'profile_visibility' => 'Keterlihatan Profil',
-    'profile_visibility_helper' => 'Buat profil anda kelihatan kepada pengguna lain.',
-
-    'show_online_status' => 'Tunjuk Status Dalam Talian',
-    'show_online_status_helper' => 'Biarkan orang lain melihat apabila anda dalam talian.',
-
-    'allow_data_export' => 'Benarkan Eksport Data',
-    'allow_data_export_helper' => 'Benarkan aplikasi mengeksport data anda.',
-
     // API
     'current_api_key' => 'Kunci API Semasa',
     'no_api_key' => 'Tiada kunci API dijana',
     'api_key_helper' => 'Kunci API anda digunakan untuk mengesahkan permintaan ke titik akhir API.',
+    'copy_api_key' => 'Salin Kunci API',
+    'api_key_ready' => 'Anda telah berjaya menyalin kunci API ke dalam papan klip.',
+    'api_key_copying' => 'Menyalin Kunci API',
+    'api_key_copying_body' => 'Kunci API sedang disalin ke dalam papan klip.',
+    'api_key_copy_failed' => 'Gagal Menyalin Kunci API',
+    'api_key_copy_failed_body' => 'Gagal menyalin kunci API ke dalam papan klip.',
     'generate_api_key' => 'Jana Kunci API',
     'regenerate_api_key' => 'Jana Semula Kunci API',
     'delete_api_key' => 'Padam Kunci API',
