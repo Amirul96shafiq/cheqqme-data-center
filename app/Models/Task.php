@@ -69,6 +69,7 @@ class Task extends Model
         'due_date_yellow',
         'due_date_green',
         'due_date_gray',
+        'featured_image',
     ];
 
     /**
@@ -77,7 +78,7 @@ class Task extends Model
     public function getAssignedToBadgeAttribute(): ?string
     {
         $user = $this->assignedTo;
-        if (! $user) {
+        if (!$user) {
             return null;
         }
         $authId = Auth::id();
@@ -94,7 +95,7 @@ class Task extends Model
     public function getAssignedToDisplayAttribute(): ?string
     {
         $user = $this->assignedTo;
-        if (! $user) {
+        if (!$user) {
             return null;
         }
 
@@ -153,7 +154,7 @@ class Task extends Model
     public function getAssignedToUsernameAttribute(): ?string
     {
         $user = $this->assignedTo;
-        if (! $user) {
+        if (!$user) {
             return null;
         }
 
@@ -164,7 +165,7 @@ class Task extends Model
     public function getAssignedToUsernameSelfAttribute(): ?string
     {
         $user = $this->assignedTo;
-        if (! $user) {
+        if (!$user) {
             return null;
         }
         $authId = Auth::id();
@@ -180,7 +181,7 @@ class Task extends Model
      */
     protected function dueDateDiffInDays(): ?int
     {
-        if (! $this->due_date) {
+        if (!$this->due_date) {
             return null;
         }
         try {
@@ -248,6 +249,34 @@ class Task extends Model
         } catch (\Throwable $e) {
             return (string) $this->due_date;
         }
+    }
+
+    /**
+     * Returns the first image from attachments as the featured image for kanban cards.
+     */
+    public function getFeaturedImageAttribute(): ?string
+    {
+        if (!$this->attachments || !is_array($this->attachments)) {
+            return null;
+        }
+
+        // Image file extensions to look for
+        $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+
+        foreach ($this->attachments as $attachment) {
+            if (!is_string($attachment)) {
+                continue;
+            }
+
+            $extension = strtolower(pathinfo($attachment, PATHINFO_EXTENSION));
+
+            if (in_array($extension, $imageExtensions)) {
+                // Return the full URL to the attachment
+                return asset('storage/' . $attachment);
+            }
+        }
+
+        return null;
     }
 
     public function shouldLogEvent(string $eventName): bool

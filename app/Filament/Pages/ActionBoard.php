@@ -46,6 +46,7 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_green' => '',
                 'assigned_to_username_self' => '',
                 'assigned_to_username' => '',
+                'featured_image' => '',
             ])
             ->cardAttributeColors([
                 'due_date_red' => 'red',

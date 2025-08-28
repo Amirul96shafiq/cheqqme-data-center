@@ -14,13 +14,19 @@ class Settings extends Page
 
   protected static string $view = 'filament.pages.settings';
 
-  protected static ?string $navigationLabel = 'Settings';
+  protected static ?string $navigationLabel = null;
 
   protected static ?string $title = 'Settings';
 
   protected static ?string $slug = 'settings';
 
   protected static ?int $navigationSort = 99;
+
+  // Disable navigation
+  public static function shouldRegisterNavigation(): bool
+  {
+    return false;
+  }
 
   public ?array $data = [];
 
