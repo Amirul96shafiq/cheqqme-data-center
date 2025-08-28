@@ -17,7 +17,7 @@ return [
   // Form fields
   'form' => [
     // API
-    'current_api_key' => 'Current API Key',
+    'current_api_key' => 'Your API Key',
     'no_api_key' => 'No API key generated',
     'api_key_helper' => 'Your API key is used to authenticate requests to the API endpoints.',
     'copy_api_key' => 'Copy API Key',

@@ -17,7 +17,7 @@ return [
   // Form fields
   'form' => [
     // API
-    'current_api_key' => 'Kunci API Semasa',
+    'current_api_key' => 'Kunci API Anda',
     'no_api_key' => 'Tiada kunci API dijana',
     'api_key_helper' => 'Kunci API anda digunakan untuk mengesahkan permintaan ke titik akhir API.',
     'copy_api_key' => 'Salin Kunci API',
