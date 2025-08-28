@@ -47,6 +47,7 @@ class ActionBoard extends KanbanBoardPage
                 'assigned_to_username_self' => '',
                 'assigned_to_username' => '',
                 'featured_image' => '',
+                'message_count' => '',
             ])
             ->cardAttributeColors([
                 'due_date_red' => 'red',
@@ -54,6 +55,7 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_gray' => 'gray',
                 'due_date_green' => 'green',
                 'assigned_to_display' => fn($record) => $record->assigned_to_display_color,
+                'message_count' => 'gray',
             ])
             ->cardAttributeIcons([
                 'due_date_red' => 'heroicon-o-calendar',
@@ -61,6 +63,7 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_gray' => 'heroicon-o-calendar',
                 'due_date_green' => 'heroicon-o-calendar',
                 'assigned_to_display' => fn($record) => $record->assigned_to_display_icon,
+                'message_count' => 'heroicon-o-chat-bubble-bottom-center',
             ])
             ->cardAttributeColors([
                 'due_date_red' => 'red',
@@ -68,6 +71,7 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_gray' => 'gray',
                 'due_date_green' => 'green',
                 'assigned_to_badge' => 'cyan', // Use cyan for self, gray for others in accessor
+                'message_count' => 'gray',
             ])
             ->cardAttributeIcons([
                 'due_date_red' => 'heroicon-o-calendar',
@@ -75,6 +79,7 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_gray' => 'heroicon-o-calendar',
                 'due_date_green' => 'heroicon-o-calendar',
                 'assigned_to_badge' => 'heroicon-o-user', // Use different icon in accessor if needed
+                'message_count' => 'heroicon-o-chat-bubble-bottom-center',
             ])
             ->cardAttributeColors([
                 'due_date_red' => 'red',
@@ -83,6 +88,7 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_green' => 'green',
                 'assigned_to_username_self' => 'cyan',
                 'assigned_to_username' => 'gray',
+                'message_count' => 'gray',
             ])
             ->cardAttributeIcons([
                 'due_date_red' => 'heroicon-o-calendar',
@@ -91,6 +97,7 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_green' => 'heroicon-o-calendar',
                 'assigned_to_username_self' => 'heroicon-m-user',
                 'assigned_to_username' => 'heroicon-o-user',
+                'message_count' => 'heroicon-o-chat-bubble-bottom-center',
             ])
             ->columns([
                 'todo' => __('action.status.todo'),
@@ -592,7 +599,7 @@ class ActionBoard extends KanbanBoardPage
                                                 ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
                                         ]),
                                 ]),
-                        ])
+                        ]),
                 ])
                 ->visible($mode === 'create'),
         ]);

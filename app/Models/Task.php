@@ -70,6 +70,7 @@ class Task extends Model
         'due_date_green',
         'due_date_gray',
         'featured_image',
+        'message_count',
     ];
 
     /**
@@ -277,6 +278,14 @@ class Task extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Returns the total count of comments/messages for this task.
+     */
+    public function getMessageCountAttribute(): ?int
+    {
+        return $this->comments()->count();
     }
 
     public function shouldLogEvent(string $eventName): bool
