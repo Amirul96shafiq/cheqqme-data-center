@@ -51,6 +51,7 @@ return [
         'description' => 'Description',
         'client' => 'Client',
         'status' => 'Status',
+        'document_count' => 'Documents',
         'planning' => 'Planning',
         'in_progress' => 'In Progress',
         'completed' => 'Completed',

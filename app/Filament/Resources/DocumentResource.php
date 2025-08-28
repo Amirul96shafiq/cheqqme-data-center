@@ -81,14 +81,14 @@ class DocumentResource extends Resource
                         TextInput::make('url')
                             ->label(__('document.form.document_url'))
                             ->helperText(__('document.form.document_url_note'))
-                            ->visible(fn(Get $get) => $get('type') === 'external')
+                            ->visible(fn (Get $get) => $get('type') === 'external')
                             ->hintAction(
-                                fn(Get $get) => blank($get('url')) ? null : Action::make('openUrl')
+                                fn (Get $get) => blank($get('url')) ? null : Action::make('openUrl')
                                     ->icon('heroicon-m-arrow-top-right-on-square')
                                     ->label(__('document.form.open_url'))
-                                    ->url(fn() => $get('url'), true)
+                                    ->url(fn () => $get('url'), true)
                                     ->tooltip(__('document.form.document_url_helper'))
-                                    ->visible(fn(Get $get) => !blank($get('url')) && filter_var($get('url'), FILTER_VALIDATE_URL))
+                                    ->visible(fn (Get $get) => ! blank($get('url')) && filter_var($get('url'), FILTER_VALIDATE_URL))
                             )
                             ->url()
                             ->nullable(),
@@ -96,7 +96,7 @@ class DocumentResource extends Resource
                         FileUpload::make('file_path')
                             ->label(__('document.form.document_upload'))
                             ->helperText(__('document.form.document_upload_helper'))
-                            ->visible(fn(Get $get) => $get('type') === 'internal')
+                            ->visible(fn (Get $get) => $get('type') === 'internal')
                             ->directory('documents')
                             ->disk('public')
                             ->visibility('public')
@@ -125,7 +125,7 @@ class DocumentResource extends Resource
 
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
-                        if (!blank($notes) && trim(strip_tags($notes))) {
+                        if (! blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
 
@@ -134,9 +134,9 @@ class DocumentResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('document.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -256,7 +256,7 @@ class DocumentResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('document.form.title_placeholder_short'))
+                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('document.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -269,7 +269,7 @@ class DocumentResource extends Resource
     {
         return $table
             // Disable record URL for trashed records
-            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn ($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
@@ -278,26 +278,11 @@ class DocumentResource extends Resource
                     ->label(__('document.table.title'))
                     ->sortable()
                     ->searchable()
-                    ->limit(20)
-                    ->url(function ($record) {
-                        if ($record->type === 'external' && $record->url) {
-                            return $record->url;
-                        }
-
-                        return $record->file_path ? asset('storage/' . ltrim($record->file_path, '/')) : null;
-                    })
-                    ->openUrlInNewTab()
-                    ->tooltip(function ($record) {
-                        if ($record->type === 'external' && $record->url) {
-                            $url = $record->url;
-
-                            return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
-                        }
-                    }),
+                    ->limit(20),
                 TextColumn::make('type')
                     ->label(__('document.table.type'))
                     ->badge()
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'internal' => __('document.table.internal'),
                         'external' => __('document.table.external'),
                         default => ucfirst($state),
@@ -313,7 +298,7 @@ class DocumentResource extends Resource
                         // Show '-' if there's no update or updated_by
                         $updatedAt = $record->updated_at;
                         $createdAt = $record->created_at;
-                        if (!$record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
+                        if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
                             return '-';
                         }
 
@@ -324,7 +309,7 @@ class DocumentResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -349,8 +334,39 @@ class DocumentResource extends Resource
                     ->searchable(),
             ])
             ->actions([
+                Tables\Actions\Action::make('open_url')
+                    ->label('')
+                    ->icon('heroicon-o-link')
+                    ->color('primary')
+                    ->url(function ($record) {
+                        if ($record->type === 'internal' && $record->file_path) {
+                            // For internal documents, use the uploaded file URL
+                            return asset('storage/'.$record->file_path);
+                        } elseif ($record->type === 'external' && $record->url) {
+                            // For external documents, use the provided URL
+                            return $record->url;
+                        }
+
+                        return null;
+                    })
+                    ->openUrlInNewTab()
+                    ->tooltip(function ($record) {
+                        $url = '';
+                        if ($record->type === 'internal' && $record->file_path) {
+                            $url = asset('storage/'.$record->file_path);
+                        } elseif ($record->type === 'external' && $record->url) {
+                            $url = $record->url;
+                        }
+
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
+                    })
+                    ->visible(function ($record) {
+                        // Only show the action if there's a valid URL or file
+                        return ($record->type === 'internal' && $record->file_path) ||
+                            ($record->type === 'external' && $record->url);
+                    }),
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
@@ -363,7 +379,8 @@ class DocumentResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
                 Tables\Actions\RestoreBulkAction::make(),
                 Tables\Actions\ForceDeleteBulkAction::make(),
-            ]);
+            ])
+            ->defaultSort('id', 'desc');
     }
 
     public static function getRelations(): array

@@ -101,10 +101,10 @@ class ClientResource extends Resource
                                     default => '60',
                                 };
 
-                                if (!str_starts_with($digits, $dialCode)) {
+                                if (! str_starts_with($digits, $dialCode)) {
                                     $digits = ltrim($digits, '0');
-                                    if (!str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode . $digits;
+                                    if (! str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode.$digits;
                                     }
                                 }
 
@@ -126,10 +126,10 @@ class ClientResource extends Resource
                                     default => '60',
                                 };
 
-                                if (!str_starts_with($digits, $dialCode)) {
+                                if (! str_starts_with($digits, $dialCode)) {
                                     $digits = ltrim($digits, '0');
-                                    if (!str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode . $digits;
+                                    if (! str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode.$digits;
                                     }
                                 }
 
@@ -145,7 +145,7 @@ class ClientResource extends Resource
                             ->nullable()
                             ->extraAlpineAttributes(['x-ref' => 'companyName'])
                             ->helperText(__('client.form.company_name_helper'))
-                            ->placeholder(fn(callable $get) => $get('pic_name')),
+                            ->placeholder(fn (callable $get) => $get('pic_name')),
 
                         TextInput::make('company_email')->label(__('client.form.company_email'))
                             ->email()
@@ -169,7 +169,7 @@ class ClientResource extends Resource
 
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
-                        if (!blank($notes) && trim(strip_tags($notes))) {
+                        if (! blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
 
@@ -178,9 +178,9 @@ class ClientResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('client.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -300,7 +300,7 @@ class ClientResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('client.form.title_placeholder_short'))
+                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('client.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -313,7 +313,7 @@ class ClientResource extends Resource
     {
         return $table
             // Disable record URL for trashed records
-            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn ($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('client.table.id'))
@@ -322,15 +322,27 @@ class ClientResource extends Resource
                     ->label(__('client.table.pic_name'))
                     ->searchable()
                     ->sortable()
-                    ->limit(10),
+                    ->formatStateUsing(function ($state, $record) {
+                        // Format the client name (shorten if too long)
+                        $formattedName = self::formatClientName($state);
+
+                        // Format the company name (limit to 10 characters)
+                        $formattedCompany = self::formatCompanyName($record->company_name);
+
+                        // Return the combined format: "Name (Company)"
+                        return $formattedName.' ('.$formattedCompany.')';
+                    }),
                 TextColumn::make('pic_contact_number')
                     ->label(__('client.table.pic_contact_number'))
                     ->searchable(),
-                TextColumn::make('company_name')
-                    ->label(__('client.table.company_name'))
-                    ->searchable()
-                    ->sortable()
-                    ->limit(20),
+                TextColumn::make('project_count')
+                    ->label(__('client.table.project_count'))
+                    ->badge()
+                    ->alignCenter(),
+                TextColumn::make('important_url_count')
+                    ->label(__('client.table.important_url_count'))
+                    ->badge()
+                    ->alignCenter(),
                 TextColumn::make('created_at')
                     ->label(__('client.table.created_at'))
                     ->dateTime('j/n/y, h:i A')
@@ -340,7 +352,7 @@ class ClientResource extends Resource
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
-                            !$record->updated_by ||
+                            ! $record->updated_by ||
                             $record->updated_at?->eq($record->created_at)
                         ) {
                             return '-';
@@ -353,7 +365,7 @@ class ClientResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -364,7 +376,7 @@ class ClientResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
@@ -378,7 +390,7 @@ class ClientResource extends Resource
                 Tables\Actions\RestoreBulkAction::make(),
                 Tables\Actions\ForceDeleteBulkAction::make(),
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort('id', 'desc');
     }
 
     public static function getRelations(): array
@@ -422,5 +434,58 @@ class ClientResource extends Resource
     public static function getNavigationSort(): ?int
     {
         return 11; // Adjust the navigation sort order as needed
+    }
+
+    /**
+     * Format client name with shortening logic
+     * Example: "Amirul Shafiq Harun" becomes "Amirul S. H."
+     */
+    private static function formatClientName(?string $name): string
+    {
+        if (empty($name)) {
+            return '';
+        }
+
+        $parts = explode(' ', trim($name));
+
+        // If only one word, return as is
+        if (count($parts) === 1) {
+            return $parts[0];
+        }
+
+        // If two words, return first word + first letter of second word
+        if (count($parts) === 2) {
+            return $parts[0].' '.substr($parts[1], 0, 1).'.';
+        }
+
+        // If three or more words, return first + middle initial + last initial
+        $first = $parts[0];
+        $last = end($parts); // Get the last element without removing it
+        $middleInitial = '';
+
+        // If there's a middle name, get its first letter
+        if (count($parts) >= 3) {
+            $middleInitial = substr($parts[1], 0, 1).'. ';
+        }
+
+        return $first.' '.$middleInitial.substr($last, 0, 1).'.';
+    }
+
+    /**
+     * Format company name with character limit
+     * Limits to 10 characters with ellipsis if longer
+     */
+    private static function formatCompanyName(?string $company): string
+    {
+        if (empty($company)) {
+            return '';
+        }
+
+        // If company name is longer than 10 characters, truncate and add ellipsis
+        if (strlen($company) > 10) {
+            return substr($company, 0, 10).'...';
+        }
+
+        return $company;
     }
 }

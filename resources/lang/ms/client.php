@@ -48,9 +48,10 @@ return [
 
     'table' => [
         'id' => 'ID',
-        'pic_name' => 'Nama PIC',
+        'pic_name' => 'Nama Pelanggan (Syarikat)',
         'pic_contact_number' => 'Nombor Telefon PIC',
-        'company_name' => 'Nama Syarikat',
+        'project_count' => 'Projek',
+        'important_url_count' => 'URL Penting',
         'created_at' => 'Dicipta Pada',
         'updated_at_by' => 'Dikemas Kini pada (oleh)',
     ],

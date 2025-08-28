@@ -40,49 +40,20 @@ class DocumentsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordUrl(fn($record) => $record->trashed() ? null : DocumentResource::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn ($record) => $record->trashed() ? null : DocumentResource::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('document.table.id'))
-                    ->sortable()
-                    ->hidden(),
+                    ->sortable(),
                 TextColumn::make('title')
                     ->label(__('document.table.title'))
                     ->sortable()
                     ->searchable()
-                    ->limit(20)
-                    ->url(function ($record) {
-                        if ($record->type === 'external' && $record->url) {
-                            return $record->url;
-                        }
-
-                        if ($record->type === 'internal' && $record->file_path) {
-                            return asset('storage/' . ltrim($record->file_path, '/'));
-                        }
-
-                        return null;
-                    })
-                    ->openUrlInNewTab()
-                    ->tooltip(function ($record) {
-                        if ($record->type === 'external' && $record->url) {
-                            $url = $record->url;
-
-                            return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
-                        }
-
-                        if ($record->type === 'internal' && $record->file_path) {
-                            $url = asset('storage/' . ltrim($record->file_path, '/'));
-
-                            return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
-                        }
-
-                        return null;
-                    })
-                    ->limit(40),
+                    ->limit(20),
                 TextColumn::make('type')
                     ->label(__('document.table.type'))
                     ->badge()
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'internal' => __('document.table.internal'),
                         'external' => __('document.table.external'),
                         default => ucfirst($state),
@@ -95,7 +66,7 @@ class DocumentsRelationManager extends RelationManager
                         }
 
                         if ($record->type === 'internal') {
-                            return $record->file_path ? asset('storage/' . ltrim($record->file_path, '/')) : '-';
+                            return $record->file_path ? asset('storage/'.ltrim($record->file_path, '/')) : '-';
                         }
 
                         return '-';
@@ -106,7 +77,7 @@ class DocumentsRelationManager extends RelationManager
                         }
 
                         if ($record->type === 'internal' && $record->file_path) {
-                            return asset('storage/' . ltrim($record->file_path, '/'));
+                            return asset('storage/'.ltrim($record->file_path, '/'));
                         }
 
                         return null;
@@ -122,7 +93,7 @@ class DocumentsRelationManager extends RelationManager
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
-                            !$record->updated_by ||
+                            ! $record->updated_by ||
                             $record->updated_at?->eq($record->created_at)
                         ) {
                             return '-';
@@ -135,7 +106,7 @@ class DocumentsRelationManager extends RelationManager
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -155,11 +126,40 @@ class DocumentsRelationManager extends RelationManager
                 // Intentionally empty to avoid creating from here unless needed
             ])
             ->actions([
-                /*Tables\Actions\ViewAction::make()
-      ->url(fn($record) => DocumentResource::getUrl('view', ['record' => $record])),*/
+                Tables\Actions\Action::make('open_url')
+                    ->label('')
+                    ->icon('heroicon-o-link')
+                    ->color('primary')
+                    ->url(function ($record) {
+                        if ($record->type === 'internal' && $record->file_path) {
+                            // For internal documents, use the uploaded file URL
+                            return asset('storage/'.$record->file_path);
+                        } elseif ($record->type === 'external' && $record->url) {
+                            // For external documents, use the provided URL
+                            return $record->url;
+                        }
+
+                        return null;
+                    })
+                    ->openUrlInNewTab()
+                    ->tooltip(function ($record) {
+                        $url = '';
+                        if ($record->type === 'internal' && $record->file_path) {
+                            $url = asset('storage/'.$record->file_path);
+                        } elseif ($record->type === 'external' && $record->url) {
+                            $url = $record->url;
+                        }
+
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
+                    })
+                    ->visible(function ($record) {
+                        // Only show the action if there's a valid URL or file
+                        return ($record->type === 'internal' && $record->file_path) ||
+                            ($record->type === 'external' && $record->url);
+                    }),
                 Tables\Actions\EditAction::make()
-                    ->url(fn($record) => DocumentResource::getUrl('edit', ['record' => $record]))
-                    ->hidden(fn($record) => $record->trashed()),
+                    ->url(fn ($record) => DocumentResource::getUrl('edit', ['record' => $record]))
+                    ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
@@ -169,6 +169,13 @@ class DocumentsRelationManager extends RelationManager
             ->bulkActions([
                 // None for now
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort(function ($query) {
+                return $query->orderByRaw('
+                    CASE
+                        WHEN updated_at IS NOT NULL AND updated_at != created_at THEN updated_at
+                        ELSE created_at
+                    END DESC
+                ');
+            });
     }
 }

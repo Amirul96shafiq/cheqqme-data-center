@@ -71,6 +71,8 @@ class Task extends Model
         'due_date_gray',
         'featured_image',
         'message_count',
+        'attachment_count',
+        'resource_count',
     ];
 
     /**
@@ -79,7 +81,7 @@ class Task extends Model
     public function getAssignedToBadgeAttribute(): ?string
     {
         $user = $this->assignedTo;
-        if (!$user) {
+        if (! $user) {
             return null;
         }
         $authId = Auth::id();
@@ -96,7 +98,7 @@ class Task extends Model
     public function getAssignedToDisplayAttribute(): ?string
     {
         $user = $this->assignedTo;
-        if (!$user) {
+        if (! $user) {
             return null;
         }
 
@@ -155,7 +157,7 @@ class Task extends Model
     public function getAssignedToUsernameAttribute(): ?string
     {
         $user = $this->assignedTo;
-        if (!$user) {
+        if (! $user) {
             return null;
         }
 
@@ -166,7 +168,7 @@ class Task extends Model
     public function getAssignedToUsernameSelfAttribute(): ?string
     {
         $user = $this->assignedTo;
-        if (!$user) {
+        if (! $user) {
             return null;
         }
         $authId = Auth::id();
@@ -182,7 +184,7 @@ class Task extends Model
      */
     protected function dueDateDiffInDays(): ?int
     {
-        if (!$this->due_date) {
+        if (! $this->due_date) {
             return null;
         }
         try {
@@ -257,7 +259,7 @@ class Task extends Model
      */
     public function getFeaturedImageAttribute(): ?string
     {
-        if (!$this->attachments || !is_array($this->attachments)) {
+        if (! $this->attachments || ! is_array($this->attachments)) {
             return null;
         }
 
@@ -265,7 +267,7 @@ class Task extends Model
         $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
 
         foreach ($this->attachments as $attachment) {
-            if (!is_string($attachment)) {
+            if (! is_string($attachment)) {
                 continue;
             }
 
@@ -273,7 +275,7 @@ class Task extends Model
 
             if (in_array($extension, $imageExtensions)) {
                 // Return the full URL to the attachment
-                return asset('storage/' . $attachment);
+                return asset('storage/'.$attachment);
             }
         }
 
@@ -286,6 +288,44 @@ class Task extends Model
     public function getMessageCountAttribute(): ?int
     {
         return $this->comments()->count();
+    }
+
+    /**
+     * Returns the total count of attachments for this task.
+     */
+    public function getAttachmentCountAttribute(): ?int
+    {
+        return $this->attachments ? count($this->attachments) : 0;
+    }
+
+    /**
+     * Returns the total count of selected resources (projects, documents, important URLs) for this task.
+     */
+    public function getResourceCountAttribute(): ?int
+    {
+        $count = 0;
+
+        // Count client
+        if ($this->client) {
+            $count += 1;
+        }
+
+        // Count projects
+        if ($this->project && is_array($this->project)) {
+            $count += count($this->project);
+        }
+
+        // Count documents
+        if ($this->document && is_array($this->document)) {
+            $count += count($this->document);
+        }
+
+        // Count important URLs
+        if ($this->important_url && is_array($this->important_url)) {
+            $count += count($this->important_url);
+        }
+
+        return $count;
     }
 
     public function shouldLogEvent(string $eventName): bool

@@ -1,4 +1,5 @@
 @props(['config', 'columnId', 'record'])
+{{-- Card container with interactive/non-interactive classes and sortable attributes --}}
 <div
     @class([
         'ff-card kanban-card',
@@ -13,6 +14,7 @@
     @if(method_exists($this, 'isTaskHighlighted') && $this->isTaskHighlighted((object) ['id' => $record['id']])) data-highlighted="true" @endif
 >
     <div class="ff-card__content">
+        {{-- Featured image section --}}
         @if(!empty($record['attributes']['featured_image']['value']))
             <div class="ff-card__featured-image -mx-4 -mt-4 mb-3">
                 <img src="{{ $record['attributes']['featured_image']['value'] }}"
@@ -20,12 +22,16 @@
                      class="w-full h-32 object-cover rounded-t-lg border-l border-r border-t border-gray-200 dark:border-gray-700">
             </div>
         @endif
+        
+        {{-- Card title --}}
         <h4 class="ff-card__title">{{ $record['title'] }}</h4>
 
+        {{-- Card description --}}
         @if(!empty($record['description']))
             <p class="ff-card__description">{{ $record['description'] }}</p>
         @endif
 
+        {{-- Process and filter special badges --}}
         @php
             $attributes = collect($record['attributes'] ?? []);
             // Only show one assigned_to badge: prefer _self, else _username
@@ -50,12 +56,26 @@
             if (!empty($attributes['message_count']['value']) && $attributes['message_count']['value'] > 0) {
                 $messageCountBadge = $attributes['message_count'];
             }
-            // Remove both from the attributes list so they're not rendered twice
-            $filtered = $attributes->except(['assigned_to_username_self', 'assigned_to_username', 'due_date_red', 'due_date_yellow', 'due_date_gray', 'due_date_green', 'featured_image', 'message_count']);
+            // Handle attachment count badge
+            $attachmentCountBadge = null;
+            if (!empty($attributes['attachment_count']['value']) && $attributes['attachment_count']['value'] > 0) {
+                $attachmentCountBadge = $attributes['attachment_count'];
+            }
+            // Handle resource count badge
+            $resourceCountBadge = null;
+            if (!empty($attributes['resource_count']['value']) && $attributes['resource_count']['value'] > 0) {
+                $resourceCountBadge = $attributes['resource_count'];
+            }
+            // Remove from the attributes list so they're not rendered twice
+            $filtered = $attributes->except(['assigned_to_username_self', 'assigned_to_username', 'due_date_red', 'due_date_yellow', 'due_date_gray', 'due_date_green', 'featured_image', 'message_count', 'attachment_count', 'resource_count']);
         @endphp
-        @if($assignedBadge || $dueDateBadge || $messageCountBadge)
+        
+        {{-- Special badges layout: assigned, message/attachment/resource counts, and due date --}}
+        @if($assignedBadge || $dueDateBadge || $messageCountBadge || $attachmentCountBadge || $resourceCountBadge)
             <div class="flex justify-between mt-5 mb-1 gap-2">
+                {{-- Left side: assigned badge and counts --}}
                 <div class="flex flex-col gap-1">
+                    {{-- Assigned badge --}}
                     @if($assignedBadge)
                         <div class="w-fit">
                             <x-flowforge::card-badge
@@ -70,21 +90,55 @@
                             />
                         </div>
                     @endif
-                    @if($messageCountBadge)
-                        <div class="w-fit">
-                            <x-flowforge::card-badge
-                                :label="$messageCountBadge['label']"
-                                :value="$messageCountBadge['value']"
-                                :color="$messageCountBadge['color'] ?? 'default'"
-                                :icon="$messageCountBadge['icon'] ?? null"
-                                :type="$messageCountBadge['type'] ?? null"
-                                :badge="$messageCountBadge['badge'] ?? null"
-                                :rounded="$messageCountBadge['rounded'] ?? 'md'"
-                                :size="$messageCountBadge['size'] ?? 'md'"
-                            />
+                    {{-- Message, attachment, and resource count badges --}}
+                    @if($messageCountBadge || $attachmentCountBadge || $resourceCountBadge)
+                        <div class="flex gap-1">
+                            @if($messageCountBadge)
+                                <div class="w-fit">
+                                    <x-flowforge::card-badge
+                                        :label="$messageCountBadge['label']"
+                                        :value="$messageCountBadge['value']"
+                                        :color="$messageCountBadge['color'] ?? 'default'"
+                                        :icon="$messageCountBadge['icon'] ?? null"
+                                        :type="$messageCountBadge['type'] ?? null"
+                                        :badge="$messageCountBadge['badge'] ?? null"
+                                        :rounded="$messageCountBadge['rounded'] ?? 'md'"
+                                        :size="$messageCountBadge['size'] ?? 'sm'"
+                                    />
+                                </div>
+                            @endif
+                            @if($attachmentCountBadge)
+                                <div class="w-fit">
+                                    <x-flowforge::card-badge
+                                        :label="$attachmentCountBadge['label']"
+                                        :value="$attachmentCountBadge['value']"
+                                        :color="$attachmentCountBadge['color'] ?? 'default'"
+                                        :icon="$attachmentCountBadge['icon'] ?? null"
+                                        :type="$attachmentCountBadge['type'] ?? null"
+                                        :badge="$attachmentCountBadge['badge'] ?? null"
+                                        :rounded="$attachmentCountBadge['rounded'] ?? 'md'"
+                                        :size="$attachmentCountBadge['size'] ?? 'sm'"
+                                    />
+                                </div>
+                            @endif
+                            @if($resourceCountBadge)
+                                <div class="w-fit">
+                                    <x-flowforge::card-badge
+                                        :label="$resourceCountBadge['label']"
+                                        :value="$resourceCountBadge['value']"
+                                        :color="$resourceCountBadge['color'] ?? 'default'"
+                                        :icon="$resourceCountBadge['icon'] ?? null"
+                                        :type="$resourceCountBadge['type'] ?? null"
+                                        :badge="$resourceCountBadge['badge'] ?? null"
+                                        :rounded="$resourceCountBadge['rounded'] ?? 'md'"
+                                        :size="$resourceCountBadge['size'] ?? 'sm'"
+                                    />
+                                </div>
+                            @endif
                         </div>
                     @endif
                 </div>
+                {{-- Right side: due date badge --}}
                 <div>
                     @if($dueDateBadge)
                         <x-flowforge::card-badge
@@ -101,6 +155,8 @@
                 </div>
             </div>
         @endif
+        
+        {{-- Remaining attributes section --}}
         @if($filtered->filter(fn($attribute) => !empty($attribute['value']))->isNotEmpty())
             <div class="ff-card__attributes">
                 @foreach($filtered as $attribute => $data)

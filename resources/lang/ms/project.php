@@ -51,6 +51,7 @@ return [
         'client' => 'Pelanggan',
         'description' => 'Deskripsi',
         'status' => 'Status',
+        'document_count' => 'Dokumen',
         'planning' => 'Perancangan',
         'in_progress' => 'Sedang Berjalan',
         'completed' => 'Selesai',

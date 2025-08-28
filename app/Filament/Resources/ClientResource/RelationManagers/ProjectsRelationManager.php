@@ -44,8 +44,7 @@ class ProjectsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('id')
                     ->label(__('project.table.id'))
-                    ->sortable()
-                    ->hidden(),
+                    ->sortable(),
                 TextColumn::make('title')
                     ->label(__('project.table.title'))
                     ->searchable()
@@ -65,10 +64,9 @@ class ProjectsRelationManager extends RelationManager
                         default => 'secondary',
                     })
                     ->sortable(),
-                TextColumn::make('documents_count')
-                    ->label(__('project.table.total_documents'))
-                    ->counts('documents')
-                    ->sortable()
+                TextColumn::make('document_count')
+                    ->label(__('project.table.document_count'))
+                    ->badge()
                     ->alignCenter(),
                 TextColumn::make('created_at')
                     ->label(__('project.table.created_at'))
@@ -118,6 +116,13 @@ class ProjectsRelationManager extends RelationManager
             ->bulkActions([
                 // None for now
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort(function ($query) {
+                return $query->orderByRaw('
+                    CASE
+                        WHEN updated_at IS NOT NULL AND updated_at != created_at THEN updated_at
+                        ELSE created_at
+                    END DESC
+                ');
+            });
     }
 }

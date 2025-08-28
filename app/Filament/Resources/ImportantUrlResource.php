@@ -58,7 +58,7 @@ class ImportantUrlResource extends Resource
                         Select::make('client_id')
                             ->label(__('importanturl.form.client'))
                             ->relationship('client', 'pic_name')
-                            ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
+                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->pic_name} ({$record->company_name})")
                             ->preload()
                             ->searchable()
                             ->nullable(),
@@ -77,10 +77,10 @@ class ImportantUrlResource extends Resource
                         ->helperText(__('importanturl.form.important_url_note'))
                         ->required()
                         ->hintAction(
-                            fn(Get $get) => blank($get('url')) ? null : Action::make('openUrl')
+                            fn (Get $get) => blank($get('url')) ? null : Action::make('openUrl')
                                 ->icon('heroicon-m-arrow-top-right-on-square')
                                 ->label(__('importanturl.form.open_url'))
-                                ->url(fn() => $get('url'), true)
+                                ->url(fn () => $get('url'), true)
                                 ->tooltip(__('importanturl.form.important_url_helper'))
                         )
                         ->url(),
@@ -92,7 +92,7 @@ class ImportantUrlResource extends Resource
 
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
-                        if (!blank($notes) && trim(strip_tags($notes))) {
+                        if (! blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
 
@@ -101,9 +101,9 @@ class ImportantUrlResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('importanturl.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -223,7 +223,7 @@ class ImportantUrlResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('importanturl.form.title_placeholder_short'))
+                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('importanturl.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -236,7 +236,7 @@ class ImportantUrlResource extends Resource
     {
         return $table
             // Disable record URL for trashed records
-            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn ($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
@@ -245,36 +245,41 @@ class ImportantUrlResource extends Resource
                     ->label(__('importanturl.table.title'))
                     ->sortable()
                     ->searchable()
-                    ->limit(20)
-                    ->url(fn($record) => $record->url, true)
-                    ->openUrlInNewTab()
-                    ->tooltip(function ($record) {
-                        $url = $record->url;
+                    ->limit(15),
 
-                        return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
+                    TextColumn::make('client.pic_name')
+                    ->label(__('importanturl.table.client'))
+                    ->searchable()
+                    ->sortable()
+                    ->formatStateUsing(function ($state, $record) {
+                        // Format the client name (shorten if too long)
+                        $formattedName = self::formatClientName($state);
+
+                        // Format the company name (limit to 10 characters)
+                        $formattedCompany = self::formatCompanyName($record->client?->company_name);
+
+                        // Return the combined format: "Name (Company)"
+                        return $formattedName . ' (' . $formattedCompany . ')';
                     }),
-                TextColumn::make('url')
-                    ->label(__('importanturl.table.link'))
-                    ->url(fn($record) => $record->url, true)
-                    ->openUrlInNewTab()
-                    ->copyable()
-                    ->limit(20),
+
                 TextColumn::make('project.title')
                     ->label(__('importanturl.table.project'))
                     ->sortable()
                     ->searchable()
-                    ->limit(20),
+                    ->limit(15),
+
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))
                     ->dateTime('j/n/y, h:i A')
                     ->sortable(),
+
                 TextColumn::make('updated_at')
                     ->label(__('importanturl.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         $updatedAt = $record->updated_at;
                         $createdAt = $record->created_at;
-                        if (!$record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
+                        if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
                             return '-';
                         }
 
@@ -285,7 +290,7 @@ class ImportantUrlResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -294,7 +299,7 @@ class ImportantUrlResource extends Resource
                 SelectFilter::make('client_id')
                     ->label(__('importanturl.filters.client_id'))
                     ->relationship('client', 'pic_name')
-                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
+                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->pic_name} ({$record->company_name})")
                     ->preload()
                     ->searchable()
                     ->multiple(),
@@ -308,8 +313,19 @@ class ImportantUrlResource extends Resource
                     ->searchable(),
             ])
             ->actions([
+                Tables\Actions\Action::make('open_url')
+                    ->label('')
+                    ->icon('heroicon-o-link')
+                    ->color('primary')
+                    ->url(fn ($record) => $record->url)
+                    ->openUrlInNewTab()
+                    ->tooltip(function ($record) {
+                        $url = $record->url;
+
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
+                    }),
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
@@ -322,7 +338,8 @@ class ImportantUrlResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
                 Tables\Actions\RestoreBulkAction::make(),
                 Tables\Actions\ForceDeleteBulkAction::make(),
-            ]);
+            ])
+            ->defaultSort('id', 'desc');
     }
 
     public static function getRelations(): array
@@ -364,5 +381,58 @@ class ImportantUrlResource extends Resource
     public static function getNavigationSort(): ?int
     {
         return 44; // Adjust the navigation sort order as needed
+    }
+
+    /**
+     * Format client name with shortening logic
+     * Example: "Amirul Shafiq Harun" becomes "Amirul S. H."
+     */
+    private static function formatClientName(?string $name): string
+    {
+        if (empty($name)) {
+            return '';
+        }
+
+        $parts = explode(' ', trim($name));
+
+        // If only one word, return as is
+        if (count($parts) === 1) {
+            return $parts[0];
+        }
+
+        // If two words, return first word + first letter of second word
+        if (count($parts) === 2) {
+            return $parts[0] . ' ' . substr($parts[1], 0, 1) . '.';
+        }
+
+        // If three or more words, return first + middle initial + last initial
+        $first = $parts[0];
+        $last = end($parts); // Get the last element without removing it
+        $middleInitial = '';
+
+        // If there's a middle name, get its first letter
+        if (count($parts) >= 3) {
+            $middleInitial = substr($parts[1], 0, 1) . '. ';
+        }
+
+        return $first . ' ' . $middleInitial . substr($last, 0, 1) . '.';
+    }
+
+    /**
+     * Format company name with character limit
+     * Limits to 10 characters with ellipsis if longer
+     */
+    private static function formatCompanyName(?string $company): string
+    {
+        if (empty($company)) {
+            return '';
+        }
+
+        // If company name is longer than 10 characters, truncate and add ellipsis
+        if (strlen($company) > 10) {
+            return substr($company, 0, 10) . '...';
+        }
+
+        return $company;
     }
 }

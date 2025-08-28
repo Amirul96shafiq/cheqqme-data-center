@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -79,5 +80,19 @@ class Client extends Model
     public function importantUrls(): HasMany
     {
         return $this->hasMany(ImportantUrl::class);
+    }
+
+    public function projectCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->projects->count(),
+        );
+    }
+
+    public function importantUrlCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->importantUrls->count(),
+        );
     }
 }

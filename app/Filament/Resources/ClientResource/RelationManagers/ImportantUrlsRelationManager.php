@@ -43,20 +43,12 @@ class ImportantUrlsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
-                    ->sortable()
-                    ->hidden(),
+                    ->sortable(),
                 TextColumn::make('title')
                     ->label(__('importanturl.table.title'))
                     ->searchable()
                     ->sortable()
-                    ->limit(30)
-                    ->url(fn ($record) => $record->url, true)
-                    ->openUrlInNewTab()
-                    ->tooltip(function ($record) {
-                        $url = $record->url;
-
-                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
-                    }),
+                    ->limit(30),
                 TextColumn::make('project.title')
                     ->label(__('importanturl.table.project'))
                     ->sortable()
@@ -109,6 +101,17 @@ class ImportantUrlsRelationManager extends RelationManager
             ])
             ->headerActions([])
             ->actions([
+                Tables\Actions\Action::make('open_url')
+                    ->label('')
+                    ->icon('heroicon-o-link')
+                    ->color('primary')
+                    ->url(fn ($record) => $record->url)
+                    ->openUrlInNewTab()
+                    ->tooltip(function ($record) {
+                        $url = $record->url;
+
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
+                    }),
                 Tables\Actions\EditAction::make()
                     ->url(fn ($record) => ImportantUrlResource::getUrl('edit', ['record' => $record]))
                     ->hidden(fn ($record) => $record->trashed()),
@@ -119,6 +122,13 @@ class ImportantUrlsRelationManager extends RelationManager
                 ]),
             ])
             ->bulkActions([])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort(function ($query) {
+                return $query->orderByRaw('
+                    CASE
+                        WHEN updated_at IS NOT NULL AND updated_at != created_at THEN updated_at
+                        ELSE created_at
+                    END DESC
+                ');
+            });
     }
 }

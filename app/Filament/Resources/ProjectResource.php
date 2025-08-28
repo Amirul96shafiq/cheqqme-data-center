@@ -63,7 +63,7 @@ class ProjectResource extends Resource
                                 Select::make('client_id')
                                     ->label(__('project.form.client'))
                                     ->relationship('client', 'pic_name')
-                                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
+                                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->pic_name} ({$record->company_name})")
                                     ->searchable()
                                     ->preload()
                                     ->nullable(),
@@ -94,7 +94,7 @@ class ProjectResource extends Resource
 
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
-                        if (!blank($notes) && trim(strip_tags($notes))) {
+                        if (! blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
 
@@ -103,9 +103,9 @@ class ProjectResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('project.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -225,7 +225,7 @@ class ProjectResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('project.form.title_placeholder_short'))
+                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('project.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -238,12 +238,11 @@ class ProjectResource extends Resource
     {
         return $table
             // Disable record URL for trashed records
-            ->recordUrl(fn($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
+            ->recordUrl(fn ($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('project.table.id'))
-                    ->sortable()
-                    ->hidden(),
+                    ->sortable(),
                 TextColumn::make('title')
                     ->label(__('project.table.title'))
                     ->searchable()
@@ -256,19 +255,23 @@ class ProjectResource extends Resource
                     ->limit(20),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'Planning' => 'primary',
                         'In Progress' => 'info',
                         'Completed' => 'success',
                         default => 'secondary',
                     })
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'Planning' => __('project.table.planning'),
                         'In Progress' => __('project.table.in_progress'),
                         'Completed' => __('project.table.completed'),
                         default => $state,
                     })
                     ->sortable(),
+                TextColumn::make('document_count')
+                    ->label(__('project.table.document_count'))
+                    ->badge()
+                    ->alignCenter(),
                 TextColumn::make(__('created_at'))
                     ->label(__('project.table.created_at'))
                     ->dateTime('j/n/y, h:i A')
@@ -278,7 +281,7 @@ class ProjectResource extends Resource
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
-                            !$record->updated_by ||
+                            ! $record->updated_by ||
                             $record->updated_at?->eq($record->created_at)
                         ) {
                             return '-';
@@ -291,7 +294,7 @@ class ProjectResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -300,7 +303,7 @@ class ProjectResource extends Resource
                 SelectFilter::make('client_id')
                     ->label(__('project.table.client'))
                     ->relationship('client', 'pic_name')
-                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
+                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->pic_name} ({$record->company_name})")
                     ->preload()
                     ->searchable()
                     ->multiple(),
@@ -318,7 +321,7 @@ class ProjectResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
@@ -331,7 +334,8 @@ class ProjectResource extends Resource
                 Tables\Actions\DeleteBulkAction::make(),
                 Tables\Actions\RestoreBulkAction::make(),
                 Tables\Actions\ForceDeleteBulkAction::make(),
-            ]);
+            ])
+            ->defaultSort('id', 'desc');
     }
 
     public static function getRelations(): array

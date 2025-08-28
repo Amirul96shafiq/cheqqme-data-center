@@ -48,9 +48,10 @@ return [
 
     'table' => [
         'id' => 'ID',
-        'pic_name' => 'PIC Name',
-        'pic_contact_number' => 'PIC Contact Number',
-        'company_name' => 'Company Name',
+        'pic_name' => 'Client Name (Company)',
+        'pic_contact_number' => 'Contact Number',
+        'project_count' => 'Projects',
+        'important_url_count' => 'Important URLs',
         'created_at' => 'Created At',
         'updated_at_by' => 'Updated At (by)',
     ],
