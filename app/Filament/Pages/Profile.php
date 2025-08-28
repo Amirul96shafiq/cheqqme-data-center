@@ -13,6 +13,8 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class Profile extends EditProfile
 {
+    protected static string $view = 'filament.pages.profile';
+
     public string $old_password = ''; // For old password input
 
     public function form(Form $form): Form
@@ -20,28 +22,8 @@ class Profile extends EditProfile
         return $form
             ->schema([
                 Forms\Components\Section::make(__('user.section.profile_settings'))
+                    ->description(__('user.section.profile_settings_description'))
                     ->schema([
-                        Forms\Components\FileUpload::make('avatar')
-                            ->label(__('user.form.avatar'))
-                            ->image()
-                            ->imageEditor()
-                            ->circleCropper()
-                            ->directory('avatars')
-                            ->moveFiles()
-                            ->columnSpanFull()
-                            ->avatar()
-                            ->afterStateUpdated(function ($state) {
-                                if (! $state instanceof TemporaryUploadedFile) {
-                                    return;
-                                }
-
-                                // Delete old avatar if exists
-                                $oldAvatar = auth()->user()->avatar;
-                                if ($oldAvatar && Storage::exists($oldAvatar)) {
-                                    Storage::delete($oldAvatar);
-                                }
-                            }),
-
                         Forms\Components\TextInput::make('username')
                             ->label(__('user.form.username'))
                             ->required()
@@ -64,14 +46,68 @@ class Profile extends EditProfile
                             ->nullable()
                             ->extraAlpineAttributes(['x-ref' => 'name'])
                             ->helperText(__('user.form.name_helper'))
-                            ->placeholder(fn (callable $get) => $get('username')),
+                            ->placeholder(fn(callable $get) => $get('username')),
 
                         $this->getEmailFormComponent()->label(__('user.form.email')),
+
+                        Forms\Components\Fieldset::make(__('user.form.personalize'))
+                            ->schema([
+                                Forms\Components\FileUpload::make('avatar')
+                                    ->label(__('user.form.avatar'))
+                                    ->image()
+                                    ->imageEditor()
+                                    ->circleCropper()
+                                    ->directory('avatars')
+                                    ->moveFiles()
+                                    ->columnSpanFull()
+                                    ->avatar()
+                                    ->afterStateUpdated(function ($state) {
+                                        if (!$state instanceof TemporaryUploadedFile) {
+                                            return;
+                                        }
+
+                                        // Delete old avatar if exists
+                                        $oldAvatar = auth()->user()->avatar;
+                                        if ($oldAvatar && Storage::exists($oldAvatar)) {
+                                            Storage::delete($oldAvatar);
+                                        }
+                                    }),
+
+                                Forms\Components\FileUpload::make('cover_image')
+                                    ->label(__('user.form.cover_image'))
+                                    ->image()
+                                    ->imageEditor()
+                                    ->directory('covers')
+                                    ->moveFiles()
+                                    ->imageResizeMode('cover')
+                                    ->imageResizeTargetWidth('1920')
+                                    ->imageResizeTargetHeight('600')
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(5120) // 5MB
+                                    ->columnSpanFull()
+                                    ->helperText(__('user.form.cover_image_helper'))
+                                    ->afterStateUpdated(function ($state) {
+                                        if (!$state instanceof TemporaryUploadedFile) {
+                                            return;
+                                        }
+
+                                        // Delete old cover image if exists
+                                        $oldCoverImage = auth()->user()->cover_image;
+                                        if ($oldCoverImage && Storage::exists($oldCoverImage)) {
+                                            Storage::delete($oldCoverImage);
+                                        }
+                                    }),
+                            ])
+                            ->columns(1),
                     ])
+                    ->collapsible()
+                    ->collapsed()
                     ->columns(1),
 
                 Forms\Components\Section::make(__('user.section.password_settings'))
                     ->description(__('user.section.password_info_description_profile'))
+                    ->collapsible()
+                    ->collapsed()
                     ->schema([
                         // OLD password
                         Forms\Components\Fieldset::make(__('user.form.old_password'))
@@ -85,7 +121,7 @@ class Profile extends EditProfile
                                     ->requiredWith(['password', 'password_confirmation'])
                                     ->rule(function () {
                                         return function (string $attribute, $value, $fail) {
-                                            if ($value && ! Hash::check($value, auth()->user()->password)) {
+                                            if ($value && !Hash::check($value, auth()->user()->password)) {
                                                 $fail('The old password is incorrect.');
                                             }
                                         };
@@ -112,7 +148,7 @@ class Profile extends EditProfile
                                     ->password()
                                     ->helperText(__('user.form.password_helper'))
                                     ->revealable()
-                                    ->dehydrated(fn ($state) => filled($state))
+                                    ->dehydrated(fn($state) => filled($state))
                                     ->same('password_confirmation')
                                     ->minLength(5)
                                     ->columnSpanFull(),
@@ -121,7 +157,7 @@ class Profile extends EditProfile
                                     ->label(__('user.form.confirm_password'))
                                     ->password()
                                     ->revealable()
-                                    ->dehydrated(fn ($state) => filled($state))
+                                    ->dehydrated(fn($state) => filled($state))
                                     ->columnSpanFull(),
                             ]),
                     ]),
@@ -148,6 +184,12 @@ class Profile extends EditProfile
 
     // Disabled Default notification in Profile
     protected function getSavedNotification(): ?Notification
+    {
+        return null;
+    }
+
+    // Override to prevent the notifications form component error
+    protected function getNotificationsFormComponent(): ?Forms\Components\Component
     {
         return null;
     }

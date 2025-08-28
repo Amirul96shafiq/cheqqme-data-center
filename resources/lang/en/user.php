@@ -21,6 +21,7 @@ return [
 
     'section' => [
         'profile_settings' => 'Profile Settings',
+        'profile_settings_description' => 'Configure and customize your profile settings here',
         'password_settings' => 'Password Settings',
         'user_info' => 'User Information',
         'password_info' => 'Password Information',
@@ -37,6 +38,8 @@ return [
         'saved_password' => 'Saved.',
         'saved_password_body' => 'Please re-login or refresh the page.',
         'avatar' => 'Avatar',
+        'cover_image' => 'Cover Image',
+        'cover_image_helper' => 'Upload a cover image for your profile (recommended: 1920x400px, max 5MB)',
         'username' => 'Username',
         'name' => 'Name',
         'email' => 'Email',
@@ -53,6 +56,7 @@ return [
         'user_confirm_placeholder' => 'Type exactly CONFIRM DELETE USER (case-sensitive) to enable delete button below',
         'user_confirm_helpertext' => 'CONFIRM DELETE USER',
         'name_helper' => 'Automatically filled with username if left empty, changeable',
+        'personalize' => 'Personalize',
     ],
 
     'table' => [

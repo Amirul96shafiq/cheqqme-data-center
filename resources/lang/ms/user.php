@@ -20,6 +20,8 @@ return [
     ],
 
     'section' => [
+        'profile_settings' => 'Pengaturan Profil',
+        'profile_settings_description' => 'Konfigurasikan dan personalisasi pengaturan profil anda di sini',
         'user_info' => 'Maklumat Pengguna',
         'password_info' => 'Maklumat Kata Laluan',
         'password_info_description' => 'Aktifkan toggle Tukar Kata Laluan? untuk melihat bahagian ini',
@@ -35,6 +37,8 @@ return [
         'saved_password' => 'Disimpan.',
         'saved_password_body' => 'Sila log masuk semula atau muat semula halaman.',
         'avatar' => 'Avatar',
+        'cover_image' => 'Gambar Cover',
+        'cover_image_helper' => 'Muat naik gambar cover (disyorkan: 1920x400px, maksimum 5MB)',
         'username' => 'Gelaran Pengguna',
         'name' => 'Nama',
         'email' => 'Emel',
@@ -51,6 +55,7 @@ return [
         'user_confirm_placeholder' => 'Taipkan tepat CONFIRMED DELETE ACCOUNT (sensitif kepada huruf besar) untuk mengaktifkan butang padam di bawah',
         'user_confirm_helpertext' => 'CONFIRMED DELETE ACCOUNT',
         'name_helper' => 'Dilengkapi dengan gelaran pengguna jika kosong, boleh diubah',
+        'personalize' => 'Personalisasi',
     ],
 
     'table' => [
