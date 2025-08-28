@@ -9,6 +9,9 @@ Homestead.json
 Homestead.yaml
 vendor/
 storage/
+
+# Allow tracking of published vendor views
+!resources/views/vendor/
 database/database.sqlite
 public/build/
 public/hot
