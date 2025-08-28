@@ -57,8 +57,8 @@ return [
 
     'table' => [
         'id' => 'ID',
+        'avatar' => 'Avatar',
         'username' => 'Username',
-        'name' => 'Name',
         'email' => 'Email',
         'created_at' => 'Created At',
         'updated_at_by' => 'Updated At (by)',

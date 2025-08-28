@@ -242,7 +242,7 @@ class AdminPanelProvider extends PanelProvider
                         return "{$greeting}, {$formattedName}";
                     })
                     ->color('primary')
-                    ->url(fn() => 'https://www.dailymotivation.site/motivations/')
+                    ->url(fn() => 'https://www.google.com/search?q=google+weather')
                     ->openUrlInNewTab(),
                 MenuItem::make()
                     ->label(fn() => __('dashboard.user-menu.profile-label'))
