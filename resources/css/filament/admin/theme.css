@@ -175,22 +175,70 @@
 
     /* Explicit board sizing so page + board fits viewport without page scroll */
     .fi-page .ff-board {
-        height: calc(100vh - 16rem) !important;
+        height: calc(100vh - 12.5rem) !important;
     }
 
-    /* Ensure columns region fills the board height */
+    /* Ensure columns region fills the board height and enables horizontal scrolling */
     .fi-page .ff-board__columns {
         height: 100% !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        display: flex !important;
+        gap: 1rem !important;
+        padding: 1rem !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: rgb(161 161 170) transparent !important;
     }
 
-    /* Columns respect the board height */
+    /* Custom scrollbar styling for horizontal scrolling */
+    .fi-page .ff-board__columns::-webkit-scrollbar {
+        height: 8px !important;
+    }
+
+    .fi-page .ff-board__columns::-webkit-scrollbar-track {
+        background: transparent !important;
+    }
+
+    .fi-page .ff-board__columns::-webkit-scrollbar-thumb {
+        background: rgb(161 161 170) !important;
+        border-radius: 4px !important;
+    }
+
+    .fi-page .ff-board__columns::-webkit-scrollbar-thumb:hover {
+        background: rgb(113 113 122) !important;
+    }
+
+    /* Columns respect the board height and maintain proper width for horizontal scrolling */
     .fi-page .ff-column {
-        max-height: 100% !important;
+        max-height: 90% !important;
     }
 
-    /* Deduct column header (~3.25rem) from column scroll area */
+    /* Enable vertical scrolling for column content */
     .fi-page .ff-column__content {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        flex: 1 1 auto !important;
         max-height: calc(100% - 3.25rem) !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: rgb(161 161 170) transparent !important;
+    }
+
+    /* Custom vertical scrollbar styling for column content */
+    .fi-page .ff-column__content::-webkit-scrollbar {
+        width: 6px !important;
+    }
+
+    .fi-page .ff-column__content::-webkit-scrollbar-track {
+        background: transparent !important;
+    }
+
+    .fi-page .ff-column__content::-webkit-scrollbar-thumb {
+        background: rgb(161 161 170) !important;
+        border-radius: 3px !important;
+    }
+
+    .fi-page .ff-column__content::-webkit-scrollbar-thumb:hover {
+        background: rgb(113 113 122) !important;
     }
 
     /* While drag-scrolling, prevent text selection cursor and highlight */

@@ -29,28 +29,40 @@ document.addEventListener("DOMContentLoaded", () => {
         if (isBound) return;
         isBound = true;
         document.addEventListener("mousedown", function (e) {
-            const content = e.target.closest(".ff-column__content");
-            if (!content) return;
-            if (e.target.closest(".ff-card")) return; // don't interfere with card drag
-            const scroller = content.closest(".ff-board__columns");
-            if (!scroller) return;
+            // Target the kanban board columns container directly
+            const kanbanBoard = e.target.closest(
+                ".ff-board__columns.kanban-board"
+            );
+            if (!kanbanBoard) return;
+
+            // Don't interfere with card dragging or other interactive elements
+            if (e.target.closest(".ff-card")) return;
+            if (e.target.closest("button")) return;
+            if (e.target.closest("input")) return;
+            if (e.target.closest("select")) return;
+            if (e.target.closest("textarea")) return;
+            if (e.target.closest("[contenteditable]")) return;
+
             e.preventDefault(); // prevent text selection
             let isDown = true;
             const startX = e.pageX;
-            const startScrollLeft = scroller.scrollLeft;
-            scroller.classList.add("ff-drag-scrolling");
+            const startScrollLeft = kanbanBoard.scrollLeft;
+            kanbanBoard.classList.add("ff-drag-scrolling");
+
             const onMove = (ev) => {
                 if (!isDown) return;
-                scroller.scrollLeft = startScrollLeft - (ev.pageX - startX);
+                kanbanBoard.scrollLeft = startScrollLeft - (ev.pageX - startX);
                 ev.preventDefault();
             };
+
             const end = () => {
                 isDown = false;
-                scroller.classList.remove("ff-drag-scrolling");
+                kanbanBoard.classList.remove("ff-drag-scrolling");
                 window.removeEventListener("mousemove", onMove);
                 window.removeEventListener("mouseup", end);
                 window.removeEventListener("mouseleave", end);
             };
+
             window.addEventListener("mousemove", onMove);
             window.addEventListener("mouseup", end);
             window.addEventListener("mouseleave", end);
