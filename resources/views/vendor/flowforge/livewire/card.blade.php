@@ -17,9 +17,14 @@
         {{-- Featured image section --}}
         @if(!empty($record['attributes']['featured_image']['value']))
             <div class="ff-card__featured-image -mx-4 -mt-4 mb-3">
-                <img src="{{ $record['attributes']['featured_image']['value'] }}"
-                     alt="Featured image"
-                     class="w-full h-32 object-cover rounded-t-lg border-l border-r border-t border-gray-200 dark:border-gray-700">
+                <a href="{{ $record['attributes']['featured_image']['value'] }}" 
+                   target="_blank"
+                   class="block"
+                   onclick="event.stopPropagation();">
+                    <img src="{{ $record['attributes']['featured_image']['value'] }}"
+                         alt="Featured image"
+                         class="w-full h-32 object-cover rounded-t-lg border-l border-r border-t border-gray-200 dark:border-gray-700 hover:opacity-90 transition-opacity">
+                </a>
             </div>
         @endif
         
