@@ -221,7 +221,17 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('id')
                     ->label(__('user.table.id'))
-                    ->sortable(),
+                    ->sortable()
+                    ->extraAttributes(function ($record) {
+                        $coverImageUrl = $record->getFilamentCoverImageUrl();
+                        if ($coverImageUrl) {
+                            return [
+                                'data-cover-image-url' => $coverImageUrl,
+                            ];
+                        }
+
+                        return [];
+                    }),
 
                 ImageColumn::make('avatar')
                     ->label(__('user.table.avatar'))
@@ -240,6 +250,13 @@ class UserResource extends Resource
                     ->size(50)
                     ->width(50)
                     ->height(50)
+                    ->extraImgAttributes(function ($record) {
+                        $coverImageUrl = $record->getFilamentCoverImageUrl();
+                        if ($coverImageUrl) {
+                            return ['class' => 'border-4 border-white/50'];
+                        }
+                        return ['class' => 'border-0'];
+                    })
                     ->alignCenter(),
 
                 TextColumn::make('username')
@@ -281,6 +298,19 @@ class UserResource extends Resource
                     ->sortable()
                     ->limit(30),
             ])
+            ->recordClasses(function ($record) {
+                $coverImageUrl = $record->getFilamentCoverImageUrl();
+                $classes = ['fi-table-row']; // Apply custom CSS class for increased row height
+    
+                if ($coverImageUrl) {
+                    $classes[] = 'cover-image-row';
+                }
+
+                return implode(' ', $classes);
+            })
+            ->modifyQueryUsing(function ($query) {
+                return $query->with('updatedBy'); // Eager load the updatedBy relationship
+            })
             ->filters([
                 TrashedFilter::make(), // To show trashed or only active
             ])
@@ -294,13 +324,10 @@ class UserResource extends Resource
                 ]),
             ])
             ->bulkActions([
-                /*Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
-                ]),*/
+                //
             ])
-            ->defaultSort('id', 'desc');
+            ->defaultSort('updated_at', 'desc')
+            ->defaultPaginationPageOption(5);
     }
 
     public static function getRelations(): array

@@ -78,3 +78,211 @@ document.addEventListener("DOMContentLoaded", () => {
         bind();
     });
 })();
+
+// -----------------------------
+// Apply cover image backgrounds to table rows
+// -----------------------------
+(function () {
+    let periodicCheckInterval;
+
+    function applyCoverImages() {
+        // Find all table cells with cover image data
+        const coverImageCells = document.querySelectorAll(
+            "[data-cover-image-url]"
+        );
+
+        let appliedCount = 0;
+        coverImageCells.forEach((cell) => {
+            const coverImageUrl = cell.getAttribute("data-cover-image-url");
+            if (coverImageUrl) {
+                // Find the parent table row
+                const tableRow = cell.closest("tr");
+                if (tableRow) {
+                    // Always reapply the background for cover image rows
+                    const isDarkMode =
+                        document.documentElement.classList.contains("dark") ||
+                        document.body.classList.contains("dark");
+                    const gradient = isDarkMode
+                        ? `linear-gradient(to right, rgba(24,24,27,0.3) 0%, rgba(24,24,27,0.7) 20%, rgba(24,24,27,0.9) 70%, rgba(24,24,27,1) 100%)`
+                        : `linear-gradient(to right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 20%, rgba(255,255,255,0.9) 70%, rgba(255,255,255,1) 100%)`;
+
+                    // Force reapplication by clearing and re-setting
+                    tableRow.style.backgroundImage = `${gradient}, url('${coverImageUrl}')`;
+                    // tableRow.style.backgroundSize = "contain";
+                    // tableRow.style.backgroundPosition = "center";
+                    // tableRow.style.backgroundRepeat = "no-repeat";
+                    tableRow.classList.add("cover-image-row");
+                    appliedCount++;
+                }
+            }
+        });
+    }
+
+    // Start periodic checking for cover images (fallback mechanism)
+    function startPeriodicCheck() {
+        if (periodicCheckInterval) {
+            clearInterval(periodicCheckInterval);
+        }
+
+        periodicCheckInterval = setInterval(() => {
+            const coverImageCells = document.querySelectorAll(
+                "[data-cover-image-url]"
+            );
+            const rowsWithoutBackground = Array.from(coverImageCells).filter(
+                (cell) => {
+                    const tableRow = cell.closest("tr");
+                    return tableRow && !tableRow.style.backgroundImage;
+                }
+            );
+
+            if (rowsWithoutBackground.length > 0) {
+                console.log(
+                    `Found ${rowsWithoutBackground.length} rows without cover images, applying...`
+                );
+                applyCoverImages(); // Apply immediately without delay
+            }
+        }, 200); // Check every 200ms for faster response
+    }
+
+    // Apply on page load
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => {
+            applyCoverImages();
+            startPeriodicCheck();
+        });
+    } else {
+        applyCoverImages();
+        startPeriodicCheck();
+    }
+
+    // Apply on all relevant Livewire events
+    document.addEventListener("livewire:updated", (event) => {
+        console.log("Livewire updated event triggered", event);
+        applyCoverImages();
+    });
+
+    document.addEventListener("livewire:navigated", (event) => {
+        console.log("Livewire navigated event triggered", event);
+        applyCoverImages();
+    });
+
+    // Listen for theme changes (Filament light-switch plugin)
+    document.addEventListener("theme-changed", (event) => {
+        console.log("Theme changed event triggered", event.detail);
+        // Reapply cover images immediately when theme changes
+        applyCoverImages();
+    });
+
+    // Additional Livewire events that might trigger DOM updates
+    document.addEventListener("livewire:loading", () => {
+        console.log("Livewire loading event triggered");
+    });
+
+    // Listen for input changes that might trigger search
+    document.addEventListener("input", (event) => {
+        if (
+            event.target.matches("input[wire\\:model*='search']") ||
+            event.target.matches("input[wire\\:model*='tableSearch']") ||
+            event.target.closest("[wire\\:model*='search']") ||
+            event.target.closest("[wire\\:model*='tableSearch']")
+        ) {
+            console.log(
+                "Search input detected, applying cover images immediately"
+            );
+            // Apply immediately without delay
+            applyCoverImages();
+        }
+    });
+
+    // Use MutationObserver as a fallback to catch any DOM changes
+    const observer = new MutationObserver((mutations) => {
+        let shouldApply = false;
+        mutations.forEach((mutation) => {
+            if (
+                mutation.type === "childList" &&
+                mutation.addedNodes.length > 0
+            ) {
+                // Check if any added nodes contain table rows with cover images
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        if (
+                            node.matches &&
+                            node.matches("[data-cover-image-url]")
+                        ) {
+                            shouldApply = true;
+                        } else if (
+                            node.querySelector &&
+                            node.querySelector("[data-cover-image-url]")
+                        ) {
+                            shouldApply = true;
+                        }
+                        // Also check for table-related elements that might contain our target elements
+                        if (
+                            node.matches &&
+                            (node.matches("table") ||
+                                node.matches("tbody") ||
+                                node.matches("tr"))
+                        ) {
+                            shouldApply = true;
+                        }
+                    }
+                });
+            }
+            // Also monitor attribute changes that might affect our elements
+            if (
+                mutation.type === "attributes" &&
+                mutation.target.matches &&
+                (mutation.target.matches("[data-cover-image-url]") ||
+                    mutation.target.closest("[data-cover-image-url]"))
+            ) {
+                shouldApply = true;
+            }
+        });
+
+        if (shouldApply) {
+            console.log("MutationObserver detected relevant DOM changes");
+            applyCoverImages();
+        }
+    });
+
+    // Start observing the document body for changes
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["data-cover-image-url", "wire:model"],
+    });
+
+    // Also observe the html element for theme class changes
+    const htmlObserver = new MutationObserver((mutations) => {
+        let themeChanged = false;
+        mutations.forEach((mutation) => {
+            if (
+                mutation.type === "attributes" &&
+                mutation.attributeName === "class"
+            ) {
+                themeChanged = true;
+            }
+        });
+
+        if (themeChanged) {
+            console.log("HTML class changed, checking for theme change");
+            // Check if dark mode status changed and reapply if needed
+            applyCoverImages();
+        }
+    });
+
+    htmlObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+    });
+
+    // Cleanup on page unload
+    window.addEventListener("beforeunload", () => {
+        if (periodicCheckInterval) {
+            clearInterval(periodicCheckInterval);
+        }
+        observer.disconnect();
+        htmlObserver.disconnect();
+    });
+})();

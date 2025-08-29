@@ -50,6 +50,17 @@
         z-index: 90;
     }
 
+    /* Custom styles for increased table row height */
+    .fi-table-row {
+        height: 9rem !important;
+    }
+
+    .fi-table-row > td {
+        vertical-align: middle;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
     /* Database notifications slide-over lives inside the modal window; ensure it stacks above overlay */
     .fi-modal-window.fi-modal-slide-over-window {
         z-index: 90 !important;
@@ -306,5 +317,41 @@
         background-color: #1e3a8a !important;
         color: #bfdbfe !important;
         border-color: #1d4ed8 !important;
+    }
+
+    /* Cover image row styling for user table */
+    .cover-image-row {
+        position: relative;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        min-height: 80px !important; /* Increased row height for cover images */
+        transition: min-height 0.3s ease-in-out !important; /* Smooth height transition */
+    }
+
+    /* Text styling for cover image rows */
+    .cover-image-row .fi-table-row-cell {
+        color: white !important;
+        position: relative;
+        z-index: 10;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+        vertical-align: middle !important;
+    }
+
+    /* Ensure all content within table cells is above gradient */
+    .cover-image-row .fi-table-row-cell * {
+        position: relative;
+        z-index: 11;
+    }
+
+    /* Dark mode adjustments for cover image rows */
+    .dark .cover-image-row .fi-table-row-cell {
+        color: white !important;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9) !important;
+    }
+
+    .dark .cover-image-row .fi-avatar {
+        border-color: rgba(255, 255, 255, 0.9) !important;
     }
 }
