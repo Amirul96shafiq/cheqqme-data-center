@@ -16,8 +16,16 @@
     <div class="ff-card__content">
         {{-- Featured image section --}}
         @if(!empty($record['attributes']['featured_image']['value']))
-            <div class="ff-card__featured-image -mx-4 -mt-4 mb-3">
-                <a href="{{ $record['attributes']['featured_image']['value'] }}" 
+            <div class="ff-card__featured-image -mx-4 -mt-4 mb-3 relative">
+                {{-- Share button for cards with featured image --}}
+                <button
+                    class="ff-card__share-btn absolute top-2 right-2 z-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-md px-2 py-[3px] shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700"
+                    onclick="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
+                    title="Share Task"
+                >
+                    @svg('heroicon-o-share', 'w-3 h-3 text-gray-600 dark:text-gray-300')
+                </button>
+                <a href="{{ $record['attributes']['featured_image']['value'] }}"
                    target="_blank"
                    class="block"
                    onclick="event.stopPropagation();">
@@ -27,9 +35,22 @@
                 </a>
             </div>
         @endif
-        
-        {{-- Card title --}}
-        <h4 class="ff-card__title">{{ $record['title'] }}</h4>
+
+        @if(empty($record['attributes']['featured_image']['value']))
+            <div class="flex justify-between items-center mb-2">
+                <h4 class="ff-card__title m-0">{{ $record['title'] }}</h4>
+                <span
+                    class="ff-card__badge inline-flex items-center px-2 py-[3px] rounded-md bg-white/90 dark:bg-gray-800/90 hover:bg-white  dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 hover:border-gray-300 text-xs cursor-pointer"
+                    onclick="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
+                    title="Share Task"
+                >
+                    @svg('heroicon-o-share', 'w-3 h-3 text-gray-600 dark:text-gray-300')
+                </span>
+            </div>
+        @else
+            {{-- Card title --}}
+            <h4 class="ff-card__title">{{ $record['title'] }}</h4>
+        @endif
 
         {{-- Card description --}}
         @if(!empty($record['description']))

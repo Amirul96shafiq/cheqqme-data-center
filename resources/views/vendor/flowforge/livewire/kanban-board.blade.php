@@ -64,6 +64,17 @@ if(!window.__flowforgeBoardAutoPoll){
         setInterval(()=>refresh(),300);
     }
 }
+
+// Task sharing functionality (no notifications)
+window.shareTaskUrl = function(event, taskId) {
+  event.preventDefault();
+  event.stopPropagation();
+  const editUrl = `/admin/tasks/${taskId}/edit`;
+  const fullUrl = window.location.origin + editUrl;
+  navigator.clipboard.writeText(fullUrl).catch(function(err) {
+      // No notification; ignore errors
+  });
+};
 </script>
 
 <!-- Hide the initial loading overlay with smooth fade-out animation -->
