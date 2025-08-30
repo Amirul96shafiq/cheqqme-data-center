@@ -36,7 +36,7 @@
       <x-filament-actions::modals />
   </div>
   <!-- Loading overlay -->
-  <div id="action-board-loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-gray-900 transition-all duration-500 ease-out" style="display:flex;">
+  <div id="action-board-loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-gray-900 transition-all duration-500 ease-out" style="display:none;">
     <div class="w-12 h-12 border-4 border-gray-300 border-t-transparent rounded-full animate-spin transition-opacity duration-300 ease-out"></div>
   </div>
 </div>
@@ -81,14 +81,23 @@ window.shareTaskUrl = function(event, taskId) {
 };
 </script>
 
-<!-- Hide the initial loading overlay with smooth fade-out animation -->
+<!-- Show loader only on initial page load and hide after board loads -->
 <script>
     (function(){
         var loader = document.getElementById('action-board-loader');
         var spinner = loader ? loader.querySelector('.animate-spin') : null;
-
-        if (loader && spinner) {
-            // First fade out the spinner after 1.5 seconds
+        var root = document.getElementById('action-board-root');
+        
+        // Only show loader on initial page load (not Livewire updates)
+        if (loader && spinner && root && !window.__flowforgeBoardInitialized) {
+            window.__flowforgeBoardInitialized = true;
+            
+            // Show the loader immediately
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+            spinner.style.opacity = '1';
+            
+            // Hide the loader after the board content is loaded
             setTimeout(function(){
                 spinner.style.opacity = '0';
 
@@ -101,7 +110,7 @@ window.shareTaskUrl = function(event, taskId) {
                         loader.style.display = 'none';
                     }, 800); // Wait for fade-out transition to complete
                 }, 500); // Wait for spinner to start fading
-            }, 2000);
+            }, 1500); // Reduced from 2000ms to 1500ms for faster UX
         }
     })();
 </script>
