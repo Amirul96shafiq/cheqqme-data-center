@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class ApiKeyAuth
@@ -20,10 +19,10 @@ class ApiKeyAuth
         $apiKey = $request->bearerToken();
 
         // Check if API key is provided
-        if (!$apiKey) {
+        if (! $apiKey) {
             return response()->json([
                 'success' => false,
-                'message' => 'API key is required. Please provide it in the Authorization header as: Bearer YOUR_API_KEY'
+                'message' => 'API key is required. Please provide it in the Authorization header as: Bearer YOUR_API_KEY',
             ], 401);
         }
 
@@ -31,10 +30,10 @@ class ApiKeyAuth
         $user = User::where('api_key', $apiKey)->first();
 
         // Check if user exists
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid API key provided.'
+                'message' => 'Invalid API key provided.',
             ], 401);
         }
 

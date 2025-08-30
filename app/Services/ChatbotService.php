@@ -244,7 +244,7 @@ class ChatbotService
             ->whereIn('status', ['todo', 'in_progress', 'toreview']);
 
         // If only count is needed, return early
-        if (!$includeDetails && $includeCount) {
+        if (! $includeDetails && $includeCount) {
             $count = $query->count();
 
             return json_encode(['task_count' => $count]);
@@ -261,7 +261,7 @@ class ChatbotService
             $result['task_count'] = $tasks->count();
         }
 
-        if (!$includeDetails) {
+        if (! $includeDetails) {
             return json_encode($result);
         }
 
@@ -291,12 +291,12 @@ class ChatbotService
         $result['tasks_by_status'] = $tasksByStatus;
 
         // If count only, return JSON
-        if (!$includeDetails) {
+        if (! $includeDetails) {
             return json_encode($result);
         }
 
         // Format as structured text with proper styling
-        $output = "You've got " . $tasks->count() . " incomplete tasks grouped by their current status. Here's a quick peek:\n\n";
+        $output = "You've got ".$tasks->count()." incomplete tasks grouped by their current status. Here's a quick peek:\n\n";
 
         // Define status labels and their counts
         $statusLabels = [
@@ -319,7 +319,7 @@ class ChatbotService
                 foreach ($displayTasks as $task) {
                     // Truncate task name to 30 characters
                     $truncatedName = strlen($task['task_name']) > 30
-                        ? substr($task['task_name'], 0, 30) . '...'
+                        ? substr($task['task_name'], 0, 30).'...'
                         : $task['task_name'];
 
                     $output .= "{$counter}. [**{$truncatedName}**]({$task['url']})";
@@ -350,6 +350,7 @@ class ChatbotService
 
         return $output;
     }
+
     /**
      * Tool: Get URLs for client management (create new, list all) with total count.
      * Shortcut: /client

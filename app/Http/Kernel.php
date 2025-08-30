@@ -54,7 +54,7 @@ class Kernel extends HttpKernel
             // API routes middleware stack
             'api' => [
                 SubstituteBindings::class, // Binds the request parameters to the route parameters
-                ThrottleRequests::class . ':api', // Throttle requests to the API
+                ThrottleRequests::class.':api', // Throttle requests to the API
             ],
         ];
     }

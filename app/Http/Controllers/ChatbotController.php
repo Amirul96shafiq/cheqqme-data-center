@@ -23,7 +23,7 @@ class ChatbotController extends Controller
             $user = Auth::user();
 
             // If the user is not authenticated, return an error
-            if (!$user) {
+            if (! $user) {
                 return response()->json(['error' => 'Unauthenticated.'], 401);
             }
 
@@ -40,7 +40,7 @@ class ChatbotController extends Controller
 
             // Check for direct commands that should bypass OpenAI (e.g., /help)
             $directResponse = $this->handleDirectCommands($message, $user);
-            if (!is_null($directResponse)) {
+            if (! is_null($directResponse)) {
                 // Normalize the direct response
                 $botReply = $this->normalizeContent($directResponse);
 
@@ -259,7 +259,7 @@ class ChatbotController extends Controller
         ];
 
         // If tools are provided, add them to the payload
-        if (!empty($tools)) {
+        if (! empty($tools)) {
             $payload['tools'] = $tools;
             $payload['tool_choice'] = 'auto';
         }
@@ -330,7 +330,7 @@ class ChatbotController extends Controller
             if ($firstMessage) {
                 $conversationDetails[] = [
                     'conversation_id' => $firstMessage->conversation_id,
-                    'title' => substr($firstMessage->content, 0, 50) . '...', // Use the start of the first message as a title
+                    'title' => substr($firstMessage->content, 0, 50).'...', // Use the start of the first message as a title
                     'last_activity' => $conv->last_message_at,
                 ];
             }
@@ -361,7 +361,7 @@ class ChatbotController extends Controller
             $conversationId = $lastConversation->conversation_id;
         } else {
             // Create a new conversation ID if no recent conversation exists
-            $conversationId = 'conv_' . uniqid() . '_' . time();
+            $conversationId = 'conv_'.uniqid().'_'.time();
         }
 
         // Return the conversation ID and user ID
@@ -490,12 +490,12 @@ class ChatbotController extends Controller
 
                     \Log::info('Chatbot conversation cleared', [
                         'conversation_id' => $conversationId,
-                        'user_id' => $user->id
+                        'user_id' => $user->id,
                     ]);
                 }
 
                 // Clear all user's chatbot caches if no specific conversation
-                if (!$conversationId) {
+                if (! $conversationId) {
                     $this->flushUserCache($user->id);
                 }
             }
@@ -505,7 +505,7 @@ class ChatbotController extends Controller
         }
 
         // Create a new conversation ID for the client to use going forward
-        $newConversationId = 'conv_' . uniqid() . '_' . time();
+        $newConversationId = 'conv_'.uniqid().'_'.time();
 
         // Return the new conversation ID
         return response()->json([
@@ -537,13 +537,13 @@ class ChatbotController extends Controller
 
             \Log::info('Conversation cache flushed', [
                 'conversation_id' => $conversationId,
-                'user_id' => $userId
+                'user_id' => $userId,
             ]);
         } catch (\Exception $e) {
             \Log::warning('Failed to flush conversation cache', [
                 'conversation_id' => $conversationId,
                 'user_id' => $userId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -579,7 +579,7 @@ class ChatbotController extends Controller
         } catch (\Exception $e) {
             \Log::warning('Failed to flush user cache', [
                 'user_id' => $userId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }

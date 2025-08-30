@@ -40,8 +40,8 @@ class ImportantUrlsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordUrl(fn($record) => $record->trashed() ? null : ImportantUrlResource::getUrl('edit', ['record' => $record]))
-            ->modifyQueryUsing(fn($query) => $query->with('client'))
+            ->recordUrl(fn ($record) => $record->trashed() ? null : ImportantUrlResource::getUrl('edit', ['record' => $record]))
+            ->modifyQueryUsing(fn ($query) => $query->with('client'))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
@@ -63,7 +63,7 @@ class ImportantUrlsRelationManager extends RelationManager
                         $formattedCompany = self::formatCompanyName($record->client?->company_name);
 
                         // Return the combined format: "Name (Company)"
-                        return $formattedName . ' (' . $formattedCompany . ')';
+                        return $formattedName.' ('.$formattedCompany.')';
                     }),
                 TextColumn::make('important_url')
                     ->label(__('importanturl.table.important_url'))
@@ -79,14 +79,14 @@ class ImportantUrlsRelationManager extends RelationManager
                 TextColumn::make('updated_at')
                     ->label(__('importanturl.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
-                        if (!$record->updated_by || $record->updated_at?->eq($record->created_at)) {
+                        if (! $record->updated_by || $record->updated_at?->eq($record->created_at)) {
                             return '-';
                         }
 
                         $user = $record->updatedBy;
                         $formattedName = $user ? $user->short_name : 'Unknown';
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -95,7 +95,7 @@ class ImportantUrlsRelationManager extends RelationManager
                 SelectFilter::make('client_id')
                     ->label(__('importanturl.table.client'))
                     ->relationship('client', 'pic_name')
-                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
+                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->pic_name} ({$record->company_name})")
                     ->preload()
                     ->searchable()
                     ->multiple(),
@@ -108,16 +108,16 @@ class ImportantUrlsRelationManager extends RelationManager
                     ->label('')
                     ->icon('heroicon-o-link')
                     ->color('primary')
-                    ->url(fn($record) => $record->url)
+                    ->url(fn ($record) => $record->url)
                     ->openUrlInNewTab()
                     ->tooltip(function ($record) {
                         $url = $record->url;
 
-                        return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     }),
                 Tables\Actions\EditAction::make()
-                    ->url(fn($record) => ImportantUrlResource::getUrl('edit', ['record' => $record]))
-                    ->hidden(fn($record) => $record->trashed()),
+                    ->url(fn ($record) => ImportantUrlResource::getUrl('edit', ['record' => $record]))
+                    ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
@@ -156,7 +156,7 @@ class ImportantUrlsRelationManager extends RelationManager
 
         // If two words, return first word + first letter of second word
         if (count($parts) === 2) {
-            return $parts[0] . ' ' . substr($parts[1], 0, 1) . '.';
+            return $parts[0].' '.substr($parts[1], 0, 1).'.';
         }
 
         // If three or more words, return first + middle initial + last initial
@@ -166,10 +166,10 @@ class ImportantUrlsRelationManager extends RelationManager
 
         // If there's a middle name, get its first letter
         if (count($parts) >= 3) {
-            $middleInitial = substr($parts[1], 0, 1) . '. ';
+            $middleInitial = substr($parts[1], 0, 1).'. ';
         }
 
-        return $first . ' ' . $middleInitial . substr($last, 0, 1) . '.';
+        return $first.' '.$middleInitial.substr($last, 0, 1).'.';
     }
 
     /**
@@ -184,7 +184,7 @@ class ImportantUrlsRelationManager extends RelationManager
 
         // If company name is longer than 10 characters, truncate and add ellipsis
         if (strlen($company) > 10) {
-            return substr($company, 0, 10) . '...';
+            return substr($company, 0, 10).'...';
         }
 
         return $company;

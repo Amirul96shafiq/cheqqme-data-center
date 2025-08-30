@@ -31,7 +31,7 @@ class ImportantUrlFactory extends Factory
 
         return [
             'title' => fake()->sentence(3),
-            'url' => fake()->randomElement($urlTypes) . fake()->regexify('[A-Za-z0-9]{10}'),
+            'url' => fake()->randomElement($urlTypes).fake()->regexify('[A-Za-z0-9]{10}'),
             'project_id' => null, // Will be set when creating
             'client_id' => null, // Will be set when creating
             'notes' => fake()->paragraph(),

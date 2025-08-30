@@ -7,13 +7,13 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-  public function index(Request $request)
-  {
-    $query = User::query();
+    public function index(Request $request)
+    {
+        $query = User::query();
 
-    $limit = (int) $request->input('limit', 50);
-    $users = $query->limit($limit)->get();
+        $limit = (int) $request->input('limit', 50);
+        $users = $query->limit($limit)->get();
 
-    return response()->json(['users' => $users]);
-  }
+        return response()->json(['users' => $users]);
+    }
 }

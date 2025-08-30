@@ -94,13 +94,13 @@ class SampleDataSeeder extends Seeder
         }
 
         $this->command->info('Sample data created successfully!');
-        $this->command->info('Users: ' . User::count());
-        $this->command->info('Clients: ' . Client::count());
-        $this->command->info('Projects: ' . Project::count());
-        $this->command->info('Documents: ' . Document::count());
-        $this->command->info('Important URLs: ' . ImportantUrl::count());
-        $this->command->info('Phone Numbers: ' . PhoneNumber::count());
-        $this->command->info('Tasks: ' . Task::count());
-        $this->command->info('Comments: ' . Comment::count());
+        $this->command->info('Users: '.User::count());
+        $this->command->info('Clients: '.Client::count());
+        $this->command->info('Projects: '.Project::count());
+        $this->command->info('Documents: '.Document::count());
+        $this->command->info('Important URLs: '.ImportantUrl::count());
+        $this->command->info('Phone Numbers: '.PhoneNumber::count());
+        $this->command->info('Tasks: '.Task::count());
+        $this->command->info('Comments: '.Comment::count());
     }
 }

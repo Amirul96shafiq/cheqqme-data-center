@@ -7,14 +7,14 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
-  public function index(Request $request)
-  {
-    $query = Client::query()
-      ->with(['projects', 'documents', 'importantUrls', 'updatedBy']);
+    public function index(Request $request)
+    {
+        $query = Client::query()
+            ->with(['projects', 'documents', 'importantUrls', 'updatedBy']);
 
-    $limit = (int) $request->input('limit', 50);
-    $clients = $query->limit($limit)->get();
+        $limit = (int) $request->input('limit', 50);
+        $clients = $query->limit($limit)->get();
 
-    return response()->json(['clients' => $clients]);
-  }
+        return response()->json(['clients' => $clients]);
+    }
 }

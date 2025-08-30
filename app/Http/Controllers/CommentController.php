@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CommentApiResource;
 use App\Models\Comment;
 use Illuminate\Http\Request;
-use App\Http\Resources\CommentApiResource;
 
 class CommentController extends Controller
 {
@@ -12,8 +12,10 @@ class CommentController extends Controller
     public function show($comment)
     {
         $commentModel = Comment::withTrashed()->findOrFail($comment);
+
         return response()->json(['comment' => new CommentApiResource($commentModel)]);
     }
+
     public function index(Request $request)
     {
         $query = Comment::query()

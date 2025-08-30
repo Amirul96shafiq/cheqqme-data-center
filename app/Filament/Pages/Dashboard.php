@@ -21,8 +21,6 @@ class Dashboard extends BaseDashboard
         return false; // Hide the Dashboard from the sidebar navigation
     }
 
-
-
     public static function getSlug(): string
     {
         return 'dashboard';

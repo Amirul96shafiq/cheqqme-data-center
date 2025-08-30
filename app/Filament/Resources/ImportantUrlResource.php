@@ -247,7 +247,7 @@ class ImportantUrlResource extends Resource
                     ->searchable()
                     ->limit(15),
 
-                    TextColumn::make('client.pic_name')
+                TextColumn::make('client.pic_name')
                     ->label(__('importanturl.table.client'))
                     ->searchable()
                     ->sortable()
@@ -259,7 +259,7 @@ class ImportantUrlResource extends Resource
                         $formattedCompany = self::formatCompanyName($record->client?->company_name);
 
                         // Return the combined format: "Name (Company)"
-                        return $formattedName . ' (' . $formattedCompany . ')';
+                        return $formattedName.' ('.$formattedCompany.')';
                     }),
 
                 TextColumn::make('project.title')
@@ -402,7 +402,7 @@ class ImportantUrlResource extends Resource
 
         // If two words, return first word + first letter of second word
         if (count($parts) === 2) {
-            return $parts[0] . ' ' . substr($parts[1], 0, 1) . '.';
+            return $parts[0].' '.substr($parts[1], 0, 1).'.';
         }
 
         // If three or more words, return first + middle initial + last initial
@@ -412,10 +412,10 @@ class ImportantUrlResource extends Resource
 
         // If there's a middle name, get its first letter
         if (count($parts) >= 3) {
-            $middleInitial = substr($parts[1], 0, 1) . '. ';
+            $middleInitial = substr($parts[1], 0, 1).'. ';
         }
 
-        return $first . ' ' . $middleInitial . substr($last, 0, 1) . '.';
+        return $first.' '.$middleInitial.substr($last, 0, 1).'.';
     }
 
     /**
@@ -430,7 +430,7 @@ class ImportantUrlResource extends Resource
 
         // If company name is longer than 10 characters, truncate and add ellipsis
         if (strlen($company) > 10) {
-            return substr($company, 0, 10) . '...';
+            return substr($company, 0, 10).'...';
         }
 
         return $company;

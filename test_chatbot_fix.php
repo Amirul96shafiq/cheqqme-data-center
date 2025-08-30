@@ -7,7 +7,7 @@ $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
 use App\Models\ChatbotConversation;
 
-$conversationId = 'test_' . time();
+$conversationId = 'test_'.time();
 
 try {
     // Create user message
@@ -16,7 +16,7 @@ try {
         'conversation_id' => $conversationId,
         'role' => 'user',
         'content' => 'Hello',
-        'last_activity' => now()
+        'last_activity' => now(),
     ]);
 
     // Create assistant message
@@ -25,15 +25,15 @@ try {
         'conversation_id' => $conversationId,
         'role' => 'assistant',
         'content' => 'Hi there!',
-        'last_activity' => now()
+        'last_activity' => now(),
     ]);
 
-    echo "Success: Both records created for conversation " . $conversationId . PHP_EOL;
+    echo 'Success: Both records created for conversation '.$conversationId.PHP_EOL;
 
     // Check records were created
     $count = ChatbotConversation::where('conversation_id', $conversationId)->count();
-    echo "Records in conversation: " . $count . PHP_EOL;
+    echo 'Records in conversation: '.$count.PHP_EOL;
 
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage() . PHP_EOL;
+    echo 'Error: '.$e->getMessage().PHP_EOL;
 }

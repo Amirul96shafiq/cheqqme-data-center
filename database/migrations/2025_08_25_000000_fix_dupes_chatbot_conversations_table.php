@@ -3,7 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         // Remove any duplicate (user_id, conversation_id) pairs to satisfy the upcoming composite unique index
@@ -14,7 +15,7 @@ return new class extends Migration {
         $seen = [];
         $toDelete = [];
         foreach ($rows as $row) {
-            $key = $row->user_id . '|' . $row->conversation_id;
+            $key = $row->user_id.'|'.$row->conversation_id;
             if (isset($seen[$key])) {
                 $toDelete[] = $row->id;
             } else {
@@ -22,7 +23,7 @@ return new class extends Migration {
             }
         }
 
-        if (!empty($toDelete)) {
+        if (! empty($toDelete)) {
             DB::table('chatbot_conversations')->whereIn('id', $toDelete)->delete();
         }
 

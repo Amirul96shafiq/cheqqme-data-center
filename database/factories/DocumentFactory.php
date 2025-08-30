@@ -23,7 +23,7 @@ class DocumentFactory extends Factory
             'title' => fake()->sentence(3),
             'type' => $type,
             'url' => $type === 'external' ? fake()->url() : null,
-            'file_path' => $type === 'internal' ? 'documents/' . fake()->uuid() . '.' . fake()->randomElement($fileExtensions) : null,
+            'file_path' => $type === 'internal' ? 'documents/'.fake()->uuid().'.'.fake()->randomElement($fileExtensions) : null,
             'project_id' => null, // Will be set when creating
             'notes' => fake()->paragraph(),
             'updated_by' => null, // Will be set when creating

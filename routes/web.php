@@ -66,7 +66,7 @@ Route::middleware('auth')->group(function () {
 
     // Live badge polling endpoint for Action Board navigation badge
     Route::get('/action-board/assigned-active-count', function () {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return response()->json(['count' => 0]);
         }
         $count = \App\Models\Task::query()

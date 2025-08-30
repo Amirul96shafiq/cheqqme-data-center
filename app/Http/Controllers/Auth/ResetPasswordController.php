@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\App;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
@@ -18,6 +18,7 @@ class ResetPasswordController extends Controller
     {
         // Ensure the locale from the user's session is applied when rendering the reset form
         App::setLocale(session('locale', config('app.locale')));
+
         return view('auth.reset-password', [
             'token' => $token,
             'email' => $request->input('email'),

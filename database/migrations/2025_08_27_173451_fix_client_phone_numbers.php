@@ -2,7 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -28,9 +29,9 @@ return new class extends Migration {
                     $areaCode = rand(1, 9);
                     if ($areaCode == 1) {
                         $mobilePrefix = rand(0, 9);
-                        $newNumber = '+' . $prefix . '1' . $mobilePrefix . str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
+                        $newNumber = '+'.$prefix.'1'.$mobilePrefix.str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
                     } else {
-                        $newNumber = '+' . $prefix . $areaCode . str_pad(rand(0, 99999999), 8, '0', STR_PAD_LEFT);
+                        $newNumber = '+'.$prefix.$areaCode.str_pad(rand(0, 99999999), 8, '0', STR_PAD_LEFT);
                     }
                     break;
 
@@ -39,9 +40,9 @@ return new class extends Migration {
                     $areaCode = rand(2, 8);
                     if ($areaCode == 6) {
                         $subArea = rand(1, 9);
-                        $newNumber = '+' . $prefix . $areaCode . $subArea . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+                        $newNumber = '+'.$prefix.$areaCode.$subArea.str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
                     } else {
-                        $newNumber = '+' . $prefix . $areaCode . rand(1, 9) . str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
+                        $newNumber = '+'.$prefix.$areaCode.rand(1, 9).str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
                     }
                     break;
 
@@ -49,14 +50,14 @@ return new class extends Migration {
                     $prefix = '65';
                     $areaCode = rand(3, 9);
                     if ($areaCode == 9) {
-                        $newNumber = '+' . $prefix . '9' . str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
+                        $newNumber = '+'.$prefix.'9'.str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
                     } else {
-                        $newNumber = '+' . $prefix . $areaCode . str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
+                        $newNumber = '+'.$prefix.$areaCode.str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
                     }
                     break;
 
                 default:
-                    $newNumber = '+601' . rand(0, 9) . str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
+                    $newNumber = '+601'.rand(0, 9).str_pad(rand(0, 9999999), 7, '0', STR_PAD_LEFT);
             }
 
             $client->pic_contact_number = $newNumber;
