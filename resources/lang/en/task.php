@@ -61,6 +61,7 @@ return [
     'action' => [
         'save_changes' => 'Save changes',
         'cancel' => 'Cancel',
+        'share' => 'Share',
     ],
     'notifications' => [
         'created_title' => 'Task Created',
@@ -76,6 +77,8 @@ return [
         'mentioned_task_fallback' => 'a task',
         'deleted_title' => 'Task Deleted',
         'deleted_body' => 'Redirecting to Action Board...',
+        'share_title' => 'Task Share Link Generated',
+        'share_body' => 'Share URL: :url',
     ],
     'activity_log' => [
         'no_activities' => 'No recent activities found.',

@@ -4,9 +4,9 @@ namespace App\Filament\Resources\TaskResource\Pages;
 
 use App\Filament\Pages\ActionBoard;
 use App\Filament\Resources\TaskResource;
+use Filament\Notifications\Notification;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\EditRecord;
-use Filament\Notifications\Notification;
 
 class EditTask extends EditRecord
 {
@@ -48,6 +48,28 @@ class EditTask extends EditRecord
     public function getCancelAction()
     {
         return null;
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\Action::make('share_task')
+                ->label(__('task.action.share'))
+                ->icon('heroicon-o-share')
+                ->color('gray')
+                ->action(function () {
+                    // Generate a shareable URL for the task using Filament's URL generator
+                    $shareUrl = TaskResource::getUrl('edit', ['record' => $this->record->id]);
+
+                    // Show notification with the shareable URL
+                    Notification::make()
+                        ->title(__('task.notifications.share_title'))
+                        ->body(__('task.notifications.share_body', ['url' => $shareUrl]))
+                        ->icon('heroicon-o-share')
+                        ->success()
+                        ->send();
+                }),
+        ];
     }
 
     protected function getFormActions(): array

@@ -69,8 +69,12 @@ if(!window.__flowforgeBoardAutoPoll){
 window.shareTaskUrl = function(event, taskId) {
   event.preventDefault();
   event.stopPropagation();
-  const editUrl = `/admin/tasks/${taskId}/edit`;
-  const fullUrl = window.location.origin + editUrl;
+
+  // Use Filament's proper URL generation instead of hardcoded path
+  // This matches the same URL structure used by the share task button in EditTask.php
+  const editUrl = @js(\App\Filament\Resources\TaskResource::getUrl('edit', ['record' => 'PLACEHOLDER']));
+  const fullUrl = editUrl.replace('PLACEHOLDER', taskId);
+
   navigator.clipboard.writeText(fullUrl).catch(function(err) {
       // No notification; ignore errors
   });

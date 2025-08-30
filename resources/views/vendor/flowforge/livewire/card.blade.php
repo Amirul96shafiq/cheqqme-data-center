@@ -36,6 +36,7 @@
             </div>
         @endif
 
+        {{-- If no featured image, show card title and share button section --}}
         @if(empty($record['attributes']['featured_image']['value']))
             <div class="flex justify-between items-center mb-2">
                 <h4 class="ff-card__title m-0">{{ $record['title'] }}</h4>

@@ -325,8 +325,8 @@
         background-size: cover !important;
         background-position: center !important;
         background-repeat: no-repeat !important;
-        min-height: 80px !important; /* Increased row height for cover images */
         transition: min-height 0.3s ease-in-out !important; /* Smooth height transition */
+        border: 0px !important;
     }
 
     /* Text styling for cover image rows */

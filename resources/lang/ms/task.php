@@ -61,6 +61,7 @@ return [
     'action' => [
         'save_changes' => 'Simpan',
         'cancel' => 'Batal',
+        'share' => 'Kongsi',
     ],
     'notifications' => [
         'created_title' => 'Tugasan Dicipta',
@@ -77,6 +78,8 @@ return [
         'mentioned_actions_view_task' => 'Papar Tugasan',
         'deleted_title' => 'Tugasan Dihapus',
         'deleted_body' => 'Bergegas ke Papan Tindakan...',
+        'share_title' => 'Pautan Tugasan Dikongsi',
+        'share_body' => 'Pautan Tugasan: :url',
     ],
     'activity_log' => [
         'no_activities' => 'Tiada aktiviti terkini ditemui.',
