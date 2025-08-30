@@ -329,14 +329,19 @@
         filter: brightness(1) !important; /* Bright by default */
     }
 
-    /* Dark mode cover image row: hover effect */
+    /* Cover image row: hover effect */
     .cover-image-row:hover {
+        filter: brightness(0.95) !important; /* Dark on hover */
+    }
+
+    /* Dark mode cover image row: hover effect */
+    .dark .cover-image-row:hover {
         filter: brightness(1.2) !important; /* Bright on hover */
     }
 
     /* Dark mode cover image row: force border color */
     .dark .cover-image-row {
-        border-color: #2F2F32 !important;
+        border-color: #2f2f32 !important;
     }
 
     /* Remove top border from first cover image row to eliminate extra line */

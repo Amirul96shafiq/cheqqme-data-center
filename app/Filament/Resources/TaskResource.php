@@ -161,6 +161,7 @@ return false;
                                                 ->panelLayout('grid')
                                                 ->reorderable()
                                                 ->appendFiles()
+                                                ->itemPanelAspectRatio('0.25')
                                                 ->acceptedFileTypes(['image/*', 'video/*', 'application/pdf'])
                                                 ->directory('tasks')
                                                 ->preserveFilenames()

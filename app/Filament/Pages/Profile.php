@@ -79,6 +79,7 @@ class Profile extends EditProfile
                                     ->imageEditor()
                                     ->directory('covers')
                                     ->moveFiles()
+                                    ->preserveFilenames()
                                     ->imageResizeMode('cover')
                                     ->imageResizeTargetWidth('1920')
                                     ->imageResizeTargetHeight('600')
