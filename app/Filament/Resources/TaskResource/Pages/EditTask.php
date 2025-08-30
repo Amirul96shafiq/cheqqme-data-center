@@ -12,6 +12,9 @@ class EditTask extends EditRecord
 {
     protected static string $resource = TaskResource::class;
 
+    // Use custom Blade template
+    protected static string $view = 'filament.resources.task-resource.pages.edit-task';
+
     // Remove breadcrumb
     public function getBreadcrumb(): string
     {
@@ -61,11 +64,14 @@ class EditTask extends EditRecord
                     // Generate a shareable URL for the task using Filament's URL generator
                     $shareUrl = TaskResource::getUrl('edit', ['record' => $this->record->id]);
 
-                    // Show notification with the shareable URL
+                    // Dispatch browser event to copy URL to clipboard
+                    $this->dispatch('copy-task-url', url: $shareUrl);
+
+                    // Show notification that copy operation was initiated
                     Notification::make()
                         ->title(__('task.notifications.share_title'))
                         ->body(__('task.notifications.share_body', ['url' => $shareUrl]))
-                        ->icon('heroicon-o-share')
+                        ->icon('heroicon-o-clipboard')
                         ->success()
                         ->send();
                 }),
