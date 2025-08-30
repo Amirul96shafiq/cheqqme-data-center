@@ -64,8 +64,8 @@ class EditTask extends EditRecord
                     // Generate a shareable URL for the task using Filament's URL generator
                     $shareUrl = TaskResource::getUrl('edit', ['record' => $this->record->id]);
 
-                    // Dispatch browser event to copy URL to clipboard
-                    $this->dispatch('copy-task-url', url: $shareUrl);
+                    // Dispatch browser event to copy URL to clipboard using generic event
+                    $this->dispatch('copy-to-clipboard', text: $shareUrl, message: __('task.notifications.share_title'));
 
                     // Show notification that copy operation was initiated
                     Notification::make()

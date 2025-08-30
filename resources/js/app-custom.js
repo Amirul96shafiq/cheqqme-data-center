@@ -104,7 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
             bubble.style.borderRadius = "6px";
             bubble.style.fontSize = "12px";
             bubble.style.opacity = "0";
-            bubble.style.transition = "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
+            bubble.style.transition =
+                "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
             bubble.style.whiteSpace = "nowrap"; // Prevent text wrapping
             document.body.appendChild(bubble);
 
@@ -114,14 +115,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 const centerX = rect.left + rect.width / 2;
                 bubble.style.left = centerX - bubbleRect.width / 2 + "px";
             });
-            
+
             // Smooth fade in
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     bubble.style.opacity = "1";
                 });
             });
-            
+
             // Smooth fade out and remove
             setTimeout(() => {
                 bubble.style.opacity = "0";
@@ -132,6 +133,72 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 })();
+
+// -----------------------------
+// Reusable Clipboard Utility
+// -----------------------------
+window.copyToClipboard = function (
+    text,
+    successMessage = "Copied to clipboard!"
+) {
+    if (!text) {
+        console.error("No text provided to copy");
+        return Promise.reject(new Error("No text provided"));
+    }
+
+    return navigator.clipboard
+        .writeText(text)
+        .then(function () {
+            // Success - notification will be handled by PHP side
+            console.log(successMessage, text);
+            return text;
+        })
+        .catch(function (err) {
+            console.error("Failed to copy to clipboard: ", err);
+
+            // Fallback for older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.select();
+
+            try {
+                document.execCommand("copy");
+                document.body.removeChild(textArea);
+
+                // Success - notification will be handled by PHP side
+                console.log(successMessage + " (fallback):", text);
+                return text;
+            } catch (fallbackErr) {
+                document.body.removeChild(textArea);
+                console.error("Fallback copy also failed:", fallbackErr);
+                throw fallbackErr;
+            }
+        });
+};
+
+// -----------------------------
+// Livewire Event Handlers for Clipboard Operations
+// -----------------------------
+document.addEventListener("livewire:init", function () {
+    // Generic copy event handler
+    Livewire.on("copy-to-clipboard", function (data) {
+        const { text, message } = data;
+        copyToClipboard(text, message);
+    });
+
+    // Legacy event handlers for backward compatibility
+    Livewire.on("copy-task-url", function (data) {
+        copyToClipboard(data.url, "Task URL copied to clipboard!");
+    });
+
+    Livewire.on("copy-api-key", function (data) {
+        copyToClipboard(data.apiKey, "API key copied to clipboard!");
+    });
+});
 
 // -----------------------------
 // Apply cover image backgrounds to table rows
