@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+vendor/
+bower_components/
+
+# Build outputs
+build/
+dist/
+public/build/
+public/hot
+
+# Cache and temporary files
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+storage/logs/
+bootstrap/cache/
+.phpunit.result.cache
+
+# Environment and config
+.env
+.env.*
+!.env.example
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
+docker/
+docker-compose*.yml
+Dockerfile*
+
+# Testing
+coverage/
+.nyc_output/
+phpunit.xml
+
+# Documentation
+*.md
+docs/
+README*
+
+# Large files
+*.log
+*.sql
+*.sqlite
+*.zip
+*.tar.gz
+
+# MCP server files
+mcp-server/
