@@ -235,8 +235,9 @@ class ImportantUrlResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            // Disable record URL for trashed records
-            ->recordUrl(fn ($record) => $record->trashed() ? null : static::getUrl('edit', ['record' => $record]))
+            // Disable record URL and record action for all records
+            ->recordUrl(null)
+            ->recordAction(null)
             ->columns([
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))

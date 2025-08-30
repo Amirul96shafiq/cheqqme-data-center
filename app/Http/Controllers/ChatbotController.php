@@ -23,7 +23,7 @@ class ChatbotController extends Controller
             $user = Auth::user();
 
             // If the user is not authenticated, return an error
-            if (!$user) {
+            if (! $user) {
                 return response()->json(['error' => 'Unauthenticated.'], 401);
             }
 
@@ -40,7 +40,7 @@ class ChatbotController extends Controller
 
             // Check for direct commands that should bypass OpenAI (e.g., /help)
             $directResponse = $this->handleDirectCommands($message, $user);
-            if (!is_null($directResponse)) {
+            if (! is_null($directResponse)) {
                 // Normalize the direct response
                 $botReply = $this->normalizeContent($directResponse);
 
@@ -253,9 +253,17 @@ class ChatbotController extends Controller
                 - You\'re not just helping - you\'re making their day better!
 
                 Micro-humour examples
-                - "On The Way, like how a Malay guy said to his friend when he is doing something"
+                - "On The Way, literally means \"You will do it\""
                 - "Pape roger, literally means \"If you need anything, just let me know\""
-                - "Thank you Bosskur, literally means \"Thank you boss\", use it when you are grateful"
+                - "Mantap Bosskur, literally means \"That\'s great, boss\", use it when you want to praise someone"
+                - "Takpe la, literally means \"It\'s okay, don\'t worry about it\", use it to comfort someone"
+                - "Alamak, literally means \"Oh my\" or \"Oh no\", use it when something unexpected happens"
+                - "Tak boleh tahan, literally means \"Cannot stand it anymore\", use it when something is too much"
+                - "Best giler, literally means \"Super awesome\", use it to express extreme excitement"
+                - "Boleh je, literally means \"Can do it\", use it to show confidence"
+                - "Siap, literally means \"Done\" or \"Finished\", use it when completing tasks"
+                - "Jom, literally means \"Let\'s go\" or \"Come on\", use it to encourage action"
+                - "Terbaik, literally means \"The best\", use it to praise something excellent"
                 ',
             ],
         ];
@@ -290,7 +298,7 @@ class ChatbotController extends Controller
         ];
 
         // If tools are provided, add them to the payload
-        if (!empty($tools)) {
+        if (! empty($tools)) {
             $payload['tools'] = $tools;
             $payload['tool_choice'] = 'auto';
         }
@@ -361,7 +369,7 @@ class ChatbotController extends Controller
             if ($firstMessage) {
                 $conversationDetails[] = [
                     'conversation_id' => $firstMessage->conversation_id,
-                    'title' => substr($firstMessage->content, 0, 50) . '...', // Use the start of the first message as a title
+                    'title' => substr($firstMessage->content, 0, 50).'...', // Use the start of the first message as a title
                     'last_activity' => $conv->last_message_at,
                 ];
             }
@@ -392,7 +400,7 @@ class ChatbotController extends Controller
             $conversationId = $lastConversation->conversation_id;
         } else {
             // Create a new conversation ID if no recent conversation exists
-            $conversationId = 'conv_' . uniqid() . '_' . time();
+            $conversationId = 'conv_'.uniqid().'_'.time();
         }
 
         // Return the conversation ID and user ID
@@ -526,7 +534,7 @@ class ChatbotController extends Controller
                 }
 
                 // Clear all user's chatbot caches if no specific conversation
-                if (!$conversationId) {
+                if (! $conversationId) {
                     $this->flushUserCache($user->id);
                 }
             }
@@ -536,7 +544,7 @@ class ChatbotController extends Controller
         }
 
         // Create a new conversation ID for the client to use going forward
-        $newConversationId = 'conv_' . uniqid() . '_' . time();
+        $newConversationId = 'conv_'.uniqid().'_'.time();
 
         // Return the new conversation ID
         return response()->json([

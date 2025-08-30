@@ -325,8 +325,18 @@
         background-size: cover !important;
         background-position: center !important;
         background-repeat: no-repeat !important;
-        transition: min-height 0.3s ease-in-out !important; /* Smooth height transition */
         border: 1px solid #e5e7eb !important;
+        filter: brightness(1) !important; /* Bright by default */
+    }
+
+    /* Dark mode cover image row: hover effect */
+    .cover-image-row:hover {
+        filter: brightness(1.2) !important; /* Bright on hover */
+    }
+
+    /* Dark mode cover image row: force border color */
+    .dark .cover-image-row {
+        border-color: #2F2F32 !important;
     }
 
     /* Remove top border from first cover image row to eliminate extra line */
