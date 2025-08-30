@@ -326,7 +326,24 @@
         background-position: center !important;
         background-repeat: no-repeat !important;
         transition: min-height 0.3s ease-in-out !important; /* Smooth height transition */
-        border: 0px !important;
+        border: 1px solid #e5e7eb !important;
+    }
+
+    /* Remove top border from first cover image row to eliminate extra line */
+    .cover-image-row:first-child {
+        border-top: none !important;
+        border-right: none !important;
+        border-left: none !important;
+    }
+
+    /* Remove all borders from consecutive cover image rows to create seamless background */
+    .cover-image-row + .cover-image-row {
+        border: none !important;
+    }
+
+    /* Ensure last cover image row has bottom border for proper closure */
+    .cover-image-row:last-child {
+        border-bottom: 1px solid #e5e7eb !important;
     }
 
     /* Text styling for cover image rows */
