@@ -33,6 +33,36 @@ class ChatbotController extends Controller
             // Get the conversation ID first
             $conversationId = $request->input('conversation_id') ?? uniqid('conv_');
 
+            // Check if the message is emoji-only
+            if ($this->isEmojiOnly($message)) {
+                $botReply = $this->getEmojiResponse($message);
+
+                // Store user message
+                ChatbotConversation::create([
+                    'user_id' => $user->id,
+                    'conversation_id' => $conversationId,
+                    'role' => 'user',
+                    'content' => $message,
+                    'last_activity' => now(),
+                ]);
+
+                // Store bot reply
+                ChatbotConversation::create([
+                    'user_id' => $user->id,
+                    'conversation_id' => $conversationId,
+                    'role' => 'assistant',
+                    'content' => $botReply,
+                    'last_activity' => now(),
+                ]);
+
+                // Return the reply and conversation ID
+                return response()->json([
+                    'reply' => $botReply,
+                    'conversation_id' => $conversationId,
+                    'timestamp' => now()->format('h:i A'),
+                ]);
+            }
+
             // Get the conversation history
             $conversationHistory = ChatbotConversation::where('conversation_id', $conversationId)
                 ->orderBy('created_at')
@@ -528,5 +558,147 @@ class ChatbotController extends Controller
                 'error' => $e->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * Check if a message contains only emojis
+     */
+    protected function isEmojiOnly(string $message): bool
+    {
+        // Remove whitespace and check if the message is empty
+        $trimmedMessage = trim($message);
+        if (empty($trimmedMessage)) {
+            return false;
+        }
+
+        // Remove all emoji characters and check if anything remains
+        $withoutEmojis = preg_replace('/[\x{1F600}-\x{1F64F}]|[\x{1F300}-\x{1F5FF}]|[\x{1F680}-\x{1F6FF}]|[\x{1F1E0}-\x{1F1FF}]|[\x{2600}-\x{26FF}]|[\x{2700}-\x{27BF}]|[\x{1F900}-\x{1F9FF}]|[\x{1F018}-\x{1F270}]|[\x{238C}-\x{2454}]|[\x{20D0}-\x{20FF}]|[\x{FE00}-\x{FE0F}]|[\x{1F000}-\x{1F02F}]|[\x{1F0A0}-\x{1F0FF}]|[\x{1F100}-\x{1F64F}]|[\x{1F680}-\x{1F6FF}]|[\x{1F910}-\x{1F96B}]|[\x{1F980}-\x{1F9E0}]/u', '', $trimmedMessage);
+
+        // Also remove common emoji modifiers and skin tone modifiers
+        $withoutEmojis = preg_replace('/[\x{1F3FB}-\x{1F3FF}]|[\x{1F9B0}-\x{1F9B3}]|[\x{200D}]|[\x{FE0F}]/u', '', $withoutEmojis);
+
+        // Remove any remaining whitespace
+        $withoutEmojis = trim($withoutEmojis);
+
+        // If nothing remains, it's emoji-only
+        return empty($withoutEmojis);
+    }
+
+    /**
+     * Get an appropriate emoji response based on the user's emoji
+     */
+    protected function getEmojiResponse(string $userEmoji): string
+    {
+        // Define emoji response mappings
+        $emojiResponses = [
+            // Love and positive emotions
+            '🥰' => '😘',
+            '😍' => '🥰',
+            '😘' => '😍',
+            '💕' => '💖',
+            '💖' => '💕',
+            '💗' => '💓',
+            '💓' => '💗',
+            '💝' => '💕',
+            '💞' => '💖',
+            '💟' => '💕',
+            '❤️' => '💖',
+            '🧡' => '💛',
+            '💛' => '💚',
+            '💚' => '💙',
+            '💙' => '💜',
+            '💜' => '🖤',
+            '🖤' => '🤍',
+            '🤍' => '🤎',
+            '🤎' => '❤️',
+
+            // Happy emotions
+            '😊' => '😄',
+            '😄' => '😁',
+            '😁' => '😆',
+            '😆' => '😅',
+            '😅' => '😂',
+            '😂' => '🤣',
+            '🤣' => '😊',
+            '😃' => '😄',
+            '😉' => '😊',
+            '😋' => '😛',
+            '😛' => '😜',
+            '😜' => '🤪',
+            '🤪' => '😝',
+            '😝' => '😋',
+
+            // Thumbs up and approval
+            '👍' => '👏',
+            '👏' => '🙌',
+            '🙌' => '👐',
+            '👐' => '🤲',
+            '🤲' => '👍',
+            '👌' => '✌️',
+            '✌️' => '🤞',
+            '🤞' => '👌',
+
+            // Celebration and excitement
+            '🎉' => '🎊',
+            '🎊' => '🎈',
+            '🎈' => '🎂',
+            '🎂' => '🎁',
+            '🎁' => '🎉',
+            '🎆' => '🎇',
+            '🎇' => '✨',
+            '✨' => '🌟',
+            '🌟' => '⭐',
+            '⭐' => '💫',
+            '💫' => '✨',
+
+            // Hugs and care
+            '🤗' => '🤗',
+            '🥺' => '🥰',
+            '😢' => '🤗',
+            '😭' => '🤗',
+
+            // Thinking and pondering
+            '🤔' => '💭',
+            '💭' => '🤔',
+            '🧐' => '💡',
+            '💡' => '🧐',
+
+            // Animals (fun responses)
+            '🐶' => '🐱',
+            '🐱' => '🐭',
+            '🐭' => '🐹',
+            '🐹' => '🐰',
+            '🐰' => '🦊',
+            '🦊' => '🐻',
+            '🐻' => '🐼',
+            '🐼' => '🐶',
+
+            // Fire and energy
+            '🔥' => '⚡',
+            '⚡' => '💥',
+            '💥' => '💢',
+            '💢' => '🔥',
+
+            // Weather and nature
+            '🌞' => '🌛',
+            '🌛' => '⭐',
+            '🌧️' => '🌈',
+            '🌈' => '🌞',
+            '🌸' => '🌺',
+            '🌺' => '🌻',
+            '🌻' => '🌸',
+        ];
+
+        $trimmedEmoji = trim($userEmoji);
+
+        // Check for exact match first
+        if (isset($emojiResponses[$trimmedEmoji])) {
+            return $emojiResponses[$trimmedEmoji];
+        }
+
+        // If it's multiple emojis or unknown emoji, provide a random positive response
+        $defaultResponses = ['😊', '🥰', '😘', '💖', '✨', '🌟', '👍', '🎉', '🤗', '😄'];
+
+        return $defaultResponses[array_rand($defaultResponses)];
     }
 }

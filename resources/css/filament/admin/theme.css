@@ -386,4 +386,9 @@
     .dark .cover-image-row .fi-avatar {
         border-color: rgba(255, 255, 255, 0.9) !important;
     }
+
+    .favorites {
+        padding-top: 12px !important;
+        padding-bottom: 12px !important;
+    }
 }

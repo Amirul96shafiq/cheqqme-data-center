@@ -743,10 +743,501 @@
         );
     }
 
+    // Emoji picker functionality
+    function toggleEmojiPicker() {
+        const emojiPickerContainer = document.getElementById(
+            "emoji-picker-container"
+        );
+        const emojiPicker = document.getElementById("emoji-picker");
+        const chatbotInterface = document.getElementById("chatbot-interface");
+        const emojiButton = document.getElementById("emoji-button");
+
+        if (
+            !emojiPickerContainer ||
+            !emojiPicker ||
+            !chatbotInterface ||
+            !emojiButton
+        )
+            return;
+
+        if (emojiPickerContainer.classList.contains("hidden")) {
+            // Position the emoji picker on the left side of the chatbox
+            const chatRect = chatbotInterface.getBoundingClientRect();
+
+            // Calculate position: left of chatbox with some spacing
+            const leftPosition = chatRect.left - 420; // 400px width + 20px spacing
+
+            // Calculate top position so that bottom of emoji picker aligns with bottom of chatbox
+            // Subtract the emoji picker height from the chatbox bottom position
+            const emojiPickerHeight = emojiPicker.offsetHeight || 400; // Get actual height or fallback
+            const topPosition = chatRect.bottom - emojiPickerHeight;
+
+            // Ensure it doesn't go off-screen on the left
+            const finalLeftPosition = Math.max(20, leftPosition);
+
+            // Ensure it doesn't go off-screen on the top
+            const finalTopPosition = Math.max(20, topPosition);
+
+            // Add a small offset to account for any margins/padding
+            const adjustedTopPosition = finalTopPosition - 1;
+
+            // Ensure the emoji picker doesn't go off the top of the screen
+            const minTopPosition = 20;
+            const finalAdjustedTopPosition = Math.max(
+                minTopPosition,
+                adjustedTopPosition
+            );
+
+            emojiPickerContainer.style.left = finalLeftPosition + "px";
+            emojiPickerContainer.style.top = finalAdjustedTopPosition + "px";
+
+            emojiPickerContainer.classList.remove("hidden");
+
+            // Add animation
+            emojiPickerContainer.style.opacity = "0";
+            emojiPickerContainer.style.transform =
+                "translateX(20px) scale(0.95)";
+            requestAnimationFrame(() => {
+                emojiPickerContainer.style.transition =
+                    "opacity 0.2s ease, transform 0.2s ease";
+                emojiPickerContainer.style.opacity = "1";
+                emojiPickerContainer.style.transform = "translateX(0) scale(1)";
+            });
+
+            // Focus the emoji picker for better UX
+            emojiPicker.focus();
+        } else {
+            emojiPickerContainer.style.transition =
+                "opacity 0.2s ease, transform 0.2s ease";
+            emojiPickerContainer.style.opacity = "0";
+            emojiPickerContainer.style.transform =
+                "translateX(20px) scale(0.95)";
+            setTimeout(() => {
+                emojiPickerContainer.classList.add("hidden");
+            }, 200);
+        }
+    }
+
+    // Initialize emoji picker when DOM is ready
+    function initializeEmojiPicker() {
+        const emojiPicker = document.getElementById("emoji-picker");
+        if (!emojiPicker) {
+            console.log("❌ Emoji picker element not found!");
+            return;
+        }
+
+        console.log("✅ Emoji picker element found:", emojiPicker);
+        console.log("🏷️ Tag name:", emojiPicker.tagName);
+        console.log("📋 Classes:", emojiPicker.className);
+        console.log("🆔 ID:", emojiPicker.id);
+
+        // Configure emoji picker
+        emojiPicker.addEventListener("emoji-click", (event) => {
+            const emoji = event.detail.unicode;
+            insertEmoji(emoji);
+            toggleEmojiPicker();
+        });
+
+        // Set custom styling
+        emojiPicker.style.setProperty(
+            "--background",
+            "var(--tw-bg-opacity, 1)"
+        );
+        emojiPicker.style.setProperty("--border-color", "rgb(229 231 235)");
+        emojiPicker.style.setProperty("--category-emoji-size", "1.5rem");
+        emojiPicker.style.setProperty("--emoji-size", "1.5rem");
+        emojiPicker.style.setProperty("--num-columns", "8");
+        emojiPicker.style.setProperty("--border-radius", "0.5rem");
+
+        // Dark mode support
+        if (document.documentElement.classList.contains("dark")) {
+            emojiPicker.style.setProperty("--background", "rgb(31 41 55)");
+            emojiPicker.style.setProperty("--border-color", "rgb(75 85 99)");
+            emojiPicker.style.setProperty("--color", "rgb(255 255 255)");
+        }
+
+        // Apply padding to favorites section after emoji picker is loaded
+        setTimeout(() => {
+            console.log("🚀 Emoji picker loaded, starting investigation...");
+            console.log("📦 Emoji picker element:", emojiPicker);
+            console.log("🔍 Emoji picker HTML:", emojiPicker.outerHTML);
+
+            // Check if it's a custom element
+            if (emojiPicker.tagName === "EMOJI-PICKER") {
+                console.log("✅ Confirmed: emoji-picker is a custom element");
+            }
+
+            // Check for Shadow DOM
+            if (emojiPicker.shadowRoot) {
+                console.log("🌑 Shadow DOM found:", emojiPicker.shadowRoot);
+                console.log(
+                    "🌑 Shadow DOM HTML:",
+                    emojiPicker.shadowRoot.innerHTML
+                );
+            } else {
+                console.log("❌ No Shadow DOM detected");
+            }
+            const favoritesElements = emojiPicker.querySelectorAll(
+                '[class*="favorites"]'
+            );
+            favoritesElements.forEach((element) => {
+                element.style.paddingTop = "12px";
+                element.style.paddingBottom = "12px";
+            });
+
+            // Also target the specific element from developer console
+            const specificFavorites = emojiPicker.querySelector(
+                '[role="menu"][data-on-click="onEmojiClick"][class*="favorites"]'
+            );
+            if (specificFavorites) {
+                specificFavorites.style.paddingTop = "12px";
+                specificFavorites.style.paddingBottom = "12px";
+            }
+
+            // Inject CSS directly into the document head for maximum specificity
+            const style = document.createElement("style");
+            style.textContent = `
+                emoji-picker .favorites,
+                emoji-picker [class*="favorites"],
+                emoji-picker [role="menu"][data-on-click="onEmojiClick"][class*="favorites"],
+                emoji-picker div[role="menu"][data-on-click="onEmojiClick"].favorites.onscreen.emoji-menu {
+                    padding-top: 12px !important;
+                    padding-bottom: 12px !important;
+                }
+                
+                /* Target all elements with favorites in their class name */
+                emoji-picker *[class*="favorites"] {
+                    padding-top: 12px !important;
+                    padding-bottom: 12px !important;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Use MutationObserver to watch for dynamically added elements
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeType === Node.ELEMENT_NODE) {
+                            // Check if the added node has favorites class
+                            if (
+                                node.classList &&
+                                node.classList.contains("favorites")
+                            ) {
+                                node.style.paddingTop = "12px";
+                                node.style.paddingBottom = "12px";
+                            }
+
+                            // Also check child elements
+                            const favoritesInNode = node.querySelectorAll(
+                                '[class*="favorites"]'
+                            );
+                            favoritesInNode.forEach((element) => {
+                                element.style.paddingTop = "12px";
+                                element.style.paddingBottom = "12px";
+                            });
+                        }
+                    });
+                });
+            });
+
+            // Start observing the emoji picker for changes
+            observer.observe(emojiPicker, {
+                childList: true,
+                subtree: true,
+            });
+
+            // Apply padding to favorites section and background color to all elements in Shadow DOM
+            const applyFavoritesPadding = () => {
+                // Set CSS custom properties on the emoji-picker element itself
+                if (document.documentElement.classList.contains("dark")) {
+                    emojiPicker.style.setProperty(
+                        "--background",
+                        "rgb(39 39 42)",
+                        "important"
+                    );
+                    emojiPicker.style.setProperty(
+                        "--border-color",
+                        "rgb(75 85 99)",
+                        "important"
+                    );
+                    emojiPicker.style.setProperty(
+                        "--color",
+                        "rgb(255 255 255)",
+                        "important"
+                    );
+                    emojiPicker.style.setProperty(
+                        "background-color",
+                        "rgb(39 39 42)",
+                        "important"
+                    );
+                    emojiPicker.style.setProperty(
+                        "background",
+                        "rgb(39 39 42)",
+                        "important"
+                    );
+                }
+
+                // Check if Shadow DOM exists and apply padding to favorites
+                if (emojiPicker.shadowRoot) {
+                    const shadowElements =
+                        emojiPicker.shadowRoot.querySelectorAll("*");
+
+                    shadowElements.forEach((element) => {
+                        // Apply background color to container elements only, not interactive elements
+                        if (
+                            document.documentElement.classList.contains("dark")
+                        ) {
+                            // Skip interactive elements to preserve hover effects
+                            const isInteractive =
+                                element.tagName === "BUTTON" ||
+                                element.getAttribute("role") === "button" ||
+                                element.getAttribute("role") === "menuitem" ||
+                                element.onclick !== null ||
+                                element.classList.contains("emoji") ||
+                                element.classList.contains("category-emoji");
+
+                            if (!isInteractive) {
+                                element.style.setProperty(
+                                    "background-color",
+                                    "rgb(39 39 42)",
+                                    "important"
+                                );
+                                element.style.setProperty(
+                                    "background",
+                                    "rgb(39 39 42)",
+                                    "important"
+                                );
+                            }
+                        }
+
+                        // Apply padding to favorites section
+                        if (
+                            element.className &&
+                            element.className.includes("favorites")
+                        ) {
+                            element.style.setProperty(
+                                "padding-top",
+                                "12px",
+                                "important"
+                            );
+                            element.style.setProperty(
+                                "padding-bottom",
+                                "12px",
+                                "important"
+                            );
+                        }
+                    });
+
+                    // Inject CSS into Shadow DOM to override CSS custom properties
+                    if (document.documentElement.classList.contains("dark")) {
+                        const styleElement = document.createElement("style");
+                        styleElement.textContent = `
+                            :host {
+                                --background: rgb(39 39 42) !important;
+                                --border-color: rgb(75 85 99) !important;
+                                --color: rgb(255 255 255) !important;
+                                background-color: rgb(39 39 42) !important;
+                                background: rgb(39 39 42) !important;
+                            }
+                            .picker {
+                                background: rgb(39 39 42) !important;
+                                background-color: rgb(39 39 42) !important;
+                            }
+                            /* Target specific background elements without affecting interactive elements */
+                            .picker > div,
+                            .picker > section,
+                            .picker > div > div,
+                            .picker > section > div {
+                                background-color: rgb(39 39 42) !important;
+                                background: rgb(39 39 42) !important;
+                            }
+                            /* Preserve hover effects on interactive elements */
+                            .picker button:hover,
+                            .picker [role="button"]:hover,
+                            .picker [role="menuitem"]:hover,
+                            .picker .emoji:hover,
+                            .picker [data-emoji]:hover,
+                            .picker .category-emoji:hover {
+                                background-color: rgb(55 65 81) !important;
+                                background: rgb(55 65 81) !important;
+                                transform: scale(1.05) !important;
+                                transition: all 0.2s ease !important;
+                                border-radius: 8px !important;
+                                cursor: pointer !important;
+                            }
+                            /* Preserve focus states */
+                            .picker button:focus,
+                            .picker [role="button"]:focus,
+                            .picker [role="menuitem"]:focus {
+                                background-color: rgb(55 65 81) !important;
+                                background: rgb(55 65 81) !important;
+                                outline: 2px solid rgb(59 130 246) !important;
+                                outline-offset: 2px !important;
+                            }
+                            /* Preserve active states */
+                            .picker button:active,
+                            .picker [role="button"]:active,
+                            .picker [role="menuitem"]:active {
+                                background-color: rgb(75 85 99) !important;
+                                background: rgb(75 85 99) !important;
+                                transform: scale(0.95) !important;
+                            }
+                        `;
+                        emojiPicker.shadowRoot.appendChild(styleElement);
+                    }
+                }
+
+                // Also apply background to the container
+                const emojiPickerContainer = document.getElementById(
+                    "emoji-picker-container"
+                );
+                if (
+                    emojiPickerContainer &&
+                    document.documentElement.classList.contains("dark")
+                ) {
+                    emojiPickerContainer.style.setProperty(
+                        "background-color",
+                        "rgb(39 39 42)",
+                        "important"
+                    );
+                    emojiPickerContainer.style.setProperty(
+                        "background",
+                        "rgb(39 39 42)",
+                        "important"
+                    );
+                }
+            };
+
+            // Apply immediately
+            applyFavoritesPadding();
+
+            // Apply every 500ms for the first 5 seconds
+            let attempts = 0;
+            const interval = setInterval(() => {
+                applyFavoritesPadding();
+                attempts++;
+                if (attempts >= 10) {
+                    clearInterval(interval);
+                }
+            }, 500);
+
+            // Also apply when the emoji picker becomes visible
+            const applyWhenVisible = () => {
+                const emojiPickerContainer = document.getElementById(
+                    "emoji-picker-container"
+                );
+                if (
+                    emojiPickerContainer &&
+                    !emojiPickerContainer.classList.contains("hidden")
+                ) {
+                    applyFavoritesPadding();
+                }
+            };
+
+            // Check every 100ms when emoji picker is visible
+            setInterval(applyWhenVisible, 100);
+        }, 100);
+    }
+
+    // Insert emoji into the input field
+    function insertEmoji(emoji) {
+        const input = document.getElementById("chat-input");
+        if (!input) return;
+
+        const cursorPos = input.selectionStart;
+        const textBefore = input.value.substring(0, cursorPos);
+        const textAfter = input.value.substring(cursorPos);
+
+        input.value = textBefore + emoji + textAfter;
+        input.setSelectionRange(
+            cursorPos + emoji.length,
+            cursorPos + emoji.length
+        );
+        input.focus();
+    }
+
+    // Close emoji picker when clicking outside or inside chatbox
+    document.addEventListener("click", function (event) {
+        const emojiPickerContainer = document.getElementById(
+            "emoji-picker-container"
+        );
+        const emojiButton = document.getElementById("emoji-button");
+        const chatbotInterface = document.getElementById("chatbot-interface");
+
+        if (
+            emojiPickerContainer &&
+            !emojiPickerContainer.classList.contains("hidden")
+        ) {
+            // Close if clicking outside the emoji picker and emoji button
+            if (
+                !emojiPickerContainer.contains(event.target) &&
+                !emojiButton.contains(event.target)
+            ) {
+                // Also close if clicking anywhere inside the chatbot interface
+                if (
+                    chatbotInterface &&
+                    chatbotInterface.contains(event.target)
+                ) {
+                    toggleEmojiPicker();
+                } else if (!chatbotInterface.contains(event.target)) {
+                    // Close if clicking outside the chatbot interface as well
+                    toggleEmojiPicker();
+                }
+            }
+        }
+    });
+
+    // Close emoji picker on Escape key
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            const emojiPickerContainer = document.getElementById(
+                "emoji-picker-container"
+            );
+            if (
+                emojiPickerContainer &&
+                !emojiPickerContainer.classList.contains("hidden")
+            ) {
+                toggleEmojiPicker();
+            }
+        }
+    });
+
+    // Reposition emoji picker on window resize
+    window.addEventListener("resize", function () {
+        const emojiPickerContainer = document.getElementById(
+            "emoji-picker-container"
+        );
+        if (
+            emojiPickerContainer &&
+            !emojiPickerContainer.classList.contains("hidden")
+        ) {
+            // Close the picker on resize to avoid positioning issues
+            toggleEmojiPicker();
+        }
+    });
+
+    // Initialize emoji picker when DOM is ready
+    onDocumentReady(() => {
+        initializeSession(); // Fetch session info on document ready
+
+        // Use a small delay to ensure DOM elements are ready
+        setTimeout(() => {
+            initializeChatbotState(); // Initialize state first
+            applyChatbotStateIfElementsPresent(); // Apply saved state from localStorage as fallback
+
+            // Initialize emoji picker after a short delay to ensure the element is loaded
+            setTimeout(() => {
+                initializeEmojiPicker();
+            }, 500);
+        }, 100);
+    });
+
     // Export functions to the window object
     window.toggleChatbot = toggleChatbot;
     window.sendMessage = sendMessage;
     window.clearConversation = clearConversation;
+    window.toggleEmojiPicker = toggleEmojiPicker;
+    window.insertEmoji = insertEmoji;
 
     // Persist open state on page unload to help with navigation
     window.addEventListener("beforeunload", function () {
