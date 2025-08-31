@@ -6,6 +6,7 @@
     let conversation = [];
     let isLoadingConversation = false;
     let conversationLoaded = false;
+    let emojiPickerInitialized = false; // Flag to prevent multiple initializations
 
     // Get user-specific conversation ID from localStorage
     function getUserConversationKey() {
@@ -202,6 +203,11 @@
         setTimeout(() => {
             initializeChatbotState(); // Initialize state first
             applyChatbotStateIfElementsPresent(); // Apply saved state from localStorage as fallback
+
+            // Initialize emoji picker after a short delay to ensure the element is loaded
+            setTimeout(() => {
+                initializeEmojiPicker();
+            }, 500);
         }, 100);
     });
 
@@ -431,6 +437,22 @@
         }
     }
 
+    // Check if content is a single emoji
+    function isSingleEmoji(content) {
+        // Remove HTML tags and normalize whitespace
+        const cleanContent = content.replace(/<[^>]*>/g, "").trim();
+
+        // More comprehensive emoji regex pattern
+        const emojiRegex =
+            /^[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F900}-\u{1F9FF}]|[\u{1F018}-\u{1F270}]|[\u{238C}-\u{2454}]|[\u{20D0}-\u{20FF}]|[\u{FE00}-\u{FE0F}]|[\u{1F000}-\u{1F02F}]|[\u{1F0A0}-\u{1F0FF}]|[\u{1F100}-\u{1F64F}]|[\u{1F910}-\u{1F96B}]|[\u{1F980}-\u{1F9E0}]|[\u{1F9E0}-\u{1F9FF}]|[\u{1F004}]|[\u{1F0CF}]|[\u{1F170}-\u{1F251}]|[\u{1F300}-\u{1F321}]|[\u{1F324}-\u{1F393}]|[\u{1F396}-\u{1F397}]|[\u{1F399}-\u{1F39B}]|[\u{1F39E}-\u{1F3F0}]|[\u{1F3F3}-\u{1F3F5}]|[\u{1F3F7}-\u{1F3FA}]|[\u{1F400}-\u{1F4FD}]|[\u{1F4FF}-\u{1F53D}]|[\u{1F549}-\u{1F54E}]|[\u{1F550}-\u{1F567}]|[\u{1F56F}-\u{1F570}]|[\u{1F573}-\u{1F57A}]|[\u{1F587}]|[\u{1F58A}-\u{1F58D}]|[\u{1F590}]|[\u{1F595}-\u{1F596}]|[\u{1F5A4}-\u{1F5A5}]|[\u{1F5A8}]|[\u{1F5B1}-\u{1F5B2}]|[\u{1F5BC}]|[\u{1F5C2}-\u{1F5C4}]|[\u{1F5D1}-\u{1F5D3}]|[\u{1F5DC}-\u{1F5DE}]|[\u{1F5E1}]|[\u{1F5E3}]|[\u{1F5E8}]|[\u{1F5EF}]|[\u{1F5F3}]|[\u{1F5FA}-\u{1F64F}]|[\u{1F680}-\u{1F6C5}]|[\u{1F6CB}-\u{1F6D2}]|[\u{1F6E0}-\u{1F6E5}]|[\u{1F6E9}]|[\u{1F6EB}-\u{1F6EC}]|[\u{1F6F0}]|[\u{1F6F3}-\u{1F6F9}]|[\u{1F6FB}-\u{1F6FF}]|[\u{1F774}-\u{1F775}]|[\u{1F7D5}-\u{1F7D9}]|[\u{1F7E0}-\u{1F7EB}]|[\u{1F7F0}]|[\u{1F90C}-\u{1F93A}]|[\u{1F93C}-\u{1F945}]|[\u{1F947}-\u{1F978}]|[\u{1F97A}-\u{1F9CB}]|[\u{1F9CD}-\u{1F9FF}]|[\u{1FA70}-\u{1FA74}]|[\u{1FA78}-\u{1FA7A}]|[\u{1FA7B}-\u{1FA7C}]|[\u{1FA80}-\u{1FA86}]|[\u{1FA90}-\u{1FAAC}]|[\u{1FAB0}-\u{1FABA}]|[\u{1FAC0}-\u{1FAC2}]|[\u{1FAD0}-\u{1FAD6}]|[\u{1FAE0}-\u{1FAE7}]|[\u{1FAF0}-\u{1FAF6}]$/u;
+
+        // Check if content is exactly one emoji character (1-2 characters for most emojis)
+        return (
+            emojiRegex.test(cleanContent) &&
+            (cleanContent.length === 1 || cleanContent.length === 2)
+        );
+    }
+
     // Normalize content to remove excessive whitespace and line breaks from HTML content
     function normalizeContent(htmlContent) {
         // Clean up excessive whitespace and line breaks from HTML content
@@ -476,17 +498,22 @@
                 ? "font-semibold text-xs chatbot-user-name-tag"
                 : "font-semibold text-xs chatbot-ai-name-tag";
 
-        // Get message class
-        const messageClass =
-            role === "user"
-                ? "fi-section bg-[#00AE9F] border-[#00AE9F] chatbot-user-message message-bubble user-message"
-                : "fi-section bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 chatbot-assistant-message message-bubble";
+        // Check if content is a single emoji
+        const isEmoji = isSingleEmoji(content);
 
-        // Get content class
-        const contentClass =
-            role === "user"
-                ? "text-sm whitespace-pre-wrap leading-relaxed chatbot-user-content"
-                : "text-sm whitespace-pre-wrap leading-relaxed chatbot-assistant-content";
+        // Get message class - remove bubble styling for single emojis
+        const messageClass = isEmoji
+            ? "chatbot-emoji-message"
+            : role === "user"
+            ? "fi-section bg-[#00AE9F] border-[#00AE9F] chatbot-user-message message-bubble user-message"
+            : "fi-section bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 chatbot-assistant-message message-bubble";
+
+        // Get content class - make emoji bigger
+        const contentClass = isEmoji
+            ? "text-7xl leading-none chatbot-emoji-content"
+            : role === "user"
+            ? "text-sm whitespace-pre-wrap leading-relaxed chatbot-user-content"
+            : "text-sm whitespace-pre-wrap leading-relaxed chatbot-assistant-content";
 
         // Get time class
         const timeClass =
@@ -495,31 +522,61 @@
                 : "chatbot-assistant-timestamp";
 
         // Add message to the chatbot UI
-        messageDiv.innerHTML =
-            '<div class="' +
-            nameTagClass +
-            ' px-1">' +
-            nameTag +
-            "</div>" +
-            '<div class="' +
-            messageClass +
-            ' rounded-xl px-4 py-3 shadow-sm border max-w-[80%]">' +
-            '<div class="' +
-            contentClass +
-            '">' +
-            normalizeContent(marked.parse(processTranslation(content))) +
-            "</div>" +
-            '<div class="' +
-            timeClass +
-            '">' +
-            (timestamp ||
-                new Date().toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                    hour12: true,
-                })) +
-            "</div>" +
-            "</div>";
+        if (isEmoji) {
+            // For single emojis, render without bubble background
+            messageDiv.innerHTML =
+                '<div class="' +
+                nameTagClass +
+                ' px-1">' +
+                nameTag +
+                "</div>" +
+                '<div class="' +
+                messageClass +
+                ' px-4 py-2">' +
+                '<div class="' +
+                contentClass +
+                '">' +
+                normalizeContent(marked.parse(processTranslation(content))) +
+                "</div>" +
+                '<div class="' +
+                timeClass +
+                ' text-xs text-gray-500 dark:text-gray-400 mt-1">' +
+                (timestamp ||
+                    new Date().toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                    })) +
+                "</div>" +
+                "</div>";
+        } else {
+            // For regular messages, use bubble styling
+            messageDiv.innerHTML =
+                '<div class="' +
+                nameTagClass +
+                ' px-1">' +
+                nameTag +
+                "</div>" +
+                '<div class="' +
+                messageClass +
+                ' rounded-xl px-4 py-3 shadow-sm border max-w-[80%]">' +
+                '<div class="' +
+                contentClass +
+                '">' +
+                normalizeContent(marked.parse(processTranslation(content))) +
+                "</div>" +
+                '<div class="' +
+                timeClass +
+                '">' +
+                (timestamp ||
+                    new Date().toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                    })) +
+                "</div>" +
+                "</div>";
+        }
 
         // Apply animation delay if specified
         if (animationDelay > 0) {
@@ -804,8 +861,16 @@
                 emojiPickerContainer.style.transform = "translateX(0) scale(1)";
             });
 
+            // Ensure emoji picker follows current theme when opened
+            if (emojiPicker.shadowRoot) {
+                updateEmojiPickerTheme();
+            }
+
             // Focus the emoji picker for better UX
             emojiPicker.focus();
+
+            // Add a small visual indicator that multiple emojis can be selected
+            // This will be handled by the emoji picker's built-in UI
         } else {
             emojiPickerContainer.style.transition =
                 "opacity 0.2s ease, transform 0.2s ease";
@@ -820,100 +885,274 @@
 
     // Initialize emoji picker when DOM is ready
     function initializeEmojiPicker() {
-        const emojiPicker = document.getElementById("emoji-picker");
-        if (!emojiPicker) {
-            console.log("❌ Emoji picker element not found!");
+        // Prevent multiple initializations
+        if (emojiPickerInitialized) {
             return;
         }
 
-        console.log("✅ Emoji picker element found:", emojiPicker);
-        console.log("🏷️ Tag name:", emojiPicker.tagName);
-        console.log("📋 Classes:", emojiPicker.className);
-        console.log("🆔 ID:", emojiPicker.id);
+        const emojiPicker = document.getElementById("emoji-picker");
+        if (!emojiPicker) {
+            return;
+        }
+
+        // Mark as initialized
+        emojiPickerInitialized = true;
 
         // Configure emoji picker
         emojiPicker.addEventListener("emoji-click", (event) => {
             const emoji = event.detail.unicode;
             insertEmoji(emoji);
-            toggleEmojiPicker();
+            // Don't close the emoji picker - let user select multiple emojis
+            // toggleEmojiPicker();
         });
 
-        // Set custom styling
-        emojiPicker.style.setProperty(
-            "--background",
-            "var(--tw-bg-opacity, 1)"
-        );
-        emojiPicker.style.setProperty("--border-color", "rgb(229 231 235)");
+        // Set basic emoji picker properties
         emojiPicker.style.setProperty("--category-emoji-size", "1.5rem");
         emojiPicker.style.setProperty("--emoji-size", "1.5rem");
         emojiPicker.style.setProperty("--num-columns", "8");
         emojiPicker.style.setProperty("--border-radius", "0.5rem");
 
-        // Dark mode support
-        if (document.documentElement.classList.contains("dark")) {
-            emojiPicker.style.setProperty("--background", "rgb(31 41 55)");
-            emojiPicker.style.setProperty("--border-color", "rgb(75 85 99)");
-            emojiPicker.style.setProperty("--color", "rgb(255 255 255)");
-        }
-
         // Apply padding to favorites section after emoji picker is loaded
         setTimeout(() => {
-            console.log("🚀 Emoji picker loaded, starting investigation...");
-            console.log("📦 Emoji picker element:", emojiPicker);
-            console.log("🔍 Emoji picker HTML:", emojiPicker.outerHTML);
+            // Function to apply padding to favorites elements
+            const applyFavoritesPadding = (root) => {
+                // Try multiple selectors to find favorites elements
+                const selectors = [
+                    '[class*="favorites"]',
+                    ".favorites",
+                    '[role="menu"][data-on-click="onEmojiClick"][class*="favorites"]',
+                    'div[role="menu"][data-on-click="onEmojiClick"].favorites.onscreen.emoji-menu',
+                ];
 
-            // Check if it's a custom element
-            if (emojiPicker.tagName === "EMOJI-PICKER") {
-                console.log("✅ Confirmed: emoji-picker is a custom element");
-            }
+                let foundElements = false;
+                selectors.forEach((selector) => {
+                    const elements = root.querySelectorAll(selector);
+                    if (elements.length > 0) {
+                        foundElements = true;
+                        elements.forEach((element) => {
+                            element.style.paddingTop = "12px";
+                            element.style.paddingBottom = "12px";
+                        });
+                    }
+                });
+                return foundElements;
+            };
 
-            // Check for Shadow DOM
-            if (emojiPicker.shadowRoot) {
-                console.log("🌑 Shadow DOM found:", emojiPicker.shadowRoot);
-                console.log(
-                    "🌑 Shadow DOM HTML:",
-                    emojiPicker.shadowRoot.innerHTML
+            // Function to inject theme styles into Shadow DOM based on current theme
+            const injectThemeStyles = (shadowRoot) => {
+                const isDarkMode =
+                    document.documentElement.classList.contains("dark");
+
+                // Create a style element for the current theme
+                const styleElement = document.createElement("style");
+                styleElement.setAttribute(
+                    "data-theme",
+                    isDarkMode ? "dark" : "light"
                 );
-            } else {
-                console.log("❌ No Shadow DOM detected");
-            }
-            const favoritesElements = emojiPicker.querySelectorAll(
-                '[class*="favorites"]'
-            );
-            favoritesElements.forEach((element) => {
-                element.style.paddingTop = "12px";
-                element.style.paddingBottom = "12px";
-            });
 
-            // Also target the specific element from developer console
-            const specificFavorites = emojiPicker.querySelector(
-                '[role="menu"][data-on-click="onEmojiClick"][class*="favorites"]'
-            );
-            if (specificFavorites) {
-                specificFavorites.style.paddingTop = "12px";
-                specificFavorites.style.paddingBottom = "12px";
-            }
-
-            // Inject CSS directly into the document head for maximum specificity
-            const style = document.createElement("style");
-            style.textContent = `
-                emoji-picker .favorites,
-                emoji-picker [class*="favorites"],
-                emoji-picker [role="menu"][data-on-click="onEmojiClick"][class*="favorites"],
-                emoji-picker div[role="menu"][data-on-click="onEmojiClick"].favorites.onscreen.emoji-menu {
-                    padding-top: 12px !important;
-                    padding-bottom: 12px !important;
+                if (isDarkMode) {
+                    styleElement.textContent = `
+                        /* Dark theme styles for emoji picker */
+                        :host {
+                            --background: rgb(39 39 42) !important;
+                            --border-color: rgb(63 63 70) !important;
+                            --color: rgb(255 255 255) !important;
+                            background-color: rgb(39 39 42) !important;
+                            border-color: rgb(63 63 70) !important;
+                        }
+                        
+                        /* Dark theme hover effects */
+                        button:hover,
+                        [role="button"]:hover,
+                        [role="menuitem"]:hover,
+                        .emoji:hover,
+                        [data-emoji]:hover,
+                        .category-emoji:hover {
+                            background-color: rgb(55 65 81) !important;
+                            transform: scale(1.02) !important;
+                            transition: all 0.2s ease !important;
+                            border-radius: 4px !important;
+                            cursor: pointer !important;
+                            padding: 0px !important;
+                        }
+                        
+                        /* Dark theme focus states */
+                        button:focus,
+                        [role="button"]:focus,
+                        [role="menuitem"]:focus {
+                            background-color: rgb(55 65 81) !important;
+                            outline: 2px solid rgb(59 130 246) !important;
+                            outline-offset: 2px !important;
+                        }
+                        
+                        /* Dark theme active states */
+                        button:active,
+                        [role="button"]:active,
+                        [role="menuitem"]:active {
+                            background-color: rgb(63 63 70) !important;
+                            transform: scale(0.98) !important;
+                            padding: 0px !important;
+                        }
+                        
+                        /* Dark theme scrollbar */
+                        ::-webkit-scrollbar {
+                            width: 8px !important;
+                        }
+                        
+                        ::-webkit-scrollbar-track {
+                            background: rgb(55 65 81) !important;
+                        }
+                        
+                        ::-webkit-scrollbar-thumb {
+                            background: rgb(107 114 128) !important;
+                            border-radius: 4px !important;
+                        }
+                        
+                        ::-webkit-scrollbar-thumb:hover {
+                            background: rgb(156 163 175) !important;
+                        }
+                        
+                        /* Ensure all interactive elements have proper dark theme styling */
+                        .picker,
+                        .picker > div,
+                        .picker > section {
+                            background-color: rgb(39 39 42) !important;
+                            color: rgb(255 255 255) !important;
+                        }
+                        
+                        /* Category buttons and emoji buttons */
+                        .category-emoji,
+                        .emoji,
+                        [data-emoji] {
+                            background-color: transparent !important;
+                            transition: all 0.2s ease !important;
+                        }
+                        
+                        /* Search input styling */
+                        input[type="search"],
+                        input[type="text"] {
+                            background-color: rgb(39 39 42) !important;
+                            border-color: rgb(63 63 70) !important;
+                            color: rgb(255 255 255) !important;
+                            font-size: 0.875rem !important;
+                        }
+                    `;
+                } else {
+                    styleElement.textContent = `
+                        /* Light theme styles for emoji picker */
+                        :host {
+                            --background: rgb(255 255 255) !important;
+                            --border-color: rgb(229 231 235) !important;
+                            --color: rgb(0 0 0) !important;
+                            background-color: rgb(255 255 255) !important;
+                            border-color: rgb(229 231 235) !important;
+                        }
+                        
+                        /* Light theme hover effects */
+                        button:hover,
+                        [role="button"]:hover,
+                        [role="menuitem"]:hover,
+                        .emoji:hover,
+                        [data-emoji]:hover,
+                        .category-emoji:hover {
+                            background-color: rgb(243 244 246) !important;
+                            transform: scale(1.02) !important;
+                            transition: all 0.2s ease !important;
+                            border-radius: 4px !important;
+                            cursor: pointer !important;
+                            padding: 0px !important;
+                        }
+                        
+                        /* Light theme focus states */
+                        button:focus,
+                        [role="button"]:focus,
+                        [role="menuitem"]:focus {
+                            background-color: rgb(243 244 246) !important;
+                            outline: 2px solid rgb(59 130 246) !important;
+                            outline-offset: 2px !important;
+                        }
+                        
+                        /* Light theme active states */
+                        button:active,
+                        [role="button"]:active,
+                        [role="menuitem"]:active {
+                            background-color: rgb(229 231 235) !important;
+                            transform: scale(0.98) !important;
+                            padding: 0px !important;
+                        }
+                        
+                        /* Light theme scrollbar */
+                        ::-webkit-scrollbar {
+                            width: 8px !important;
+                        }
+                        
+                        ::-webkit-scrollbar-track {
+                            background: rgb(255 255 255) !important;
+                        }
+                        
+                        ::-webkit-scrollbar-thumb {
+                            background: rgb(229 231 235) !important;
+                            border-radius: 4px !important;
+                        }
+                        
+                        ::-webkit-scrollbar-thumb:hover {
+                            background: rgb(209 213 219) !important;
+                        }
+                        
+                        /* Ensure all interactive elements have proper light theme styling */
+                        .picker,
+                        .picker > div,
+                        .picker > section {
+                            background-color: rgb(255 255 255) !important;
+                            color: rgb(0 0 0) !important;
+                        }
+                        
+                        /* Category buttons and emoji buttons */
+                        .category-emoji,
+                        .emoji,
+                        [data-emoji] {
+                            background-color: transparent !important;
+                            transition: all 0.2s ease !important;
+                        }
+                        
+                        /* Search input styling */
+                        input[type="search"],
+                        input[type="text"] {
+                            background-color: rgb(255 255 255) !important;
+                            border-color: rgb(229 231 235) !important;
+                            color: rgb(0 0 0) !important;
+                            font-size: 0.875rem !important;
+                        }
+                    `;
                 }
-                
-                /* Target all elements with favorites in their class name */
-                emoji-picker *[class*="favorites"] {
-                    padding-top: 12px !important;
-                    padding-bottom: 12px !important;
-                }
-            `;
-            document.head.appendChild(style);
 
-            // Use MutationObserver to watch for dynamically added elements
+                // Inject the style into Shadow DOM
+                shadowRoot.appendChild(styleElement);
+            };
+
+            // Access Shadow DOM root
+            const shadowRoot = emojiPicker.shadowRoot;
+            if (!shadowRoot) {
+                console.log("Shadow DOM not accessible, trying direct access");
+                // Fallback: try direct access
+                applyFavoritesPadding(emojiPicker);
+                return;
+            }
+
+            // Inject theme styles into Shadow DOM based on current theme
+            injectThemeStyles(shadowRoot);
+
+            // Apply padding to favorites elements within Shadow DOM
+            const foundElements = applyFavoritesPadding(shadowRoot);
+
+            // If no elements found, retry after a longer delay
+            if (!foundElements) {
+                setTimeout(() => {
+                    applyFavoritesPadding(shadowRoot);
+                }, 500);
+            }
+
+            // Use MutationObserver to watch for dynamically added elements within Shadow DOM
             const observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     mutation.addedNodes.forEach((node) => {
@@ -940,209 +1179,20 @@
                 });
             });
 
-            // Start observing the emoji picker for changes
-            observer.observe(emojiPicker, {
+            // Start observing the Shadow DOM for changes
+            observer.observe(shadowRoot, {
                 childList: true,
                 subtree: true,
             });
-
-            // Apply padding to favorites section and background color to all elements in Shadow DOM
-            const applyFavoritesPadding = () => {
-                // Set CSS custom properties on the emoji-picker element itself
-                if (document.documentElement.classList.contains("dark")) {
-                    emojiPicker.style.setProperty(
-                        "--background",
-                        "rgb(39 39 42)",
-                        "important"
-                    );
-                    emojiPicker.style.setProperty(
-                        "--border-color",
-                        "rgb(75 85 99)",
-                        "important"
-                    );
-                    emojiPicker.style.setProperty(
-                        "--color",
-                        "rgb(255 255 255)",
-                        "important"
-                    );
-                    emojiPicker.style.setProperty(
-                        "background-color",
-                        "rgb(39 39 42)",
-                        "important"
-                    );
-                    emojiPicker.style.setProperty(
-                        "background",
-                        "rgb(39 39 42)",
-                        "important"
-                    );
-                }
-
-                // Check if Shadow DOM exists and apply padding to favorites
-                if (emojiPicker.shadowRoot) {
-                    const shadowElements =
-                        emojiPicker.shadowRoot.querySelectorAll("*");
-
-                    shadowElements.forEach((element) => {
-                        // Apply background color to container elements only, not interactive elements
-                        if (
-                            document.documentElement.classList.contains("dark")
-                        ) {
-                            // Skip interactive elements to preserve hover effects
-                            const isInteractive =
-                                element.tagName === "BUTTON" ||
-                                element.getAttribute("role") === "button" ||
-                                element.getAttribute("role") === "menuitem" ||
-                                element.onclick !== null ||
-                                element.classList.contains("emoji") ||
-                                element.classList.contains("category-emoji");
-
-                            if (!isInteractive) {
-                                element.style.setProperty(
-                                    "background-color",
-                                    "rgb(39 39 42)",
-                                    "important"
-                                );
-                                element.style.setProperty(
-                                    "background",
-                                    "rgb(39 39 42)",
-                                    "important"
-                                );
-                            }
-                        }
-
-                        // Apply padding to favorites section
-                        if (
-                            element.className &&
-                            element.className.includes("favorites")
-                        ) {
-                            element.style.setProperty(
-                                "padding-top",
-                                "12px",
-                                "important"
-                            );
-                            element.style.setProperty(
-                                "padding-bottom",
-                                "12px",
-                                "important"
-                            );
-                        }
-                    });
-
-                    // Inject CSS into Shadow DOM to override CSS custom properties
-                    if (document.documentElement.classList.contains("dark")) {
-                        const styleElement = document.createElement("style");
-                        styleElement.textContent = `
-                            :host {
-                                --background: rgb(39 39 42) !important;
-                                --border-color: rgb(75 85 99) !important;
-                                --color: rgb(255 255 255) !important;
-                                background-color: rgb(39 39 42) !important;
-                                background: rgb(39 39 42) !important;
-                            }
-                            .picker {
-                                background: rgb(39 39 42) !important;
-                                background-color: rgb(39 39 42) !important;
-                            }
-                            /* Target specific background elements without affecting interactive elements */
-                            .picker > div,
-                            .picker > section,
-                            .picker > div > div,
-                            .picker > section > div {
-                                background-color: rgb(39 39 42) !important;
-                                background: rgb(39 39 42) !important;
-                            }
-                            /* Preserve hover effects on interactive elements */
-                            .picker button:hover,
-                            .picker [role="button"]:hover,
-                            .picker [role="menuitem"]:hover,
-                            .picker .emoji:hover,
-                            .picker [data-emoji]:hover,
-                            .picker .category-emoji:hover {
-                                background-color: rgb(55 65 81) !important;
-                                background: rgb(55 65 81) !important;
-                                transform: scale(1.05) !important;
-                                transition: all 0.2s ease !important;
-                                border-radius: 8px !important;
-                                cursor: pointer !important;
-                            }
-                            /* Preserve focus states */
-                            .picker button:focus,
-                            .picker [role="button"]:focus,
-                            .picker [role="menuitem"]:focus {
-                                background-color: rgb(55 65 81) !important;
-                                background: rgb(55 65 81) !important;
-                                outline: 2px solid rgb(59 130 246) !important;
-                                outline-offset: 2px !important;
-                            }
-                            /* Preserve active states */
-                            .picker button:active,
-                            .picker [role="button"]:active,
-                            .picker [role="menuitem"]:active {
-                                background-color: rgb(75 85 99) !important;
-                                background: rgb(75 85 99) !important;
-                                transform: scale(0.95) !important;
-                            }
-                        `;
-                        emojiPicker.shadowRoot.appendChild(styleElement);
-                    }
-                }
-
-                // Also apply background to the container
-                const emojiPickerContainer = document.getElementById(
-                    "emoji-picker-container"
-                );
-                if (
-                    emojiPickerContainer &&
-                    document.documentElement.classList.contains("dark")
-                ) {
-                    emojiPickerContainer.style.setProperty(
-                        "background-color",
-                        "rgb(39 39 42)",
-                        "important"
-                    );
-                    emojiPickerContainer.style.setProperty(
-                        "background",
-                        "rgb(39 39 42)",
-                        "important"
-                    );
-                }
-            };
-
-            // Apply immediately
-            applyFavoritesPadding();
-
-            // Apply every 500ms for the first 5 seconds
-            let attempts = 0;
-            const interval = setInterval(() => {
-                applyFavoritesPadding();
-                attempts++;
-                if (attempts >= 10) {
-                    clearInterval(interval);
-                }
-            }, 500);
-
-            // Also apply when the emoji picker becomes visible
-            const applyWhenVisible = () => {
-                const emojiPickerContainer = document.getElementById(
-                    "emoji-picker-container"
-                );
-                if (
-                    emojiPickerContainer &&
-                    !emojiPickerContainer.classList.contains("hidden")
-                ) {
-                    applyFavoritesPadding();
-                }
-            };
-
-            // Check every 100ms when emoji picker is visible
-            setInterval(applyWhenVisible, 100);
         }, 100);
     }
 
     // Insert emoji into the input field
     function insertEmoji(emoji) {
         const input = document.getElementById("chat-input");
-        if (!input) return;
+        if (!input) {
+            return;
+        }
 
         const cursorPos = input.selectionStart;
         const textBefore = input.value.substring(0, cursorPos);
@@ -1153,7 +1203,12 @@
             cursorPos + emoji.length,
             cursorPos + emoji.length
         );
+
+        // Keep focus on input and emoji picker open for multiple selections
         input.focus();
+
+        // Trigger input event to update any listeners
+        input.dispatchEvent(new Event("input", { bubbles: true }));
     }
 
     // Close emoji picker when clicking outside
@@ -1162,15 +1217,17 @@
             "emoji-picker-container"
         );
         const emojiButton = document.getElementById("emoji-button");
+        const emojiPicker = document.getElementById("emoji-picker");
 
         if (
             emojiPickerContainer &&
             !emojiPickerContainer.classList.contains("hidden")
         ) {
-            // Close if clicking outside the emoji picker and emoji button
+            // Close if clicking outside the emoji picker, emoji button, and emoji picker element
             if (
                 !emojiPickerContainer.contains(event.target) &&
-                !emojiButton.contains(event.target)
+                !emojiButton.contains(event.target) &&
+                !emojiPicker.contains(event.target)
             ) {
                 toggleEmojiPicker();
             }
@@ -1206,20 +1263,260 @@
         }
     });
 
-    // Initialize emoji picker when DOM is ready
-    onDocumentReady(() => {
-        initializeSession(); // Fetch session info on document ready
+    // Function to update emoji picker theme based on current theme
+    function updateEmojiPickerTheme() {
+        const emojiPicker = document.getElementById("emoji-picker");
+        if (!emojiPicker || !emojiPicker.shadowRoot) return;
 
-        // Use a small delay to ensure DOM elements are ready
-        setTimeout(() => {
-            initializeChatbotState(); // Initialize state first
-            applyChatbotStateIfElementsPresent(); // Apply saved state from localStorage as fallback
+        const isDarkMode = document.documentElement.classList.contains("dark");
+        const shadowRoot = emojiPicker.shadowRoot;
 
-            // Initialize emoji picker after a short delay to ensure the element is loaded
-            setTimeout(() => {
-                initializeEmojiPicker();
-            }, 500);
-        }, 100);
+        // Remove existing theme styles
+        const existingStyles = shadowRoot.querySelectorAll("style[data-theme]");
+        existingStyles.forEach((style) => style.remove());
+
+        // Create new theme styles
+        const styleElement = document.createElement("style");
+        styleElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
+
+        if (isDarkMode) {
+            styleElement.textContent = `
+                /* Dark theme styles for emoji picker */
+                :host {
+                    --background: rgb(39 39 42) !important;
+                    --border-color: rgb(63 63 70) !important;
+                    --color: rgb(255 255 255) !important;
+                    background-color: rgb(39 39 42) !important;
+                    border-color: rgb(63 63 70) !important;
+                }
+                
+                /* Dark theme hover effects */
+                button:hover,
+                [role="button"]:hover,
+                [role="menuitem"]:hover,
+                .emoji:hover,
+                [data-emoji]:hover,
+                .category-emoji:hover {
+                    background-color: rgb(55 65 81) !important;
+                    transform: scale(1.02) !important;
+                    transition: all 0.2s ease !important;
+                    border-radius: 4px !important;
+                    cursor: pointer !important;
+                    padding: 0px !important;
+                }
+                
+                /* Dark theme focus states */
+                button:focus,
+                [role="button"]:focus,
+                [role="menuitem"]:focus {
+                    background-color: rgb(55 65 81) !important;
+                    outline: 2px solid rgb(59 130 246) !important;
+                    outline-offset: 2px !important;
+                }
+                
+                /* Dark theme active states */
+                button:active,
+                [role="button"]:active,
+                [role="menuitem"]:active {
+                    background-color: rgb(63 63 70) !important;
+                    transform: scale(0.98) !important;
+                    padding: 0px !important;
+                }
+                
+                /* Dark theme scrollbar */
+                ::-webkit-scrollbar {
+                    width: 8px !important;
+                }
+                
+                ::-webkit-scrollbar-track {
+                    background: rgb(39 39 42) !important;
+                }
+                
+                ::-webkit-scrollbar-thumb {
+                    background: rgb(107 114 128) !important;
+                    border-radius: 4px !important;
+                }
+                
+                ::-webkit-scrollbar-thumb:hover {
+                    background: rgb(156 163 175) !important;
+                }
+                
+                /* Ensure all interactive elements have proper dark theme styling */
+                .picker,
+                .picker > div,
+                .picker > section {
+                    background-color: rgb(39 39 42) !important;
+                    color: rgb(255 255 255) !important;
+                }
+                
+                /* Category buttons and emoji buttons */
+                .category-emoji,
+                .emoji,
+                [data-emoji] {
+                    background-color: transparent !important;
+                    transition: all 0.2s ease !important;
+                }
+                
+                /* Search input styling - synced with chat input design */
+                input[type="search"],
+                input[type="text"] {
+                    background-color: rgb(39 39 42) !important;
+                    border: 1px solid rgb(63 63 70) !important; /* gray-600 to match chat input */
+                    color: rgb(255 255 255) !important; /* white text */
+                    font-size: 0.875rem !important; /* text-sm to match chat input */
+                    border-radius: 0.5rem !important; /* rounded-lg to match chat input */
+                    padding: 0.75rem 1rem !important; /* py-3 px-4 to match chat input */
+                    transition: all 0.2s ease !important;
+                }
+                
+                /* Search input focus state - synced with chat input focus */
+                input[type="search"]:focus,
+                input[type="text"]:focus {
+                    outline: none !important;
+                    border-color: rgb(0 174 159) !important;              
+                }
+                
+                /* Search input placeholder styling */
+                input[type="search"]::placeholder,
+                input[type="text"]::placeholder {
+                    color: rgb(156 163 175) !important; /* gray-400 for placeholder */
+                }
+                
+                /* Indicator styling - synced with project primary color */
+                .indicator {
+                    background-color: rgb(0 174 159) !important; /* primary-500 to match project theme */
+                }
+            `;
+        } else {
+            styleElement.textContent = `
+                /* Light theme styles for emoji picker - synced with chatbox design */
+                :host {
+                    --background: rgb(249 250 251) !important; /* gray-50 to match chat input */
+                    --border-color: rgb(209 213 219) !important; /* gray-300 to match chat input */
+                    --color: rgb(0 0 0) !important;
+                    background-color: rgb(249 250 251) !important; /* gray-50 to match chat input */
+                    border-color: rgb(209 213 219) !important; /* gray-300 to match chat input */
+                }
+                
+                /* Light theme hover effects */
+                button:hover,
+                [role="button"]:hover,
+                [role="menuitem"]:hover,
+                .emoji:hover,
+                [data-emoji]:hover,
+                .category-emoji:hover {
+                    background-color: rgb(243 244 246) !important; /* gray-100 for subtle hover */
+                    transform: scale(1.02) !important;
+                    transition: all 0.2s ease !important;
+                    border-radius: 4px !important;
+                    cursor: pointer !important;
+                    padding: 0px !important;
+                }
+                
+                /* Light theme focus states */
+                button:focus,
+                [role="button"]:focus,
+                [role="menuitem"]:focus {
+                    background-color: rgb(243 244 246) !important; /* gray-100 for focus */
+                    outline: 2px solid rgb(59 130 246) !important; /* primary-500 focus ring */
+                    outline-offset: 2px !important;
+                }
+                
+                /* Light theme active states */
+                button:active,
+                [role="button"]:active,
+                [role="menuitem"]:active {
+                    background-color: rgb(229 231 235) !important; /* gray-200 for active */
+                    transform: scale(0.98) !important;
+                    padding: 0px !important;
+                }
+                
+                /* Light theme scrollbar - synced with chatbox scrollbar design */
+                ::-webkit-scrollbar {
+                    width: 8px !important;
+                }
+                
+                ::-webkit-scrollbar-track {
+                    background: rgb(249 250 251) !important; /* gray-50 to match background */
+                }
+                
+                ::-webkit-scrollbar-thumb {
+                    background: rgb(209 213 219) !important; /* gray-300 to match borders */
+                    border-radius: 4px !important;
+                }
+                
+                ::-webkit-scrollbar-thumb:hover {
+                    background: rgb(156 163 175) !important; /* gray-400 for hover */
+                }
+                
+                /* Ensure all interactive elements have proper light theme styling */
+                .picker,
+                .picker > div,
+                .picker > section {
+                    background-color: rgb(249 250 251) !important; /* gray-50 to match chat input */
+                    color: rgb(0 0 0) !important;
+                }
+                
+                /* Category buttons and emoji buttons */
+                .category-emoji,
+                .emoji,
+                [data-emoji] {
+                    background-color: transparent !important;
+                    transition: all 0.2s ease !important;
+                }
+                
+                /* Search input styling - synced with chat input design */
+                input[type="search"],
+                input[type="text"] {
+                    background-color: rgb(255 255 255) !important;
+                    border: 1px solid rgb(209 213 219) !important; /* gray-300 to match chat input */
+                    color: rgb(0 0 0) !important;
+                    font-size: 0.875rem !important; /* text-sm to match chat input */
+                    border-radius: 0.5rem !important; /* rounded-lg to match chat input */
+                    padding: 0.75rem 1rem !important; /* py-3 px-4 to match chat input */
+                    transition: all 0.2s ease !important;
+                }
+                
+                /* Search input focus state - synced with chat input focus */
+                input[type="search"]:focus,
+                input[type="text"]:focus {
+                    outline: none !important;
+                    border-color: rgb(0 174 159) !important; /* primary-500 to match chat input focus */
+                }
+                
+                /* Search input placeholder styling */
+                input[type="search"]::placeholder,
+                input[type="text"]::placeholder {
+                    color: rgb(156 163 175) !important; /* gray-400 for placeholder */
+                }
+                
+                /* Indicator styling - synced with project primary color */
+                .indicator {
+                    background-color: rgb(0 174 159) !important; /* primary-500 to match project theme */
+                }
+            `;
+        }
+
+        // Inject the style into Shadow DOM
+        shadowRoot.appendChild(styleElement);
+    }
+
+    // Listen for theme changes
+    const themeObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (
+                mutation.type === "attributes" &&
+                mutation.attributeName === "class"
+            ) {
+                updateEmojiPickerTheme();
+            }
+        });
+    });
+
+    // Start observing theme changes
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
     });
 
     // Export functions to the window object

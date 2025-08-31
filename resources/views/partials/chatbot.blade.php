@@ -314,109 +314,39 @@
         text-decoration: none;
     }
     
-    /* Floating emoji picker styling */
-    #emoji-picker-container {
-        z-index: 1000;
-        transition: opacity 0.2s ease, transform 0.2s ease;
-        position: fixed;
-        pointer-events: auto;
+    /* ===== SINGLE EMOJI MESSAGE STYLING ===== */
+    
+    /* Emoji message container - no background, no border */
+    .chatbot-emoji-message {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0.5rem 1rem !important;
+        max-width: none !important;
+        border-radius: 0 !important;
     }
     
-    #emoji-picker {
-        width: 400px !important;
-        max-width: 400px !important;
-        border-radius: 0.75rem !important;
-        border: 1px solid rgb(229 231 235) !important;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-        backdrop-filter: blur(10px) !important;
+    /* Emoji content - large size, centered */
+    .chatbot-emoji-content {
+        font-size: 4.5rem !important;
+        line-height: 1 !important;
+        text-align: center !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 5rem !important;
     }
     
-    .dark #emoji-picker {
-        border-color: rgb(75 85 99) !important;
-        background-color: rgb(39 39 42) !important;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.1) !important;
+    /* Emoji timestamp styling */
+    .chatbot-emoji-message .chatbot-user-timestamp,
+    .chatbot-emoji-message .chatbot-assistant-timestamp {
+        text-align: center !important;
+        margin-top: 0.25rem !important;
+        font-size: 0.7rem !important;
+        opacity: 0.7 !important;
     }
     
-    /* Emoji button styling */
-    #emoji-button {
-        transition: all 0.2s ease;
-    }
-    
-    #emoji-button:hover {
-        transform: scale(1.05);
-    }
-    
-    /* Mobile responsive adjustments */
-    @media (max-width: 768px) {
-        #emoji-picker {
-            width: 280px !important;
-            max-width: 280px !important;
-        }
-    }
-    
-    /* Emoji picker favorites section styling */
-    #emoji-picker .favorites,
-    emoji-picker .favorites,
-    .favorites.onscreen.emoji-menu {
-        padding-top: 12px !important;
-        padding-bottom: 12px !important;
-    }
-    
-    /* More specific targeting for emoji picker elements */
-    #emoji-picker *[class*="favorites"],
-    emoji-picker *[class*="favorites"] {
-        padding-top: 12px !important;
-        padding-bottom: 12px !important;
-    }
-    
-    /* Target the specific element from the developer console */
-    #emoji-picker [role="menu"][data-on-click="onEmojiClick"][class*="favorites"],
-    emoji-picker [role="menu"][data-on-click="onEmojiClick"][class*="favorites"] {
-        padding-top: 12px !important;
-        padding-bottom: 12px !important;
-    }
-    
-    /* Emoji picker hover effects */
-    emoji-picker button:hover,
-    emoji-picker [role="button"]:hover,
-    emoji-picker [role="menuitem"]:hover,
-    emoji-picker .emoji:hover,
-    emoji-picker [data-emoji]:hover,
-    emoji-picker .category-emoji:hover {
-        background-color: rgb(55 65 81) !important;
-        background: rgb(55 65 81) !important;
-        transform: scale(1.05) !important;
-        transition: all 0.2s ease !important;
-        border-radius: 8px !important;
-        cursor: pointer !important;
-    }
-    
-    /* Emoji picker focus effects */
-    emoji-picker button:focus,
-    emoji-picker [role="button"]:focus,
-    emoji-picker [role="menuitem"]:focus,
-    emoji-picker .emoji:focus,
-    emoji-picker [data-emoji]:focus,
-    emoji-picker .category-emoji:focus {
-        background-color: rgb(55 65 81) !important;
-        background: rgb(55 65 81) !important;
-        outline: 2px solid rgb(59 130 246) !important;
-        outline-offset: 2px !important;
-        border-radius: 8px !important;
-    }
-    
-    /* Emoji picker active effects */
-    emoji-picker button:active,
-    emoji-picker [role="button"]:active,
-    emoji-picker [role="menuitem"]:active,
-    emoji-picker .emoji:active,
-    emoji-picker [data-emoji]:active,
-    emoji-picker .category-emoji:active {
-        background-color: rgb(75 85 99) !important;
-        background: rgb(75 85 99) !important;
-        transform: scale(0.95) !important;
-        border-radius: 8px !important;
-    }
+
 </style>
 <!-- Chatbot Widget -->
 <div class="fixed bottom-4 right-4 z-[99]">
@@ -487,20 +417,8 @@
         <!-- Input Area -->
         <div class="border-t border-gray-200 dark:border-gray-700 p-5 bg-white dark:bg-gray-800 rounded-b-xl">
             <form onsubmit="sendMessage(event)" class="flex space-x-3" autocomplete="off">
-                <!-- Emoji Button -->
-                <button
-                    type="button"
-                    id="emoji-button"
-                    onclick="toggleEmojiPicker()"
-                    class="flex-shrink-0 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-                    title="Add emoji"
-                >
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-7.536 5.879a1 1 0 001.415 0 3 3 0 014.242 0 1 1 0 001.415-1.415 5 5 0 00-7.072 0 1 1 0 000 1.415z" clip-rule="evenodd"></path>
-                    </svg>
-                </button>
-                <!-- Chat Input -->
-                <div class="flex-1">
+                <!-- Chat Input with Emoji Button Inside -->
+                <div class="flex-1 relative">
                     <input
                         type="text"
                         id="chat-input"
@@ -508,8 +426,18 @@
                         autocorrect="off"
                         spellcheck="false"
                         placeholder="Chat here."
-                        class="fi-input w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-white dark:placeholder-gray-400 transition-colors text-sm"
+                        class="fi-input w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-white dark:placeholder-gray-400 transition-colors text-sm"
                     >
+                    <!-- Emoji Button Inside Input -->
+                    <button
+                        type="button"
+                        id="emoji-button"
+                        onclick="toggleEmojiPicker()"
+                        class="absolute left-3 top-3 flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors"
+                        title="Add emoji"
+                    >
+                        @svg('heroicon-o-face-smile', 'w-5 h-5')
+                    </button>
                 </div>
                 <!-- Send Message Button -->
                 <button
@@ -534,8 +462,8 @@
 <!-- Emoji Picker Element -->
 <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 
-<!-- Custom Emoji Picker Styles -->
-<link rel="stylesheet" href="{{ asset('css/emoji-picker-custom.css') }}">
+<!-- Emoji Picker Theme CSS -->
+@vite('resources/css/emoji-picker-theme.css')
 
 <!-- Chatbot JavaScript -->
 @vite('resources/js/chatbot.js')

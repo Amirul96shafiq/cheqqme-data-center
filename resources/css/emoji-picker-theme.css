@@ -1,0 +1,285 @@
+/* Emoji Picker Theme CSS - Automatically responds to theme changes */
+
+/* CSS Custom Properties for theming */
+:root {
+    /* Light mode colors - synced with chatbox design */
+    --emoji-picker-bg: rgb(249 250 251); /* gray-50 to match chat input */
+    --emoji-picker-border: rgb(209 213 219); /* gray-300 to match chat input */
+    --emoji-picker-text: rgb(0 0 0);
+    --emoji-picker-hover: rgb(243 244 246); /* gray-100 for subtle hover */
+    --emoji-picker-focus: rgb(243 244 246); /* gray-100 for focus */
+    --emoji-picker-active: rgb(229 231 235); /* gray-200 for active */
+    --emoji-picker-scrollbar-track: rgb(
+        249 250 251
+    ); /* gray-50 to match background */
+    --emoji-picker-scrollbar-thumb: rgb(
+        209 213 219
+    ); /* gray-300 to match borders */
+    --emoji-picker-scrollbar-thumb-hover: rgb(
+        156 163 175
+    ); /* gray-400 for hover */
+}
+
+/* Dark mode colors - synced with chatbox design */
+.dark {
+    --emoji-picker-bg: rgb(31 41 55); /* gray-800 to match chat interface */
+    --emoji-picker-border: rgb(55 65 81); /* gray-700 to match chat interface */
+    --emoji-picker-text: rgb(255 255 255);
+    --emoji-picker-hover: rgb(55 65 81); /* gray-700 for hover */
+    --emoji-picker-focus: rgb(55 65 81); /* gray-700 for focus */
+    --emoji-picker-active: rgb(75 85 99); /* gray-600 for active */
+    --emoji-picker-scrollbar-track: rgb(
+        31 41 55
+    ); /* gray-800 to match background */
+    --emoji-picker-scrollbar-thumb: rgb(
+        75 85 99
+    ); /* gray-600 to match borders */
+    --emoji-picker-scrollbar-thumb-hover: rgb(
+        107 114 128
+    ); /* gray-500 for hover */
+}
+
+/* Emoji picker container styling - Light theme synced with chatbox */
+#emoji-picker {
+    background-color: rgb(
+        249 250 251
+    ) !important; /* gray-50 to match chat input */
+    border-color: rgb(
+        209 213 219
+    ) !important; /* gray-300 to match chat input */
+    color: rgb(0 0 0) !important; /* Light theme text */
+}
+
+/* Emoji picker Shadow DOM styling - Light theme synced with chatbox */
+emoji-picker {
+    --background: rgb(249 250 251) !important; /* gray-50 to match chat input */
+    --border-color: rgb(
+        209 213 219
+    ) !important; /* gray-300 to match chat input */
+    --color: rgb(0 0 0) !important; /* Light theme text */
+    background-color: rgb(
+        249 250 251
+    ) !important; /* gray-50 to match chat input */
+    border-color: rgb(
+        209 213 219
+    ) !important; /* gray-300 to match chat input */
+}
+
+/* Dark mode emoji picker styling - synced with chatbox design */
+.dark #emoji-picker {
+    background-color: rgb(
+        31 41 55
+    ) !important; /* gray-800 to match chat interface */
+    border-color: rgb(
+        55 65 81
+    ) !important; /* gray-700 to match chat interface */
+    color: rgb(255 255 255) !important; /* Dark theme text */
+}
+
+.dark emoji-picker {
+    --background: rgb(
+        31 41 55
+    ) !important; /* gray-800 to match chat interface */
+    --border-color: rgb(
+        55 65 81
+    ) !important; /* gray-700 to match chat interface */
+    --color: rgb(255 255 255) !important; /* Dark theme text */
+    background-color: rgb(
+        31 41 55
+    ) !important; /* gray-800 to match chat interface */
+    border-color: rgb(
+        55 65 81
+    ) !important; /* gray-700 to match chat interface */
+}
+
+/* Hover effects for interactive elements - Light theme by default */
+emoji-picker button:hover,
+emoji-picker [role="button"]:hover,
+emoji-picker [role="menuitem"]:hover,
+emoji-picker .emoji:hover,
+emoji-picker [data-emoji]:hover,
+emoji-picker .category-emoji:hover {
+    background-color: rgb(243 244 246) !important; /* Light gray hover */
+    transform: scale(1.05) !important;
+    transition: all 0.2s ease !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+}
+
+/* Dark mode hover effects */
+.dark emoji-picker button:hover,
+.dark emoji-picker [role="button"]:hover,
+.dark emoji-picker [role="menuitem"]:hover,
+.dark emoji-picker .emoji:hover,
+.dark emoji-picker [data-emoji]:hover,
+.dark emoji-picker .category-emoji:hover {
+    background-color: rgb(55 65 81) !important; /* Dark gray hover */
+}
+
+/* Focus states - Light theme by default */
+emoji-picker button:focus,
+emoji-picker [role="button"]:focus,
+emoji-picker [role="menuitem"]:focus {
+    background-color: rgb(243 244 246) !important; /* Light gray focus */
+    outline: 2px solid rgb(59 130 246) !important;
+    outline-offset: 2px !important;
+}
+
+/* Active states - Light theme by default */
+emoji-picker button:active,
+emoji-picker [role="button"]:active,
+emoji-picker [role="menuitem"]:active {
+    background-color: rgb(229 231 235) !important; /* Light gray active */
+    transform: scale(0.95) !important;
+}
+
+/* Dark mode focus states */
+.dark emoji-picker button:focus,
+.dark emoji-picker [role="button"]:focus,
+.dark emoji-picker [role="menuitem"]:focus {
+    background-color: rgb(55 65 81) !important; /* Dark gray focus */
+}
+
+/* Dark mode active states */
+.dark emoji-picker button:active,
+.dark emoji-picker [role="button"]:active,
+.dark emoji-picker [role="menuitem"]:active {
+    background-color: rgb(63 63 70) !important; /* Dark gray active */
+}
+
+/* Scrollbar styling - Light theme synced with chatbox */
+emoji-picker ::-webkit-scrollbar {
+    width: 8px !important;
+}
+
+emoji-picker ::-webkit-scrollbar-track {
+    background: rgb(249 250 251) !important; /* gray-50 to match background */
+}
+
+emoji-picker ::-webkit-scrollbar-thumb {
+    background: rgb(209 213 219) !important; /* gray-300 to match borders */
+    border-radius: 4px !important;
+}
+
+emoji-picker ::-webkit-scrollbar-thumb:hover {
+    background: rgb(156 163 175) !important; /* gray-400 for hover */
+}
+
+/* Dark mode scrollbar - synced with chatbox design */
+.dark emoji-picker ::-webkit-scrollbar-track {
+    background: rgb(31 41 55) !important; /* gray-800 to match background */
+}
+
+.dark emoji-picker ::-webkit-scrollbar-thumb {
+    background: rgb(75 85 99) !important; /* gray-600 to match borders */
+}
+
+.dark emoji-picker ::-webkit-scrollbar-thumb:hover {
+    background: rgb(107 114 128) !important; /* gray-500 for hover */
+}
+
+/* Container styling */
+#emoji-picker-container {
+    z-index: 1000;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    position: fixed;
+    pointer-events: auto;
+}
+
+#emoji-picker {
+    width: 400px !important;
+    max-width: 400px !important;
+    border-radius: 0.75rem !important;
+    border: 1px solid rgb(209 213 219) !important; /* gray-300 to match chat input */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.dark #emoji-picker {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25),
+        0 10px 10px -5px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Emoji button styling */
+#emoji-button {
+    transition: all 0.2s ease;
+}
+
+#emoji-button:hover {
+    transform: scale(1.05);
+}
+
+/* Search input styling - synced with chat input design */
+emoji-picker input[type="search"],
+emoji-picker input[type="text"] {
+    background-color: rgb(
+        249 250 251
+    ) !important; /* gray-50 to match chat input */
+    border: 1px solid rgb(209 213 219) !important; /* gray-300 to match chat input */
+    color: rgb(0 0 0) !important;
+    font-size: 0.875rem !important; /* text-sm to match chat input */
+    border-radius: 0.5rem !important; /* rounded-lg to match chat input */
+    padding: 0.75rem 1rem !important; /* py-3 px-4 to match chat input */
+    transition: all 0.2s ease !important;
+}
+
+/* Search input focus state - synced with chat input focus */
+emoji-picker input[type="search"]:focus,
+emoji-picker input[type="text"]:focus {
+    outline: none !important;
+    border-color: rgb(
+        0 174 159
+    ) !important; /* primary-500 to match chat input focus */
+    box-shadow: 0 0 0 2px rgb(0 174 159 / 0.2) !important; /* focus ring */
+}
+
+/* Search input placeholder styling */
+emoji-picker input[type="search"]::placeholder,
+emoji-picker input[type="text"]::placeholder {
+    color: rgb(156 163 175) !important; /* gray-400 for placeholder */
+}
+
+/* Dark mode search input styling - synced with chat input design */
+.dark emoji-picker input[type="search"],
+.dark emoji-picker input[type="text"] {
+    background-color: rgb(
+        55 65 81
+    ) !important; /* gray-700 to match chat input */
+    border: 1px solid rgb(75 85 99) !important; /* gray-600 to match chat input */
+    color: rgb(255 255 255) !important; /* white text */
+    font-size: 0.875rem !important; /* text-sm to match chat input */
+    border-radius: 0.5rem !important; /* rounded-lg to match chat input */
+    padding: 0.75rem 1rem !important; /* py-3 px-4 to match chat input */
+    transition: all 0.2s ease !important;
+}
+
+/* Dark mode search input focus state - synced with chat input focus */
+.dark emoji-picker input[type="search"]:focus,
+.dark emoji-picker input[type="text"]:focus {
+    outline: none !important;
+    border-color: rgb(
+        0 174 159
+    ) !important; /* primary-500 to match chat input focus */
+    box-shadow: 0 0 0 2px rgb(0 174 159 / 0.2) !important; /* focus ring */
+}
+
+/* Dark mode search input placeholder styling */
+.dark emoji-picker input[type="search"]::placeholder,
+.dark emoji-picker input[type="text"]::placeholder {
+    color: rgb(156 163 175) !important; /* gray-400 for placeholder */
+}
+
+.indicator {
+    background-color: rgb(
+        0 174 159
+    ) !important; /* primary-500 to match project theme */
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    #emoji-picker {
+        width: 280px !important;
+        max-width: 280px !important;
+    }
+}
