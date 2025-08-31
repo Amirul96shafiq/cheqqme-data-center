@@ -1156,13 +1156,12 @@
         input.focus();
     }
 
-    // Close emoji picker when clicking outside or inside chatbox
+    // Close emoji picker when clicking outside
     document.addEventListener("click", function (event) {
         const emojiPickerContainer = document.getElementById(
             "emoji-picker-container"
         );
         const emojiButton = document.getElementById("emoji-button");
-        const chatbotInterface = document.getElementById("chatbot-interface");
 
         if (
             emojiPickerContainer &&
@@ -1173,16 +1172,7 @@
                 !emojiPickerContainer.contains(event.target) &&
                 !emojiButton.contains(event.target)
             ) {
-                // Also close if clicking anywhere inside the chatbot interface
-                if (
-                    chatbotInterface &&
-                    chatbotInterface.contains(event.target)
-                ) {
-                    toggleEmojiPicker();
-                } else if (!chatbotInterface.contains(event.target)) {
-                    // Close if clicking outside the chatbot interface as well
-                    toggleEmojiPicker();
-                }
+                toggleEmojiPicker();
             }
         }
     });
@@ -1278,15 +1268,20 @@
         const chatbotInterface = document.getElementById("chatbot-interface");
         const chatIcon = document.getElementById("chat-icon");
         const closeIcon = document.getElementById("close-icon");
+        const emojiPickerContainer = document.getElementById(
+            "emoji-picker-container"
+        );
 
         // Only close if chatbot is currently open and click is outside the chatbot elements
+        // AND not inside the emoji picker
         if (
             chatbotInterface &&
             chatbotInterface.style.display !== "none" &&
             !chatbotInterface.classList.contains("hidden") &&
             !event.target.closest("#chatbot-interface") &&
             !event.target.closest("#chat-icon") &&
-            !event.target.closest("#close-icon")
+            !event.target.closest("#close-icon") &&
+            !event.target.closest("#emoji-picker-container")
         ) {
             toggleChatbot();
         }
