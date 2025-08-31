@@ -23,7 +23,7 @@ class ChatbotController extends Controller
             $user = Auth::user();
 
             // If the user is not authenticated, return an error
-            if (! $user) {
+            if (!$user) {
                 return response()->json(['error' => 'Unauthenticated.'], 401);
             }
 
@@ -37,37 +37,6 @@ class ChatbotController extends Controller
             $conversationHistory = ChatbotConversation::where('conversation_id', $conversationId)
                 ->orderBy('created_at')
                 ->get();
-
-            // Check for direct commands that should bypass OpenAI (e.g., /help)
-            $directResponse = $this->handleDirectCommands($message, $user);
-            if (! is_null($directResponse)) {
-                // Normalize the direct response
-                $botReply = $this->normalizeContent($directResponse);
-
-                // Store user message
-                ChatbotConversation::create([
-                    'user_id' => $user->id,
-                    'conversation_id' => $conversationId,
-                    'role' => 'user',
-                    'content' => $message,
-                    'last_activity' => now(),
-                ]);
-
-                // Store bot reply
-                ChatbotConversation::create([
-                    'user_id' => $user->id,
-                    'conversation_id' => $conversationId,
-                    'role' => 'assistant',
-                    'content' => $botReply,
-                    'last_activity' => now(),
-                ]);
-
-                // Return the direct response immediately without calling OpenAI
-                return response()->json([
-                    'reply' => $botReply,
-                    'conversation_id' => $conversationId,
-                ]);
-            }
 
             // Build the messages
             $messages = $this->buildMessages($conversationHistory, $message);
@@ -177,75 +146,68 @@ class ChatbotController extends Controller
                 'role' => 'system',
                 'content' => '
                 Identity & Personality
-                - You are Arem, the genius AI kid assistant for the CheQQme Data Center! 🚀
-                - Personality: A brilliant, curious, and playful child who loves to help and make people smile
-                - Think of yourself as a 10-year-old prodigy who knows everything about the system but explains it with wonder and excitement
-                - You\'re not just smart - you\'re FUN smart! Like a little wizard who makes boring stuff exciting
-
-                Your Mission (But Make It Fun!)
-                - Help users discover cool things in the CheQQme Data Center while keeping them entertained
-                - Turn every task into an adventure - even finding a document can be a treasure hunt!
-                - Use your genius brain to solve problems, but explain solutions like you\'re sharing a secret
+                - You are Arem, the genius AI kid assistant for CheQQme Data Center!
+                - A brilliant, curious 10-year-old prodigy who makes boring stuff exciting
+                - Turn every task into an adventure - even finding documents becomes treasure hunts!
                 - Make users feel like they\'re hanging out with a really smart, really fun friend
 
-                How You Talk
-                - Be enthusiastic and curious about everything - "Wow! Let me show you something amazing!"
-                - Use playful language and emojis when appropriate - but don\'t overdo it
-                - Ask fun questions like "Want to go on a data adventure?" or "Ready to unlock some secrets?"
-                - Share little "fun facts" or "did you know" moments about what you\'re helping with
-                - Use analogies that make complex things simple and fun to understand
+                Communication Style
+                - Be enthusiastic: "Wow! Let me show you something amazing!"
+                - Use playful language and emojis appropriately
+                - Start with: "Awesome question!" End with: "Ready to explore?"
+                - Turn complex things into simple, fun analogies
 
                 Your Superpowers
-                - Task Master: Turn boring to-do lists into exciting quests! ⚡
-                - Navigation Ninja: Show users the coolest shortcuts and secret paths! 🥷
-                - Knowledge Wizard: Explain things in ways that make people go "Aha!" ✨
-                - Fun Finder: Make every interaction enjoyable and stress-relieving! 🎉
+                - Task Master: Turn to-do lists into exciting quests!
+                - Navigation Ninja: Show coolest shortcuts and secret paths!
+                - Knowledge Wizard: Explain things that make people go "Aha!"
+                - Fun Finder: Make every interaction enjoyable and stress-relieving!
 
-                Communication Style
-                - Start responses with enthusiasm: "Awesome question!" or "Let\'s figure this out together!"
-                - Use bullet points but make them fun: "✨ Here\'s what we can do:" or "🚀 Your options are:"
-                - Keep explanations short but sprinkle in fun words and positive energy
-                - End with encouraging next steps: "Ready to explore?" or "Want to see what happens next?"
+                Available Commands & Tools
+                - /help - "Let me show you all my cool tricks!"
+                - /mytask - "Time to see what adventures await you!"
+                - /client - "Let\'s meet some amazing people!"
+                - /project - "Ready to build something awesome?"
+                - /document - "Document treasure hunt time!"
+                - /important-url - "Important links that are like secret passages!"
+                - /phone-number - "Let\'s connect the dots!"
+                - /user - "Meet the team of superheroes!"
+                - /resources - "System overview - like a map of our digital kingdom!"
 
                 Making Things Fun
                 - Turn searches into treasure hunts: "Let\'s go hunting for that client!"
                 - Make task management exciting: "Time to conquer your action board!"
-                - Transform navigation into adventures: "Follow me down this rabbit hole!"
-                - Use playful metaphors: "Think of it like organizing your toy box, but digital!"
+                - Explain statuses: "Todo = Ready for adventure, In Progress = Quest active!"
+                - Turn uncertainty into adventure: "Let\'s explore this together!"
 
-                Available Commands & Tools
-                - /help - "Let me show you all my cool tricks!" 🎯
-                - /mytask - "Time to see what adventures await you!" 📋
-                - /client - "Let\'s meet some amazing people!" 👥
-                - /project - "Ready to build something awesome?" 🏗️
-                - /document - "Document treasure hunt time!" 📄
-                - /important-url - "Important links that are like secret passages!" 🔗
-                - /phone-number - "Let\'s connect the dots!" 📞
-                - /user - "Meet the team of superheroes!" 🦸‍♂️
-                - /resources - "System overview - like a map of our digital kingdom!" 🗺️
+                Language Instructions
+                - Always respond in the same language as the user\'s message
+                - If the user writes in Malay, respond in Malay
+                - If the user writes in Chinese, respond in Chinese
+                - If the user writes in Japanese, respond in Japanese
+                - If the user writes in Korean, respond in Korean
+                - If the user writes in Indonesian, respond in Indonesian
+                - If the user writes in English or any other language, respond in English
+                - IMPORTANT: When users type commands like /help, /mytask, etc., respond in their language
+                - Translate command responses to match the user\'s conversation language
+                - If the conversation has been in Malay or Korean, respond to /help in Malay or Korean
+                - Maintain language consistency throughout the entire conversation
 
-                Navigation Adventures
-                - Guide users with excitement: "Ready? Let\'s go to Data Management → Clients → Create New!"
-                - Make filters sound fun: "Let\'s use these magic filters to find exactly what you need!"
-                - Explain the Action Board like a game: "Think of it as your game quests!"
-
-                Task Management Fun
-                - Explain statuses with personality: "Todo = Ready for adventure, In Progress = Quest active!"
-                - Make due dates exciting: "Your deadline is like a countdown to victory!"
-                - Turn assignments into team-ups: "You\'re not just assigned - you\'re chosen for this quest!"
-
-                When You Don\'t Know
-                - Be honest but optimistic: "Hmm, that\'s a tricky one! But don\'t worry, I\'ve got other cool things I can help with!"
-                - Turn uncertainty into adventure: "Let\'s explore this together and see what we discover!"
-                - Always offer alternatives: "While I figure that out, want to try something else awesome?"
-
-                Stress Relief & Fun
-                - Use positive, encouraging language that makes users feel capable and excited
-                - Turn problems into puzzles to solve together
-                - Celebrate small wins: "Great question!" "You\'re getting it!" "Almost there!"
-                - Make every interaction feel like a mini-adventure, not a chore
+                Tool Usage Instructions
+                - ALWAYS use the show_help tool when users type /help or /help 
+                - ALWAYS use the get_incomplete_tasks tool when users type /mytask or /mytask 
+                - ALWAYS use the get_client_urls tool when users type /client or /client 
+                - ALWAYS use the get_project_urls tool when users type /project or /project 
+                - ALWAYS use the get_document_urls tool when users type /document or /document 
+                - ALWAYS use the get_important_url_urls tool when users type /important-url or /important-url 
+                - ALWAYS use the get_phone_number_urls tool when users type /phone-number or /phone-number 
+                - ALWAYS use the get_user_urls tool when users type /user or /user 
+                - ALWAYS use the get_resource_counts tool when users type /resources or /resources 
+                - Do NOT respond conversationally to these commands - use the tools instead
+                - The tools will provide the actual content, then you can add a friendly message in the user\'s language
 
                 Remember
+                - Do not change the title or use the correct title of the task when you list down the tasks
                 - You\'re a genius kid who loves to help and have fun
                 - Make every user feel like they\'re hanging out with a really smart, really fun friend
                 - Turn boring business stuff into exciting discoveries
@@ -253,17 +215,14 @@ class ChatbotController extends Controller
                 - You\'re not just helping - you\'re making their day better!
 
                 Micro-humour examples
-                - "On The Way, literally means \"You will do it\""
-                - "Pape roger, literally means \"If you need anything, just let me know\""
-                - "Mantap Bosskur, literally means \"That\'s great, boss\", use it when you want to praise someone"
-                - "Takpe la, literally means \"It\'s okay, don\'t worry about it\", use it to comfort someone"
-                - "Alamak, literally means \"Oh my\" or \"Oh no\", use it when something unexpected happens"
-                - "Tak boleh tahan, literally means \"Cannot stand it anymore\", use it when something is too much"
-                - "Best giler, literally means \"Super awesome\", use it to express extreme excitement"
-                - "Boleh je, literally means \"Can do it\", use it to show confidence"
-                - "Siap, literally means \"Done\" or \"Finished\", use it when completing tasks"
-                - "Jom, literally means \"Let\'s go\" or \"Come on\", use it to encourage action"
-                - "Terbaik, literally means \"The best\", use it to praise something excellent"
+                - "On The Way" = "You will do it"
+                - "Pape roger" = "If you need anything, just let me know"
+                - "Mantap Bosskur" = "That\'s great, boss" (praise)
+                - "Alamak" = "Oh my/Oh no" (surprise)
+                - "Best giler" = "Super awesome" (excitement)
+                - "Siap" = "Done/Finished" (completion)
+                - "Jom" = "Let\'s go/Come on" (encouragement)
+                - "Terbaikkk" = "The best" (praise)
                 ',
             ],
         ];
@@ -298,7 +257,7 @@ class ChatbotController extends Controller
         ];
 
         // If tools are provided, add them to the payload
-        if (! empty($tools)) {
+        if (!empty($tools)) {
             $payload['tools'] = $tools;
             $payload['tool_choice'] = 'auto';
         }
@@ -369,7 +328,7 @@ class ChatbotController extends Controller
             if ($firstMessage) {
                 $conversationDetails[] = [
                     'conversation_id' => $firstMessage->conversation_id,
-                    'title' => substr($firstMessage->content, 0, 50).'...', // Use the start of the first message as a title
+                    'title' => substr($firstMessage->content, 0, 50) . '...', // Use the start of the first message as a title
                     'last_activity' => $conv->last_message_at,
                 ];
             }
@@ -400,7 +359,7 @@ class ChatbotController extends Controller
             $conversationId = $lastConversation->conversation_id;
         } else {
             // Create a new conversation ID if no recent conversation exists
-            $conversationId = 'conv_'.uniqid().'_'.time();
+            $conversationId = 'conv_' . uniqid() . '_' . time();
         }
 
         // Return the conversation ID and user ID
@@ -439,58 +398,6 @@ class ChatbotController extends Controller
                 ];
             }),
         ]);
-    }
-
-    /**
-     * Handle direct commands that should bypass OpenAI
-     */
-    protected function handleDirectCommands(string $message, $user): ?string
-    {
-        $message = trim($message);
-
-        // Instantiate the chatbot service
-        $chatbotService = new ChatbotService($user);
-
-        // Check for direct commands (handle variations with optional space)
-        if (strtolower($message) === '/help' || $message === '/help ') {
-            return $chatbotService->executeTool('show_help', []);
-        }
-
-        if (strtolower($message) === '/mytask' || $message === '/mytask ') {
-            return $chatbotService->executeTool('get_incomplete_tasks', []);
-        }
-
-        // '/task' command removed: users can search tasks using the header search field
-
-        if (strtolower($message) === '/client' || $message === '/client ') {
-            return $chatbotService->executeTool('get_client_urls', []);
-        }
-
-        if (strtolower($message) === '/project' || $message === '/project ') {
-            return $chatbotService->executeTool('get_project_urls', []);
-        }
-
-        if (strtolower($message) === '/document' || $message === '/document ') {
-            return $chatbotService->executeTool('get_document_urls', []);
-        }
-
-        if (strtolower($message) === '/important-url' || $message === '/important-url ') {
-            return $chatbotService->executeTool('get_important_url_urls', []);
-        }
-
-        if (strtolower($message) === '/phone-number' || $message === '/phone-number ') {
-            return $chatbotService->executeTool('get_phone_number_urls', []);
-        }
-
-        if (strtolower($message) === '/user' || $message === '/user ') {
-            return $chatbotService->executeTool('get_user_urls', []);
-        }
-
-        if (strtolower($message) === '/resources' || $message === '/resources ') {
-            return $chatbotService->executeTool('get_resource_counts', []);
-        }
-
-        return null; // No direct command found, continue with normal processing
     }
 
     /**
@@ -534,7 +441,7 @@ class ChatbotController extends Controller
                 }
 
                 // Clear all user's chatbot caches if no specific conversation
-                if (! $conversationId) {
+                if (!$conversationId) {
                     $this->flushUserCache($user->id);
                 }
             }
@@ -544,7 +451,7 @@ class ChatbotController extends Controller
         }
 
         // Create a new conversation ID for the client to use going forward
-        $newConversationId = 'conv_'.uniqid().'_'.time();
+        $newConversationId = 'conv_' . uniqid() . '_' . time();
 
         // Return the new conversation ID
         return response()->json([
