@@ -263,6 +263,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make()
+                    ->label('Boards'),
+
+                NavigationGroup::make()
                     ->label('Data Management'),
 
                 NavigationGroup::make()
