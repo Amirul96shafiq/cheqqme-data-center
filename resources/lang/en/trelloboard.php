@@ -16,6 +16,13 @@ return [
 
     'actions' => [
         'create' => 'Create Trello Board',
+        'delete' => 'Delete',
+        'edit' => 'Edit',
+        'view' => 'View',
+        'restore' => 'Restore',
+        'force_delete' => 'Force Delete',
+        'open_url' => 'Open URL',
+        'log' => 'Activity Log',
     ],
 
     'section' => [

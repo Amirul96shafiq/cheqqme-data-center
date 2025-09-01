@@ -48,11 +48,11 @@ class AdminPanelProvider extends PanelProvider
             ->get(['id', 'name', 'url'])
             ->map(function ($board) {
                 return NavigationItem::make("trello-board-{$board->id}")
-                    ->label($board->name . ' Trello Board')
+                    ->label($board->name . ' ' . __('navigation.trello_board_suffix'))
                     ->url($board->url)
                     ->openUrlInNewTab()
-                    ->group('Boards')
-                    ->sort(1);
+                    ->group(fn() => __('navigation.groups.boards'))
+                    ->sort(2);
             })
             ->toArray();
     }
@@ -245,7 +245,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label(function () {
                         $userName = auth()->user()?->name ?? '';
                         if (!$userName) {
-                            return 'Profile';
+                            return __('greetings.profile');
                         }
 
                         // Format name: First name + initials for remaining parts
@@ -255,10 +255,10 @@ class AdminPanelProvider extends PanelProvider
 
                         $hour = now()->hour;
                         $greeting = match (true) {
-                            $hour >= 7 && $hour <= 11 => 'Morning',
-                            $hour >= 12 && $hour <= 19 => 'Afternoon',
-                            $hour >= 20 && $hour <= 23 => 'Evening',
-                            default => 'Goodnight' // 12AM-6AM
+                            $hour >= 7 && $hour <= 11 => __('greetings.morning'),
+                            $hour >= 12 && $hour <= 19 => __('greetings.afternoon'),
+                            $hour >= 20 && $hour <= 23 => __('greetings.evening'),
+                            default => __('greetings.goodnight') // 12AM-6AM
                         };
 
                         return "{$greeting}, {$formattedName}";
@@ -285,16 +285,16 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label('Boards'),
+                    ->label(__('navigation.groups.boards')),
 
                 NavigationGroup::make()
-                    ->label('Data Management'),
+                    ->label(__('navigation.groups.data_management')),
 
                 NavigationGroup::make()
-                    ->label('User Management'),
+                    ->label(__('navigation.groups.user_management')),
 
                 NavigationGroup::make()
-                    ->label('Tools'),
+                    ->label(__('navigation.groups.tools')),
             ])
             ->navigationItems($this->getEnabledTrelloBoards())
             ->renderHook(

@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         // Call the sample data seeder to populate other tables
         $this->call([
             SampleDataSeeder::class,
+            TrelloBoardSeeder::class,
         ]);
     }
 }

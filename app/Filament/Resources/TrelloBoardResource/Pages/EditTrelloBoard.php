@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\TrelloBoardResource\Pages;
 
+use App\Filament\Pages\Base\BaseEditRecord;
 use App\Filament\Resources\TrelloBoardResource;
 use Filament\Actions;
-use App\Filament\Pages\Base\BaseEditRecord;
 
 class EditTrelloBoard extends BaseEditRecord
 {
@@ -15,14 +15,16 @@ class EditTrelloBoard extends BaseEditRecord
         return [
             $this->getSaveFormAction(),
             $this->getCancelFormAction(),
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label(__('trelloboard.actions.delete')),
         ];
     }
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label(__('trelloboard.actions.delete')),
         ];
     }
 
