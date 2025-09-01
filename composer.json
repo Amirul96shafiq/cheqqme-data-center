@@ -11,6 +11,7 @@
         "bezhansalleh/filament-language-switch": "^3.1",
         "blade-ui-kit/blade-heroicons": "^2.6",
         "charrafimed/global-search-modal": "^3.7",
+        "discoverydesign/filament-gaze": "^1.1",
         "filament/filament": "^3.0",
         "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^12.0",

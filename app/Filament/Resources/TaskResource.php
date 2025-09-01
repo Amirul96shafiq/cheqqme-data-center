@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TaskResource\Pages;
 use App\Models\Task;
+use DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -54,6 +55,11 @@ return false;
     public static function form(Form $form): Form
     {
         return $form->schema([
+            GazeBanner::make()
+                ->lock()
+                ->columnSpanFull()
+                ->hideOnCreate()
+                ->pollTimer(10),
             Forms\Components\Grid::make(5)
                 ->schema([
                     // Main content (left side) - spans 2 columns

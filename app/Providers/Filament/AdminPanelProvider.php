@@ -7,6 +7,7 @@ use App\Models\TrelloBoard;
 use Awcodes\LightSwitch\Enums\Alignment;
 use Awcodes\LightSwitch\LightSwitchPlugin;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
+use DiscoveryDesign\FilamentGaze\FilamentGazePlugin;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -22,17 +23,18 @@ use Filament\Support\Enums\MaxWidth;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 // -----------------------------
 // Plugins
 // -----------------------------
 // Light Switch by Adam Weston
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\StartSession;
 // Global Search Modal by CharrafiMed
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Request;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 // ActivityLog by Rômulo Ramos
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+// Gaze by Discovery Design
 use Rmsramos\Activitylog\ActivitylogPlugin;
 
 class AdminPanelProvider extends PanelProvider
@@ -329,6 +331,8 @@ class AdminPanelProvider extends PanelProvider
                 ActivitylogPlugin::make()
                     ->navigationGroup(fn() => __('activitylog.navigation_group'))
                     ->navigationSort(11),
+
+                FilamentGazePlugin::make(),
             ]);
     }
 }

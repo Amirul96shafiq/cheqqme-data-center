@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers\UserActivityLogRelationManager;
 use App\Models\User;
+use DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Actions;
@@ -40,6 +41,11 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
+                GazeBanner::make()
+                    ->lock()
+                    ->columnSpanFull()
+                    ->hideOnCreate()
+                    ->pollTimer(10),
 
                 Section::make(heading: __('user.section.user_info'))
                     ->schema([
@@ -337,7 +343,7 @@ class UserResource extends Resource
                     ),
 
                 Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
-                
+
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\RestoreAction::make(),
