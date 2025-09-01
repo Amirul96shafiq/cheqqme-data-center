@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Profile;
+use App\Models\TrelloBoard;
 use Awcodes\LightSwitch\Enums\Alignment;
 use Awcodes\LightSwitch\LightSwitchPlugin;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
@@ -13,6 +14,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
 use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -35,6 +37,26 @@ use Rmsramos\Activitylog\ActivitylogPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
+    /**
+     * Get enabled Trello boards for navigation
+     */
+    protected function getEnabledTrelloBoards(): array
+    {
+        return TrelloBoard::where('show_on_boards', true)
+            ->where('url', '!=', '')
+            ->orderBy('name')
+            ->get(['id', 'name', 'url'])
+            ->map(function ($board) {
+                return NavigationItem::make("trello-board-{$board->id}")
+                    ->label($board->name . ' Trello Board')
+                    ->url($board->url)
+                    ->openUrlInNewTab()
+                    ->group('Boards')
+                    ->sort(1);
+            })
+            ->toArray();
+    }
+
     /**
      * Determine if the current request is for a login page
      */
@@ -145,7 +167,7 @@ class AdminPanelProvider extends PanelProvider
 
         return $panel
             ->default()
-            ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
+            ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
             ->favicon(asset('images/favicon.png'))
@@ -217,18 +239,18 @@ class AdminPanelProvider extends PanelProvider
                         if ($hour >= 20 && $hour <= 23) {
                             return 'heroicon-o-moon';
                         } // Evening
-
+            
                         return 'heroicon-o-moon'; // Goodnight (12AM-6AM)
                     })
                     ->label(function () {
                         $userName = auth()->user()?->name ?? '';
-                        if (! $userName) {
+                        if (!$userName) {
                             return 'Profile';
                         }
 
                         // Format name: First name + initials for remaining parts
                         $formattedName = collect(explode(' ', $userName))
-                            ->map(fn ($part, $index) => $index === 0 ? $part : substr($part, 0, 1).'.')
+                            ->map(fn($part, $index) => $index === 0 ? $part : substr($part, 0, 1) . '.')
                             ->implode(' ');
 
                         $hour = now()->hour;
@@ -242,23 +264,23 @@ class AdminPanelProvider extends PanelProvider
                         return "{$greeting}, {$formattedName}";
                     })
                     ->color('primary')
-                    ->url(fn () => 'https://www.google.com/search?q=google+weather')
+                    ->url(fn() => 'https://www.google.com/search?q=google+weather')
                     ->openUrlInNewTab(),
                 MenuItem::make()
-                    ->label(fn () => __('dashboard.user-menu.profile-label'))
+                    ->label(fn() => __('dashboard.user-menu.profile-label'))
                     ->icon('heroicon-o-user')
-                    ->url(fn () => filament()->getProfileUrl())
+                    ->url(fn() => filament()->getProfileUrl())
                     ->sort(-1),
                 MenuItem::make()
-                    ->label(fn () => __('dashboard.user-menu.settings-label'))
+                    ->label(fn() => __('dashboard.user-menu.settings-label'))
                     ->icon('heroicon-o-cog-6-tooth')
-                    ->url(fn () => route('filament.admin.pages.settings'))
+                    ->url(fn() => route('filament.admin.pages.settings'))
                     ->sort(0),
                 'logout' => MenuItem::make()
-                    ->label(fn () => __('dashboard.user-menu.logout-label'))
+                    ->label(fn() => __('dashboard.user-menu.logout-label'))
                     ->icon('heroicon-o-arrow-right-on-rectangle')
                     ->color('danger')
-                    ->url(fn () => filament()->getLogoutUrl())
+                    ->url(fn() => filament()->getLogoutUrl())
                     ->sort(1),
             ])
             ->navigationGroups([
@@ -274,6 +296,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label('Tools'),
             ])
+            ->navigationItems($this->getEnabledTrelloBoards())
             ->renderHook(
                 'panels::body.end',
                 function () {
@@ -304,7 +327,7 @@ class AdminPanelProvider extends PanelProvider
                     ->expandedUrlTarget(enabled: false),
 
                 ActivitylogPlugin::make()
-                    ->navigationGroup(fn () => __('activitylog.navigation_group'))
+                    ->navigationGroup(fn() => __('activitylog.navigation_group'))
                     ->navigationSort(11),
             ]);
     }
