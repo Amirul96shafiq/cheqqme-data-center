@@ -163,8 +163,6 @@
 
         // Persist open state
         localStorage.setItem(getUserChatStateKey(), isOpen ? "true" : "false");
-
-        // console.log(`Chat visibility set to: ${isOpen ? "open" : "closed"}`);
     }
 
     // Apply chatbot open/close state when elements exist; safe for dynamic insertion
@@ -700,8 +698,6 @@
 
     // Clear conversation
     async function clearConversation() {
-        console.log("Clearing conversation...");
-
         // Show immediate feedback to user
         const chatMessages = document.getElementById("chat-messages");
         if (chatMessages) {
@@ -870,7 +866,7 @@
             emojiPicker.focus();
 
             // Add a small visual indicator that multiple emojis can be selected
-            // This will be handled by the emoji picker's built-in UI
+            // Handled by the emoji picker's built-in UI
         } else {
             emojiPickerContainer.style.transition =
                 "opacity 0.2s ease, transform 0.2s ease";
@@ -902,8 +898,6 @@
         emojiPicker.addEventListener("emoji-click", (event) => {
             const emoji = event.detail.unicode;
             insertEmoji(emoji);
-            // Don't close the emoji picker - let user select multiple emojis
-            // toggleEmojiPicker();
         });
 
         // Set basic emoji picker properties

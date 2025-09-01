@@ -628,6 +628,11 @@ class ChatbotController extends Controller
             '🤪' => '😝',
             '😝' => '😋',
 
+            // Monkey face
+            '🙈' => '🙉',
+            '🙉' => '🙊',
+            '🙊' => '🙈',
+
             // Thumbs up and approval
             '👍' => '👏',
             '👏' => '🙌',
