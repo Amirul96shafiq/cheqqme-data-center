@@ -41,8 +41,7 @@ class TrelloBoardResource extends Resource
 
     {
         return [
-            __('trelloboard.search.name') => $record->name,
-            __('trelloboard.search.url') => $record->url,
+            __('trelloboard.search.board_url') => $record->url,
         ];
     }
 

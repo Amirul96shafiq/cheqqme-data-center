@@ -54,7 +54,6 @@ return [
     ],
 
     'search' => [
-        'board_name' => 'Board Name',
         'board_url' => 'Board URL',
     ],
 ];
