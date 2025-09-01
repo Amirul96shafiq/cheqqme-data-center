@@ -319,12 +319,9 @@ class UserResource extends Resource
                 TrashedFilter::make(), // To show trashed or only active
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
-
                 TableAction::make('personalize')
                     ->label('Personalize')
                     ->icon('heroicon-o-paint-brush')
-                    ->color('success')
                     ->url(
                         fn(User $record) =>
                         // Only show for logged-in user's own account
@@ -339,6 +336,8 @@ class UserResource extends Resource
                         auth()->id() === $record->id
                     ),
 
+                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
+                
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\RestoreAction::make(),

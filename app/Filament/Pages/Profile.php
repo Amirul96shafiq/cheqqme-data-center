@@ -81,8 +81,6 @@ class Profile extends EditProfile
                                     ->moveFiles()
                                     ->preserveFilenames()
                                     ->imageResizeMode('cover')
-                                    ->imageResizeTargetWidth('1920')
-                                    ->imageResizeTargetHeight('600')
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                     ->maxSize(5120) // 5MB
                                     ->columnSpanFull()

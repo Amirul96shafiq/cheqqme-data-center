@@ -39,7 +39,7 @@ return [
         'saved_password_body' => 'Please re-login or refresh the page.',
         'avatar' => 'Avatar',
         'cover_image' => 'Cover Image',
-        'cover_image_helper' => 'Upload a cover image for your profile (recommended: 1920x400px, max 5MB)',
+        'cover_image_helper' => 'Upload a cover image for your profile (recommended: max 5MB)',
         'username' => 'Username',
         'name' => 'Name',
         'email' => 'Email',
