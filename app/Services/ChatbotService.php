@@ -9,6 +9,7 @@ use App\Models\ImportantUrl;
 use App\Models\PhoneNumber;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\TrelloBoard;
 use App\Models\User;
 
 class ChatbotService
@@ -49,6 +50,7 @@ class ChatbotService
             'get_phone_number_urls' => [$this, 'getPhoneNumberUrls'], // Get URLs for phone number management (create new, list all) with total count. Shortcut: /phone-number
             'get_user_urls' => [$this, 'getUserUrls'], // Get URLs for user management (create new, list all) with total count. Shortcut: /user
             'get_resource_counts' => [$this, 'getResourceCounts'], // Get total counts for all resources. Shortcut: /resources
+            'get_trello_board_urls' => [$this, 'getTrelloBoardUrls'], // Get URLs for Trello board management (create new, list all) with total count. Shortcut: /trello-board
         ];
     }
 
@@ -176,6 +178,18 @@ class ChatbotService
                     ],
                 ],
             ],
+            'get_trello_board_urls' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_trello_board_urls',
+                    'description' => 'Get URLs for Trello board management including create new Trello board and list all Trello boards with total count. Respond in the user\'s language. Shortcut: /trello-board',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
+                        'required' => [],
+                    ],
+                ],
+            ],
         ];
 
         return $definitions[$name] ?? null;
@@ -222,6 +236,7 @@ class ChatbotService
                     '/phone-number' => 'Dapatkan URL untuk pengurusan nombor telefon dengan jumlah keseluruhan',
                     '/user' => 'Dapatkan URL untuk pengurusan pengguna dengan jumlah keseluruhan',
                     '/resources' => 'Dapatkan jumlah keseluruhan untuk semua sumber dalam sistem',
+                    '/trello-board' => 'Dapatkan URL untuk pengurusan papan Trello dengan jumlah keseluruhan',
                 ],
                 'footer' => 'Hanya taip mana-mana pintasan ini dalam mesej anda untuk menggunakannya dengan cepat! 🚀',
             ],
@@ -238,6 +253,7 @@ class ChatbotService
                     '/phone-number' => 'Dapatkan URL untuk manajemen nomor telepon dengan jumlah total',
                     '/user' => 'Dapatkan URL untuk manajemen pengguna dengan jumlah total',
                     '/resources' => 'Dapatkan jumlah total untuk semua sumber dalam sistem',
+                    '/trello-board' => 'Dapatkan URL untuk manajemen papan Trello dengan jumlah total',
                 ],
                 'footer' => 'Cukup ketik salah satu pintasan ini dalam pesan Anda untuk menggunakannya dengan cepat! 🚀',
             ],
@@ -254,6 +270,7 @@ class ChatbotService
                     '/phone-number' => '获取电话号码管理URL和总数',
                     '/user' => '获取用户管理URL和总数',
                     '/resources' => '获取系统中所有资源的总数',
+                    '/trello-board' => '获取Trello看板管理URL和总数',
                 ],
                 'footer' => '只需在消息中输入这些快捷方式中的任何一个即可快速使用！🚀',
             ],
@@ -270,6 +287,7 @@ class ChatbotService
                     '/phone-number' => '총 수와 함께 전화번호 관리 URL 가져오기',
                     '/user' => '총 수와 함께 사용자 관리 URL 가져오기',
                     '/resources' => '시스템의 모든 리소스 총 수 가져오기',
+                    '/trello-board' => '총 수와 함께 트렐로 보드 관리 URL 가져오기',
                 ],
                 'footer' => '메시지에 이러한 단축키 중 하나를 입력하여 빠르게 사용하세요! 🚀',
             ],
@@ -286,6 +304,7 @@ class ChatbotService
                     '/phone-number' => '総数와 함께 전화번호 관리 URL 가져오기',
                     '/user' => '総数와 함께 사용자 관리 URL 가져오기',
                     '/resources' => '시스템의 모든 리소스 총 수 가져오기',
+                    '/trello-board' => '総数와 함께 트렐로 보드 관리 URL 가져오기',
                 ],
                 'footer' => 'メッセージにこれらのショートカットのいずれかを入力して素早く使用してください！🚀',
             ],
@@ -302,6 +321,7 @@ class ChatbotService
                     '/phone-number' => 'Get URLs for phone number management with total count',
                     '/user' => 'Get URLs for user management with total count',
                     '/resources' => 'Get total counts for all resources in the system',
+                    '/trello-board' => 'Get URLs for Trello board management with total count',
                 ],
                 'footer' => 'Just type any of these shortcuts in your message to use them quickly! 🚀',
             ],
@@ -313,36 +333,36 @@ class ChatbotService
 
         // Malay
         $output .= "**Bahasa Melayu:**\n";
-        $output .= $helpContent['malay']['title']."\n";
-        $output .= $helpContent['malay']['intro']."\n";
+        $output .= $helpContent['malay']['title'] . "\n";
+        $output .= $helpContent['malay']['intro'] . "\n";
         $counter = 1;
         foreach ($helpContent['malay']['shortcuts'] as $shortcut => $description) {
             $output .= "{$counter}. **{$shortcut}** - {$description}\n";
             $counter++;
         }
-        $output .= $helpContent['malay']['footer']."\n\n";
+        $output .= $helpContent['malay']['footer'] . "\n\n";
 
         // Korean
         $output .= "**한국어:**\n";
-        $output .= $helpContent['korean']['title']."\n";
-        $output .= $helpContent['korean']['intro']."\n";
+        $output .= $helpContent['korean']['title'] . "\n";
+        $output .= $helpContent['korean']['intro'] . "\n";
         $counter = 1;
         foreach ($helpContent['korean']['shortcuts'] as $shortcut => $description) {
             $output .= "{$counter}. **{$shortcut}** - {$description}\n";
             $counter++;
         }
-        $output .= $helpContent['korean']['footer']."\n\n";
+        $output .= $helpContent['korean']['footer'] . "\n\n";
 
         // English
         $output .= "**English:**\n";
-        $output .= $helpContent['english']['title']."\n";
-        $output .= $helpContent['english']['intro']."\n";
+        $output .= $helpContent['english']['title'] . "\n";
+        $output .= $helpContent['english']['intro'] . "\n";
         $counter = 1;
         foreach ($helpContent['english']['shortcuts'] as $shortcut => $description) {
             $output .= "{$counter}. **{$shortcut}** - {$description}\n";
             $counter++;
         }
-        $output .= $helpContent['english']['footer']."\n\n";
+        $output .= $helpContent['english']['footer'] . "\n\n";
 
         $output .= '**Note:** Choose the language that matches your conversation! 🌍';
 
@@ -359,7 +379,7 @@ class ChatbotService
             ->whereIn('status', ['todo', 'in_progress', 'toreview']);
 
         // If only count is needed, return early
-        if (! $includeDetails && $includeCount) {
+        if (!$includeDetails && $includeCount) {
             $count = $query->count();
 
             return json_encode(['task_count' => $count]);
@@ -376,7 +396,7 @@ class ChatbotService
             $result['task_count'] = $tasks->count();
         }
 
-        if (! $includeDetails) {
+        if (!$includeDetails) {
             return json_encode($result);
         }
 
@@ -406,12 +426,12 @@ class ChatbotService
         $result['tasks_by_status'] = $tasksByStatus;
 
         // If count only, return JSON
-        if (! $includeDetails) {
+        if (!$includeDetails) {
             return json_encode($result);
         }
 
         // Format as structured text with proper styling
-        $output = "You've got ".$tasks->count()." incomplete tasks grouped by their current status. Here's a quick peek:\n\n";
+        $output = "You've got " . $tasks->count() . " incomplete tasks grouped by their current status. Here's a quick peek:\n\n";
 
         // Define status labels and their counts
         $statusLabels = [
@@ -434,7 +454,7 @@ class ChatbotService
                 foreach ($displayTasks as $task) {
                     // Truncate task name to 30 characters
                     $truncatedName = strlen($task['task_name']) > 30
-                        ? substr($task['task_name'], 0, 30).'...'
+                        ? substr($task['task_name'], 0, 30) . '...'
                         : $task['task_name'];
 
                     $output .= "{$counter}. [**{$truncatedName}**]({$task['url']})";
@@ -657,6 +677,39 @@ class ChatbotService
     }
 
     /**
+     * Tool: Get URLs for Trello board management (create new, list all) with total count.
+     * Shortcut: /trello-board
+     */
+    public function getTrelloBoardUrls(): string
+    {
+        $count = TrelloBoard::whereNull('deleted_at')->count();
+
+        $output = "**Trello Board Management** 📊\n\n";
+        $output .= "There are **{$count}** Trello boards in the system right now.\n\n";
+        $output .= "Here are the direct links to manage Trello boards:\n\n";
+
+        $createUrl = \App\Filament\Resources\TrelloBoardResource::getUrl('create');
+        $listUrl = \App\Filament\Resources\TrelloBoardResource::getUrl('index');
+
+        $output .= "**Create New Trello Board**\n";
+        $output .= "📝 [{$createUrl}]({$createUrl})\n";
+        $output .= "Create a new Trello board for organizing tasks and projects.\n\n";
+
+        $output .= "**List All Trello Boards**\n";
+        $output .= "📋 [{$listUrl}]({$listUrl})\n";
+        $output .= "View, search, and manage all existing Trello boards.\n\n";
+
+        $output .= "💡 **Pro Tips:**\n";
+        $output .= "• Set the show_on_boards to true to show the Trello board in the navigation\n";
+        $output .= "• Set the url to the Trello board URL\n";
+        $output .= "• Set the name to the Trello board name\n\n";
+
+        $output .= 'Need help with something else? Just ask! 🚀';
+
+        return $output;
+    }
+
+    /**
      * Tool: Get total counts for all resources in the system.
      * Shortcut: /resources
      */
@@ -669,6 +722,7 @@ class ChatbotService
             'documents' => Document::whereNull('deleted_at')->count(),
             'important_urls' => ImportantUrl::whereNull('deleted_at')->count(),
             'phone_numbers' => PhoneNumber::whereNull('deleted_at')->count(),
+            'trello_boards' => TrelloBoard::whereNull('deleted_at')->count(),
         ];
 
         $output = "**Resource Counts Overview** 📊\n\n";
@@ -679,7 +733,8 @@ class ChatbotService
         $output .= "**📁 Projects:** {$counts['projects']}\n";
         $output .= "**📄 Documents:** {$counts['documents']}\n";
         $output .= "**🔗 Important URLs:** {$counts['important_urls']}\n";
-        $output .= "**📞 Phone Numbers:** {$counts['phone_numbers']}\n\n";
+        $output .= "**📞 Phone Numbers:** {$counts['phone_numbers']}\n";
+        $output .= "**📊 Trello Boards:** {$counts['trello_boards']}\n\n";
 
         $output .= 'Want to see details for a specific resource? Use the individual shortcuts like /users or /clients! 🚀';
 
