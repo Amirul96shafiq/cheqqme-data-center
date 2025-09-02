@@ -5,9 +5,12 @@ namespace App\Filament\Resources\PhoneNumberResource\Pages;
 use App\Filament\Pages\Base\BaseEditRecord;
 use App\Filament\Resources\PhoneNumberResource;
 use Filament\Actions;
+use Kenepa\ResourceLock\Resources\Pages\Concerns\UsesResourceLock;
 
 class EditPhoneNumber extends BaseEditRecord
 {
+    use UsesResourceLock;
+
     protected static string $resource = PhoneNumberResource::class;
 
     protected function getFormActions(): array

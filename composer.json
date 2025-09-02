@@ -13,6 +13,7 @@
         "charrafimed/global-search-modal": "^3.7",
         "filament/filament": "^3.0",
         "guzzlehttp/guzzle": "^7.9",
+        "kenepa/resource-lock": "^3.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.2",
         "laravel/tinker": "^2.10.1",

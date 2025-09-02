@@ -34,6 +34,8 @@ use Illuminate\Support\Facades\Request;
 // ActivityLog by Rômulo Ramos
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Rmsramos\Activitylog\ActivitylogPlugin;
+// Resource Lock by Kenepa
+use Kenepa\ResourceLock\ResourceLockPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -334,6 +336,8 @@ class AdminPanelProvider extends PanelProvider
                 ActivitylogPlugin::make()
                     ->navigationGroup(fn() => __('activitylog.navigation_group'))
                     ->navigationSort(11),
+
+                ResourceLockPlugin::make(),
             ]);
     }
 }

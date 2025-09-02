@@ -5,9 +5,12 @@ namespace App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Pages\Base\BaseEditRecord;
 use App\Filament\Resources\ClientResource;
 use Filament\Actions;
+use Kenepa\ResourceLock\Resources\Pages\Concerns\UsesResourceLock;
 
 class EditClient extends BaseEditRecord
 {
+    use UsesResourceLock;
+
     protected static string $resource = ClientResource::class;
 
     protected function getFormActions(): array

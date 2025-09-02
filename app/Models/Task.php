@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Kenepa\ResourceLock\Models\Concerns\HasLocks;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Task extends Model
 {
-    use HasFactory, LogsActivity, SoftDeletes;
+    use HasFactory, HasLocks, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'title',
@@ -81,7 +82,7 @@ class Task extends Model
     public function getAssignedToBadgeAttribute(): ?string
     {
         $user = $this->assignedTo;
-        if (! $user) {
+        if (!$user) {
             return null;
         }
         $authId = Auth::id();
@@ -98,7 +99,7 @@ class Task extends Model
     public function getAssignedToDisplayAttribute(): ?string
     {
         $user = $this->assignedTo;
-        if (! $user) {
+        if (!$user) {
             return null;
         }
 
@@ -157,7 +158,7 @@ class Task extends Model
     public function getAssignedToUsernameAttribute(): ?string
     {
         $user = $this->assignedTo;
-        if (! $user) {
+        if (!$user) {
             return null;
         }
 
@@ -168,7 +169,7 @@ class Task extends Model
     public function getAssignedToUsernameSelfAttribute(): ?string
     {
         $user = $this->assignedTo;
-        if (! $user) {
+        if (!$user) {
             return null;
         }
         $authId = Auth::id();
@@ -184,7 +185,7 @@ class Task extends Model
      */
     protected function dueDateDiffInDays(): ?int
     {
-        if (! $this->due_date) {
+        if (!$this->due_date) {
             return null;
         }
         try {
@@ -259,7 +260,7 @@ class Task extends Model
      */
     public function getFeaturedImageAttribute(): ?string
     {
-        if (! $this->attachments || ! is_array($this->attachments)) {
+        if (!$this->attachments || !is_array($this->attachments)) {
             return null;
         }
 
@@ -267,7 +268,7 @@ class Task extends Model
         $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
 
         foreach ($this->attachments as $attachment) {
-            if (! is_string($attachment)) {
+            if (!is_string($attachment)) {
                 continue;
             }
 
@@ -275,7 +276,7 @@ class Task extends Model
 
             if (in_array($extension, $imageExtensions)) {
                 // Return the full URL to the attachment
-                return asset('storage/'.$attachment);
+                return asset('storage/' . $attachment);
             }
         }
 

@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Kenepa\ResourceLock\Models\Concerns\HasLocks;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Client extends Model
 {
-    use HasFactory, LogsActivity, SoftDeletes;
+    use HasFactory, HasLocks, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'pic_name',
@@ -85,14 +86,14 @@ class Client extends Model
     public function projectCount(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->projects->count(),
+            get: fn() => $this->projects->count(),
         );
     }
 
     public function importantUrlCount(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->importantUrls->count(),
+            get: fn() => $this->importantUrls->count(),
         );
     }
 }
