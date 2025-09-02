@@ -31,6 +31,7 @@ class User extends Authenticatable implements HasAvatar
         'username',
         'name',
         'email',
+        'timezone',
         'password',
         'api_key',
         'api_key_generated_at',
@@ -64,9 +65,9 @@ class User extends Authenticatable implements HasAvatar
             $trackedFields = ['username', 'name', 'email', 'avatar', 'cover_image', 'email_verified_at', 'deleted_at'];
 
             // Check if any tracked fields actually changed
-            $trackedFieldsChanged = !empty(array_intersect(array_keys($dirtyFields), $trackedFields));
+            $trackedFieldsChanged = ! empty(array_intersect(array_keys($dirtyFields), $trackedFields));
 
-            if (!$trackedFieldsChanged) {
+            if (! $trackedFieldsChanged) {
                 return false;
             }
         }
@@ -158,10 +159,10 @@ class User extends Authenticatable implements HasAvatar
         $initials = array_map(function ($p) {
             $ch = mb_substr($p, 0, 1);
 
-            return mb_strtoupper($ch) . '.';
+            return mb_strtoupper($ch).'.';
         }, $parts);
 
-        return $first . ' ' . implode(' ', $initials);
+        return $first.' '.implode(' ', $initials);
     }
 
     /**
@@ -170,7 +171,7 @@ class User extends Authenticatable implements HasAvatar
     public function generateApiKey(): string
     {
         // $apiKey = 'ak_' . bin2hex(random_bytes(32));
-        $apiKey = 'cheqqme_' . bin2hex(random_bytes(32));
+        $apiKey = 'cheqqme_'.bin2hex(random_bytes(32));
 
         $this->update([
             'api_key' => $apiKey,
@@ -185,7 +186,7 @@ class User extends Authenticatable implements HasAvatar
      */
     public function hasApiKey(): bool
     {
-        return !empty($this->api_key);
+        return ! empty($this->api_key);
     }
 
     /**
@@ -193,14 +194,14 @@ class User extends Authenticatable implements HasAvatar
      */
     public function getMaskedApiKey(): ?string
     {
-        if (!$this->api_key) {
+        if (! $this->api_key) {
             return null;
         }
 
         $prefix = substr($this->api_key, 0, 8);
         $suffix = substr($this->api_key, -4);
 
-        return $prefix . '****************************' . $suffix;
+        return $prefix.'****************************'.$suffix;
     }
 
     /**

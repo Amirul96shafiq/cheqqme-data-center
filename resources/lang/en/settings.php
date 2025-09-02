@@ -12,13 +12,23 @@ return [
     'section' => [
         'api' => 'API Access',
         'api_description' => 'Manage your API key for external access to your data.',
+        'timezone' => 'Timezone',
+        'timezone_description' => 'Set your timezone for the application.',
     ],
 
     // Form fields
     'form' => [
         // API
+        'current_timezone' => 'Your Timezone',
+        'timezone' => 'Your Timezone',
+        'current_time_in_timezone' => 'Current Time in Timezone',
+        'select_timezone_to_preview' => 'Select a timezone to preview the current time.',
+        'timezone_preview_description' => 'Preview the current time in your timezone.',
         'current_api_key' => 'Your API Key',
         'no_api_key' => 'No API key generated',
+        'no_timezone' => 'No timezone selected',
+        'timezone_preview' => 'Current Time in Timezone',
+        'invalid_timezone' => 'Invalid timezone',
         'api_key_helper' => 'Your API key is used to authenticate requests to the API endpoints.',
         'copy_api_key' => 'Copy API Key',
         'generate_api_key' => 'Generate API Key',
@@ -30,6 +40,8 @@ return [
         'api_key_regenerated_body' => 'Your API key has been regenerated. The old key is no longer valid.',
         'api_key_deleted' => 'API Key Deleted',
         'api_key_deleted_body' => 'Your API key has been deleted successfully.',
+        'api_key_copied' => 'API Key Copied',
+        'api_key_copied_body' => 'Your API key has been copied to clipboard successfully.',
         'api_key_ready' => 'You have successfully copied your API key to clipboard.',
         'api_key_copying' => 'Copying API Key',
         'api_key_copying_body' => 'Your API key is being copied to clipboard.',
@@ -43,6 +55,8 @@ return [
         'delete' => 'Delete',
         'api_documentation' => 'API Documentation',
         'api_documentation_description' => 'View API endpoints, authentication methods, and usage examples.',
+        'copy' => 'Copy',
+        'copied' => 'Copied!',
         'api_documentation_content' => '
           <code class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4 block text-gray-500 dark-text-gray-700 dark:text-gray-400">
             <div class="space-y-4">
@@ -63,6 +77,25 @@ return [
             </div>
           </code>
         ',
+
+        // Timezone preview content
+        'system_user' => 'System User',
+        'current_time' => 'Current Time',
+        'timezone_information' => 'Timezone (TZ) Information',
+        'identifier_name' => 'Identifier Name',
+        'country_code' => 'Country (Country Code)',
+        'utc_offset' => 'UTC Offset (±hh:mm)',
+        'abbreviation' => 'Abbreviation',
+        'sample_data_preview' => 'Sample Data Preview',
+        'id' => 'ID',
+        'title' => 'Title',
+        'created_at' => 'Created At',
+        'updated_at' => 'Updated At',
+        'by' => 'By',
+        'sample_project_alpha' => 'Project Alpha',
+        'sample_task_review' => 'Task Review',
+        'sample_meeting_notes' => 'Meeting Notes',
+        'unknown' => 'Unknown',
 
         // Actions
         'save' => 'Save Settings',
