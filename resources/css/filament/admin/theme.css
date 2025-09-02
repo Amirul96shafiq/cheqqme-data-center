@@ -341,7 +341,7 @@
 
     /* Dark mode cover image row: force border color */
     .dark .cover-image-row {
-        border-color: #2f2f32 !important;
+        border: none !important;
     }
 
     /* Remove top border from first cover image row to eliminate extra line */
@@ -358,7 +358,7 @@
 
     /* Ensure last cover image row has bottom border for proper closure */
     .cover-image-row:last-child {
-        border-bottom: 1px solid #e5e7eb !important;
+        border: none !important;
     }
 
     /* Text styling for cover image rows */
@@ -385,5 +385,25 @@
 
     .dark .cover-image-row .fi-avatar {
         border-color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    /* User table row border styling */
+    .user-table-row-border {
+        border: none !important;
+    }
+
+    /* Dark mode user table row border styling */
+    .dark .user-table-row-border {
+        border: none !important;
+    }
+
+    /* Hover effect for user table rows */
+    .user-table-row-border:hover {
+        border: none !important;
+    }
+
+    /* Dark mode hover effect for user table rows */
+    .dark .user-table-row-border:hover {
+        border: none !important;
     }
 }

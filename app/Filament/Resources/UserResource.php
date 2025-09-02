@@ -304,7 +304,7 @@ class UserResource extends Resource
             ])
             ->recordClasses(function ($record) {
                 $coverImageUrl = $record->getFilamentCoverImageUrl();
-                $classes = ['fi-table-row'];
+                $classes = ['fi-table-row', 'user-table-row-border'];
 
                 if ($coverImageUrl) {
                     $classes[] = 'cover-image-row';
