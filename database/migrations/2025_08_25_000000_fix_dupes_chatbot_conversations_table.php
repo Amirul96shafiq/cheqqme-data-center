@@ -3,8 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         // Remove any duplicate (user_id, conversation_id) pairs to satisfy the upcoming composite unique index
@@ -15,7 +14,7 @@ return new class extends Migration
         $seen = [];
         $toDelete = [];
         foreach ($rows as $row) {
-            $key = $row->user_id.'|'.$row->conversation_id;
+            $key = $row->user_id . '|' . $row->conversation_id;
             if (isset($seen[$key])) {
                 $toDelete[] = $row->id;
             } else {
@@ -23,7 +22,7 @@ return new class extends Migration
             }
         }
 
-        if (! empty($toDelete)) {
+        if (!empty($toDelete)) {
             DB::table('chatbot_conversations')->whereIn('id', $toDelete)->delete();
         }
 
@@ -31,7 +30,10 @@ return new class extends Migration
         // Use raw SQL to ensure compatibility with SQLite
         DB::statement('DROP INDEX IF EXISTS chatbot_conversations_conversation_id_unique');
         DB::statement('DROP INDEX IF EXISTS chatbot_conversations_user_id_conversation_id_unique');
-        DB::statement('CREATE INDEX chatbot_conversations_user_id_conversation_id_index ON chatbot_conversations (user_id, conversation_id)');
+        DB::statement('DROP INDEX IF EXISTS chatbot_conversations_user_id_conversation_id_index');
+
+        // Create the index (this should work even if it doesn't exist)
+        DB::statement('CREATE INDEX IF NOT EXISTS chatbot_conversations_user_id_conversation_id_index ON chatbot_conversations (user_id, conversation_id)');
     }
 
     public function down(): void

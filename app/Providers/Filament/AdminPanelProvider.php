@@ -7,7 +7,6 @@ use App\Models\TrelloBoard;
 use Awcodes\LightSwitch\Enums\Alignment;
 use Awcodes\LightSwitch\LightSwitchPlugin;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
-use DiscoveryDesign\FilamentGaze\FilamentGazePlugin;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -34,7 +33,6 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Request;
 // ActivityLog by Rômulo Ramos
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-// Gaze by Discovery Design
 use Rmsramos\Activitylog\ActivitylogPlugin;
 
 class AdminPanelProvider extends PanelProvider
@@ -44,19 +42,24 @@ class AdminPanelProvider extends PanelProvider
      */
     protected function getEnabledTrelloBoards(): array
     {
-        return TrelloBoard::where('show_on_boards', true)
-            ->where('url', '!=', '')
-            ->orderBy('name')
-            ->get(['id', 'name', 'url'])
-            ->map(function ($board) {
-                return NavigationItem::make("trello-board-{$board->id}")
-                    ->label($board->name . ' ' . __('navigation.trello_board_suffix'))
-                    ->url($board->url)
-                    ->openUrlInNewTab()
-                    ->group(fn() => __('navigation.groups.boards'))
-                    ->sort(2);
-            })
-            ->toArray();
+        try {
+            return TrelloBoard::where('show_on_boards', true)
+                ->where('url', '!=', '')
+                ->orderBy('name')
+                ->get(['id', 'name', 'url'])
+                ->map(function ($board) {
+                    return NavigationItem::make("trello-board-{$board->id}")
+                        ->label($board->name . ' ' . __('navigation.trello_board_suffix'))
+                        ->url($board->url)
+                        ->openUrlInNewTab()
+                        ->group(fn() => __('navigation.groups.boards'))
+                        ->sort(2);
+                })
+                ->toArray();
+        } catch (\Exception $e) {
+            // Return empty array if trello_boards table doesn't exist or other errors
+            return [];
+        }
     }
 
     /**
@@ -331,8 +334,6 @@ class AdminPanelProvider extends PanelProvider
                 ActivitylogPlugin::make()
                     ->navigationGroup(fn() => __('activitylog.navigation_group'))
                     ->navigationSort(11),
-
-                FilamentGazePlugin::make(),
             ]);
     }
 }

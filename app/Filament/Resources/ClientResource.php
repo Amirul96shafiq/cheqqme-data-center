@@ -7,7 +7,6 @@ use App\Filament\Resources\ClientResource\RelationManagers;
 use App\Filament\Resources\ClientResource\RelationManagers\ClientActivityLogRelationManager;
 use App\Models\Client;
 use Closure;
-use DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
@@ -52,11 +51,6 @@ class ClientResource extends Resource
     {
         return $form
             ->schema([
-                GazeBanner::make()
-                    ->lock()
-                    ->columnSpanFull()
-                    ->hideOnCreate()
-                    ->pollTimer(10),
                 Section::make(__('client.section.client_info'))
                     ->schema([
                         TextInput::make('pic_name')
@@ -107,10 +101,10 @@ class ClientResource extends Resource
                                     default => '60',
                                 };
 
-                                if (!str_starts_with($digits, $dialCode)) {
+                                if (! str_starts_with($digits, $dialCode)) {
                                     $digits = ltrim($digits, '0');
-                                    if (!str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode . $digits;
+                                    if (! str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode.$digits;
                                     }
                                 }
 
@@ -132,10 +126,10 @@ class ClientResource extends Resource
                                     default => '60',
                                 };
 
-                                if (!str_starts_with($digits, $dialCode)) {
+                                if (! str_starts_with($digits, $dialCode)) {
                                     $digits = ltrim($digits, '0');
-                                    if (!str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode . $digits;
+                                    if (! str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode.$digits;
                                     }
                                 }
 
@@ -151,7 +145,7 @@ class ClientResource extends Resource
                             ->nullable()
                             ->extraAlpineAttributes(['x-ref' => 'companyName'])
                             ->helperText(__('client.form.company_name_helper'))
-                            ->placeholder(fn(callable $get) => $get('pic_name')),
+                            ->placeholder(fn (callable $get) => $get('pic_name')),
 
                         TextInput::make('company_email')->label(__('client.form.company_email'))
                             ->email()
@@ -175,7 +169,7 @@ class ClientResource extends Resource
 
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
-                        if (!blank($notes) && trim(strip_tags($notes))) {
+                        if (! blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
 
@@ -184,9 +178,9 @@ class ClientResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('client.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -306,7 +300,7 @@ class ClientResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('client.form.title_placeholder_short'))
+                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('client.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -337,7 +331,7 @@ class ClientResource extends Resource
                         $formattedCompany = self::formatCompanyName($record->company_name);
 
                         // Return the combined format: "Name (Company)"
-                        return $formattedName . ' (' . $formattedCompany . ')';
+                        return $formattedName.' ('.$formattedCompany.')';
                     }),
                 TextColumn::make('pic_contact_number')
                     ->label(__('client.table.pic_contact_number'))
@@ -359,7 +353,7 @@ class ClientResource extends Resource
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
-                            !$record->updated_by ||
+                            ! $record->updated_by ||
                             $record->updated_at?->eq($record->created_at)
                         ) {
                             return '-';
@@ -372,7 +366,7 @@ class ClientResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -383,7 +377,7 @@ class ClientResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
@@ -462,7 +456,7 @@ class ClientResource extends Resource
 
         // If two words, return first word + first letter of second word
         if (count($parts) === 2) {
-            return $parts[0] . ' ' . substr($parts[1], 0, 1) . '.';
+            return $parts[0].' '.substr($parts[1], 0, 1).'.';
         }
 
         // If three or more words, return first + middle initial + last initial
@@ -472,10 +466,10 @@ class ClientResource extends Resource
 
         // If there's a middle name, get its first letter
         if (count($parts) >= 3) {
-            $middleInitial = substr($parts[1], 0, 1) . '. ';
+            $middleInitial = substr($parts[1], 0, 1).'. ';
         }
 
-        return $first . ' ' . $middleInitial . substr($last, 0, 1) . '.';
+        return $first.' '.$middleInitial.substr($last, 0, 1).'.';
     }
 
     /**
@@ -490,7 +484,7 @@ class ClientResource extends Resource
 
         // If company name is longer than 10 characters, truncate and add ellipsis
         if (strlen($company) > 10) {
-            return substr($company, 0, 10) . '...';
+            return substr($company, 0, 10).'...';
         }
 
         return $company;

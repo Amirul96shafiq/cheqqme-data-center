@@ -6,7 +6,6 @@ use App\Filament\Resources\TrelloBoardResource\Pages;
 use App\Filament\Resources\TrelloBoardResource\RelationManagers\TrelloBoardActivityLogRelationManager;
 use App\Models\TrelloBoard;
 use Closure;
-use DiscoveryDesign\FilamentGaze\Forms\Components\GazeBanner;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Grid;
@@ -49,11 +48,6 @@ class TrelloBoardResource extends Resource
     {
         return $form
             ->schema([
-                GazeBanner::make()
-                    ->lock()
-                    ->columnSpanFull()
-                    ->hideOnCreate()
-                    ->pollTimer(10),
                 Section::make(__('trelloboard.section.trello_board_info'))
                     ->schema([
                         Forms\Components\Grid::make(2)
@@ -67,10 +61,10 @@ class TrelloBoardResource extends Resource
                                     ->helperText(__('trelloboard.form.board_url_note'))
                                     ->required()
                                     ->hintAction(
-                                        fn(Get $get) => blank($get('url')) ? null : Action::make('openUrl')
+                                        fn (Get $get) => blank($get('url')) ? null : Action::make('openUrl')
                                             ->icon('heroicon-m-arrow-top-right-on-square')
                                             ->label(__('trelloboard.form.open_url'))
-                                            ->url(fn() => $get('url'), true)
+                                            ->url(fn () => $get('url'), true)
                                             ->tooltip(__('trelloboard.form.board_url_helper'))
                                     )
                                     ->url(),
@@ -90,7 +84,7 @@ class TrelloBoardResource extends Resource
 
                         // Add 1 if notes field is not empty
                         $notes = $get('notes');
-                        if (!blank($notes) && trim(strip_tags($notes))) {
+                        if (! blank($notes) && trim(strip_tags($notes))) {
                             $count++;
                         }
 
@@ -99,9 +93,9 @@ class TrelloBoardResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('trelloboard.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -221,7 +215,7 @@ class TrelloBoardResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('trelloboard.form.title_placeholder_short'))
+                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('trelloboard.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -270,7 +264,7 @@ class TrelloBoardResource extends Resource
                         // Show '-' if there's no update or updated_by
                         $updatedAt = $record->updated_at;
                         $createdAt = $record->created_at;
-                        if (!$record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
+                        if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
                             return '-';
                         }
 
@@ -281,7 +275,7 @@ class TrelloBoardResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -302,18 +296,18 @@ class TrelloBoardResource extends Resource
                     ->label('')
                     ->icon('heroicon-o-link')
                     ->color('primary')
-                    ->url(fn($record) => $record->url)
+                    ->url(fn ($record) => $record->url)
                     ->openUrlInNewTab()
                     ->tooltip(function ($record) {
                         $url = $record->url;
 
-                        return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     }),
                 Tables\Actions\ViewAction::make()
                     ->label(__('trelloboard.actions.view')),
                 Tables\Actions\EditAction::make()
                     ->label(__('trelloboard.actions.edit'))
-                    ->hidden(fn($record) => $record->trashed()),
+                    ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make(__('trelloboard.actions.log')),

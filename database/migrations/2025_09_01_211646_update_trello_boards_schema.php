@@ -5,41 +5,53 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        // Copy data from existing columns to new ones (columns already exist)
-        DB::statement('UPDATE trello_boards SET notes = description WHERE notes IS NULL AND description IS NOT NULL');
-        DB::statement('UPDATE trello_boards SET show_on_boards = is_active WHERE show_on_boards IS NULL');
-        DB::statement('UPDATE trello_boards SET updated_by = created_by WHERE updated_by IS NULL');
+        // Check if old columns exist before trying to migrate
+        $columns = Schema::getColumnListing('trello_boards');
 
-        // Drop indexes first (required for SQLite)
-        Schema::table('trello_boards', function (Blueprint $table) {
-            $table->dropIndex('trello_boards_trello_board_id_index');
-            $table->dropUnique('trello_boards_trello_board_id_unique');
-            $table->dropIndex('trello_boards_is_active_index');
-        });
+        if (in_array('description', $columns) && in_array('notes', $columns)) {
+            DB::statement('UPDATE trello_boards SET notes = description WHERE notes IS NULL AND description IS NOT NULL');
+        }
 
-        // Drop old columns
-        Schema::table('trello_boards', function (Blueprint $table) {
-            $table->dropColumn([
-                'trello_board_id',
-                'trello_api_key',
-                'trello_api_token',
-                'description',
-                'board_data',
-                'cards_data',
-                'last_synced_at',
-                'is_active',
-                'sync_status',
-                'sync_error',
-                'sync_job_id',
-                'auto_created',
-            ]);
-        });
+        if (in_array('is_active', $columns) && in_array('show_on_boards', $columns)) {
+            DB::statement('UPDATE trello_boards SET show_on_boards = is_active WHERE show_on_boards IS NULL');
+        }
+
+        if (in_array('created_by', $columns) && in_array('updated_by', $columns)) {
+            DB::statement('UPDATE trello_boards SET updated_by = created_by WHERE updated_by IS NULL');
+        }
+
+        // Skip index dropping for fresh tables - these indexes don't exist in our new table structure
+
+        // Drop old columns - only if they exist
+        $oldColumns = [
+            'trello_board_id',
+            'trello_api_key',
+            'trello_api_token',
+            'description',
+            'board_data',
+            'cards_data',
+            'last_synced_at',
+            'is_active',
+            'sync_status',
+            'sync_error',
+            'sync_job_id',
+            'auto_created',
+        ];
+
+        $columnsToDrop = array_intersect($oldColumns, $columns);
+
+        if (! empty($columnsToDrop)) {
+            Schema::table('trello_boards', function (Blueprint $table) use ($columnsToDrop) {
+                $table->dropColumn($columnsToDrop);
+            });
+        }
     }
 
     /**
