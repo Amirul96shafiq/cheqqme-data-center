@@ -89,10 +89,10 @@ class PhoneNumberResource extends Resource
                                     default => '60',
                                 };
 
-                                if (! str_starts_with($digits, $dialCode)) {
+                                if (!str_starts_with($digits, $dialCode)) {
                                     $digits = ltrim($digits, '0');
-                                    if (! str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode.$digits;
+                                    if (!str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode . $digits;
                                     }
                                 }
 
@@ -114,10 +114,10 @@ class PhoneNumberResource extends Resource
                                     default => '60',
                                 };
 
-                                if (! str_starts_with($digits, $dialCode)) {
+                                if (!str_starts_with($digits, $dialCode)) {
                                     $digits = ltrim($digits, '0');
-                                    if (! str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode.$digits;
+                                    if (!str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode . $digits;
                                     }
                                 }
 
@@ -130,20 +130,14 @@ class PhoneNumberResource extends Resource
                     ->heading(function (Get $get) {
                         $count = 0;
 
-                        // Add 1 if notes field is not empty
-                        $notes = $get('notes');
-                        if (! blank($notes) && trim(strip_tags($notes))) {
-                            $count++;
-                        }
-
                         // Add count of extra_information items
                         $extraInfo = $get('extra_information') ?? [];
                         $count += count($extraInfo);
 
                         $title = __('phonenumber.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
 
-                        return new HtmlString($title.' '.$badge);
+                        return new HtmlString($title . ' ' . $badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -164,8 +158,8 @@ class PhoneNumberResource extends Resource
                             ->extraAttributes([
                                 'style' => 'resize: vertical;',
                             ])
-                            ->live(onBlur: true)
-                            // Character limit helper text - only updates on blur to prevent focus loss
+                            ->live()
+                            // Character limit helper text
                             ->helperText(function (Get $get) {
                                 $raw = $get('notes') ?? '';
                                 if (empty($raw)) {
@@ -221,7 +215,7 @@ class PhoneNumberResource extends Resource
                                             ->extraAttributes([
                                                 'style' => 'resize: vertical;',
                                             ])
-                                            ->debounce(300)
+                                            ->live()
                                             ->reactive()
                                             // Character limit reactive function
                                             ->helperText(function (Get $get) {
@@ -263,7 +257,7 @@ class PhoneNumberResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('phonenumber.form.title_placeholder_short'))
+                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('phonenumber.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -298,7 +292,7 @@ class PhoneNumberResource extends Resource
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
-                            ! $record->updated_by ||
+                            !$record->updated_by ||
                             $record->updated_at?->eq($record->created_at)
                         ) {
                             return '-';
@@ -311,7 +305,7 @@ class PhoneNumberResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -323,7 +317,7 @@ class PhoneNumberResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
-                    ->hidden(fn ($record) => $record->trashed()),
+                    ->hidden(fn($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
