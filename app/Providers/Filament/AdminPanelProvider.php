@@ -51,7 +51,7 @@ class AdminPanelProvider extends PanelProvider
                 ->get(['id', 'name', 'url'])
                 ->map(function ($board) {
                     return NavigationItem::make("trello-board-{$board->id}")
-                        ->label($board->name . ' ' . __('navigation.trello_board_suffix'))
+                        ->label(fn() => (strlen($board->name) > 10 ? substr($board->name, 0, 10) . '...' : $board->name) . ' ' . __('navigation.trello_board_suffix'))
                         ->url($board->url)
                         ->openUrlInNewTab()
                         ->group(fn() => __('navigation.groups.boards'))
