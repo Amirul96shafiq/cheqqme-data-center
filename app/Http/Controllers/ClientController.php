@@ -17,14 +17,28 @@ class ClientController extends Controller
             $query = Client::query()
                 ->with(['projects', 'documents', 'importantUrls', 'updatedBy']);
 
-            // Add search functionality
-            if ($request->has('search')) {
+            // Add exact ID search (highest priority)
+            if ($request->filled('id')) {
+                $id = $request->input('id');
+                $query->where('id', $id);
+            }
+            // Add search functionality (if no specific ID is provided)
+            elseif ($request->filled('search')) {
                 $search = $request->input('search');
                 $query->where(function ($q) use ($search) {
-                    $q->where('pic_name', 'like', "%{$search}%")
-                      ->orWhere('company_name', 'like', "%{$search}%")
-                      ->orWhere('pic_email', 'like', "%{$search}%")
-                      ->orWhere('company_email', 'like', "%{$search}%");
+                    // Check if search is numeric (could be an ID)
+                    if (is_numeric($search)) {
+                        $q->where('id', $search)
+                          ->orWhere('pic_name', 'like', "%{$search}%")
+                          ->orWhere('company_name', 'like', "%{$search}%")
+                          ->orWhere('pic_email', 'like', "%{$search}%")
+                          ->orWhere('company_email', 'like', "%{$search}%");
+                    } else {
+                        $q->where('pic_name', 'like', "%{$search}%")
+                          ->orWhere('company_name', 'like', "%{$search}%")
+                          ->orWhere('pic_email', 'like', "%{$search}%")
+                          ->orWhere('company_email', 'like', "%{$search}%");
+                    }
                 });
             }
 
