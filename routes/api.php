@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 // API endpoints protected by Sanctum
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/openai-logs', [OpenaiLogController::class, 'apiIndex'])->name('api.openai.logs');
     Route::get('/clients', [ClientController::class, 'index'])->name('api.clients');
     Route::get('/projects', [ProjectController::class, 'index'])->name('api.projects');
     Route::get('/documents', [DocumentController::class, 'index'])->name('api.documents');
@@ -23,9 +22,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/phone-numbers', [PhoneNumberController::class, 'index'])->name('api.phone-numbers');
     Route::get('/users', [UserController::class, 'index'])->name('api.users');
     Route::get('/tasks', [TaskController::class, 'index'])->name('api.tasks');
-    Route::get('/trello-boards', [TrelloBoardController::class, 'index'])->name('api.trello-boards');
     Route::get('/comments', [CommentController::class, 'index'])->name('api.comments');
     Route::get('/comments/{comment}', [CommentController::class, 'show'])->name('api.comments.show');
+    Route::get('/trello-boards', [TrelloBoardController::class, 'index'])->name('api.trello-boards');
+    Route::get('/openai-logs', [OpenaiLogController::class, 'apiIndex'])->name('api.openai.logs');
 });
 
 // Public API documentation endpoint with pretty JSON
@@ -55,7 +55,7 @@ Route::get('/documentation', function () {
                 'GET /important-urls' => 'Get all important URLs with search, filtering, sorting, and ID search',
                 'GET /phone-numbers' => 'Get all phone numbers with search, filtering, sorting, and ID search',
                 'GET /users' => 'Get all users with search, filtering, sorting, and ID search',
-                'GET /comments' => 'Get all comments',
+                'GET /comments' => 'Get all comments with search, filtering, sorting, and ID search',
                 'GET /comments/{comment}' => 'Get specific comment by ID',
             ],
             'example_request' => 'GET ' . config('app.url') . '/api/profile',
@@ -156,6 +156,24 @@ Route::get('/documentation', function () {
                 'GET /api/users?limit=10' => 'Limit results to 10 users',
                 'GET /api/users?id=1&limit=5' => 'Get user by ID with limit (ID takes priority)',
             ],
+            'comment_api_examples' => [
+                'GET /api/comments?id=1' => 'Get comment by exact ID',
+                'GET /api/comments?search=1' => 'Search comments by ID (numeric search)',
+                'GET /api/comments?search=hehe' => 'Search comments by comment text',
+                'GET /api/comments?task_id=1' => 'Filter comments by task ID',
+                'GET /api/comments?user_id=1' => 'Filter comments by user ID',
+                'GET /api/comments?has_mentions=true' => 'Filter comments that have mentions',
+                'GET /api/comments?mention_user_id=7' => 'Filter comments that mention a specific user',
+                'GET /api/comments?comment_length=short' => 'Filter comments by length (short, medium, long)',
+                'GET /api/comments?comment_length=medium' => 'Filter medium-length comments',
+                'GET /api/comments?comment_length=long' => 'Filter long comments',
+                'GET /api/comments?created_after=2025-09-01' => 'Filter comments created after date',
+                'GET /api/comments?created_before=2025-09-03' => 'Filter comments created before date',
+                'GET /api/comments?updated_by=1' => 'Filter comments by last updater ID',
+                'GET /api/comments?sort_by=created_at&sort_order=desc' => 'Sort comments by creation date descending',
+                'GET /api/comments?limit=10' => 'Limit results to 10 comments',
+                'GET /api/comments?id=1&limit=5' => 'Get comment by ID with limit (ID takes priority)',
+            ],
             'response_format' => [
                 'success' => 'boolean',
                 'message' => 'string',
@@ -182,8 +200,8 @@ Route::middleware([\App\Http\Middleware\ApiKeyAuth::class])->group(function () {
     Route::get('/important-urls', [ImportantUrlController::class, 'index'])->name('api.important-urls');
     Route::get('/phone-numbers', [PhoneNumberController::class, 'index'])->name('api.phone-numbers');
     Route::get('/users', [UserController::class, 'index'])->name('api.users');
-    Route::get('/comments', [CommentController::class, 'index'])->name('api.comments');
     Route::get('/tasks', [TaskController::class, 'index'])->name('api.tasks');
+    Route::get('/comments', [CommentController::class, 'index'])->name('api.comments');
     Route::get('/comments/{comment}', [CommentController::class, 'show'])->name('api.comments.show');
     Route::get('/trello-boards', [TrelloBoardController::class, 'index'])->name('api.trello-boards');
 });

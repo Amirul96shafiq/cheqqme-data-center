@@ -29,13 +29,13 @@ class UserController extends Controller
                     // Check if search is numeric (could be an ID)
                     if (is_numeric($search)) {
                         $q->where('id', $search)
-                          ->orWhere('name', 'like', "%{$search}%")
-                          ->orWhere('username', 'like', "%{$search}%")
-                          ->orWhere('email', 'like', "%{$search}%");
+                            ->orWhere('name', 'like', "%{$search}%")
+                            ->orWhere('username', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
                     } else {
                         $q->where('name', 'like', "%{$search}%")
-                          ->orWhere('username', 'like', "%{$search}%")
-                          ->orWhere('email', 'like', "%{$search}%");
+                            ->orWhere('username', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
                     }
                 });
             }
