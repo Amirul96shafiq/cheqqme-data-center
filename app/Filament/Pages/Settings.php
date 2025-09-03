@@ -284,6 +284,7 @@ class Settings extends Page
                         // Timezone preview section
                         Forms\Components\Section::make(__('settings.form.current_time_in_timezone'))
                             ->collapsible()
+                            ->collapsed()
                             ->description(__('settings.form.timezone_preview_description'))
                             ->schema([
                                 Forms\Components\Grid::make(12)
