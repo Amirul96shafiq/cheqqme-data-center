@@ -33,13 +33,13 @@ class TaskController extends Controller
                     // Check if search is numeric (could be an ID)
                     if (is_numeric($search)) {
                         $q->where('id', $search)
-                          ->orWhere('title', 'like', "%{$search}%")
-                          ->orWhere('description', 'like', "%{$search}%")
-                          ->orWhere('status', 'like', "%{$search}%");
+                            ->orWhere('title', 'like', "%{$search}%")
+                            ->orWhere('description', 'like', "%{$search}%")
+                            ->orWhere('status', 'like', "%{$search}%");
                     } else {
                         $q->where('title', 'like', "%{$search}%")
-                          ->orWhere('description', 'like', "%{$search}%")
-                          ->orWhere('status', 'like', "%{$search}%");
+                            ->orWhere('description', 'like', "%{$search}%")
+                            ->orWhere('status', 'like', "%{$search}%");
                     }
                 });
             }

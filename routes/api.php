@@ -9,6 +9,7 @@ use App\Http\Controllers\OpenaiLogController;
 use App\Http\Controllers\PhoneNumberController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TrelloBoardController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/phone-numbers', [PhoneNumberController::class, 'index'])->name('api.phone-numbers');
     Route::get('/users', [UserController::class, 'index'])->name('api.users');
     Route::get('/tasks', [TaskController::class, 'index'])->name('api.tasks');
+    Route::get('/trello-boards', [TrelloBoardController::class, 'index'])->name('api.trello-boards');
     Route::get('/comments', [CommentController::class, 'index'])->name('api.comments');
     Route::get('/comments/{comment}', [CommentController::class, 'show'])->name('api.comments.show');
 });
@@ -42,13 +44,13 @@ Route::get('/documentation', function () {
             'endpoints' => [
                 // User endpoints
                 'GET /profile' => 'Get user profile information',
-                'GET /tasks' => 'Get user tasks with pagination',
                 'GET /projects' => 'Get user projects with pagination',
                 'GET /api-key-info' => 'Get API key information',
 
                 // Resource endpoints
                 'GET /clients' => 'Get all clients with search, filtering, and sorting',
                 'GET /tasks' => 'Get all tasks with search, filtering, sorting, and ID search',
+                'GET /trello-boards' => 'Get all Trello boards with search, filtering, sorting, and ID search',
                 'GET /documents' => 'Get all documents',
                 'GET /important-urls' => 'Get all important URLs',
                 'GET /phone-numbers' => 'Get all phone numbers',
@@ -73,6 +75,17 @@ Route::get('/documentation', function () {
                 'GET /api/tasks?sort_by=title&sort_order=asc' => 'Sort tasks by title ascending',
                 'GET /api/tasks?limit=10' => 'Limit results to 10 tasks',
                 'GET /api/tasks?id=1&limit=5' => 'Get task by ID with limit (ID takes priority)',
+            ],
+            'trello_board_api_examples' => [
+                'GET /api/trello-boards?id=1' => 'Get Trello board by exact ID',
+                'GET /api/trello-boards?search=1' => 'Search Trello boards by ID (numeric search)',
+                'GET /api/trello-boards?search=project' => 'Search Trello boards by name, URL, or notes',
+                'GET /api/trello-boards?show_on_boards=true' => 'Filter Trello boards shown on navigation',
+                'GET /api/trello-boards?created_by=1' => 'Filter Trello boards by creator ID',
+                'GET /api/trello-boards?updated_by=1' => 'Filter Trello boards by last updater ID',
+                'GET /api/trello-boards?sort_by=name&sort_order=asc' => 'Sort Trello boards by name ascending',
+                'GET /api/trello-boards?limit=10' => 'Limit results to 10 Trello boards',
+                'GET /api/trello-boards?id=1&limit=5' => 'Get Trello board by ID with limit (ID takes priority)',
             ],
             'response_format' => [
                 'success' => 'boolean',
@@ -105,4 +118,5 @@ Route::middleware([\App\Http\Middleware\ApiKeyAuth::class])->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('api.users');
     Route::get('/comments', [CommentController::class, 'index'])->name('api.comments');
     Route::get('/comments/{comment}', [CommentController::class, 'show'])->name('api.comments.show');
+    Route::get('/trello-boards', [TrelloBoardController::class, 'index'])->name('api.trello-boards');
 });
