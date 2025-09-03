@@ -47,7 +47,7 @@ Route::get('/documentation', function () {
                 'GET /api-key-info' => 'Get API key information',
 
                 // Resource endpoints
-                'GET /clients' => 'Get all clients',
+                'GET /clients' => 'Get all clients with search, filtering, and sorting',
                 'GET /documents' => 'Get all documents',
                 'GET /important-urls' => 'Get all important URLs',
                 'GET /phone-numbers' => 'Get all phone numbers',
