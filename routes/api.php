@@ -35,8 +35,9 @@ Route::get('/documentation', function () {
             'base_url' => config('app.url') . '/api',
             'authentication' => 'Bearer token in Authorization header',
             'features' => [
-                'pretty_json' => 'All responses are formatted with proper indentation',
+                'pretty_json' => 'All responses are formatted with proper indentation using JSON_PRETTY_PRINT',
                 'consistent_format' => 'Standardized response structure across all endpoints',
+                'request_tracking' => 'Unique request IDs for better debugging and monitoring',
             ],
             'endpoints' => [
                 // User endpoints
@@ -58,6 +59,7 @@ Route::get('/documentation', function () {
             'headers' => [
                 'Authorization' => 'Bearer YOUR_API_KEY',
                 'Accept' => 'application/json',
+                'X-Request-ID' => 'Optional: Custom request ID for tracking',
             ],
             'response_format' => [
                 'success' => 'boolean',
@@ -65,6 +67,7 @@ Route::get('/documentation', function () {
                 'data' => 'mixed',
                 'meta' => [
                     'timestamp' => 'ISO 8601 timestamp',
+                    'request_id' => 'unique request identifier (UUID)',
                 ]
             ],
         ],

@@ -18,7 +18,7 @@ class TaskController extends Controller
             if (method_exists(Task::class, 'project')) {
                 $withRelations[] = 'project';
             }
-            
+
             $query = Task::query()->with($withRelations);
             $limit = (int) $request->input('limit', 50);
             $tasks = $query->limit($limit)->get();
