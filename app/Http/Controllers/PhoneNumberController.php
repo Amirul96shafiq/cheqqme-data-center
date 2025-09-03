@@ -29,13 +29,13 @@ class PhoneNumberController extends Controller
                     // Check if search is numeric (could be an ID)
                     if (is_numeric($search)) {
                         $q->where('id', $search)
-                          ->orWhere('title', 'like', "%{$search}%")
-                          ->orWhere('phone', 'like', "%{$search}%")
-                          ->orWhere('notes', 'like', "%{$search}%");
+                            ->orWhere('title', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%")
+                            ->orWhere('notes', 'like', "%{$search}%");
                     } else {
                         $q->where('title', 'like', "%{$search}%")
-                          ->orWhere('phone', 'like', "%{$search}%")
-                          ->orWhere('notes', 'like', "%{$search}%");
+                            ->orWhere('phone', 'like', "%{$search}%")
+                            ->orWhere('notes', 'like', "%{$search}%");
                     }
                 });
             }

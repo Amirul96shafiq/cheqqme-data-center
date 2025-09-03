@@ -44,7 +44,6 @@ Route::get('/documentation', function () {
             'endpoints' => [
                 // User endpoints
                 'GET /profile' => 'Get user profile information',
-                'GET /projects' => 'Get user projects with pagination',
                 'GET /api-key-info' => 'Get API key information',
 
                 // Resource endpoints
@@ -55,7 +54,7 @@ Route::get('/documentation', function () {
                 'GET /documents' => 'Get all documents with search, filtering, sorting, and ID search',
                 'GET /important-urls' => 'Get all important URLs with search, filtering, sorting, and ID search',
                 'GET /phone-numbers' => 'Get all phone numbers with search, filtering, sorting, and ID search',
-                'GET /users' => 'Get all users',
+                'GET /users' => 'Get all users with search, filtering, sorting, and ID search',
                 'GET /comments' => 'Get all comments',
                 'GET /comments/{comment}' => 'Get specific comment by ID',
             ],
@@ -141,6 +140,22 @@ Route::get('/documentation', function () {
                 'GET /api/phone-numbers?limit=10' => 'Limit results to 10 phone numbers',
                 'GET /api/phone-numbers?id=1&limit=5' => 'Get phone number by ID with limit (ID takes priority)',
             ],
+            'user_api_examples' => [
+                'GET /api/users?id=1' => 'Get user by exact ID',
+                'GET /api/users?search=1' => 'Search users by ID (numeric search)',
+                'GET /api/users?search=Test' => 'Search users by name, username, or email',
+                'GET /api/users?username=test' => 'Filter users by username pattern',
+                'GET /api/users?email=test@example.com' => 'Filter users by email pattern',
+                'GET /api/users?updated_by=1' => 'Filter users by last updater ID',
+                'GET /api/users?has_api_key=true' => 'Filter users that have API keys',
+                'GET /api/users?email_verified=true' => 'Filter users with verified emails',
+                'GET /api/users?has_avatar=true' => 'Filter users that have avatars',
+                'GET /api/users?has_cover_image=true' => 'Filter users that have cover images',
+                'GET /api/users?timezone=Asia/Kuala_Lumpur' => 'Filter users by timezone',
+                'GET /api/users?sort_by=name&sort_order=asc' => 'Sort users by name ascending',
+                'GET /api/users?limit=10' => 'Limit results to 10 users',
+                'GET /api/users?id=1&limit=5' => 'Get user by ID with limit (ID takes priority)',
+            ],
             'response_format' => [
                 'success' => 'boolean',
                 'message' => 'string',
@@ -158,19 +173,17 @@ Route::get('/documentation', function () {
 Route::middleware([\App\Http\Middleware\ApiKeyAuth::class])->group(function () {
     // User endpoints
     Route::get('/profile', [ApiUserController::class, 'profile'])->name('api.user.profile');
-    // Route::get('/tasks', [ApiUserController::class, 'tasks'])->name('api.user.tasks');
-    Route::get('/tasks', [TaskController::class, 'index'])->name('api.tasks');
-    // Route::get('/projects', [ApiUserController::class, 'projects'])->name('api.user.projects');
-    Route::get('/projects', [ProjectController::class, 'index'])->name('api.projects');
     Route::get('/api-key-info', [ApiUserController::class, 'apiKeyInfo'])->name('api.user.api-key-info');
 
     // Resource endpoints
     Route::get('/clients', [ClientController::class, 'index'])->name('api.clients');
     Route::get('/documents', [DocumentController::class, 'index'])->name('api.documents');
+    Route::get('/projects', [ProjectController::class, 'index'])->name('api.projects');
     Route::get('/important-urls', [ImportantUrlController::class, 'index'])->name('api.important-urls');
     Route::get('/phone-numbers', [PhoneNumberController::class, 'index'])->name('api.phone-numbers');
     Route::get('/users', [UserController::class, 'index'])->name('api.users');
     Route::get('/comments', [CommentController::class, 'index'])->name('api.comments');
+    Route::get('/tasks', [TaskController::class, 'index'])->name('api.tasks');
     Route::get('/comments/{comment}', [CommentController::class, 'show'])->name('api.comments.show');
     Route::get('/trello-boards', [TrelloBoardController::class, 'index'])->name('api.trello-boards');
 });
