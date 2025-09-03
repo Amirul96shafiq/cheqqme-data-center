@@ -127,6 +127,50 @@ class Settings extends Page
                                             ->dehydrated(false)
                                             ->placeholder(__('settings.form.no_api_key'))
                                             ->helperText(__('settings.form.api_key_helper'))
+                                            ->prefixAction(
+                                                \Filament\Forms\Components\Actions\Action::make('regenerate_api_key')
+                                                    ->label(__('settings.form.regenerate_api_key'))
+                                                    ->icon('heroicon-o-arrow-path')
+                                                    ->color('gray')
+                                                    ->size('sm')
+                                                    ->visible(fn() => auth()->user()->hasApiKey())
+                                                    ->requiresConfirmation()
+                                                    ->modalHeading(__('settings.form.confirm_regenerate'))
+                                                    ->modalDescription(__('settings.form.confirm_regenerate_description'))
+                                                    ->modalSubmitActionLabel(__('settings.form.regenerate'))
+                                                    ->action(function ($set) {
+                                                        $user = auth()->user();
+                                                        $apiKey = $user->generateApiKey();
+                                                        $set('current_api_key', $user->getMaskedApiKey());
+
+                                                        Notification::make()
+                                                            ->title(__('settings.form.api_key_regenerated'))
+                                                            ->body(__('settings.form.api_key_regenerated_body'))
+                                                            ->warning()
+                                                            ->send();
+                                                    })
+                                            )
+                                            ->suffixAction(
+                                                \Filament\Forms\Components\Actions\Action::make('copy_api_key')
+                                                    ->label(__('settings.form.copy_api_key'))
+                                                    ->icon('heroicon-o-square-2-stack')
+                                                    ->color('gray')
+                                                    ->size('sm')
+                                                    ->visible(fn() => auth()->user()->hasApiKey())
+                                                    ->action(function () {
+                                                        $user = auth()->user();
+
+                                                        // Dispatch browser event to copy API key to clipboard
+                                                        $this->dispatch('copy-api-key', apiKey: $user->api_key);
+
+                                                        // Show notification that copy operation was initiated
+                                                        Notification::make()
+                                                            ->title(__('settings.form.api_key_copying'))
+                                                            ->body(__('settings.form.api_key_copying_body'))
+                                                            ->info()
+                                                            ->send();
+                                                    })
+                                            )
                                             ->columnSpan(8),
                                     ])
                                     ->columnSpan(8),
@@ -140,28 +184,8 @@ class Settings extends Page
                                     ->label('')
                                     ->columnSpan(4),
 
-                                // Actions: Generate, Copy, Regenerate, Delete
+                                // Actions: Generate, Delete
                                 Forms\Components\Actions::make([
-                                    // Copy API key
-                                    \Filament\Forms\Components\Actions\Action::make('copy_api_key')
-                                        ->label(__('settings.form.copy_api_key'))
-                                        ->icon('heroicon-o-clipboard')
-                                        ->color('gray')
-                                        ->visible(fn() => auth()->user()->hasApiKey())
-                                        ->action(function () {
-                                            $user = auth()->user();
-
-                                            // Dispatch browser event to copy API key to clipboard
-                                            $this->dispatch('copy-api-key', apiKey: $user->api_key);
-
-                                            // Show notification that copy operation was initiated
-                                            Notification::make()
-                                                ->title(__('settings.form.api_key_copying'))
-                                                ->body(__('settings.form.api_key_copying_body'))
-                                                ->info()
-                                                ->send();
-                                        }),
-
                                     // Generate API key
                                     \Filament\Forms\Components\Actions\Action::make('generate_api_key')
                                         ->label(__('settings.form.generate_api_key'))
@@ -178,28 +202,6 @@ class Settings extends Page
                                                 ->title(__('settings.form.api_key_generated'))
                                                 ->body(__('settings.form.api_key_generated_body'))
                                                 ->success()
-                                                ->send();
-                                        }),
-
-                                    // Regenerate API key
-                                    \Filament\Forms\Components\Actions\Action::make('regenerate_api_key')
-                                        ->label(__('settings.form.regenerate_api_key'))
-                                        ->icon('heroicon-o-arrow-path')
-                                        ->color('gray')
-                                        ->visible(fn() => auth()->user()->hasApiKey())
-                                        ->requiresConfirmation()
-                                        ->modalHeading(__('settings.form.confirm_regenerate'))
-                                        ->modalDescription(__('settings.form.confirm_regenerate_description'))
-                                        ->modalSubmitActionLabel(__('settings.form.regenerate'))
-                                        ->action(function ($set) {
-                                            $user = auth()->user();
-                                            $apiKey = $user->generateApiKey();
-                                            $set('current_api_key', $user->getMaskedApiKey());
-
-                                            Notification::make()
-                                                ->title(__('settings.form.api_key_regenerated'))
-                                                ->body(__('settings.form.api_key_regenerated_body'))
-                                                ->warning()
                                                 ->send();
                                         }),
 
