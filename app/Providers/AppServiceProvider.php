@@ -58,14 +58,13 @@ class AppServiceProvider extends ServiceProvider
             \Filament\Facades\Filament::registerRenderHook('panels::scripts.after', function () {
                 return <<<'HTML'
                     <script>
-                    // Adaptive Action Board badge polling (authenticated users only)
+                    // Action Board badge polling (authenticated users only)
                     if(!window.__globalActionBoardBadge){
                         window.__globalActionBoardBadge = true;
+                        
+                        let pollingInterval = null;
                         let inFlight = false;
-                        let intervalMs = 4000;            // Base interval (slower to reduce load)
-                        const minInterval = 1000;         // Fastest after activity
-                        const maxInterval = 12000;        // Slowest when idle
-                        let idleCycles = 0;
+                        
                         function findLink(){
                             let link = document.querySelector('nav [href*="action-board"], [data-filament-navigation] [href*="action-board"]');
                             if(!link){
@@ -73,6 +72,7 @@ class AppServiceProvider extends ServiceProvider
                             }
                             return link;
                         }
+                        
                         // Ensure the badge is present
                         function ensureBadge(link){
                             if(!link) return null;
@@ -91,80 +91,103 @@ class AppServiceProvider extends ServiceProvider
                             }
                             return badge;
                         }
-                        // Refresh the badge
-                        async function refresh(forceFast=false){
-                            if(document.hidden) return; // Skip when tab not visible
-                            if(inFlight) return; inFlight=true;
+                        
+                        // Update badge with new count
+                        function updateBadge(count){
+                            const link = findLink();
+                            const badge = ensureBadge(link);
+                            if(!badge) return;
+                            
+                            const next = String(count);
+                            if(badge.textContent.trim() !== next){
+                                badge.textContent = next;
+                                badge.classList.add('animate-pulse');
+                                setTimeout(()=>badge.classList.remove('animate-pulse'), 600);
+                                console.log('Badge updated:', count);
+                            }
+                            
+                            // Show/hide badge based on count
+                            if(count === 0){
+                                badge.style.display = 'none';
+                            } else {
+                                badge.style.display = 'flex';
+                            }
+                        }
+                        
+                        // Poll for updates
+                        async function pollForUpdates(){
+                            if(document.hidden || inFlight) return;
+                            inFlight = true;
+                            
                             try{
-                                // Fetch the count
-                                const res = await fetch('/action-board/assigned-active-count',{headers:{'Accept':'application/json','Cache-Control':'no-cache'}});
-                                if(!res.ok){
-                                    // Backoff on auth / server errors
-                                    intervalMs = Math.min(maxInterval, intervalMs * 1.5);
-                                    return;
-                                }
-                                // Get the data
-                                const data = await res.json();
-                                // Get the count
-                                const count = typeof data.count==='number'? data.count:0;
-                                // Get the link
-                                const link = findLink();
-                                // Get the badge
-                                const badge = ensureBadge(link);
-                                if(!badge) return;
-                                // Get the next count
-                                const next = String(count);
-                                // If the badge text content is not the same as the next count, update the badge
-                                if(badge.textContent.trim()!==next){
-                                    badge.textContent = next;
-                                    badge.classList.add('animate-pulse');
-                                    setTimeout(()=>badge.classList.remove('animate-pulse'),400);
-                                    // Activity detected -> speed up briefly
-                                    intervalMs = Math.max(minInterval, 1500);
-                                    idleCycles = 0;
+                                const res = await fetch('/action-board/assigned-active-count', {
+                                    headers: {'Accept': 'application/json', 'Cache-Control': 'no-cache'},
+                                    credentials: 'same-origin'
+                                });
+                                
+                                if(res.ok){
+                                    const data = await res.json();
+                                    updateBadge(data.count);
                                 } else {
-                                    // Increment the idle cycles
-                                    idleCycles++;
-                                    // Gradually slow down while idle
-                                    if(idleCycles % 5 === 0){
-                                        // Gradually slow down while idle
-                                        intervalMs = Math.min(maxInterval, intervalMs + 1000);
-                                    }
-                                }
-                                // Show/hide badge based on count
-                                if(count === 0){
-                                    badge.style.display = 'none';
-                                } else {
-                                    badge.style.display = 'flex';
+                                    console.warn('Polling failed:', res.status);
                                 }
                             }catch(e){
-                                // Backoff on errors
-                                intervalMs = Math.min(maxInterval, intervalMs * 1.5);
-                            } finally { inFlight=false; }
-                        }
-                        // Schedule the loop
-                        function scheduleLoop(){
-                            refresh();
-                            setTimeout(scheduleLoop, intervalMs);
-                        }
-                        // Listen for visibility changes
-                        document.addEventListener('visibilitychange', ()=>{ if(!document.hidden){ intervalMs = Math.max(minInterval, 2000); refresh(); }});
-                        // Listen for task events
-                        ['task-created','task-updated','task-moved','task-status-updated'].forEach(ev=>document.addEventListener(ev, ()=>refresh(true)));
-                        // Listen for Livewire events
-                        ['livewire:load', 'livewire:update'].forEach(ev=>document.addEventListener(ev, ()=>setTimeout(()=>refresh(true), 500)));
-                        // Listen for Kanban board events
-                        ['kanban-order-updated', 'task-moved'].forEach(ev=>document.addEventListener(ev, ()=>setTimeout(()=>refresh(true), 300)));
-                        // More aggressive polling when on Action Board page
-                        setInterval(()=>{
-                            if(window.location.pathname.includes('action-board')){
-                                refresh(true);
+                                console.error('Polling error:', e);
+                            } finally { 
+                                inFlight = false;
                             }
-                        }, 2000);
-                        // Force a refresh
-                        window.forceActionBoardBadgeRefresh = ()=>refresh(true);
-                        // Listen for DOMContentLoaded
-                        document.addEventListener('DOMContentLoaded', scheduleLoop);
+                        }
+                        
+                        // Start polling
+                        function startPolling(){
+                            console.log('Starting badge polling...');
+                            
+                            // Clear any existing interval
+                            if(pollingInterval) {
+                                clearInterval(pollingInterval);
+                            }
+                            
+                            // Initial poll
+                            pollForUpdates();
+                            
+                            // Set up polling interval (every 3 seconds)
+                            pollingInterval = setInterval(pollForUpdates, 3000);
+                            
+                            // Listen for task events to trigger immediate refresh
+                            ['task-created','task-updated','task-moved','task-status-updated'].forEach(ev=>{
+                                document.addEventListener(ev, ()=>{
+                                    console.log('Task event detected:', ev);
+                                    pollForUpdates();
+                                });
+                            });
+                            
+                            // Listen for Livewire events
+                            ['livewire:load', 'livewire:update'].forEach(ev=>{
+                                document.addEventListener(ev, ()=>{
+                                    console.log('Livewire event detected:', ev);
+                                    setTimeout(()=>pollForUpdates(), 500);
+                                });
+                            });
+                            
+                            // Listen for Kanban board events
+                            ['kanban-order-updated', 'task-moved'].forEach(ev=>{
+                                document.addEventListener(ev, ()=>{
+                                    console.log('Kanban event detected:', ev);
+                                    setTimeout(()=>pollForUpdates(), 300);
+                                });
+                            });
+                        }
+                        
+                        // Initialize when DOM is ready
+                        document.addEventListener('DOMContentLoaded', function() {
+                            startPolling();
+                            
+                            // Force refresh function for manual updates
+                            window.forceActionBoardBadgeRefresh = function() {
+                                console.log('Manual badge refresh triggered');
+                                pollForUpdates();
+                            };
+                        });
                     }
                     </script>
                     <script>

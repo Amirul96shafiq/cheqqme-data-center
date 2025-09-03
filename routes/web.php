@@ -64,7 +64,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/chatbot/conversation', [ChatbotController::class, 'getConversationHistory'])->name('chatbot.history');
     Route::post('/chatbot/clear', [ChatbotController::class, 'clearConversation'])->name('chatbot.clear');
 
-    // Live badge polling endpoint for Action Board navigation badge
+    // WebSocket broadcast authentication
+    Route::post('/broadcasting/auth', [\App\Http\Controllers\BroadcastController::class, 'authenticate'])
+        ->name('broadcasting.auth');
+
+    // Fallback polling endpoint (kept for compatibility, will be removed after WebSocket migration)
     Route::get('/action-board/assigned-active-count', function () {
         if (!auth()->check()) {
             return response()->json(['count' => 0]);

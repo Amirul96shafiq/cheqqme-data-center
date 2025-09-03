@@ -4,11 +4,17 @@ namespace App\Observers;
 
 use App\Models\Task;
 use App\Models\User;
+use App\Services\TaskCountService;
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 
 class TaskObserver
 {
+    public function __construct(
+        private TaskCountService $taskCountService
+    ) {
+    }
+
     /**
      * Handle the Task "created" event.
      */
@@ -33,6 +39,9 @@ class TaskObserver
                     ->sendToDatabase($assignedUser);
             }
         }
+
+        // Broadcast task count updates
+        $this->taskCountService->broadcastTaskCountUpdatesForTask($task);
     }
 
     /**
@@ -82,5 +91,31 @@ class TaskObserver
                 }
             }
         }
+    }
+
+    /**
+     * Handle the Task "updated" event.
+     */
+    public function updated(Task $task)
+    {
+        // Broadcast task count updates for both old and new assigned users
+        $this->taskCountService->broadcastTaskCountUpdatesForTask($task);
+
+        // If assignment changed, also broadcast for the old assigned user
+        if ($task->isDirty('assigned_to')) {
+            $oldAssignedUserId = $task->getOriginal('assigned_to');
+            if ($oldAssignedUserId && is_numeric($oldAssignedUserId)) {
+                $this->taskCountService->broadcastTaskCountUpdate((int) $oldAssignedUserId);
+            }
+        }
+    }
+
+    /**
+     * Handle the Task "deleted" event.
+     */
+    public function deleted(Task $task)
+    {
+        // Broadcast task count updates for assigned users
+        $this->taskCountService->broadcastTaskCountUpdatesForTask($task);
     }
 }
