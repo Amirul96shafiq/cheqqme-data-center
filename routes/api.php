@@ -26,14 +26,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/comments/{comment}', [CommentController::class, 'show'])->name('api.comments.show');
 });
 
-// Public API documentation endpoint
+// Public API documentation endpoint with pretty JSON
 Route::get('/documentation', function () {
     return response()->json([
         'success' => true,
         'message' => 'API Documentation',
-        'documentation' => [
-            'base_url' => config('app.url').'/api',
+        'data' => [
+            'base_url' => config('app.url') . '/api',
             'authentication' => 'Bearer token in Authorization header',
+            'features' => [
+                'pretty_json' => 'All responses are formatted with proper indentation',
+                'consistent_format' => 'Standardized response structure across all endpoints',
+            ],
             'endpoints' => [
                 // User endpoints
                 'GET /profile' => 'Get user profile information',
@@ -50,13 +54,21 @@ Route::get('/documentation', function () {
                 'GET /comments' => 'Get all comments',
                 'GET /comments/{comment}' => 'Get specific comment by ID',
             ],
-            'example_request' => 'GET '.config('app.url').'/api/profile',
+            'example_request' => 'GET ' . config('app.url') . '/api/profile',
             'headers' => [
                 'Authorization' => 'Bearer YOUR_API_KEY',
                 'Accept' => 'application/json',
             ],
+            'response_format' => [
+                'success' => 'boolean',
+                'message' => 'string',
+                'data' => 'mixed',
+                'meta' => [
+                    'timestamp' => 'ISO 8601 timestamp',
+                ]
+            ],
         ],
-    ]);
+    ], 200, [], JSON_PRETTY_PRINT);
 })->name('api.documentation');
 
 // API Key authenticated endpoints
