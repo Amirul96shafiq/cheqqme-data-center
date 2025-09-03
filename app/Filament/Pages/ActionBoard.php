@@ -146,32 +146,32 @@ class ActionBoard extends KanbanBoardPage
                                             Forms\Components\Hidden::make('id')
                                                 ->disabled()
                                                 ->visible(false),
+                                            Forms\Components\Select::make('assigned_to')
+                                                ->label(__('task.form.assign_to'))
+                                                ->options(function () {
+                                                    return User::withTrashed()
+                                                        ->orderBy('username')
+                                                        ->get()
+                                                        ->mapWithKeys(fn($u) => [
+                                                            $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
+                                                        ])
+                                                        ->toArray();
+                                                })
+                                                ->searchable()
+                                                ->preload()
+                                                ->native(false)
+                                                ->nullable()
+                                                ->multiple()
+                                                ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
+                                                ->default(fn(?Task $record) => $record?->assigned_to)
+                                                ->dehydrated(),
                                             Forms\Components\TextInput::make('title')
                                                 ->label(__('task.form.title'))
                                                 ->required()
                                                 ->placeholder(__('task.form.title_placeholder'))
                                                 ->columnSpanFull(),
-                                            Forms\Components\Grid::make(3)
+                                            Forms\Components\Grid::make(2)
                                                 ->schema([
-                                                    Forms\Components\Select::make('assigned_to')
-                                                        ->label(__('task.form.assign_to'))
-                                                        ->options(function () {
-                                                            return User::withTrashed()
-                                                                ->orderBy('username')
-                                                                ->get()
-                                                                ->mapWithKeys(fn($u) => [
-                                                                    $u->id => ($u->username ?: 'User #' . $u->id) . ($u->deleted_at ? ' (deleted)' : ''),
-                                                                ])
-                                                                ->toArray();
-                                                        })
-                                                        ->searchable()
-                                                        ->preload()
-                                                        ->native(false)
-                                                        ->nullable()
-                                                        ->multiple()
-                                                        ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
-                                                        ->default(fn(?Task $record) => $record?->assigned_to)
-                                                        ->dehydrated(),
                                                     Forms\Components\DatePicker::make('due_date')
                                                         ->label(__('task.form.due_date'))
                                                         ->placeholder('dd/mm/yyyy')
