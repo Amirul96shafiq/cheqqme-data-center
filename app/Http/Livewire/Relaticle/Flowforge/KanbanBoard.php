@@ -119,6 +119,8 @@ class KanbanBoard extends BaseKanbanBoard
                 'column' => $columnId,
                 'cardIds' => $cardIds,
             ]);
+            // Dispatch task-moved event for badge updates
+            $this->dispatch('task-moved');
         }
 
         return $success;

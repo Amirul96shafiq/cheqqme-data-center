@@ -66,12 +66,12 @@ Route::middleware('auth')->group(function () {
 
     // Live badge polling endpoint for Action Board navigation badge
     Route::get('/action-board/assigned-active-count', function () {
-        if (! auth()->check()) {
+        if (!auth()->check()) {
             return response()->json(['count' => 0]);
         }
         $count = \App\Models\Task::query()
-            ->where('assigned_to', auth()->id())
-            ->whereNotIn('status', ['completed', 'archived'])
+            ->where('assigned_to', 'like', '%' . auth()->id() . '%')
+            ->whereIn('status', ['todo', 'in_progress', 'toreview'])
             ->count();
 
         return response()->json(['count' => $count]);

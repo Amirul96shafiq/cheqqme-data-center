@@ -59,6 +59,7 @@ class Task extends Model
         'project' => 'array',
         'document' => 'array',
         'important_url' => 'array',
+        'assigned_to' => 'array',
         'extra_information' => 'array',
         'attachments' => 'array',
     ];
@@ -66,6 +67,8 @@ class Task extends Model
     // Make virtual attributes available when converting to array / JSON for the Kanban adapter
     protected $appends = [
         'assigned_to_badge',
+        'assigned_to_extra_count',
+        'assigned_to_extra_count_self',
         'due_date_red',
         'due_date_yellow',
         'due_date_green',
@@ -81,16 +84,103 @@ class Task extends Model
      */
     public function getAssignedToBadgeAttribute(): ?string
     {
-        $user = $this->assignedTo;
-        if (!$user) {
+        $firstUser = $this->first_assigned_user;
+        if (! $firstUser) {
             return null;
         }
+
         $authId = Auth::id();
-        if ($authId && $user->id === $authId) {
-            return $user->short_name ?? $user->username ?? $user->name ?? null;
+        if ($authId && $firstUser->id === $authId) {
+            return $firstUser->short_name ?? $firstUser->username ?? $firstUser->name ?? null;
         }
 
-        return $user->short_name ?? $user->username ?? $user->name ?? null;
+        return $firstUser->short_name ?? $firstUser->username ?? $firstUser->name ?? null;
+    }
+
+    /**
+     * Returns the total count of assigned users.
+     */
+    public function getAssignedToCountAttribute(): int
+    {
+        return $this->assigned_to ? count($this->assigned_to) : 0;
+    }
+
+    /**
+     * Returns the count of assigned users excluding the current user.
+     */
+    public function getAssignedToOthersCountAttribute(): int
+    {
+        if (! $this->assigned_to) {
+            return 0;
+        }
+
+        $authId = Auth::id();
+        if (! $authId) {
+            return count($this->assigned_to);
+        }
+
+        // Count users excluding current user
+        return count(array_filter($this->assigned_to, function ($userId) use ($authId) {
+            return $userId != $authId;
+        }));
+    }
+
+    /**
+     * Returns the count of additional assigned users (total - 1).
+     * This is used for the "+X" badge display.
+     */
+    public function getAssignedToExtraCountAttribute(): ?string
+    {
+        $totalCount = $this->assigned_to ? count($this->assigned_to) : 0;
+
+        if ($totalCount <= 1) {
+            return null; // No extra users to show
+        }
+
+        $extraCount = $totalCount - 1;
+
+        return "+{$extraCount}";
+    }
+
+    /**
+     * Returns the extra assigned users count for current user (highlighted).
+     * This is used for the "+X" badge display when current user is among extra users.
+     */
+    public function getAssignedToExtraCountSelfAttribute(): ?string
+    {
+        $totalCount = $this->assigned_to ? count($this->assigned_to) : 0;
+
+        if ($totalCount <= 1) {
+            return null; // No extra users to show
+        }
+
+        $authId = Auth::id();
+        if (! $authId) {
+            return null; // No current user
+        }
+
+        // Get all assigned users
+        $users = $this->assignedToUsers();
+        if ($users->isEmpty()) {
+            return null;
+        }
+
+        // Get the first user (main assigned user)
+        $firstUser = $users->first();
+
+        // Check if current user is among the extra users (excluding the first user)
+        $extraUsers = $users->filter(function ($user) use ($firstUser) {
+            return $user->id !== $firstUser->id;
+        });
+
+        // If current user is in the extra users list, show the count
+        if ($extraUsers->contains('id', $authId)) {
+            $extraCount = $totalCount - 1;
+
+            return "+{$extraCount}";
+        }
+
+        return null;
     }
 
     /**
@@ -98,40 +188,56 @@ class Task extends Model
      */
     public function getAssignedToDisplayAttribute(): ?string
     {
-        $user = $this->assignedTo;
-        if (!$user) {
+        $firstUser = $this->first_assigned_user;
+        if (! $firstUser) {
             return null;
         }
 
-        return $user->short_name ?? $user->username ?? $user->name ?? null;
+        return $firstUser->short_name ?? $firstUser->username ?? $firstUser->name ?? null;
     }
 
     public function getAssignedToDisplayColorAttribute(): string
     {
-        $user = $this->assignedTo;
-        $authId = Auth::id();
-        if ($user && $authId && $user->id === $authId) {
-            return 'cyan'; // Highlight for self
-        }
-        if ($user) {
-            return 'gray'; // Normal for others
+        $users = $this->assignedToUsers();
+        if (empty($users)) {
+            return 'gray';
         }
 
-        return 'gray'; // Default
+        $authId = Auth::id();
+        if (! $authId) {
+            return 'gray';
+        }
+
+        // Check if current user is in the assigned users list
+        $currentUserAssigned = $users->contains('id', $authId);
+
+        if ($currentUserAssigned) {
+            return 'cyan'; // Highlight for self
+        }
+
+        return 'gray'; // Normal for others
     }
 
     public function getAssignedToDisplayIconAttribute(): string
     {
-        $user = $this->assignedTo;
-        $authId = Auth::id();
-        if ($user && $authId && $user->id === $authId) {
-            return 'heroicon-m-user'; // Icon for self
-        }
-        if ($user) {
-            return 'heroicon-o-user'; // Icon for others
+        $users = $this->assignedToUsers();
+        if (empty($users)) {
+            return 'heroicon-o-user';
         }
 
-        return 'heroicon-o-user'; // Default
+        $authId = Auth::id();
+        if (! $authId) {
+            return 'heroicon-o-user';
+        }
+
+        // Check if current user is in the assigned users list
+        $currentUserAssigned = $users->contains('id', $authId);
+
+        if ($currentUserAssigned) {
+            return 'heroicon-m-user'; // Icon for self
+        }
+
+        return 'heroicon-o-user'; // Icon for others
     }
 
     /**
@@ -142,9 +248,36 @@ class Task extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function assignedTo()
+    /**
+     * Get all assigned users for this task.
+     */
+    public function assignedToUsers()
     {
-        return $this->belongsTo(User::class, 'assigned_to');
+        if (! $this->assigned_to || ! is_array($this->assigned_to)) {
+            return collect();
+        }
+
+        // Get users in the same order as they appear in the assigned_to array
+        $users = User::whereIn('id', $this->assigned_to)->get()->keyBy('id');
+        $orderedUsers = collect();
+
+        foreach ($this->assigned_to as $userId) {
+            if ($users->has($userId)) {
+                $orderedUsers->push($users->get($userId));
+            }
+        }
+
+        return $orderedUsers;
+    }
+
+    /**
+     * Get the first assigned user from the array.
+     */
+    public function getFirstAssignedUserAttribute()
+    {
+        $users = $this->assignedToUsers();
+
+        return $users->first();
     }
 
     public function comments(): HasMany
@@ -157,24 +290,24 @@ class Task extends Model
      */
     public function getAssignedToUsernameAttribute(): ?string
     {
-        $user = $this->assignedTo;
-        if (!$user) {
+        $firstUser = $this->first_assigned_user;
+        if (! $firstUser) {
             return null;
         }
 
         // Always show username, even for current user
-        return $user->short_name ?? $user->username ?? $user->name ?? null;
+        return $firstUser->short_name ?? $firstUser->username ?? $firstUser->name ?? null;
     }
 
     public function getAssignedToUsernameSelfAttribute(): ?string
     {
-        $user = $this->assignedTo;
-        if (!$user) {
+        $firstUser = $this->first_assigned_user;
+        if (! $firstUser) {
             return null;
         }
         $authId = Auth::id();
-        if ($authId && $user->id === $authId) {
-            return $user->short_name ?? $user->username ?? $user->name ?? null;
+        if ($authId && $firstUser->id === $authId) {
+            return $firstUser->short_name ?? $firstUser->username ?? $firstUser->name ?? null;
         }
 
         return null;
@@ -185,7 +318,7 @@ class Task extends Model
      */
     protected function dueDateDiffInDays(): ?int
     {
-        if (!$this->due_date) {
+        if (! $this->due_date) {
             return null;
         }
         try {
@@ -260,7 +393,7 @@ class Task extends Model
      */
     public function getFeaturedImageAttribute(): ?string
     {
-        if (!$this->attachments || !is_array($this->attachments)) {
+        if (! $this->attachments || ! is_array($this->attachments)) {
             return null;
         }
 
@@ -268,7 +401,7 @@ class Task extends Model
         $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
 
         foreach ($this->attachments as $attachment) {
-            if (!is_string($attachment)) {
+            if (! is_string($attachment)) {
                 continue;
             }
 
@@ -276,7 +409,7 @@ class Task extends Model
 
             if (in_array($extension, $imageExtensions)) {
                 // Return the full URL to the attachment
-                return asset('storage/' . $attachment);
+                return asset('storage/'.$attachment);
             }
         }
 

@@ -48,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
                 ->locales(['en', 'ms'])
                 ->visible(
                     insidePanels: true,
-                    outsidePanels: fn () => request()->is('admin/login')
+                    outsidePanels: fn() => request()->is('admin/login')
                 )
                 ->outsidePanelPlacement(Placement::BottomCenter);
         });
@@ -76,12 +76,18 @@ class AppServiceProvider extends ServiceProvider
                         // Ensure the badge is present
                         function ensureBadge(link){
                             if(!link) return null;
-                            let badge = link.querySelector('.ab-dynamic-badge');
+                            // Look for existing Filament native badge
+                            let badge = link.querySelector('.fi-badge, [class*="fi-badge"]');
                             if(!badge){
-                                badge = document.createElement('span');
-                                badge.className='ab-dynamic-badge inline-flex items-center justify-center rounded-full ml-2 px-2.5 py-0.5 text-xs font-medium bg-primary-500/10 text-primary-500 shadow-sm border border-primary-500 transition duration-200';
-                                badge.style.minWidth='1.5rem';
-                                link.appendChild(badge);
+                                // Create badge if it doesn't exist
+                                const badgeContainer = link.querySelector('[class*="fi-sidebar-item-button"] span:last-child');
+                                if(badgeContainer){
+                                    badge = document.createElement('span');
+                                    badge.className='fi-badge inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full shadow-sm';
+                                    badge.style.minWidth='1.25rem';
+                                    badge.style.minHeight='1.25rem';
+                                    badgeContainer.appendChild(badge);
+                                }
                             }
                             return badge;
                         }
@@ -111,8 +117,8 @@ class AppServiceProvider extends ServiceProvider
                                 // If the badge text content is not the same as the next count, update the badge
                                 if(badge.textContent.trim()!==next){
                                     badge.textContent = next;
-                                    badge.classList.add('ab-badge-pulse');
-                                    setTimeout(()=>badge.classList.remove('ab-badge-pulse'),400);
+                                    badge.classList.add('animate-pulse');
+                                    setTimeout(()=>badge.classList.remove('animate-pulse'),400);
                                     // Activity detected -> speed up briefly
                                     intervalMs = Math.max(minInterval, 1500);
                                     idleCycles = 0;
@@ -125,14 +131,11 @@ class AppServiceProvider extends ServiceProvider
                                         intervalMs = Math.min(maxInterval, intervalMs + 1000);
                                     }
                                 }
-                                // If the count is 0, update the badge to the gray color
+                                // Show/hide badge based on count
                                 if(count === 0){
-                                    badge.classList.remove('bg-primary-100','text-primary-700','border-primary-500');
-                                    badge.classList.add('bg-gray-200','text-gray-600','border','border-gray-300');
+                                    badge.style.display = 'none';
                                 } else {
-                                    // If the count is not 0, update the badge to the primary color
-                                    badge.classList.remove('bg-gray-200','text-gray-600','border-gray-300');
-                                    badge.classList.add('bg-primary-100','text-primary-700','border','border-primary-500');
+                                    badge.style.display = 'flex';
                                 }
                             }catch(e){
                                 // Backoff on errors
@@ -148,6 +151,16 @@ class AppServiceProvider extends ServiceProvider
                         document.addEventListener('visibilitychange', ()=>{ if(!document.hidden){ intervalMs = Math.max(minInterval, 2000); refresh(); }});
                         // Listen for task events
                         ['task-created','task-updated','task-moved','task-status-updated'].forEach(ev=>document.addEventListener(ev, ()=>refresh(true)));
+                        // Listen for Livewire events
+                        ['livewire:load', 'livewire:update'].forEach(ev=>document.addEventListener(ev, ()=>setTimeout(()=>refresh(true), 500)));
+                        // Listen for Kanban board events
+                        ['kanban-order-updated', 'task-moved'].forEach(ev=>document.addEventListener(ev, ()=>setTimeout(()=>refresh(true), 300)));
+                        // More aggressive polling when on Action Board page
+                        setInterval(()=>{
+                            if(window.location.pathname.includes('action-board')){
+                                refresh(true);
+                            }
+                        }, 2000);
                         // Force a refresh
                         window.forceActionBoardBadgeRefresh = ()=>refresh(true);
                         // Listen for DOMContentLoaded

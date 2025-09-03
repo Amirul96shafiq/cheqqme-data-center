@@ -68,6 +68,14 @@
             } elseif (!empty($attributes['assigned_to_username']['value'])) {
                 $assignedBadge = $attributes['assigned_to_username'];
             }
+            
+            // Handle extra assigned users badge
+            $extraAssignedBadge = null;
+            if (!empty($attributes['assigned_to_extra_count_self']['value'])) {
+                $extraAssignedBadge = $attributes['assigned_to_extra_count_self'];
+            } elseif (!empty($attributes['assigned_to_extra_count']['value'])) {
+                $extraAssignedBadge = $attributes['assigned_to_extra_count'];
+            }
             $dueDateBadge = null;
             if (!empty($attributes['due_date_red']['value'])) {
                 $dueDateBadge = $attributes['due_date_red'];
@@ -94,17 +102,17 @@
                 $resourceCountBadge = $attributes['resource_count'];
             }
             // Remove from the attributes list so they're not rendered twice
-            $filtered = $attributes->except(['assigned_to_username_self', 'assigned_to_username', 'due_date_red', 'due_date_yellow', 'due_date_gray', 'due_date_green', 'featured_image', 'message_count', 'attachment_count', 'resource_count']);
+            $filtered = $attributes->except(['assigned_to_username_self', 'assigned_to_username', 'assigned_to_extra_count_self', 'assigned_to_extra_count', 'due_date_red', 'due_date_yellow', 'due_date_gray', 'due_date_green', 'featured_image', 'message_count', 'attachment_count', 'resource_count']);
         @endphp
         
         {{-- Special badges layout: assigned, message/attachment/resource counts, and due date --}}
-        @if($assignedBadge || $dueDateBadge || $messageCountBadge || $attachmentCountBadge || $resourceCountBadge)
+        @if($assignedBadge || $extraAssignedBadge || $dueDateBadge || $messageCountBadge || $attachmentCountBadge || $resourceCountBadge)
             <div class="flex justify-between mt-5 mb-1 gap-2">
                 {{-- Left side: assigned badge and counts --}}
                 <div class="flex flex-col gap-1">
                     {{-- Assigned badge --}}
                     @if($assignedBadge)
-                        <div class="w-fit">
+                        <div class="w-fit flex gap-1 items-center">
                             <x-flowforge::card-badge
                                 :label="$assignedBadge['label']"
                                 :value="$assignedBadge['value']"
@@ -115,6 +123,18 @@
                                 :rounded="$assignedBadge['rounded'] ?? 'md'"
                                 :size="$assignedBadge['size'] ?? 'md'"
                             />
+                            @if($extraAssignedBadge)
+                                <x-flowforge::card-badge
+                                    :label="$extraAssignedBadge['label']"
+                                    :value="$extraAssignedBadge['value']"
+                                    :color="$extraAssignedBadge['color'] ?? 'default'"
+                                    :icon="$extraAssignedBadge['icon'] ?? null"
+                                    :type="$extraAssignedBadge['type'] ?? null"
+                                    :badge="$extraAssignedBadge['badge'] ?? null"
+                                    :rounded="$extraAssignedBadge['rounded'] ?? 'md'"
+                                    :size="$extraAssignedBadge['size'] ?? 'md'"
+                                />
+                            @endif
                         </div>
                     @endif
                     {{-- Message, attachment, and resource count badges --}}

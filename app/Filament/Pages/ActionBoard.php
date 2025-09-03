@@ -31,35 +31,39 @@ class ActionBoard extends KanbanBoardPage
             ->columnField('status')
             // Attributes for badge display; virtual due_date_* for static colors.
             ->cardAttributes([
+                'assigned_to_username_self' => '',
+                'assigned_to_username' => '',
+                'assigned_to_extra_count_self' => '',
+                'assigned_to_extra_count' => '',
                 'due_date_red' => '',
                 'due_date_yellow' => '',
                 'due_date_gray' => '',
                 'due_date_green' => '',
-                'assigned_to_username_self' => '',
-                'assigned_to_username' => '',
                 'featured_image' => '',
                 'message_count' => '',
                 'attachment_count' => '',
                 'resource_count' => '',
             ])
             ->cardAttributeColors([
+                'assigned_to_username_self' => 'teal',
+                'assigned_to_username' => 'gray',
+                'assigned_to_extra_count_self' => 'teal',
+                'assigned_to_extra_count' => 'gray',
                 'due_date_red' => 'red',
                 'due_date_yellow' => 'yellow',
                 'due_date_gray' => 'gray',
                 'due_date_green' => 'green',
-                'assigned_to_username_self' => 'teal',
-                'assigned_to_username' => 'gray',
                 'message_count' => 'gray',
                 'attachment_count' => 'gray',
                 'resource_count' => 'gray',
             ])
             ->cardAttributeIcons([
+                'assigned_to_username_self' => 'heroicon-m-user',
+                'assigned_to_username' => 'heroicon-o-user',
                 'due_date_red' => 'heroicon-o-calendar',
                 'due_date_yellow' => 'heroicon-o-calendar',
                 'due_date_gray' => 'heroicon-o-calendar',
                 'due_date_green' => 'heroicon-o-calendar',
-                'assigned_to_username_self' => 'heroicon-m-user',
-                'assigned_to_username' => 'heroicon-o-user',
                 'message_count' => 'heroicon-o-chat-bubble-bottom-center',
                 'attachment_count' => 'heroicon-o-paper-clip',
                 'resource_count' => 'heroicon-o-folder',
@@ -104,6 +108,9 @@ class ActionBoard extends KanbanBoardPage
                     ->icon('heroicon-o-check-circle')
                     ->success()
                     ->send();
+
+                // Dispatch task-created event for badge updates
+                $this->dispatch('task-created');
             });
     }
 
@@ -161,6 +168,7 @@ class ActionBoard extends KanbanBoardPage
                                                         ->preload()
                                                         ->native(false)
                                                         ->nullable()
+                                                        ->multiple()
                                                         ->formatStateUsing(fn($state, ?Task $record) => $record?->assigned_to)
                                                         ->default(fn(?Task $record) => $record?->assigned_to)
                                                         ->dehydrated(),
@@ -614,6 +622,20 @@ class ActionBoard extends KanbanBoardPage
     public static function getNavigationLabel(): string
     {
         return __('action.navigation.label');
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        if (!auth()->check()) {
+            return null;
+        }
+
+        $count = Task::query()
+            ->where('assigned_to', 'like', '%' . auth()->id() . '%')
+            ->whereIn('status', ['todo', 'in_progress', 'toreview'])
+            ->count();
+
+        return $count > 0 ? (string) $count : null;
     }
 
     public function getTitle(): string

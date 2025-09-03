@@ -91,6 +91,7 @@ return false;
                                                         ->preload()
                                                         ->native(false)
                                                         ->nullable()
+                                                        ->multiple()
                                                         ->formatStateUsing(fn ($state, ?Task $record) => $record?->assigned_to)
                                                         ->default(fn (?Task $record) => $record?->assigned_to)
                                                         ->dehydrated(),
