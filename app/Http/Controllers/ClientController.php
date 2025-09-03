@@ -29,15 +29,15 @@ class ClientController extends Controller
                     // Check if search is numeric (could be an ID)
                     if (is_numeric($search)) {
                         $q->where('id', $search)
-                          ->orWhere('pic_name', 'like', "%{$search}%")
-                          ->orWhere('company_name', 'like', "%{$search}%")
-                          ->orWhere('pic_email', 'like', "%{$search}%")
-                          ->orWhere('company_email', 'like', "%{$search}%");
+                            ->orWhere('pic_name', 'like', "%{$search}%")
+                            ->orWhere('company_name', 'like', "%{$search}%")
+                            ->orWhere('pic_email', 'like', "%{$search}%")
+                            ->orWhere('company_email', 'like', "%{$search}%");
                     } else {
                         $q->where('pic_name', 'like', "%{$search}%")
-                          ->orWhere('company_name', 'like', "%{$search}%")
-                          ->orWhere('pic_email', 'like', "%{$search}%")
-                          ->orWhere('company_email', 'like', "%{$search}%");
+                            ->orWhere('company_name', 'like', "%{$search}%")
+                            ->orWhere('pic_email', 'like', "%{$search}%")
+                            ->orWhere('company_email', 'like', "%{$search}%");
                     }
                 });
             }

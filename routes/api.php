@@ -48,6 +48,7 @@ Route::get('/documentation', function () {
 
                 // Resource endpoints
                 'GET /clients' => 'Get all clients with search, filtering, and sorting',
+                'GET /tasks' => 'Get all tasks with search, filtering, sorting, and ID search',
                 'GET /documents' => 'Get all documents',
                 'GET /important-urls' => 'Get all important URLs',
                 'GET /phone-numbers' => 'Get all phone numbers',
@@ -60,6 +61,18 @@ Route::get('/documentation', function () {
                 'Authorization' => 'Bearer YOUR_API_KEY',
                 'Accept' => 'application/json',
                 'X-Request-ID' => 'Optional: Custom request ID for tracking',
+            ],
+            'task_api_examples' => [
+                'GET /api/tasks?id=1' => 'Get task by exact ID',
+                'GET /api/tasks?search=1' => 'Search tasks by ID (numeric search)',
+                'GET /api/tasks?search=voluptas' => 'Search tasks by title, description, or status',
+                'GET /api/tasks?status=archived' => 'Filter tasks by status',
+                'GET /api/tasks?assigned_to=4' => 'Filter tasks by assigned user ID',
+                'GET /api/tasks?due_date_from=2025-09-01' => 'Filter tasks due after date',
+                'GET /api/tasks?due_date_to=2025-09-30' => 'Filter tasks due before date',
+                'GET /api/tasks?sort_by=title&sort_order=asc' => 'Sort tasks by title ascending',
+                'GET /api/tasks?limit=10' => 'Limit results to 10 tasks',
+                'GET /api/tasks?id=1&limit=5' => 'Get task by ID with limit (ID takes priority)',
             ],
             'response_format' => [
                 'success' => 'boolean',
