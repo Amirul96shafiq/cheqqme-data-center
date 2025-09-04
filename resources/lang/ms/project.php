@@ -70,6 +70,6 @@ return [
     'search' => [
         'title' => 'Tajuk Projek',
         'client' => 'Pelanggan',
-        'project_url' => 'URL Projek',
+        'status' => 'Status',
     ],
 ];

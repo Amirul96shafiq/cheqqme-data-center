@@ -70,6 +70,6 @@ return [
     'search' => [
         'title' => 'Project Title',
         'client' => 'Client',
-        'project_url' => 'Project URL',
+        'status' => 'Status',
     ],
 ];

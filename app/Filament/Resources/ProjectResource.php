@@ -40,10 +40,16 @@ class ProjectResource extends Resource
 
     public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
     {
+        $statusLabels = [
+            'Planning' => __('project.status.planning'),
+            'In Progress' => __('project.status.in_progress'),
+            'Completed' => __('project.status.completed'),
+        ];
+
         return [
             __('project.search.title') => $record->title,
             __('project.search.client') => optional($record->client)->company_name,
-            __('project.search.project_url') => $record->project_url,
+            __('project.search.status') => $record->status,
         ];
     }
 
