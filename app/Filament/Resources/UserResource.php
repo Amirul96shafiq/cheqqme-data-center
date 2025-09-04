@@ -330,7 +330,9 @@ class UserResource extends Resource
                     ->multiple()
                     ->searchable(),
 
-                TrashedFilter::make(), // To show trashed or only active
+                TrashedFilter::make()
+                    ->label(__('user.filter.trashed'))
+                    ->searchable(), // To show trashed or only active
             ])
             ->actions([
                 TableAction::make('personalize')

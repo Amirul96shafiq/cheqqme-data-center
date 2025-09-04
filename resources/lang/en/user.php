@@ -71,5 +71,6 @@ return [
     'filter' => [
         'has_cover_image' => 'Has Cover Image',
         'timezone' => 'Timezone',
+        'trashed' => 'Trashed',
     ],
 ];
