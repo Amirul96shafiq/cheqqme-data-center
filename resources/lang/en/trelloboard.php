@@ -62,5 +62,8 @@ return [
 
     'search' => [
         'board_url' => 'Board URL',
+        'show_on_board' => 'Show on Board',
+        'show_on_board_true' => 'Yes',
+        'show_on_board_false' => 'No',
     ],
 ];

@@ -62,5 +62,8 @@ return [
 
     'search' => [
         'board_url' => 'URL Papan',
+        'show_on_board' => 'Papar pada Papan',
+        'show_on_board_true' => 'Ya',
+        'show_on_board_false' => 'Tidak',
     ],
 ];

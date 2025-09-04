@@ -41,6 +41,7 @@ class TrelloBoardResource extends Resource
     {
         return [
             __('trelloboard.search.board_url') => $record->url,
+            __('trelloboard.search.show_on_board') => $record->show_on_boards ? __('trelloboard.search.show_on_board_true') : __('trelloboard.search.show_on_board_false'),
         ];
     }
 
