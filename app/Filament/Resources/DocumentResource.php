@@ -40,11 +40,41 @@ class DocumentResource extends Resource
 
     public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
     {
-        return [
+        $details = [
             __('document.search.project') => optional($record->project)->title,
             __('document.search.type') => ucfirst($record->type),
-            __('document.search.url') => $record->url ?? '-',
         ];
+
+        // Show file_path for internal documents, url for external documents
+        if ($record->type === 'internal') {
+            $filePath = $record->file_path ?? '-';
+            if ($filePath !== '-') {
+                // Extract filename and extension
+                $pathInfo = pathinfo($filePath);
+                $filename = $pathInfo['filename'] ?? '';
+                $extension = $pathInfo['extension'] ?? '';
+
+                // Limit filename to 10 characters and add truncation indicator
+                $truncatedFilename = strlen($filename) > 20 ? substr($filename, 0, 20) . '~' : $filename;
+
+                // Format: documents/1234567890~.pdf (using tilde to indicate truncation)
+                $formattedPath = 'documents/' . $truncatedFilename . '.' . $extension;
+                $details[__('document.search.file_path')] = $formattedPath;
+            } else {
+                $details[__('document.search.file_path')] = $filePath;
+            }
+        } else {
+            $url = $record->url ?? '-';
+            if ($url !== '-') {
+                // Limit URL to 20 characters and add truncation indicator
+                $truncatedUrl = strlen($url) > 40 ? substr($url, 0, 40) . '...' : $url;
+                $details[__('document.search.url')] = $truncatedUrl;
+            } else {
+                $details[__('document.search.url')] = $url;
+            }
+        }
+
+        return $details;
     }
 
     public static function form(Form $form): Form

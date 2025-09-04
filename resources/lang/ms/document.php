@@ -69,8 +69,9 @@ return [
     ],
 
     'search' => [
-        'title' => 'Tajuk Dokumen',
-        'client' => 'Pelanggan',
         'project' => 'Projek',
+        'type' => 'Jenis',
+        'url' => 'URL',
+        'file_path' => 'Laluan Fail',
     ],
 ];

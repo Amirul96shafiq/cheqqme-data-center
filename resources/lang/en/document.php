@@ -69,8 +69,9 @@ return [
     ],
 
     'search' => [
-        'title' => 'Document Title',
-        'client' => 'Client',
         'project' => 'Project',
+        'type' => 'Type',
+        'url' => 'URL',
+        'file_path' => 'File Path',
     ],
 ];
