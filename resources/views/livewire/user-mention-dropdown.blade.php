@@ -1,7 +1,8 @@
 <!-- User Mention Dropdown -->
 <div>
-    <!-- Show dropdown if it exists and has users -->
-    @if($showDropdown && count($users) > 0)
+    <!-- Show dropdown if it exists -->
+    @if($showDropdown)
+        @if(count($users) > 0)
         <!-- Backdrop for click outside -->
         <div 
             class="fixed inset-0 z-40"
@@ -108,6 +109,14 @@
                     </div>
                 @endforeach
             </div>
+        @else
+            <!-- No users found -->
+            <div class="overflow-y-auto max-h-48 p-2">
+                <div class="p-4 text-center text-gray-500 dark:text-gray-400">
+                    No users found for "{{ $search }}"
+                </div>
+            </div>
+        @endif
         </div>
     @endif
     

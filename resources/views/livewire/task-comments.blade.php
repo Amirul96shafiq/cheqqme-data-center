@@ -391,24 +391,227 @@
         });
         // Initialize mentions
         function initializeMentions() {
-            // First, check if there's an edit form present
-            const editForm = document.querySelector('.edit-form[data-edit-form="true"]');
-            if (editForm) {
-                let editor = findEditEditor();
-                if (editor) {
-                    initializeEditor(editor);
-                    return;
-                }
-            }
-
-            // Otherwise, find the regular editor (composer)
-            let editor = findEditor();
-            if (editor) {
-                initializeEditor(editor);
+            // For Filament RichEditor components, we need to wait for Trix to be ready
+            const composerEditor = document.querySelector('[data-composer] trix-editor');
+            if (composerEditor && !composerEditor.dataset.mentionsInitialized) {
+                initializeTrixEditor(composerEditor);
                 return;
             }
-            // Wait for the editor to be available
-            waitForEditor();
+
+            // Check for edit form editors
+            const editEditor = document.querySelector('.fi-form:not([data-composer]) trix-editor');
+            if (editEditor && !editEditor.dataset.mentionsInitialized) {
+                initializeTrixEditor(editEditor);
+                return;
+            }
+
+            // If no editors found yet, wait and try again
+            setTimeout(() => {
+                const anyTrixEditor = document.querySelector('trix-editor');
+                if (anyTrixEditor && !anyTrixEditor.dataset.mentionsInitialized) {
+                    initializeTrixEditor(anyTrixEditor);
+                }
+            }, 500);
+        }
+
+        // Specialized initialization for Trix editors
+        function initializeTrixEditor(trixEditor) {
+            if (trixEditor.dataset.mentionsInitialized) {
+                return;
+            }
+            
+            trixEditor.dataset.mentionsInitialized = 'true';
+
+            // Wait for Trix to be fully ready
+            if (trixEditor.editor) {
+                setupTrixMentions(trixEditor);
+            } else {
+                trixEditor.addEventListener('trix-initialize', function() {
+                    setupTrixMentions(trixEditor);
+                });
+            }
+        }
+
+        // Setup mention functionality for Trix editor
+        function setupTrixMentions(trixEditor) {
+            // Listen for text changes in Trix
+            trixEditor.addEventListener('trix-change', function(e) {
+                if (!insertingMention) {
+                    handleTrixMentionDetection(trixEditor);
+                }
+            });
+
+            // Listen for cursor position changes
+            trixEditor.addEventListener('trix-selection-change', function(e) {
+                if (dropdownActive && !insertingMention) {
+                    handleTrixMentionDetection(trixEditor);
+                }
+            });
+
+            // Handle keyboard events for dropdown navigation
+            trixEditor.addEventListener('keydown', function(e) {
+                if (!dropdownActive) return;
+
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    dropdownActive = false;
+                    atSymbolPosition = null;
+                    Livewire.dispatch('hideMentionDropdown');
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    navigateUp();
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    navigateDown();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    Livewire.dispatch('selectCurrentUser');
+                }
+            });
+        }
+
+        // Handle mention detection in Trix editor
+        function handleTrixMentionDetection(trixEditor) {
+            if (!trixEditor.editor) return;
+
+            const document = trixEditor.editor.getDocument();
+            const range = trixEditor.editor.getSelectedRange();
+            const text = document.toString();
+            const cursorPosition = range[0];
+            const beforeCursor = text.substring(0, cursorPosition);
+
+            // Check for @ mention pattern - improved regex to capture search term properly
+            let atMatch = beforeCursor.match(/(?:^|\s)@(\w*)$/);
+            
+            if (!atMatch && beforeCursor.endsWith('@')) {
+                atMatch = ['@', '']; // New @ symbol with empty search term
+            }
+
+            if (!atMatch) {
+                if (dropdownActive) {
+                    dropdownActive = false;
+                    atSymbolPosition = null;
+                    Livewire.dispatch('hideMentionDropdown');
+                }
+                return;
+            }
+
+            // Clean the search term - remove @ symbol if present
+            let searchTerm = atMatch[1] || '';
+            searchTerm = searchTerm.replace(/^@+/, ''); // Remove leading @ symbols
+            
+            const atIndex = beforeCursor.lastIndexOf('@');
+
+            console.log('🔍 Trix mention detection:', { 
+                beforeCursor: beforeCursor.substring(Math.max(0, beforeCursor.length - 20)),
+                rawMatch: atMatch,
+                cleanedSearchTerm: searchTerm
+            });
+
+            if (!dropdownActive) {
+                showTrixMentionDropdown(trixEditor, searchTerm, atIndex);
+            } else {
+                updateTrixMentionDropdown(trixEditor, searchTerm);
+            }
+        }
+
+        // Show mention dropdown for Trix editor
+        function showTrixMentionDropdown(trixEditor, searchTerm, atIndex) {
+            try {
+                // Get position using Trix's built-in method
+                const rect = trixEditor.editor.getClientRectAtPosition(atIndex);
+                
+                if (rect && rect.left > 0 && rect.top > 0) {
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                    
+                    const finalPosition = {
+                        left: rect.left + scrollLeft,
+                        top: rect.bottom + scrollTop
+                    };
+
+                    atSymbolPosition = finalPosition;
+                    dropdownActive = true;
+
+                    // Determine input ID based on editor context
+                    const inputId = trixEditor.closest('[data-composer]') ? 'composerData.newComment' : 'editData.editingText';
+                    
+                    console.log('� Dispatching Trix showMentionDropdown:', { 
+                        inputId, 
+                        searchTerm, 
+                        x: finalPosition.left, 
+                        y: finalPosition.top 
+                    });
+
+                    Livewire.dispatch('showMentionDropdown', {
+                        inputId: inputId,
+                        searchTerm: searchTerm,
+                        x: finalPosition.left,
+                        y: finalPosition.top
+                    });
+                } else {
+                    // Fallback to editor position
+                    const editorRect = trixEditor.getBoundingClientRect();
+                    if (editorRect) {
+                        showTrixMentionDropdownFallback(trixEditor, searchTerm, editorRect);
+                    }
+                }
+            } catch (error) {
+                // Fallback
+                const editorRect = trixEditor.getBoundingClientRect();
+                if (editorRect) {
+                    showTrixMentionDropdownFallback(trixEditor, searchTerm, editorRect);
+                }
+            }
+        }
+
+        // Fallback method to show dropdown
+        function showTrixMentionDropdownFallback(trixEditor, searchTerm, editorRect) {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+            
+            const finalPosition = {
+                left: editorRect.left + scrollLeft,
+                top: editorRect.bottom + scrollTop + 5
+            };
+
+            atSymbolPosition = finalPosition;
+            dropdownActive = true;
+
+            const inputId = trixEditor.closest('[data-composer]') ? 'composerData.newComment' : 'editData.editingText';
+            
+            console.log('📡 Dispatching Trix showMentionDropdown (fallback):', { 
+                inputId, 
+                searchTerm, 
+                x: finalPosition.left, 
+                y: finalPosition.top 
+            });
+
+            Livewire.dispatch('showMentionDropdown', {
+                inputId: inputId,
+                searchTerm: searchTerm,
+                x: finalPosition.left,
+                y: finalPosition.top
+            });
+        }
+
+        // Update mention dropdown for Trix editor
+        function updateTrixMentionDropdown(trixEditor, searchTerm) {
+            const inputId = trixEditor.closest('[data-composer]') ? 'composerData.newComment' : 'editData.editingText';
+            
+            console.log('📡 Dispatching Trix showMentionDropdown (update):', { 
+                inputId, 
+                searchTerm, 
+                x: atSymbolPosition.left, 
+                y: atSymbolPosition.top 
+            });
+
+            Livewire.dispatch('showMentionDropdown', {
+                inputId: inputId,
+                searchTerm: searchTerm,
+                x: atSymbolPosition.left,
+                y: atSymbolPosition.top
+            });
         }
         // Find the edit form editor specifically
         function findEditEditor() {
@@ -510,7 +713,15 @@
         }
 
         function initializeEditor(editor) {
+            console.log('🚀 Initializing editor:', { 
+                tagName: editor.tagName, 
+                id: editor.id, 
+                className: editor.className,
+                alreadyInitialized: !!editor.dataset.mentionsInitialized
+            });
+            
             if (editor.dataset.mentionsInitialized) {
+                console.log('⚠️ Editor already initialized, skipping');
                 return;
             }
 
@@ -518,6 +729,7 @@
             
             // Add event listeners
             editor.addEventListener('input', function(e) {
+                console.log('⌨️ Input event fired on editor');
                 handleMentionInput(e, editor);
             });
             
@@ -531,26 +743,61 @@
                 handleMentionKeydown(e, editor);
             });
             
+            console.log('✅ Editor initialized with mention listeners');
+            
             // Listen for user selection from dropdown
             Livewire.on('userSelected', function(data) {
                 // Reset dropdown state when user selects
                 dropdownActive = false;
                 atSymbolPosition = null;
-                lastSelectedPosition = getCursorPosition(editor);
                 
-                if (data.inputId === 'composerData.newComment' || data.inputId === 'editData.editingText' || data.inputId === editor.id) {
-                    // Notify server of selected user id to track mentions robustly
+                // Find the active Trix editor
+                const activeTrixEditor = document.querySelector('trix-editor:focus') || 
+                                       document.querySelector('[data-composer] trix-editor') ||
+                                       document.querySelector('.fi-form:not([data-composer]) trix-editor');
+                
+                if (activeTrixEditor && activeTrixEditor.editor) {
+                    insertTrixMention(activeTrixEditor, data.username);
+                    
+                    // Notify server of selected user id
                     if (typeof data.userId !== 'undefined') {
                         Livewire.dispatch('mentionSelected', { userId: data.userId });
                     }
-                    insertMention(editor, data.username);
-                } else {
-                    if (typeof data.userId !== 'undefined') {
-                        Livewire.dispatch('mentionSelected', { userId: data.userId });
-                    }
-                    insertMention(editor, data.username);
                 }
             });
+
+            // Insert mention into Trix editor
+            function insertTrixMention(trixEditor, username) {
+                if (!trixEditor.editor) return;
+
+                try {
+                    insertingMention = true;
+                    
+                    const document = trixEditor.editor.getDocument();
+                    const range = trixEditor.editor.getSelectedRange();
+                    const text = document.toString();
+                    const cursorPosition = range[0];
+                    const beforeCursor = text.substring(0, cursorPosition);
+                    
+                    // Find the @ symbol position
+                    const atIndex = beforeCursor.lastIndexOf('@');
+                    if (atIndex !== -1) {
+                        // Select from @ to current cursor position
+                        const selectionRange = [atIndex, cursorPosition];
+                        trixEditor.editor.setSelectedRange(selectionRange);
+                        
+                        // Insert the mention
+                        const mentionText = `@${username} `;
+                        trixEditor.editor.insertString(mentionText);
+                    }
+                    
+                    setTimeout(() => {
+                        insertingMention = false;
+                    }, 100);
+                } catch (error) {
+                    insertingMention = false;
+                }
+            }
             
             // Listen for hideMentionDropdown event
             Livewire.on('hideMentionDropdown', function() {
@@ -616,9 +863,17 @@
         }
         // Handle mention input debounced
         function handleMentionInputDebounced(e, editor) {
+            console.log('🔍 handleMentionInputDebounced called', { editor: editor.tagName, editorId: editor.id });
+            
             const text = editor.textContent || '';
             const cursorPosition = getCursorPosition(editor);
             const beforeCursor = text.substring(0, cursorPosition);
+            
+            console.log('📝 Text analysis:', { 
+                text: text.substring(0, 50) + (text.length > 50 ? '...' : ''), 
+                cursorPosition, 
+                beforeCursor: beforeCursor.substring(Math.max(0, beforeCursor.length - 20)) 
+            });
             
             // ENHANCED LOGIC: Handle both new @ and search updates with better pattern matching
             
@@ -631,10 +886,14 @@
                 if (atMatch) {
                     // This is a new @ symbol, treat as empty search term
                     atMatch = ['@', '']; // Simulate match with empty search term
+                    console.log('🎯 Found @ at end, treating as new mention');
                 }
             }
+            
+            console.log('🔎 Pattern matching result:', { atMatch, dropdownActive });
             // If no match, hide the dropdown
             if (!atMatch) {
+                console.log('❌ No @ pattern found, hiding dropdown if active');
                 // No valid @ pattern - hide dropdown if active
                 if (dropdownActive) {
                     dropdownActive = false;
@@ -643,18 +902,25 @@
                 }
                 return;
             }
+            
             // 2. We have a valid @ pattern - check if we need to show or update dropdown
             const searchTerm = atMatch[1] || '';
             const atIndex = beforeCursor.lastIndexOf('@');
             
+            console.log('✅ Valid @ pattern found:', { searchTerm, atIndex, dropdownActive });
+            
             if (!dropdownActive) {
+                console.log('🚀 Showing new dropdown...');
                 // Show new dropdown
                 const atPosition = getCaretCoordinatesAtIndex(editor, atIndex);
 
                 // Try to get position, with fallbacks
                 let finalPosition = atPosition;
+                
+                console.log('📍 Initial position:', atPosition);
 
                 if (!finalPosition || finalPosition.left === 0 || finalPosition.top === 0) {
+                    console.log('🔄 Using fallback position...');
                     // Fallback 1: Try to get editor's bounding rect
                     const editorRect = editor.getBoundingClientRect();
                     if (editorRect) {
@@ -671,17 +937,36 @@
 
                     // Determine the input ID based on the editor element
                     const inputId = editor.closest('[data-composer]') ? 'composerData.newComment' : 'editData.editingText';
+                    
+                    console.log('📡 Dispatching showMentionDropdown:', { 
+                        inputId, 
+                        searchTerm, 
+                        x: finalPosition.left, 
+                        y: finalPosition.top 
+                    });
+                    
                     Livewire.dispatch('showMentionDropdown', {
                         inputId: inputId,
                         searchTerm: searchTerm,
                         x: finalPosition.left,
                         y: finalPosition.top
                     });
+                } else {
+                    console.log('❌ Could not determine position for dropdown');
                 }
             } else {
+                console.log('🔄 Updating existing dropdown...');
                 // Update existing dropdown with new search term
                 // Determine the input ID based on the editor element
                 const inputId = editor.closest('[data-composer]') ? 'composerData.newComment' : 'editData.editingText';
+                
+                console.log('📡 Dispatching showMentionDropdown (update):', { 
+                    inputId, 
+                    searchTerm, 
+                    x: atSymbolPosition.left, 
+                    y: atSymbolPosition.top 
+                });
+                
                 Livewire.dispatch('showMentionDropdown', {
                     inputId: inputId,
                     searchTerm: searchTerm,
@@ -1340,5 +1625,8 @@
             return getCaretCoordinates(element, index);
         }
     </script>
+
+    <!-- Include the User Mention Dropdown Component -->
+    @livewire('user-mention-dropdown')
 </div>
 

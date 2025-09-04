@@ -22,6 +22,11 @@ class UserMentionDropdown extends Component
 
     public int $dropdownY = 0;
 
+    public function mount()
+    {
+        // Component initialization
+    }
+
     // Show the dropdown
     #[On('showMentionDropdown')]
     public function showDropdown(string $inputId, string $searchTerm = '', int $x = 0, int $y = 0)
@@ -63,13 +68,23 @@ class UserMentionDropdown extends Component
         // Log the event
         \Log::info('UserMentionDropdown::searchUsers called', ['search' => $this->search]);
 
+        // Clean the search term - remove @ symbol if present
+        $cleanSearch = ltrim($this->search, '@');
+        
         // Search for users
         $query = User::query()
-            ->where('username', 'like', '%'.$this->search.'%')
-            ->orWhere('email', 'like', '%'.$this->search.'%')
-            ->orWhere('name', 'like', '%'.$this->search.'%')
+            ->where('username', 'like', '%' . $cleanSearch . '%')
+            ->orWhere('email', 'like', '%' . $cleanSearch . '%')
+            ->orWhere('name', 'like', '%' . $cleanSearch . '%')
             ->orderBy('username')
             ->limit(10);
+
+        // Log the actual query for debugging
+        \Log::info('UserMentionDropdown::searchUsers query', [
+            'original_search' => $this->search,
+            'cleaned_search' => $cleanSearch,
+            'sql' => $query->toSql()
+        ]);
 
         // Get the users
         $this->users = $query->get()->map(function ($user) {

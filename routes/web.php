@@ -39,11 +39,23 @@ Route::post('/set-locale', function (Request $request) {
 
 // Home route
 Route::get('/', function () {
-    if (Auth::check()) {
-        return redirect('/admin');
-    }
+    return view('welcome');
+});
 
-    return redirect('/admin/login');
+// Test route for mentions
+Route::get('/test-mentions', function () {
+    $user = \App\Models\User::first();
+    $task = \App\Models\Task::first();
+    
+    if (!$user || !$task) {
+        return response()->json([
+            'error' => 'No user or task found. Please ensure you have test data.',
+            'users_count' => \App\Models\User::count(),
+            'tasks_count' => \App\Models\Task::count(),
+        ]);
+    }
+    
+    return view('test-mentions', compact('user', 'task'));
 });
 
 // Login route
