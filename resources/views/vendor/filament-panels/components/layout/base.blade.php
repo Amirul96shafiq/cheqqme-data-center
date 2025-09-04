@@ -68,6 +68,37 @@
                 --collapsed-sidebar-width: {{ filament()->getCollapsedSidebarWidth() }};
                 --default-theme-mode: {{ filament()->getDefaultThemeMode()->value }};
             }
+
+            /* Dynamic Background System */
+            .fi-body {
+                position: relative;
+                background-image: url('{{ asset('images/bg-light.png') }}');
+                background-size: contain;
+                background-position: bottom;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            }
+
+            .fi-body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(180deg, rgb(255, 255, 255) 5%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0.7) 75%, rgba(255, 255, 255, 0.15) 100%);
+                pointer-events: none;
+                z-index: -1;
+            }
+
+            /* Dark theme background */
+            .dark .fi-body {
+                background-image: url('{{ asset('images/bg-dark.png') }}');
+            }
+
+            .dark .fi-body::before {
+                background: linear-gradient(180deg, rgb(26, 26, 26) 5%, rgba(19, 19, 19, 0.95) 25%, rgba(19, 19, 19.90) 50%, rgba(19, 19, 19, 0.55) 100%);
+            }
         </style>
 
         @stack('styles')

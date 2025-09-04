@@ -349,7 +349,7 @@
 
 </style>
 <!-- Chatbot Widget -->
-<div class="fixed bottom-4 right-4 z-[99]">
+<div class="fixed bottom-4 right-4 z-[10]">
         <!-- Floating Chat Button -->
     <div class="relative">
         <!-- Chat Icon (shown when chat is closed) -->
