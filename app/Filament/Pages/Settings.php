@@ -316,26 +316,24 @@ class Settings extends Page
 
                                                     $html = '<div class="grid grid-cols-2 gap-6">';
 
-                                                    // ! TO CHANGE THE COLOR VISUAL TO BE MORE CHEQQME (TEAL COLORED)
                                                     // Current time - Left side
-                                                    $html .= '<div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">';
-                                                    $html .= '<h4 class="font-medium text-blue-900 dark:text-blue-100 mb-3">' . __('settings.form.current_time') . '</h4>';
+                                                    $html .= '<div class="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-lg">';
+                                                    $html .= '<h4 class="font-medium text-teal-900 dark:text-teal-100 mb-3">' . __('settings.form.current_time') . '</h4>';
                                                     $html .= '<div class="text-center">';
-                                                    $html .= '<div class="text-2xl font-bold text-blue-700 dark:text-blue-300 mb-2">' . $now->format('g:i A') . '</div>';
-                                                    $html .= '<div class="text-sm text-blue-600 dark:text-blue-400">' . $this->getLocalizedDate($now) . '</div>';
-                                                    $html .= '<div class="text-xs text-blue-500 dark:text-blue-500 mt-1">' . $now->format('P') . '</div>';
+                                                    $html .= '<div class="text-2xl font-bold text-teal-700 dark:text-teal-300 mb-2">' . $now->format('g:i A') . '</div>';
+                                                    $html .= '<div class="text-sm text-teal-600 dark:text-teal-400">' . $this->getLocalizedDate($now) . '</div>';
+                                                    $html .= '<div class="text-xs text-teal-500 dark:text-teal-500 mt-1">' . $now->format('P') . '</div>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
 
-                                                    // ! TO CHANGE THE COLOR VISUAL TO BE MORE CHEQQME (AMBER COLORED)
                                                     // Timezone information - Right side
-                                                    $html .= '<div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">';
-                                                    $html .= '<h4 class="font-medium text-green-900 dark:text-green-100 mb-3">' . __('settings.form.timezone_information') . '</h4>';
+                                                    $html .= '<div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">';
+                                                    $html .= '<h4 class="font-medium text-amber-900 dark:text-amber-100 mb-3">' . __('settings.form.timezone_information') . '</h4>';
                                                     $html .= '<div class="space-y-2 text-sm">';
-                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-green-700 dark:text-green-300">' . __('settings.form.identifier_name') . ':</span> <span class="text-green-600 dark:text-green-400">' . $timezone . '</span></div>';
-                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-green-700 dark:text-green-300">' . __('settings.form.country_code') . ':</span> <span class="text-green-600 dark:text-green-400">' . $this->getCountryFromTimezone($timezone) . '</span></div>';
-                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-green-700 dark:text-green-300">' . __('settings.form.utc_offset') . ':</span> <span class="text-green-600 dark:text-green-400">' . $now->format('P') . '</span></div>';
-                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-green-700 dark:text-green-300">' . __('settings.form.abbreviation') . ':</span> <span class="text-green-600 dark:text-green-400">' . $now->format('T') . '</span></div>';
+                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">' . __('settings.form.identifier_name') . ':</span> <span class="text-amber-600 dark:text-amber-400">' . $timezone . '</span></div>';
+                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">' . __('settings.form.country_code') . ':</span> <span class="text-amber-600 dark:text-amber-400">' . $this->getCountryFromTimezone($timezone) . '</span></div>';
+                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">' . __('settings.form.utc_offset') . ':</span> <span class="text-amber-600 dark:text-amber-400">' . $now->format('P') . '</span></div>';
+                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">' . __('settings.form.abbreviation') . ':</span> <span class="text-amber-600 dark:text-amber-400">' . $now->format('T') . '</span></div>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
 

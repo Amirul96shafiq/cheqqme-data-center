@@ -219,10 +219,10 @@ return false;
                                                 ->dehydrated()
                                                 ->live()
                                                 ->reactive()
-                                                ->suffixAction(
+                                                ->prefixAction(
                                                     // Open the client in a new tab
                                                     Forms\Components\Actions\Action::make('openClient')
-                                                        ->icon('heroicon-o-arrow-top-right-on-square')
+                                                        ->icon('heroicon-o-pencil-square')
                                                         ->url(function (Forms\Get $get) {
                                                             $clientId = $get('client');
                                                             if (!$clientId) {
@@ -233,6 +233,13 @@ return false;
                                                         })
                                                         ->openUrlInNewTab()
                                                         ->visible(fn(Forms\Get $get) => (bool) $get('client'))
+                                                )
+                                                ->suffixAction(
+                                                    Forms\Components\Actions\Action::make('createClient')
+                                                        ->icon('heroicon-o-plus')
+                                                        ->url(\App\Filament\Resources\ClientResource::getUrl('create'))
+                                                        ->openUrlInNewTab()
+                                                        ->label(__('task.form.create_client'))
                                                 )
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
                                                     // If a client is selected, get all projects, documents, and important URLs for selected client
@@ -308,6 +315,13 @@ return false;
                                                         ->dehydrated()
                                                         ->live()
                                                         ->reactive()
+                                                        ->suffixAction(
+                                                            Forms\Components\Actions\Action::make('createProject')
+                                                                ->icon('heroicon-o-plus')
+                                                                ->url(\App\Filament\Resources\ProjectResource::getUrl('create'))
+                                                                ->openUrlInNewTab()
+                                                                ->label(__('task.form.create_project'))
+                                                        )
                                                         ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                                             // If no projects are selected, clear all documents
                                                             $selectedProjects = $state ?? [];
@@ -385,6 +399,13 @@ return false;
                                                         ->dehydrated()
                                                         ->live()
                                                         ->reactive()
+                                                        ->suffixAction(
+                                                            Forms\Components\Actions\Action::make('createDocument')
+                                                                ->icon('heroicon-o-plus')
+                                                                ->url(\App\Filament\Resources\DocumentResource::getUrl('create'))
+                                                                ->openUrlInNewTab()
+                                                                ->label(__('task.form.create_document'))
+                                                        )
                                                         ->helperText(__('task.form.document_helper')),
                                                     // Important URLs
                                                     Forms\Components\Select::make('important_url')
@@ -418,6 +439,13 @@ return false;
                                                         ->dehydrated()
                                                         ->live()
                                                         ->reactive()
+                                                        ->suffixAction(
+                                                            Forms\Components\Actions\Action::make('createImportantUrl')
+                                                                ->icon('heroicon-o-plus')
+                                                                ->url(\App\Filament\Resources\ImportantUrlResource::getUrl('create'))
+                                                                ->openUrlInNewTab()
+                                                                ->label(__('task.form.create_important_url'))
+                                                        )
                                                         ->helperText(__('task.form.important_url_helper')),
 
                                                     // Display selected items with clickable links

@@ -39,6 +39,10 @@ return [
         'item' => 'item(s)',
         'activity_log' => 'Activity Log',
         'recent_activity' => 'Recent Activity',
+        'create_client' => 'Create Client',
+        'create_project' => 'Create Project',
+        'create_document' => 'Create Document',
+        'create_important_url' => 'Create Important URL',
     ],
     'search' => [
         'status' => 'Status',

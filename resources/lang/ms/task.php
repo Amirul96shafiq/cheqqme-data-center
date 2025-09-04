@@ -39,6 +39,10 @@ return [
         'item' => 'item',
         'activity_log' => 'Log Aktiviti',
         'recent_activity' => 'Aktiviti Terkini',
+        'create_client' => 'Tambah Pelanggan',
+        'create_project' => 'Tambah Projek',
+        'create_document' => 'Tambah Dokumen',
+        'create_important_url' => 'Tambah URL Penting',
     ],
     'search' => [
         'status' => 'Status',
