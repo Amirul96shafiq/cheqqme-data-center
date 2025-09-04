@@ -46,7 +46,6 @@ return [
     ],
 
     'search' => [
-        'title' => 'Pemilik',
         'phone' => 'Nombor Telefon',
     ],
 ];
