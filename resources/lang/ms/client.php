@@ -61,4 +61,8 @@ return [
         'pic_contact_number' => 'Nombor Telefon PIC',
         'company_name' => 'Nama Syarikat',
     ],
+
+    'filter' => [
+        'trashed' => 'Dihapus',
+    ],
 ];

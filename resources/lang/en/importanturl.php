@@ -71,4 +71,8 @@ return [
         'client' => 'Client',
         'url' => 'URL',
     ],
+
+    'filter' => [
+        'trashed' => 'Trashed',
+    ],
 ];

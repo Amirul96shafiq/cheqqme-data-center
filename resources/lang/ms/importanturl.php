@@ -71,4 +71,8 @@ return [
         'client' => 'Pelanggan',
         'url' => 'URL',
     ],
+
+    'filter' => [
+        'trashed' => 'Dihapus',
+    ],
 ];

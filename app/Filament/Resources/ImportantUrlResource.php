@@ -304,7 +304,8 @@ class ImportantUrlResource extends Resource
                     ->searchable()
                     ->multiple(),
                 TrashedFilter::make()
-                    ->searchable(),
+                    ->label(__('importanturl.filter.trashed'))
+                    ->searchable(), // To show trashed or only active
             ])
             ->actions([
                 Tables\Actions\Action::make('open_url')

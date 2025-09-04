@@ -65,6 +65,7 @@ return [
         'planning' => 'Perancangan',
         'in_progress' => 'Sedang Berjalan',
         'completed' => 'Selesai',
+        'trashed' => 'Dihapus',
     ],
 
     'search' => [

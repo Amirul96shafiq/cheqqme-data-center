@@ -318,7 +318,8 @@ class ProjectResource extends Resource
                     ->preload()
                     ->searchable(),
                 TrashedFilter::make()
-                    ->searchable(),
+                    ->label(__('project.filter.trashed'))
+                    ->searchable(), // To show trashed or only active
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

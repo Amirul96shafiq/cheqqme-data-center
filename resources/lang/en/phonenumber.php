@@ -48,4 +48,8 @@ return [
     'search' => [
         'phone' => 'Phone No.',
     ],
+
+    'filter' => [
+        'trashed' => 'Trashed',
+    ],
 ];

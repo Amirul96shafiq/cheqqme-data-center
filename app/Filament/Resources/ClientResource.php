@@ -367,7 +367,8 @@ class ClientResource extends Resource
             ])
             ->filters([
                 TrashedFilter::make()
-                    ->searchable(),
+                    ->label(__('client.filter.trashed'))
+                    ->searchable(), // To show trashed or only active
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

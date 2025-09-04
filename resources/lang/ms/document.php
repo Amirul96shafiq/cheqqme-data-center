@@ -74,4 +74,8 @@ return [
         'url' => 'URL',
         'file_path' => 'Laluan Fail',
     ],
+
+    'filter' => [
+        'trashed' => 'Dihapus',
+    ],
 ];

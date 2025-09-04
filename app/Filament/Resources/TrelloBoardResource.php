@@ -16,6 +16,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
@@ -285,6 +286,10 @@ class TrelloBoardResource extends Resource
                     ->multiple()
                     ->preload()
                     ->searchable(),
+
+                TrashedFilter::make()
+                    ->label(__('trelloboard.filter.trashed'))
+                    ->searchable(), // To show trashed or only active
             ])
             ->actions([
                 Tables\Actions\Action::make('open_url')

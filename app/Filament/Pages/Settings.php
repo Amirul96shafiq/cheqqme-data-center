@@ -316,6 +316,7 @@ class Settings extends Page
 
                                                     $html = '<div class="grid grid-cols-2 gap-6">';
 
+                                                    // ! TO CHANGE THE COLOR VISUAL TO BE MORE CHEQQME (TEAL COLORED)
                                                     // Current time - Left side
                                                     $html .= '<div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">';
                                                     $html .= '<h4 class="font-medium text-blue-900 dark:text-blue-100 mb-3">' . __('settings.form.current_time') . '</h4>';
@@ -326,6 +327,7 @@ class Settings extends Page
                                                     $html .= '</div>';
                                                     $html .= '</div>';
 
+                                                    // ! TO CHANGE THE COLOR VISUAL TO BE MORE CHEQQME (AMBER COLORED)
                                                     // Timezone information - Right side
                                                     $html .= '<div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">';
                                                     $html .= '<h4 class="font-medium text-green-900 dark:text-green-100 mb-3">' . __('settings.form.timezone_information') . '</h4>';

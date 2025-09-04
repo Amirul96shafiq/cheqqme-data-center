@@ -356,7 +356,8 @@ class DocumentResource extends Resource
                     ->preload()
                     ->searchable(),
                 TrashedFilter::make()
-                    ->searchable(),
+                    ->label(__('document.filter.trashed'))
+                    ->searchable(), // To show trashed or only active
             ])
             ->actions([
                 Tables\Actions\Action::make('open_url')

@@ -74,4 +74,8 @@ return [
         'url' => 'URL',
         'file_path' => 'File Path',
     ],
+
+    'filter' => [
+        'trashed' => 'Trashed',
+    ],
 ];

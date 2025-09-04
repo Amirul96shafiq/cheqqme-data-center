@@ -66,4 +66,8 @@ return [
         'show_on_board_true' => 'Yes',
         'show_on_board_false' => 'No',
     ],
+
+    'filter' => [
+        'trashed' => 'Trashed',
+    ],
 ];

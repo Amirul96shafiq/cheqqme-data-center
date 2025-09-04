@@ -61,4 +61,8 @@ return [
         'pic_contact_number' => 'PIC Phone No.',
         'company_name' => 'Company Name',
     ],
+
+    'filter' => [
+        'trashed' => 'Trashed',
+    ],
 ];

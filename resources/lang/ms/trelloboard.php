@@ -66,4 +66,8 @@ return [
         'show_on_board_true' => 'Ya',
         'show_on_board_false' => 'Tidak',
     ],
+
+    'filter' => [
+        'trashed' => 'Dihapus',
+    ],
 ];

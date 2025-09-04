@@ -65,6 +65,7 @@ return [
         'planning' => 'Planning',
         'in_progress' => 'In Progress',
         'completed' => 'Completed',
+        'trashed' => 'Trashed',
     ],
 
     'search' => [
