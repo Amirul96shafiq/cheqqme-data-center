@@ -33,8 +33,7 @@ class TaskObserver
                         Action::make('view_task')
                             ->label(__('task.notifications.view_task'))
                             ->url(route('filament.admin.resources.tasks.edit', $task))
-                            ->button()
-                            ->outlined(),
+                            ->button(),
                     ])
                     ->sendToDatabase($assignedUser);
             }
@@ -84,8 +83,7 @@ class TaskObserver
                             Action::make('view_task')
                                 ->label(__('task.notifications.view_task'))
                                 ->url(route('filament.admin.resources.tasks.edit', $task))
-                                ->button()
-                                ->outlined(),
+                                ->button(),
                         ])
                         ->sendToDatabase($assignedUser);
                 }

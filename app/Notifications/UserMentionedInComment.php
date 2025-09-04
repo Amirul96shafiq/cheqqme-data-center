@@ -91,8 +91,7 @@ class UserMentionedInComment extends Notification
                 FilamentAction::make('view')
                     ->label(__('task.notifications.view_task'))
                     ->url(\App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $this->task->id]))
-                    ->button()
-                    ->outlined(),
+                    ->button(),
             ])
             ->getDatabaseMessage();
     }

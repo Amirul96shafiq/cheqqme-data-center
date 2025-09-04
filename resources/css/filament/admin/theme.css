@@ -31,7 +31,7 @@
     /* Dark mode primary buttons: ensure readable white text */
     .dark .fi-btn.fi-btn-color-primary,
     .dark .fi-btn.fi-btn-color-primary * {
-        color: #ffffff !important;
+        color: rgb(78 29 4) !important;
     }
 
     .fi-modal-close-overlay {
@@ -126,15 +126,29 @@
         border: 1px solid rgb(255 255 255 / 0.2) !important;
         box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3);
     }
-    /* Flowforge Kanban card title normal weight (lean override) */
-    .ff-card__title {
-        font-weight: 400 !important;
+    
+    /* Force override using more specific selectors */
+    .fi-page .ff-column {
+        background-color: rgb(255 255 255 / 0.3) !important;
+        --tw-bg-opacity: 1 !important;
+    }
+
+    /* Dark mode Flowforge Kanban column: force background color */
+    .fi-page .dark .ff-column,
+    .fi-page .ff-column:is(.dark *) {
+        background-color: rgb(34 39 43 / 0.8) !important;
+        --tw-bg-opacity: 1 !important;
     }
 
     /* Dark mode Flowforge Kanban card: force background color */
     .ff-card:is(.dark *) {
-        background-color: #22272b90 !important;
+        background-color: rgb(41 47 51) !important;
         border-color: rgb(250 250 250 / 0.1) !important;
+    }
+
+    /* Dark mode Flowforge Kanban card: force border color on hover */
+    .ff-card:is(.dark *):hover {
+        border-color: rgb(250 250 250 / 0.25) !important;
     }
 
     /* Force sidebar to pin on large screens, with full viewport height */
