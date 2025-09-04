@@ -67,7 +67,6 @@ return [
     ],
 
     'search' => [
-        'title' => 'Important URL Title',
         'project' => 'Project',
         'client' => 'Client',
         'url' => 'URL',
