@@ -81,7 +81,7 @@ return [
         'navigation_group' => 'Tools',
         'navigation_sort' => 1,
         'limited_access' => false,
-        'should_register_navigation' => true,
+        'should_register_navigation' => false,
         //        'gate' => ''
     ],
 
