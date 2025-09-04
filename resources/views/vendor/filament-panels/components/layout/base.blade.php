@@ -97,7 +97,7 @@
             }
 
             .dark .fi-body::before {
-                background: linear-gradient(135deg, rgb(29, 39, 37) 5%, rgba(19, 19, 19, 0.95) 25%, rgba(19, 19, 19.90) 50%, rgba(19, 19, 19, 0.55) 100%);
+                background: linear-gradient(135deg, rgb(29, 39, 37) 0%, rgb(29, 39, 37) 20%, rgba(19, 19, 19, 0.95) 45%, rgba(19, 19, 19, 0.90) 70%, rgba(19, 19, 19, 0.55) 100%);
             }
         </style>
 
