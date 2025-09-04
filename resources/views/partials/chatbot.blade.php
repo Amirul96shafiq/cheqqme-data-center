@@ -452,7 +452,7 @@
 </div>
 
 <!-- Floating Emoji Picker Container -->
-<div id="emoji-picker-container" class="fixed hidden z-[1000]">
+<div id="emoji-picker-container" class="fixed hidden z-[11]">
     <emoji-picker id="emoji-picker"></emoji-picker>
 </div>
 
