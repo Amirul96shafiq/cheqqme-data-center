@@ -1,7 +1,7 @@
 <x-filament-tables::cell
     :attributes="
         \Filament\Support\prepare_inherited_attributes($attributes)
-            ->class(['fi-ta-group-selection-cell bg-gray-50 dark:bg-white/5 w-1'])
+            ->class(['fi-ta-group-selection-cell bg-gray-50/65 dark:bg-white/5 w-1 backdrop-blur-sm'])
     "
 >
     <div class="px-3">

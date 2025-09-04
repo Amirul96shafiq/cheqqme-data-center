@@ -3,51 +3,9 @@
 @config 'tailwind.config.js';
 
 @layer utilities {
-    /* Dynamic Background System - Additional Styles */
-    /* Ensure proper stacking for background system */
-    .fi-body {
-        position: relative;
-    }
-
-    /* Ensure all Filament components are above the background gradient */
-    .fi-main,
-    .fi-page,
-    .fi-simple-main,
-    .fi-simple-main-ctn {
-        position: relative;
-        z-index: 2;
-    }
-
-    /* Ensure modals and overlays are above everything */
-    .fi-modal,
-    .fi-modal-close-overlay,
-    .fi-modal-window {
-        z-index: 100 !important;
-    }
-
-    /* Ensure notifications are above background */
-    .fi-notifications {
-        z-index: 50;
-    }
-
     /* Ensure global loader is above everything */
     #global-loader {
         z-index: 9999 !important;
-    }
-
-    /* Ensure chatbot is above background gradient */
-    .fixed.bottom-4.right-4 {
-        z-index: 999 !important;
-    }
-
-    /* Ensure chatbot interface is above background */
-    #chatbot-interface {
-        z-index: 998 !important;
-    }
-
-    /* Ensure emoji picker is above everything */
-    #emoji-picker-container {
-        z-index: 1000 !important;
     }
 
     /* Neutral palette swap: force Zinc neutrals in dark mode */
@@ -75,15 +33,10 @@
         --color-slate-900: var(--color-gray-900);
     }
 
-    /* Dark mode primary buttons: ensure readable white text */
+    /* Dark mode primary buttons: ensure readable text */
     .dark .fi-btn.fi-btn-color-primary,
     .dark .fi-btn.fi-btn-color-primary * {
-        color: #ffffff !important;
-    }
-
-    .fi-modal-close-overlay {
-        /* Ensure overlays sit above custom fixed sidebar */
-        z-index: 80 !important;
+        color: rgb(78 29 4) !important;
     }
 
     /* Modal root containers also need higher stacking to cover the sidebar */
@@ -106,17 +59,6 @@
         vertical-align: middle;
         padding-top: 1rem;
         padding-bottom: 1rem;
-    }
-
-    /* Database notifications slide-over lives inside the modal window; ensure it stacks above overlay */
-    .fi-modal-window.fi-modal-slide-over-window {
-        z-index: 90 !important;
-    }
-
-    /* Also ensure the notifications trigger panel stays below overlays */
-    .fi-topbar,
-    .fi-sidebar {
-        z-index: 20;
     }
 
     /* Ensure global search field and results are above other elements */
@@ -183,45 +125,30 @@
         border: 1px solid rgb(255 255 255 / 0.2) !important;
         box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3);
     }
-    /* Flowforge Kanban card title normal weight (lean override) */
-    .ff-card__title {
-        font-weight: 400 !important;
+
+
+    /* Force override using more specific selectors */
+    .fi-page .ff-column {
+        background-color: rgb(255 255 255 / 0.3) !important;
+        --tw-bg-opacity: 1 !important;
+    }
+
+    /* Dark mode Flowforge Kanban column: force background color */
+    .fi-page .dark .ff-column,
+    .fi-page .ff-column:is(.dark *) {
+        background-color: rgb(34 39 43 / 0.8) !important;
+        --tw-bg-opacity: 1 !important;
     }
 
     /* Dark mode Flowforge Kanban card: force background color */
     .ff-card:is(.dark *) {
-        background-color: #22272b90 !important;
+        background-color: rgb(41 47 51) !important;
         border-color: rgb(250 250 250 / 0.1) !important;
     }
 
-    /* Force sidebar to pin on large screens, with full viewport height */
-    @media (min-width: 1024px) {
-        /* Pin the sidebar */
-        .fi-main-sidebar.fi-sidebar,
-        .fi-main-sidebar .fi-sidebar {
-            position: fixed !important;
-            top: 0;
-            inset-inline-start: 0;
-            height: 100vh;
-            z-index: 10 !important; /* keep under modal overlays */
-        }
-
-        /* Reserve space for the fixed sidebar */
-        .fi-main-ctn {
-            margin-inline-start: var(--sidebar-width) !important;
-        }
-
-        /* Action Board: remove vertical scrolling on the page when Flowforge board is present */
-        .fi-main:has(.ff-board),
-        .fi-page:has(.ff-board) {
-            overflow-y: hidden !important;
-        }
-
-        /* Ensure the main container fills the viewport to avoid stray scrollbars */
-        .fi-main:has(.ff-board) {
-            min-height: 80vh;
-            max-height: 90vh;
-        }
+    /* Dark mode Flowforge Kanban card: force border color on hover */
+    .ff-card:is(.dark *):Hover {
+        border-color: rgb(250 250 250 / 0.25) !important;
     }
 
     /* Action Board: clamp each column's internal scroll area to avoid page-level scrollbars */
@@ -462,5 +389,35 @@
     /* Dark mode hover effect for user table rows */
     .dark .user-table-row-border:hover {
         border: none !important;
+    }
+
+    /* Force sidebar to pin on large screens, with full viewport height */
+    @media (min-width: 1024px) {
+        /* Pin the sidebar */
+        .fi-main-sidebar.fi-sidebar,
+        .fi-main-sidebar .fi-sidebar {
+            position: fixed !important;
+            top: 0;
+            inset-inline-start: 0;
+            height: 100vh;
+            z-index: 10 !important; /* keep under modal overlays */
+        }
+
+        /* Reserve space for the fixed sidebar */
+        .fi-main-ctn {
+            margin-inline-start: var(--sidebar-width) !important;
+        }
+
+        /* Action Board: remove vertical scrolling on the page when Flowforge board is present */
+        .fi-main:has(.ff-board),
+        .fi-page:has(.ff-board) {
+            overflow-y: hidden !important;
+        }
+
+        /* Ensure the main container fills the viewport to avoid stray scrollbars */
+        .fi-main:has(.ff-board) {
+            min-height: 80vh;
+            max-height: 90vh;
+        }
     }
 }

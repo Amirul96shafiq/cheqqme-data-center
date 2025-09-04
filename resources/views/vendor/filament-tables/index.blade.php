@@ -303,7 +303,7 @@
 
                     @if ($isSelectionEnabled || count($sortableColumns))
                         <div
-                            class="flex items-center gap-4 gap-x-6 bg-gray-50 px-4 dark:bg-white/5 sm:px-6"
+                            class="flex items-center gap-4 gap-x-6 bg-gray-50/65 px-4 dark:bg-white/5 sm:px-6 backdrop-blur-sm"
                         >
                             @if ($isSelectionEnabled && (! $isReordering))
                                 <x-filament-tables::selection.checkbox
@@ -414,7 +414,7 @@
                         @class([
                             'fi-ta-content-grid gap-4 p-4 sm:px-6' => $contentGrid,
                             'pt-0' => $contentGrid && $this->getTableGrouping(),
-                            'gap-y-px bg-gray-200 dark:bg-white/5' => ! $contentGrid,
+                            'gap-y-px bg-gray-200/65 dark:bg-white/5 backdrop-blur-sm' => ! $contentGrid,
                         ])
                     >
                         @php
@@ -496,9 +496,9 @@
                                     x-sortable-handle
                                 @endif
                                 @class([
-                                    'fi-ta-record relative h-full bg-white transition duration-75 dark:bg-gray-900',
-                                    'hover:bg-gray-50 dark:hover:bg-white/5' => ($recordUrl || $recordAction) && (! $contentGrid),
-                                    'hover:bg-gray-50 dark:hover:bg-white/10 dark:hover:ring-white/20' => ($recordUrl || $recordAction) && $contentGrid,
+                                    'fi-ta-record relative h-full bg-white/65 transition duration-75 dark:bg-gray-900/65 backdrop-blur-sm',
+                                    'hover:bg-gray-50/65 dark:hover:bg-white/5 backdrop-blur-sm' => ($recordUrl || $recordAction) && (! $contentGrid),
+                                    'hover:bg-gray-50/65 dark:hover:bg-white/10 dark:hover:ring-white/20 backdrop-blur-sm' => ($recordUrl || $recordAction) && $contentGrid,
                                     'rounded-xl shadow-sm ring-1 ring-gray-950/5 dark:bg-white/5 dark:ring-white/10' => $contentGrid,
                                     ...$getRecordClasses($record),
                                 ])
@@ -508,8 +508,8 @@
                                         isGroupCollapsed(
                                             {{ \Illuminate\Support\Js::from($recordGroupTitle) }},
                                         ),
-                                    {{ ($contentGrid ? '\'bg-gray-50 dark:bg-white/10 dark:ring-white/20\'' : '\'bg-gray-50 dark:bg-white/5 before:absolute before:start-0 before:inset-y-0 before:w-0.5 before:bg-primary-600 dark:before:bg-primary-500\'') . ': isRecordSelected(\'' . $recordKey . '\')' }},
-                                    {{ $contentGrid ? '\'bg-white dark:bg-white/5 dark:ring-white/10\': ! isRecordSelected(\'' . $recordKey . '\')' : '\'\':\'\'' }},
+                                    {{ ($contentGrid ? '\'bg-gray-50/65 dark:bg-white/10 dark:ring-white/20 backdrop-blur-sm\'' : '\'bg-gray-50/65 dark:bg-white/5 before:absolute before:start-0 before:inset-y-0 before:w-0.5 before:bg-primary-600 dark:before:bg-primary-500 backdrop-blur-sm\'') . ': isRecordSelected(\'' . $recordKey . '\')' }},
+                                    {{ $contentGrid ? '\'bg-white/65 dark:bg-white/5 dark:ring-white/10 backdrop-blur-sm\': ! isRecordSelected(\'' . $recordKey . '\')' : '\'\':\'\'' }},
                                 }"
                             >
                                 @php
@@ -1022,9 +1022,9 @@
 
                                         @if ($isSelectionEnabled && $recordCheckboxPosition === RecordCheckboxPosition::BeforeCells)
                                             @if (count($actions) && $actionsPosition === ActionsPosition::BeforeCells)
-                                                <td
-                                                    class="bg-gray-50 dark:bg-white/5"
-                                                ></td>
+                                                                                            <td
+                                                class="bg-gray-50/65 dark:bg-white/5 backdrop-blur-sm"
+                                            ></td>
                                             @endif
 
                                             <x-filament-tables::selection.group-cell>

@@ -369,8 +369,8 @@
 
 </style>
 <!-- Chatbot Widget -->
-<div class="fixed bottom-4 right-4 z-[999]">
-        <!-- Floating Chat Button -->
+<div class="fixed bottom-4 right-4 z-0">
+    <!-- Floating Chat Button -->
     <div class="relative">
         <!-- Chat Icon (shown when chat is closed) -->
         <img
@@ -472,7 +472,7 @@
 </div>
 
 <!-- Floating Emoji Picker Container -->
-<div id="emoji-picker-container" class="fixed hidden z-[1000]">
+<div id="emoji-picker-container" class="fixed hidden z-1">
     <emoji-picker id="emoji-picker"></emoji-picker>
 </div>
 

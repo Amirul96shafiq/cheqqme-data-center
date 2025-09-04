@@ -88,7 +88,7 @@
                 bottom: 0;
                 background: linear-gradient(135deg, rgb(255, 255, 255) 5%, rgba(255, 255, 255, 0.95) 25%, rgba(255, 255, 255.90) 50%, rgba(255, 255, 255, 0.55) 100%);
                 pointer-events: none;
-                z-index: 1;
+                z-index: -1;
             }
 
             /* Dark theme background */
