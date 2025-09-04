@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProjectResource\Pages;
 use App\Filament\Resources\ProjectResource\RelationManagers;
 use App\Filament\Resources\ProjectResource\RelationManagers\ProjectActivityLogRelationManager;
+use App\Helpers\ClientFormatter;
 use App\Models\Project;
 use Closure;
 use Filament\Forms\Components\Grid;
@@ -69,7 +70,9 @@ class ProjectResource extends Resource
                                 Select::make('client_id')
                                     ->label(__('project.form.client'))
                                     ->relationship('client', 'pic_name')
-                                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
+                                    ->getOptionLabelFromRecordUsing(function ($record) {
+                                        return ClientFormatter::formatClientDisplay($record->pic_name, $record->company_name);
+                                    })
                                     ->searchable()
                                     ->preload()
                                     ->nullable(),
@@ -304,7 +307,9 @@ class ProjectResource extends Resource
                 SelectFilter::make('client_id')
                     ->label(__('project.table.client'))
                     ->relationship('client', 'pic_name')
-                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->pic_name} ({$record->company_name})")
+                    ->getOptionLabelFromRecordUsing(function ($record) {
+                        return ClientFormatter::formatClientDisplay($record->pic_name, $record->company_name);
+                    })
                     ->preload()
                     ->searchable()
                     ->multiple(),

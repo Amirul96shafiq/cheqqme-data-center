@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ProjectResource\RelationManagers;
 
 use App\Filament\Resources\ImportantUrlResource;
+use App\Helpers\ClientFormatter;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -40,8 +41,8 @@ class ImportantUrlsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordUrl(fn ($record) => $record->trashed() ? null : ImportantUrlResource::getUrl('edit', ['record' => $record]))
-            ->modifyQueryUsing(fn ($query) => $query->with('client'))
+            ->recordUrl(fn($record) => $record->trashed() ? null : ImportantUrlResource::getUrl('edit', ['record' => $record]))
+            ->modifyQueryUsing(fn($query) => $query->with('client'))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
@@ -56,14 +57,7 @@ class ImportantUrlsRelationManager extends RelationManager
                     ->searchable()
                     ->sortable()
                     ->formatStateUsing(function ($state, $record) {
-                        // Format the client name (shorten if too long)
-                        $formattedName = self::formatClientName($state);
-
-                        // Format the company name (limit to 10 characters)
-                        $formattedCompany = self::formatCompanyName($record->client?->company_name);
-
-                        // Return the combined format: "Name (Company)"
-                        return $formattedName.' ('.$formattedCompany.')';
+                        return ClientFormatter::formatClientDisplay($state, $record->client?->company_name);
                     }),
                 TextColumn::make('important_url')
                     ->label(__('importanturl.table.important_url'))
@@ -79,14 +73,14 @@ class ImportantUrlsRelationManager extends RelationManager
                 TextColumn::make('updated_at')
                     ->label(__('importanturl.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
-                        if (! $record->updated_by || $record->updated_at?->eq($record->created_at)) {
+                        if (!$record->updated_by || $record->updated_at?->eq($record->created_at)) {
                             return '-';
                         }
 
                         $user = $record->updatedBy;
                         $formattedName = $user ? $user->short_name : 'Unknown';
 
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -95,7 +89,9 @@ class ImportantUrlsRelationManager extends RelationManager
                 SelectFilter::make('client_id')
                     ->label(__('importanturl.table.client'))
                     ->relationship('client', 'pic_name')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->pic_name} ({$record->company_name})")
+                    ->getOptionLabelFromRecordUsing(function ($record) {
+                        return ClientFormatter::formatClientDisplay($record->pic_name, $record->company_name);
+                    })
                     ->preload()
                     ->searchable()
                     ->multiple(),
@@ -108,16 +104,16 @@ class ImportantUrlsRelationManager extends RelationManager
                     ->label('')
                     ->icon('heroicon-o-link')
                     ->color('primary')
-                    ->url(fn ($record) => $record->url)
+                    ->url(fn($record) => $record->url)
                     ->openUrlInNewTab()
                     ->tooltip(function ($record) {
                         $url = $record->url;
 
-                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
+                        return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
                     }),
                 Tables\Actions\EditAction::make()
-                    ->url(fn ($record) => ImportantUrlResource::getUrl('edit', ['record' => $record]))
-                    ->hidden(fn ($record) => $record->trashed()),
+                    ->url(fn($record) => ImportantUrlResource::getUrl('edit', ['record' => $record]))
+                    ->hidden(fn($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
@@ -135,58 +131,5 @@ class ImportantUrlsRelationManager extends RelationManager
                     END DESC
                 ');
             });
-    }
-
-    /**
-     * Format client name with shortening logic
-     * Example: "Amirul Shafiq Harun" becomes "Amirul S. H."
-     */
-    private static function formatClientName(?string $name): string
-    {
-        if (empty($name)) {
-            return '';
-        }
-
-        $parts = explode(' ', trim($name));
-
-        // If only one word, return as is
-        if (count($parts) === 1) {
-            return $parts[0];
-        }
-
-        // If two words, return first word + first letter of second word
-        if (count($parts) === 2) {
-            return $parts[0].' '.substr($parts[1], 0, 1).'.';
-        }
-
-        // If three or more words, return first + middle initial + last initial
-        $first = $parts[0];
-        $last = end($parts); // Get the last element without removing it
-        $middleInitial = '';
-
-        // If there's a middle name, get its first letter
-        if (count($parts) >= 3) {
-            $middleInitial = substr($parts[1], 0, 1).'. ';
-        }
-
-        return $first.' '.$middleInitial.substr($last, 0, 1).'.';
-    }
-
-    /**
-     * Format company name with character limit
-     * Limits to 10 characters with ellipsis if longer
-     */
-    private static function formatCompanyName(?string $company): string
-    {
-        if (empty($company)) {
-            return '';
-        }
-
-        // If company name is longer than 10 characters, truncate and add ellipsis
-        if (strlen($company) > 10) {
-            return substr($company, 0, 10).'...';
-        }
-
-        return $company;
     }
 }
