@@ -67,4 +67,9 @@ return [
         'created_at' => 'Created At',
         'updated_at_by' => 'Updated At (by)',
     ],
+
+    'filter' => [
+        'has_cover_image' => 'Has Cover Image',
+        'timezone' => 'Timezone',
+    ],
 ];

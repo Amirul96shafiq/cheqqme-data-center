@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Forms\Components\TimezoneField;
+use App\Helpers\TimezoneHelper;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -412,36 +413,7 @@ class Settings extends Page
     // Get country from timezone
     private function getCountryFromTimezone(string $timezone): string
     {
-        $timezoneMap = [
-            'Asia/Kuala_Lumpur' => 'Malaysia (MY)',
-            'Asia/Singapore' => 'Singapore (SG)',
-            'Asia/Jakarta' => 'Indonesia (ID)',
-            'Asia/Makassar' => 'Indonesia (ID)',
-            'Asia/Jayapura' => 'Indonesia (ID)',
-            'Asia/Manila' => 'Philippines (PH)',
-            'Asia/Tokyo' => 'Japan (JP)',
-            'Asia/Seoul' => 'South Korea (KR)',
-            'Asia/Shanghai' => 'China (CN)',
-            'Asia/Beijing' => 'China (CN)',
-            'Asia/Harbin' => 'China (CN)',
-            'Asia/Urumqi' => 'China (CN)',
-            'Australia/Perth' => 'Australia (AU)',
-            'Australia/Darwin' => 'Australia (AU)',
-            'Australia/Adelaide' => 'Australia (AU)',
-            'Australia/Brisbane' => 'Australia (AU)',
-            'Australia/Sydney' => 'Australia (AU)',
-            'Australia/Melbourne' => 'Australia (AU)',
-            'Australia/Hobart' => 'Australia (AU)',
-            'Europe/London' => 'United Kingdom (UK)',
-            'America/New_York' => 'United States (US)',
-            'America/Chicago' => 'United States (US)',
-            'America/Denver' => 'United States (US)',
-            'America/Los_Angeles' => 'United States (US)',
-            'America/Anchorage' => 'United States (US)',
-            'Pacific/Honolulu' => 'United States (US)',
-        ];
-
-        return $timezoneMap[$timezone] ?? 'Unknown';
+        return TimezoneHelper::getCountryFromTimezone($timezone);
     }
 
     // Get localized date
@@ -458,7 +430,7 @@ class Settings extends Page
                 'Wednesday' => 'Rabu',
                 'Thursday' => 'Khamis',
                 'Friday' => 'Jumaat',
-                'Saturday' => 'Sabtu'
+                'Saturday' => 'Sabtu',
             ];
 
             $monthNames = [
@@ -473,7 +445,7 @@ class Settings extends Page
                 'September' => 'September',
                 'October' => 'Oktober',
                 'November' => 'November',
-                'December' => 'Disember'
+                'December' => 'Disember',
             ];
 
             $day = $dayNames[$date->format('l')] ?? $date->format('l');
