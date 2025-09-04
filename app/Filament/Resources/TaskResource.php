@@ -44,10 +44,23 @@ return false;
 
     public static function getGlobalSearchResultDetails($record): array
     {
+        $assignedUsers = $record->assignedToUsers();
+        $assignedUserNames = $assignedUsers->map(function ($user) {
+            return $user->short_name ?? $user->username ?? $user->name ?? 'User #' . $user->id;
+        })->join(', ');
+
+        $statusLabels = [
+            'todo' => __('task.status.todo'),
+            'in_progress' => __('task.status.in_progress'),
+            'toreview' => __('task.status.toreview'),
+            'completed' => __('task.status.completed'),
+            'archived' => __('task.status.archived'),
+        ];
+
         return [
-            __('task.search.status') => $record->status,
-            __('task.search.due_date') => $record->due_date,
-            __('task.search.assigned_to') => $record->assigned_to_username,
+            __('task.search.status') => $statusLabels[$record->status] ?? $record->status,
+            __('task.search.due_date') => $record->due_date ? \Carbon\Carbon::parse($record->due_date)->format('j/n/y') : null,
+            __('task.search.assigned_to') => $assignedUserNames ?: __('task.search.no_assignment'),
         ];
     }
 

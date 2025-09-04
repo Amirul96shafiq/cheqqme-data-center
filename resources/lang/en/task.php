@@ -44,6 +44,7 @@ return [
         'status' => 'Status',
         'due_date' => 'Due Date',
         'assigned_to' => 'Assigned To',
+        'no_assignment' => 'No user assigned',
     ],
     'status' => [
         'todo' => 'To Do',

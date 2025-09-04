@@ -44,6 +44,7 @@ return [
         'status' => 'Status',
         'due_date' => 'Tarikh Habis',
         'assigned_to' => 'Ditugaskan Kepada',
+        'no_assignment' => 'Tiada pengguna ditugaskan',
     ],
     'status' => [
         'todo' => 'Untuk Dilakukan',
