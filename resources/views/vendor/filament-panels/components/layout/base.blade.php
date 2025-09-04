@@ -99,20 +99,6 @@
             .dark .fi-body::before {
                 background: linear-gradient(135deg, rgb(29, 39, 37) 5%, rgba(19, 19, 19, 0.95) 25%, rgba(19, 19, 19.90) 50%, rgba(19, 19, 19, 0.55) 100%);
             }
-
-            /* Ensure content is above the gradient overlay */
-            .fi-body > * {
-                position: relative;
-                z-index: 2;
-            }
-
-            /* Ensure sidebar and topbar are above the gradient */
-            .fi-sidebar,
-            .fi-topbar,
-            .fi-main-sidebar {
-                position: relative;
-                z-index: 10;
-            }
         </style>
 
         @stack('styles')

@@ -119,6 +119,16 @@
         z-index: 20;
     }
 
+    /* Ensure global search field and results are above other elements */
+    .fi-global-search {
+        position: relative;
+        z-index: 30;
+    }
+
+    .fi-global-search-results-ctn {
+        z-index: 50 !important;
+    }
+
     /* Custom placement for Filament Language Switch Outside Panel (Admin) */
     .fls-display-on {
         position: fixed;
