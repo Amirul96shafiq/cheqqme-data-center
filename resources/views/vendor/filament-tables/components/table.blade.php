@@ -12,12 +12,12 @@
     @if ($header)
         <thead class="divide-y divide-gray-200 dark:divide-white/5">
             @if ($headerGroups)
-                <tr class="bg-gray-100/65 dark:bg-transparent backdrop-blur-sm">
+                <tr class="bg-gray-100/65 dark:bg-transparent backdrop-blur-lg">
                     {{ $headerGroups }}
                 </tr>
             @endif
 
-            <tr class="bg-gray-50/65 dark:bg-white/5 backdrop-blur-sm">
+            <tr class="bg-gray-50/65 dark:bg-white/5 backdrop-blur-lg">
                 {{ $header }}
             </tr>
         </thead>
@@ -35,7 +35,7 @@
     </tbody>
 
     @if ($footer)
-        <tfoot class="bg-gray-50/65 dark:bg-white/5 backdrop-blur-sm">
+        <tfoot class="bg-gray-50/65 dark:bg-white/5 backdrop-blur-lg">
             <tr>
                 {{ $footer }}
             </tr>

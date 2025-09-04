@@ -111,7 +111,7 @@
             ->merge($getExtraAlpineAttributes(), escape: false)
             ->class([
                 'fi-fo-wizard',
-                'fi-contained rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10' => $isContained,
+                'fi-contained rounded-xl bg-white/65 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900/65 dark:ring-white/10 backdrop-blur-sm' => $isContained,
             ])
     }}
 >
@@ -135,7 +135,7 @@
         @class([
             'fi-fo-wizard-header grid divide-y divide-gray-200 dark:divide-white/5 md:grid-flow-col md:divide-y-0 md:overflow-x-auto',
             'border-b border-gray-200 dark:border-white/10' => $isContained,
-            'rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10' => ! $isContained,
+            'rounded-xl bg-white/65 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900/65 dark:ring-white/10 backdrop-blur-sm' => ! $isContained,
         ])
         x-ref="header"
     >

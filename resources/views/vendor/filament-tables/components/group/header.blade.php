@@ -12,7 +12,7 @@
     @endif
     {{
         $attributes->class([
-            'fi-ta-group-header flex w-full items-center gap-x-3 bg-gray-50/65 px-3 py-2 dark:bg-white/5 backdrop-blur-sm',
+            'fi-ta-group-header flex w-full items-center gap-x-3 bg-gray-50/65 px-3 py-2 dark:bg-white/5 backdrop-blur-lg',
             'cursor-pointer' => $collapsible,
         ])
     }}
