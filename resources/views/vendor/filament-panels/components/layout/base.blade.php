@@ -68,6 +68,51 @@
                 --collapsed-sidebar-width: {{ filament()->getCollapsedSidebarWidth() }};
                 --default-theme-mode: {{ filament()->getDefaultThemeMode()->value }};
             }
+
+            /* Dynamic Background System */
+            .fi-body {
+                position: relative;
+                background-image: url('{{ asset('images/bg-light.png') }}');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            }
+
+            .fi-body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(135deg, rgb(255, 255, 255) 5%, rgba(255, 255, 255, 0.95) 25%, rgba(255, 255, 255.90) 50%, rgba(255, 255, 255, 0.55) 100%);
+                pointer-events: none;
+                z-index: 1;
+            }
+
+            /* Dark theme background */
+            .dark .fi-body {
+                background-image: url('{{ asset('images/bg-dark.png') }}');
+            }
+
+            .dark .fi-body::before {
+                background: linear-gradient(135deg, rgb(29, 39, 37) 5%, rgba(19, 19, 19, 0.95) 25%, rgba(19, 19, 19.90) 50%, rgba(19, 19, 19, 0.55) 100%);
+            }
+
+            /* Ensure content is above the gradient overlay */
+            .fi-body > * {
+                position: relative;
+                z-index: 2;
+            }
+
+            /* Ensure sidebar and topbar are above the gradient */
+            .fi-sidebar,
+            .fi-topbar,
+            .fi-main-sidebar {
+                position: relative;
+                z-index: 10;
+            }
         </style>
 
         @stack('styles')
@@ -113,7 +158,7 @@
                 ->class([
                     'fi-body',
                     'fi-panel-' . filament()->getId(),
-                    'min-h-screen bg-gray-50 font-normal text-gray-950 antialiased dark:bg-gray-950 dark:text-white',
+                    'min-h-screen font-normal text-gray-950 antialiased dark:text-white',
                 ]) }}
     >
         @include('components.global-loader')

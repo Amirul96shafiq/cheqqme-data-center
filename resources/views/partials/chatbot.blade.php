@@ -16,6 +16,26 @@
 <style>
     /* ===== CHATBOT BASE STYLES ===== */
     
+    /* Ensure chatbot button is always visible above background */
+    .fixed.bottom-4.right-4 {
+        z-index: 10 !important;
+        position: fixed !important;
+        bottom: 1rem !important;
+        right: 1rem !important;
+    }
+    
+    /* Ensure chat icon is always visible */
+    #chat-icon {
+        z-index: 10 !important;
+        position: relative !important;
+    }
+    
+    /* Ensure close icon is always visible */
+    #close-icon {
+        z-index: 10 !important;
+        position: relative !important;
+    }
+    
     /* ===== CHATBOT STYLING CLASSES ===== */
 
     /* AI name styling */
@@ -349,7 +369,7 @@
 
 </style>
 <!-- Chatbot Widget -->
-<div class="fixed bottom-4 right-4 z-[99]">
+<div class="fixed bottom-4 right-4 z-[999]">
         <!-- Floating Chat Button -->
     <div class="relative">
         <!-- Chat Icon (shown when chat is closed) -->
@@ -359,7 +379,7 @@
             alt="Chat with Arem"
             onclick="toggleChatbot()"
             title="Chat with Arem"
-            class="w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg opacity-80 hover:opacity-100"
+            class="w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg opacity-80 hover:opacity-100 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600"
         >
         <!-- Close Icon (shown when chat is open) -->
         <div

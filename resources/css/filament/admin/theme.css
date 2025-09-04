@@ -3,6 +3,53 @@
 @config 'tailwind.config.js';
 
 @layer utilities {
+    /* Dynamic Background System - Additional Styles */
+    /* Ensure proper stacking for background system */
+    .fi-body {
+        position: relative;
+    }
+
+    /* Ensure all Filament components are above the background gradient */
+    .fi-main,
+    .fi-page,
+    .fi-simple-main,
+    .fi-simple-main-ctn {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Ensure modals and overlays are above everything */
+    .fi-modal,
+    .fi-modal-close-overlay,
+    .fi-modal-window {
+        z-index: 100 !important;
+    }
+
+    /* Ensure notifications are above background */
+    .fi-notifications {
+        z-index: 50;
+    }
+
+    /* Ensure global loader is above everything */
+    #global-loader {
+        z-index: 9999 !important;
+    }
+
+    /* Ensure chatbot is above background gradient */
+    .fixed.bottom-4.right-4 {
+        z-index: 999 !important;
+    }
+
+    /* Ensure chatbot interface is above background */
+    #chatbot-interface {
+        z-index: 998 !important;
+    }
+
+    /* Ensure emoji picker is above everything */
+    #emoji-picker-container {
+        z-index: 1000 !important;
+    }
+
     /* Neutral palette swap: force Zinc neutrals in dark mode */
     .dark {
         /* Filament/Tailwind often reference gray/slate tokens; align both to Zinc */
@@ -99,7 +146,7 @@
     .global-search-modal-details .inline.font-medium {
         font-size: 0.75rem !important;
     }
-    
+
     /* Global Search Modal Details for DD */
     .global-search-modal-details .inline {
         font-size: 0.75rem !important;
