@@ -27,7 +27,7 @@
                             <x-heroicon-o-folder class="w-3 h-3 text-gray-400" />
                             <div class="flex-1 min-w-0">
                                 <span class="text-xs font-medium text-gray-900 dark:text-gray-100 truncate block">
-                                    {{ $project->title }}
+                                    {{ Str::limit($project->title, 100) }}
                                 </span>
                                 @if($project->deleted_at)
                                     <span class="text-xs text-red-600 dark:text-red-400 font-medium">Deleted</span>
@@ -77,7 +77,7 @@
                             <x-heroicon-o-document class="w-3 h-3 text-gray-400" />
                             <div class="flex-1 min-w-0">
                                 <span class="text-xs font-medium text-gray-900 dark:text-gray-100 truncate block">
-                                    {{ $document->title }}
+                                    {{ Str::limit($document->title, 100) }}
                                 </span>
                                 @if($document->deleted_at)
                                     <span class="text-xs text-red-600 dark:text-red-400 font-medium">Deleted</span>
@@ -135,7 +135,7 @@
                             <x-heroicon-o-globe-alt class="w-3 h-3 text-gray-400" />
                             <div class="flex-1 min-w-0">
                                 <span class="text-xs font-medium text-gray-900 dark:text-gray-100 truncate block">
-                                    {{ $url->title }}
+                                    {{ Str::limit($url->title, 100) }}
                                 </span>
                                 @if($url->url)
                                     <span class="text-xs text-gray-500 dark:text-gray-400 truncate">

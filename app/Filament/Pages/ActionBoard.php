@@ -358,7 +358,7 @@ class ActionBoard extends KanbanBoardPage
                                                                 ->orderBy('title')
                                                                 ->get()
                                                                 ->mapWithKeys(fn($p) => [
-                                                                    $p->id => str($p->title)->limit(25) . ($p->deleted_at ? ' (deleted)' : ''),
+                                                                    $p->id => str($p->title)->limit(20) . ($p->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
@@ -423,7 +423,7 @@ class ActionBoard extends KanbanBoardPage
                                                                     ->orderBy('title')
                                                                     ->get()
                                                                     ->mapWithKeys(fn($d) => [
-                                                                        $d->id => str($d->title)->limit(25) . ($d->deleted_at ? ' (deleted)' : ''),
+                                                                        $d->id => str($d->title)->limit(20) . ($d->deleted_at ? ' (deleted)' : ''),
                                                                     ])
                                                                     ->toArray();
                                                             }
@@ -434,7 +434,7 @@ class ActionBoard extends KanbanBoardPage
                                                                 ->orderBy('title')
                                                                 ->get()
                                                                 ->mapWithKeys(fn($d) => [
-                                                                    $d->id => str($d->title)->limit(25) . ($d->deleted_at ? ' (deleted)' : ''),
+                                                                    $d->id => str($d->title)->limit(20) . ($d->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
@@ -466,7 +466,7 @@ class ActionBoard extends KanbanBoardPage
                                                                 ->orderBy('title')
                                                                 ->get()
                                                                 ->mapWithKeys(fn($i) => [
-                                                                    $i->id => str($i->title)->limit(25) . ($i->deleted_at ? ' (deleted)' : ''),
+                                                                    $i->id => str($i->title)->limit(20) . ($i->deleted_at ? ' (deleted)' : ''),
                                                                 ])
                                                                 ->toArray();
                                                         })
