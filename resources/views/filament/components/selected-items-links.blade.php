@@ -9,7 +9,7 @@
 <div class="space-y-4">
     <!-- Projects -->
     @if(!empty($selectedProjects))
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div class="bg-white/5 dark:bg-gray-800/5 rounded-lg border border-gray-200 dark:border-gray-700 p-4 backdrop-blur-sm">
             <div class="flex items-center gap-2 mb-3">
                 <div class="flex items-center justify-center w-5 h-5 bg-gray-100 dark:bg-gray-700 rounded-lg">
                     <x-heroicon-o-briefcase class="w-3 h-3 text-gray-600 dark:text-gray-400" />
@@ -59,7 +59,7 @@
 
     <!-- Documents -->
     @if(!empty($selectedDocuments))
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div class="bg-white/5 dark:bg-gray-800/5 rounded-lg border border-gray-200 dark:border-gray-700 p-4 backdrop-blur-sm">
             <div class="flex items-center gap-2 mb-3">
                 <div class="flex items-center justify-center w-5 h-5 bg-gray-100 dark:bg-gray-700 rounded-lg">
                     <x-heroicon-o-document-text class="w-3 h-3 text-gray-600 dark:text-gray-400" />
@@ -117,7 +117,7 @@
 
     <!-- Important URLs -->
     @if(!empty($selectedUrls))
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div class="bg-white/5 dark:bg-gray-800/5 rounded-lg border border-gray-200 dark:border-gray-700 p-4 backdrop-blur-sm">
             <div class="flex items-center gap-2 mb-3">
                 <div class="flex items-center justify-center w-5 h-5 bg-gray-100 dark:bg-gray-700 rounded-lg">
                     <x-heroicon-o-link class="w-3 h-3 text-gray-600 dark:text-gray-400" />

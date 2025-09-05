@@ -9,7 +9,7 @@
     <x-slot name="trigger">
         <div
             @class([
-                'flex items-center justify-center w-9 h-9 language-switch-trigger text-primary-600 bg-white dark:bg-[rgb(255_255_255_/_.05)] border border-[rgb(3 7 18 / 0.1)] hover:border-[rgb(3 7 18 / 0.2)] dark:border-[rgb(255 255 255 / 0.2)] dark:hover:border-[rgb(255 255 255 / 0.3)]',
+                'flex items-center justify-center w-9 h-9 language-switch-trigger text-primary-600 bg-gray-50/65 dark:bg-gray-900/5 border border-gray-100 dark:border-gray-800/50',
                 'rounded-full' => $isCircular,
                 'rounded-lg' => !$isCircular,
                 'p-1' => $isFlagsOnly || $hasFlags,
@@ -48,7 +48,7 @@
                     @endif
 
                     @class([
-                        'flex items-center w-full transition-colors duration-75 rounded-md outline-none fi-dropdown-list-item whitespace-nowrap disabled:pointer-events-none disabled:opacity-70 fi-dropdown-list-item-color-gray hover:bg-gray-950/5 focus:bg-gray-950/5 dark:hover:bg-white/5 dark:focus:bg-white/5',
+                        'flex items-center w-full transition-colors duration-75 rounded-md outline-none fi-dropdown-list-item whitespace-nowrap disabled:pointer-events-none disabled:opacity-70 fi-dropdown-list-item-color-gray hover:bg-gray-400/5 focus:bg-gray-400/5 dark:hover:bg-white/10 dark:focus:bg-white/5',
                         'justify-center px-2 py-0.5' => $isFlagsOnly,
                         'justify-start space-x-2 rtl:space-x-reverse p-1' => !$isFlagsOnly,
                     ])

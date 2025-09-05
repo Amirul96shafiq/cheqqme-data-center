@@ -241,6 +241,7 @@ class ActionBoard extends KanbanBoardPage
                                                 ->reorderable()
                                                 ->appendFiles()
                                                 ->acceptedFileTypes(['image/*', 'video/*', 'application/pdf'])
+                                                ->maxSize(20480) // 20MB
                                                 ->directory('tasks')
                                                 ->preserveFilenames()
                                                 ->moveFiles()

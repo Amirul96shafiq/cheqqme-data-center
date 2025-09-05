@@ -177,6 +177,7 @@ return false;
                                                 ->appendFiles()
                                                 ->itemPanelAspectRatio('0.25')
                                                 ->acceptedFileTypes(['image/*', 'video/*', 'application/pdf'])
+                                                ->maxSize(20480) // 20MB
                                                 ->directory('tasks')
                                                 ->preserveFilenames()
                                                 ->moveFiles()

@@ -73,8 +73,8 @@
             .fi-body {
                 position: relative;
                 background-image: url('{{ asset('images/bg-light.png') }}');
-                background-size: cover;
-                background-position: center;
+                background-size: contain;
+                background-position: bottom;
                 background-repeat: no-repeat;
                 background-attachment: fixed;
             }
@@ -86,7 +86,7 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background: linear-gradient(135deg, rgb(255, 255, 255) 5%, rgba(255, 255, 255, 0.95) 25%, rgba(255, 255, 255.90) 50%, rgba(255, 255, 255, 0.55) 100%);
+                background: linear-gradient(180deg, rgb(255, 255, 255) 15%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0.7) 75%, rgba(255, 255, 255, 0.15) 100%);
                 pointer-events: none;
                 z-index: -1;
             }
@@ -97,7 +97,7 @@
             }
 
             .dark .fi-body::before {
-                background: linear-gradient(135deg, rgb(29, 39, 37) 0%, rgb(29, 39, 37) 20%, rgba(19, 19, 19, 0.95) 45%, rgba(19, 19, 19, 0.90) 70%, rgba(19, 19, 19, 0.55) 100%);
+                background: linear-gradient(180deg, rgb(26, 26, 26) 5%, rgba(19, 19, 19, 0.95) 25%, rgba(19, 19, 19.90) 50%, rgba(19, 19, 19, 0.55) 100%);
             }
         </style>
 
@@ -144,7 +144,7 @@
                 ->class([
                     'fi-body',
                     'fi-panel-' . filament()->getId(),
-                    'min-h-screen font-normal text-gray-950 antialiased dark:text-white',
+                    'min-h-screen bg-gray-50 font-normal text-gray-950 antialiased dark:bg-gray-950 dark:text-white',
                 ]) }}
     >
         @include('components.global-loader')

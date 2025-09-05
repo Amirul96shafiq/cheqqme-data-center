@@ -48,8 +48,8 @@
         @endif
         @class([
             'fi-sidebar-item-button relative flex items-center justify-center gap-x-3 rounded-lg px-2 py-2 outline-none transition duration-75',
-            'hover:bg-gray-100 focus-visible:bg-gray-100 dark:hover:bg-white/5 dark:focus-visible:bg-white/5' => filled($url),
-            'dark:bg-white/5' => $active,
+            'relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/50 before:to-white/50 dark:before:from-white/10 dark:before:to-white/10 before:translate-x-[-100%] hover:before:translate-x-0 focus-visible:before:translate-x-0 before:transition-transform before:duration-500 before:ease-in-out before:z-[-1]' => filled($url),
+            'bg-white/50 dark:bg-white/5' => $active,
         ])
     >
         @if (filled($icon) && ((! $subGrouped) || $sidebarCollapsible))

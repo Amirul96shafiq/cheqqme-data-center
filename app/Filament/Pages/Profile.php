@@ -46,7 +46,7 @@ class Profile extends EditProfile
                             ->nullable()
                             ->extraAlpineAttributes(['x-ref' => 'name'])
                             ->helperText(__('user.form.name_helper'))
-                            ->placeholder(fn (callable $get) => $get('username')),
+                            ->placeholder(fn(callable $get) => $get('username')),
 
                         $this->getEmailFormComponent()->label(__('user.form.email')),
 
@@ -62,7 +62,7 @@ class Profile extends EditProfile
                                     ->columnSpanFull()
                                     ->avatar()
                                     ->afterStateUpdated(function ($state) {
-                                        if (! $state instanceof TemporaryUploadedFile) {
+                                        if (!$state instanceof TemporaryUploadedFile) {
                                             return;
                                         }
 
@@ -82,11 +82,11 @@ class Profile extends EditProfile
                                     ->preserveFilenames()
                                     ->imageResizeMode('cover')
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                    ->maxSize(5120) // 5MB
+                                    ->maxSize(20480) // 20MB
                                     ->columnSpanFull()
                                     ->helperText(__('user.form.cover_image_helper'))
                                     ->afterStateUpdated(function ($state) {
-                                        if (! $state instanceof TemporaryUploadedFile) {
+                                        if (!$state instanceof TemporaryUploadedFile) {
                                             return;
                                         }
 
@@ -95,7 +95,14 @@ class Profile extends EditProfile
                                         if ($oldCoverImage && Storage::exists($oldCoverImage)) {
                                             Storage::delete($oldCoverImage);
                                         }
-                                    }),
+                                    })
+                                    ->uploadingMessage(__('user.form.uploading'))
+                                    ->uploadProgressIndicatorPosition('right')
+                                    ->reorderable(false)
+                                    ->appendFiles(false)
+                                    ->openable(false)
+                                    ->downloadable(false)
+                                    ->deletable(true),
                             ])
                             ->columns(1),
                     ])
@@ -120,7 +127,7 @@ class Profile extends EditProfile
                                     ->requiredWith(['password', 'password_confirmation'])
                                     ->rule(function () {
                                         return function (string $attribute, $value, $fail) {
-                                            if ($value && ! Hash::check($value, auth()->user()->password)) {
+                                            if ($value && !Hash::check($value, auth()->user()->password)) {
                                                 $fail('The old password is incorrect.');
                                             }
                                         };
@@ -147,7 +154,7 @@ class Profile extends EditProfile
                                     ->password()
                                     ->helperText(__('user.form.password_helper'))
                                     ->revealable()
-                                    ->dehydrated(fn ($state) => filled($state))
+                                    ->dehydrated(fn($state) => filled($state))
                                     ->same('password_confirmation')
                                     ->minLength(5)
                                     ->columnSpanFull(),
@@ -156,7 +163,7 @@ class Profile extends EditProfile
                                     ->label(__('user.form.confirm_password'))
                                     ->password()
                                     ->revealable()
-                                    ->dehydrated(fn ($state) => filled($state))
+                                    ->dehydrated(fn($state) => filled($state))
                                     ->columnSpanFull(),
                             ]),
                     ]),

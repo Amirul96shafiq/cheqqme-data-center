@@ -10,21 +10,7 @@
   <script src="https://unpkg.com/@tabler/icons@latest/iconfont/tabler-icons.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-
-  <style>
-    html {
-      font-family: 'Roboto';
-    }
-
-    .theme-toggle-btn {
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      transition: all 0.2s ease-in-out;
-    }
-
-  .theme-toggle-btn.active { background-color: rgba(255,255,255,0.1); }
-  .theme-toggle-btn.active svg { color: #fbb43e; /* match brand primary-500 like login/reset */ }
-  </style>
+  <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 
   <!-- Theme Script -->
   <script>
@@ -106,27 +92,27 @@
   </script>
 </head>
 
-<body class="min-h-screen bg-gray-50 dark:bg-zinc-950 flex items-center justify-center">
+<body class="auth-body min-h-screen flex items-center justify-center">
   @include('components.global-loader')
   <div class="max-w-md w-full space-y-8">
 
     <!-- Theme Toggle Buttons -->
-    <div class="absolute top-2 left-0 right-0 flex justify-center z-50">
-      <div class="flex flex-row gap-1 p-2 rounded-lg">
+    <div class="absolute top-5 left-0 right-0 flex justify-center z-50">
+      <div class="flex flex-row gap-5 p-2 rounded-lg">
 
         <!-- Light Theme (Sun) -->
         <button class="theme-toggle-btn" data-theme="light" title="Enable light theme">
-          <x-heroicon-s-sun class="w-5 h-5 text-gray-400 hover:text-primary-500" />
+          <x-heroicon-s-sun class="w-5 h-5 text-gray-400 hover:text-gray-500" />
         </button>
 
         <!-- Dark Theme (Moon) -->
         <button class="theme-toggle-btn" data-theme="dark" title="Enable dark theme">
-          <x-heroicon-s-moon class="w-5 h-5 text-gray-400 hover:text-primary-500" />
+          <x-heroicon-s-moon class="w-5 h-5 text-gray-400 hover:text-gray-500" />
         </button>
 
         <!-- System Theme (Desktop) -->
         <button class="theme-toggle-btn" data-theme="system" title="Enable system theme">
-          <x-heroicon-s-computer-desktop class="w-5 h-5 text-gray-400 hover:text-primary-500" />
+          <x-heroicon-s-computer-desktop class="w-5 h-5 text-gray-400 hover:text-gray-500" />
         </button>
 
       </div>
@@ -202,36 +188,40 @@
   @endphp
 
   <!-- Language Switcher -->
-  <div class="absolute bottom-4 left-0 right-0 flex justify-center z-50">
+  <div class="absolute bottom-4 left-0 right-0 flex justify-center z-10">
     <div x-data="{ open: false }" class="relative">
         <!-- Dropdown -->
         <div x-show="open" @click.away="open = false"
-            class="absolute bottom-full mb-2 w-40 rounded-md shadow-lg bg-white dark:bg-neutral-900 ring-1 ring-gray-950/5 dark:ring-white/10 z-50"
+            class="absolute bottom-full mb-2 w-max rounded-md shadow-lg bg-white dark:bg-neutral-900 ring-1 ring-gray-950/5 dark:ring-white/10 z-10"
             x-cloak
             style="left: 50%; transform: translateX(-50%);">
-            <div class="py-1 text-sm text-gray-700 dark:text-gray-100">
+            <div class="py-2 text-sm text-gray-700 dark:text-gray-100">
+                @if(app()->getLocale() !== 'en')
                 <form method="POST" action="{{ route('locale.set') }}">
                     @csrf
                     <input type="hidden" name="locale" value="en">
                     <button type="submit"
-                        class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 {{ app()->getLocale() === 'en' ? 'font-bold' : '' }}">
-                        <span class="text-primary-500">EN </span>English
+                      class="block w-full text-center font-semibold px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
+                    <span class="text-center p-1.5 mr-2 text-primary-500 bg-primary-100/25 dark:bg-primary-100/5 rounded-lg">EN</span>{{ __('auth.english') }}
                     </button>
                 </form>
+                @endif
+                @if(app()->getLocale() !== 'ms')
                 <form method="POST" action="{{ route('locale.set') }}">
                     @csrf
                     <input type="hidden" name="locale" value="ms">
                     <button type="submit"
-                          class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 {{ app()->getLocale() === 'ms' ? 'font-bold' : '' }}">
-                        <span class="text-primary-500">MS </span>Bahasa Melayu
+                          class="block w-full text-center font-semibold px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
+                        <span class="text-center p-1.5 mr-2 text-primary-500 bg-primary-100/25 dark:bg-primary-100/5 rounded-lg">MS</span>{{ __('auth.malay') }}
                     </button>
                 </form>
+                @endif
             </div>
         </div>
 
         <!-- Toggle -->
     <button @click="open = !open"
-      class="flex items-center justify-center w-9 h-9 language-switch-trigger text-primary-600 bg-white dark:bg-[rgb(255_255_255_/_0.05)] border border-[rgb(3_7_18_/_0.1)] hover:border-[rgb(3_7_18_/_0.2)] dark:border-[rgb(255_255_255_/_0.2)] dark:hover:border-[rgb(255_255_255_/_0.3)] rounded-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 font-semibold">
+      class="flex items-center justify-center w-9 h-9 language-switch-trigger text-primary-600 bg-white dark:bg-zinc-900/65 border border-[rgb(3_7_18_/_0.1)] hover:border-[rgb(3_7_18_/_0.15)] dark:border-[rgb(255_255_255_/_0.2)] dark:hover:border-[rgb(255_255_255_/_0.3)] rounded-lg transition font-semibold">
       {{ strtoupper(app()->getLocale()) }}
     </button>
   </div>

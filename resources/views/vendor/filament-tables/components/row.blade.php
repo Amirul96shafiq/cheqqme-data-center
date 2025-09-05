@@ -24,7 +24,7 @@
     {{
         $attributes->class([
             'fi-ta-row [@media(hover:hover)]:transition [@media(hover:hover)]:duration-75',
-            'hover:bg-gray-50/65 dark:hover:bg-white/5 backdrop-blur-lg' => $recordAction || $recordUrl,
+            'hover:bg-gray-50/65 dark:hover:bg-white/10 backdrop-blur-lg' => $recordAction || $recordUrl,
             $stripedClasses => $striped,
         ])
     }}

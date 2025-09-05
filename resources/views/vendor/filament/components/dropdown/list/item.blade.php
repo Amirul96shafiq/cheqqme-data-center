@@ -27,7 +27,7 @@
         'fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70',
         'pointer-events-none opacity-70' => $disabled,
         match ($color) {
-            'gray' => 'hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/5 dark:focus-visible:bg-white/5',
+            'gray' => 'hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5',
             default => 'fi-color-custom hover:bg-custom-50 focus-visible:bg-custom-50 dark:hover:bg-custom-400/10 dark:focus-visible:bg-custom-400/10',
         },
         // @deprecated `fi-dropdown-list-item-color-*` has been replaced by `fi-color-*` and `fi-color-custom`.

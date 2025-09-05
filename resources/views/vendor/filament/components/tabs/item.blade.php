@@ -27,7 +27,7 @@
 
     $hasAlpineActiveClasses = filled($alpineActive);
 
-    $inactiveItemClasses = 'hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/5 dark:focus-visible:bg-white/5';
+    $inactiveItemClasses = 'hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5';
 
     // @deprecated `fi-tabs-item-active` has been replaced by `fi-active`.
     $activeItemClasses = 'fi-active fi-tabs-item-active bg-gray-50 dark:bg-white/5';

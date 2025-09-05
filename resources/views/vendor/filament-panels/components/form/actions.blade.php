@@ -19,7 +19,7 @@
             x-init="evaluatePageScrollPosition"
             x-on:scroll.window="evaluatePageScrollPosition"
             x-bind:class="{
-                'fi-sticky sticky bottom-0 -mx-4 transform bg-white/65 p-4 shadow-lg ring-1 ring-gray-950/5 transition dark:bg-gray-900/65 dark:ring-white/10 md:bottom-4 md:rounded-xl backdrop-blur-sm':
+                'fi-sticky sticky bottom-0 -mx-4 transform bg-white/65 p-4 shadow-lg ring-1 ring-gray-950/5 transition dark:bg-gray-900/65 dark:ring-white/10 backdrop-blur-sm md:bottom-4 md:rounded-xl':
                     isSticky,
             }"
         @endif

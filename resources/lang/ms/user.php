@@ -38,7 +38,7 @@ return [
         'saved_password_body' => 'Sila log masuk semula atau muat semula halaman.',
         'avatar' => 'Avatar',
         'cover_image' => 'Gambar Cover',
-        'cover_image_helper' => 'Muat naik gambar cover (disyorkan: maksimum 5MB)',
+        'cover_image_helper' => 'Muat naik gambar cover (disyorkan: maksimum 20MB)',
         'username' => 'Gelaran Pengguna',
         'name' => 'Nama',
         'email' => 'Emel',

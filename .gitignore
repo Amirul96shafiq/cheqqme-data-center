@@ -49,3 +49,20 @@ auth.json
 # Local AI assistant guidance files (do not commit)
 .copilot/
 copilot-instructions.md
+
+# GitHub folder
+.github/
+
+# Additional files to ignore
+commits.txt
+filetree.txt
+CHATBOT_CONFIG_README.md
+CHATBOT_README.md
+COMMENT_SYSTEM_README.md
+test_chatbot_fix.php
+test_chatbot.php
+cookies.txt
+build/
+docker/
+emoji-picker-original.css
+null

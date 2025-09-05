@@ -122,7 +122,7 @@
             x-show="isOpen"
             x-transition.duration.300ms.opacity
             @class([
-                'fi-modal-close-overlay fixed inset-0 z-10 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md',
+                'fi-modal-close-overlay fixed inset-0 z-40 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md',
             ])
         ></div>
 
@@ -224,7 +224,7 @@
                             @class([
                                 'fi-modal-header flex px-6 pt-6',
                                 'pb-6' => (! $hasSlot) && (! $hasFooter),
-                                'fi-sticky sticky top-0 z-1 border-b border-gray-200 bg-white/65 pb-6 dark:border-white/10 dark:bg-gray-900/65 backdrop-blur-sm' => $stickyHeader,
+                                'fi-sticky sticky top-0 z-10 border-b border-gray-200 bg-white pb-6 dark:border-white/10 dark:bg-gray-900 backdrop-blur-sm' => $stickyHeader,
                                 'rounded-t-xl' => $stickyHeader && ! ($slideOver || ($width === MaxWidth::Screen)),
                                 match ($alignment) {
                                     Alignment::Start, Alignment::Left => 'gap-x-5',
@@ -352,7 +352,7 @@
                                 'fi-modal-footer w-full',
                                 'pe-6 ps-[5.25rem]' => $hasIcon && ($alignment === Alignment::Start) && ($footerActionsAlignment !== Alignment::Center) && (! $stickyFooter),
                                 'px-6' => ! ($hasIcon && ($alignment === Alignment::Start) && ($footerActionsAlignment !== Alignment::Center) && (! $stickyFooter)),
-                                'fi-sticky sticky bottom-0 border-t border-gray-200 bg-white/65 py-5 dark:border-white/10 dark:bg-gray-900/65 backdrop-blur-sm' => $stickyFooter,
+                                'fi-sticky sticky bottom-0 border-t border-gray-200 bg-white py-5 dark:border-white/10 dark:bg-gray-900' => $stickyFooter,
                                 'rounded-b-xl' => $stickyFooter && ! ($slideOver || ($width === MaxWidth::Screen)),
                                 'pb-6' => ! $stickyFooter,
                                 'mt-6' => (! $stickyFooter) && (! $hasSlot),
