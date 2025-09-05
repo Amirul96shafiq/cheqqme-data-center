@@ -70,7 +70,7 @@ class UserMentionDropdown extends Component
 
         // Clean the search term - remove @ symbol if present
         $cleanSearch = ltrim($this->search, '@');
-        
+
         // Search for users
         $query = User::query()
             ->where('username', 'like', '%' . $cleanSearch . '%')

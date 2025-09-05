@@ -327,9 +327,96 @@
         // Wait for Livewire to be available
         function waitForLivewire() {
             if (typeof Livewire !== 'undefined') {
+                // Set up global userSelected listener immediately when Livewire is available
+                setupGlobalUserSelectedListener();
                 setTimeout(initializeMentions, 1000);
             } else {
                 setTimeout(waitForLivewire, 100);
+            }
+        }
+        
+        // Set up global userSelected event listener
+        function setupGlobalUserSelectedListener() {
+            console.log('🚀 Setting up global userSelected listener');
+            
+            // Remove any existing listeners first to avoid duplicates
+            if (window.userSelectedListenerSetup) {
+                console.log('⚠️ Global listener already exists, skipping');
+                return;
+            }
+            
+            window.userSelectedListenerSetup = true;
+            
+            // Use both old and new Livewire event listener syntax for compatibility
+            if (typeof Livewire.on === 'function') {
+                Livewire.on('userSelected', function(event) {
+                    // Handle both event data formats
+                    const data = event.detail ? event.detail : event;
+                    handleUserSelected(data);
+                });
+            }
+            
+            // Also listen for custom events on document (fallback)
+            document.addEventListener('livewire:userSelected', function(event) {
+                const data = event.detail;
+                handleUserSelected(data);
+            });
+            
+            function handleUserSelected(data) {
+                console.log('🎯 Global userSelected event received:', data);
+                
+                // Reset dropdown state when user selects
+                dropdownActive = false;
+                atSymbolPosition = null;
+                
+                // Find the currently active editor
+                let activeEditor = null;
+                
+                // First try to find focused editors
+                activeEditor = document.querySelector('trix-editor:focus') || 
+                             document.querySelector('.ProseMirror:focus') ||
+                             document.querySelector('[contenteditable="true"]:focus');
+                
+                // If no focused editor, try to find the composer editor
+                if (!activeEditor) {
+                    activeEditor = document.querySelector('[data-composer] trix-editor') ||
+                                 document.querySelector('[data-composer] .ProseMirror') ||
+                                 document.querySelector('[data-composer] [contenteditable="true"]');
+                }
+                
+                // If still no editor, try to find any edit form editor
+                if (!activeEditor) {
+                    activeEditor = document.querySelector('.fi-form:not([data-composer]) trix-editor') ||
+                                 document.querySelector('.fi-form:not([data-composer]) .ProseMirror') ||
+                                 document.querySelector('.fi-form:not([data-composer]) [contenteditable="true"]');
+                }
+                
+                console.log('🎯 Found active editor:', activeEditor ? {
+                    tagName: activeEditor.tagName,
+                    className: activeEditor.className,
+                    id: activeEditor.id
+                } : null);
+                
+                if (activeEditor && data.username) {
+                    console.log('✅ Calling insertMention with:', {
+                        editor: activeEditor.tagName,
+                        username: data.username
+                    });
+                    
+                    // Use the comprehensive insertMention function
+                    insertMention(activeEditor, data.username);
+                    
+                    // Notify server of selected user id
+                    if (typeof data.userId !== 'undefined') {
+                        Livewire.dispatch('mentionSelected', { userId: data.userId });
+                    }
+                } else {
+                    console.log('❌ No active editor found or no username provided', {
+                        hasEditor: !!activeEditor,
+                        hasUsername: !!data.username,
+                        data: data
+                    });
+                }
             }
         }
         // Wait for Livewire to be available
@@ -341,6 +428,9 @@
             });
             // Re-initialize after Livewire navigated
             document.addEventListener('livewire:navigated', function() {
+                // Reset the listener flag so it can be re-setup
+                window.userSelectedListenerSetup = false;
+                setupGlobalUserSelectedListener(); // Re-setup global listener
                 setTimeout(initializeMentions, 500);
             });
 
@@ -744,27 +834,6 @@
             });
             
             console.log('✅ Editor initialized with mention listeners');
-            
-            // Listen for user selection from dropdown
-            Livewire.on('userSelected', function(data) {
-                // Reset dropdown state when user selects
-                dropdownActive = false;
-                atSymbolPosition = null;
-                
-                // Find the active Trix editor
-                const activeTrixEditor = document.querySelector('trix-editor:focus') || 
-                                       document.querySelector('[data-composer] trix-editor') ||
-                                       document.querySelector('.fi-form:not([data-composer]) trix-editor');
-                
-                if (activeTrixEditor && activeTrixEditor.editor) {
-                    insertTrixMention(activeTrixEditor, data.username);
-                    
-                    // Notify server of selected user id
-                    if (typeof data.userId !== 'undefined') {
-                        Livewire.dispatch('mentionSelected', { userId: data.userId });
-                    }
-                }
-            });
 
             // Insert mention into Trix editor
             function insertTrixMention(trixEditor, username) {
