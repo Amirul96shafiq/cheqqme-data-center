@@ -270,7 +270,7 @@
 
         <!-- Toggle -->
     <button @click="open = !open"
-      class="flex items-center justify-center w-12 h-12 language-switch-trigger text-primary-600 bg-white dark:bg-zinc-900/65 border border-[rgb(3_7_18_/_0.1)] hover:border-[rgb(3_7_18_/_0.15)] dark:border-[rgb(255_255_255_/_0.2)] dark:hover:border-[rgb(255_255_255_/_0.3)] rounded-lg transition font-semibold">
+      class="flex items-center justify-center w-9 h-9 language-switch-trigger text-primary-600 bg-white dark:bg-zinc-900/65 border border-[rgb(3_7_18_/_0.1)] hover:border-[rgb(3_7_18_/_0.15)] dark:border-[rgb(255_255_255_/_0.2)] dark:hover:border-[rgb(255_255_255_/_0.3)] rounded-lg transition font-semibold">
       {{ strtoupper(app()->getLocale()) }}
     </button>
   </div>
