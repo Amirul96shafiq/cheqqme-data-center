@@ -10,7 +10,7 @@
     $hasAlpineHiddenClasses = filled($alpineHidden);
     $hasAlpineSelectedClasses = filled($alpineSelected);
 
-    $stripedClasses = 'bg-gray-50 dark:bg-white/5';
+    $stripedClasses = 'bg-gray-50/65 dark:bg-white/5 backdrop-blur-lg';
 @endphp
 
 <tr
@@ -24,7 +24,7 @@
     {{
         $attributes->class([
             'fi-ta-row [@media(hover:hover)]:transition [@media(hover:hover)]:duration-75',
-            'hover:bg-gray-50 dark:hover:bg-white/5' => $recordAction || $recordUrl,
+            'hover:bg-gray-50/65 dark:hover:bg-white/10 backdrop-blur-lg' => $recordAction || $recordUrl,
             $stripedClasses => $striped,
         ])
     }}

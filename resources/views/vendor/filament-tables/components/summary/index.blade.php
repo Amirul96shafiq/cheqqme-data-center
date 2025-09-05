@@ -32,7 +32,7 @@
 
 @if ($hasPageSummary)
     <x-filament-tables::row
-        class="fi-ta-summary-header-row bg-gray-50 dark:bg-white/5"
+        class="fi-ta-summary-header-row bg-gray-50/65 dark:bg-white/65 backdrop-blur-lg"
     >
         @if ($placeholderColumns && $actions && in_array($actionsPosition, [ActionsPosition::BeforeCells, ActionsPosition::BeforeColumns]))
             <td></td>
@@ -135,6 +135,6 @@
     :selected-state="$selectedState"
     :selection-enabled="$selectionEnabled"
     @class([
-        'bg-gray-50 dark:bg-white/5' => ! $hasPageSummary,
+        'bg-gray-50/65 dark:bg-white/65 backdrop-blur-lg' => ! $hasPageSummary,
     ])
 />
