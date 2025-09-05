@@ -10,52 +10,7 @@
   <script src="https://unpkg.com/@tabler/icons@latest/iconfont/tabler-icons.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-
-  <style>
-    html {
-      font-family: 'Roboto';
-    }
-
-    .theme-toggle-btn {
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      transition: all 0.2s ease-in-out;
-    }
-
-    .theme-toggle-btn.active { background-color: rgba(255,255,255,0.1); }
-    .theme-toggle-btn.active svg { color: #fbb43e; /* match brand primary-500 like login/reset */ }
-
-    /* Dynamic Background System */
-    .auth-body {
-      position: relative;
-      background-image: url('{{ asset('images/bg-light.png') }}');
-      background-size: contain;
-      background-position: bottom;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-    }
-
-    .auth-body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(180deg, rgb(255, 255, 255) 15%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0.7) 75%, rgba(255, 255, 255, 0.15) 100%);
-      pointer-events: none;
-      z-index: -1;
-    }
-
-    /* Dark theme background */
-    .dark .auth-body {
-      background-image: url('{{ asset('images/bg-dark.png') }}');
-    }
-
-    .dark .auth-body::before {
-      background: linear-gradient(180deg, rgb(26, 26, 26) 5% , rgba(19, 19, 19) 25%, rgba(19, 19, 19, 0.95) 50%, rgba(19, 19, 19, 0.55) 100%);
-    }
-  </style>
+  <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 
   <!-- Theme Script -->
   <script>
