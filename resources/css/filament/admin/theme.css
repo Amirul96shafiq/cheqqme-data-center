@@ -131,6 +131,7 @@
     .fi-page .ff-column {
         background-color: rgb(255 255 255 / 0.3) !important;
         --tw-bg-opacity: 1 !important;
+        backdrop-filter: blur(4px) !important;
     }
 
     /* Dark mode Flowforge Kanban column: force background color */
