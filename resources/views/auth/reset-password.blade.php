@@ -111,8 +111,8 @@
   <div class="max-w-md w-full space-y-8">
 
     <!-- Theme Toggle Buttons -->
-    <div class="absolute top-2 left-0 right-0 flex justify-center z-50">
-      <div class="flex flex-row gap-1 p-2 rounded-lg">
+    <div class="absolute top-5 left-0 right-0 flex justify-center z-50">
+      <div class="flex flex-row gap-5 p-2 rounded-lg">
 
         <!-- Light Theme (Sun) -->
         <button class="theme-toggle-btn" data-theme="light" title="Enable light theme">
