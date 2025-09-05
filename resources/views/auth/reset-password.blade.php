@@ -216,15 +216,17 @@
       </form>
 
       <!-- Footer -->
-      <div class="text-center">
-        <a href="{{ route('login') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:underline">
-          {{ __('auth.back_to_login') }}
-        </a>
-      </div>
-      <div class="text-center">
-        <a href="/forgot-password" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:underline">
-          {{ __('auth.back_to_forgot_password') }}
-        </a>
+      <div class="text-center space-y-2">
+        <div>
+          <a href="{{ route('login') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:underline">
+            {{ __('auth.back_to_login') }}
+          </a>
+        </div>
+        <div>
+          <a href="/forgot-password" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:underline">
+            {{ __('auth.back_to_forgot_password') }}
+          </a>
+        </div>
       </div>
     </div>
 
