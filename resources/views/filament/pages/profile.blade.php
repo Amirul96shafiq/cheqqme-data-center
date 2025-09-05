@@ -7,7 +7,7 @@
     class="fi-resource-edit-record-page"
 >
     {{-- Cover Image Section --}}
-    <div class="relative h-48 md:h-64 lg:h-80 xl:h-96 w-full overflow-hidden rounded-t-2xl mb-[-40px] z-0">
+    <div class="relative h-48 md:h-64 lg:h-80 xl:h-96 w-full overflow-hidden rounded-2xl z-0">
         <img
             src="{{ $user && $user->cover_image ? $user->getFilamentCoverImageUrl() : asset('images/default-cover-img.png') }}"
             alt="Cover Image"

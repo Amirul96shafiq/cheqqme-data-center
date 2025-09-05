@@ -145,7 +145,7 @@ class DocumentResource extends Resource
                                 'application/vnd.ms-powerpoint', // ppt
                                 'application/vnd.openxmlformats-officedocument.presentationml.presentation', // pptx
                             ])
-                            ->maxFiles(10240)
+                            ->maxFiles(20480) // 20MB
                             ->nullable(),
                     ]),
 

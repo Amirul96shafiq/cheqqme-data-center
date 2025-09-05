@@ -28,7 +28,7 @@ return [
         'extra_information_helper' => 'You have :count characters remaining',
         'extra_information_warning' => 'Extra information must be less than 500 characters',
         'attachments' => 'Attachments',
-        'attachments_helper' => 'Attach multiple files (PDF, images, videos)',
+        'attachments_helper' => 'Attach multiple files (PDF, images, videos) - max 20MB each',
         'selected_projects' => 'Selected Projects',
         'selected_documents' => 'Selected Documents',
         'selected_important_urls' => 'Selected Important URLs',

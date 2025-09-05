@@ -28,7 +28,7 @@ return [
         'extra_information_helper' => 'Baki aksara: :count',
         'extra_information_warning' => 'Maklumat tambahan tidak boleh melebihi 500 aksara yang boleh dibaca.',
         'attachments' => 'Lampiran',
-        'attachments_helper' => 'Lampirkan fail (PDF, gambar, video)',
+        'attachments_helper' => 'Lampirkan fail (PDF, gambar, video) - maksimum 20MB setiap satu',
         'selected_projects' => 'Projek Dipilih',
         'selected_documents' => 'Dokumen Dipilih',
         'selected_important_urls' => 'URL Penting Dipilih',

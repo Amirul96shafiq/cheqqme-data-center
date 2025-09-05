@@ -36,7 +36,7 @@ return [
         'open_url' => 'Buka URL',
         'document_url_helper' => 'Buka URL dalam tab baru',
         'document_upload' => 'Muat Naik Dokumen',
-        'document_upload_helper' => 'Muat naik dokumen dalaman di sini (PDF, JPEG, PNG, DOC, DOCX, XLS, XLSX, PPT, PPTX)',
+        'document_upload_helper' => 'Muat naik dokumen dalaman di sini (PDF, JPEG, PNG, DOC, DOCX, XLS, XLSX, PPT, PPTX) - maksimum 20MB',
         'notes' => 'Catatan',
         'notes_helper' => 'Baki aksara: :count',
         'notes_warning' => 'Catatan tidak boleh melebihi 500 aksara yang boleh dilihat.',
