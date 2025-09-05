@@ -224,7 +224,7 @@
                             @class([
                                 'fi-modal-header flex px-6 pt-6',
                                 'pb-6' => (! $hasSlot) && (! $hasFooter),
-                                'fi-sticky sticky top-0 z-1 border-b border-gray-200 bg-white/65 pb-6 dark:border-white/10 dark:bg-gray-900/65 backdrop-blur-sm' => $stickyHeader,
+                                'fi-sticky sticky top-0 z-10 border-b border-gray-200 bg-white pb-6 dark:border-white/10 dark:bg-gray-900 backdrop-blur-sm' => $stickyHeader,
                                 'rounded-t-xl' => $stickyHeader && ! ($slideOver || ($width === MaxWidth::Screen)),
                                 match ($alignment) {
                                     Alignment::Start, Alignment::Left => 'gap-x-5',
