@@ -318,23 +318,106 @@
                 // Find the currently active editor
                 let activeEditor = null;
                 
-                // First try to find focused editors
-                activeEditor = document.querySelector('trix-editor:focus') || 
-                             document.querySelector('.ProseMirror:focus') ||
-                             document.querySelector('[contenteditable="true"]:focus');
-                
-                // If no focused editor, try to find the composer editor
-                if (!activeEditor) {
-                    activeEditor = document.querySelector('[data-composer] trix-editor') ||
-                                 document.querySelector('[data-composer] .ProseMirror') ||
-                                 document.querySelector('[data-composer] [contenteditable="true"]');
-                }
-                
-                // If still no editor, try to find any edit form editor
-                if (!activeEditor) {
-                    activeEditor = document.querySelector('.fi-form:not([data-composer]) trix-editor') ||
-                                 document.querySelector('.fi-form:not([data-composer]) .ProseMirror') ||
-                                 document.querySelector('.fi-form:not([data-composer]) [contenteditable="true"]');
+                // IMPROVED LOGIC: Use inputId to determine which editor to prioritize
+                if (data.inputId === 'editData.editingText') {
+                    console.log('🎯 Looking for EDIT FORM editor based on inputId');
+                    
+                    // For edit forms, prioritize edit form editors first
+                    const editForm = document.querySelector('.edit-form[data-edit-form="true"]');
+                    if (editForm) {
+                        activeEditor = editForm.querySelector('trix-editor') ||
+                                     editForm.querySelector('.ProseMirror') ||
+                                     editForm.querySelector('[contenteditable="true"]');
+                    }
+                    
+                    console.log('🔍 Step 1 - Specific edit form editor:', activeEditor ? {
+                        tagName: activeEditor.tagName,
+                        className: activeEditor.className,
+                        id: activeEditor.id
+                    } : 'none found');
+                    
+                    // Fallback to any fi-form that's not the composer
+                    if (!activeEditor) {
+                        activeEditor = document.querySelector('.fi-form:not([data-composer]) trix-editor') ||
+                                     document.querySelector('.fi-form:not([data-composer]) .ProseMirror') ||
+                                     document.querySelector('.fi-form:not([data-composer]) [contenteditable="true"]');
+                                     
+                        console.log('🔍 Step 2 - General edit form editor:', activeEditor ? {
+                            tagName: activeEditor.tagName,
+                            className: activeEditor.className,
+                            id: activeEditor.id
+                        } : 'none found');
+                    }
+                    
+                    // Last resort: check for focused editors
+                    if (!activeEditor) {
+                        activeEditor = document.querySelector('trix-editor:focus') || 
+                                     document.querySelector('.ProseMirror:focus') ||
+                                     document.querySelector('[contenteditable="true"]:focus');
+                                     
+                        console.log('🔍 Step 3 - Focused editor (fallback):', activeEditor ? {
+                            tagName: activeEditor.tagName,
+                            className: activeEditor.className,
+                            id: activeEditor.id
+                        } : 'none found');
+                    }
+                } else {
+                    console.log('🎯 Looking for COMPOSER editor based on inputId or default logic');
+                    
+                    // For composer or unknown inputId, use original logic
+                    // First try to find focused editors
+                    activeEditor = document.querySelector('trix-editor:focus') || 
+                                 document.querySelector('.ProseMirror:focus') ||
+                                 document.querySelector('[contenteditable="true"]:focus');
+                    
+                    console.log('🔍 Step 1 - Focused editor:', activeEditor ? {
+                        tagName: activeEditor.tagName,
+                        className: activeEditor.className,
+                        id: activeEditor.id
+                    } : 'none found');
+                    
+                    // If no focused editor, try to find the composer editor
+                    if (!activeEditor) {
+                        activeEditor = document.querySelector('[data-composer] trix-editor') ||
+                                     document.querySelector('[data-composer] .ProseMirror') ||
+                                     document.querySelector('[data-composer] [contenteditable="true"]');
+                                     
+                        console.log('🔍 Step 2 - Composer editor:', activeEditor ? {
+                            tagName: activeEditor.tagName,
+                            className: activeEditor.className,
+                            id: activeEditor.id
+                        } : 'none found');
+                    }
+                    
+                    // If still no editor, try to find any edit form editor
+                    if (!activeEditor) {
+                        // Look specifically for edit form with data-edit-form attribute
+                        const editForm = document.querySelector('.edit-form[data-edit-form="true"]');
+                        if (editForm) {
+                            activeEditor = editForm.querySelector('trix-editor') ||
+                                         editForm.querySelector('.ProseMirror') ||
+                                         editForm.querySelector('[contenteditable="true"]');
+                        }
+                        
+                        console.log('🔍 Step 3a - Specific edit form editor:', activeEditor ? {
+                            tagName: activeEditor.tagName,
+                            className: activeEditor.className,
+                            id: activeEditor.id
+                        } : 'none found');
+                        
+                        // Fallback to any fi-form that's not the composer
+                        if (!activeEditor) {
+                            activeEditor = document.querySelector('.fi-form:not([data-composer]) trix-editor') ||
+                                         document.querySelector('.fi-form:not([data-composer]) .ProseMirror') ||
+                                         document.querySelector('.fi-form:not([data-composer]) [contenteditable="true"]');
+                                         
+                            console.log('🔍 Step 3b - General edit form editor:', activeEditor ? {
+                                tagName: activeEditor.tagName,
+                                className: activeEditor.className,
+                                id: activeEditor.id
+                            } : 'none found');
+                        }
+                    }
                 }
                 
                 console.log('🎯 Found active editor:', activeEditor ? {
@@ -362,7 +445,8 @@
                     
                     console.log('✅ Calling insertMention with:', {
                         editor: activeEditor.tagName,
-                        username: data.username
+                        username: data.username,
+                        currentText: currentText.substring(0, 50) + (currentText.length > 50 ? '...' : '')
                     });
                     
                     // Use the comprehensive insertMention function
@@ -386,10 +470,23 @@
             waitForLivewire();
             // Re-initialize after Livewire updates
             document.addEventListener('livewire:update', function() {
+                console.log('🔄 Livewire update detected, re-initializing mentions...');
                 setTimeout(initializeMentions, 500);
+                
+                // Also check for any edit form editors that might have appeared
+                setTimeout(function() {
+                    const editFormEditors = document.querySelectorAll('.edit-form[data-edit-form="true"] trix-editor, .fi-form:not([data-composer]) trix-editor, .edit-form[data-edit-form="true"] .ProseMirror, .fi-form:not([data-composer]) .ProseMirror');
+                    editFormEditors.forEach(function(editor) {
+                        if (!editor.dataset.mentionsInitialized) {
+                            console.log('🔧 Found uninitialized edit form editor, initializing...');
+                            initializeEditor(editor);
+                        }
+                    });
+                }, 1000);
             });
             // Re-initialize after Livewire navigated
             document.addEventListener('livewire:navigated', function() {
+                console.log('🔄 Livewire navigated, re-setting up mentions...');
                 // Reset the listener flag so it can be re-setup
                 window.userSelectedListenerSetup = false;
                 setupGlobalUserSelectedListener(); // Re-setup global listener
@@ -403,10 +500,19 @@
                         // Check if any added nodes contain an edit form
                         mutation.addedNodes.forEach(function(node) {
                             if (node.nodeType === Node.ELEMENT_NODE) {
+                                // Check for edit form with data-edit-form attribute
+                                const specificEditForm = node.querySelector ?
+                                    node.querySelector('.edit-form[data-edit-form="true"]') :
+                                    null;
+                                    
                                 const editForm = node.querySelector ?
                                     node.querySelector('.fi-form:not([data-composer] .fi-form)') :
                                     null;
-                                if (editForm || (node.classList && node.classList.contains('fi-form') && !node.closest('[data-composer]'))) {
+                                    
+                                if (specificEditForm || editForm || 
+                                   (node.classList && node.classList.contains('edit-form')) ||
+                                   (node.classList && node.classList.contains('fi-form') && !node.closest('[data-composer]'))) {
+                                    console.log('🔍 Edit form detected in DOM, initializing mentions...');
                                     // Wait longer for the edit form to be fully rendered
                                     setTimeout(initializeMentions, 1500);
                                 }
@@ -428,14 +534,39 @@
                 if (target && (target.tagName === 'TRIX-EDITOR' || target.contentEditable === 'true' || target.getAttribute('role') === 'textbox')) {
                     // Check if this editor is in an edit form (not composer)
                     const editForm = target.closest('.fi-form');
-                    if (editForm && !editForm.closest('[data-composer]')) {
+                    const specificEditForm = target.closest('.edit-form[data-edit-form="true"]');
+                    
+                    if ((editForm && !editForm.closest('[data-composer]')) || specificEditForm) {
+                        console.log('🎯 Edit form editor focused, initializing mentions...', {
+                            tagName: target.tagName,
+                            isInEditForm: !!editForm,
+                            isInSpecificEditForm: !!specificEditForm,
+                            alreadyInitialized: !!target.dataset.mentionsInitialized
+                        });
+                        
                         // Small delay to ensure the editor is fully ready
                         setTimeout(function() {
-                            if (!target.hasAttribute('data-mentions-initialized')) {
+                            if (!target.dataset.mentionsInitialized) {
                                 initializeEditor(target);
                             }
                         }, 100);
                     }
+                }
+            });
+
+            // Listen for edit button clicks to prepare for edit form appearing
+            document.addEventListener('click', function(e) {
+                const editButton = e.target.closest('button[wire\\:click*="startEdit"]');
+                if (editButton) {
+                    console.log('🔧 Edit button clicked, preparing for edit form...');
+                    // Wait a bit for the edit form to appear, then initialize
+                    setTimeout(function() {
+                        const editFormEditor = document.querySelector('.edit-form[data-edit-form="true"] trix-editor, .edit-form[data-edit-form="true"] .ProseMirror');
+                        if (editFormEditor && !editFormEditor.dataset.mentionsInitialized) {
+                            console.log('🎯 Edit form appeared, initializing editor...');
+                            initializeEditor(editFormEditor);
+                        }
+                    }, 1500); // Wait for Livewire to update and render the edit form
                 }
             });
 
@@ -454,6 +585,13 @@
             const editEditor = document.querySelector('.fi-form:not([data-composer]) trix-editor');
             if (editEditor && !editEditor.dataset.mentionsInitialized) {
                 initializeTrixEditor(editEditor);
+                return;
+            }
+            
+            // Check specifically for edit forms with data-edit-form attribute
+            const specificEditEditor = document.querySelector('.edit-form[data-edit-form="true"] trix-editor');
+            if (specificEditEditor && !specificEditEditor.dataset.mentionsInitialized) {
+                initializeTrixEditor(specificEditEditor);
                 return;
             }
 
@@ -688,6 +826,7 @@
             }
 
             if (editForm) {
+                // Try multiple ways to find the editor within the edit form
                 const richEditor = editForm.querySelector('.fi-fo-rich-editor, .fi-fo-rich-editor-container');
                 if (richEditor) {
                     let editor = richEditor.querySelector('trix-editor');
@@ -699,6 +838,17 @@
                     if (editor) {
                         return editor;
                     }
+                }
+                
+                // Direct search in edit form
+                let editor = editForm.querySelector('trix-editor');
+                if (editor) {
+                    return editor;
+                }
+                
+                editor = editForm.querySelector('.ProseMirror, [contenteditable="true"], [role="textbox"]');
+                if (editor) {
+                    return editor;
                 }
             }
 
