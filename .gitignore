@@ -49,3 +49,6 @@ auth.json
 # Local AI assistant guidance files (do not commit)
 .copilot/
 copilot-instructions.md
+
+# GitHub folder
+.github/
