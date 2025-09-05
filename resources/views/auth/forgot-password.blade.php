@@ -102,17 +102,17 @@
 
         <!-- Light Theme (Sun) -->
         <button class="theme-toggle-btn" data-theme="light" title="Enable light theme">
-          <x-heroicon-s-sun class="w-5 h-5 text-gray-400 hover:text-primary-500" />
+          <x-heroicon-s-sun class="w-5 h-5 text-gray-400 hover:text-gray-500" />
         </button>
 
         <!-- Dark Theme (Moon) -->
         <button class="theme-toggle-btn" data-theme="dark" title="Enable dark theme">
-          <x-heroicon-s-moon class="w-5 h-5 text-gray-400 hover:text-primary-500" />
+          <x-heroicon-s-moon class="w-5 h-5 text-gray-400 hover:text-gray-500" />
         </button>
 
         <!-- System Theme (Desktop) -->
         <button class="theme-toggle-btn" data-theme="system" title="Enable system theme">
-          <x-heroicon-s-computer-desktop class="w-5 h-5 text-gray-400 hover:text-primary-500" />
+          <x-heroicon-s-computer-desktop class="w-5 h-5 text-gray-400 hover:text-gray-500" />
         </button>
 
       </div>
