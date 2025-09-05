@@ -18,4 +18,8 @@ return [
 
     // General
     'back_to_login' => 'Kembali ke Log Masuk',
+
+    // Language
+    'english' => 'Inggeris',
+    'malay' => 'Melayu',
 ];

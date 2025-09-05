@@ -18,4 +18,8 @@ return [
 
     // General
     'back_to_login' => 'Back to Sign in',
+
+    // Language
+    'english' => 'English',
+    'malay' => 'Malay',
 ];

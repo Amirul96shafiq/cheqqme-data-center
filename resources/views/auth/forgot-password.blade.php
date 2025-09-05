@@ -188,36 +188,40 @@
   @endphp
 
   <!-- Language Switcher -->
-  <div class="absolute bottom-4 left-0 right-0 flex justify-center z-50">
+  <div class="absolute bottom-4 left-0 right-0 flex justify-center z-10">
     <div x-data="{ open: false }" class="relative">
         <!-- Dropdown -->
         <div x-show="open" @click.away="open = false"
-            class="absolute bottom-full mb-2 w-40 rounded-md shadow-lg bg-white dark:bg-neutral-900 ring-1 ring-gray-950/5 dark:ring-white/10 z-50"
+            class="absolute bottom-full mb-2 w-max rounded-md shadow-lg bg-white dark:bg-neutral-900 ring-1 ring-gray-950/5 dark:ring-white/10 z-10"
             x-cloak
             style="left: 50%; transform: translateX(-50%);">
-            <div class="py-1 text-sm text-gray-700 dark:text-gray-100">
+            <div class="py-2 text-sm text-gray-700 dark:text-gray-100">
+                @if(app()->getLocale() !== 'en')
                 <form method="POST" action="{{ route('locale.set') }}">
                     @csrf
                     <input type="hidden" name="locale" value="en">
                     <button type="submit"
-                        class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 {{ app()->getLocale() === 'en' ? 'font-bold' : '' }}">
-                        <span class="text-primary-500">EN </span>English
+                      class="block w-full text-center font-semibold px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
+                    <span class="text-center p-1.5 mr-2 text-primary-500 bg-primary-100/25 dark:bg-primary-100/5 rounded-lg">EN</span>{{ __('auth.english') }}
                     </button>
                 </form>
+                @endif
+                @if(app()->getLocale() !== 'ms')
                 <form method="POST" action="{{ route('locale.set') }}">
                     @csrf
                     <input type="hidden" name="locale" value="ms">
                     <button type="submit"
-                          class="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800 {{ app()->getLocale() === 'ms' ? 'font-bold' : '' }}">
-                        <span class="text-primary-500">MS </span>Bahasa Melayu
+                          class="block w-full text-center font-semibold px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
+                        <span class="text-center p-1.5 mr-2 text-primary-500 bg-primary-100/25 dark:bg-primary-100/5 rounded-lg">MS</span>{{ __('auth.malay') }}
                     </button>
                 </form>
+                @endif
             </div>
         </div>
 
         <!-- Toggle -->
     <button @click="open = !open"
-      class="flex items-center justify-center w-9 h-9 language-switch-trigger text-primary-600 bg-white dark:bg-[rgb(255_255_255_/_0.05)] border border-[rgb(3_7_18_/_0.1)] hover:border-[rgb(3_7_18_/_0.2)] dark:border-[rgb(255_255_255_/_0.2)] dark:hover:border-[rgb(255_255_255_/_0.3)] rounded-lg transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 font-semibold">
+      class="flex items-center justify-center w-12 h-12 language-switch-trigger text-primary-600 bg-white dark:bg-zinc-900/65 border border-[rgb(3_7_18_/_0.1)] hover:border-[rgb(3_7_18_/_0.15)] dark:border-[rgb(255_255_255_/_0.2)] dark:hover:border-[rgb(255_255_255_/_0.3)] rounded-lg transition font-semibold">
       {{ strtoupper(app()->getLocale()) }}
     </button>
   </div>
