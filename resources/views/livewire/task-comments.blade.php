@@ -1,7 +1,7 @@
 <!-- Task Comments Component -->
-<div class="flex flex-col flex-1 h-full min-h-0 rounded-xl bg-white dark:bg-gray-900">
+<div class="flex flex-col flex-1 h-full min-h-0 rounded-xl">
     <!-- Composer (Top) -->
-    <div class="px-0 pt-0 pb-5 bg-white dark:bg-gray-900" data-composer>
+    <div class="px-0 pt-0 pb-5" data-composer>
         <div class="space-y-3">
             <div class="fi-form" wire:ignore>
                 {{ $this->composerForm }} <!-- Filament RichEditor -->
