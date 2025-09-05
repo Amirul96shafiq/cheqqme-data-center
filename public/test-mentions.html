@@ -96,15 +96,25 @@
                 
                 if (atIndex !== -1) {
                     const beforeAt = text.substring(0, atIndex);
-                    const afterAt = text.substring(atIndex);
-                    const spaceIndex = afterAt.indexOf(' ');
-                    const endIndex = spaceIndex !== -1 ? spaceIndex : afterAt.length;
+                    const textFromAt = text.substring(atIndex);
+                    
+                    // Find where the partial mention ends by looking for space or newline
+                    const spaceIndex = textFromAt.indexOf(' ');
+                    const newlineIndex = textFromAt.indexOf('\n');
+                    
+                    // Find the first occurrence of space or newline (whichever comes first)
+                    let endIndex = textFromAt.length; // Default to end of text
+                    if (spaceIndex !== -1) endIndex = Math.min(endIndex, spaceIndex);
+                    if (newlineIndex !== -1) endIndex = Math.min(endIndex, newlineIndex);
+                    
                     const afterPartial = text.substring(atIndex + endIndex);
                     
                     const newText = beforeAt + '@' + username + ' ' + afterPartial;
                     
                     console.log('✅ Replacing text:', {
                         before: beforeAt,
+                        textFromAt: textFromAt,
+                        endIndex: endIndex,
                         afterPartial: afterPartial,
                         newText: newText
                     });

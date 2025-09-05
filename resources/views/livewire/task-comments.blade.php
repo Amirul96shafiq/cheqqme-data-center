@@ -398,6 +398,22 @@
                 } : null);
                 
                 if (activeEditor && data.username) {
+                    // Check if this username is already properly inserted to prevent duplicates
+                    let currentText = '';
+                    if (activeEditor.tagName === 'TRIX-EDITOR') {
+                        currentText = activeEditor.editor.getDocument().toString();
+                    } else if (activeEditor.classList.contains('ProseMirror')) {
+                        currentText = activeEditor.textContent || '';
+                    } else if (activeEditor.contentEditable === 'true') {
+                        currentText = activeEditor.textContent || '';
+                    }
+                    
+                    const fullMention = `@${data.username} `;
+                    if (currentText.includes(fullMention)) {
+                        console.log('⚠️ Username already properly inserted, skipping duplicate event');
+                        return;
+                    }
+                    
                     console.log('✅ Calling insertMention with:', {
                         editor: activeEditor.tagName,
                         username: data.username
@@ -1239,19 +1255,45 @@
                         
                         const beforeCursor = text.substring(0, cursorPosition);
                         
-                        // Find the @ symbol in the current text
-                        const atIndex = beforeCursor.lastIndexOf('@');
+                        console.log('🔍 insertMention debug:', {
+                            text: text,
+                            cursorPosition: cursorPosition,
+                            beforeCursor: beforeCursor,
+                            username: username
+                        });
+                        
+                        // Find the @ symbol in the current text - look for the last @ in the entire text
+                        const atIndex = text.lastIndexOf('@');
 
                         // If the @ symbol is found, insert the mention
                         if (atIndex !== -1) {
-                            // Find where the @ symbol ends (at space or end of text)
-                            const afterAt = beforeCursor.substring(atIndex);
-                            const spaceIndex = afterAt.indexOf(' ');
-                            const endIndex = spaceIndex !== -1 ? spaceIndex : afterAt.length;
+                            // Find where the partial mention ends by looking at text from @ position
+                            const textFromAt = text.substring(atIndex);
+                            const spaceIndex = textFromAt.indexOf(' ');
+                            const newlineIndex = textFromAt.indexOf('\n');
+                            
+                            // Find the first occurrence of space or newline (whichever comes first)
+                            let endIndex = textFromAt.length; // Default to end of text
+                            if (spaceIndex !== -1) endIndex = Math.min(endIndex, spaceIndex);
+                            if (newlineIndex !== -1) endIndex = Math.min(endIndex, newlineIndex);
+                            
+                            console.log('🔍 Replacement calculation:', {
+                                atIndex: atIndex,
+                                textFromAt: textFromAt,
+                                spaceIndex: spaceIndex,
+                                newlineIndex: newlineIndex,
+                                endIndex: endIndex
+                            });
                             
                             // Create new text: replace @ and partial text with @username
                             const beforeAt = text.substring(0, atIndex);
                             const afterPartial = text.substring(atIndex + endIndex);
+                            
+                            console.log('🔍 Text parts:', {
+                                beforeAt: beforeAt,
+                                partialToReplace: text.substring(atIndex, atIndex + endIndex),
+                                afterPartial: afterPartial
+                            });
                             // Handle usernames with spaces by keeping the spaces intact
                             const formattedUsername = username;
                             // Use plain text for mentions to avoid HTML issues
@@ -1378,14 +1420,31 @@
                     // Get current text content
                     const currentText = trixEditor.getDocument().toString();
                     
+                    console.log('🔍 Trix insertMention debug:', {
+                        currentText: currentText,
+                        username: username
+                    });
+                    
                     // Find the @ symbol in the current text
                     const atIndex = currentText.lastIndexOf('@');
                     
                     if (atIndex !== -1) {
-                        // Find where the @ symbol ends (at space or end of text)
-                        const afterAt = currentText.substring(atIndex);
-                        const spaceIndex = afterAt.indexOf(' ');
-                        const endIndex = spaceIndex !== -1 ? spaceIndex : afterAt.length;
+                        // Find where the partial mention ends by looking at text from @ position
+                        const textFromAt = currentText.substring(atIndex);
+                        const spaceIndex = textFromAt.indexOf(' ');
+                        const newlineIndex = textFromAt.indexOf('\n');
+                        
+                        // Find the first occurrence of space or newline (whichever comes first)
+                        let endIndex = textFromAt.length; // Default to end of text
+                        if (spaceIndex !== -1) endIndex = Math.min(endIndex, spaceIndex);
+                        if (newlineIndex !== -1) endIndex = Math.min(endIndex, newlineIndex);
+                        
+                        console.log('🔍 Trix replacement calculation:', {
+                            atIndex: atIndex,
+                            textFromAt: textFromAt,
+                            endIndex: endIndex,
+                            partialToReplace: currentText.substring(atIndex, atIndex + endIndex)
+                        });
                         
                         // Create new text: replace @ and partial text with @username
                         const beforeAt = currentText.substring(0, atIndex);
@@ -1442,19 +1501,39 @@
                 const text = editor.textContent || '';
                 const atIndex = text.lastIndexOf('@');
                 
+                console.log('🔍 Fallback insertMention debug:', {
+                    text: text,
+                    atIndex: atIndex,
+                    username: username
+                });
+                
                 if (atIndex !== -1) {
-                    const beforeCursor = text.substring(0, atIndex);
-                    const afterCursor = text.substring(atIndex);
+                    const beforeAt = text.substring(0, atIndex);
+                    const textFromAt = text.substring(atIndex);
                     
-                    // Find where the @ symbol ends (at space or end of text)
-                    const spaceIndex = afterCursor.indexOf(' ');
-                    const endIndex = spaceIndex !== -1 ? spaceIndex : afterCursor.length;
-                    const afterPartial = afterCursor.substring(endIndex);
+                    // Find where the partial mention ends by looking for space or newline
+                    const spaceIndex = textFromAt.indexOf(' ');
+                    const newlineIndex = textFromAt.indexOf('\n');
+                    
+                    // Find the first occurrence of space or newline (whichever comes first)
+                    let endIndex = textFromAt.length; // Default to end of text
+                    if (spaceIndex !== -1) endIndex = Math.min(endIndex, spaceIndex);
+                    if (newlineIndex !== -1) endIndex = Math.min(endIndex, newlineIndex);
+                    
+                    const afterPartial = text.substring(atIndex + endIndex);
+                    
+                    console.log('🔍 Fallback replacement calculation:', {
+                        textFromAt: textFromAt,
+                        endIndex: endIndex,
+                        partialToReplace: text.substring(atIndex, atIndex + endIndex),
+                        beforeAt: beforeAt,
+                        afterPartial: afterPartial
+                    });
                     
                     // Create new text (plain text replacement to avoid DOM corruption)
                     // Handle usernames with spaces by keeping the spaces intact
                     const formattedUsername = username;
-                    const newText = beforeCursor + '@' + formattedUsername + ' ' + afterPartial;
+                    const newText = beforeAt + '@' + formattedUsername + ' ' + afterPartial;
                     editor.textContent = newText;
                     
                     // Set cursor position after the inserted username and space
