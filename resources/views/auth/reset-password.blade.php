@@ -30,6 +30,37 @@
       border-radius: 0.5rem;
       transition: all 0.2s ease-in-out;
     }
+
+    /* Dynamic Background System */
+    .auth-body {
+      position: relative;
+      background-image: url('{{ asset('images/bg-light.png') }}');
+      background-size: contain;
+      background-position: bottom;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    .auth-body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, rgb(255, 255, 255) 15%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0.7) 75%, rgba(255, 255, 255, 0.15) 100%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Dark theme background */
+    .dark .auth-body {
+      background-image: url('{{ asset('images/bg-dark.png') }}');
+    }
+
+    .dark .auth-body::before {
+      background: linear-gradient(180deg, rgb(26, 26, 26) 5% , rgba(19, 19, 19) 25%, rgba(19, 19, 19, 0.95) 50%, rgba(19, 19, 19, 0.55) 100%);
+    }
   </style>
 
   <!-- Theme Script -->
@@ -126,7 +157,7 @@
   </script>
 </head>
 
-<body class="min-h-screen bg-gray-100 dark:bg-zinc-950 flex items-center justify-center">
+<body class="auth-body min-h-screen flex items-center justify-center">
   @include('components.global-loader')
   <div class="max-w-md w-full space-y-8">
 
