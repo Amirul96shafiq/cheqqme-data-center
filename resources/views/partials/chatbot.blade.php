@@ -442,9 +442,9 @@
                 <!-- Send Message Button -->
                 <button
                     type="submit"
-                    class="fi-btn fi-btn-color-primary fi-btn-size-md rounded-lg focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
+                    class="fi-btn fi-btn-size-md 3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors px-3"
                 >
-                    @svg('heroicon-o-paper-airplane', 'w-5 h-5')
+                    @svg('heroicon-m-paper-airplane', 'w-4 h-4')
                 </button>
             </form>
         </div>
