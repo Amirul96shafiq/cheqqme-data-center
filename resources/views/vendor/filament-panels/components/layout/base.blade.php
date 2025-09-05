@@ -86,7 +86,7 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background: linear-gradient(180deg, rgb(255, 255, 255) 5%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0.7) 75%, rgba(255, 255, 255, 0.15) 100%);
+                background: linear-gradient(180deg, rgb(255, 255, 255) 15%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0.7) 75%, rgba(255, 255, 255, 0.15) 100%);
                 pointer-events: none;
                 z-index: -1;
             }
