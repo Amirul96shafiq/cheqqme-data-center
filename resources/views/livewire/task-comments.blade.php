@@ -3,7 +3,7 @@
     <!-- Composer (Top) -->
     <div class="px-0 pt-0 pb-5" data-composer>
         <div class="space-y-3">
-            <div class="fi-form" wire:ignore>
+            <div class="fi-form" wire:ignore.self>
                 {{ $this->composerForm }} <!-- Filament RichEditor -->
             </div>
             @error('newComment') <p class="text-xs text-danger-600">{{ $message }}</p> @enderror <!-- Error message -->
@@ -77,7 +77,7 @@
                             <!-- Edit form -->
                             @if($this->editingId === $comment->id)
                                 <div class="space-y-2">
-                                    <div class="fi-form edit-form" wire:ignore data-edit-form="true">{{ $this->editForm }}</div>
+                                    <div class="fi-form edit-form" wire:ignore.self data-edit-form="true">{{ $this->editForm }}</div>
                                     <div class="flex items-center gap-2">
                                         <!-- Save Edit form button -->
                                         <button wire:click="saveEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-white hover:bg-primary-500 hover:dark:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.save') }}</button>
@@ -117,7 +117,7 @@
     <!-- Delete comment modal -->
     @if($confirmingDeleteId)
         <!-- Elevated z-index to ensure overlay sits above form action buttons -->
-        <div
+        <div wire:ignore
             x-data
             x-init="
                 const root = document.documentElement;
@@ -1627,6 +1627,8 @@
     </script>
 
     <!-- Include the User Mention Dropdown Component -->
-    @livewire('user-mention-dropdown')
+    <div wire:ignore>
+        @livewire('user-mention-dropdown')
+    </div>
 </div>
 

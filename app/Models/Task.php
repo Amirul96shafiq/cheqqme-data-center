@@ -59,10 +59,64 @@ class Task extends Model
         'project' => 'array',
         'document' => 'array',
         'important_url' => 'array',
-        'assigned_to' => 'array',
         'extra_information' => 'array',
         'attachments' => 'array',
     ];
+
+    /**
+     * Mutator to ensure assigned_to is always an array when setting.
+     */
+    public function setAssignedToAttribute($value)
+    {
+        if (is_null($value)) {
+            $this->attributes['assigned_to'] = json_encode([]);
+
+            return;
+        }
+
+        if (is_array($value)) {
+            $this->attributes['assigned_to'] = json_encode($value);
+
+            return;
+        }
+
+        // Handle single integer values
+        if (is_numeric($value)) {
+            $this->attributes['assigned_to'] = json_encode([$value]);
+
+            return;
+        }
+
+        $this->attributes['assigned_to'] = json_encode([]);
+    }
+
+    /**
+     * Accessor to ensure assigned_to is always an array when getting.
+     */
+    public function getAssignedToAttribute($value)
+    {
+        if (is_null($value)) {
+            return [];
+        }
+
+        // If it's already an array (from cast), return it
+        if (is_array($value)) {
+            return $value;
+        }
+
+        // Handle legacy integer values
+        if (is_numeric($value)) {
+            return [$value];
+        }
+
+        // Try to decode JSON
+        $decoded = json_decode($value, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            return $decoded;
+        }
+
+        return [];
+    }
 
     // Make virtual attributes available when converting to array / JSON for the Kanban adapter
     protected $appends = [
@@ -102,7 +156,12 @@ class Task extends Model
      */
     public function getAssignedToCountAttribute(): int
     {
-        return $this->assigned_to ? count($this->assigned_to) : 0;
+        $assignedTo = $this->assigned_to;
+        if (! $assignedTo || ! is_array($assignedTo)) {
+            return 0;
+        }
+
+        return count($assignedTo);
     }
 
     /**
@@ -110,17 +169,18 @@ class Task extends Model
      */
     public function getAssignedToOthersCountAttribute(): int
     {
-        if (! $this->assigned_to) {
+        $assignedTo = $this->assigned_to;
+        if (! $assignedTo || ! is_array($assignedTo)) {
             return 0;
         }
 
         $authId = Auth::id();
         if (! $authId) {
-            return count($this->assigned_to);
+            return count($assignedTo);
         }
 
         // Count users excluding current user
-        return count(array_filter($this->assigned_to, function ($userId) use ($authId) {
+        return count(array_filter($assignedTo, function ($userId) use ($authId) {
             return $userId != $authId;
         }));
     }
@@ -131,7 +191,12 @@ class Task extends Model
      */
     public function getAssignedToExtraCountAttribute(): ?string
     {
-        $totalCount = $this->assigned_to ? count($this->assigned_to) : 0;
+        $assignedTo = $this->assigned_to;
+        if (! $assignedTo || ! is_array($assignedTo)) {
+            return null;
+        }
+
+        $totalCount = count($assignedTo);
 
         if ($totalCount <= 1) {
             return null; // No extra users to show
@@ -148,7 +213,12 @@ class Task extends Model
      */
     public function getAssignedToExtraCountSelfAttribute(): ?string
     {
-        $totalCount = $this->assigned_to ? count($this->assigned_to) : 0;
+        $assignedTo = $this->assigned_to;
+        if (! $assignedTo || ! is_array($assignedTo)) {
+            return null;
+        }
+
+        $totalCount = count($assignedTo);
 
         if ($totalCount <= 1) {
             return null; // No extra users to show
@@ -253,15 +323,16 @@ class Task extends Model
      */
     public function assignedToUsers()
     {
-        if (! $this->assigned_to || ! is_array($this->assigned_to)) {
+        $assignedTo = $this->assigned_to;
+        if (! $assignedTo || ! is_array($assignedTo)) {
             return collect();
         }
 
         // Get users in the same order as they appear in the assigned_to array
-        $users = User::whereIn('id', $this->assigned_to)->get()->keyBy('id');
+        $users = User::whereIn('id', $assignedTo)->get()->keyBy('id');
         $orderedUsers = collect();
 
-        foreach ($this->assigned_to as $userId) {
+        foreach ($assignedTo as $userId) {
             if ($users->has($userId)) {
                 $orderedUsers->push($users->get($userId));
             }

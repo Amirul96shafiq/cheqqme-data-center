@@ -15,10 +15,26 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Create the specific user (will update if exists)
+        User::updateOrCreate(
+            ['email' => 'amirul96shafiq.harun@gmail.com'],
+            [
+                'name' => 'Amirul Shafiq Harun',
+                'username' => 'Amirul Shafiq Harun',
+                'password' => bcrypt('11111'),
+                'email_verified_at' => now(),
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'username' => 'Test User',
+                'password' => bcrypt('password'),
+                'email_verified_at' => now(),
+            ]
+        );
 
         // Call the sample data seeder to populate other tables
         $this->call([
