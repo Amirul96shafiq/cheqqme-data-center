@@ -176,65 +176,11 @@
         </script>
     @endif
     <!-- Custom styles -->
-        <style>
-            /* Mention badge styling */
-            .prose.prose-xs .mention {
-                display: inline-block;
-                padding: .15rem .35rem;
-                border-radius: .35rem;
-                background-color: #00AE9F12;
-                color: #00AE9F;
-                font-weight: 600;
-                white-space: nowrap;
-            }
-            .dark .prose.prose-xs .mention {
-                background-color: #00AE9F33;
-                color: #b7e9e6;
-            }
-            /* Custom scrollbar styles */
-            .custom-thin-scroll::-webkit-scrollbar { width: 6px; }
-            .custom-thin-scroll::-webkit-scrollbar-track { background: transparent; }
-            .custom-thin-scroll::-webkit-scrollbar-thumb { background: rgba(100,116,139,.35); border-radius: 3px; }
-            .dark .custom-thin-scroll::-webkit-scrollbar-thumb { background: rgba(148,163,184,.30); }
-            .custom-thin-scroll:hover::-webkit-scrollbar-thumb { background: rgba(100,116,139,.55); }
-            .dark .custom-thin-scroll:hover::-webkit-scrollbar-thumb { background: rgba(148,163,184,.50); }
-            .custom-thin-scroll { scrollbar-width: thin; scrollbar-color: rgba(148,163,184,.35) transparent; }
-            .dark .custom-thin-scroll { scrollbar-color: rgba(148,163,184,.35) transparent; }
-            /* Comment username styles */
-            .comment-username { font-size: 14px; font-weight: 700; }
-            /* Comment meta styles */
-            .comment-meta { font-size: 11px; line-height: 1rem; }
-            /* Scroll lock only when modal open */
-            .comment-delete-open body { overflow: hidden; }
-            /* Hide underlying Edit Task modal submit/cancel buttons while delete confirmation is open */
-            .comment-delete-open .fi-modal-window:not(.comment-delete-modal) .fi-modal-footer,
-            .comment-delete-open .fi-modal-window:not(.comment-delete-modal) .fi-modal-actions,
-            .comment-delete-open .fi-modal-window:not(.comment-delete-modal) footer button {
-                visibility: hidden !important;
-            }
-            /* Minimal single-row Filament RichEditor styles */
-            .minimal-comment-editor .fi-fo-rich-editor-toolbar { padding: 0.15rem 0.25rem; gap: .25rem; display:flex; }
-            .minimal-comment-editor .fi-fo-rich-editor-toolbar button { height: 1.75rem; width: 1.75rem; }
-            .minimal-comment-editor .fi-fo-rich-editor-container { padding: 0 !important; }
-            /* Minimal single-row Filament RichEditor styles */
-            .minimal-comment-editor .fi-fo-rich-editor,
-            .minimal-comment-editor .fi-fo-rich-editor-container,
-            .minimal-comment-editor .fi-fo-rich-editor-container .ProseMirror { min-height: 2rem !important; max-height: 2rem !important; }
-            .minimal-comment-editor .fi-fo-rich-editor-container .ProseMirror { overflow: hidden !important; white-space: nowrap; line-height: 1.1rem; padding: .25rem .6rem !important; }
-            .minimal-comment-editor .fi-fo-rich-editor-container .ProseMirror p { margin: 0; display:inline; }
-            .minimal-comment-editor .fi-fo-rich-editor-container .ProseMirror p + p { display:inline; }
-            .minimal-comment-editor [data-placeholder]::before { top: 4px !important; }
-            /* Force custom placeholder text to override any stray literal content flicker */
-            .minimal-comment-editor [data-placeholder]::before { content: @json(__('comments.composer.placeholder')); }
-            /* Minimal single-row Filament RichEditor styles */
-            .minimal-comment-editor .fi-fo-rich-editor { border-radius: .5rem; }
-            .minimal-comment-editor .fi-fo-rich-editor:focus-within .fi-fo-rich-editor-container .ProseMirror { white-space: normal; overflow:auto; max-height: 12rem !important; }
-            .minimal-comment-editor .fi-fo-rich-editor:focus-within { box-shadow: 0 0 0 2px rgba(59,130,246,.4); }
-            /* Minimal single-row Filament RichEditor styles */
-            /* Comment content blockquote styling */
-            .prose.prose-xs blockquote { font-weight: normal !important; font-style: italic; border-left: 3px solid rgba(148,163,184,.6); padding-left: .75rem; margin: .5rem 0; background: linear-gradient(to right, rgba(148,163,184,.10), rgba(148,163,184,0)); border-radius: 0 .375rem .375rem 0; }
-            .dark .prose.prose-xs blockquote { border-left-color: rgba(100,116,139,.6); background: linear-gradient(to right, rgba(51,65,85,.40), rgba(51,65,85,0)); }
-            .prose.prose-xs blockquote p { font-weight: inherit !important; }
+    <style>
+        /* Set the placeholder text as a CSS custom property */
+        .minimal-comment-editor {
+            --comment-placeholder: @json(__('comments.composer.placeholder'));
+        }
     </style>
     <!-- Alpine handles adding/removing comment-delete-open class -->
         <!-- Edit now uses Filament RichEditor -->

@@ -1,6 +1,9 @@
 /* Base Tailwind entry file.
     Note: Filament-specific customizations live in resources/css/filament/admin/theme.css */
 
+/* Import component-specific styles */
+@import "task-comments.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
