@@ -47,6 +47,7 @@ return [
         'extra_value' => 'Value',
         'add_extra_info' => '+ Add Extra Information',
         'title_placeholder_short' => 'Title goes here',
+        'board_name_helper' => 'Extracts from the Board URL (.../board-name)',
     ],
 
     'table' => [

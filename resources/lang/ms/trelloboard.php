@@ -47,6 +47,7 @@ return [
         'extra_value' => 'Nilai',
         'add_extra_info' => '+ Tambah Maklumat Tambahan',
         'title_placeholder_short' => 'Tajuk di sini',
+        'board_name_helper' => 'Dapatkan dari URL Papan (.../board-name)',
     ],
 
     'table' => [

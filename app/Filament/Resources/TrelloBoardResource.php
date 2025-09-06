@@ -16,12 +16,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 
@@ -54,14 +54,33 @@ class TrelloBoardResource extends Resource
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('name')
-                                    ->label(__('trelloboard.form.board_name'))
-                                    ->required(),
-
                                 Forms\Components\TextInput::make('url')
                                     ->label(__('trelloboard.form.board_url'))
+                                    ->placeholder('https://trello.com/b/12345678/board-name')
                                     ->helperText(__('trelloboard.form.board_url_note'))
                                     ->required()
+                                    ->live()
+                                    ->afterStateUpdated(function (Forms\Set $set, ?string $state) {
+                                        if (empty($state)) {
+                                            return;
+                                        }
+
+                                        // Extract board name from URL path
+                                        $parsedUrl = parse_url($state);
+                                        if (isset($parsedUrl['path'])) {
+                                            $path = trim($parsedUrl['path'], '/');
+                                            $pathParts = explode('/', $path);
+
+                                            // Get the last part of the path (board name)
+                                            $boardName = end($pathParts);
+
+                                            if (!empty($boardName)) {
+                                                // Convert to title case and replace hyphens/underscores with spaces
+                                                $formattedName = ucwords(str_replace(['-', '_'], ' ', $boardName));
+                                                $set('name', $formattedName);
+                                            }
+                                        }
+                                    })
                                     ->hintAction(
                                         fn(Get $get) => blank($get('url')) ? null : Action::make('openUrl')
                                             ->icon('heroicon-m-arrow-top-right-on-square')
@@ -70,6 +89,12 @@ class TrelloBoardResource extends Resource
                                             ->tooltip(__('trelloboard.form.board_url_helper'))
                                     )
                                     ->url(),
+
+                                Forms\Components\TextInput::make('name')
+                                    ->label(__('trelloboard.form.board_name'))
+                                    ->required()
+                                    ->placeholder('Board Name')
+                                    ->helperText(__('trelloboard.form.board_name_helper')),
                             ]),
                     ]),
 
