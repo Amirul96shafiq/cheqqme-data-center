@@ -71,9 +71,9 @@ class Comment extends Model
             return;
         }
 
-        // Check if @all is mentioned
-        if (in_array('@all', $this->mentions)) {
-            \Log::info('🎯 @all mention detected, processing all users');
+        // Check if @Everyone is mentioned
+        if (in_array('@Everyone', $this->mentions)) {
+            \Log::info('🎯 @Everyone mention detected, processing all users');
 
             // Get all users including the comment author (consistent with regular mentions)
             $allUsers = User::all();
@@ -106,9 +106,9 @@ class Comment extends Model
                 }
             }
 
-            \Log::info('✅ @all notifications processing completed');
+            \Log::info('✅ @Everyone notifications processing completed');
 
-            return; // Exit early since @all covers everyone
+            return; // Exit early since @Everyone covers everyone
         }
 
         \Log::info('👤 Processing regular user mentions', [
@@ -155,10 +155,10 @@ class Comment extends Model
             return [];
         }
 
-        // Check for @all mention first
-        if (preg_match('/@all\b/i', $text)) {
-            // Return special marker for @all - we'll handle this in processMentions
-            return ['@all'];
+        // Check for @Everyone mention first
+        if (preg_match('/@everyone\b/i', $text)) {
+            // Return special marker for @Everyone - we'll handle this in processMentions
+            return ['@Everyone'];
         }
 
         // Find raw candidates: @ followed by up to 5 space-separated tokens
@@ -263,6 +263,12 @@ class Comment extends Model
 
         // Build alternatives to match exactly (prefer longer names first)
         $terms = [];
+
+        // Add @Everyone if it's in mentions
+        if (in_array('@Everyone', $mentionIds)) {
+            $terms[] = '@Everyone';
+        }
+
         foreach ($mentionUsers as $u) {
             if (!empty($u->name)) {
                 $terms[] = '@' . $u->name;

@@ -73,16 +73,16 @@ class UserMentionDropdown extends Component
 
         $users = [];
 
-        // Check if search matches "@all" (case insensitive)
-        if (empty($cleanSearch) || stripos('all', $cleanSearch) === 0) {
-            // Add @all as the first option
+        // Check if search matches "@Everyone" (case insensitive)
+        if (empty($cleanSearch) || stripos('everyone', $cleanSearch) === 0) {
+            // Add @Everyone as the first option
             $users[] = [
-                'id' => '@all',
-                'username' => 'all',
+                'id' => '@Everyone',
+                'username' => 'Everyone',
                 'email' => 'Notify all users',
-                'name' => 'All Users',
+                'name' => 'Everyone',
                 'avatar' => null,
-                'short_name' => 'all',
+                'short_name' => 'Everyone',
                 'is_special' => true, // Mark as special for styling
             ];
         }
@@ -143,11 +143,11 @@ class UserMentionDropdown extends Component
                 'inputId' => $this->targetInputId,
             ]);
 
-            // Handle special @all case
-            if ($user['id'] === '@all') {
-                // Dispatch the userSelected event with special @all identifier
-                $this->dispatch('userSelected', username: 'all', userId: '@all', inputId: $this->targetInputId);
-                \Log::info('userSelected event dispatched for @all');
+            // Handle special @Everyone case
+            if ($user['id'] === '@Everyone') {
+                // Dispatch the userSelected event with special @Everyone identifier
+                $this->dispatch('userSelected', username: 'Everyone', userId: '@Everyone', inputId: $this->targetInputId);
+                \Log::info('userSelected event dispatched for @Everyone');
             } else {
                 // Dispatch the userSelected event for regular users
                 $this->dispatch('userSelected', username: $user['username'], userId: $user['id'], inputId: $this->targetInputId);

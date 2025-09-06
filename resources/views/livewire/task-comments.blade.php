@@ -336,15 +336,15 @@
                     return;
                 }
                 
-                // Handle special @all case
-                if (data.userId === '@all') {
-                    console.log('🎯 Processing @all mention:', {
+                // Handle special @Everyone case
+                if (data.userId === '@Everyone') {
+                    console.log('🎯 Processing @Everyone mention:', {
                         userId: data.userId,
                         username: data.username,
                         inputId: data.inputId,
                         timestamp: new Date().toISOString()
                     });
-                    // For @all, we'll let the backend handle the special case
+                    // For @Everyone, we'll let the backend handle the special case
                     // Just insert the text and let the server process it
                 }
                 
@@ -502,7 +502,7 @@
                             userId: data.userId,
                             username: data.username,
                             inputId: data.inputId,
-                            isAll: data.userId === '@all',
+                            isEveryone: data.userId === '@Everyone',
                             timestamp: new Date().toISOString()
                         });
                         

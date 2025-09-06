@@ -66,15 +66,15 @@ class TaskComments extends Component implements HasForms
         \Log::info('🔍 Processing mentionSelected', [
             'userId' => $userId,
             'userIdType' => gettype($userId),
-            'isAll' => $userId === '@all',
+            'isEveryone' => $userId === '@Everyone',
             'currentPendingMentions' => $this->pendingMentionUserIds,
         ]);
 
-        // Handle special @all case
-        if ($userId === '@all') {
-            \Log::info('🎯 Adding @all to pending mentions');
-            $this->pendingMentionUserIds[] = '@all';
-            \Log::info('✅ @all added to pending mentions', [
+        // Handle special @Everyone case
+        if ($userId === '@Everyone') {
+            \Log::info('🎯 Adding @Everyone to pending mentions');
+            $this->pendingMentionUserIds[] = '@Everyone';
+            \Log::info('✅ @Everyone added to pending mentions', [
                 'pendingMentions' => $this->pendingMentionUserIds,
             ]);
 
@@ -177,10 +177,10 @@ class TaskComments extends Component implements HasForms
 
         // Merge with any user IDs selected via the dropdown tracking
         if (!empty($this->pendingMentionUserIds)) {
-            // Check if @all is in pending mentions
-            if (in_array('@all', $this->pendingMentionUserIds)) {
-                \Log::info('🎯 @all found in pending mentions, overriding all other mentions');
-                $mentions = ['@all']; // @all overrides all other mentions
+            // Check if @Everyone is in pending mentions
+            if (in_array('@Everyone', $this->pendingMentionUserIds)) {
+                \Log::info('🎯 @Everyone found in pending mentions, overriding all other mentions');
+                $mentions = ['@Everyone']; // @Everyone overrides all other mentions
             } else {
                 \Log::info('🔄 Merging regular mentions', [
                     'extractedMentions' => $mentions,
@@ -192,7 +192,7 @@ class TaskComments extends Component implements HasForms
 
         \Log::info('✅ Final mentions for comment', [
             'finalMentions' => $mentions,
-            'hasAll' => in_array('@all', $mentions),
+            'hasEveryone' => in_array('@Everyone', $mentions),
         ]);
 
         // Create the comment
@@ -207,7 +207,7 @@ class TaskComments extends Component implements HasForms
         \Log::info('🚀 Calling processMentions', [
             'commentId' => $comment->id,
             'mentions' => $comment->mentions,
-            'hasAll' => in_array('@all', $comment->mentions),
+            'hasEveryone' => in_array('@Everyone', $comment->mentions),
         ]);
 
         $comment->processMentions();
@@ -335,9 +335,9 @@ class TaskComments extends Component implements HasForms
         // Extract mentions from updated comment text
         $mentions = Comment::extractMentions($sanitized);
         if (!empty($this->pendingMentionUserIds)) {
-            // Check if @all is in pending mentions
-            if (in_array('@all', $this->pendingMentionUserIds)) {
-                $mentions = ['@all']; // @all overrides all other mentions
+            // Check if @Everyone is in pending mentions
+            if (in_array('@Everyone', $this->pendingMentionUserIds)) {
+                $mentions = ['@Everyone']; // @Everyone overrides all other mentions
             } else {
                 $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
             }
