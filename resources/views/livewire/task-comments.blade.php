@@ -676,16 +676,9 @@
                     dropdownActive = false;
                     atSymbolPosition = null;
                     Livewire.dispatch('hideMentionDropdown');
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    navigateUp();
-                } else if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    navigateDown();
-                } else if (e.key === 'Enter') {
-                    e.preventDefault();
-                    Livewire.dispatch('selectCurrentUser');
                 }
+                // Note: Arrow keys and Enter are now handled by the dropdown's global listener
+                // This allows the editor to maintain focus while still enabling navigation
             });
         }
 
@@ -1021,6 +1014,16 @@
                 // Mark dropdown as active when it appears
                 dropdownActive = true;
                 
+                // Ensure the editor stays focused for typing
+                setTimeout(() => {
+                    const activeEditor = document.querySelector('trix-editor:focus') || 
+                                       document.querySelector('.ProseMirror:focus') ||
+                                       document.querySelector('[contenteditable="true"]:focus');
+                    if (activeEditor) {
+                        activeEditor.focus();
+                    }
+                }, 50);
+                
                 // Note: Initial selection is now handled by the dropdown's Alpine.js component
                 // This provides instant visual feedback without Livewire round-trips
             });
@@ -1207,7 +1210,7 @@
                 return; // Don't interfere with normal typing if no dropdown
             }
             
-            // Handle keyboard navigation when dropdown is open
+            // Only handle specific keys when dropdown is open - let typing pass through
             if (e.key === 'Escape') {
                 e.preventDefault();
                 dropdownActive = false;
@@ -1215,7 +1218,7 @@
                 Livewire.dispatch('hideMentionDropdown');
             }
             // Note: Arrow keys and Enter are now handled by the dropdown's Alpine.js component
-            // This provides instant, client-side navigation without Livewire round-trips
+            // All other keys (letters, numbers, etc.) pass through to the editor for typing
         }
         // Insert mention
         function insertMention(editor, username) {

@@ -13,7 +13,6 @@
         <div 
             class="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl max-h-64 w-80 user-mention-dropdown rounded-xl overflow-hidden"
             style="left: {{ $dropdownX }}px; top: {{ $dropdownY }}px;"
-            tabindex="0"
             x-show="true"
             x-data="{
                 selectedIndex: {{ $selectedIndex }},
@@ -26,13 +25,13 @@
                     // Initialize client-side state
                     this.selectedIndex = {{ $selectedIndex }};
                     
-                    // Set up keyboard navigation
-                    this.$el.addEventListener('keydown', (e) => {
+                    // Set up global keyboard navigation - listen on document since editor maintains focus
+                    this.keydownHandler = (e) => {
                         if (this.selectionLock) {
-                            e.preventDefault();
-                            return;
+                            return; // Don't prevent default, just ignore
                         }
                         
+                        // Only handle navigation keys when dropdown is visible
                         if (e.key === 'ArrowUp') {
                             e.preventDefault();
                             this.navigateUp();
@@ -46,10 +45,12 @@
                             e.preventDefault();
                             this.hideDropdown();
                         }
-                    });
+                        // All other keys (letters, numbers, etc.) are ignored here
+                        // This allows them to pass through to the editor
+                    };
                     
-                    // Focus the dropdown for keyboard navigation
-                    this.$el.focus();
+                    // Add global listener
+                    document.addEventListener('keydown', this.keydownHandler);
                 },
                 
                 navigateUp() {
@@ -138,6 +139,11 @@
                     // Hide instantly - no delays
                     this.$el.classList.add('instant-hide');
                     
+                    // Remove global keyboard listener
+                    if (this.keydownHandler) {
+                        document.removeEventListener('keydown', this.keydownHandler);
+                    }
+                    
                     // Clean up Livewire state asynchronously (non-blocking)
                     setTimeout(() => {
                         $wire.hideDropdown();
@@ -158,6 +164,9 @@
             "
             x-on:click.away="
                 $el.classList.add('instant-hide');
+                if (keydownHandler) {
+                    document.removeEventListener('keydown', keydownHandler);
+                }
                 setTimeout(() => $wire.hideDropdown(), 0);
             "
         >
@@ -311,12 +320,7 @@
             background-color: rgba(156, 163, 175, 0.7);
         }
         
-        /* Focus styles for keyboard navigation */
-        .user-mention-dropdown:focus {
-            outline: none;
-            ring: 2px;
-            ring-color: rgba(59, 130, 246, 0.5);
-        }
+        /* Focus styles removed - dropdown doesn't need focus for typing */
         
         /* Instant hide class for zero-delay closing */
         .user-mention-dropdown.instant-hide {
