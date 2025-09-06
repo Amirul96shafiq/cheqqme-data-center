@@ -17,81 +17,81 @@
     </div>
     <!-- Comments List (scroll area) -->
     <div class="flex-1 min-h-0 px-0 pb-0">
-    <div class="px-4 py-4 text-sm overflow-y-auto custom-thin-scroll h-full" data-comment-list style="max-height:calc(68vh - 270px);">
-        <div class="space-y-6">
-            <!-- Loop through comments -->
-            @forelse($this->comments as $comment)
-                <div class="group relative flex gap-3" wire:key="comment-{{ $comment->id }}">
-                    <div class="flex-shrink-0">
-					@php
-						$avatarPath = $comment->user->avatar ?? null;
-						$avatarUrl = $avatarPath ? \Storage::url($avatarPath) : null;
-					@endphp
-					@if($avatarUrl)
-						<img src="{{ $avatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm" loading="lazy">
-					@else
-                        <!-- Default avatar if no avatar is set -->
-						@php
-							$defaultAvatarUrl = (new \Filament\AvatarProviders\UiAvatarsProvider())->get($comment->user);
-						@endphp
-						@if($defaultAvatarUrl)
-							<img src="{{ $defaultAvatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm" loading="lazy">
-						@else
-							<div class="w-10 h-10 rounded-full bg-primary-500 ring-1 ring-white/20 dark:ring-gray-800 shadow-sm flex items-center justify-center">
-								<span class="text-sm font-medium text-white">
-									{{ substr($comment->user->username ?? __('comments.meta.user_fallback'), 0, 1) }}
-								</span>
-							</div>
-						@endif
-					@endif
-                    </div>
-                    <!-- Comment content -->
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="flex flex-col">
-                                    <span class="comment-username text-gray-900 dark:text-gray-100 leading-none">{{ $comment->user->username ?? __('comments.meta.unknown') }}</span>
-                                    <span class="mt-1 comment-meta text-gray-500 dark:text-gray-400" title="{{ $comment->created_at->format('j/n/y, h:i A') }}">
-                                        {{ $comment->created_at->diffForHumans(short: true) }} · {{ $comment->created_at->format('j/n/y, h:i A') }}
-                                    @if($comment->updated_at->gt($comment->created_at))
-                                            <span class="italic text-gray-400 comment-meta">· {{ __('comments.meta.edited') }}</span>
-                                    @endif
-                                </span>
-                            </div>
-                            <!-- Edit and Delete buttons -->
-                            @if(auth()->id() === $comment->user_id)
-                                <div class="flex items-center gap-1">
-                                    @if($this->editingId !== $comment->id)
-                                        <!-- Edit button -->
-                                        <button type="button" wire:click="startEdit({{ $comment->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.edit') }}">
-                                            @svg('heroicon-o-pencil', 'w-4 h-4 transition-transform duration-200')
-                                        </button>
-                                        <!-- Delete button -->
-                                        <button type="button" wire:click="confirmDelete({{ $comment->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/20 focus:outline-none focus:ring-2 focus:ring-danger-500/40 transition-all duration-200" title="{{ __('comments.buttons.delete') }}">
-                                            @svg('heroicon-o-trash', 'w-4 h-4 transition-transform duration-200')
-                                        </button>
-                                    @endif
-                                </div>
-                            @endif
-                        </div>
-                        <div class="mt-2">
-                            <!-- Edit form -->
-                            @if($this->editingId === $comment->id)
-                                <div class="space-y-2">
-                                    <div class="fi-form edit-form" wire:ignore.self data-edit-form="true">{{ $this->editForm }}</div>
-                                    <div class="flex items-center gap-2">
-                                        <!-- Save Edit form button -->
-                                        <button wire:click="saveEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-white hover:bg-primary-500 hover:dark:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.save') }}</button>
-                                        <!-- Cancel Edit form button -->
-                                        <button wire:click="cancelEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.cancel') }}</button>
-                                    </div>
-                                </div>
+        <div class="px-4 py-4 text-sm overflow-y-auto custom-thin-scroll h-full" data-comment-list style="max-height:calc(68vh - 270px);">
+            <div class="space-y-6">
+                <!-- Loop through comments -->
+                @forelse($this->comments as $comment)
+                    <div class="group relative flex gap-3" wire:key="comment-{{ $comment->id }}">
+                        <div class="flex-shrink-0">
+                        @php
+                            $avatarPath = $comment->user->avatar ?? null;
+                            $avatarUrl = $avatarPath ? \Storage::url($avatarPath) : null;
+                        @endphp
+                        @if($avatarUrl)
+                            <img src="{{ $avatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm" loading="lazy">
+                        @else
+                            <!-- Default avatar if no avatar is set -->
+                            @php
+                                $defaultAvatarUrl = (new \Filament\AvatarProviders\UiAvatarsProvider())->get($comment->user);
+                            @endphp
+                            @if($defaultAvatarUrl)
+                                <img src="{{ $defaultAvatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm" loading="lazy">
                             @else
-                                <!-- Comment content -->
-                                <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4">
-                                    <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[13px] text-gray-700 dark:text-gray-300 break-words">{!! $comment->rendered_comment !!}</div>
+                                <div class="w-10 h-10 rounded-full bg-primary-500 ring-1 ring-white/20 dark:ring-gray-800 shadow-sm flex items-center justify-center">
+                                    <span class="text-sm font-medium text-white">
+                                        {{ substr($comment->user->username ?? __('comments.meta.user_fallback'), 0, 1) }}
+                                    </span>
                                 </div>
                             @endif
+                        @endif
                         </div>
+                        <!-- Comment content -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex flex-col">
+                                        <span class="comment-username text-gray-900 dark:text-gray-100 leading-none">{{ $comment->user->username ?? __('comments.meta.unknown') }}</span>
+                                        <span class="mt-1 comment-meta text-gray-500 dark:text-gray-400" title="{{ $comment->created_at->format('j/n/y, h:i A') }}">
+                                            {{ $comment->created_at->diffForHumans(short: true) }} · {{ $comment->created_at->format('j/n/y, h:i A') }}
+                                        @if($comment->updated_at->gt($comment->created_at))
+                                                <span class="italic text-gray-400 comment-meta">· {{ __('comments.meta.edited') }}</span>
+                                        @endif
+                                    </span>
+                                </div>
+                                <!-- Edit and Delete buttons -->
+                                @if(auth()->id() === $comment->user_id)
+                                    <div class="flex items-center gap-1">
+                                        @if($this->editingId !== $comment->id)
+                                            <!-- Edit button -->
+                                            <button type="button" wire:click="startEdit({{ $comment->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.edit') }}">
+                                                @svg('heroicon-o-pencil', 'w-4 h-4 transition-transform duration-200')
+                                            </button>
+                                            <!-- Delete button -->
+                                            <button type="button" wire:click="confirmDelete({{ $comment->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/20 focus:outline-none focus:ring-2 focus:ring-danger-500/40 transition-all duration-200" title="{{ __('comments.buttons.delete') }}">
+                                                @svg('heroicon-o-trash', 'w-4 h-4 transition-transform duration-200')
+                                            </button>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="mt-2">
+                                <!-- Edit form -->
+                                @if($this->editingId === $comment->id)
+                                    <div class="space-y-2">
+                                        <div class="fi-form edit-form" wire:ignore.self data-edit-form="true">{{ $this->editForm }}</div>
+                                        <div class="flex items-center gap-2">
+                                            <!-- Save Edit form button -->
+                                            <button wire:click="saveEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-white hover:bg-primary-500 hover:dark:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.save') }}</button>
+                                            <!-- Cancel Edit form button -->
+                                            <button wire:click="cancelEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.cancel') }}</button>
+                                        </div>
+                                    </div>
+                                @else
+                                    <!-- Comment content -->
+                                    <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4">
+                                        <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[13px] text-gray-700 dark:text-gray-300 break-words">{!! $comment->rendered_comment !!}</div>
+                                    </div>
+                                @endif
+                            </div>
                     </div>
                 </div>
             <!-- No comments -->
@@ -100,18 +100,18 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400 italic">{{ __('comments.list.none') }}</p>
                 </div>
             @endforelse
-        </div>
-        <!-- Show total comments -->
-        @if($this->totalComments > 0)
-            <div class="mt-3 text-[10px] text-gray-400 text-center">{{ __('comments.list.showing', ['shown' => $this->comments->count(), 'total' => $this->totalComments]) }}</div>
-        @endif
-        <!-- Show more comments button -->
-        @if($this->totalComments > $visibleCount)
-            @php $remaining = $this->totalComments - $visibleCount; @endphp
-            <div class="mt-2">
-                <button wire:click="showMore" type="button" class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40">{{ __('comments.list.show_more', ['count' => ($remaining < 5 ? $remaining : 5)]) }}</button>
             </div>
-        @endif
+            <!-- Show total comments -->
+            @if($this->totalComments > 0)
+                <div class="mt-3 text-[10px] text-gray-400 text-center">{{ __('comments.list.showing', ['shown' => $this->comments->count(), 'total' => $this->totalComments]) }}</div>
+            @endif
+            <!-- Show more comments button -->
+            @if($this->totalComments > $visibleCount)
+                @php $remaining = $this->totalComments - $visibleCount; @endphp
+                <div class="mt-2">
+                    <button wire:click="showMore" type="button" class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40">{{ __('comments.list.show_more', ['count' => ($remaining < 5 ? $remaining : 5)]) }}</button>
+                </div>
+            @endif
         </div>
     </div>
     <!-- Delete comment modal -->
@@ -175,6 +175,7 @@
             document.documentElement.classList.remove('comment-delete-open');
         </script>
     @endif
+    
     <!-- Custom styles -->
     <style>
         /* Set the placeholder text as a CSS custom property */
@@ -182,91 +183,92 @@
             --comment-placeholder: @json(__('comments.composer.placeholder'));
         }
     </style>
+    
     <!-- Alpine handles adding/removing comment-delete-open class -->
-        <!-- Edit now uses Filament RichEditor -->
-        <!-- Toolbar always visible for composer -->
-        <script>
-            // Function to clear undefined in composer
-            function clearUndefinedInComposer(){
-                const wrapper = document.querySelector('.minimal-comment-editor');
-                if(!wrapper) return; 
-                const pm = wrapper.querySelector('.ProseMirror');
-                if(!pm) return;
-                if(pm.childNodes.length === 1 && pm.textContent.trim().toLowerCase() === 'undefined'){
-                    pm.textContent='';
-                    pm.dispatchEvent(new Event('input',{bubbles:true}));
-                }
+    <!-- Edit now uses Filament RichEditor -->
+    <!-- Toolbar always visible for composer -->
+    <script>
+        // Function to clear undefined in composer
+        function clearUndefinedInComposer(){
+            const wrapper = document.querySelector('.minimal-comment-editor');
+            if(!wrapper) return; 
+            const pm = wrapper.querySelector('.ProseMirror');
+            if(!pm) return;
+            if(pm.childNodes.length === 1 && pm.textContent.trim().toLowerCase() === 'undefined'){
+                pm.textContent='';
+                pm.dispatchEvent(new Event('input',{bubbles:true}));
             }
+        }
             
-            // Function to prevent comments from starting with whitespace
-            function preventLeadingWhitespace(event) {
-                const editor = event.target;
-                const text = editor.textContent || '';
+        // Function to prevent comments from starting with whitespace
+        function preventLeadingWhitespace(event) {
+            const editor = event.target;
+            const text = editor.textContent || '';
+            
+            // If the text starts with whitespace, prevent the input
+            if (text.match(/^\s/)) {
+                // Remove leading whitespace
+                editor.textContent = text.replace(/^\s+/, '');
                 
-                // If the text starts with whitespace, prevent the input
-                if (text.match(/^\s/)) {
-                    // Remove leading whitespace
-                    editor.textContent = text.replace(/^\s+/, '');
-                    
-                    // Show a subtle warning
-                    const warning = document.createElement('div');
-                    warning.className = 'text-xs text-amber-600 dark:text-amber-400 mt-1';
-                    warning.textContent = 'Comments cannot start with spaces or newlines';
-                    
-                    // Remove any existing warning
-                    const existingWarning = editor.parentElement.querySelector('.text-amber-600');
-                    if (existingWarning) {
-                        existingWarning.remove();
+                // Show a subtle warning
+                const warning = document.createElement('div');
+                warning.className = 'text-xs text-amber-600 dark:text-amber-400 mt-1';
+                warning.textContent = 'Comments cannot start with spaces or newlines';
+                
+                // Remove any existing warning
+                const existingWarning = editor.parentElement.querySelector('.text-amber-600');
+                if (existingWarning) {
+                    existingWarning.remove();
+                }
+                
+                // Add warning below the editor
+                editor.parentElement.appendChild(warning);
+                
+                // Remove warning after 3 seconds
+                setTimeout(() => {
+                    if (warning.parentElement) {
+                        warning.remove();
                     }
-                    
-                    // Add warning below the editor
-                    editor.parentElement.appendChild(warning);
-                    
-                    // Remove warning after 3 seconds
-                    setTimeout(() => {
-                        if (warning.parentElement) {
-                            warning.remove();
-                        }
-                    }, 3000);
-                }
+                }, 3000);
             }
+        }
             
-            // Clear undefined in composer
-            document.addEventListener('DOMContentLoaded', clearUndefinedInComposer);
-            document.addEventListener('livewire:update', clearUndefinedInComposer);
-            document.addEventListener('livewire:navigated', clearUndefinedInComposer);
-            
-            // Reset composer editor
-            document.addEventListener('resetComposerEditor', () => {
-                const wrapper = document.querySelector('.minimal-comment-editor');
-                const pm = wrapper?.querySelector('.ProseMirror');
-                if (pm) {
-                    pm.textContent='';
-                    pm.dispatchEvent(new Event('input',{bubbles:true}));
-                }
-            });
-            
-            // Add input event listeners to prevent leading whitespace
-            document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(() => {
-                    const editors = document.querySelectorAll('.minimal-comment-editor .ProseMirror, [data-composer] .ProseMirror');
-                    editors.forEach(editor => {
-                        editor.addEventListener('input', preventLeadingWhitespace);
-                    });
-                }, 1000);
-            });
-            
-            // Re-add listeners after Livewire updates
-            document.addEventListener('livewire:update', function() {
-                setTimeout(() => {
-                    const editors = document.querySelectorAll('.minimal-comment-editor .ProseMirror, [data-composer] .ProseMirror');
-                    editors.forEach(editor => {
-                        editor.removeEventListener('input', preventLeadingWhitespace);
-                        editor.addEventListener('input', preventLeadingWhitespace);
-                    });
-                }, 500);
-            });
-        </script>
+        // Clear undefined in composer
+        document.addEventListener('DOMContentLoaded', clearUndefinedInComposer);
+        document.addEventListener('livewire:update', clearUndefinedInComposer);
+        document.addEventListener('livewire:navigated', clearUndefinedInComposer);
+        
+        // Reset composer editor
+        document.addEventListener('resetComposerEditor', () => {
+            const wrapper = document.querySelector('.minimal-comment-editor');
+            const pm = wrapper?.querySelector('.ProseMirror');
+            if (pm) {
+                pm.textContent='';
+                pm.dispatchEvent(new Event('input',{bubbles:true}));
+            }
+        });
+        
+        // Add input event listeners to prevent leading whitespace
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const editors = document.querySelectorAll('.minimal-comment-editor .ProseMirror, [data-composer] .ProseMirror');
+                editors.forEach(editor => {
+                    editor.addEventListener('input', preventLeadingWhitespace);
+                });
+            }, 1000);
+        });
+        
+        // Re-add listeners after Livewire updates
+        document.addEventListener('livewire:update', function() {
+            setTimeout(() => {
+                const editors = document.querySelectorAll('.minimal-comment-editor .ProseMirror, [data-composer] .ProseMirror');
+                editors.forEach(editor => {
+                    editor.removeEventListener('input', preventLeadingWhitespace);
+                    editor.addEventListener('input', preventLeadingWhitespace);
+                });
+            }, 500);
+        });
+    </script>
 
     <!-- Mention Functionality JavaScript -->
     <script>
@@ -1605,7 +1607,6 @@
             setTimeout(() => {
                 insertingMention = false;
 
-                // No Livewire method overrides to restore
             }, 500); // Longer delay to ensure cursor positioning is stable
         }
 
