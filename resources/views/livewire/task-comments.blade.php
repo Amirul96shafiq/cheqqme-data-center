@@ -310,11 +310,16 @@
                 handleUserSelected(data);
             });
             
-            // Listen for the new instant custom event (zero-delay)
-            window.addEventListener('userSelected', function(event) {
+            // Listen for the new instant custom event (zero-delay) - with proper cleanup
+            const userSelectedHandler = function(event) {
                 console.log('🎯 Instant userSelected event received:', event.detail);
                 handleUserSelected(event.detail);
-            });
+            };
+            
+            window.addEventListener('userSelected', userSelectedHandler);
+            
+            // Store the handler for cleanup
+            window.userSelectedHandler = userSelectedHandler;
             
             function handleUserSelected(data) {
                 console.log('🎯 Global userSelected event received:', data);
@@ -322,6 +327,12 @@
                 // Prevent multiple mentions from being processed
                 if (mentionSelectionLock) {
                     console.log('🚫 Mention selection blocked - already processing');
+                    return;
+                }
+                
+                // Validate data
+                if (!data || !data.username) {
+                    console.log('❌ Invalid userSelected data:', data);
                     return;
                 }
                 
@@ -457,6 +468,10 @@
                     const fullMention = `@${data.username} `;
                     if (currentText.includes(fullMention)) {
                         console.log('⚠️ Username already properly inserted, skipping duplicate event');
+                        // Release the selection lock
+                        setTimeout(() => {
+                            mentionSelectionLock = false;
+                        }, 200);
                         return;
                     }
                     
@@ -477,7 +492,6 @@
                     // Release the selection lock after a short delay
                     setTimeout(() => {
                         mentionSelectionLock = false;
-                        console.log('🔓 Mention selection lock released');
                     }, 200);
                 } else {
                     console.log('❌ No active editor found or no username provided', {
@@ -489,7 +503,6 @@
                     // Release the selection lock even if no editor found
                     setTimeout(() => {
                         mentionSelectionLock = false;
-                        console.log('🔓 Mention selection lock released (no editor)');
                     }, 200);
                 }
             }
@@ -1223,6 +1236,7 @@
         // Insert mention
         function insertMention(editor, username) {
             if (!username || username === 'undefined') {
+                console.log('❌ Invalid username for insertion:', username);
                 return;
             }
             
@@ -1231,6 +1245,12 @@
                 console.log('🚫 Insertion blocked - already inserting mention');
                 return;
             }
+            
+            console.log('🎯 Starting insertMention:', { 
+                editor: editor.tagName, 
+                username: username,
+                editorClass: editor.className 
+            });
             
             insertingMention = true;
             

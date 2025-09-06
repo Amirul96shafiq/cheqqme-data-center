@@ -22,6 +22,8 @@
                 selectionLock: false,
                 
                 init() {
+                    console.log('🚀 Initializing Alpine.js dropdown component');
+                    
                     // Initialize client-side state
                     this.selectedIndex = {{ $selectedIndex }};
                     
@@ -31,7 +33,16 @@
                             return; // Don't prevent default, just ignore
                         }
                         
-                        // Only handle navigation keys when dropdown is visible
+                        // Only handle navigation keys when this dropdown is visible
+                        if (!this.$el || this.$el.classList.contains('instant-hide')) {
+                            return; // Dropdown is hidden, ignore keyboard events
+                        }
+                        
+                        // Debug logging for navigation keys
+                        if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === 'Escape') {
+                            console.log('🎯 Keyboard event received:', e.key, 'selectedIndex:', this.selectedIndex);
+                        }
+                        
                         if (e.key === 'ArrowUp') {
                             e.preventDefault();
                             this.navigateUp();
@@ -54,12 +65,16 @@
                 },
                 
                 navigateUp() {
+                    console.log('⬆️ navigateUp called, current index:', this.selectedIndex);
                     this.selectedIndex = this.selectedIndex > 0 ? this.selectedIndex - 1 : this.users.length - 1;
+                    console.log('⬆️ navigateUp new index:', this.selectedIndex);
                     this.updateSelection();
                 },
                 
                 navigateDown() {
+                    console.log('⬇️ navigateDown called, current index:', this.selectedIndex);
                     this.selectedIndex = this.selectedIndex < this.users.length - 1 ? this.selectedIndex + 1 : 0;
+                    console.log('⬇️ navigateDown new index:', this.selectedIndex);
                     this.updateSelection();
                 },
                 
@@ -80,8 +95,8 @@
                         }
                     });
                     
-                    // Update Livewire state (non-blocking)
-                    $wire.updateSelectedIndex(this.selectedIndex);
+                    // Note: Removed $wire.updateSelectedIndex() call to prevent Livewire interference
+                    // The visual selection is handled entirely client-side for smooth navigation
                 },
                 
                 selectUser() {
@@ -93,7 +108,18 @@
                     
                     if (this.users[this.selectedIndex]) {
                         const user = this.users[this.selectedIndex];
-                        console.log('🎯 Alpine.js selectUser called:', { username: user.username, userId: user.id });
+                        console.log('🎯 Alpine.js selectUser called:', { 
+                            username: user.username, 
+                            userId: user.id,
+                            selectedIndex: this.selectedIndex,
+                            totalUsers: this.users.length
+                        });
+                        
+                        // Validate user data
+                        if (!user.username || !user.id) {
+                            console.log('❌ Invalid user data:', user);
+                            return;
+                        }
                         
                         // Lock selection to prevent duplicates
                         this.selectionLock = true;
@@ -103,19 +129,26 @@
                         this.hideDropdown();
                         
                         // Dispatch userSelected event directly to the parent component (no Livewire round-trip)
-                        window.dispatchEvent(new CustomEvent('userSelected', {
-                            detail: {
-                                username: user.username,
-                                userId: user.id,
-                                inputId: this.targetInputId
-                            }
-                        }));
+                        try {
+                            window.dispatchEvent(new CustomEvent('userSelected', {
+                                detail: {
+                                    username: user.username,
+                                    userId: user.id,
+                                    inputId: this.targetInputId
+                                }
+                            }));
+                            console.log('✅ userSelected event dispatched successfully');
+                        } catch (error) {
+                            console.error('❌ Error dispatching userSelected event:', error);
+                        }
                         
                         // Reset lock after a short delay to allow for cleanup
                         setTimeout(() => {
                             this.selectionLock = false;
                             this.isSelecting = false;
                         }, 100);
+                    } else {
+                        console.log('❌ No user found at selected index:', this.selectedIndex);
                     }
                 },
                 
@@ -142,12 +175,28 @@
                     // Remove global keyboard listener
                     if (this.keydownHandler) {
                         document.removeEventListener('keydown', this.keydownHandler);
+                        this.keydownHandler = null;
                     }
                     
                     // Clean up Livewire state asynchronously (non-blocking)
                     setTimeout(() => {
                         $wire.hideDropdown();
                     }, 10);
+                },
+                
+                // Cleanup method for component destruction
+                destroy() {
+                    console.log('🧹 Alpine.js component destroying');
+                    
+                    // Remove global keyboard listener
+                    if (this.keydownHandler) {
+                        document.removeEventListener('keydown', this.keydownHandler);
+                        this.keydownHandler = null;
+                    }
+                    
+                    // Reset locks
+                    this.selectionLock = false;
+                    this.isSelecting = false;
                 }
             }"
             x-init="
