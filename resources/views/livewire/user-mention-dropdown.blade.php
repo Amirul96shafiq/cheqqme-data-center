@@ -308,7 +308,7 @@
                         <div class="flex-1 min-w-0 overflow-hidden">
                             <div class="flex items-center space-x-2 min-w-0">
                                 <p class="text-sm font-medium {{ isset($user['is_special']) && $user['is_special'] ? 'text-orange-600 dark:text-orange-400' : 'text-gray-900 dark:text-gray-100' }} truncate flex-shrink-0 user-mention-username">
-                                    @{{ $user['username'] }}
+                                    {{ $user['username'] }}
                                 </p>
                                 @if($user['name'] && $user['name'] !== $user['username'])
                                     <span class="text-xs text-gray-500 dark:text-gray-400 truncate flex-shrink-0">

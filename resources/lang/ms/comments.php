@@ -60,6 +60,7 @@ return [
             'navigate' => 'Navigasi',
             'select' => 'Pilih',
             'cancel' => 'Batal',
+            'notify_all' => 'Notifikasi semua pengguna',
         ],
     ],
     'js' => [

@@ -79,7 +79,7 @@ class UserMentionDropdown extends Component
             $users[] = [
                 'id' => '@Everyone',
                 'username' => 'Everyone',
-                'email' => 'Notify all users',
+                'email' => __('comments.mentions.dropdown.notify_all'),
                 'name' => 'Everyone',
                 'avatar' => null,
                 'short_name' => 'Everyone',

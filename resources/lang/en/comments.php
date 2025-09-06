@@ -60,6 +60,7 @@ return [
             'navigate' => 'Navigate',
             'select' => 'Select',
             'cancel' => 'Cancel',
+            'notify_all' => 'Notify all users',
         ],
     ],
     'js' => [
