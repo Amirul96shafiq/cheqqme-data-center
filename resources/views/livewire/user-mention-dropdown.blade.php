@@ -142,11 +142,11 @@
                             console.error('❌ Error dispatching userSelected event:', error);
                         }
                         
-                        // Reset lock after a short delay to allow for cleanup
+                        // Reset lock after a longer delay to prevent rapid duplicate selections
                         setTimeout(() => {
                             this.selectionLock = false;
                             this.isSelecting = false;
-                        }, 100);
+                        }, 300); // Increased from 100ms to 300ms
                     } else {
                         console.log('❌ No user found at selected index:', this.selectedIndex);
                     }
@@ -178,9 +178,18 @@
                         this.keydownHandler = null;
                     }
                     
-                    // Clean up Livewire state asynchronously (non-blocking)
+                    // Clean up Livewire state asynchronously (non-blocking) with safety check
                     setTimeout(() => {
-                        $wire.hideDropdown();
+                        try {
+                            // Check if the Livewire component still exists in the DOM
+                            if (this.$wire && this.$wire.$el && document.contains(this.$wire.$el)) {
+                                $wire.hideDropdown();
+                            } else {
+                                console.log('⚠️ Livewire component not found in DOM, skipping hideDropdown call');
+                            }
+                        } catch (error) {
+                            console.log('⚠️ Error calling hideDropdown:', error.message);
+                        }
                     }, 10);
                 },
                 
@@ -216,7 +225,17 @@
                 if (keydownHandler) {
                     document.removeEventListener('keydown', keydownHandler);
                 }
-                setTimeout(() => $wire.hideDropdown(), 0);
+                setTimeout(() => {
+                    try {
+                        if ($wire && $wire.$el && document.contains($wire.$el)) {
+                            $wire.hideDropdown();
+                        } else {
+                            console.log('⚠️ Livewire component not found in DOM (click away), skipping hideDropdown call');
+                        }
+                    } catch (error) {
+                        console.log('⚠️ Error calling hideDropdown (click away):', error.message);
+                    }
+                }, 0);
             "
         >
             <!-- Navigation Helper - Sticky to top -->

@@ -489,10 +489,10 @@
                         Livewire.dispatch('mentionSelected', { userId: data.userId });
                     }
                     
-                    // Release the selection lock after a short delay
+                    // Release the selection lock after a longer delay to prevent rapid duplicates
                     setTimeout(() => {
                         mentionSelectionLock = false;
-                    }, 200);
+                    }, 500); // Increased from 200ms to 500ms
                 } else {
                     console.log('❌ No active editor found or no username provided', {
                         hasEditor: !!activeEditor,
@@ -503,7 +503,7 @@
                     // Release the selection lock even if no editor found
                     setTimeout(() => {
                         mentionSelectionLock = false;
-                    }, 200);
+                    }, 500); // Increased from 200ms to 500ms
                 }
             }
         }
