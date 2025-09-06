@@ -271,8 +271,7 @@ class AdminPanelProvider extends PanelProvider
                         return "{$greeting}, {$formattedName}";
                     })
                     ->color('primary')
-                    ->url(fn() => 'https://www.google.com/search?q=google+weather')
-                    ->openUrlInNewTab(),
+                    ->url(fn() => 'javascript:void(0)'),
                 MenuItem::make()
                     ->label(fn() => __('dashboard.user-menu.profile-label'))
                     ->icon('heroicon-o-user')
@@ -320,6 +319,12 @@ class AdminPanelProvider extends PanelProvider
                     return view('partials.chatbot', [
                         'userName' => auth()->user()?->name ?? 'You',
                     ]);
+                },
+            )
+            ->renderHook(
+                'panels::scripts.after',
+                function () {
+                    return view('filament.scripts.greeting-modal');
                 },
             )
             ->plugins([
