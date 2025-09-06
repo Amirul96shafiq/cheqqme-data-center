@@ -83,7 +83,7 @@ class UserMentionDropdown extends Component
         \Log::info('UserMentionDropdown::searchUsers query', [
             'original_search' => $this->search,
             'cleaned_search' => $cleanSearch,
-            'sql' => $query->toSql()
+            'sql' => $query->toSql(),
         ]);
 
         // Get the users
@@ -130,11 +130,26 @@ class UserMentionDropdown extends Component
             // Log the event
             \Log::info('userSelected event dispatched', ['username' => $user['username']]);
 
-            // Hide the dropdown
+            // Hide the dropdown immediately
             $this->hideDropdown();
         } else {
             \Log::warning('User not found at index', ['index' => $index, 'users' => $this->users]);
         }
+    }
+
+    // Handle userSelected event from Alpine.js
+    #[On('userSelected')]
+    public function onUserSelected(string $username, int $userId, string $inputId)
+    {
+        // Log the event
+        \Log::info('UserMentionDropdown::onUserSelected called', [
+            'username' => $username,
+            'userId' => $userId,
+            'inputId' => $inputId,
+        ]);
+
+        // Hide the dropdown immediately when user is selected
+        $this->hideDropdown();
     }
 
     // Update the search
@@ -154,11 +169,12 @@ class UserMentionDropdown extends Component
         }
     }
 
-    // Update the selected index
+    // Update the selected index (non-blocking for client-side navigation)
     #[On('updateSelectedIndex')]
     public function updateSelectedIndex(int $index)
     {
         // Update the selected index from client-side navigation
+        // This is non-blocking and only for state synchronization
         if ($index >= 0 && $index < count($this->users)) {
             $this->selectedIndex = $index;
         }

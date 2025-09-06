@@ -308,8 +308,23 @@
                 handleUserSelected(data);
             });
             
+            // Listen for the new instant custom event (zero-delay)
+            window.addEventListener('userSelected', function(event) {
+                console.log('🎯 Instant userSelected event received:', event.detail);
+                handleUserSelected(event.detail);
+            });
+            
             function handleUserSelected(data) {
                 console.log('🎯 Global userSelected event received:', data);
+                
+                // Prevent multiple mentions from being processed
+                if (mentionSelectionLock) {
+                    console.log('🚫 Mention selection blocked - already processing');
+                    return;
+                }
+                
+                // Lock mention selection
+                mentionSelectionLock = true;
                 
                 // Reset dropdown state when user selects
                 dropdownActive = false;
@@ -456,12 +471,24 @@
                     if (typeof data.userId !== 'undefined') {
                         Livewire.dispatch('mentionSelected', { userId: data.userId });
                     }
+                    
+                    // Release the selection lock after a short delay
+                    setTimeout(() => {
+                        mentionSelectionLock = false;
+                        console.log('🔓 Mention selection lock released');
+                    }, 200);
                 } else {
                     console.log('❌ No active editor found or no username provided', {
                         hasEditor: !!activeEditor,
                         hasUsername: !!data.username,
                         data: data
                     });
+                    
+                    // Release the selection lock even if no editor found
+                    setTimeout(() => {
+                        mentionSelectionLock = false;
+                        console.log('🔓 Mention selection lock released (no editor)');
+                    }, 200);
                 }
             }
         }
@@ -992,21 +1019,8 @@
                 // Mark dropdown as active when it appears
                 dropdownActive = true;
                 
-                // Reset client-side navigation state when dropdown appears
-                currentSelectedIndex = 0;
-                // Apply initial selection to first item immediately
-                const dropdown = document.querySelector('.user-mention-dropdown');
-                if (dropdown) {
-                    const userItems = dropdown.querySelectorAll('.user-mention-item');
-                    if (userItems.length > 0) {
-                        // Remove any existing selections first
-                        userItems.forEach(item => {
-                            item.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
-                        });
-                        // Apply selection to first item
-                        userItems[0].classList.add('bg-blue-50', 'dark:bg-blue-900/20');
-                    }
-                }
+                // Note: Initial selection is now handled by the dropdown's Alpine.js component
+                // This provides instant visual feedback without Livewire round-trips
             });
             
             // Search term updates are now handled directly in handleMentionInputDebounced
@@ -1023,7 +1037,7 @@
         let insertingMention = false;
         let atSymbolPosition = null;
         let dropdownActive = false;
-        let lastSelectedPosition = -1;
+        let mentionSelectionLock = false;
         // Add debouncing to prevent multiple rapid calls
         let mentionInputTimeout = null;
         // Handle mention input
@@ -1156,9 +1170,6 @@
                 });
             }
         }
-        // Client-side navigation state
-        let currentSelectedIndex = 0;
-        
         function handleMentionKeydown(e, editor) {
             // Always handle Shift+Enter to prevent bold formatting issues
             if (e.key === 'Enter' && e.shiftKey) {
@@ -1188,7 +1199,6 @@
             
             // Check if dropdown is visible before handling navigation keys
             const dropdown = document.querySelector('.user-mention-dropdown');
-            // Since the dropdown uses Livewire conditional rendering, we just need to check if the element exists
             const isDropdownVisible = dropdown !== null;
             
             if (!isDropdownVisible) {
@@ -1201,93 +1211,19 @@
                 dropdownActive = false;
                 atSymbolPosition = null;
                 Livewire.dispatch('hideMentionDropdown');
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                navigateUp();
-            } else if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                navigateDown();
-            } else if (e.key === 'Enter') {
-                e.preventDefault();
-                Livewire.dispatch('selectCurrentUser');
             }
-            // For all other keys (typing), let the editor handle them normally
-        }
-        // Navigate up
-        function navigateUp() {
-            const dropdown = document.querySelector('.user-mention-dropdown');
-            if (!dropdown) return;
-            
-            const userItems = dropdown.querySelectorAll('.user-mention-item');
-            if (userItems.length === 0) return;
-            
-            // Calculate new index with wrapping
-            const newIndex = currentSelectedIndex > 0 ? currentSelectedIndex - 1 : userItems.length - 1;
-            
-            // Only update if index actually changed
-            if (newIndex !== currentSelectedIndex) {
-                // Remove previous selection (if exists)
-                if (currentSelectedIndex >= 0 && currentSelectedIndex < userItems.length) {
-                    userItems[currentSelectedIndex].classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
-                }
-                
-                // Update index
-                currentSelectedIndex = newIndex;
-                
-                // Apply new selection
-                if (currentSelectedIndex >= 0 && currentSelectedIndex < userItems.length) {
-                    userItems[currentSelectedIndex].classList.add('bg-blue-50', 'dark:bg-blue-900/20');
-                    
-                    // Simple, instant scroll to keep item visible
-                    userItems[currentSelectedIndex].scrollIntoView({ 
-                        block: 'nearest', 
-                        behavior: 'instant' 
-                    });
-                }
-                
-                // Update Livewire component state immediately (no debounce for navigation)
-                Livewire.dispatch('updateSelectedIndex', { index: currentSelectedIndex });
-            }
-        }
-        // Navigate down
-        function navigateDown() {
-            const dropdown = document.querySelector('.user-mention-dropdown');
-            if (!dropdown) return;
-            
-            const userItems = dropdown.querySelectorAll('.user-mention-item');
-            if (userItems.length === 0) return;
-            
-            // Calculate new index with wrapping
-            const newIndex = currentSelectedIndex < userItems.length - 1 ? currentSelectedIndex + 1 : 0;
-            
-            // Only update if index actually changed
-            if (newIndex !== currentSelectedIndex) {
-                // Remove previous selection (if exists)
-                if (currentSelectedIndex >= 0 && currentSelectedIndex < userItems.length) {
-                    userItems[currentSelectedIndex].classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
-                }
-                
-                // Update index
-                currentSelectedIndex = newIndex;
-                
-                // Apply new selection
-                if (currentSelectedIndex >= 0 && currentSelectedIndex < userItems.length) {
-                    userItems[currentSelectedIndex].classList.add('bg-blue-50', 'dark:bg-blue-900/20');
-                    
-                    // Simple, instant scroll to keep item visible
-                    userItems[currentSelectedIndex].scrollIntoView({ 
-                        block: 'nearest', 
-                        behavior: 'instant' 
-                    });
-                }
-                
-                // Update Livewire component state immediately (no debounce for navigation)
-                Livewire.dispatch('updateSelectedIndex', { index: currentSelectedIndex });
-            }
+            // Note: Arrow keys and Enter are now handled by the dropdown's Alpine.js component
+            // This provides instant, client-side navigation without Livewire round-trips
         }
         // Insert mention
         function insertMention(editor, username) {
             if (!username || username === 'undefined') {
+                return;
+            }
+            
+            // Prevent duplicate insertions
+            if (insertingMention) {
+                console.log('🚫 Insertion blocked - already inserting mention');
                 return;
             }
             
