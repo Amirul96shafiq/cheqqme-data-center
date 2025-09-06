@@ -337,7 +337,7 @@ class UserResource extends Resource
             ->actions([
                 TableAction::make('personalize')
                     ->label('Personalize')
-                    ->icon('heroicon-o-paint-brush')
+                    ->icon('heroicon-o-sparkles')
                     ->url(
                         fn(User $record) =>
                         // Only show for logged-in user's own account
