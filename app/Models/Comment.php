@@ -155,18 +155,19 @@ class Comment extends Model
             return [];
         }
 
-        // Check for @Everyone mention first
+        $mentions = [];
+
+        // Check for @Everyone mention
         if (preg_match('/@everyone\b/i', $text)) {
-            // Return special marker for @Everyone - we'll handle this in processMentions
-            return ['@Everyone'];
+            $mentions[] = '@Everyone';
         }
 
         // Find raw candidates: @ followed by up to 5 space-separated tokens
         preg_match_all('/@([A-Za-z0-9_\.\-]+(?:\s+[A-Za-z0-9_\.\-]+){0,4})/u', $text, $allMatches, PREG_OFFSET_CAPTURE);
 
-        // If no matches, return empty array
+        // If no individual mentions found, return what we have (might be just @Everyone)
         if (empty($allMatches[1])) {
-            return [];
+            return $mentions;
         }
 
         // Build candidate variants (longest-first) to resolve against DB
@@ -192,9 +193,9 @@ class Comment extends Model
 
         // Get candidates
         $candidates = array_keys($candidateSet);
-        // If no candidates, return empty array
+        // If no candidates, return what we have
         if (empty($candidates)) {
-            return [];
+            return $mentions;
         }
 
         // Query users by exact username or exact display name
@@ -204,7 +205,7 @@ class Comment extends Model
             ->get(['id', 'username', 'name']);
 
         if ($users->isEmpty()) {
-            return [];
+            return $mentions;
         }
 
         // Build lookup maps for fast resolution
@@ -235,11 +236,10 @@ class Comment extends Model
             }
         }
 
-        if (empty($foundIds)) {
-            return [];
-        }
+        // Merge individual user mentions with @Everyone (if present)
+        $mentions = array_merge($mentions, array_values(array_unique($foundIds)));
 
-        return array_values(array_unique($foundIds));
+        return array_values(array_unique($mentions));
     }
 
     public function getActivityLogOptions(): LogOptions

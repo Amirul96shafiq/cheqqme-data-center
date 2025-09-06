@@ -177,17 +177,8 @@ class TaskComments extends Component implements HasForms
 
         // Merge with any user IDs selected via the dropdown tracking
         if (!empty($this->pendingMentionUserIds)) {
-            // Check if @Everyone is in pending mentions
-            if (in_array('@Everyone', $this->pendingMentionUserIds)) {
-                \Log::info('🎯 @Everyone found in pending mentions, overriding all other mentions');
-                $mentions = ['@Everyone']; // @Everyone overrides all other mentions
-            } else {
-                \Log::info('🔄 Merging regular mentions', [
-                    'extractedMentions' => $mentions,
-                    'pendingMentions' => $this->pendingMentionUserIds,
-                ]);
-                $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
-            }
+            // Merge all mentions (including @Everyone if present)
+            $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
         }
 
         \Log::info('✅ Final mentions for comment', [
@@ -335,12 +326,8 @@ class TaskComments extends Component implements HasForms
         // Extract mentions from updated comment text
         $mentions = Comment::extractMentions($sanitized);
         if (!empty($this->pendingMentionUserIds)) {
-            // Check if @Everyone is in pending mentions
-            if (in_array('@Everyone', $this->pendingMentionUserIds)) {
-                $mentions = ['@Everyone']; // @Everyone overrides all other mentions
-            } else {
-                $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
-            }
+            // Merge all mentions (including @Everyone if present)
+            $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
         }
 
         // Update the comment
