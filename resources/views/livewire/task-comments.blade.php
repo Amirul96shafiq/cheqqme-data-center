@@ -336,6 +336,18 @@
                     return;
                 }
                 
+                // Handle special @all case
+                if (data.userId === '@all') {
+                    console.log('🎯 Processing @all mention:', {
+                        userId: data.userId,
+                        username: data.username,
+                        inputId: data.inputId,
+                        timestamp: new Date().toISOString()
+                    });
+                    // For @all, we'll let the backend handle the special case
+                    // Just insert the text and let the server process it
+                }
+                
                 // Lock mention selection
                 mentionSelectionLock = true;
                 
@@ -486,7 +498,19 @@
                     
                     // Notify server of selected user id
                     if (typeof data.userId !== 'undefined') {
+                        console.log('📡 Dispatching mentionSelected event:', {
+                            userId: data.userId,
+                            username: data.username,
+                            inputId: data.inputId,
+                            isAll: data.userId === '@all',
+                            timestamp: new Date().toISOString()
+                        });
+                        
                         Livewire.dispatch('mentionSelected', { userId: data.userId });
+                        
+                        console.log('✅ mentionSelected event dispatched successfully');
+                    } else {
+                        console.log('⚠️ No userId in data, skipping mentionSelected dispatch:', data);
                     }
                     
                     // Release the selection lock after a longer delay to prevent rapid duplicates

@@ -71,7 +71,23 @@ class UserMentionDropdown extends Component
         // Clean the search term - remove @ symbol if present
         $cleanSearch = ltrim($this->search, '@');
 
-        // Search for users
+        $users = [];
+
+        // Check if search matches "@all" (case insensitive)
+        if (empty($cleanSearch) || stripos('all', $cleanSearch) === 0) {
+            // Add @all as the first option
+            $users[] = [
+                'id' => '@all',
+                'username' => 'all',
+                'email' => 'Notify all users',
+                'name' => 'All Users',
+                'avatar' => null,
+                'short_name' => 'all',
+                'is_special' => true, // Mark as special for styling
+            ];
+        }
+
+        // Search for regular users
         $query = User::query()
             ->where('username', 'like', '%' . $cleanSearch . '%')
             ->orWhere('email', 'like', '%' . $cleanSearch . '%')
@@ -86,8 +102,8 @@ class UserMentionDropdown extends Component
             'sql' => $query->toSql(),
         ]);
 
-        // Get the users
-        $this->users = $query->get()->map(function ($user) {
+        // Get the regular users and merge with @all
+        $regularUsers = $query->get()->map(function ($user) {
             return [
                 'id' => $user->id,
                 'username' => $user->username,
@@ -95,8 +111,11 @@ class UserMentionDropdown extends Component
                 'name' => $user->name,
                 'avatar' => $user->avatar,
                 'short_name' => $user->short_name ?? $user->username,
+                'is_special' => false,
             ];
         })->toArray();
+
+        $this->users = array_merge($users, $regularUsers);
 
         // Log the event
         \Log::info('UserMentionDropdown::searchUsers completed', ['userCount' => count($this->users)]);
@@ -124,11 +143,16 @@ class UserMentionDropdown extends Component
                 'inputId' => $this->targetInputId,
             ]);
 
-            // Dispatch the userSelected event
-            $this->dispatch('userSelected', username: $user['username'], userId: $user['id'], inputId: $this->targetInputId);
-
-            // Log the event
-            \Log::info('userSelected event dispatched', ['username' => $user['username']]);
+            // Handle special @all case
+            if ($user['id'] === '@all') {
+                // Dispatch the userSelected event with special @all identifier
+                $this->dispatch('userSelected', username: 'all', userId: '@all', inputId: $this->targetInputId);
+                \Log::info('userSelected event dispatched for @all');
+            } else {
+                // Dispatch the userSelected event for regular users
+                $this->dispatch('userSelected', username: $user['username'], userId: $user['id'], inputId: $this->targetInputId);
+                \Log::info('userSelected event dispatched', ['username' => $user['username']]);
+            }
 
             // Hide the dropdown immediately
             $this->hideDropdown();
@@ -139,7 +163,7 @@ class UserMentionDropdown extends Component
 
     // Handle userSelected event from Alpine.js
     #[On('userSelected')]
-    public function onUserSelected(string $username, int $userId, string $inputId)
+    public function onUserSelected(string $username, int|string $userId, string $inputId)
     {
         // Log the event
         \Log::info('UserMentionDropdown::onUserSelected called', [

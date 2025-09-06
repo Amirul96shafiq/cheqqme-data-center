@@ -50,11 +50,44 @@ class TaskComments extends Component implements HasForms
     #[On('mentionSelected')]
     public function onMentionSelected(?array $payload = null): void
     {
+        \Log::info('🎯 TaskComments::onMentionSelected called', [
+            'payload' => $payload,
+            'timestamp' => now()->toISOString(),
+        ]);
+
         if (!$payload) {
+            \Log::warning('❌ No payload received in onMentionSelected');
+
             return;
         }
-        $userId = (int) ($payload['userId'] ?? 0);
+
+        $userId = $payload['userId'] ?? 0;
+
+        \Log::info('🔍 Processing mentionSelected', [
+            'userId' => $userId,
+            'userIdType' => gettype($userId),
+            'isAll' => $userId === '@all',
+            'currentPendingMentions' => $this->pendingMentionUserIds,
+        ]);
+
+        // Handle special @all case
+        if ($userId === '@all') {
+            \Log::info('🎯 Adding @all to pending mentions');
+            $this->pendingMentionUserIds[] = '@all';
+            \Log::info('✅ @all added to pending mentions', [
+                'pendingMentions' => $this->pendingMentionUserIds,
+            ]);
+
+            return;
+        }
+
+        // Handle regular user IDs
+        $userId = (int) $userId;
         if ($userId > 0 && !in_array($userId, $this->pendingMentionUserIds, true)) {
+            \Log::info('🎯 Adding regular user to pending mentions', [
+                'userId' => $userId,
+                'pendingMentions' => $this->pendingMentionUserIds,
+            ]);
             $this->pendingMentionUserIds[] = $userId;
         }
     }
@@ -136,10 +169,31 @@ class TaskComments extends Component implements HasForms
 
         // Extract mentions from comment text
         $mentions = Comment::extractMentions($sanitized);
+        \Log::info('🔍 Comment mentions extracted', [
+            'extractedMentions' => $mentions,
+            'pendingMentionUserIds' => $this->pendingMentionUserIds,
+            'sanitizedComment' => $sanitized,
+        ]);
+
         // Merge with any user IDs selected via the dropdown tracking
         if (!empty($this->pendingMentionUserIds)) {
-            $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
+            // Check if @all is in pending mentions
+            if (in_array('@all', $this->pendingMentionUserIds)) {
+                \Log::info('🎯 @all found in pending mentions, overriding all other mentions');
+                $mentions = ['@all']; // @all overrides all other mentions
+            } else {
+                \Log::info('🔄 Merging regular mentions', [
+                    'extractedMentions' => $mentions,
+                    'pendingMentions' => $this->pendingMentionUserIds,
+                ]);
+                $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
+            }
         }
+
+        \Log::info('✅ Final mentions for comment', [
+            'finalMentions' => $mentions,
+            'hasAll' => in_array('@all', $mentions),
+        ]);
 
         // Create the comment
         $comment = Comment::create([
@@ -150,7 +204,17 @@ class TaskComments extends Component implements HasForms
         ]);
 
         // Process mentions and send notifications
+        \Log::info('🚀 Calling processMentions', [
+            'commentId' => $comment->id,
+            'mentions' => $comment->mentions,
+            'hasAll' => in_array('@all', $comment->mentions),
+        ]);
+
         $comment->processMentions();
+
+        \Log::info('✅ processMentions completed', [
+            'commentId' => $comment->id,
+        ]);
 
         // Send notification
         Notification::make()
@@ -271,7 +335,12 @@ class TaskComments extends Component implements HasForms
         // Extract mentions from updated comment text
         $mentions = Comment::extractMentions($sanitized);
         if (!empty($this->pendingMentionUserIds)) {
-            $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
+            // Check if @all is in pending mentions
+            if (in_array('@all', $this->pendingMentionUserIds)) {
+                $mentions = ['@all']; // @all overrides all other mentions
+            } else {
+                $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
+            }
         }
 
         // Update the comment

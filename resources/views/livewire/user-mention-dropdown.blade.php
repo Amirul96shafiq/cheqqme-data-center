@@ -265,14 +265,21 @@
             <div class="overflow-y-auto max-h-48 p-2" id="user-mention-list">
                 @foreach($users as $index => $user)
                     <div 
-                        class="flex items-center space-x-3 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 user-mention-item transition-colors duration-75 {{ $index === $selectedIndex ? 'bg-blue-50 dark:bg-blue-900/20' : '' }}"
+                        class="flex items-center space-x-3 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 user-mention-item transition-colors duration-75 {{ $index === $selectedIndex ? 'bg-blue-50 dark:bg-blue-900/20' : '' }} {{ isset($user['is_special']) && $user['is_special'] ? 'border-l-4 border-orange-500 bg-orange-50 dark:bg-orange-900/20' : '' }}"
                         wire:key="user-{{ $user['id'] }}"
                         x-on:mouseenter="selectedIndex = {{ $index }}; updateSelection()"
                         x-on:click="selectUserByIndex({{ $index }})"
                     >
                         <!-- User Avatar -->
                         <div class="flex-shrink-0 user-mention-avatar">
-                            @if($user['avatar'])
+                            @if(isset($user['is_special']) && $user['is_special'])
+                                <!-- Special @all avatar -->
+                                <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                                    </svg>
+                                </div>
+                            @elseif($user['avatar'])
                                 <img
                                     src="{{ Storage::url($user['avatar']) }}"
                                     alt="{{ $user['username'] }}"
@@ -300,8 +307,8 @@
                         <!-- User Info -->
                         <div class="flex-1 min-w-0 overflow-hidden">
                             <div class="flex items-center space-x-2 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate flex-shrink-0 user-mention-username">
-                                    {{ $user['username'] }}
+                                <p class="text-sm font-medium {{ isset($user['is_special']) && $user['is_special'] ? 'text-orange-600 dark:text-orange-400' : 'text-gray-900 dark:text-gray-100' }} truncate flex-shrink-0 user-mention-username">
+                                    @{{ $user['username'] }}
                                 </p>
                                 @if($user['name'] && $user['name'] !== $user['username'])
                                     <span class="text-xs text-gray-500 dark:text-gray-400 truncate flex-shrink-0">
@@ -309,7 +316,7 @@
                                     </span>
                                 @endif
                             </div>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1 user-mention-email">
+                            <p class="text-xs {{ isset($user['is_special']) && $user['is_special'] ? 'text-orange-500 dark:text-orange-300' : 'text-gray-500 dark:text-gray-400' }} truncate mt-1 user-mention-email">
                                 {{ $user['email'] }}
                             </p>
                         </div>
