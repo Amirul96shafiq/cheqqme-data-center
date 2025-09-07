@@ -57,6 +57,7 @@ return [
         'user_confirm_helpertext' => 'CONFIRM DELETE USER',
         'name_helper' => 'Automatically filled with username if left empty, changeable',
         'personalize' => 'Personalize',
+        'uploading' => 'Uploading...',
     ],
 
     'table' => [

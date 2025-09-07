@@ -33,9 +33,9 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Request;
 // ActivityLog by Rômulo Ramos
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Rmsramos\Activitylog\ActivitylogPlugin;
-// Resource Lock by Kenepa
 use Kenepa\ResourceLock\ResourceLockPlugin;
+// Resource Lock by Kenepa
+use Rmsramos\Activitylog\ActivitylogPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -51,10 +51,10 @@ class AdminPanelProvider extends PanelProvider
                 ->get(['id', 'name', 'url'])
                 ->map(function ($board) {
                     return NavigationItem::make("trello-board-{$board->id}")
-                        ->label(fn() => (strlen($board->name) > 10 ? substr($board->name, 0, 10) . '...' : $board->name) . ' ' . __('navigation.trello_board_suffix'))
+                        ->label(fn () => (strlen($board->name) > 10 ? substr($board->name, 0, 10).'...' : $board->name).' '.__('navigation.trello_board_suffix'))
                         ->url($board->url)
                         ->openUrlInNewTab()
-                        ->group(fn() => __('navigation.groups.boards'))
+                        ->group(fn () => __('navigation.groups.boards'))
                         ->sort(2);
                 })
                 ->toArray();
@@ -174,7 +174,7 @@ class AdminPanelProvider extends PanelProvider
 
         return $panel
             ->default()
-            ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
+            ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
             ->favicon(asset('images/favicon.png'))
@@ -246,19 +246,17 @@ class AdminPanelProvider extends PanelProvider
                         if ($hour >= 20 && $hour <= 23) {
                             return 'heroicon-o-moon';
                         } // Evening
-            
+
                         return 'heroicon-o-moon'; // Goodnight (12AM-6AM)
                     })
                     ->label(function () {
                         $userName = auth()->user()?->name ?? '';
-                        if (!$userName) {
+                        if (! $userName) {
                             return __('greetings.profile');
                         }
 
                         // Format name: First name + initials for remaining parts
-                        $formattedName = collect(explode(' ', $userName))
-                            ->map(fn($part, $index) => $index === 0 ? $part : substr($part, 0, 1) . '.')
-                            ->implode(' ');
+                        $formattedName = \App\Helpers\ClientFormatter::formatClientName($userName);
 
                         $hour = now()->hour;
                         $greeting = match (true) {
@@ -271,22 +269,22 @@ class AdminPanelProvider extends PanelProvider
                         return "{$greeting}, {$formattedName}";
                     })
                     ->color('primary')
-                    ->url(fn() => 'javascript:void(0)'),
+                    ->url(fn () => 'javascript:void(0)'),
                 MenuItem::make()
-                    ->label(fn() => __('dashboard.user-menu.profile-label'))
+                    ->label(fn () => __('dashboard.user-menu.profile-label'))
                     ->icon('heroicon-o-user')
-                    ->url(fn() => filament()->getProfileUrl())
+                    ->url(fn () => filament()->getProfileUrl())
                     ->sort(-1),
                 MenuItem::make()
-                    ->label(fn() => __('dashboard.user-menu.settings-label'))
+                    ->label(fn () => __('dashboard.user-menu.settings-label'))
                     ->icon('heroicon-o-cog-6-tooth')
-                    ->url(fn() => route('filament.admin.pages.settings'))
+                    ->url(fn () => route('filament.admin.pages.settings'))
                     ->sort(0),
                 'logout' => MenuItem::make()
-                    ->label(fn() => __('dashboard.user-menu.logout-label'))
+                    ->label(fn () => __('dashboard.user-menu.logout-label'))
                     ->icon('heroicon-o-arrow-right-on-rectangle')
                     ->color('danger')
-                    ->url(fn() => filament()->getLogoutUrl())
+                    ->url(fn () => filament()->getLogoutUrl())
                     ->sort(1),
             ])
             ->navigationGroups([
@@ -339,7 +337,7 @@ class AdminPanelProvider extends PanelProvider
                     ->expandedUrlTarget(enabled: false),
 
                 ActivitylogPlugin::make()
-                    ->navigationGroup(fn() => __('activitylog.navigation_group'))
+                    ->navigationGroup(fn () => __('activitylog.navigation_group'))
                     ->navigationSort(11),
 
                 ResourceLockPlugin::make(),

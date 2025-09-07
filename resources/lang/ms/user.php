@@ -56,6 +56,7 @@ return [
         'user_confirm_helpertext' => 'CONFIRMED DELETE ACCOUNT',
         'name_helper' => 'Dilengkapi dengan gelaran pengguna jika kosong, boleh diubah',
         'personalize' => 'Personalisasi',
+        'uploading' => 'Sedang memuat naik...',
     ],
 
     'table' => [
