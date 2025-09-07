@@ -97,48 +97,51 @@ function openGreetingModal() {
                                 </div>
                             </div>
                         </div>
-                        
-                            <!-- 5-Day Forecast -->
-                            <div class="mt-4">
-                                <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">5-Day Forecast</h5>
-                                <div class="space-y-2" id="forecast-container">
-                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
-                                        <div class="flex items-center space-x-3">
-                                            <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Today</span>
-                                            @svg('heroicon-o-sun', 'w-6 h-6 text-yellow-500')
-                                        </div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
-                                    </div>
-                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
-                                        <div class="flex items-center space-x-3">
-                                            <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tomorrow</span>
-                                            @svg('heroicon-o-cloud', 'w-6 h-6 text-blue-500')
-                                        </div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
-                                    </div>
-                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
-                                        <div class="flex items-center space-x-3">
-                                            <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tuesday</span>
-                                            @svg('heroicon-o-cloud', 'w-6 h-6 text-gray-500')
-                                        </div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
-                                    </div>
-                                    <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
-                                        <div class="flex items-center space-x-3">
-                                            <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Wednesday</span>
-                                            @svg('heroicon-o-cloud', 'w-6 h-6 text-blue-500')
-                                        </div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
-                                    </div>
-                                    <div class="flex items-center justify-between py-2">
-                                        <div class="flex items-center space-x-3">
-                                            <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Thursday</span>
-                                            @svg('heroicon-o-cloud', 'w-6 h-6 text-blue-500')
-                                        </div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
-                                    </div>
+                    </div>
+                    
+                    <!-- 5-Day Forecast -->
+                    <div class="mt-12">
+                        <div class="flex items-center justify-between mb-3">
+                            <h5 class="text-sm font-semibold text-gray-900 dark:text-white">5-Day Forecast</h5>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">High / Low</span>
+                        </div>
+                        <div class="space-y-2" id="forecast-container">
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Today</span>
+                                    @svg('heroicon-o-sun', 'w-6 h-6 text-yellow-500')
                                 </div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
                             </div>
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tomorrow</span>
+                                    @svg('heroicon-o-cloud', 'w-6 h-6 text-blue-500')
+                                </div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
+                            </div>
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tuesday</span>
+                                    @svg('heroicon-o-cloud', 'w-6 h-6 text-gray-500')
+                                </div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
+                            </div>
+                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Wednesday</span>
+                                    @svg('heroicon-o-cloud', 'w-6 h-6 text-blue-500')
+                                </div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
+                            </div>
+                            <div class="flex items-center justify-between py-2">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Thursday</span>
+                                    @svg('heroicon-o-cloud', 'w-6 h-6 text-blue-500')
+                                </div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -753,8 +756,11 @@ function updateForecastData(weatherData) {
                              alt="${day.condition}" 
                              class="w-12 h-12">
                     </div>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 flex-1 min-w-0">${day.description}</span>
                 </div>
-                <div class="text-sm font-medium text-gray-900 dark:text-white">${day.max_temp}°C / ${day.min_temp}°C</div>
+                <div class="text-sm font-medium text-gray-900 dark:text-white text-right">
+                    <div>${day.max_temp}°C / ${day.min_temp}°C</div>
+                </div>
             </div>
         `;
     });
