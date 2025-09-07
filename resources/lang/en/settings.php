@@ -14,6 +14,10 @@ return [
         'api_description' => 'Manage your API key for external access to your data.',
         'location_timezone' => 'Location & Timezone',
         'location_timezone_description' => 'Set your location for weather data and timezone for the application.',
+        'location' => 'Location',
+        'location_description' => 'Set your location for weather data and geolocation services.',
+        'timezone' => 'Timezone',
+        'timezone_description' => 'Set your timezone for the application.',
     ],
 
     // Form fields
@@ -21,7 +25,7 @@ return [
         // API
         'current_timezone' => 'Timezone Settings',
         'timezone' => 'Timezone Settings',
-        'current_time_in_timezone' => 'Preview Time & Timezone',
+        'current_time_in_timezone' => 'Time & Timezone Preview ',
         'select_timezone_to_preview' => 'Select a timezone to preview the current time.',
         'timezone_preview_description' => 'Preview the current time in your timezone.',
         'current_api_key' => 'Your API Key',

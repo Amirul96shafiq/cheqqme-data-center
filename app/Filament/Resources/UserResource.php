@@ -352,6 +352,23 @@ class UserResource extends Resource
                         auth()->id() === $record->id
                     ),
 
+                TableAction::make('settings')
+                    ->label('Settings')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->url(
+                        fn(User $record) =>
+                        // Only show for logged-in user's own account
+                        auth()->id() === $record->id
+                        ? \App\Filament\Pages\Settings::getUrl()
+                        : '#'
+                    )
+                    ->openUrlInNewTab(false)
+                    ->visible(
+                        fn(User $record) =>
+                        // Only visible to the logged-in user and only for their own account
+                        auth()->id() === $record->id
+                    ),
+
                 Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([

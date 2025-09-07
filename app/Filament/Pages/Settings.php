@@ -74,7 +74,7 @@ class Settings extends Page
         }
 
         // Set initial timezone preview
-        if (!empty($data['timezone'])) {
+        if (! empty($data['timezone'])) {
             try {
                 $timezone = new \DateTimeZone($data['timezone']);
                 $now = new \DateTime('now', $timezone);
@@ -141,7 +141,7 @@ class Settings extends Page
 
         // Preserve all other existing data
         foreach ($currentData as $key => $value) {
-            if (!in_array($key, ['latitude', 'longitude', 'city', 'country'])) {
+            if (! in_array($key, ['latitude', 'longitude', 'city', 'country'])) {
                 $this->data[$key] = $value;
             }
         }
@@ -206,7 +206,7 @@ class Settings extends Page
                                                     ->icon('heroicon-o-arrow-path')
                                                     ->color('gray')
                                                     ->size('sm')
-                                                    ->visible(fn() => auth()->user()->hasApiKey())
+                                                    ->visible(fn () => auth()->user()->hasApiKey())
                                                     ->requiresConfirmation()
                                                     ->modalHeading(__('settings.form.confirm_regenerate'))
                                                     ->modalDescription(__('settings.form.confirm_regenerate_description'))
@@ -229,7 +229,7 @@ class Settings extends Page
                                                     ->icon('heroicon-o-square-2-stack')
                                                     ->color('gray')
                                                     ->size('sm')
-                                                    ->visible(fn() => auth()->user()->hasApiKey())
+                                                    ->visible(fn () => auth()->user()->hasApiKey())
                                                     ->action(function () {
                                                         $user = auth()->user();
 
@@ -264,7 +264,7 @@ class Settings extends Page
                                         ->label(__('settings.form.generate_api_key'))
                                         ->icon('heroicon-o-key')
                                         ->color('gray')
-                                        ->visible(fn() => !auth()->user()->hasApiKey())
+                                        ->visible(fn () => ! auth()->user()->hasApiKey())
                                         ->action(function ($set) {
                                             $user = auth()->user();
                                             $apiKey = $user->generateApiKey();
@@ -284,7 +284,7 @@ class Settings extends Page
                                         ->icon('heroicon-o-trash')
                                         ->color('danger')
                                         ->outlined()
-                                        ->visible(fn() => auth()->user()->hasApiKey())
+                                        ->visible(fn () => auth()->user()->hasApiKey())
                                         ->requiresConfirmation()
                                         ->modalHeading(__('settings.form.confirm_delete'))
                                         ->modalDescription(__('settings.form.confirm_delete_description'))
@@ -323,9 +323,9 @@ class Settings extends Page
                             ]),
                     ]),
 
-                // Location & Timezone section
-                Forms\Components\Section::make(__('settings.section.location_timezone'))
-                    ->description(__('settings.section.location_timezone_description'))
+                // Location section
+                Forms\Components\Section::make(__('settings.section.location'))
+                    ->description(__('settings.section.location_description'))
                     ->collapsible()
                     ->schema([
                         // Location actions
@@ -357,10 +357,10 @@ class Settings extends Page
                                         ->color('danger')
                                         ->outlined()
                                         ->visible(function ($get) {
-                                            return !empty($get('city')) ||
-                                                !empty($get('country')) ||
-                                                !empty($get('latitude')) ||
-                                                !empty($get('longitude'));
+                                            return ! empty($get('city')) ||
+                                                ! empty($get('country')) ||
+                                                ! empty($get('latitude')) ||
+                                                ! empty($get('longitude'));
                                         })
                                         ->action(function ($set) {
                                             $set('city', '');
@@ -457,7 +457,7 @@ class Settings extends Page
                                                         $html .= '</svg>';
                                                         $html .= '</div>';
                                                         $html .= '<div class="ml-3">';
-                                                        $html .= '<p class="text-sm font-medium text-red-800 dark:text-red-200">' . $weatherData['message'] . '</p>';
+                                                        $html .= '<p class="text-sm font-medium text-red-800 dark:text-red-200">'.$weatherData['message'].'</p>';
                                                         $html .= '</div>';
                                                         $html .= '</div>';
                                                         $html .= '</div>';
@@ -481,16 +481,16 @@ class Settings extends Page
                                                     $html .= '</div>';
                                                     $html .= '</div>';
                                                     $html .= '<div>';
-                                                    $html .= '<h3 class="text-lg font-semibold">' . ucfirst($current['condition']) . '</h3>';
-                                                    $html .= '<p class="text-teal-100 text-sm">' . ucfirst($current['description']) . '</p>';
+                                                    $html .= '<h3 class="text-lg font-semibold">'.ucfirst($current['condition']).'</h3>';
+                                                    $html .= '<p class="text-teal-100 text-sm">'.ucfirst($current['description']).'</p>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
 
                                                     // Right side - Temperature and location
                                                     $html .= '<div class="text-right">';
-                                                    $html .= '<div class="text-3xl font-bold">' . $current['temperature'] . '°C</div>';
-                                                    $html .= '<div class="text-teal-100 text-sm">Feels like ' . $current['feels_like'] . '°C</div>';
-                                                    $html .= '<div class="text-teal-100 text-sm mt-1">' . $location['city'] . ', ' . $location['country'] . '</div>';
+                                                    $html .= '<div class="text-3xl font-bold">'.$current['temperature'].'°C</div>';
+                                                    $html .= '<div class="text-teal-100 text-sm">Feels like '.$current['feels_like'].'°C</div>';
+                                                    $html .= '<div class="text-teal-100 text-sm mt-1">'.$location['city'].', '.$location['country'].'</div>';
                                                     $html .= '</div>';
 
                                                     $html .= '</div>';
@@ -498,7 +498,7 @@ class Settings extends Page
 
                                                     return new \Illuminate\Support\HtmlString($html);
                                                 } catch (\Exception $e) {
-                                                    \Log::error('Weather preview error: ' . $e->getMessage());
+                                                    \Log::error('Weather preview error: '.$e->getMessage());
                                                     $html = '<div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">';
                                                     $html .= '<div class="flex items-center">';
                                                     $html .= '<div class="flex-shrink-0">';
@@ -507,7 +507,7 @@ class Settings extends Page
                                                     $html .= '</svg>';
                                                     $html .= '</div>';
                                                     $html .= '<div class="ml-3">';
-                                                    $html .= '<p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">' . __('settings.form.weather_error') . '</p>';
+                                                    $html .= '<p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">'.__('settings.form.weather_error').'</p>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
@@ -518,7 +518,13 @@ class Settings extends Page
                                             ->columnSpan(12),
                                     ]),
                             ]),
+                    ]),
 
+                // Timezone section
+                Forms\Components\Section::make(__('settings.section.timezone'))
+                    ->description(__('settings.section.timezone_description'))
+                    ->collapsible()
+                    ->schema([
                         // Timezone row with label and field
                         Forms\Components\Grid::make(12)
                             ->schema([
@@ -559,7 +565,7 @@ class Settings extends Page
                                             ->label('')
                                             ->content(function ($get) {
                                                 $timezone = $get('timezone');
-                                                if (!$timezone) {
+                                                if (! $timezone) {
                                                     return __('settings.form.select_timezone_to_preview');
                                                 }
 
@@ -581,22 +587,22 @@ class Settings extends Page
 
                                                     // Current time - Left side
                                                     $html .= '<div class="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-lg">';
-                                                    $html .= '<h4 class="font-medium text-teal-900 dark:text-teal-100 mb-3">' . __('settings.form.current_time') . '</h4>';
+                                                    $html .= '<h4 class="font-medium text-teal-900 dark:text-teal-100 mb-3">'.__('settings.form.current_time').'</h4>';
                                                     $html .= '<div class="text-center">';
-                                                    $html .= '<div class="text-2xl font-bold text-teal-700 dark:text-teal-300 mb-2">' . $now->format('g:i A') . '</div>';
-                                                    $html .= '<div class="text-sm text-teal-600 dark:text-teal-400">' . $this->getLocalizedDate($now) . '</div>';
-                                                    $html .= '<div class="text-xs text-teal-500 dark:text-teal-500 mt-1">' . $now->format('P') . '</div>';
+                                                    $html .= '<div class="text-2xl font-bold text-teal-700 dark:text-teal-300 mb-2">'.$now->format('g:i A').'</div>';
+                                                    $html .= '<div class="text-sm text-teal-600 dark:text-teal-400">'.$this->getLocalizedDate($now).'</div>';
+                                                    $html .= '<div class="text-xs text-teal-500 dark:text-teal-500 mt-1">'.$now->format('P').'</div>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
 
                                                     // Timezone information - Right side
                                                     $html .= '<div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">';
-                                                    $html .= '<h4 class="font-medium text-amber-900 dark:text-amber-100 mb-3">' . __('settings.form.timezone_information') . '</h4>';
+                                                    $html .= '<h4 class="font-medium text-amber-900 dark:text-amber-100 mb-3">'.__('settings.form.timezone_information').'</h4>';
                                                     $html .= '<div class="space-y-2 text-sm">';
-                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">' . __('settings.form.identifier_name') . ':</span> <span class="text-amber-600 dark:text-amber-400">' . $timezone . '</span></div>';
-                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">' . __('settings.form.country_code') . ':</span> <span class="text-amber-600 dark:text-amber-400">' . $this->getCountryFromTimezone($timezone) . '</span></div>';
-                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">' . __('settings.form.utc_offset') . ':</span> <span class="text-amber-600 dark:text-amber-400">' . $now->format('P') . '</span></div>';
-                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">' . __('settings.form.abbreviation') . ':</span> <span class="text-amber-600 dark:text-amber-400">' . $now->format('T') . '</span></div>';
+                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.form.identifier_name').':</span> <span class="text-amber-600 dark:text-amber-400">'.$timezone.'</span></div>';
+                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.form.country_code').':</span> <span class="text-amber-600 dark:text-amber-400">'.$this->getCountryFromTimezone($timezone).'</span></div>';
+                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.form.utc_offset').':</span> <span class="text-amber-600 dark:text-amber-400">'.$now->format('P').'</span></div>';
+                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.form.abbreviation').':</span> <span class="text-amber-600 dark:text-amber-400">'.$now->format('T').'</span></div>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
 
@@ -604,16 +610,16 @@ class Settings extends Page
 
                                                     // Sample data table - Full width below
                                                     $html .= '<div class="mt-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">';
-                                                    $html .= '<h4 class="font-medium text-gray-900 dark:text-gray-100 mb-3">' . __('settings.form.sample_data_preview') . '</h4>';
+                                                    $html .= '<h4 class="font-medium text-gray-900 dark:text-gray-100 mb-3">'.__('settings.form.sample_data_preview').'</h4>';
                                                     $html .= '<div class="overflow-x-auto">';
                                                     $html .= '<table class="min-w-full text-sm">';
                                                     $html .= '<thead class="border-b border-gray-200 dark:border-gray-700">';
                                                     $html .= '<tr>';
-                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">' . __('settings.form.id') . '</th>';
-                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">' . __('settings.form.title') . '</th>';
-                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">' . __('settings.form.created_at') . '</th>';
-                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">' . __('settings.form.updated_at') . '</th>';
-                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">' . __('settings.form.by') . '</th>';
+                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.form.id').'</th>';
+                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.form.title').'</th>';
+                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.form.created_at').'</th>';
+                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.form.updated_at').'</th>';
+                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.form.by').'</th>';
                                                     $html .= '</tr>';
                                                     $html .= '</thead>';
                                                     $html .= '<tbody class="divide-y divide-gray-200 dark:divide-gray-700">';
@@ -627,11 +633,11 @@ class Settings extends Page
 
                                                     foreach ($sampleData as $row) {
                                                         $html .= '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">';
-                                                        $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">' . $row['id'] . '</td>';
-                                                        $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">' . $row['title'] . '</td>';
-                                                        $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">' . $row['created']->format('j/n/y, h:i A') . '</td>';
-                                                        $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">' . $row['updated']->format('j/n/y, h:i A') . '</td>';
-                                                        $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">' . $row['by'] . '</td>';
+                                                        $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">'.$row['id'].'</td>';
+                                                        $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">'.$row['title'].'</td>';
+                                                        $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['created']->format('j/n/y, h:i A').'</td>';
+                                                        $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['updated']->format('j/n/y, h:i A').'</td>';
+                                                        $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['by'].'</td>';
                                                         $html .= '</tr>';
                                                     }
 
@@ -645,7 +651,7 @@ class Settings extends Page
                                                     return 'Invalid timezone';
                                                 }
                                             })
-                                            ->visible(fn($get) => !empty($get('timezone')))
+                                            ->visible(fn ($get) => ! empty($get('timezone')))
                                             ->extraAttributes(['class' => 'text-sm text-gray-600 dark:text-gray-400'])
                                             ->columnSpan(12),
                                     ]),
@@ -737,7 +743,7 @@ class Settings extends Page
 
             return $mockWeatherData;
         } catch (\Exception $e) {
-            \Log::error('Weather preview error: ' . $e->getMessage());
+            \Log::error('Weather preview error: '.$e->getMessage());
 
             return [
                 'error' => true,
@@ -761,22 +767,84 @@ class Settings extends Page
     private function generateMockWeatherData(string $city, string $country): array
     {
         // Generate consistent mock data based on city and country
-        $seed = crc32($city . $country);
+        $seed = crc32($city.$country);
         mt_srand($seed);
 
-        // Mock weather conditions
-        $conditions = ['Clear', 'Clouds', 'Rain', 'Sunny', 'Partly Cloudy', 'Overcast'];
-        $descriptions = [
-            'Clear' => 'clear sky',
-            'Clouds' => 'few clouds',
-            'Rain' => 'light rain',
-            'Sunny' => 'sunny',
-            'Partly Cloudy' => 'partly cloudy',
-            'Overcast' => 'overcast clouds',
+        // Mock weather conditions with multilingual support
+        $conditions = [
+            'clear' => [
+                'en' => 'Clear',
+                'ms' => 'Jernih',
+                'description_en' => 'clear sky',
+                'description_ms' => 'langit jernih',
+            ],
+            'clouds' => [
+                'en' => 'Clouds',
+                'ms' => 'Berawan',
+                'description_en' => 'few clouds',
+                'description_ms' => 'sedikit awan',
+            ],
+            'rain' => [
+                'en' => 'Rain',
+                'ms' => 'Hujan',
+                'description_en' => 'light rain',
+                'description_ms' => 'hujan ringan',
+            ],
+            'sunny' => [
+                'en' => 'Sunny',
+                'ms' => 'Cerah',
+                'description_en' => 'sunny',
+                'description_ms' => 'cerah',
+            ],
+            'partly_cloudy' => [
+                'en' => 'Partly Cloudy',
+                'ms' => 'Sebahagian Berawan',
+                'description_en' => 'partly cloudy',
+                'description_ms' => 'sebahagian berawan',
+            ],
+            'overcast' => [
+                'en' => 'Overcast',
+                'ms' => 'Mendung',
+                'description_en' => 'overcast clouds',
+                'description_ms' => 'awan mendung',
+            ],
+            'thunderstorm' => [
+                'en' => 'Thunderstorm',
+                'ms' => 'Ribut Petir',
+                'description_en' => 'thunderstorm',
+                'description_ms' => 'ribut petir',
+            ],
+            'snow' => [
+                'en' => 'Snow',
+                'ms' => 'Salji',
+                'description_en' => 'light snow',
+                'description_ms' => 'salji ringan',
+            ],
+            'fog' => [
+                'en' => 'Fog',
+                'ms' => 'Kabus',
+                'description_en' => 'fog',
+                'description_ms' => 'kabus',
+            ],
+            'mist' => [
+                'en' => 'Mist',
+                'ms' => 'Jerebu',
+                'description_en' => 'mist',
+                'description_ms' => 'jerebu',
+            ],
         ];
 
-        $condition = $conditions[mt_rand(0, count($conditions) - 1)];
-        $description = $descriptions[$condition] ?? 'clear sky';
+        // Get current locale
+        $locale = app()->getLocale();
+        $isMalay = $locale === 'ms';
+
+        // Select random condition
+        $conditionKeys = array_keys($conditions);
+        $selectedKey = $conditionKeys[mt_rand(0, count($conditionKeys) - 1)];
+        $selectedCondition = $conditions[$selectedKey];
+
+        $condition = $isMalay ? $selectedCondition['ms'] : $selectedCondition['en'];
+        $description = $isMalay ? $selectedCondition['description_ms'] : $selectedCondition['description_en'];
 
         // Generate temperature based on country (rough climate zones)
         $baseTemp = $this->getBaseTemperatureForCountry($country);
