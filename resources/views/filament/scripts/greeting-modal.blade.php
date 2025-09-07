@@ -394,7 +394,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if ((text.includes('good morning') || text.includes('good afternoon') || 
                     text.includes('good evening') || text.includes('goodnight') ||
                     text.includes('morning') || text.includes('afternoon') || 
-                    text.includes('evening') || text.includes('night')) &&
+                    text.includes('evening') || text.includes('night') ||
+                    // Malay greetings
+                    text.includes('pagi') || text.includes('petang') || 
+                    text.includes('malam') || text.includes('selamat malam')) &&
                     (link.closest('[data-filament-dropdown-list]') || 
                      link.closest('.fi-dropdown-list') ||
                      link.closest('[role="menu"]'))) {
@@ -434,7 +437,10 @@ document.addEventListener('click', function(e) {
             if ((text.includes('good morning') || text.includes('good afternoon') || 
                 text.includes('good evening') || text.includes('goodnight') ||
                 text.includes('morning') || text.includes('afternoon') || 
-                text.includes('evening') || text.includes('night')) &&
+                text.includes('evening') || text.includes('night') ||
+                // Malay greetings
+                text.includes('pagi') || text.includes('petang') || 
+                text.includes('malam') || text.includes('selamat malam')) &&
                 (element.closest('[data-filament-dropdown-list]') || 
                  element.closest('.fi-dropdown-list') ||
                  element.closest('[role="menu"]'))) {
