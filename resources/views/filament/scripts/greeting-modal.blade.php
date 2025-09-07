@@ -271,7 +271,7 @@ function openGreetingModal() {
                         </button>
                         <button 
                             onclick="closeGreetingModal()" 
-                            class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+                            class="px-4 py-2 text-sm font-medium bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md" style="color: rgb(78, 29, 4);"
                         >
                             {{ __('greetingmodal.action-continue') }}
                         </button>
@@ -629,12 +629,11 @@ function updateWeatherIcon(iconCode, condition) {
     const iconContainer = document.querySelector('.weather-icon-container');
     if (!iconContainer) return;
 
-    // Add weather-specific animations
+    // Add weather-specific styling
     iconContainer.className = 'w-12 h-12 rounded-full flex items-center justify-center weather-icon-container';
     
-    // Determine background color and animation based on weather condition
-    let bgClass = 'bg-yellow-100 dark:bg-yellow-900/30';
-    let animationClass = '';
+    // Determine background color based on weather condition
+    let bgClass = 'bg-white dark:bg-gray-700/30';
     
     // Handle undefined condition
     if (!condition) {
@@ -645,33 +644,27 @@ function updateWeatherIcon(iconCode, condition) {
     switch (condition.toLowerCase()) {
         case 'clear':
         case 'sunny':
-            bgClass = 'bg-yellow-100 dark:bg-yellow-900/30';
-            animationClass = 'animate-pulse';
+            bgClass = 'bg-white dark:bg-gray-700/30';
             break;
         case 'clouds':
         case 'cloudy':
-            bgClass = 'bg-gray-100 dark:bg-gray-700/30';
-            animationClass = 'animate-pulse';
+            bgClass = 'bg-white dark:bg-gray-700/30';
             break;
         case 'rain':
         case 'drizzle':
-            bgClass = 'bg-blue-100 dark:bg-blue-900/30';
-            animationClass = 'animate-pulse';
+            bgClass = 'bg-white dark:bg-gray-700/30';
             break;
         case 'thunderstorm':
-            bgClass = 'bg-purple-100 dark:bg-purple-900/30';
-            animationClass = 'animate-ping';
+            bbgClass = 'bg-white dark:bg-gray-700/30';
             break;
         case 'snow':
-            bgClass = 'bg-blue-50 dark:bg-blue-800/30';
-            animationClass = 'animate-pulse';
+            bgClass = 'bg-white dark:bg-gray-700/30';
             break;
         default:
-            bgClass = 'bg-gray-100 dark:bg-gray-700/30';
-            animationClass = 'animate-pulse';
+            bgClass = 'bg-white dark:bg-gray-700/30';
     }
     
-    iconContainer.className += ` ${bgClass} ${animationClass}`;
+    iconContainer.className += ` ${bgClass}`;
     
     // Update icon with OpenWeatherMap icon
     iconContainer.innerHTML = `
