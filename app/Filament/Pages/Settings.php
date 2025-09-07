@@ -130,7 +130,7 @@ class Settings extends Page
             'latitude' => $latitude,
             'longitude' => $longitude,
             'city' => $city,
-            'country' => $country
+            'country' => $country,
         ]);
 
         // Update only specific location fields without affecting other form data
@@ -151,14 +151,14 @@ class Settings extends Page
 
         // Debug: Log timezone after update
         \Log::info('Location detected - Timezone after update:', [
-            'timezone' => $this->data['timezone'] ?? 'not set'
+            'timezone' => $this->data['timezone'] ?? 'not set',
         ]);
 
         Notification::make()
             ->title(__('settings.form.location_detected'))
             ->body(__('settings.form.location_detected_body', [
                 'city' => $city ?? 'Unknown',
-                'country' => $country ?? 'Unknown'
+                'country' => $country ?? 'Unknown',
             ]))
             ->success()
             ->send();
@@ -328,6 +328,56 @@ class Settings extends Page
                     ->description(__('settings.section.location_timezone_description'))
                     ->collapsible()
                     ->schema([
+                        // Location actions
+                        Forms\Components\Grid::make(12)
+                            ->schema([
+                                Forms\Components\Placeholder::make('location_actions_label')
+                                    ->label('')
+                                    ->columnSpan(4),
+
+                                Forms\Components\Actions::make([
+                                    \Filament\Forms\Components\Actions\Action::make('detect_location')
+                                        ->label(__('settings.form.detect_location'))
+                                        ->icon('heroicon-o-map-pin')
+                                        ->color('gray')
+                                        ->action(function ($set) {
+                                            // Dispatch browser event to detect location
+                                            $this->dispatch('detect-user-location');
+
+                                            Notification::make()
+                                                ->title(__('settings.form.location_detection_started'))
+                                                ->body(__('settings.form.location_detection_started_body'))
+                                                ->info()
+                                                ->send();
+                                        }),
+
+                                    \Filament\Forms\Components\Actions\Action::make('clear_location')
+                                        ->label(__('settings.form.clear_location'))
+                                        ->icon('heroicon-o-trash')
+                                        ->color('danger')
+                                        ->outlined()
+                                        ->visible(function ($get) {
+                                            return !empty($get('city')) || 
+                                                   !empty($get('country')) || 
+                                                   !empty($get('latitude')) || 
+                                                   !empty($get('longitude'));
+                                        })
+                                        ->action(function ($set) {
+                                            $set('city', '');
+                                            $set('country', '');
+                                            $set('latitude', '');
+                                            $set('longitude', '');
+
+                                            Notification::make()
+                                                ->title(__('settings.form.location_cleared'))
+                                                ->body(__('settings.form.location_cleared_body'))
+                                                ->success()
+                                                ->send();
+                                        }),
+                                ])
+                                    ->columns(2)
+                                    ->columnSpan(8),
+                            ]),
                         // Location fields
                         Forms\Components\Grid::make(12)
                             ->schema([
@@ -366,51 +416,6 @@ class Settings extends Page
                                             ->maxValue(180)
                                             ->columnSpan(4),
                                     ])
-                                    ->columnSpan(8),
-                            ]),
-
-                        // Location actions
-                        Forms\Components\Grid::make(12)
-                            ->schema([
-                                Forms\Components\Placeholder::make('location_actions_label')
-                                    ->label('')
-                                    ->columnSpan(4),
-
-                                Forms\Components\Actions::make([
-                                    \Filament\Forms\Components\Actions\Action::make('detect_location')
-                                        ->label(__('settings.form.detect_location'))
-                                        ->icon('heroicon-o-map-pin')
-                                        ->color('primary')
-                                        ->action(function ($set) {
-                                            // Dispatch browser event to detect location
-                                            $this->dispatch('detect-user-location');
-
-                                            Notification::make()
-                                                ->title(__('settings.form.location_detection_started'))
-                                                ->body(__('settings.form.location_detection_started_body'))
-                                                ->info()
-                                                ->send();
-                                        }),
-
-                                    \Filament\Forms\Components\Actions\Action::make('clear_location')
-                                        ->label(__('settings.form.clear_location'))
-                                        ->icon('heroicon-o-x-mark')
-                                        ->color('gray')
-                                        ->outlined()
-                                        ->action(function ($set) {
-                                            $set('city', '');
-                                            $set('country', '');
-                                            $set('latitude', '');
-                                            $set('longitude', '');
-
-                                            Notification::make()
-                                                ->title(__('settings.form.location_cleared'))
-                                                ->body(__('settings.form.location_cleared_body'))
-                                                ->success()
-                                                ->send();
-                                        }),
-                                ])
-                                    ->columns(2)
                                     ->columnSpan(8),
                             ]),
 

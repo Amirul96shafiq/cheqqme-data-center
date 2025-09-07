@@ -19,8 +19,8 @@ return [
     // Form fields
     'form' => [
         // API
-        'current_timezone' => 'Your Timezone',
-        'timezone' => 'Your Timezone',
+        'current_timezone' => 'Timezone Settings',
+        'timezone' => 'Timezone Settings',
         'current_time_in_timezone' => 'Current Time in Timezone',
         'select_timezone_to_preview' => 'Select a timezone to preview the current time.',
         'timezone_preview_description' => 'Preview the current time in your timezone.',
@@ -103,8 +103,8 @@ return [
         'country' => 'Country',
         'latitude' => 'Latitude',
         'longitude' => 'Longitude',
-        'detect_location' => 'Detect Location',
-        'clear_location' => 'Clear Location',
+        'detect_location' => 'Set Location',
+        'clear_location' => 'Delete Location',
         'location_detection_started' => 'Location Detection Started',
         'location_detection_started_body' => 'Please allow location access in your browser to detect your current location.',
         'location_detected' => 'Location Detected',
