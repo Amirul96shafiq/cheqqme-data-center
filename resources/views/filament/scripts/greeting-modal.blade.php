@@ -39,13 +39,13 @@ function openGreetingModal() {
                                         @svg('heroicon-o-sun', 'w-6 h-6 text-yellow-600 dark:text-yellow-400')
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white weather-condition">Sunny</h4>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 weather-location">Kuala Lumpur, Malaysia</p>
+                                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white weather-condition">Loading...</h4>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 weather-location">Loading...</p>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-2xl font-bold text-gray-900 dark:text-white current-temp">28°C</div>
-                                    <div class="text-sm text-gray-600 dark:text-gray-400 feels-like">Feels like 32°C</div>
+                                    <div class="text-2xl font-bold text-gray-900 dark:text-white current-temp">Loading...</div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 feels-like">Feels like Loading...</div>
                                 </div>
                             </div>
                         </div>
@@ -53,32 +53,48 @@ function openGreetingModal() {
                         <!-- Weather Details -->
                         <div class="grid grid-cols-2 gap-3">
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                                <div class="flex items-center space-x-2 mb-1">
-                                    @svg('heroicon-o-cloud', 'w-4 h-4 text-gray-500 dark:text-gray-400')
-                                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Humidity</span>
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0">
+                                        @svg('heroicon-o-cloud', 'w-6 h-6 text-gray-500 dark:text-gray-400')
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Humidity</div>
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-white humidity-value">Loading...</div>
+                                    </div>
                                 </div>
-                                <div class="text-sm font-semibold text-gray-900 dark:text-white humidity-value">75%</div>
                             </div>
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                                <div class="flex items-center space-x-2 mb-1">
-                                    @svg('heroicon-o-arrow-down-circle', 'w-4 h-4 text-gray-500 dark:text-gray-400')
-                                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Wind</span>
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0">
+                                        @svg('heroicon-o-arrow-down-circle', 'w-6 h-6 text-gray-500 dark:text-gray-400')
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Wind</div>
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-white wind-value">Loading...</div>
+                                    </div>
                                 </div>
-                                <div class="text-sm font-semibold text-gray-900 dark:text-white wind-value">12 km/h</div>
                             </div>
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                                <div class="flex items-center space-x-2 mb-1">
-                                    @svg('heroicon-o-bolt', 'w-4 h-4 text-gray-500 dark:text-gray-400')
-                                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">UV Index</span>
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0">
+                                        @svg('heroicon-o-bolt', 'w-6 h-6 text-gray-500 dark:text-gray-400')
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">UV Index</div>
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-white uv-value">Loading...</div>
+                                    </div>
                                 </div>
-                                <div class="text-sm font-semibold text-gray-900 dark:text-white uv-value">High</div>
                             </div>
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                                <div class="flex items-center space-x-2 mb-1">
-                                    @svg('heroicon-o-clock', 'w-4 h-4 text-gray-500 dark:text-gray-400')
-                                    <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Sunset</span>
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex-shrink-0">
+                                        @svg('heroicon-o-clock', 'w-6 h-6 text-gray-500 dark:text-gray-400')
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Sunset</div>
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-white sunset-value">Loading...</div>
+                                    </div>
                                 </div>
-                                <div class="text-sm font-semibold text-gray-900 dark:text-white sunset-value">7:15 PM</div>
                             </div>
                         </div>
                         
@@ -91,49 +107,49 @@ function openGreetingModal() {
                                             <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Today</span>
                                             @svg('heroicon-o-sun', 'w-5 h-5 text-yellow-500')
                                         </div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">28°C / 24°C</div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
                                     </div>
                                     <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                         <div class="flex items-center space-x-3">
                                             <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tomorrow</span>
                                             @svg('heroicon-o-cloud', 'w-5 h-5 text-blue-500')
                                         </div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">26°C / 22°C</div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
                                     </div>
                                     <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                         <div class="flex items-center space-x-3">
                                             <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tuesday</span>
                                             @svg('heroicon-o-cloud', 'w-5 h-5 text-gray-500')
                                         </div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">25°C / 21°C</div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
                                     </div>
                                     <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                         <div class="flex items-center space-x-3">
                                             <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Wednesday</span>
                                             @svg('heroicon-o-cloud', 'w-5 h-5 text-blue-500')
                                         </div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">26°C / 22°C</div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
                                     </div>
                                     <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                         <div class="flex items-center space-x-3">
                                             <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Thursday</span>
                                             @svg('heroicon-o-cloud', 'w-5 h-5 text-blue-500')
                                         </div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">27°C / 23°C</div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
                                     </div>
                                     <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                         <div class="flex items-center space-x-3">
                                             <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Friday</span>
                                             @svg('heroicon-o-cloud', 'w-5 h-5 text-blue-500')
                                         </div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">29°C / 25°C</div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
                                     </div>
                                     <div class="flex items-center justify-between py-2">
                                         <div class="flex items-center space-x-3">
                                             <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Saturday</span>
                                             @svg('heroicon-o-cloud', 'w-5 h-5 text-blue-500')
                                         </div>
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">26°C / 22°C</div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
                                     </div>
                                 </div>
                             </div>
