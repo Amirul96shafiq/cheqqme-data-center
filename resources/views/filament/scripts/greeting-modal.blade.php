@@ -146,7 +146,7 @@ function openGreetingModal() {
                 </div>
                 
                 <!-- Greeting Section (30% width) -->
-                <div class="p-6" style="width: 40%;">
+                <div class="p-6 flex flex-col justify-center" style="width: 40%;">
                 <!-- Close Button -->
                 <button 
                     onclick="closeGreetingModal()" 
