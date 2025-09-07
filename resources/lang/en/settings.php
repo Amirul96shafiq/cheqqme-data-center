@@ -114,6 +114,14 @@ return [
         'location_cleared' => 'Location Cleared',
         'location_cleared_body' => 'Your location data has been cleared.',
 
+        // Weather Preview
+        'weather_preview' => 'Weather Preview',
+        'weather_preview_description' => 'Preview current weather for your selected location.',
+        'select_location_to_preview_weather' => 'Enter city and country to preview weather.',
+        'weather_data_unavailable' => 'Weather data unavailable',
+        'fetching_weather' => 'Fetching weather data...',
+        'weather_error' => 'Unable to fetch weather data',
+
         // Actions
         'save' => 'Save Settings',
         'saved' => 'Settings Saved',

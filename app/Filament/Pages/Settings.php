@@ -357,10 +357,10 @@ class Settings extends Page
                                         ->color('danger')
                                         ->outlined()
                                         ->visible(function ($get) {
-                                            return !empty($get('city')) || 
-                                                   !empty($get('country')) || 
-                                                   !empty($get('latitude')) || 
-                                                   !empty($get('longitude'));
+                                            return !empty($get('city')) ||
+                                                !empty($get('country')) ||
+                                                !empty($get('latitude')) ||
+                                                !empty($get('longitude'));
                                         })
                                         ->action(function ($set) {
                                             $set('city', '');
@@ -391,11 +391,13 @@ class Settings extends Page
                                         Forms\Components\TextInput::make('city')
                                             ->label(__('settings.form.city'))
                                             ->placeholder('e.g., Kuala Lumpur')
+                                            ->live()
                                             ->columnSpan(4),
 
                                         Forms\Components\TextInput::make('country')
                                             ->label(__('settings.form.country'))
                                             ->placeholder('e.g., MY')
+                                            ->live()
                                             ->columnSpan(4),
 
                                         Forms\Components\TextInput::make('latitude')
@@ -417,6 +419,104 @@ class Settings extends Page
                                             ->columnSpan(4),
                                     ])
                                     ->columnSpan(8),
+                            ]),
+
+                        // Weather preview section
+                        Forms\Components\Section::make(__('settings.form.weather_preview'))
+                            ->collapsible()
+                            ->collapsed()
+                            ->description(__('settings.form.weather_preview_description'))
+                            ->schema([
+                                Forms\Components\Grid::make(12)
+                                    ->schema([
+                                        Forms\Components\Placeholder::make('weather_preview')
+                                            ->label('')
+                                            ->live()
+                                            ->content(function ($get) {
+                                                $city = $get('city');
+                                                $country = $get('country');
+
+                                                if (empty($city) || empty($country)) {
+                                                    $html = '<div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                                        <div class="text-2xl font-bold">null</div>
+                                                        <div class="text-sm mt-2">No location data available</div>
+                                                    </div>';
+
+                                                    return new \Illuminate\Support\HtmlString($html);
+                                                }
+
+                                                try {
+                                                    $weatherData = $this->getWeatherPreviewData($city, $country);
+
+                                                    if (isset($weatherData['error']) && $weatherData['error']) {
+                                                        $html = '<div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">';
+                                                        $html .= '<div class="flex items-center">';
+                                                        $html .= '<div class="flex-shrink-0">';
+                                                        $html .= '<svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">';
+                                                        $html .= '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />';
+                                                        $html .= '</svg>';
+                                                        $html .= '</div>';
+                                                        $html .= '<div class="ml-3">';
+                                                        $html .= '<p class="text-sm font-medium text-red-800 dark:text-red-200">' . $weatherData['message'] . '</p>';
+                                                        $html .= '</div>';
+                                                        $html .= '</div>';
+                                                        $html .= '</div>';
+
+                                                        return new \Illuminate\Support\HtmlString($html);
+                                                    }
+
+                                                    $current = $weatherData['current'];
+                                                    $location = $weatherData['location'];
+
+                                                    $html = '<div class="bg-gradient-to-r from-teal-500 to-teal-600 dark:from-teal-600 dark:to-teal-700 p-6 rounded-lg text-white">';
+                                                    $html .= '<div class="flex items-center justify-between">';
+
+                                                    // Left side - Weather icon and condition
+                                                    $html .= '<div class="flex items-center space-x-4">';
+                                                    $html .= '<div class="flex-shrink-0">';
+                                                    $html .= '<div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">';
+                                                    $html .= '<svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">';
+                                                    $html .= '<path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z" />';
+                                                    $html .= '</svg>';
+                                                    $html .= '</div>';
+                                                    $html .= '</div>';
+                                                    $html .= '<div>';
+                                                    $html .= '<h3 class="text-lg font-semibold">' . ucfirst($current['condition']) . '</h3>';
+                                                    $html .= '<p class="text-teal-100 text-sm">' . ucfirst($current['description']) . '</p>';
+                                                    $html .= '</div>';
+                                                    $html .= '</div>';
+
+                                                    // Right side - Temperature and location
+                                                    $html .= '<div class="text-right">';
+                                                    $html .= '<div class="text-3xl font-bold">' . $current['temperature'] . '°C</div>';
+                                                    $html .= '<div class="text-teal-100 text-sm">Feels like ' . $current['feels_like'] . '°C</div>';
+                                                    $html .= '<div class="text-teal-100 text-sm mt-1">' . $location['city'] . ', ' . $location['country'] . '</div>';
+                                                    $html .= '</div>';
+
+                                                    $html .= '</div>';
+                                                    $html .= '</div>';
+
+                                                    return new \Illuminate\Support\HtmlString($html);
+                                                } catch (\Exception $e) {
+                                                    \Log::error('Weather preview error: ' . $e->getMessage());
+                                                    $html = '<div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">';
+                                                    $html .= '<div class="flex items-center">';
+                                                    $html .= '<div class="flex-shrink-0">';
+                                                    $html .= '<svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">';
+                                                    $html .= '<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />';
+                                                    $html .= '</svg>';
+                                                    $html .= '</div>';
+                                                    $html .= '<div class="ml-3">';
+                                                    $html .= '<p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">' . __('settings.form.weather_error') . '</p>';
+                                                    $html .= '</div>';
+                                                    $html .= '</div>';
+                                                    $html .= '</div>';
+
+                                                    return new \Illuminate\Support\HtmlString($html);
+                                                }
+                                            })
+                                            ->columnSpan(12),
+                                    ]),
                             ]),
 
                         // Timezone row with label and field
@@ -626,5 +726,113 @@ class Settings extends Page
 
         // Default English format
         return $date->format('l, F j, Y');
+    }
+
+    // Get weather preview data
+    private function getWeatherPreviewData(string $city, string $country): array
+    {
+        try {
+            // Generate mock weather data based on location
+            $mockWeatherData = $this->generateMockWeatherData($city, $country);
+
+            return $mockWeatherData;
+        } catch (\Exception $e) {
+            \Log::error('Weather preview error: ' . $e->getMessage());
+
+            return [
+                'error' => true,
+                'message' => __('settings.form.weather_error'),
+                'location' => [
+                    'city' => $city,
+                    'country' => $country,
+                ],
+                'current' => [
+                    'temperature' => '-',
+                    'feels_like' => '-',
+                    'condition' => 'Unknown',
+                    'description' => __('settings.form.weather_data_unavailable'),
+                    'icon' => '01d',
+                ],
+            ];
+        }
+    }
+
+    // Generate mock weather data based on location
+    private function generateMockWeatherData(string $city, string $country): array
+    {
+        // Generate consistent mock data based on city and country
+        $seed = crc32($city . $country);
+        mt_srand($seed);
+
+        // Mock weather conditions
+        $conditions = ['Clear', 'Clouds', 'Rain', 'Sunny', 'Partly Cloudy', 'Overcast'];
+        $descriptions = [
+            'Clear' => 'clear sky',
+            'Clouds' => 'few clouds',
+            'Rain' => 'light rain',
+            'Sunny' => 'sunny',
+            'Partly Cloudy' => 'partly cloudy',
+            'Overcast' => 'overcast clouds',
+        ];
+
+        $condition = $conditions[mt_rand(0, count($conditions) - 1)];
+        $description = $descriptions[$condition] ?? 'clear sky';
+
+        // Generate temperature based on country (rough climate zones)
+        $baseTemp = $this->getBaseTemperatureForCountry($country);
+        $temperature = $baseTemp + mt_rand(-5, 10);
+        $feelsLike = $temperature + mt_rand(-2, 3);
+
+        return [
+            'location' => [
+                'city' => $city,
+                'country' => $country,
+            ],
+            'current' => [
+                'temperature' => $temperature,
+                'feels_like' => $feelsLike,
+                'condition' => $condition,
+                'description' => $description,
+                'icon' => '01d',
+                'humidity' => mt_rand(40, 80),
+                'pressure' => mt_rand(1000, 1020),
+                'wind_speed' => mt_rand(5, 25),
+                'wind_direction' => mt_rand(0, 360),
+                'uv_index' => mt_rand(1, 8),
+                'sunrise' => '6:30 AM',
+                'sunset' => '6:30 PM',
+            ],
+            'timestamp' => now()->toISOString(),
+            'cached' => false,
+        ];
+    }
+
+    // Get base temperature for country (mock climate data)
+    private function getBaseTemperatureForCountry(string $country): int
+    {
+        $countryTemps = [
+            'MY' => 28, // Malaysia - tropical
+            'SG' => 28, // Singapore - tropical
+            'TH' => 30, // Thailand - tropical
+            'ID' => 28, // Indonesia - tropical
+            'PH' => 28, // Philippines - tropical
+            'US' => 20, // United States - temperate
+            'CA' => 15, // Canada - temperate
+            'GB' => 12, // United Kingdom - temperate
+            'AU' => 22, // Australia - temperate
+            'JP' => 18, // Japan - temperate
+            'KR' => 16, // South Korea - temperate
+            'CN' => 18, // China - temperate
+            'IN' => 32, // India - tropical/subtropical
+            'BR' => 26, // Brazil - tropical
+            'MX' => 24, // Mexico - subtropical
+            'RU' => 5,  // Russia - cold
+            'DE' => 14, // Germany - temperate
+            'FR' => 15, // France - temperate
+            'IT' => 18, // Italy - temperate
+            'ES' => 20, // Spain - temperate
+        ];
+
+        return $countryTemps[strtoupper($country)] ?? 20; // Default temperate
     }
 }
