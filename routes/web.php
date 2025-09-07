@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\WeatherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -46,7 +47,7 @@ Route::get('/', function () {
 Route::get('/test-mentions', function () {
     $user = \App\Models\User::first();
     $task = \App\Models\Task::first();
-    
+
     if (!$user || !$task) {
         return response()->json([
             'error' => 'No user or task found. Please ensure you have test data.',
@@ -54,7 +55,7 @@ Route::get('/test-mentions', function () {
             'tasks_count' => \App\Models\Task::count(),
         ]);
     }
-    
+
     return view('test-mentions', compact('user', 'task'));
 });
 
@@ -92,4 +93,13 @@ Route::middleware('auth')->group(function () {
 
         return response()->json(['count' => $count]);
     })->name('action-board.assigned-active-count');
+});
+
+// Weather API routes
+Route::middleware('auth')->group(function () {
+    Route::get('/weather/current', [WeatherController::class, 'getCurrentWeather'])->name('weather.current');
+    Route::get('/weather/forecast', [WeatherController::class, 'getForecast'])->name('weather.forecast');
+    Route::get('/weather/data', [WeatherController::class, 'getWeatherData'])->name('weather.data');
+    Route::post('/weather/location', [WeatherController::class, 'updateLocation'])->name('weather.location');
+    Route::post('/weather/clear-cache', [WeatherController::class, 'clearCache'])->name('weather.clear-cache');
 });

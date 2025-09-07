@@ -1,5 +1,7 @@
 <script>
 function openGreetingModal() {
+    console.log('openGreetingModal function called!');
+    
     // Create modal overlay
     const modal = document.createElement('div');
     modal.id = 'greeting-modal-overlay';
@@ -20,9 +22,9 @@ function openGreetingModal() {
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-5xl w-full mx-4 transform transition-all duration-300 scale-95 opacity-0 border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="flex">
                 <!-- Weather Information Section (60% width) -->
-                <div class="p-6 border-r border-gray-200 dark:border-gray-700" style="width: 60%;">
+                <div class="p-6 border-r border-gray-200 dark:border-gray-700 weather-section" style="width: 60%;">
                     <div class="flex items-center justify-between mb-4">
-                        <button onclick="closeGreetingModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <button onclick="refreshWeatherData()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="Refresh Weather Data">
                             @svg('heroicon-o-arrow-path', 'w-5 h-5')
                         </button>
                     </div>
@@ -33,17 +35,17 @@ function openGreetingModal() {
                         <div class="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-3">
-                                    <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
+                                    <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center weather-icon-container">
                                         @svg('heroicon-o-sun', 'w-6 h-6 text-yellow-600 dark:text-yellow-400')
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Sunny</h4>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400">Kuala Lumpur, Malaysia</p>
+                                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white weather-condition">Sunny</h4>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 weather-location">Kuala Lumpur, Malaysia</p>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-2xl font-bold text-gray-900 dark:text-white">28°C</div>
-                                    <div class="text-sm text-gray-600 dark:text-gray-400">Feels like 32°C</div>
+                                    <div class="text-2xl font-bold text-gray-900 dark:text-white current-temp">28°C</div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 feels-like">Feels like 32°C</div>
                                 </div>
                             </div>
                         </div>
@@ -55,28 +57,28 @@ function openGreetingModal() {
                                     @svg('heroicon-o-cloud', 'w-4 h-4 text-gray-500 dark:text-gray-400')
                                     <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Humidity</span>
                                 </div>
-                                <div class="text-sm font-semibold text-gray-900 dark:text-white">75%</div>
+                                <div class="text-sm font-semibold text-gray-900 dark:text-white humidity-value">75%</div>
                             </div>
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                 <div class="flex items-center space-x-2 mb-1">
                                     @svg('heroicon-o-arrow-down-circle', 'w-4 h-4 text-gray-500 dark:text-gray-400')
                                     <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Wind</span>
                                 </div>
-                                <div class="text-sm font-semibold text-gray-900 dark:text-white">12 km/h</div>
+                                <div class="text-sm font-semibold text-gray-900 dark:text-white wind-value">12 km/h</div>
                             </div>
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                 <div class="flex items-center space-x-2 mb-1">
                                     @svg('heroicon-o-bolt', 'w-4 h-4 text-gray-500 dark:text-gray-400')
                                     <span class="text-xs font-medium text-gray-600 dark:text-gray-400">UV Index</span>
                                 </div>
-                                <div class="text-sm font-semibold text-gray-900 dark:text-white">High</div>
+                                <div class="text-sm font-semibold text-gray-900 dark:text-white uv-value">High</div>
                             </div>
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                 <div class="flex items-center space-x-2 mb-1">
                                     @svg('heroicon-o-clock', 'w-4 h-4 text-gray-500 dark:text-gray-400')
                                     <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Sunset</span>
                                 </div>
-                                <div class="text-sm font-semibold text-gray-900 dark:text-white">7:15 PM</div>
+                                <div class="text-sm font-semibold text-gray-900 dark:text-white sunset-value">7:15 PM</div>
                             </div>
                         </div>
                         
@@ -289,6 +291,48 @@ function openGreetingModal() {
         setTimeout(() => {
             updateForecastDayLabels();
         }, 100);
+        
+        // Debug weather elements right after modal creation
+        setTimeout(() => {
+            console.log('=== DEBUGGING WEATHER ELEMENTS RIGHT AFTER MODAL CREATION ===');
+            debugWeatherElements();
+            
+            // Additional focused debug
+            console.log('=== FOCUSED WEATHER DEBUG ===');
+            const weatherSection = document.querySelector('.weather-section');
+            console.log('Weather section found:', !!weatherSection);
+            if (weatherSection) {
+                console.log('Weather section innerHTML length:', weatherSection.innerHTML.length);
+                console.log('Contains current-temp:', weatherSection.innerHTML.includes('current-temp'));
+                console.log('Contains weather-condition:', weatherSection.innerHTML.includes('weather-condition'));
+                console.log('Contains weather-location:', weatherSection.innerHTML.includes('weather-location'));
+                console.log('Contains feels-like:', weatherSection.innerHTML.includes('feels-like'));
+            }
+        }, 150);
+        
+        // Fetch weather data and detect location AFTER modal is fully rendered
+        setTimeout(() => {
+            detectUserLocation();
+            // Wait for modal to be fully visible before fetching weather
+            setTimeout(() => {
+                console.log('=== DEBUGGING WEATHER ELEMENTS RIGHT BEFORE API CALL ===');
+                debugWeatherElements();
+                
+                // Additional focused debug before API call
+                console.log('=== FOCUSED WEATHER DEBUG BEFORE API CALL ===');
+                const weatherSection = document.querySelector('.weather-section');
+                console.log('Weather section found:', !!weatherSection);
+                if (weatherSection) {
+                    console.log('Weather section innerHTML length:', weatherSection.innerHTML.length);
+                    console.log('Contains current-temp:', weatherSection.innerHTML.includes('current-temp'));
+                    console.log('Contains weather-condition:', weatherSection.innerHTML.includes('weather-condition'));
+                    console.log('Contains weather-location:', weatherSection.innerHTML.includes('weather-location'));
+                    console.log('Contains feels-like:', weatherSection.innerHTML.includes('feels-like'));
+                }
+                
+                fetchWeatherData();
+            }, 500);
+        }, 200);
     }, 10);
     
     // Prevent body scroll
@@ -422,6 +466,7 @@ document.addEventListener('click', function(e) {
         console.log('Greeting text clicked via event delegation');
         e.preventDefault();
         e.stopPropagation();
+        console.log('About to call openGreetingModal...');
         openGreetingModal();
     }
 });
@@ -523,9 +568,459 @@ window.toggleDataManagementVideo = function() {
         localStorage.setItem('forecast-last-update', todayString);
         console.log('Forecast day labels updated for', todayString);
     }
+
+
 };
+
+// Weather API Integration Functions (Global Scope)
+function updateForecastDayLabels() {
+    const today = new Date();
+    const todayString = today.toDateString();
+    
+    // Check if we've already updated today
+    const lastUpdate = localStorage.getItem('forecast-last-update');
+    if (lastUpdate === todayString) {
+        return; // Already updated today, no need to update
+    }
+    
+    // Update day labels
+    const forecastContainer = document.getElementById('forecast-container');
+    if (!forecastContainer) return;
+    
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const daySpans = forecastContainer.querySelectorAll('.text-sm.text-gray-600.dark\\:text-gray-400.w-16');
+    
+    daySpans.forEach((span, index) => {
+        if (index === 0) {
+            span.textContent = 'Today';
+        } else if (index === 1) {
+            span.textContent = 'Tomorrow';
+        } else {
+            // Calculate the correct day for each forecast entry
+            const forecastDate = new Date(today);
+            forecastDate.setDate(today.getDate() + index);
+            span.textContent = dayNames[forecastDate.getDay()];
+        }
+    });
+    
+    // Save today's date as last update
+    localStorage.setItem('forecast-last-update', todayString);
+    console.log('Forecast day labels updated for', todayString);
+}
+
+function showWeatherLoading() {
+    // Loading spinner disabled to prevent replacing weather elements
+    console.log('Loading spinner called but disabled to prevent element replacement');
+}
+
+function updateWeatherData(weatherData) {
+    console.log('updateWeatherData called with:', weatherData);
+    const weatherSection = document.querySelector('.weather-section');
+    if (!weatherSection || !weatherData) {
+        console.error('Weather section not found or no data:', weatherSection, weatherData);
+        return;
+    }
+
+    const { current, forecast, error } = weatherData;
+    
+    if (error) {
+        console.error('Weather data has error:', error);
+        showWeatherError();
+        return;
+    }
+
+    console.log('Updating current weather:', current);
+    console.log('Updating forecast:', forecast);
+
+    // Update current weather
+    updateCurrentWeather(current);
+    
+    // Update forecast
+    updateForecastData(forecast);
+}
+
+function updateCurrentWeather(weatherData, retryCount = 0) {
+    console.log('updateCurrentWeather called with:', weatherData, 'retryCount:', retryCount);
+    
+    // Extract current weather data from nested structure
+    // weatherData is the 'current' object from the API response
+    const actualCurrentDetails = weatherData.current || {};
+    const locationDetails = weatherData.location || {};
+    
+    console.log('Extracted weather data:', {
+        temperature: actualCurrentDetails.temperature,
+        feels_like: actualCurrentDetails.feels_like,
+        condition: actualCurrentDetails.condition,
+        icon: actualCurrentDetails.icon,
+        location: locationDetails
+    });
+    
+    console.log('Location details breakdown:', {
+        city: locationDetails.city,
+        country: locationDetails.country,
+        fullLocation: locationDetails
+    });
+    
+    // Check if all required elements exist
+    const tempElement = document.querySelector('.current-temp');
+    const feelsLikeElement = document.querySelector('.feels-like');
+    const conditionElement = document.querySelector('.weather-condition');
+    const locationElement = document.querySelector('.weather-location');
+    
+    console.log('Element check results:');
+    console.log('- tempElement:', tempElement ? 'found' : 'NOT FOUND');
+    console.log('- feelsLikeElement:', feelsLikeElement ? 'found' : 'NOT FOUND');
+    console.log('- conditionElement:', conditionElement ? 'found' : 'NOT FOUND');
+    console.log('- locationElement:', locationElement ? 'found' : 'NOT FOUND');
+    
+    if (!tempElement || !feelsLikeElement || !conditionElement || !locationElement) {
+        if (retryCount < 10) { // Limit retries to prevent infinite loop
+            console.error('Some weather elements not found, retrying in 100ms... (attempt', retryCount + 1, 'of 10)');
+            if (retryCount === 0) {
+                debugWeatherElements(); // Debug on first retry
+            }
+            setTimeout(() => updateCurrentWeather(current, retryCount + 1), 100);
+            return;
+        } else {
+            console.error('Max retries reached, giving up on weather update');
+            debugWeatherElements(); // Debug when giving up
+            return;
+        }
+    }
+    
+    // Update temperature
+    tempElement.textContent = actualCurrentDetails.temperature + '°C';
+    console.log('Updated temperature to:', actualCurrentDetails.temperature + '°C');
+
+    // Update feels like
+    feelsLikeElement.textContent = 'Feels like ' + actualCurrentDetails.feels_like + '°C';
+    console.log('Updated feels like to:', actualCurrentDetails.feels_like + '°C');
+
+    // Update condition
+    conditionElement.textContent = actualCurrentDetails.condition;
+    console.log('Updated condition to:', actualCurrentDetails.condition);
+
+    // Update location
+    locationElement.textContent = locationDetails.city + ', ' + locationDetails.country;
+    console.log('Updated location to:', locationDetails.city + ', ' + locationDetails.country);
+
+    // Update weather icon with animation
+    updateWeatherIcon(actualCurrentDetails.icon, actualCurrentDetails.condition);
+
+    // Update weather details
+    updateWeatherDetails(actualCurrentDetails);
+}
+
+function updateWeatherIcon(iconCode, condition) {
+    const iconContainer = document.querySelector('.weather-icon-container');
+    if (!iconContainer) return;
+
+    // Add weather-specific animations
+    iconContainer.className = 'w-12 h-12 rounded-full flex items-center justify-center weather-icon-container';
+    
+    // Determine background color and animation based on weather condition
+    let bgClass = 'bg-yellow-100 dark:bg-yellow-900/30';
+    let animationClass = '';
+    
+    // Handle undefined condition
+    if (!condition) {
+        console.log('Weather condition is undefined, using default styling');
+        condition = 'sunny'; // Default fallback
+    }
+    
+    switch (condition.toLowerCase()) {
+        case 'clear':
+        case 'sunny':
+            bgClass = 'bg-yellow-100 dark:bg-yellow-900/30';
+            animationClass = 'animate-pulse';
+            break;
+        case 'clouds':
+        case 'cloudy':
+            bgClass = 'bg-gray-100 dark:bg-gray-700/30';
+            animationClass = 'animate-bounce';
+            break;
+        case 'rain':
+        case 'drizzle':
+            bgClass = 'bg-blue-100 dark:bg-blue-900/30';
+            animationClass = 'animate-pulse';
+            break;
+        case 'thunderstorm':
+            bgClass = 'bg-purple-100 dark:bg-purple-900/30';
+            animationClass = 'animate-ping';
+            break;
+        case 'snow':
+            bgClass = 'bg-blue-50 dark:bg-blue-800/30';
+            animationClass = 'animate-pulse';
+            break;
+        default:
+            bgClass = 'bg-gray-100 dark:bg-gray-700/30';
+            animationClass = 'animate-pulse';
+    }
+    
+    iconContainer.className += ` ${bgClass} ${animationClass}`;
+    
+    // Update icon with OpenWeatherMap icon
+    iconContainer.innerHTML = `
+        <img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" 
+             alt="${condition}" 
+             class="w-6 h-6">
+    `;
+}
+
+function updateWeatherDetails(current) {
+    // Update humidity
+    const humidityElement = document.querySelector('.humidity-value');
+    if (humidityElement) {
+        humidityElement.textContent = current.humidity + '%';
+    }
+
+    // Update wind
+    const windElement = document.querySelector('.wind-value');
+    if (windElement) {
+        windElement.textContent = current.wind_speed + ' km/h';
+    }
+
+    // Update UV index
+    const uvElement = document.querySelector('.uv-value');
+    if (uvElement) {
+        uvElement.textContent = current.uv_index;
+    }
+
+    // Update sunset
+    const sunsetElement = document.querySelector('.sunset-value');
+    if (sunsetElement) {
+        sunsetElement.textContent = current.sunset;
+    }
+}
+
+function updateForecastData(weatherData) {
+    console.log('updateForecastData called with:', weatherData);
+    
+    // Extract forecast data from nested structure
+    // weatherData is the 'forecast' object from the API response
+    const forecast = weatherData.forecast || [];
+    console.log('Extracted forecast data:', forecast);
+    
+    const forecastContainer = document.getElementById('forecast-container');
+    if (!forecastContainer || !Array.isArray(forecast)) {
+        console.log('Forecast container not found or forecast is not an array');
+        return;
+    }
+
+    let forecastHTML = '';
+    
+    forecast.forEach((day, index) => {
+        const isLastItem = index === forecast.length - 1;
+        const borderClass = isLastItem ? '' : 'border-b border-gray-200 dark:border-gray-600';
+        
+        forecastHTML += `
+            <div class="flex items-center justify-between py-2 ${borderClass}">
+                <div class="flex items-center space-x-3">
+                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">${day.day_name}</span>
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <img src="https://openweathermap.org/img/wn/${day.icon}@2x.png" 
+                             alt="${day.condition}" 
+                             class="w-5 h-5">
+                    </div>
+                </div>
+                <div class="text-sm font-medium text-gray-900 dark:text-white">${day.max_temp}°C / ${day.min_temp}°C</div>
+            </div>
+        `;
+    });
+
+    forecastContainer.innerHTML = forecastHTML;
+}
+
+function showWeatherError() {
+    const weatherSection = document.querySelector('.weather-section');
+    if (weatherSection) {
+        weatherSection.innerHTML = `
+            <div class="p-6">
+                <div class="text-center text-gray-500 dark:text-gray-400 mb-4">
+                    <p>Failed to retrieve weather data</p>
+                    <p class="text-sm mt-2">Weather information temporarily unavailable</p>
+                </div>
+            </div>
+        `;
+    }
+}
+
+async function fetchWeatherData(retryCount = 0) {
+    try {
+        console.log('Starting weather data fetch... retryCount:', retryCount);
+        
+        // Check if weather section exists before showing loading
+        const weatherSection = document.querySelector('.weather-section');
+        if (!weatherSection) {
+            if (retryCount < 10) { // Limit retries to prevent infinite loop
+                console.error('Weather section not found, retrying in 100ms... (attempt', retryCount + 1, 'of 10)');
+                setTimeout(() => fetchWeatherData(retryCount + 1), 100);
+                return;
+            } else {
+                console.error('Max retries reached, giving up on weather fetch');
+                return;
+            }
+        }
+        
+        // Loading spinner removed to prevent element replacement
+        console.log('Weather data fetch started - no loading spinner to prevent element replacement');
+        
+        const response = await fetch('/weather/data', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            }
+        });
+
+        console.log('Weather API response status:', response.status);
+        console.log('Weather API response ok:', response.ok);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Weather API error response:', errorText);
+            throw new Error(`Weather API request failed: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('Weather API result:', result);
+        
+        if (result.success) {
+            console.log('Weather API result.data structure:', result.data);
+            console.log('result.data.current:', result.data.current);
+            console.log('result.data.forecast:', result.data.forecast);
+            updateWeatherData(result.data);
+        } else {
+            console.error('Weather API returned success: false');
+            showWeatherError();
+        }
+    } catch (error) {
+        console.error('Weather fetch error:', error);
+        showWeatherError();
+    }
+}
+
+// Debug function to check DOM elements
+function debugWeatherElements() {
+    console.log('=== DEBUGGING WEATHER ELEMENTS ===');
+    console.log('All elements with weather-related classes:');
+    
+    const allElements = document.querySelectorAll('[class*="weather"], [class*="current"], [class*="feels"]');
+    allElements.forEach((el, index) => {
+        console.log(`${index + 1}. ${el.tagName} with classes: ${el.className}`);
+    });
+    
+    console.log('Specific weather elements:');
+    console.log('- .weather-section:', document.querySelector('.weather-section'));
+    console.log('- .current-temp:', document.querySelector('.current-temp'));
+    console.log('- .feels-like:', document.querySelector('.feels-like'));
+    console.log('- .weather-condition:', document.querySelector('.weather-condition'));
+    console.log('- .weather-location:', document.querySelector('.weather-location'));
+    
+    // Check what's actually inside the weather section
+    const weatherSection = document.querySelector('.weather-section');
+    if (weatherSection) {
+        console.log('Weather section innerHTML:', weatherSection.innerHTML);
+        console.log('Weather section children count:', weatherSection.children.length);
+        console.log('Weather section children:', Array.from(weatherSection.children).map(child => child.tagName + ' with classes: ' + child.className));
+    }
+    
+    console.log('=== END DEBUG ===');
+}
+
+async function refreshWeatherData() {
+    try {
+        console.log('Refreshing weather data...');
+        
+        // Add visual feedback to the refresh button
+        const refreshButton = document.querySelector('button[onclick="refreshWeatherData()"]');
+        if (refreshButton) {
+            refreshButton.disabled = true;
+            refreshButton.innerHTML = `
+                <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            `;
+        }
+        
+        // Clear cache first
+        await fetch('/weather/clear-cache', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            }
+        });
+        
+        // Fetch fresh data
+        await fetchWeatherData();
+        
+        console.log('Weather data refreshed successfully');
+    } catch (error) {
+        console.error('Weather refresh error:', error);
+        showWeatherError();
+    } finally {
+        // Restore refresh button
+        const refreshButton = document.querySelector('button[onclick="refreshWeatherData()"]');
+        if (refreshButton) {
+            refreshButton.disabled = false;
+            refreshButton.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            `;
+        }
+    }
+}
+
+function detectUserLocation() {
+    if (!navigator.geolocation) {
+        console.log('Geolocation not supported');
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const { latitude, longitude } = position.coords;
+            
+            try {
+                // Update user location in database
+                await fetch('/weather/location', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({
+                        latitude: latitude,
+                        longitude: longitude
+                    })
+                });
+                
+                console.log('Location updated successfully');
+            } catch (error) {
+                console.error('Location update error:', error);
+            }
+        },
+        (error) => {
+            console.log('Geolocation error:', error.message);
+            // Use default location (Kuala Lumpur)
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000 // 5 minutes
+        }
+    );
+}
 
 // Make functions globally available
 window.openGreetingModal = openGreetingModal;
 window.closeGreetingModal = closeGreetingModal;
+window.updateForecastDayLabels = updateForecastDayLabels;
+window.detectUserLocation = detectUserLocation;
+window.refreshWeatherData = refreshWeatherData;
+window.fetchWeatherData = fetchWeatherData;
+window.debugWeatherElements = debugWeatherElements;
 </script>
