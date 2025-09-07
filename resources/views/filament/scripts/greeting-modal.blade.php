@@ -32,7 +32,7 @@ function openGreetingModal() {
                     <!-- Weather Content -->
                     <div class="space-y-4">
                         <!-- Current Weather -->
-                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4">
+                        <div class="bg-gradient-to-r from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20 rounded-lg p-4">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center weather-icon-container">
@@ -718,7 +718,7 @@ function updateWeatherIcon(iconCode, condition) {
         case 'clouds':
         case 'cloudy':
             bgClass = 'bg-gray-100 dark:bg-gray-700/30';
-            animationClass = 'animate-bounce';
+            animationClass = 'animate-pulse';
             break;
         case 'rain':
         case 'drizzle':
