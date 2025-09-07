@@ -21,7 +21,7 @@ return [
         // API
         'current_timezone' => 'Timezone Settings',
         'timezone' => 'Timezone Settings',
-        'current_time_in_timezone' => 'Current Time in Timezone',
+        'current_time_in_timezone' => 'Preview Time & Timezone',
         'select_timezone_to_preview' => 'Select a timezone to preview the current time.',
         'timezone_preview_description' => 'Preview the current time in your timezone.',
         'current_api_key' => 'Your API Key',
