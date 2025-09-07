@@ -265,9 +265,7 @@ git --version     # Should show Git version
 
 ---
 
----
-
-## 🌤️ Weather System
+## Weather System
 
 ### Overview
 
