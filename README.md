@@ -44,6 +44,13 @@ It improves discoverability, reduces context switching, and lays groundwork for 
     -   Context-aware responses about platform features and navigation
     -   Conversation memory and intelligent assistance
     -   Custom CheQQme persona for platform-specific help
+-   **Weather System** with intelligent location management
+    -   Real-time weather data and 7-day forecasts via greeting modal
+    -   Smart location detection: prioritizes user settings over auto-detection
+    -   Manual location configuration in Settings page
+    -   Automatic geolocation fallback when no location is set
+    -   Location-based timezone support for sunrise/sunset times
+    -   OpenWeatherMap API integration with 3-hour caching
 -   MCP server integration (Node/Express) reading the same SQLite DB as Laravel
     -   Auth via `x-api-key` header; endpoints for users, tasks, comments, clients, projects, documents, important-urls, phone-numbers
     -   Password hash compatible: bcrypt `$2b$` is converted to `$2y$` for Laravel
@@ -257,6 +264,89 @@ git --version     # Should show Git version
     - **Password:** `password`
 
 ---
+
+---
+
+## 🌤️ Weather System
+
+### Overview
+
+The application includes a comprehensive weather system with intelligent location management that provides real-time weather information through a greeting modal interface.
+
+### Location Management Logic
+
+The weather system uses a smart priority system for location detection:
+
+#### 1. Manual Location Settings (Priority Mode)
+
+-   **When**: User has configured location in Settings page
+-   **Behavior**: Uses saved coordinates for all weather requests
+-   **Process**: No automatic geolocation detection occurs
+-   **Example**: Seoul (37.5665, 126.9780) → Always shows Seoul weather
+
+#### 2. Automatic Geolocation Detection (Fallback Mode)
+
+-   **When**: User hasn't configured location settings
+-   **Behavior**: Automatically detects current browser location
+-   **Process**: Uses browser geolocation API for weather requests
+-   **Example**: No saved location → Detects and uses current location
+
+### Location Detection Flow
+
+```
+Greeting Modal Opens
+        ↓
+Check User Location API
+        ↓
+Has Saved Location?
+        ↓
+    ┌─── YES ────→ Use Saved Location
+    │
+    └─── NO ────→ Auto-detect Current Location
+```
+
+### Testing Different Locations
+
+#### Sample Coordinates
+
+-   **Seoul, South Korea**: `37.5665, 126.9780`
+-   **Tokyo, Japan**: `35.6762, 139.6503`
+-   **New York, USA**: `40.7128, -74.0060`
+-   **London, UK**: `51.5074, -0.1278`
+
+#### Testing Steps
+
+1. Go to Settings (`/admin/settings`)
+2. Expand "Location & Timezone" section
+3. Enter coordinates manually or use "Detect Location"
+4. Save settings
+5. Open greeting modal to see weather for configured location
+
+### Technical Implementation
+
+#### API Endpoints
+
+-   `GET /weather/user-location` - Check if user has saved location
+-   `GET /weather/current` - Get current weather data
+-   `GET /weather/forecast` - Get 7-day weather forecast
+-   `POST /weather/location` - Update user location
+
+#### Key Features
+
+-   **Smart Location Detection**: Prioritizes user settings over auto-detection
+-   **Timezone Support**: Location-based sunrise/sunset times
+-   **3-Hour Caching**: Reduces API calls with intelligent caching
+-   **Error Handling**: Graceful fallback when API unavailable
+-   **Coordinate Validation**: Proper bounds checking for latitude/longitude
+
+#### Configuration
+
+```env
+OPENWEATHERMAP_API_KEY=your_api_key_here
+WEATHER_CACHE_TTL_HOURS=3
+WEATHER_DEFAULT_LATITUDE=3.1390
+WEATHER_DEFAULT_LONGITUDE=101.6869
+```
 
 ---
 

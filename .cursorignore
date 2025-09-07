@@ -52,9 +52,6 @@ coverage/
 phpunit.xml
 
 # Documentation
-*.md
-docs/
-README*
 
 # Large files
 *.log
