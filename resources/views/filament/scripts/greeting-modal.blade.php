@@ -310,28 +310,9 @@ function openGreetingModal() {
             }
         }, 150);
         
-        // Fetch weather data and detect location AFTER modal is fully rendered
+        // Check user location and fetch weather data AFTER modal is fully rendered
         setTimeout(() => {
-            detectUserLocation();
-            // Wait for modal to be fully visible before fetching weather
-            setTimeout(() => {
-                console.log('=== DEBUGGING WEATHER ELEMENTS RIGHT BEFORE API CALL ===');
-                debugWeatherElements();
-                
-                // Additional focused debug before API call
-                console.log('=== FOCUSED WEATHER DEBUG BEFORE API CALL ===');
-                const weatherSection = document.querySelector('.weather-section');
-                console.log('Weather section found:', !!weatherSection);
-                if (weatherSection) {
-                    console.log('Weather section innerHTML length:', weatherSection.innerHTML.length);
-                    console.log('Contains current-temp:', weatherSection.innerHTML.includes('current-temp'));
-                    console.log('Contains weather-condition:', weatherSection.innerHTML.includes('weather-condition'));
-                    console.log('Contains weather-location:', weatherSection.innerHTML.includes('weather-location'));
-                    console.log('Contains feels-like:', weatherSection.innerHTML.includes('feels-like'));
-                }
-                
-                fetchWeatherData();
-            }, 500);
+            checkUserLocationAndFetchWeather();
         }, 200);
     }, 10);
     
@@ -973,6 +954,91 @@ async function refreshWeatherData() {
     }
 }
 
+async function checkUserLocationAndFetchWeather() {
+    try {
+        // Check if user has saved location settings
+        const response = await fetch('/weather/user-location', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            }
+        });
+        
+        const data = await response.json();
+        console.log('User location check result:', data);
+        
+        if (data.hasLocation && data.latitude && data.longitude) {
+            console.log('User has saved location, using saved coordinates:', data);
+            // User has saved location, use it directly
+            setTimeout(() => {
+                console.log('=== DEBUGGING WEATHER ELEMENTS RIGHT BEFORE API CALL ===');
+                debugWeatherElements();
+                
+                // Additional focused debug before API call
+                console.log('=== FOCUSED WEATHER DEBUG BEFORE API CALL ===');
+                const weatherSection = document.querySelector('.weather-section');
+                console.log('Weather section found:', !!weatherSection);
+                if (weatherSection) {
+                    console.log('Weather section innerHTML length:', weatherSection.innerHTML.length);
+                    console.log('Contains current-temp:', weatherSection.innerHTML.includes('current-temp'));
+                    console.log('Contains weather-condition:', weatherSection.innerHTML.includes('weather-condition'));
+                    console.log('Contains weather-location:', weatherSection.innerHTML.includes('weather-location'));
+                    console.log('Contains feels-like:', weatherSection.innerHTML.includes('feels-like'));
+                }
+                
+                fetchWeatherData();
+            }, 500);
+        } else {
+            console.log('No saved location found, detecting current location');
+            // No saved location, detect current location
+            detectUserLocation();
+            // Wait for location detection before fetching weather
+            setTimeout(() => {
+                console.log('=== DEBUGGING WEATHER ELEMENTS RIGHT BEFORE API CALL ===');
+                debugWeatherElements();
+                
+                // Additional focused debug before API call
+                console.log('=== FOCUSED WEATHER DEBUG BEFORE API CALL ===');
+                const weatherSection = document.querySelector('.weather-section');
+                console.log('Weather section found:', !!weatherSection);
+                if (weatherSection) {
+                    console.log('Weather section innerHTML length:', weatherSection.innerHTML.length);
+                    console.log('Contains current-temp:', weatherSection.innerHTML.includes('current-temp'));
+                    console.log('Contains weather-condition:', weatherSection.innerHTML.includes('weather-condition'));
+                    console.log('Contains weather-location:', weatherSection.innerHTML.includes('weather-location'));
+                    console.log('Contains feels-like:', weatherSection.innerHTML.includes('feels-like'));
+                }
+                
+                fetchWeatherData();
+            }, 1000);
+        }
+    } catch (error) {
+        console.error('Error checking user location:', error);
+        // Fallback: detect current location
+        detectUserLocation();
+        setTimeout(() => {
+            console.log('=== DEBUGGING WEATHER ELEMENTS RIGHT BEFORE API CALL ===');
+            debugWeatherElements();
+            
+            // Additional focused debug before API call
+            console.log('=== FOCUSED WEATHER DEBUG BEFORE API CALL ===');
+            const weatherSection = document.querySelector('.weather-section');
+            console.log('Weather section found:', !!weatherSection);
+            if (weatherSection) {
+                console.log('Weather section innerHTML length:', weatherSection.innerHTML.length);
+                console.log('Contains current-temp:', weatherSection.innerHTML.includes('current-temp'));
+                console.log('Contains weather-condition:', weatherSection.innerHTML.includes('weather-condition'));
+                console.log('Contains weather-location:', weatherSection.innerHTML.includes('weather-location'));
+                console.log('Contains feels-like:', weatherSection.innerHTML.includes('feels-like'));
+            }
+            
+            fetchWeatherData();
+        }, 1000);
+    }
+}
+
 function detectUserLocation() {
     if (!navigator.geolocation) {
         console.log('Geolocation not supported');
@@ -1020,6 +1086,7 @@ window.openGreetingModal = openGreetingModal;
 window.closeGreetingModal = closeGreetingModal;
 window.updateForecastDayLabels = updateForecastDayLabels;
 window.detectUserLocation = detectUserLocation;
+window.checkUserLocationAndFetchWeather = checkUserLocationAndFetchWeather;
 window.refreshWeatherData = refreshWeatherData;
 window.fetchWeatherData = fetchWeatherData;
 window.debugWeatherElements = debugWeatherElements;

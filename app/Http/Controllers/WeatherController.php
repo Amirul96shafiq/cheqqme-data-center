@@ -55,6 +55,33 @@ class WeatherController extends Controller
  }
 
  /**
+  * Check if user has saved location settings
+  */
+ public function checkUserLocation(): JsonResponse
+ {
+  $user = Auth::user();
+
+  if (!$user) {
+   return response()->json([
+    'success' => false,
+    'message' => 'User not authenticated'
+   ], 401);
+  }
+
+  $hasLocation = !empty($user->latitude) && !empty($user->longitude);
+
+  return response()->json([
+   'success' => true,
+   'hasLocation' => $hasLocation,
+   'latitude' => $user->latitude,
+   'longitude' => $user->longitude,
+   'city' => $user->city,
+   'country' => $user->country,
+   'locationUpdatedAt' => $user->location_updated_at?->toISOString()
+  ]);
+ }
+
+ /**
   * Update user location
   */
  public function updateLocation(Request $request): JsonResponse

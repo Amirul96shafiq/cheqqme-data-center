@@ -100,6 +100,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/weather/current', [WeatherController::class, 'getCurrentWeather'])->name('weather.current');
     Route::get('/weather/forecast', [WeatherController::class, 'getForecast'])->name('weather.forecast');
     Route::get('/weather/data', [WeatherController::class, 'getWeatherData'])->name('weather.data');
+    Route::get('/weather/user-location', [WeatherController::class, 'checkUserLocation'])->name('weather.user-location');
     Route::post('/weather/location', [WeatherController::class, 'updateLocation'])->name('weather.location');
     Route::post('/weather/clear-cache', [WeatherController::class, 'clearCache'])->name('weather.clear-cache');
 });
