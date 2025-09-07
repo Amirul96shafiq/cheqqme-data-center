@@ -134,6 +134,18 @@ class WeatherService
   $wind = $data['wind'] ?? [];
   $sys = $data['sys'] ?? [];
 
+  // Get timezone from API response (timezone offset in seconds)
+  $timezoneOffset = $data['timezone'] ?? 0;
+  $timezoneName = $this->getTimezoneFromOffset($timezoneOffset);
+
+  // Debug logging
+  Log::info('Weather API timezone info', [
+   'offset_seconds' => $timezoneOffset,
+   'offset_hours' => $timezoneOffset / 3600,
+   'timezone_name' => $timezoneName,
+   'location' => $location['city'] . ', ' . $location['country']
+  ]);
+
   return [
    'location' => [
     'city' => $location['city'],
@@ -150,8 +162,8 @@ class WeatherService
     'wind_speed' => round(($wind['speed'] ?? 0) * 3.6), // Convert m/s to km/h
     'wind_direction' => $wind['deg'] ?? 0,
     'uv_index' => $this->getUvIndex($data),
-    'sunrise' => $sys['sunrise'] ? Carbon::createFromTimestamp($sys['sunrise'])->format('g:i A') : '-',
-    'sunset' => $sys['sunset'] ? Carbon::createFromTimestamp($sys['sunset'])->format('g:i A') : '-',
+    'sunrise' => $sys['sunrise'] ? Carbon::createFromTimestamp($sys['sunrise'], $timezoneName)->format('g:i A') : '-',
+    'sunset' => $sys['sunset'] ? Carbon::createFromTimestamp($sys['sunset'], $timezoneName)->format('g:i A') : '-',
    ],
    'timestamp' => now()->toISOString(),
    'cached' => false,
@@ -211,6 +223,47 @@ class WeatherService
    'timestamp' => now()->toISOString(),
    'cached' => false,
   ];
+ }
+
+ /**
+  * Get timezone name from offset (in seconds)
+  */
+ protected function getTimezoneFromOffset(int $offset): string
+ {
+  // Convert seconds to hours
+  $offsetHours = $offset / 3600;
+
+  // Common timezone mappings based on offset
+  $timezoneMap = [
+   -12 => 'Pacific/Kwajalein',
+   -11 => 'Pacific/Midway',
+   -10 => 'Pacific/Honolulu',
+   -9 => 'America/Anchorage',
+   -8 => 'America/Los_Angeles',
+   -7 => 'America/Denver',
+   -6 => 'America/Chicago',
+   -5 => 'America/New_York',
+   -4 => 'America/Caracas',
+   -3 => 'America/Sao_Paulo',
+   -2 => 'Atlantic/South_Georgia',
+   -1 => 'Atlantic/Azores',
+   0 => 'UTC',
+   1 => 'Europe/London',
+   2 => 'Europe/Berlin',
+   3 => 'Europe/Moscow',
+   4 => 'Asia/Dubai',
+   5 => 'Asia/Karachi',
+   6 => 'Asia/Dhaka',
+   7 => 'Asia/Bangkok',
+   8 => 'Asia/Shanghai',
+   9 => 'Asia/Tokyo',
+   10 => 'Australia/Sydney',
+   11 => 'Pacific/Norfolk',
+   12 => 'Pacific/Auckland',
+  ];
+
+  // Return mapped timezone or UTC as fallback
+  return $timezoneMap[$offsetHours] ?? 'UTC';
  }
 
  /**

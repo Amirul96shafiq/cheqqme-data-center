@@ -59,6 +59,20 @@ class Settings extends Page
             $data['timezone'] = config('app.timezone', 'UTC');
         }
 
+        // Set default location values if not set
+        if (empty($data['city'])) {
+            $data['city'] = config('weather.default_location.city', 'Kuala Lumpur');
+        }
+        if (empty($data['country'])) {
+            $data['country'] = config('weather.default_location.country', 'MY');
+        }
+        if (empty($data['latitude'])) {
+            $data['latitude'] = config('weather.default_location.latitude', 3.1390);
+        }
+        if (empty($data['longitude'])) {
+            $data['longitude'] = config('weather.default_location.longitude', 101.6869);
+        }
+
         // Set initial timezone preview
         if (!empty($data['timezone'])) {
             try {
@@ -79,6 +93,8 @@ class Settings extends Page
         return [
             'clipboard-copy-success' => 'handleClipboardCopySuccess',
             'clipboard-copy-failure' => 'handleClipboardCopyFailure',
+            'location-detected' => 'handleLocationDetected',
+            'location-detection-failed' => 'handleLocationDetectionFailed',
         ];
     }
 
@@ -98,6 +114,62 @@ class Settings extends Page
         Notification::make()
             ->title(__('settings.form.api_key_copy_failed'))
             ->body(__('settings.form.api_key_copy_failed_body'))
+            ->danger()
+            ->send();
+    }
+
+    // Handle location detected
+    public function handleLocationDetected($latitude, $longitude, $city = null, $country = null): void
+    {
+        // Get current form state to preserve existing data
+        $currentData = $this->form->getState();
+
+        // Debug: Log current timezone before update
+        \Log::info('Location detected - Current timezone before update:', [
+            'timezone' => $currentData['timezone'] ?? 'not set',
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'city' => $city,
+            'country' => $country
+        ]);
+
+        // Update only specific location fields without affecting other form data
+        $this->data['latitude'] = $latitude;
+        $this->data['longitude'] = $longitude;
+        $this->data['city'] = $city ?? '';
+        $this->data['country'] = $country ?? '';
+
+        // Preserve all other existing data
+        foreach ($currentData as $key => $value) {
+            if (!in_array($key, ['latitude', 'longitude', 'city', 'country'])) {
+                $this->data[$key] = $value;
+            }
+        }
+
+        // Update the form with the modified data
+        $this->form->fill($this->data);
+
+        // Debug: Log timezone after update
+        \Log::info('Location detected - Timezone after update:', [
+            'timezone' => $this->data['timezone'] ?? 'not set'
+        ]);
+
+        Notification::make()
+            ->title(__('settings.form.location_detected'))
+            ->body(__('settings.form.location_detected_body', [
+                'city' => $city ?? 'Unknown',
+                'country' => $country ?? 'Unknown'
+            ]))
+            ->success()
+            ->send();
+    }
+
+    // Handle location detection failed
+    public function handleLocationDetectionFailed(): void
+    {
+        Notification::make()
+            ->title(__('settings.form.location_detection_failed'))
+            ->body(__('settings.form.location_detection_failed_body'))
             ->danger()
             ->send();
     }
@@ -251,11 +323,97 @@ class Settings extends Page
                             ]),
                     ]),
 
-                // Timezone section
-                Forms\Components\Section::make(__('settings.section.timezone'))
-                    ->description(__('settings.section.timezone_description'))
+                // Location & Timezone section
+                Forms\Components\Section::make(__('settings.section.location_timezone'))
+                    ->description(__('settings.section.location_timezone_description'))
                     ->collapsible()
                     ->schema([
+                        // Location fields
+                        Forms\Components\Grid::make(12)
+                            ->schema([
+                                Forms\Components\Placeholder::make('location_label')
+                                    ->label(__('settings.form.location_settings'))
+                                    ->content('')
+                                    ->columnSpan(4),
+
+                                Forms\Components\Grid::make(8)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('city')
+                                            ->label(__('settings.form.city'))
+                                            ->placeholder('e.g., Kuala Lumpur')
+                                            ->columnSpan(4),
+
+                                        Forms\Components\TextInput::make('country')
+                                            ->label(__('settings.form.country'))
+                                            ->placeholder('e.g., MY')
+                                            ->columnSpan(4),
+
+                                        Forms\Components\TextInput::make('latitude')
+                                            ->label(__('settings.form.latitude'))
+                                            ->placeholder('e.g., 3.1390')
+                                            ->numeric()
+                                            ->step(0.0000001)
+                                            ->minValue(-90)
+                                            ->maxValue(90)
+                                            ->columnSpan(4),
+
+                                        Forms\Components\TextInput::make('longitude')
+                                            ->label(__('settings.form.longitude'))
+                                            ->placeholder('e.g., 101.6869')
+                                            ->numeric()
+                                            ->step(0.0000001)
+                                            ->minValue(-180)
+                                            ->maxValue(180)
+                                            ->columnSpan(4),
+                                    ])
+                                    ->columnSpan(8),
+                            ]),
+
+                        // Location actions
+                        Forms\Components\Grid::make(12)
+                            ->schema([
+                                Forms\Components\Placeholder::make('location_actions_label')
+                                    ->label('')
+                                    ->columnSpan(4),
+
+                                Forms\Components\Actions::make([
+                                    \Filament\Forms\Components\Actions\Action::make('detect_location')
+                                        ->label(__('settings.form.detect_location'))
+                                        ->icon('heroicon-o-map-pin')
+                                        ->color('primary')
+                                        ->action(function ($set) {
+                                            // Dispatch browser event to detect location
+                                            $this->dispatch('detect-user-location');
+
+                                            Notification::make()
+                                                ->title(__('settings.form.location_detection_started'))
+                                                ->body(__('settings.form.location_detection_started_body'))
+                                                ->info()
+                                                ->send();
+                                        }),
+
+                                    \Filament\Forms\Components\Actions\Action::make('clear_location')
+                                        ->label(__('settings.form.clear_location'))
+                                        ->icon('heroicon-o-x-mark')
+                                        ->color('gray')
+                                        ->outlined()
+                                        ->action(function ($set) {
+                                            $set('city', '');
+                                            $set('country', '');
+                                            $set('latitude', '');
+                                            $set('longitude', '');
+
+                                            Notification::make()
+                                                ->title(__('settings.form.location_cleared'))
+                                                ->body(__('settings.form.location_cleared_body'))
+                                                ->success()
+                                                ->send();
+                                        }),
+                                ])
+                                    ->columns(2)
+                                    ->columnSpan(8),
+                            ]),
+
                         // Timezone row with label and field
                         Forms\Components\Grid::make(12)
                             ->schema([
@@ -401,6 +559,11 @@ class Settings extends Page
         $user = Auth::user();
         $user->update([
             'timezone' => $data['timezone'] ?? config('app.timezone', 'UTC'),
+            'city' => $data['city'] ?? null,
+            'country' => $data['country'] ?? null,
+            'latitude' => $data['latitude'] ?? null,
+            'longitude' => $data['longitude'] ?? null,
+            'location_updated_at' => now(),
         ]);
 
         Notification::make()

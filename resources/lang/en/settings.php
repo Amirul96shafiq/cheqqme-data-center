@@ -12,8 +12,8 @@ return [
     'section' => [
         'api' => 'API Access',
         'api_description' => 'Manage your API key for external access to your data.',
-        'timezone' => 'Timezone',
-        'timezone_description' => 'Set your timezone for the application.',
+        'location_timezone' => 'Location & Timezone',
+        'location_timezone_description' => 'Set your location for weather data and timezone for the application.',
     ],
 
     // Form fields
@@ -96,6 +96,23 @@ return [
         'sample_task_review' => 'Task Review',
         'sample_meeting_notes' => 'Meeting Notes',
         'unknown' => 'Unknown',
+
+        // Location
+        'location_settings' => 'Location Settings',
+        'city' => 'City',
+        'country' => 'Country',
+        'latitude' => 'Latitude',
+        'longitude' => 'Longitude',
+        'detect_location' => 'Detect Location',
+        'clear_location' => 'Clear Location',
+        'location_detection_started' => 'Location Detection Started',
+        'location_detection_started_body' => 'Please allow location access in your browser to detect your current location.',
+        'location_detected' => 'Location Detected',
+        'location_detected_body' => 'Your location has been detected: :city, :country',
+        'location_detection_failed' => 'Location Detection Failed',
+        'location_detection_failed_body' => 'Unable to detect your location. Please check your browser permissions or enter the location manually.',
+        'location_cleared' => 'Location Cleared',
+        'location_cleared_body' => 'Your location data has been cleared.',
 
         // Actions
         'save' => 'Save Settings',
