@@ -3,16 +3,19 @@
 namespace App\Services;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class WeatherService
 {
  protected string $apiKey;
+
  protected string $baseUrl;
+
  protected int $timeout;
+
  protected int $cacheTtlHours;
 
  public function __construct()
@@ -88,12 +91,14 @@ class WeatherService
 
    if ($response->successful()) {
     $data = $response->json();
+
     return $this->formatCurrentWeatherData($data, $location);
    }
 
    throw new \Exception('API request failed: ' . $response->status());
   } catch (\Exception $e) {
    Log::error('Weather API Error (Current): ' . $e->getMessage());
+
    return $this->getFallbackWeatherData($location);
   }
  }
@@ -114,12 +119,14 @@ class WeatherService
 
    if ($response->successful()) {
     $data = $response->json();
+
     return $this->formatForecastData($data, $location);
    }
 
    throw new \Exception('API request failed: ' . $response->status());
   } catch (\Exception $e) {
    Log::error('Weather API Error (Forecast): ' . $e->getMessage());
+
    return $this->getFallbackForecastData($location);
   }
  }
@@ -143,7 +150,7 @@ class WeatherService
    'offset_seconds' => $timezoneOffset,
    'offset_hours' => $timezoneOffset / 3600,
    'timezone_name' => $timezoneName,
-   'location' => $location['city'] . ', ' . $location['country']
+   'location' => $location['city'] . ', ' . $location['country'],
   ]);
 
   return [
@@ -210,6 +217,17 @@ class WeatherService
      'condition' => $primaryWeather['main'] ?? 'Unknown',
      'description' => $primaryWeather['description'] ?? 'Unknown',
      'icon' => $primaryWeather['icon'] ?? '01d',
+    ];
+   } else {
+    // If no data available for this day, create fallback entry
+    $forecast[] = [
+     'date' => $date,
+     'day_name' => $today->copy()->addDays($i)->format('l'),
+     'min_temp' => '-',
+     'max_temp' => '-',
+     'condition' => 'Unknown',
+     'description' => 'Forecast unavailable',
+     'icon' => '01d',
     ];
    }
   }
@@ -279,6 +297,7 @@ class WeatherService
   } elseif ($hour >= 8 && $hour <= 18) {
    return 'Moderate';
   }
+
   return 'Low';
  }
 
@@ -369,7 +388,7 @@ class WeatherService
  /**
   * Update user location
   */
- public function updateUserLocation(User $user, float $latitude, float $longitude, string $city = null, string $country = null): void
+ public function updateUserLocation(User $user, float $latitude, float $longitude, ?string $city = null, ?string $country = null): void
  {
   $user->update([
    'latitude' => $latitude,

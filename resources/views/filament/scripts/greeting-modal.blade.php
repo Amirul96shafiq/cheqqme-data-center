@@ -287,10 +287,7 @@ function openGreetingModal() {
             modalContent.style.opacity = '1';
         }
         
-        // Update day labels if needed (only once per day)
-        setTimeout(() => {
-            updateForecastDayLabels();
-        }, 100);
+        // Day labels are now handled directly in updateForecastData() function
         
         // Debug weather elements right after modal creation
         setTimeout(() => {
@@ -514,80 +511,11 @@ window.toggleDataManagementVideo = function() {
         }
     }
 
-    // Function to update day labels only when needed (every 24 hours)
-    function updateForecastDayLabels() {
-        const today = new Date();
-        const todayString = today.toDateString();
-        
-        // Check if we've already updated today
-        const lastUpdate = localStorage.getItem('forecast-last-update');
-        if (lastUpdate === todayString) {
-            return; // Already updated today, no need to update
-        }
-        
-        // Update day labels
-        const forecastContainer = document.getElementById('forecast-container');
-        if (!forecastContainer) return;
-        
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const daySpans = forecastContainer.querySelectorAll('.text-sm.text-gray-600.dark\\:text-gray-400.w-16');
-        
-        daySpans.forEach((span, index) => {
-            if (index === 0) {
-                span.textContent = 'Today';
-            } else if (index === 1) {
-                span.textContent = 'Tomorrow';
-            } else {
-                // Calculate the correct day for each forecast entry
-                const forecastDate = new Date(today);
-                forecastDate.setDate(today.getDate() + index);
-                span.textContent = dayNames[forecastDate.getDay()];
-            }
-        });
-        
-        // Save today's date as last update
-        localStorage.setItem('forecast-last-update', todayString);
-        console.log('Forecast day labels updated for', todayString);
-    }
 
 
 };
 
 // Weather API Integration Functions (Global Scope)
-function updateForecastDayLabels() {
-    const today = new Date();
-    const todayString = today.toDateString();
-    
-    // Check if we've already updated today
-    const lastUpdate = localStorage.getItem('forecast-last-update');
-    if (lastUpdate === todayString) {
-        return; // Already updated today, no need to update
-    }
-    
-    // Update day labels
-    const forecastContainer = document.getElementById('forecast-container');
-    if (!forecastContainer) return;
-    
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const daySpans = forecastContainer.querySelectorAll('.text-sm.text-gray-600.dark\\:text-gray-400.w-16');
-    
-    daySpans.forEach((span, index) => {
-        if (index === 0) {
-            span.textContent = 'Today';
-        } else if (index === 1) {
-            span.textContent = 'Tomorrow';
-        } else {
-            // Calculate the correct day for each forecast entry
-            const forecastDate = new Date(today);
-            forecastDate.setDate(today.getDate() + index);
-            span.textContent = dayNames[forecastDate.getDay()];
-        }
-    });
-    
-    // Save today's date as last update
-    localStorage.setItem('forecast-last-update', todayString);
-    console.log('Forecast day labels updated for', todayString);
-}
 
 function showWeatherLoading() {
     // Loading spinner disabled to prevent replacing weather elements
@@ -790,14 +718,31 @@ function updateForecastData(weatherData) {
 
     let forecastHTML = '';
     
+    // Get day names for proper labeling
+    const today = new Date();
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    
     forecast.forEach((day, index) => {
         const isLastItem = index === forecast.length - 1;
         const borderClass = isLastItem ? '' : 'border-b border-gray-200 dark:border-gray-600';
         
+        // Use our day labeling logic instead of API day names
+        let dayLabel;
+        if (index === 0) {
+            dayLabel = 'Today';
+        } else if (index === 1) {
+            dayLabel = 'Tomorrow';
+        } else {
+            // Calculate the correct day for each forecast entry
+            const forecastDate = new Date(today);
+            forecastDate.setDate(today.getDate() + index);
+            dayLabel = dayNames[forecastDate.getDay()];
+        }
+        
         forecastHTML += `
             <div class="flex items-center justify-between py-2 ${borderClass}">
                 <div class="flex items-center space-x-3">
-                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">${day.day_name}</span>
+                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">${dayLabel}</span>
                     <div class="w-5 h-5 flex items-center justify-center">
                         <img src="https://openweathermap.org/img/wn/${day.icon}@2x.png" 
                              alt="${day.condition}" 
@@ -1084,7 +1029,6 @@ function detectUserLocation() {
 // Make functions globally available
 window.openGreetingModal = openGreetingModal;
 window.closeGreetingModal = closeGreetingModal;
-window.updateForecastDayLabels = updateForecastDayLabels;
 window.detectUserLocation = detectUserLocation;
 window.checkUserLocationAndFetchWeather = checkUserLocationAndFetchWeather;
 window.refreshWeatherData = refreshWeatherData;
