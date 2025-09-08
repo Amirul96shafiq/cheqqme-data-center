@@ -11,9 +11,9 @@ function openGreetingModal() {
     
     // Get current time for personalized greeting
     const hour = new Date().getHours();
-    const greeting = hour >= 7 && hour <= 11 ? 'Good Morning' : 
-                    hour >= 12 && hour <= 19 ? 'Good Afternoon' : 
-                    hour >= 20 && hour <= 23 ? 'Good Evening' : 'Good Night';
+    const greeting = hour >= 7 && hour <= 11 ? '{{ __("greetingmodal.good_morning") }}' : 
+                    hour >= 12 && hour <= 19 ? '{{ __("greetingmodal.good_afternoon") }}' : 
+                    hour >= 20 && hour <= 23 ? '{{ __("greetingmodal.good_evening") }}' : '{{ __("greetingmodal.good_night") }}';
     
     const icon = hour >= 7 && hour <= 19 ? 'sun' : 'moon';
     const iconColor = hour >= 7 && hour <= 19 ? 'text-yellow-500' : 'text-blue-400';
@@ -158,9 +158,18 @@ function openGreetingModal() {
                 
                 <div class="text-center mb-8">
                     <div class="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        @svg('heroicon-o-heart', 'w-6 h-6 text-primary-600 dark:text-primary-400')
+                    </div>
+                    <div class="flex items-center justify-center space-x-2">
+                        <svg class="w-4 h-4 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            ${icon === 'sun' ? 
+                                `@svg('heroicon-o-sun', 'w-4 h-4')` :
+                                `@svg('heroicon-o-moon', 'w-4 h-4')`
+                            }
                         </svg>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 greeting-text">
+                            ${greeting}
+                        </p>
                     </div>
                     <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                         <span class="text-primary-600 dark:text-primary-400">{{ \App\Helpers\ClientFormatter::formatClientName(auth()->user()?->name) }}</span>{{ __('greetingmodal.content-title') }}
@@ -259,7 +268,7 @@ function openGreetingModal() {
             <!-- Footer Actions -->
             <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
                 <div class="flex justify-between items-center">
-                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                    <div class="text-xs text-gray-500 dark:text-gray-400" id="weather-footer-text" data-last-updated-text="{{ __('weather.last_weather_updated') }}">
                         {{ __('greetingmodal.footer-text') }}
                     </div>
                     <div class="flex space-x-3">
@@ -557,6 +566,9 @@ function updateWeatherData(weatherData) {
     
     // Update forecast
     updateForecastData(forecast);
+    
+    // Update footer with weather timestamp
+    updateWeatherFooter(current);
 }
 
 function updateCurrentWeather(weatherData, retryCount = 0) {
@@ -613,8 +625,9 @@ function updateCurrentWeather(weatherData, retryCount = 0) {
     console.log('Updated temperature to:', actualCurrentDetails.temperature + '°C');
 
     // Update feels like
-    feelsLikeElement.textContent = 'Feels like ' + actualCurrentDetails.feels_like + '°C';
-    console.log('Updated feels like to:', actualCurrentDetails.feels_like + '°C');
+    const feelsLikeText = '{{ __('weather.feels_like') }}';
+    feelsLikeElement.textContent = feelsLikeText + ' ' + actualCurrentDetails.feels_like + '°C';
+    console.log('Updated feels like to:', feelsLikeText + ' ' + actualCurrentDetails.feels_like + '°C');
 
     // Update condition
     conditionElement.textContent = actualCurrentDetails.condition;
@@ -781,6 +794,45 @@ function showWeatherError() {
     }
 }
 
+function updateWeatherFooter(weatherData) {
+    const footerElement = document.getElementById('weather-footer-text');
+    if (!footerElement || !weatherData) {
+        console.log('Footer element not found or no weather data');
+        return;
+    }
+
+    // Get the localized text from the data attribute
+    const lastUpdatedText = footerElement.getAttribute('data-last-updated-text') || 'Last Weather updated';
+
+    // Extract timestamp from weather data
+    const timestamp = weatherData.timestamp;
+    if (!timestamp) {
+        console.log('No timestamp found in weather data');
+        return;
+    }
+
+    try {
+        // Parse the ISO timestamp and format it
+        const date = new Date(timestamp);
+        const formattedDate = date.toLocaleDateString('en-US', {
+            month: 'numeric',
+            day: 'numeric',
+            year: '2-digit'
+        });
+        const formattedTime = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        footerElement.textContent = `${lastUpdatedText}: ${formattedDate} ${formattedTime}`;
+        console.log('Updated footer with timestamp:', `${lastUpdatedText}: ${formattedDate} ${formattedTime}`);
+    } catch (error) {
+        console.error('Error formatting timestamp:', error);
+        footerElement.textContent = `${lastUpdatedText}: Unknown`;
+    }
+}
+
 async function fetchWeatherData(retryCount = 0) {
     try {
         console.log('Starting weather data fetch... retryCount:', retryCount);
@@ -873,9 +925,7 @@ async function refreshWeatherData() {
         if (refreshButton) {
             refreshButton.disabled = true;
             refreshButton.innerHTML = `
-                <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
+                <x-heroicon-o-arrow-path class="w-5 h-5 animate-spin" />
             `;
         }
         
@@ -901,9 +951,7 @@ async function refreshWeatherData() {
         if (refreshButton) {
             refreshButton.disabled = false;
             refreshButton.innerHTML = `
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
+                <x-heroicon-o-arrow-path class="w-5 h-5" />
             `;
         }
     }

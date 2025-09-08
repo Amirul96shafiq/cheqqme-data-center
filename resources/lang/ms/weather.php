@@ -85,5 +85,5 @@ return [
     'location_detection_failed' => 'Gagal mengesan lokasi',
     'weather_updated' => 'Data cuaca dikemaskini',
     'cache_cleared' => 'Cache cuaca dikosongkan',
+    'last_weather_updated' => 'Cuaca Terakhir Dikemaskini',
 ];
-
