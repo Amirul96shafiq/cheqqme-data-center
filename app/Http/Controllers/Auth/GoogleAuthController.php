@@ -11,7 +11,7 @@ use Laravel\Socialite\Facades\Socialite;
 class GoogleAuthController extends Controller
 {
     /**
-     * Redirect to Google OAuth (for popup)
+     * Redirect to Google OAuth (for popup window)
      */
     public function redirectToGoogle()
     {
@@ -20,6 +20,7 @@ class GoogleAuthController extends Controller
 
     /**
      * Handle Google OAuth callback
+     * Processes the OAuth response and authenticates the user
      */
     public function handleGoogleCallback(Request $request)
     {
@@ -30,7 +31,6 @@ class GoogleAuthController extends Controller
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if (!$user) {
-                // User doesn't exist - return specific error message
                 return response()->json([
                     'success' => false,
                     'message' => 'Failed to login. The selected Google Account does not exist in the system.',
@@ -63,19 +63,8 @@ class GoogleAuthController extends Controller
     }
 
     /**
-     * Handle popup window callback (for JavaScript integration)
-     */
-    public function handlePopupCallback(Request $request)
-    {
-        // This method is deprecated - popup callback now uses showPopupCallback
-        return response()->json([
-            'type' => 'GOOGLE_SIGNIN_ERROR',
-            'message' => 'This endpoint is deprecated. Please refresh and try again.',
-        ]);
-    }
-
-    /**
      * Show popup callback page
+     * Renders the HTML page that handles the OAuth callback in the popup window
      */
     public function showPopupCallback()
     {
