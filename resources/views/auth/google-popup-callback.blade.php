@@ -45,27 +45,35 @@
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
         const error = urlParams.get('error');
-        const state = urlParams.get('state');
 
-        // Debug logging
-        console.log('Popup callback page loaded');
-        console.log('Current URL:', window.location.href);
-        console.log('Code parameter:', code);
-        console.log('Error parameter:', error);
-        console.log('State parameter:', state);
-        console.log('All URL parameters:', Object.fromEntries(urlParams));
+        // Helper function to close popup with fallback message
+        function closePopupWithFallback(message, isError = false) {
+            window.close();
+            
+            setTimeout(() => {
+                if (!window.closed) {
+                    const icon = isError ? 'Authentication failed' : 'Successfully signed in! Redirecting...';
+                    document.body.innerHTML = `<div class="loading"><p>${icon}</p><p>You can close this window.</p></div>`;
+                }
+            }, 500);
+        }
+
+        // Helper function to send error message to parent
+        function sendErrorToParent(message) {
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({
+                    type: 'GOOGLE_SIGNIN_ERROR',
+                    message: message
+                }, window.location.origin);
+            }
+        }
 
         if (error) {
-            // Handle OAuth error
-            console.log('OAuth error detected:', error);
-            window.opener.postMessage({
-                type: 'GOOGLE_SIGNIN_ERROR',
-                message: 'Authentication was cancelled or failed.'
-            }, window.location.origin);
-            window.close();
+            // Handle OAuth error from Google
+            sendErrorToParent('Authentication was cancelled or failed.');
+            closePopupWithFallback('Authentication was cancelled or failed.', true);
         } else if (code) {
-            // Make a request to our callback endpoint to process the OAuth code
-            console.log('OAuth code found, making request to process it');
+            // Process OAuth code
             fetch('/auth/google/callback?' + window.location.search, {
                 method: 'GET',
                 headers: {
@@ -76,97 +84,33 @@
                 credentials: 'same-origin'
             })
             .then(response => {
-                console.log('Response status:', response.status);
                 if (!response.ok) {
                     throw new Error('Network response was not ok: ' + response.status);
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('Authentication response:', data);
-                
                 if (data.success) {
-                    // SUCCESS: Immediately redirect parent window and close popup
-                    console.log('Authentication successful, redirecting parent window');
-                    
+                    // SUCCESS: Redirect parent window and close popup
                     if (window.opener && !window.opener.closed) {
-                        // Redirect the parent window immediately
                         window.opener.location.href = data.redirect_url;
-                        console.log('Parent window redirected to:', data.redirect_url);
                     }
-                    
-                    // Close this popup window immediately
-                    window.close();
-                    
-                    // Fallback: if window doesn't close, show success message
-                    setTimeout(() => {
-                        if (!window.closed) {
-                            document.body.innerHTML = '<div class="loading"><p>Successfully signed in! Redirecting...</p><p>You can close this window.</p></div>';
-                        }
-                    }, 500);
-                    
+                    closePopupWithFallback('Successfully signed in!', false);
                 } else {
                     // ERROR: Send error message to parent
-                    console.log('Authentication failed, sending error message');
-                    
-                    if (window.opener && !window.opener.closed) {
-                        window.opener.postMessage({
-                            type: 'GOOGLE_SIGNIN_ERROR',
-                            message: data.message
-                        }, window.location.origin);
-                    }
-                    
-                    // Close popup window
-                    window.close();
-                    
-                    // Fallback: if window doesn't close, show error message
-                    setTimeout(() => {
-                        if (!window.closed) {
-                            document.body.innerHTML = '<div class="loading"><p>Authentication failed: ' + data.message + '</p><p>You can close this window.</p></div>';
-                        }
-                    }, 500);
+                    sendErrorToParent(data.message);
+                    closePopupWithFallback(data.message, true);
                 }
             })
             .catch(error => {
                 console.error('Error processing OAuth:', error);
-                
-                if (window.opener && !window.opener.closed) {
-                    window.opener.postMessage({
-                        type: 'GOOGLE_SIGNIN_ERROR',
-                        message: 'Failed to authenticate with Google. Please try again.'
-                    }, window.location.origin);
-                }
-                
-                // Close popup window immediately
-                window.close();
-                
-                // Fallback: if window doesn't close, show error message
-                setTimeout(() => {
-                    if (!window.closed) {
-                        document.body.innerHTML = '<div class="loading"><p>Authentication failed. Please try again.</p><p>You can close this window.</p></div>';
-                    }
-                }, 500);
+                sendErrorToParent('Failed to authenticate with Google. Please try again.');
+                closePopupWithFallback('Failed to authenticate with Google. Please try again.', true);
             });
         } else {
-            // No code or error parameter - this should not happen in normal flow
-            console.log('No OAuth code or error found in URL:', window.location.href);
-            console.log('This indicates Google did not redirect properly');
-            if (window.opener && !window.opener.closed) {
-                window.opener.postMessage({
-                    type: 'GOOGLE_SIGNIN_ERROR',
-                    message: 'Invalid authentication response.'
-                }, window.location.origin);
-            }
-            
-            // Close popup window immediately
-            window.close();
-            
-            // Fallback: if window doesn't close, show error message
-            setTimeout(() => {
-                if (!window.closed) {
-                    document.body.innerHTML = '<div class="loading"><p>Invalid authentication response.</p><p>You can close this window.</p></div>';
-                }
-            }, 500);
+            // No code or error parameter - invalid response
+            sendErrorToParent('Invalid authentication response.');
+            closePopupWithFallback('Invalid authentication response.', true);
         }
     </script>
 </body>

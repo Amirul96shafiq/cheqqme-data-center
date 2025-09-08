@@ -49,6 +49,7 @@ class Login extends BaseLogin
                         ->submit('login')
                         ->extraAttributes(['class' => 'w-full py-4']),
 
+                    // Google Sign-in button - opens popup window for OAuth authentication
                     Action::make('google_signin')
                         ->label('Sign in with Google')
                         ->color('gray')
@@ -84,12 +85,11 @@ class Login extends BaseLogin
             'password' => $data['password'],
         ];
 
-        if (! Auth::attempt($credentials, $data['remember'] ?? false)) {
+        if (!Auth::attempt($credentials, $data['remember'] ?? false)) {
             $this->throwFailureValidationException();
         }
 
-        return new class implements LoginResponse
-        {
+        return new class implements LoginResponse {
             public function toResponse($request)
             {
                 return redirect()->route('filament.admin.pages.dashboard');

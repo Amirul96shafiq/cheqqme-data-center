@@ -56,6 +56,12 @@ class User extends Authenticatable implements HasAvatar
                 'cover_image',
                 'email_verified_at',
                 'deleted_at',
+                'google_id',
+                'timezone',
+                'api_key_generated_at',
+                'city',
+                'country',
+                'location_updated_at',
             ])
             ->logOnlyDirty() // Only log when values actually change
             ->useLogName('Users');
@@ -243,14 +249,6 @@ class User extends Authenticatable implements HasAvatar
             $this->update(['google_avatar_url' => $googleAvatarUrl]);
         }
         // If custom avatar exists, do nothing (preserve custom avatar)
-    }
-
-    /**
-     * Find user by Google ID
-     */
-    public static function findByGoogleId(string $googleId): ?self
-    {
-        return static::where('google_id', $googleId)->first();
     }
 
     /**
