@@ -336,7 +336,7 @@ class UserResource extends Resource
             ])
             ->actions([
                 TableAction::make('personalize')
-                    ->label('Personalize')
+                    ->label(__('user.table.personalize'))
                     ->icon('heroicon-o-sparkles')
                     ->url(
                         fn(User $record) =>
@@ -353,7 +353,7 @@ class UserResource extends Resource
                     ),
 
                 TableAction::make('settings')
-                    ->label('Settings')
+                    ->label(__('user.table.settings'))
                     ->icon('heroicon-o-cog-6-tooth')
                     ->url(
                         fn(User $record) =>

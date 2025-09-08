@@ -21,10 +21,10 @@ function openGreetingModal() {
     modal.innerHTML = `
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-5xl w-full mx-4 transform transition-all duration-300 scale-95 opacity-0 border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="flex">
-                <!-- Weather Information Section (60% width) -->
-                <div class="p-6 border-r border-gray-200 dark:border-gray-700 weather-section" style="width: 60%;">
+                <!-- Weather Information Section (40% width) -->
+                <div class="p-6 border-r border-gray-200 dark:border-gray-700 weather-section" style="width: 40%;">
                     <div class="flex items-center justify-between mb-4">
-                        <button onclick="refreshWeatherData()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="Refresh Weather Data">
+                        <button onclick="refreshWeatherData()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="{{ __('weather.refresh_weather') }}">
                             @svg('heroicon-o-arrow-path', 'w-5 h-5')
                         </button>
                     </div>
@@ -39,13 +39,13 @@ function openGreetingModal() {
                                         @svg('heroicon-o-sun', 'w-6 h-6 text-yellow-600 dark:text-yellow-400')
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white weather-condition">Loading...</h4>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 weather-location">Loading...</p>
+                                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white weather-condition">{{ __('weather.loading') }}</h4>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 weather-location">{{ __('weather.loading') }}</p>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-2xl font-bold text-gray-900 dark:text-white current-temp">Loading...</div>
-                                    <div class="text-sm text-gray-600 dark:text-gray-400 feels-like">Feels like Loading...</div>
+                                    <div class="text-2xl font-bold text-gray-900 dark:text-white current-temp">{{ __('weather.loading') }}</div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 feels-like">{{ __('weather.feels_like') }} {{ __('weather.loading') }}</div>
                                 </div>
                             </div>
                         </div>
@@ -58,8 +58,8 @@ function openGreetingModal() {
                                         @svg('heroicon-o-cloud', 'w-6 h-6 text-gray-500 dark:text-gray-400')
                                     </div>
                                     <div class="flex-1">
-                                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Humidity</div>
-                                        <div class="text-sm font-semibold text-gray-900 dark:text-white humidity-value">Loading...</div>
+                                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{{ __('weather.humidity') }}</div>
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-white humidity-value">{{ __('weather.loading') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -69,8 +69,8 @@ function openGreetingModal() {
                                         @svg('heroicon-o-arrow-down-circle', 'w-6 h-6 text-gray-500 dark:text-gray-400')
                                     </div>
                                     <div class="flex-1">
-                                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Wind</div>
-                                        <div class="text-sm font-semibold text-gray-900 dark:text-white wind-value">Loading...</div>
+                                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{{ __('weather.wind') }}</div>
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-white wind-value">{{ __('weather.loading') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -80,8 +80,8 @@ function openGreetingModal() {
                                         @svg('heroicon-o-bolt', 'w-6 h-6 text-gray-500 dark:text-gray-400')
                                     </div>
                                     <div class="flex-1">
-                                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">UV Index</div>
-                                        <div class="text-sm font-semibold text-gray-900 dark:text-white uv-value">Loading...</div>
+                                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{{ __('weather.uv_index') }}</div>
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-white uv-value">{{ __('weather.loading') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -91,8 +91,8 @@ function openGreetingModal() {
                                         @svg('heroicon-o-clock', 'w-6 h-6 text-gray-500 dark:text-gray-400')
                                     </div>
                                     <div class="flex-1">
-                                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Sunset</div>
-                                        <div class="text-sm font-semibold text-gray-900 dark:text-white sunset-value">Loading...</div>
+                                        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{{ __('weather.sunset') }}</div>
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-white sunset-value">{{ __('weather.loading') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -102,51 +102,51 @@ function openGreetingModal() {
                     <!-- 5-Day Forecast -->
                     <div class="mt-12">
                         <div class="flex items-center justify-between mb-3">
-                            <h5 class="text-sm font-semibold text-gray-900 dark:text-white">5-Day Forecast</h5>
-                            <span class="text-xs text-gray-500 dark:text-gray-400">High / Low</span>
+                            <h5 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('weather.forecast') }}</h5>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('weather.forecast_high_low') }}</span>
                         </div>
                         <div class="space-y-2" id="forecast-container">
                             <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Today</span>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">{{ __('weather.today') }}</span>
                                     @svg('heroicon-o-sun', 'w-6 h-6 text-yellow-500')
                                 </div>
-                                <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
                             <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tomorrow</span>
                                     @svg('heroicon-o-cloud', 'w-6 h-6 text-blue-500')
                                 </div>
-                                <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
                             <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tuesday</span>
                                     @svg('heroicon-o-cloud', 'w-6 h-6 text-gray-500')
                                 </div>
-                                <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
                             <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Wednesday</span>
                                     @svg('heroicon-o-cloud', 'w-6 h-6 text-blue-500')
                                 </div>
-                                <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">{{ __('weather.loading') }} / {{ __('weather.loading') }}</div>
                             </div>
                             <div class="flex items-center justify-between py-2">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Thursday</span>
                                     @svg('heroicon-o-cloud', 'w-6 h-6 text-blue-500')
                                 </div>
-                                <div class="text-sm font-medium text-gray-900 dark:text-white">Loading... / Loading...</div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Greeting Section (30% width) -->
-                <div class="p-6 flex flex-col justify-center" style="width: 40%;">
+                <!-- Greeting Section (60% width) -->
+                <div class="p-6 flex flex-col justify-center" style="width: 60%;">
                 <!-- Close Button -->
                 <button 
                     onclick="closeGreetingModal()" 
@@ -639,7 +639,7 @@ function updateWeatherIcon(iconCode, condition) {
     iconContainer.className = 'w-12 h-12 rounded-full flex items-center justify-center weather-icon-container';
     
     // Determine background color based on weather condition
-    let bgClass = 'bg-white dark:bg-gray-700/30';
+    let bgClass = 'bg-white/30 dark:bg-gray-700/30';
     
     // Handle undefined condition
     if (!condition) {
@@ -650,24 +650,24 @@ function updateWeatherIcon(iconCode, condition) {
     switch (condition.toLowerCase()) {
         case 'clear':
         case 'sunny':
-            bgClass = 'bg-white dark:bg-gray-700/30';
+            bgClass = 'bg-white/30 dark:bg-gray-700/30';
             break;
         case 'clouds':
         case 'cloudy':
-            bgClass = 'bg-white dark:bg-gray-700/30';
+            bgClass = 'bg-white/30 dark:bg-gray-700/30';
             break;
         case 'rain':
         case 'drizzle':
-            bgClass = 'bg-white dark:bg-gray-700/30';
+            bgClass = 'bg-white/30 dark:bg-gray-700/30';
             break;
         case 'thunderstorm':
-            bbgClass = 'bg-white dark:bg-gray-700/30';
+            bbgClass = 'bg-white/30 dark:bg-gray-700/30';
             break;
         case 'snow':
-            bgClass = 'bg-white dark:bg-gray-700/30';
+            bgClass = 'bg-white/30 dark:bg-gray-700/30';
             break;
         default:
-            bgClass = 'bg-white dark:bg-gray-700/30';
+            bgClass = 'bg-white/30 dark:bg-gray-700/30';
     }
     
     iconContainer.className += ` ${bgClass}`;
@@ -676,7 +676,7 @@ function updateWeatherIcon(iconCode, condition) {
     iconContainer.innerHTML = `
         <img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" 
              alt="${condition}" 
-             class="w-6 h-6">
+             class="w-12 h-12">
     `;
 }
 

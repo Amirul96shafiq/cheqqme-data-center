@@ -67,6 +67,8 @@ return [
         'email' => 'Email',
         'created_at' => 'Created At',
         'updated_at_by' => 'Updated At (by)',
+        'personalize' => 'Personalize',
+        'settings' => 'Settings',
     ],
 
     'filter' => [

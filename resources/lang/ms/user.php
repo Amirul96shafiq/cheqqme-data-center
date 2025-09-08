@@ -66,6 +66,8 @@ return [
         'email' => 'Email',
         'created_at' => 'Created At',
         'updated_at_by' => 'Updated At (by)',
+        'personalize' => 'Personalisasi',
+        'settings' => 'Tetapan',
     ],
 
     'filter' => [
