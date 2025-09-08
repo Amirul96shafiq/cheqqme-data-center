@@ -7,7 +7,6 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // OpenAI logs endpoint (web UI)
@@ -63,6 +62,12 @@ Route::get('/test-mentions', function () {
 Route::get('/login', function () {
     return redirect('/admin/login');
 })->name('login');
+
+// Google OAuth routes
+Route::get('/auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::get('/auth/google/popup-callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'showPopupCallback'])->name('auth.google.popup-callback');
+Route::get('/auth/google/popup', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'showPopupCallback'])->name('auth.google.popup');
 
 // Comment routes (controller based)
 Route::middleware('auth')->group(function () {

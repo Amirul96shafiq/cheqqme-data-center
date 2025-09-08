@@ -4,4 +4,5 @@ return [
     App\Providers\AppServiceProvider::class,
     App\Providers\Filament\AdminPanelProvider::class,
     App\Providers\HttpServiceProvider::class,
+    App\Providers\SocialiteServiceProvider::class,
 ];

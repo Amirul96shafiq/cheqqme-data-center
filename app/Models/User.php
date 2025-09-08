@@ -31,6 +31,8 @@ class User extends Authenticatable implements HasAvatar
         'username',
         'name',
         'email',
+        'google_id',
+        'google_avatar_url',
         'timezone',
         'password',
         'api_key',
@@ -144,7 +146,18 @@ class User extends Authenticatable implements HasAvatar
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatar ? Storage::url($this->avatar) : null;
+        // Priority 1: Custom uploaded avatar (NEVER overwritten)
+        if ($this->avatar) {
+            return Storage::url($this->avatar);
+        }
+
+        // Priority 2: Google avatar (CAN be overwritten by custom upload)
+        if ($this->google_avatar_url) {
+            return $this->google_avatar_url;
+        }
+
+        // Priority 3: Default Filament avatar (CAN be overwritten by both)
+        return null; // Filament handles default avatar generation
     }
 
     public function getFilamentCoverImageUrl(): ?string
@@ -218,5 +231,33 @@ class User extends Authenticatable implements HasAvatar
     public function validateApiKey(string $apiKey): bool
     {
         return $this->api_key === $apiKey;
+    }
+
+    /**
+     * Update Google avatar URL (only if no custom avatar exists)
+     */
+    public function updateGoogleAvatar(string $googleAvatarUrl): void
+    {
+        // Only update Google avatar if no custom avatar exists
+        if (!$this->avatar) {
+            $this->update(['google_avatar_url' => $googleAvatarUrl]);
+        }
+        // If custom avatar exists, do nothing (preserve custom avatar)
+    }
+
+    /**
+     * Find user by Google ID
+     */
+    public static function findByGoogleId(string $googleId): ?self
+    {
+        return static::where('google_id', $googleId)->first();
+    }
+
+    /**
+     * Check if user has Google authentication linked
+     */
+    public function hasGoogleAuth(): bool
+    {
+        return !empty($this->google_id);
     }
 }

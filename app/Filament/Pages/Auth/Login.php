@@ -49,6 +49,16 @@ class Login extends BaseLogin
                         ->submit('login')
                         ->extraAttributes(['class' => 'w-full py-4']),
 
+                    Action::make('google_signin')
+                        ->label('Sign in with Google')
+                        ->color('gray')
+                        ->outlined()
+                        ->extraAttributes([
+                            'class' => 'w-full py-3 mt-2',
+                            'onclick' => 'openGoogleSignIn()',
+                        ])
+                        ->icon('heroicon-o-arrow-right-on-rectangle'),
+
                     Action::make('forgotPassword')
                         ->label(__('login.actions.forgotPassword'))
                         ->url(route('password.request'))
@@ -108,5 +118,27 @@ class Login extends BaseLogin
                 ->duration(5000)
                 ->send();
         }
+
+        // Check for Google sign-in errors
+        $googleError = session()->pull('google_error');
+        if ($googleError) {
+            Notification::make()
+                ->title($googleError)
+                ->danger()
+                ->duration(5000)
+                ->send();
+        }
+    }
+
+    /**
+     * Handle Google sign-in error
+     */
+    public function handleGoogleError(string $message): void
+    {
+        Notification::make()
+            ->title($message)
+            ->danger()
+            ->duration(5000)
+            ->send();
     }
 }
