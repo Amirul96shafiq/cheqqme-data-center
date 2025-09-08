@@ -3,7 +3,7 @@
         <!-- Base URL -->
         <div class="flex items-center justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">
             <div class="flex-1">
-                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Base URL:</p>
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('settings.api.documentation_content.base_url') }}:</p>
                 <code class="text-sm text-gray-600 dark:text-gray-400">{{ $baseUrl }}</code>
             </div>
             <button 
@@ -23,7 +23,7 @@
         <!-- API Header -->
         <div class="flex items-center justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">
             <div class="flex-1">
-                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">API Header:</p>
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('settings.api.documentation_content.api_header') }}:</p>
                 <code class="text-sm text-gray-600 dark:text-gray-400">Accept: application/json</code>
             </div>
             <button 
@@ -43,7 +43,7 @@
         <!-- Authentication -->
         <div class="flex items-center justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">
             <div class="flex-1">
-                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Authentication:</p>
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('settings.api.documentation_content.authentication') }}:</p>
                 <code class="text-sm text-gray-600 dark:text-gray-400">Authorization: Bearer {{ $maskedApiKey }}</code>
             </div>
             <button 
@@ -63,7 +63,7 @@
         <!-- Example Request -->
         <div class="flex items-center justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">
             <div class="flex-1">
-                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Example Request:</p>
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('settings.api.documentation_content.example_request') }}:</p>
                 <code class="text-sm text-gray-600 dark:text-gray-400">
                     GET {{ $baseUrl }}/clients<br>
                     Accept: application/json<br>
@@ -86,7 +86,7 @@
 
         <!-- Sample Screenshot -->
         <div class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">
-            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sample Screenshot:</p>
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('settings.api.documentation_content.sample_screenshot') }}:</p>
             <a href="/images/api-sample-screenshot.png" target="_blank" class="block">
                 <img src="/images/api-sample-screenshot.png" alt="API Documentation: Sample Screenshot" class="w-full h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity">
             </a>
@@ -94,7 +94,7 @@
 
         <!-- List of Supported API -->
         <div class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">
-            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">List of Supported API:</p>
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{{ __('settings.api.documentation_content.list_of_supported_api') }}:</p>
             
             <!-- User Endpoints -->
             <div class="space-y-2 mb-4">

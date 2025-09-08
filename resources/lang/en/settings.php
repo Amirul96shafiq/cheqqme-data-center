@@ -1,91 +1,68 @@
 <?php
 
 return [
-    // Navigation
-    'navigation_label' => 'Settings',
+    // Page navigation and titles
+    'page' => [
+        'navigation_label' => 'Settings',
+        'title' => 'Settings',
+    ],
 
-    // Page titles and descriptions
-    'title' => 'Settings',
-    'slug' => 'settings',
-
-    // Sections
-    'section' => [
+    // Section headers and descriptions
+    'sections' => [
         'api' => 'API Access',
         'api_description' => 'Manage your API key for external access to your data.',
-        'location_timezone' => 'Location & Timezone',
-        'location_timezone_description' => 'Set your location for weather data and timezone for the application.',
         'location' => 'Location',
         'location_description' => 'Set your location for weather data and geolocation services.',
         'timezone' => 'Timezone',
         'timezone_description' => 'Set your timezone for the application.',
     ],
 
-    // Form fields
-    'form' => [
-        // API
-        'current_timezone' => 'Timezone Settings',
-        'timezone' => 'Timezone Settings',
-        'current_time_in_timezone' => 'Time & Timezone Preview ',
-        'select_timezone_to_preview' => 'Select a timezone to preview the current time.',
-        'timezone_preview_description' => 'Preview the current time in your timezone.',
-        'current_api_key' => 'Your API Key',
-        'no_api_key' => 'No API key generated',
-        'no_timezone' => 'No timezone selected',
-        'timezone_preview' => 'Current Time in Timezone',
-        'invalid_timezone' => 'Invalid timezone',
-        'api_key_helper' => 'Your API key is used to authenticate requests to the API endpoints.',
-        'copy_api_key' => 'Copy API Key',
-        'generate_api_key' => 'Generate API Key',
-        'regenerate_api_key' => 'Regenerate API Key',
-        'delete_api_key' => 'Delete API Key',
-        'api_key_generated' => 'API Key Generated',
-        'api_key_generated_body' => 'Your new API key has been generated successfully.',
-        'api_key_regenerated' => 'API Key Regenerated',
-        'api_key_regenerated_body' => 'Your API key has been regenerated. The old key is no longer valid.',
-        'api_key_deleted' => 'API Key Deleted',
-        'api_key_deleted_body' => 'Your API key has been deleted successfully.',
-        'api_key_copied' => 'API Key Copied',
-        'api_key_copied_body' => 'Your API key has been copied to clipboard successfully.',
-        'api_key_ready' => 'You have successfully copied your API key to clipboard.',
-        'api_key_copying' => 'Copying API Key',
-        'api_key_copying_body' => 'Your API key is being copied to clipboard.',
-        'api_key_copy_failed' => 'Failed to Copy API Key',
-        'api_key_copy_failed_body' => 'Failed to copy your API key to clipboard.',
+    // API-related translations
+    'api' => [
+        'current_key' => 'Your API Key',
+        'no_key' => 'No API key generated',
+        'helper' => 'Your API key is used to authenticate requests to the API endpoints.',
+        'copy' => 'Copy API Key',
+        'generate' => 'Generate API Key',
+        'regenerate' => 'Regenerate API Key',
+        'delete' => 'Delete API Key',
+        'documentation' => 'API Documentation',
+        'documentation_description' => 'View API endpoints, authentication methods, and usage examples.',
         'confirm_regenerate' => 'Regenerate API Key?',
         'confirm_regenerate_description' => 'This will generate a new API key and invalidate the current one. Any applications using the old key will stop working.',
         'confirm_delete' => 'Delete API Key?',
         'confirm_delete_description' => 'This will permanently delete your API key. Any applications using this key will stop working.',
-        'regenerate' => 'Regenerate',
-        'delete' => 'Delete',
-        'api_documentation' => 'API Documentation',
-        'api_documentation_description' => 'View API endpoints, authentication methods, and usage examples.',
-        'copy' => 'Copy',
-        'copied' => 'Copied!',
-        'api_documentation_content' => '
-          <code class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4 block text-gray-500 dark-text-gray-700 dark:text-gray-400">
-            <div class="space-y-4">
-                <p>Base URL:</p>
-                <code class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4 block text-gray-500 dark-text-gray-700 dark:text-gray-400">:base_url</code>
-                <p>API Header:</p>
-                <code class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4 block text-gray-500 dark-text-gray-700 dark:text-gray-400">Accept: application/json</code>
-                <p>Authentication:</p>
-                <code class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4 block text-gray-500 dark-text-gray-700 dark:text-gray-400">Authorization: Bearer YOUR_API_KEY</code>
-                <p>Example Request:</p>
-                <code class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4 block text-gray-500 dark-text-gray-700 dark:text-gray-400">GET :base_url/clients<br>Accept: application/json<br>Authorization: Bearer YOUR_API_KEY</code>
-                <p>Sample Screenshot:</p>
-                <a href="/images/api-sample-screenshot.png" target="_blank" class="block">
-                    <img src="/images/api-sample-screenshot.png" alt="API Documentation: Sample Screenshot" class="w-full h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity">
-                </a>
-                <p>List of Supported API:</p>
-                <code class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4 block text-gray-500 dark-text-gray-700 dark:text-gray-400">GET :base_url/clients<br>GET :base_url/projects<br>GET :base_url/documents<br>GET :base_url/important-urls<br>GET :base_url/phone-numbers<br>GET :base_url/users<br>GET :base_url/comments<br>GET :base_url/comments/{comment}</code>
-            </div>
-          </code>
-        ',
+        'regenerate_action' => 'Regenerate',
+        'delete_action' => 'Delete',
+        'documentation_content' => [
+            'base_url' => 'Base URL',
+            'api_header' => 'API Header',
+            'authentication' => 'Authentication',
+            'example_request' => 'Example Request',
+            'sample_screenshot' => 'Sample Screenshot',
+            'list_of_supported_api' => 'List of Supported API',
+        ],
+    ],
 
-        // Timezone preview content
-        'system_user' => 'System User',
+    // Location-related translations
+    'location' => [
+        'settings' => 'Location Settings',
+        'city' => 'City',
+        'country' => 'Country',
+        'latitude' => 'Latitude',
+        'longitude' => 'Longitude',
+        'detect' => 'Set Location',
+        'clear' => 'Delete Location',
+    ],
+
+    // Timezone-related translations
+    'timezone' => [
+        'settings' => 'Timezone Settings',
+        'current_time_preview' => 'Time & Timezone Preview',
+        'select_to_preview' => 'Select a timezone to preview the current time.',
+        'preview_description' => 'Preview the current time in your timezone.',
         'current_time' => 'Current Time',
-        'timezone_information' => 'Timezone (TZ) Information',
+        'information' => 'Timezone (TZ) Information',
         'identifier_name' => 'Identifier Name',
         'country_code' => 'Country (Country Code)',
         'utc_offset' => 'UTC Offset (±hh:mm)',
@@ -98,17 +75,32 @@ return [
         'by' => 'By',
         'sample_project_alpha' => 'Project Alpha',
         'sample_task_review' => 'Task Review',
-        'sample_meeting_notes' => 'Meeting Notes',
-        'unknown' => 'Unknown',
+    ],
 
-        // Location
-        'location_settings' => 'Location Settings',
-        'city' => 'City',
-        'country' => 'Country',
-        'latitude' => 'Latitude',
-        'longitude' => 'Longitude',
-        'detect_location' => 'Set Location',
-        'clear_location' => 'Delete Location',
+    // Weather-related translations
+    'weather' => [
+        'preview' => 'Weather Preview',
+        'preview_description' => 'Preview current weather for your selected location.',
+        'data_unavailable' => 'Weather data unavailable',
+        'error' => 'Unable to fetch weather data',
+        'feels_like' => 'Feels like',
+        'no_location_data_available' => 'No location data available',
+    ],
+
+    // Notification messages
+    'notifications' => [
+        'api_key_generated' => 'API Key Generated',
+        'api_key_generated_body' => 'Your new API key has been generated successfully.',
+        'api_key_regenerated' => 'API Key Regenerated',
+        'api_key_regenerated_body' => 'Your API key has been regenerated. The old key is no longer valid.',
+        'api_key_deleted' => 'API Key Deleted',
+        'api_key_deleted_body' => 'Your API key has been deleted successfully.',
+        'api_key_copied' => 'API Key Copied',
+        'api_key_copied_body' => 'Your API key has been copied to clipboard successfully.',
+        'api_key_copying' => 'Copying API Key',
+        'api_key_copying_body' => 'Your API key is being copied to clipboard.',
+        'api_key_copy_failed' => 'Failed to Copy API Key',
+        'api_key_copy_failed_body' => 'Failed to copy your API key to clipboard.',
         'location_detection_started' => 'Location Detection Started',
         'location_detection_started_body' => 'Please allow location access in your browser to detect your current location.',
         'location_detected' => 'Location Detected',
@@ -117,18 +109,7 @@ return [
         'location_detection_failed_body' => 'Unable to detect your location. Please check your browser permissions or enter the location manually.',
         'location_cleared' => 'Location Cleared',
         'location_cleared_body' => 'Your location data has been cleared.',
-
-        // Weather Preview
-        'weather_preview' => 'Weather Preview',
-        'weather_preview_description' => 'Preview current weather for your selected location.',
-        'select_location_to_preview_weather' => 'Enter city and country to preview weather.',
-        'weather_data_unavailable' => 'Weather data unavailable',
-        'fetching_weather' => 'Fetching weather data...',
-        'weather_error' => 'Unable to fetch weather data',
-
-        // Actions
-        'save' => 'Save Settings',
-        'saved' => 'Settings Saved',
-        'saved_body' => 'Your settings have been successfully saved.',
+        'settings_saved' => 'Settings Saved',
+        'settings_saved_body' => 'Your settings have been successfully saved.',
     ],
 ];

@@ -33,13 +33,13 @@ class Settings extends Page
     // Get navigation label and title
     public static function getNavigationLabel(): string
     {
-        return __('settings.navigation_label');
+        return __('settings.page.navigation_label');
     }
 
     // Get title
     public function getTitle(): string
     {
-        return __('settings.title');
+        return __('settings.page.title');
     }
 
     // Get data
@@ -74,7 +74,7 @@ class Settings extends Page
         }
 
         // Set initial timezone preview
-        if (! empty($data['timezone'])) {
+        if (!empty($data['timezone'])) {
             try {
                 $timezone = new \DateTimeZone($data['timezone']);
                 $now = new \DateTime('now', $timezone);
@@ -102,8 +102,8 @@ class Settings extends Page
     public function handleClipboardCopySuccess(): void
     {
         Notification::make()
-            ->title(__('settings.form.api_key_copied'))
-            ->body(__('settings.form.api_key_copied_body'))
+            ->title(__('settings.notifications.api_key_copied'))
+            ->body(__('settings.notifications.api_key_copied_body'))
             ->success()
             ->send();
     }
@@ -112,8 +112,8 @@ class Settings extends Page
     public function handleClipboardCopyFailure(): void
     {
         Notification::make()
-            ->title(__('settings.form.api_key_copy_failed'))
-            ->body(__('settings.form.api_key_copy_failed_body'))
+            ->title(__('settings.notifications.api_key_copy_failed'))
+            ->body(__('settings.notifications.api_key_copy_failed_body'))
             ->danger()
             ->send();
     }
@@ -141,7 +141,7 @@ class Settings extends Page
 
         // Preserve all other existing data
         foreach ($currentData as $key => $value) {
-            if (! in_array($key, ['latitude', 'longitude', 'city', 'country'])) {
+            if (!in_array($key, ['latitude', 'longitude', 'city', 'country'])) {
                 $this->data[$key] = $value;
             }
         }
@@ -155,8 +155,8 @@ class Settings extends Page
         ]);
 
         Notification::make()
-            ->title(__('settings.form.location_detected'))
-            ->body(__('settings.form.location_detected_body', [
+            ->title(__('settings.notifications.location_detected'))
+            ->body(__('settings.notifications.location_detected_body', [
                 'city' => $city ?? 'Unknown',
                 'country' => $country ?? 'Unknown',
             ]))
@@ -168,8 +168,8 @@ class Settings extends Page
     public function handleLocationDetectionFailed(): void
     {
         Notification::make()
-            ->title(__('settings.form.location_detection_failed'))
-            ->body(__('settings.form.location_detection_failed_body'))
+            ->title(__('settings.notifications.location_detection_failed'))
+            ->body(__('settings.notifications.location_detection_failed_body'))
             ->danger()
             ->send();
     }
@@ -180,15 +180,15 @@ class Settings extends Page
         return $form
             ->schema([
                 // API section
-                Forms\Components\Section::make(__('settings.section.api'))
-                    ->description(__('settings.section.api_description'))
+                Forms\Components\Section::make(__('settings.sections.api'))
+                    ->description(__('settings.sections.api_description'))
                     ->collapsible()
                     ->schema([
                         // Current API key row
                         Forms\Components\Grid::make(12)
                             ->schema([
                                 Forms\Components\Placeholder::make('current_api_key_label')
-                                    ->label(__('settings.form.current_api_key'))
+                                    ->label(__('settings.api.current_key'))
                                     ->content('')
                                     ->columnSpan(4),
 
@@ -198,38 +198,38 @@ class Settings extends Page
                                             ->label('')
                                             ->disabled()
                                             ->dehydrated(false)
-                                            ->placeholder(__('settings.form.no_api_key'))
-                                            ->helperText(__('settings.form.api_key_helper'))
+                                            ->placeholder(__('settings.api.no_key'))
+                                            ->helperText(__('settings.api.helper'))
                                             ->prefixAction(
                                                 \Filament\Forms\Components\Actions\Action::make('regenerate_api_key')
-                                                    ->label(__('settings.form.regenerate_api_key'))
+                                                    ->label(__('settings.api.regenerate'))
                                                     ->icon('heroicon-o-arrow-path')
                                                     ->color('gray')
                                                     ->size('sm')
-                                                    ->visible(fn () => auth()->user()->hasApiKey())
+                                                    ->visible(fn() => auth()->user()->hasApiKey())
                                                     ->requiresConfirmation()
-                                                    ->modalHeading(__('settings.form.confirm_regenerate'))
-                                                    ->modalDescription(__('settings.form.confirm_regenerate_description'))
-                                                    ->modalSubmitActionLabel(__('settings.form.regenerate'))
+                                                    ->modalHeading(__('settings.api.confirm_regenerate'))
+                                                    ->modalDescription(__('settings.api.confirm_regenerate_description'))
+                                                    ->modalSubmitActionLabel(__('settings.api.regenerate_action'))
                                                     ->action(function ($set) {
                                                         $user = auth()->user();
                                                         $apiKey = $user->generateApiKey();
                                                         $set('current_api_key', $user->getMaskedApiKey());
 
                                                         Notification::make()
-                                                            ->title(__('settings.form.api_key_regenerated'))
-                                                            ->body(__('settings.form.api_key_regenerated_body'))
+                                                            ->title(__('settings.notifications.api_key_regenerated'))
+                                                            ->body(__('settings.notifications.api_key_regenerated_body'))
                                                             ->warning()
                                                             ->send();
                                                     })
                                             )
                                             ->suffixAction(
                                                 \Filament\Forms\Components\Actions\Action::make('copy_api_key')
-                                                    ->label(__('settings.form.copy_api_key'))
+                                                    ->label(__('settings.api.copy'))
                                                     ->icon('heroicon-o-square-2-stack')
                                                     ->color('gray')
                                                     ->size('sm')
-                                                    ->visible(fn () => auth()->user()->hasApiKey())
+                                                    ->visible(fn() => auth()->user()->hasApiKey())
                                                     ->action(function () {
                                                         $user = auth()->user();
 
@@ -238,8 +238,8 @@ class Settings extends Page
 
                                                         // Show notification that copy operation was initiated
                                                         Notification::make()
-                                                            ->title(__('settings.form.api_key_copying'))
-                                                            ->body(__('settings.form.api_key_copying_body'))
+                                                            ->title(__('settings.notifications.api_key_copying'))
+                                                            ->body(__('settings.notifications.api_key_copying_body'))
                                                             ->info()
                                                             ->send();
                                                     })
@@ -261,10 +261,10 @@ class Settings extends Page
                                 Forms\Components\Actions::make([
                                     // Generate API key
                                     \Filament\Forms\Components\Actions\Action::make('generate_api_key')
-                                        ->label(__('settings.form.generate_api_key'))
+                                        ->label(__('settings.api.generate'))
                                         ->icon('heroicon-o-key')
                                         ->color('gray')
-                                        ->visible(fn () => ! auth()->user()->hasApiKey())
+                                        ->visible(fn() => !auth()->user()->hasApiKey())
                                         ->action(function ($set) {
                                             $user = auth()->user();
                                             $apiKey = $user->generateApiKey();
@@ -272,23 +272,23 @@ class Settings extends Page
 
                                             // Notification
                                             Notification::make()
-                                                ->title(__('settings.form.api_key_generated'))
-                                                ->body(__('settings.form.api_key_generated_body'))
+                                                ->title(__('settings.notifications.api_key_generated'))
+                                                ->body(__('settings.notifications.api_key_generated_body'))
                                                 ->success()
                                                 ->send();
                                         }),
 
                                     // Delete API key
                                     \Filament\Forms\Components\Actions\Action::make('delete_api_key')
-                                        ->label(__('settings.form.delete_api_key'))
+                                        ->label(__('settings.api.delete'))
                                         ->icon('heroicon-o-trash')
                                         ->color('danger')
                                         ->outlined()
-                                        ->visible(fn () => auth()->user()->hasApiKey())
+                                        ->visible(fn() => auth()->user()->hasApiKey())
                                         ->requiresConfirmation()
-                                        ->modalHeading(__('settings.form.confirm_delete'))
-                                        ->modalDescription(__('settings.form.confirm_delete_description'))
-                                        ->modalSubmitActionLabel(__('settings.form.delete'))
+                                        ->modalHeading(__('settings.api.confirm_delete'))
+                                        ->modalDescription(__('settings.api.confirm_delete_description'))
+                                        ->modalSubmitActionLabel(__('settings.api.delete_action'))
                                         ->action(function ($set) {
                                             $user = auth()->user();
                                             $user->update([
@@ -298,8 +298,8 @@ class Settings extends Page
                                             $set('current_api_key', '');
 
                                             Notification::make()
-                                                ->title(__('settings.form.api_key_deleted'))
-                                                ->body(__('settings.form.api_key_deleted_body'))
+                                                ->title(__('settings.notifications.api_key_deleted'))
+                                                ->body(__('settings.notifications.api_key_deleted_body'))
                                                 ->success()
                                                 ->send();
                                         }),
@@ -309,10 +309,10 @@ class Settings extends Page
                             ]),
 
                         // API documentation section
-                        Forms\Components\Section::make(__('settings.form.api_documentation'))
+                        Forms\Components\Section::make(__('settings.api.documentation'))
                             ->collapsible()
                             ->collapsed()
-                            ->description(__('settings.form.api_documentation_description'))
+                            ->description(__('settings.api.documentation_description'))
                             ->schema([
                                 Forms\Components\Grid::make(12)
                                     ->schema([
@@ -324,8 +324,8 @@ class Settings extends Page
                     ]),
 
                 // Location section
-                Forms\Components\Section::make(__('settings.section.location'))
-                    ->description(__('settings.section.location_description'))
+                Forms\Components\Section::make(__('settings.sections.location'))
+                    ->description(__('settings.sections.location_description'))
                     ->collapsible()
                     ->schema([
                         // Location actions
@@ -337,7 +337,7 @@ class Settings extends Page
 
                                 Forms\Components\Actions::make([
                                     \Filament\Forms\Components\Actions\Action::make('detect_location')
-                                        ->label(__('settings.form.detect_location'))
+                                        ->label(__('settings.location.detect'))
                                         ->icon('heroicon-o-map-pin')
                                         ->color('gray')
                                         ->action(function ($set) {
@@ -345,22 +345,22 @@ class Settings extends Page
                                             $this->dispatch('detect-user-location');
 
                                             Notification::make()
-                                                ->title(__('settings.form.location_detection_started'))
-                                                ->body(__('settings.form.location_detection_started_body'))
+                                                ->title(__('settings.notifications.location_detection_started'))
+                                                ->body(__('settings.notifications.location_detection_started_body'))
                                                 ->info()
                                                 ->send();
                                         }),
 
                                     \Filament\Forms\Components\Actions\Action::make('clear_location')
-                                        ->label(__('settings.form.clear_location'))
+                                        ->label(__('settings.location.clear'))
                                         ->icon('heroicon-o-trash')
                                         ->color('danger')
                                         ->outlined()
                                         ->visible(function ($get) {
-                                            return ! empty($get('city')) ||
-                                                ! empty($get('country')) ||
-                                                ! empty($get('latitude')) ||
-                                                ! empty($get('longitude'));
+                                            return !empty($get('city')) ||
+                                                !empty($get('country')) ||
+                                                !empty($get('latitude')) ||
+                                                !empty($get('longitude'));
                                         })
                                         ->action(function ($set) {
                                             $set('city', '');
@@ -369,8 +369,8 @@ class Settings extends Page
                                             $set('longitude', '');
 
                                             Notification::make()
-                                                ->title(__('settings.form.location_cleared'))
-                                                ->body(__('settings.form.location_cleared_body'))
+                                                ->title(__('settings.notifications.location_cleared'))
+                                                ->body(__('settings.notifications.location_cleared_body'))
                                                 ->success()
                                                 ->send();
                                         }),
@@ -382,26 +382,26 @@ class Settings extends Page
                         Forms\Components\Grid::make(12)
                             ->schema([
                                 Forms\Components\Placeholder::make('location_label')
-                                    ->label(__('settings.form.location_settings'))
+                                    ->label(__('settings.location.settings'))
                                     ->content('')
                                     ->columnSpan(4),
 
                                 Forms\Components\Grid::make(8)
                                     ->schema([
                                         Forms\Components\TextInput::make('city')
-                                            ->label(__('settings.form.city'))
+                                            ->label(__('settings.location.city'))
                                             ->placeholder('e.g., Kuala Lumpur')
                                             ->live()
                                             ->columnSpan(4),
 
                                         Forms\Components\TextInput::make('country')
-                                            ->label(__('settings.form.country'))
+                                            ->label(__('settings.location.country'))
                                             ->placeholder('e.g., MY')
                                             ->live()
                                             ->columnSpan(4),
 
                                         Forms\Components\TextInput::make('latitude')
-                                            ->label(__('settings.form.latitude'))
+                                            ->label(__('settings.location.latitude'))
                                             ->placeholder('e.g., 3.1390')
                                             ->numeric()
                                             ->step(0.0000001)
@@ -410,7 +410,7 @@ class Settings extends Page
                                             ->columnSpan(4),
 
                                         Forms\Components\TextInput::make('longitude')
-                                            ->label(__('settings.form.longitude'))
+                                            ->label(__('settings.location.longitude'))
                                             ->placeholder('e.g., 101.6869')
                                             ->numeric()
                                             ->step(0.0000001)
@@ -422,10 +422,10 @@ class Settings extends Page
                             ]),
 
                         // Weather preview section
-                        Forms\Components\Section::make(__('settings.form.weather_preview'))
+                        Forms\Components\Section::make(__('settings.weather.preview'))
                             ->collapsible()
                             ->collapsed()
-                            ->description(__('settings.form.weather_preview_description'))
+                            ->description(__('settings.weather.preview_description'))
                             ->schema([
                                 Forms\Components\Grid::make(12)
                                     ->schema([
@@ -439,7 +439,7 @@ class Settings extends Page
                                                 if (empty($city) || empty($country)) {
                                                     $html = '<div class="text-center py-8 text-gray-500 dark:text-gray-400">
                                                         <div class="text-2xl font-bold">null</div>
-                                                        <div class="text-sm mt-2">No location data available</div>
+                                                        <div class="text-sm mt-2">' . __('settings.weather.no_location_data_available') . '</div>
                                                     </div>';
 
                                                     return new \Illuminate\Support\HtmlString($html);
@@ -457,7 +457,7 @@ class Settings extends Page
                                                         $html .= '</svg>';
                                                         $html .= '</div>';
                                                         $html .= '<div class="ml-3">';
-                                                        $html .= '<p class="text-sm font-medium text-red-800 dark:text-red-200">'.$weatherData['message'].'</p>';
+                                                        $html .= '<p class="text-sm font-medium text-red-800 dark:text-red-200">' . $weatherData['message'] . '</p>';
                                                         $html .= '</div>';
                                                         $html .= '</div>';
                                                         $html .= '</div>';
@@ -468,29 +468,29 @@ class Settings extends Page
                                                     $current = $weatherData['current'];
                                                     $location = $weatherData['location'];
 
-                                                    $html = '<div class="bg-gradient-to-r from-teal-500 to-teal-600 dark:from-teal-600 dark:to-teal-700 p-6 rounded-lg text-white">';
+                                                    $html = '<div class="bg-gradient-to-r from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20 p-6 rounded-lg text-teal-700 dark:text-teal-100">';
                                                     $html .= '<div class="flex items-center justify-between">';
 
                                                     // Left side - Weather icon and condition
                                                     $html .= '<div class="flex items-center space-x-4">';
                                                     $html .= '<div class="flex-shrink-0">';
-                                                    $html .= '<div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">';
-                                                    $html .= '<svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">';
+                                                    $html .= '<div class="w-16 h-16 bg-gray-100 dark:bg-gray-700/30 rounded-full flex items-center justify-center">';
+                                                    $html .= '<svg class="w-8 h-8 text-gray-500 dark:text-white" fill="currentColor" viewBox="0 0 20 20">';
                                                     $html .= '<path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z" />';
                                                     $html .= '</svg>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
                                                     $html .= '<div>';
-                                                    $html .= '<h3 class="text-lg font-semibold">'.ucfirst($current['condition']).'</h3>';
-                                                    $html .= '<p class="text-teal-100 text-sm">'.ucfirst($current['description']).'</p>';
+                                                    $html .= '<h3 class="text-lg font-semibold">' . ucfirst($current['condition']) . '</h3>';
+                                                    $html .= '<p class="text-gray-600 dark:text-gray-400 text-sm">' . ucfirst($current['description']) . '</p>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
 
                                                     // Right side - Temperature and location
                                                     $html .= '<div class="text-right">';
-                                                    $html .= '<div class="text-3xl font-bold">'.$current['temperature'].'°C</div>';
-                                                    $html .= '<div class="text-teal-100 text-sm">Feels like '.$current['feels_like'].'°C</div>';
-                                                    $html .= '<div class="text-teal-100 text-sm mt-1">'.$location['city'].', '.$location['country'].'</div>';
+                                                    $html .= '<div class="text-3xl font-bold">' . $current['temperature'] . '°C</div>';
+                                                    $html .= '<div class="text-gray-600 dark:text-gray-400 text-sm">' . __('settings.weather.feels_like') . ' ' . $current['feels_like'] . '°C</div>';
+                                                    $html .= '<div class="text-gray-600 dark:text-gray-400 text-sm mt-1">' . $location['city'] . ', ' . $location['country'] . '</div>';
                                                     $html .= '</div>';
 
                                                     $html .= '</div>';
@@ -498,7 +498,7 @@ class Settings extends Page
 
                                                     return new \Illuminate\Support\HtmlString($html);
                                                 } catch (\Exception $e) {
-                                                    \Log::error('Weather preview error: '.$e->getMessage());
+                                                    \Log::error('Weather preview error: ' . $e->getMessage());
                                                     $html = '<div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">';
                                                     $html .= '<div class="flex items-center">';
                                                     $html .= '<div class="flex-shrink-0">';
@@ -507,7 +507,7 @@ class Settings extends Page
                                                     $html .= '</svg>';
                                                     $html .= '</div>';
                                                     $html .= '<div class="ml-3">';
-                                                    $html .= '<p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">'.__('settings.form.weather_error').'</p>';
+                                                    $html .= '<p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">' . __('settings.weather.error') . '</p>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
@@ -521,15 +521,15 @@ class Settings extends Page
                     ]),
 
                 // Timezone section
-                Forms\Components\Section::make(__('settings.section.timezone'))
-                    ->description(__('settings.section.timezone_description'))
+                Forms\Components\Section::make(__('settings.sections.timezone'))
+                    ->description(__('settings.sections.timezone_description'))
                     ->collapsible()
                     ->schema([
                         // Timezone row with label and field
                         Forms\Components\Grid::make(12)
                             ->schema([
                                 Forms\Components\Placeholder::make('timezone_label')
-                                    ->label(__('settings.form.timezone'))
+                                    ->label(__('settings.timezone.settings'))
                                     ->content('')
                                     ->columnSpan(4),
 
@@ -554,10 +554,10 @@ class Settings extends Page
                             ]),
 
                         // Timezone preview section
-                        Forms\Components\Section::make(__('settings.form.current_time_in_timezone'))
+                        Forms\Components\Section::make(__('settings.timezone.current_time_preview'))
                             ->collapsible()
                             ->collapsed()
-                            ->description(__('settings.form.timezone_preview_description'))
+                            ->description(__('settings.timezone.preview_description'))
                             ->schema([
                                 Forms\Components\Grid::make(12)
                                     ->schema([
@@ -565,8 +565,8 @@ class Settings extends Page
                                             ->label('')
                                             ->content(function ($get) {
                                                 $timezone = $get('timezone');
-                                                if (! $timezone) {
-                                                    return __('settings.form.select_timezone_to_preview');
+                                                if (!$timezone) {
+                                                    return __('settings.timezone.select_to_preview');
                                                 }
 
                                                 try {
@@ -587,22 +587,22 @@ class Settings extends Page
 
                                                     // Current time - Left side
                                                     $html .= '<div class="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-lg">';
-                                                    $html .= '<h4 class="font-medium text-teal-900 dark:text-teal-100 mb-3">'.__('settings.form.current_time').'</h4>';
+                                                    $html .= '<h4 class="font-medium text-teal-900 dark:text-teal-100 mb-3">' . __('settings.timezone.current_time') . '</h4>';
                                                     $html .= '<div class="text-center">';
-                                                    $html .= '<div class="text-2xl font-bold text-teal-700 dark:text-teal-300 mb-2">'.$now->format('g:i A').'</div>';
-                                                    $html .= '<div class="text-sm text-teal-600 dark:text-teal-400">'.$this->getLocalizedDate($now).'</div>';
-                                                    $html .= '<div class="text-xs text-teal-500 dark:text-teal-500 mt-1">'.$now->format('P').'</div>';
+                                                    $html .= '<div class="text-2xl font-bold text-teal-700 dark:text-teal-300 mb-2">' . $now->format('g:i A') . '</div>';
+                                                    $html .= '<div class="text-sm text-teal-600 dark:text-teal-400">' . $this->getLocalizedDate($now) . '</div>';
+                                                    $html .= '<div class="text-xs text-teal-500 dark:text-teal-500 mt-1">' . $now->format('P') . '</div>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
 
                                                     // Timezone information - Right side
                                                     $html .= '<div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">';
-                                                    $html .= '<h4 class="font-medium text-amber-900 dark:text-amber-100 mb-3">'.__('settings.form.timezone_information').'</h4>';
+                                                    $html .= '<h4 class="font-medium text-amber-900 dark:text-amber-100 mb-3">' . __('settings.timezone.information') . '</h4>';
                                                     $html .= '<div class="space-y-2 text-sm">';
-                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.form.identifier_name').':</span> <span class="text-amber-600 dark:text-amber-400">'.$timezone.'</span></div>';
-                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.form.country_code').':</span> <span class="text-amber-600 dark:text-amber-400">'.$this->getCountryFromTimezone($timezone).'</span></div>';
-                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.form.utc_offset').':</span> <span class="text-amber-600 dark:text-amber-400">'.$now->format('P').'</span></div>';
-                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.form.abbreviation').':</span> <span class="text-amber-600 dark:text-amber-400">'.$now->format('T').'</span></div>';
+                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">' . __('settings.timezone.identifier_name') . ':</span> <span class="text-amber-600 dark:text-amber-400">' . $timezone . '</span></div>';
+                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">' . __('settings.timezone.country_code') . ':</span> <span class="text-amber-600 dark:text-amber-400">' . $this->getCountryFromTimezone($timezone) . '</span></div>';
+                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">' . __('settings.timezone.utc_offset') . ':</span> <span class="text-amber-600 dark:text-amber-400">' . $now->format('P') . '</span></div>';
+                                                    $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">' . __('settings.timezone.abbreviation') . ':</span> <span class="text-amber-600 dark:text-amber-400">' . $now->format('T') . '</span></div>';
                                                     $html .= '</div>';
                                                     $html .= '</div>';
 
@@ -610,34 +610,34 @@ class Settings extends Page
 
                                                     // Sample data table - Full width below
                                                     $html .= '<div class="mt-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">';
-                                                    $html .= '<h4 class="font-medium text-gray-900 dark:text-gray-100 mb-3">'.__('settings.form.sample_data_preview').'</h4>';
+                                                    $html .= '<h4 class="font-medium text-gray-900 dark:text-gray-100 mb-3">' . __('settings.timezone.sample_data_preview') . '</h4>';
                                                     $html .= '<div class="overflow-x-auto">';
                                                     $html .= '<table class="min-w-full text-sm">';
                                                     $html .= '<thead class="border-b border-gray-200 dark:border-gray-700">';
                                                     $html .= '<tr>';
-                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.form.id').'</th>';
-                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.form.title').'</th>';
-                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.form.created_at').'</th>';
-                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.form.updated_at').'</th>';
-                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.form.by').'</th>';
+                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">' . __('settings.timezone.id') . '</th>';
+                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">' . __('settings.timezone.title') . '</th>';
+                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">' . __('settings.timezone.created_at') . '</th>';
+                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">' . __('settings.timezone.updated_at') . '</th>';
+                                                    $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">' . __('settings.timezone.by') . '</th>';
                                                     $html .= '</tr>';
                                                     $html .= '</thead>';
                                                     $html .= '<tbody class="divide-y divide-gray-200 dark:divide-gray-700">';
 
                                                     // Sample rows with current time-based timestamps
                                                     $sampleData = [
-                                                        ['id' => 1, 'title' => __('settings.form.sample_project_alpha'), 'created' => clone $createdAt, 'updated' => clone $updatedAt, 'by' => $userName],
-                                                        ['id' => 2, 'title' => __('settings.form.sample_task_review'), 'created' => (clone $createdAt)->modify('-1 day'), 'updated' => (clone $updatedAt)->modify('-1 day'), 'by' => $userName],
+                                                        ['id' => 1, 'title' => __('settings.timezone.sample_project_alpha'), 'created' => clone $createdAt, 'updated' => clone $updatedAt, 'by' => $userName],
+                                                        ['id' => 2, 'title' => __('settings.timezone.sample_task_review'), 'created' => (clone $createdAt)->modify('-1 day'), 'updated' => (clone $updatedAt)->modify('-1 day'), 'by' => $userName],
                                                         ['id' => 3, 'title' => 'Meeting Notes', 'created' => (clone $createdAt)->modify('-3 days'), 'updated' => (clone $updatedAt)->modify('-2 days'), 'by' => $userName],
                                                     ];
 
                                                     foreach ($sampleData as $row) {
                                                         $html .= '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">';
-                                                        $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">'.$row['id'].'</td>';
-                                                        $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">'.$row['title'].'</td>';
-                                                        $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['created']->format('j/n/y, h:i A').'</td>';
-                                                        $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['updated']->format('j/n/y, h:i A').'</td>';
-                                                        $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['by'].'</td>';
+                                                        $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">' . $row['id'] . '</td>';
+                                                        $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">' . $row['title'] . '</td>';
+                                                        $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">' . $row['created']->format('j/n/y, h:i A') . '</td>';
+                                                        $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">' . $row['updated']->format('j/n/y, h:i A') . '</td>';
+                                                        $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">' . $row['by'] . '</td>';
                                                         $html .= '</tr>';
                                                     }
 
@@ -651,7 +651,7 @@ class Settings extends Page
                                                     return 'Invalid timezone';
                                                 }
                                             })
-                                            ->visible(fn ($get) => ! empty($get('timezone')))
+                                            ->visible(fn($get) => !empty($get('timezone')))
                                             ->extraAttributes(['class' => 'text-sm text-gray-600 dark:text-gray-400'])
                                             ->columnSpan(12),
                                     ]),
@@ -678,8 +678,8 @@ class Settings extends Page
         ]);
 
         Notification::make()
-            ->title(__('settings.form.saved'))
-            ->body(__('settings.form.saved_body'))
+            ->title(__('settings.notifications.settings_saved'))
+            ->body(__('settings.notifications.settings_saved_body'))
             ->success()
             ->send();
     }
@@ -743,11 +743,11 @@ class Settings extends Page
 
             return $mockWeatherData;
         } catch (\Exception $e) {
-            \Log::error('Weather preview error: '.$e->getMessage());
+            \Log::error('Weather preview error: ' . $e->getMessage());
 
             return [
                 'error' => true,
-                'message' => __('settings.form.weather_error'),
+                'message' => __('settings.weather.error'),
                 'location' => [
                     'city' => $city,
                     'country' => $country,
@@ -756,7 +756,7 @@ class Settings extends Page
                     'temperature' => '-',
                     'feels_like' => '-',
                     'condition' => 'Unknown',
-                    'description' => __('settings.form.weather_data_unavailable'),
+                    'description' => __('settings.weather.data_unavailable'),
                     'icon' => '01d',
                 ],
             ];
@@ -767,7 +767,7 @@ class Settings extends Page
     private function generateMockWeatherData(string $city, string $country): array
     {
         // Generate consistent mock data based on city and country
-        $seed = crc32($city.$country);
+        $seed = crc32($city . $country);
         mt_srand($seed);
 
         // Mock weather conditions with multilingual support
