@@ -218,12 +218,12 @@
       <!-- Footer -->
       <div class="text-center space-y-2">
         <div>
-          <a href="{{ route('login') }}" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:underline">
+          <a href="{{ route('login') }}" class="w-full mt-3 p-4 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-400/50 rounded-lg transition-colors duration-200 no-underline hover:no-underline block text-center">
             {{ __('auth.back_to_login') }}
           </a>
         </div>
         <div>
-          <a href="/forgot-password" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:underline">
+          <a href="/forgot-password" class="w-full p-4 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-400/50 rounded-lg transition-colors duration-200 no-underline hover:no-underline block text-center">
             {{ __('auth.back_to_forgot_password') }}
           </a>
         </div>
