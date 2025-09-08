@@ -166,7 +166,7 @@
         <!-- Submit button -->
         <div>
           <button type="submit"
-            class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-white dark:text-white font-semibold text-sm rounded-lg transition focus:ring-2 focus:ring-primary-600 focus:outline-none">
+            class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-white dark:text-[rgb(78_29_4)] font-semibold text-sm rounded-lg transition focus:ring-2 focus:ring-primary-600 focus:outline-none">
             {{ __('auth.send_link') }}
           </button>
         </div>
