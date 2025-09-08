@@ -22,6 +22,8 @@ return [
     'section' => [
         'profile_settings' => 'Profile Settings',
         'profile_settings_description' => 'Configure and customize your profile settings here',
+        'google_connection_settings' => 'Google Connection Settings',
+        'google_connection_settings_description' => 'Manage your Google account connections and integrations',
         'password_settings' => 'Password Settings',
         'user_info' => 'User Information',
         'password_info' => 'Password Information',
@@ -58,6 +60,18 @@ return [
         'name_helper' => 'Automatically filled with username if left empty, changeable',
         'personalize' => 'Personalize',
         'uploading' => 'Uploading...',
+        'disconnect_google' => 'Disconnect',
+        'disconnect_google_confirm' => 'Disconnect Google Account',
+        'disconnect_google_description' => 'Are you sure you want to disconnect your Google account? You will no longer be able to sign in using Google, but you can still use your username and password.',
+        'disconnect' => 'Disconnect',
+        'cancel' => 'Cancel',
+        'google_disconnected' => 'Google Account Disconnected',
+        'google_disconnected_body' => 'Your Google account has been successfully disconnected. You can still sign in using your username and password.',
+        'google_connection' => 'Google Connection',
+        'google_description' => 'To use as an alternative login method & synchronize your Google avatar with your profile.',
+        'connect_google' => 'Connect Now',
+        'google_connected' => 'Google Account Connected',
+        'google_connected_body' => 'Your Google account has been successfully connected. You can now sign in using Google.',
     ],
 
     'table' => [

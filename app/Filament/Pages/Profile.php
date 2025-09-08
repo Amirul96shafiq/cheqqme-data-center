@@ -110,6 +110,74 @@ class Profile extends EditProfile
                     ->collapsed()
                     ->columns(1),
 
+                Forms\Components\Section::make(__('user.section.google_connection_settings'))
+                    ->description(__('user.section.google_connection_settings_description'))
+                    ->schema([
+                        Forms\Components\Placeholder::make('google_connection')
+                            ->label(__('user.form.google_connection'))
+                            ->content(function () {
+                                $user = auth()->user();
+                                if ($user->hasGoogleAuth()) {
+                                    return new \Illuminate\Support\HtmlString(
+                                        '<div class="flex items-center justify-between">
+                                            <span class="text-sm text-gray-600 dark:text-gray-400">' . __('user.form.google_description') . '</span>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                Connected
+                                            </span>
+                                        </div>'
+                                    );
+                                }
+
+                                return new \Illuminate\Support\HtmlString(
+                                    '<div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-500 dark:text-gray-400">Not connected to Google</span>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            Not Connected
+                                        </span>
+                                    </div>'
+                                );
+                            })
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible()
+                    ->collapsed()
+                    ->headerActions([
+                        Forms\Components\Actions\Action::make('disconnect_google')
+                            ->label(__('user.form.disconnect_google'))
+                            ->color('danger')
+                            ->outlined()
+                            ->icon('heroicon-o-link-slash')
+                            ->visible(fn() => auth()->user()->hasGoogleAuth())
+                            ->requiresConfirmation()
+                            ->modalHeading(__('user.form.disconnect_google_confirm'))
+                            ->modalDescription(__('user.form.disconnect_google_description'))
+                            ->modalSubmitActionLabel(__('user.form.disconnect'))
+                            ->modalCancelActionLabel(__('user.form.cancel'))
+                            ->modalWidth('md')
+                            ->action('confirmDisconnectGoogle'),
+
+                        Forms\Components\Actions\Action::make('connect_google')
+                            ->label(__('user.form.connect_google'))
+                            ->color('success')
+                            ->outlined()
+                            ->icon('heroicon-o-link')
+                            ->visible(fn() => !auth()->user()->hasGoogleAuth())
+                            ->requiresConfirmation()
+                            ->modalHeading(__('user.form.connect_google'))
+                            ->modalDescription(__('user.form.google_description'))
+                            ->modalSubmitActionLabel(__('user.form.connect_google'))
+                            ->modalCancelActionLabel(__('user.form.cancel'))
+                            ->modalWidth('md')
+                            ->action('connectGoogle'),
+                    ])
+                    ->columns(1),
+
                 Forms\Components\Section::make(__('user.section.password_settings'))
                     ->description(__('user.section.password_info_description_profile'))
                     ->collapsible()
@@ -198,5 +266,33 @@ class Profile extends EditProfile
     protected function getNotificationsFormComponent(): ?Forms\Components\Component
     {
         return null;
+    }
+
+    /**
+     * Confirm disconnect Google account
+     */
+    public function confirmDisconnectGoogle(): void
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return;
+        }
+
+        $user->disconnectGoogle();
+
+        Notification::make()
+            ->title(__('user.form.google_disconnected'))
+            ->body(__('user.form.google_disconnected_body'))
+            ->success()
+            ->send();
+    }
+
+    /**
+     * Connect Google account
+     */
+    public function connectGoogle()
+    {
+        // Redirect to Google OAuth
+        return redirect()->route('auth.google');
     }
 }
