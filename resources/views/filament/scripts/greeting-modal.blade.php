@@ -113,28 +113,28 @@ function openGreetingModal() {
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
-                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
+                            <div class="flex items-center justify-between py-2 px-3 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tomorrow</span>
                                     @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
-                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
+                            <div class="flex items-center justify-between py-2 px-3 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 3</span>
                                     @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
-                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
+                            <div class="flex items-center justify-between py-2 px-3 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 4</span>
                                     @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">{{ __('weather.loading') }} / {{ __('weather.loading') }}</div>
                             </div>
-                            <div class="flex items-center justify-between py-2">
+                            <div class="flex items-center justify-between py-2 px-3">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 5</span>
                                     @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
@@ -767,10 +767,10 @@ function updateForecastData(weatherData) {
         }
         
         // Apply special styling for "Today"
-        const todayClasses = isToday ? 'px-3 rounded-lg  bg-gray-100 dark:bg-gray-700' : '';
+        const todayClasses = isToday ? 'rounded-lg  bg-gray-100 dark:bg-gray-700' : '';
         
         forecastHTML += `
-            <div class="flex items-center justify-between py-2 ${todayClasses} ${borderClass}">
+            <div class="flex items-center justify-between py-2 px-3 ${todayClasses} ${borderClass}">
                 <div class="flex items-center space-x-3">
                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">${dayLabel}</span>
                     <div class="w-12 h-12 flex items-center justify-center">
