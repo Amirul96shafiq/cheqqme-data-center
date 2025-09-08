@@ -51,23 +51,10 @@ class Login extends BaseLogin
 
                     // Google Sign-in button - opens popup window for OAuth authentication
                     Action::make('google_signin')
-                        ->label('Sign in with Google')
-                        ->color('gray')
-                        ->outlined()
-                        ->extraAttributes([
-                            'class' => 'w-full py-3 mt-2',
-                            'onclick' => 'openGoogleSignIn()',
-                        ])
-                        ->icon('heroicon-o-arrow-right-on-rectangle'),
+                        ->view('components.google-signin-button'),
 
                     Action::make('forgotPassword')
-                        ->label(__('login.actions.forgotPassword'))
-                        ->url(route('password.request'))
-                        ->color('gray')
-                        ->link()
-                        ->extraAttributes([
-                            'class' => 'w-full text-center mt-2 text-sm',
-                        ]),
+                        ->view('components.forgot-password-link'),
                 ])
                     ->columnSpanFull()
                     ->columns(1),
