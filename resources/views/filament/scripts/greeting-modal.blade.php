@@ -144,131 +144,125 @@ function openGreetingModal() {
                 </div>
                 
                 <!-- Greeting Section (60% width) -->
-                <div class="p-6 flex flex-col justify-center" style="width: 60%;">
-                <!-- Close Button -->
-                <button 
-                    onclick="closeGreetingModal()" 
-                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 z-10"
-                    aria-label="Close"
-                >
-                    @svg('heroicon-o-x-mark', 'w-5 h-5')
-                </button>
-                
-                <div class="text-center mb-8">
-                    <div class="flex items-center justify-center space-x-2">
-                        <svg class="w-4 h-4 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            ${icon === 'sun' ? 
-                                `@svg('heroicon-o-sun', 'w-4 h-4')` :
-                                `@svg('heroicon-o-moon', 'w-4 h-4')`
-                            }
-                        </svg>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 greeting-text">
-                            ${greeting}
+                <div class="p-6 flex flex-col justify-center bg-cover bg-center bg-no-repeat" 
+                     style="width: 60%; background-image: url('/images/greeting-light.png'); background-position: top center; background-size: contain;" 
+                     data-bg-light="/images/greeting-light.png" 
+                     data-bg-dark="/images/greeting-dark.png">            
+                    <div class="text-center mb-8">
+                        <div class="flex items-center justify-center space-x-2">
+                            <svg class="w-4 h-4 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                ${icon === 'sun' ? 
+                                    `@svg('heroicon-o-sun', 'w-4 h-4')` :
+                                    `@svg('heroicon-o-moon', 'w-4 h-4')`
+                                }
+                            </svg>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 greeting-text">
+                                ${greeting}
+                            </p>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                            <span class="text-primary-600 dark:text-primary-400">{{ \App\Helpers\ClientFormatter::formatClientName(auth()->user()?->name) }}</span>{{ __('greetingmodal.content-title') }}
+                        </h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+                            {{ __('greetingmodal.content-message') }}
                         </p>
                     </div>
-                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                        <span class="text-primary-600 dark:text-primary-400">{{ \App\Helpers\ClientFormatter::formatClientName(auth()->user()?->name) }}</span>{{ __('greetingmodal.content-title') }}
-                    </h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
-                        {{ __('greetingmodal.content-message') }}
-                    </p>
-                </div>
                 
-                <!-- Quick Actions -->
-                <div class="space-y-3 mb-6">
-                    <!-- Profile Quick Action -->
-                    <button onclick="navigateToProfile()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
-                        <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
-                            @svg('heroicon-o-user', 'w-5 h-5 text-primary-600 dark:text-primary-400')
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
-                                {{ __('greetingmodal.action-1-title') }}
-                            </h5>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
-                                {{ __('greetingmodal.action-1-description') }}
-                            </p>
-                        </div>
-                        <div class="flex-shrink-0">
-                            @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
-                        </div>
-                    </button>
-                    <!-- Settings Quick Action -->
-                    <button onclick="navigateToSettings()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
-                        <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
-                            @svg('heroicon-o-cog-6-tooth', 'w-5 h-5 text-primary-600 dark:text-primary-400')
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
-                                {{ __('greetingmodal.action-2-title') }}
-                            </h5>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
-                                {{ __('greetingmodal.action-2-description') }}
-                            </p>
-                        </div>
-                        <div class="flex-shrink-0">
-                            @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
-                        </div>
-                    </button>
-                    <!-- Action Board Quick Action -->
-                    <button onclick="navigateToActionBoard()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
-                        <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
-                            @svg('heroicon-o-rocket-launch', 'w-5 h-5 text-primary-600 dark:text-primary-400')
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
-                                {{ __('greetingmodal.action-3-title') }}
-                            </h5>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
-                                {{ __('greetingmodal.action-3-description') }}
-                            </p>
-                        </div>
-                        <div class="flex-shrink-0">
-                            @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
-                        </div>
-                    </button>
-                    <!-- Data Management Quick Action -->
-                    <button onclick="toggleDataManagementVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
-                        <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
-                            @svg('heroicon-o-table-cells', 'w-5 h-5 text-primary-600 dark:text-primary-400')
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
-                                {{ __('greetingmodal.action-4-title') }}
-                            </h5>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
-                                {{ __('greetingmodal.action-4-description') }}
-                            </p>
-                        </div>
-                        <div class="flex-shrink-0">
-                            @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
-                        </div>
-                    </button>
-                </div>
+                    <!-- Quick Actions -->
+                    <div class="space-y-3 mb-6">
+                        <!-- Profile Quick Action -->
+                        <button onclick="navigateToProfile()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                            <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
+                                @svg('heroicon-o-user', 'w-5 h-5 text-primary-600 dark:text-primary-400')
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
+                                    {{ __('greetingmodal.action-1-title') }}
+                                </h5>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+                                    {{ __('greetingmodal.action-1-description') }}
+                                </p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
+                            </div>
+                        </button>
+                        <!-- Settings Quick Action -->
+                        <button onclick="navigateToSettings()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                            <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
+                                @svg('heroicon-o-cog-6-tooth', 'w-5 h-5 text-primary-600 dark:text-primary-400')
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
+                                    {{ __('greetingmodal.action-2-title') }}
+                                </h5>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+                                    {{ __('greetingmodal.action-2-description') }}
+                                </p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
+                            </div>
+                        </button>
+                        <!-- Action Board Quick Action -->
+                        <button onclick="navigateToActionBoard()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                            <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
+                                @svg('heroicon-o-rocket-launch', 'w-5 h-5 text-primary-600 dark:text-primary-400')
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
+                                    {{ __('greetingmodal.action-3-title') }}
+                                </h5>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+                                    {{ __('greetingmodal.action-3-description') }}
+                                </p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
+                            </div>
+                        </button>
+                        <!-- Data Management Quick Action -->
+                        <button onclick="toggleDataManagementVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                            <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
+                                @svg('heroicon-o-table-cells', 'w-5 h-5 text-primary-600 dark:text-primary-400')
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
+                                    {{ __('greetingmodal.action-4-title') }}
+                                </h5>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+                                    {{ __('greetingmodal.action-4-description') }}
+                                </p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
+                            </div>
+                        </button>
+                    </div>
                 
-                <!-- Video Container -->
-                <div id="data-management-video" class="hidden mt-[-20px] mb-6 opacity-0 transform scale-95 transition-all duration-300 ease-in-out">
-                    <div class="bg-gray-50/10 dark:bg-gray-700/10 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                        <div class="flex items-center justify-between mb-3">
-                            <h6 class="text-sm font-semibold text-gray-900 dark:text-white">
-                                {{ __('greetingmodal.video-title') }}
-                            </h6>
-                            <button onclick="toggleDataManagementVideo()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
-                                @svg('heroicon-o-x-mark', 'w-4 h-4')
-                            </button>
-                        </div>
-                        <div class="relative">
-                            <video 
-                                class="w-full rounded-lg shadow-sm" 
-                                controls 
-                                preload="metadata"
-                            >
-                                <source src="/videos/video_sample_01.mp4" type="video/mp4">
-                                {{ __('greetingmodal.video-not-supported') }}
-                            </video>
+                    <!-- Video Container -->
+                    <div id="data-management-video" class="hidden mt-[-20px] mb-6 opacity-0 transform scale-95 transition-all duration-300 ease-in-out">
+                        <div class="bg-gray-50/10 dark:bg-gray-700/10 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                            <div class="flex items-center justify-between mb-3">
+                                <h6 class="text-sm font-semibold text-gray-900 dark:text-white">
+                                    {{ __('greetingmodal.video-title') }}
+                                </h6>
+                                <button onclick="toggleDataManagementVideo()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
+                                    @svg('heroicon-o-x-mark', 'w-4 h-4')
+                                </button>
+                            </div>
+                            <div class="relative">
+                                <video 
+                                    class="w-full rounded-lg shadow-sm" 
+                                    controls 
+                                    preload="metadata"
+                                >
+                                    <source src="/videos/video_sample_01.mp4" type="video/mp4">
+                                    {{ __('greetingmodal.video-not-supported') }}
+                                </video>
+                            </div>
                         </div>
                     </div>
-                </div>
                 </div>
             </div>
             
@@ -301,6 +295,11 @@ function openGreetingModal() {
             modalContent.style.transform = 'scale(1)';
             modalContent.style.opacity = '1';
         }
+        
+        // Set up dark mode background image switching after modal is rendered
+        setTimeout(() => {
+            setupGreetingBackgroundImage();
+        }, 50);
         
         // Check user location and fetch weather data
         setTimeout(() => {
@@ -892,6 +891,45 @@ function detectUserLocation() {
             maximumAge: 300000 // 5 minutes
         }
     );
+}
+
+// Setup greeting background image based on dark/light mode
+function setupGreetingBackgroundImage() {
+    const greetingSection = document.querySelector('[data-bg-light]');
+    if (!greetingSection) return;
+    
+    // Function to update background image based on theme
+    function updateBackgroundImage() {
+        // Simple check: if dark class is present, use dark image, otherwise use light image
+        const isDarkMode = document.documentElement.classList.contains('dark') || 
+                          document.body.classList.contains('dark');
+        
+        const bgImage = isDarkMode ? 
+            greetingSection.getAttribute('data-bg-dark') : 
+            greetingSection.getAttribute('data-bg-light');
+        
+        greetingSection.style.backgroundImage = `url('${bgImage}')`;
+    }
+    
+    // Set initial background image
+    updateBackgroundImage();
+    
+    // Listen for theme changes
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && 
+                (mutation.attributeName === 'class' || mutation.attributeName === 'data-theme')) {
+                updateBackgroundImage();
+            }
+        });
+    });
+    
+    // Observe document element and body for theme changes
+    observer.observe(document.documentElement, { attributes: true });
+    observer.observe(document.body, { attributes: true });
+    
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateBackgroundImage);
 }
 
 // Make functions globally available
