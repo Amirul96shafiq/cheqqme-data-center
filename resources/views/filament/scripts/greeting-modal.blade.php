@@ -1,7 +1,5 @@
 <script>
 function openGreetingModal() {
-    console.log('openGreetingModal function called!');
-    
     // Create modal overlay
     const modal = document.createElement('div');
     modal.id = 'greeting-modal-overlay';
@@ -157,9 +155,6 @@ function openGreetingModal() {
                 </button>
                 
                 <div class="text-center mb-8">
-                    <div class="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        @svg('heroicon-o-heart', 'w-6 h-6 text-primary-600 dark:text-primary-400')
-                    </div>
                     <div class="flex items-center justify-center space-x-2">
                         <svg class="w-4 h-4 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             ${icon === 'sun' ? 
@@ -174,7 +169,7 @@ function openGreetingModal() {
                     <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                         <span class="text-primary-600 dark:text-primary-400">{{ \App\Helpers\ClientFormatter::formatClientName(auth()->user()?->name) }}</span>{{ __('greetingmodal.content-title') }}
                     </h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-12">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
                         {{ __('greetingmodal.content-message') }}
                     </p>
                 </div>
@@ -252,7 +247,7 @@ function openGreetingModal() {
                 </div>
                 
                 <!-- Video Container -->
-                <div id="data-management-video" class="hidden mt-2 mb-6 opacity-0 transform scale-95 transition-all duration-300 ease-in-out">
+                <div id="data-management-video" class="hidden mt-[-20px] mb-6 opacity-0 transform scale-95 transition-all duration-300 ease-in-out">
                     <div class="bg-gray-50/10 dark:bg-gray-700/10 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                         <div class="flex items-center justify-between mb-3">
                             <h6 class="text-sm font-semibold text-gray-900 dark:text-white">
@@ -307,27 +302,7 @@ function openGreetingModal() {
             modalContent.style.opacity = '1';
         }
         
-        // Day labels are now handled directly in updateForecastData() function
-        
-        // Debug weather elements right after modal creation
-        setTimeout(() => {
-            console.log('=== DEBUGGING WEATHER ELEMENTS RIGHT AFTER MODAL CREATION ===');
-            debugWeatherElements();
-            
-            // Additional focused debug
-            console.log('=== FOCUSED WEATHER DEBUG ===');
-            const weatherSection = document.querySelector('.weather-section');
-            console.log('Weather section found:', !!weatherSection);
-            if (weatherSection) {
-                console.log('Weather section innerHTML length:', weatherSection.innerHTML.length);
-                console.log('Contains current-temp:', weatherSection.innerHTML.includes('current-temp'));
-                console.log('Contains weather-condition:', weatherSection.innerHTML.includes('weather-condition'));
-                console.log('Contains weather-location:', weatherSection.innerHTML.includes('weather-location'));
-                console.log('Contains feels-like:', weatherSection.innerHTML.includes('feels-like'));
-            }
-        }, 150);
-        
-        // Check user location and fetch weather data AFTER modal is fully rendered
+        // Check user location and fetch weather data
         setTimeout(() => {
             checkUserLocationAndFetchWeather();
         }, 200);
@@ -381,43 +356,30 @@ function closeGreetingModal() {
 
 // Auto-detect clicks on greeting menu item
 document.addEventListener('DOMContentLoaded', function() {
-    // Wait for Filament to load
     setTimeout(function() {
-        console.log('Looking for greeting menu item...');
-        
-        // Try multiple selectors to find the greeting menu item
         const selectors = [
             '[data-filament-dropdown-list] a[href="javascript:void(0)"]',
             '.fi-dropdown-list a[href="javascript:void(0)"]',
-            '[role="menu"] a[href="javascript:void(0)"]',
-            '[data-filament-dropdown-list-item] a[href="javascript:void(0)"]',
-            '.fi-dropdown-list-item a[href="javascript:void(0)"]',
-            'a[href="javascript:void(0)"]'
+            '[role="menu"] a[href="javascript:void(0)"]'
         ];
         
         let greetingLink = null;
         
         for (const selector of selectors) {
             const links = document.querySelectorAll(selector);
-            console.log(`Found ${links.length} links with selector: ${selector}`);
             
             links.forEach(function(link) {
-                console.log('Checking link:', link.textContent.trim(), link.href);
-                // Check if this is our greeting menu item by looking for time-based greetings
                 const text = link.textContent.trim().toLowerCase();
-                // More specific check - must be in user menu dropdown
                 if ((text.includes('good morning') || text.includes('good afternoon') || 
                     text.includes('good evening') || text.includes('goodnight') ||
                     text.includes('morning') || text.includes('afternoon') || 
                     text.includes('evening') || text.includes('night') ||
-                    // Malay greetings
                     text.includes('pagi') || text.includes('petang') || 
                     text.includes('malam') || text.includes('selamat malam')) &&
                     (link.closest('[data-filament-dropdown-list]') || 
                      link.closest('.fi-dropdown-list') ||
                      link.closest('[role="menu"]'))) {
                     greetingLink = link;
-                    console.log('Found greeting menu item:', text);
                 }
             });
             
@@ -425,61 +387,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (greetingLink) {
-            console.log('Attaching click handler to greeting menu item');
             greetingLink.addEventListener('click', function(e) {
-                console.log('Greeting menu item clicked!');
                 e.preventDefault();
                 e.stopPropagation();
                 openGreetingModal();
             });
-        } else {
-            console.log('Greeting menu item not found');
         }
-    }, 2000); // Increased timeout to ensure Filament is fully loaded
+    }, 2000);
 });
 
 // Fallback: Use event delegation to catch clicks on any element
 document.addEventListener('click', function(e) {
-    // Check if clicked element or its parent contains greeting text
     let element = e.target;
-    let foundGreeting = false;
     
     // Check up to 3 parent levels
     for (let i = 0; i < 3; i++) {
         if (element && element.textContent) {
             const text = element.textContent.trim().toLowerCase();
-            // More specific check - must contain greeting AND be in user menu
             if ((text.includes('good morning') || text.includes('good afternoon') || 
                 text.includes('good evening') || text.includes('goodnight') ||
                 text.includes('morning') || text.includes('afternoon') || 
                 text.includes('evening') || text.includes('night') ||
-                // Malay greetings
                 text.includes('pagi') || text.includes('petang') || 
                 text.includes('malam') || text.includes('selamat malam')) &&
                 (element.closest('[data-filament-dropdown-list]') || 
                  element.closest('.fi-dropdown-list') ||
                  element.closest('[role="menu"]'))) {
-                foundGreeting = true;
+                e.preventDefault();
+                e.stopPropagation();
+                openGreetingModal();
                 break;
             }
         }
-        element = element?.parentElement; // Safe navigation with optional chaining
-    }
-    
-    if (foundGreeting) {
-        console.log('Greeting text clicked via event delegation');
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('About to call openGreetingModal...');
-        openGreetingModal();
+        element = element?.parentElement;
     }
 });
-
-// Test function - you can call this manually in browser console: testGreetingModal()
-window.testGreetingModal = function() {
-    console.log('Testing greeting modal...');
-    openGreetingModal();
-};
 
 // Navigation functions for quick actions
 window.navigateToProfile = function() {
@@ -541,84 +483,38 @@ window.toggleDataManagementVideo = function() {
 
 };
 
-// Weather API Integration Functions (Global Scope)
+// Weather API Integration Functions
+const weatherIconMap = {
+    'sunny': { icon: 'heroicon-o-sun', color: 'text-yellow-500' },
+    'clear': { icon: 'heroicon-o-sun', color: 'text-yellow-500' },
+    'cloud': { icon: 'heroicon-o-cloud', color: 'text-gray-500' },
+    'overcast': { icon: 'heroicon-o-cloud', color: 'text-gray-500' },
+    'rain': { icon: 'heroicon-o-cloud-rain', color: 'text-blue-500' },
+    'drizzle': { icon: 'heroicon-o-cloud-rain', color: 'text-blue-500' },
+    'shower': { icon: 'heroicon-o-cloud-rain', color: 'text-blue-500' },
+    'storm': { icon: 'heroicon-o-bolt', color: 'text-purple-500' },
+    'thunder': { icon: 'heroicon-o-bolt', color: 'text-purple-500' },
+    'lightning': { icon: 'heroicon-o-bolt', color: 'text-purple-500' },
+    'snow': { icon: 'heroicon-o-snowflake', color: 'text-blue-300' },
+    'blizzard': { icon: 'heroicon-o-snowflake', color: 'text-blue-300' },
+    'sleet': { icon: 'heroicon-o-snowflake', color: 'text-blue-300' },
+    'fog': { icon: 'heroicon-o-eye-slash', color: 'text-gray-400' },
+    'mist': { icon: 'heroicon-o-eye-slash', color: 'text-gray-400' },
+    'haze': { icon: 'heroicon-o-eye-slash', color: 'text-gray-400' }
+};
 
-function getWeatherHeroicon(condition) {
-    if (!condition) return 'heroicon-o-sun';
+function getWeatherIcon(condition) {
+    if (!condition) return { icon: 'heroicon-o-sun', color: 'text-yellow-500' };
     
     const conditionLower = condition.toLowerCase();
     
-    // Sunny/Clear conditions
-    if (conditionLower.includes('sunny') || conditionLower.includes('clear') || conditionLower.includes('sun')) {
-        return 'heroicon-o-sun';
+    for (const [key, value] of Object.entries(weatherIconMap)) {
+        if (conditionLower.includes(key)) {
+            return value;
+        }
     }
     
-    // Cloudy conditions
-    if (conditionLower.includes('cloud') || conditionLower.includes('overcast') || conditionLower.includes('partly cloudy')) {
-        return 'heroicon-o-cloud';
-    }
-    
-    // Rainy conditions
-    if (conditionLower.includes('rain') || conditionLower.includes('drizzle') || conditionLower.includes('shower')) {
-        return 'heroicon-o-cloud-rain';
-    }
-    
-    // Stormy conditions
-    if (conditionLower.includes('storm') || conditionLower.includes('thunder') || conditionLower.includes('lightning')) {
-        return 'heroicon-o-bolt';
-    }
-    
-    // Snowy conditions
-    if (conditionLower.includes('snow') || conditionLower.includes('blizzard') || conditionLower.includes('sleet')) {
-        return 'heroicon-o-snowflake';
-    }
-    
-    // Foggy conditions
-    if (conditionLower.includes('fog') || conditionLower.includes('mist') || conditionLower.includes('haze')) {
-        return 'heroicon-o-eye-slash';
-    }
-    
-    // Default fallback
-    return 'heroicon-o-sun';
-}
-
-function getWeatherIconColor(condition) {
-    if (!condition) return 'text-yellow-500';
-    
-    const conditionLower = condition.toLowerCase();
-    
-    // Sunny/Clear conditions
-    if (conditionLower.includes('sunny') || conditionLower.includes('clear') || conditionLower.includes('sun')) {
-        return 'text-yellow-500';
-    }
-    
-    // Cloudy conditions
-    if (conditionLower.includes('cloud') || conditionLower.includes('overcast') || conditionLower.includes('partly cloudy')) {
-        return 'text-gray-500';
-    }
-    
-    // Rainy conditions
-    if (conditionLower.includes('rain') || conditionLower.includes('drizzle') || conditionLower.includes('shower')) {
-        return 'text-blue-500';
-    }
-    
-    // Stormy conditions
-    if (conditionLower.includes('storm') || conditionLower.includes('thunder') || conditionLower.includes('lightning')) {
-        return 'text-purple-500';
-    }
-    
-    // Snowy conditions
-    if (conditionLower.includes('snow') || conditionLower.includes('blizzard') || conditionLower.includes('sleet')) {
-        return 'text-blue-300';
-    }
-    
-    // Foggy conditions
-    if (conditionLower.includes('fog') || conditionLower.includes('mist') || conditionLower.includes('haze')) {
-        return 'text-gray-400';
-    }
-    
-    // Default fallback
-    return 'text-yellow-500';
+    return { icon: 'heroicon-o-sun', color: 'text-yellow-500' };
 }
 
 function getHeroiconSVG(iconName) {
@@ -634,29 +530,18 @@ function getHeroiconSVG(iconName) {
     return svgPaths[iconName] || svgPaths['heroicon-o-sun'];
 }
 
-function showWeatherLoading() {
-    // Loading spinner disabled to prevent replacing weather elements
-    console.log('Loading spinner called but disabled to prevent element replacement');
-}
-
 function updateWeatherData(weatherData) {
-    console.log('updateWeatherData called with:', weatherData);
     const weatherSection = document.querySelector('.weather-section');
     if (!weatherSection || !weatherData) {
-        console.error('Weather section not found or no data:', weatherSection, weatherData);
         return;
     }
 
     const { current, forecast, error } = weatherData;
     
     if (error) {
-        console.error('Weather data has error:', error);
         showWeatherError();
         return;
     }
-
-    console.log('Updating current weather:', current);
-    console.log('Updating forecast:', forecast);
 
     // Update current weather
     updateCurrentWeather(current);
@@ -668,73 +553,34 @@ function updateWeatherData(weatherData) {
     updateWeatherFooter(current);
 }
 
-function updateCurrentWeather(weatherData, retryCount = 0) {
-    console.log('updateCurrentWeather called with:', weatherData, 'retryCount:', retryCount);
-    
-    // Extract current weather data from nested structure
-    // weatherData is the 'current' object from the API response
+function updateCurrentWeather(weatherData) {
     const actualCurrentDetails = weatherData.current || {};
     const locationDetails = weatherData.location || {};
     
-    console.log('Extracted weather data:', {
-        temperature: actualCurrentDetails.temperature,
-        feels_like: actualCurrentDetails.feels_like,
-        condition: actualCurrentDetails.condition,
-        icon: actualCurrentDetails.icon,
-        location: locationDetails
-    });
-    
-    console.log('Location details breakdown:', {
-        city: locationDetails.city,
-        country: locationDetails.country,
-        fullLocation: locationDetails
-    });
-    
-    // Check if all required elements exist
+    // Get elements
     const tempElement = document.querySelector('.current-temp');
     const feelsLikeElement = document.querySelector('.feels-like');
     const conditionElement = document.querySelector('.weather-condition');
     const locationElement = document.querySelector('.weather-location');
     
-    console.log('Element check results:');
-    console.log('- tempElement:', tempElement ? 'found' : 'NOT FOUND');
-    console.log('- feelsLikeElement:', feelsLikeElement ? 'found' : 'NOT FOUND');
-    console.log('- conditionElement:', conditionElement ? 'found' : 'NOT FOUND');
-    console.log('- locationElement:', locationElement ? 'found' : 'NOT FOUND');
-    
     if (!tempElement || !feelsLikeElement || !conditionElement || !locationElement) {
-        if (retryCount < 10) { // Limit retries to prevent infinite loop
-            console.error('Some weather elements not found, retrying in 100ms... (attempt', retryCount + 1, 'of 10)');
-            if (retryCount === 0) {
-                debugWeatherElements(); // Debug on first retry
-            }
-            setTimeout(() => updateCurrentWeather(current, retryCount + 1), 100);
-            return;
-        } else {
-            console.error('Max retries reached, giving up on weather update');
-            debugWeatherElements(); // Debug when giving up
-            return;
-        }
+        return;
     }
     
     // Update temperature
     tempElement.textContent = actualCurrentDetails.temperature + '°C';
-    console.log('Updated temperature to:', actualCurrentDetails.temperature + '°C');
 
     // Update feels like
     const feelsLikeText = '{{ __('weather.feels_like') }}';
     feelsLikeElement.textContent = feelsLikeText + ' ' + actualCurrentDetails.feels_like + '°C';
-    console.log('Updated feels like to:', feelsLikeText + ' ' + actualCurrentDetails.feels_like + '°C');
 
     // Update condition
     conditionElement.textContent = actualCurrentDetails.condition;
-    console.log('Updated condition to:', actualCurrentDetails.condition);
 
     // Update location
     locationElement.textContent = locationDetails.city + ', ' + locationDetails.country;
-    console.log('Updated location to:', locationDetails.city + ', ' + locationDetails.country);
 
-    // Update weather icon with animation
+    // Update weather icon
     updateWeatherIcon(actualCurrentDetails.icon, actualCurrentDetails.condition);
 
     // Update weather details
@@ -745,20 +591,13 @@ function updateWeatherIcon(iconCode, condition) {
     const iconContainer = document.querySelector('.weather-icon-container');
     if (!iconContainer) return;
 
-    // Get the appropriate heroicon and color
-    const heroicon = getWeatherHeroicon(condition);
-    const iconColor = getWeatherIconColor(condition);
-    
-    // Add weather-specific styling
-    iconContainer.className = 'w-12 h-12 rounded-full flex items-center justify-center weather-icon-container';
+    const weatherIcon = getWeatherIcon(condition);
     
     // Determine background color based on weather condition
     let bgClass = 'bg-yellow-100 dark:bg-yellow-900/30';
     
-    // Handle undefined condition
     if (!condition) {
-        console.log('Weather condition is undefined, using default styling');
-        condition = 'sunny'; // Default fallback
+        condition = 'sunny';
     }
     
     switch (condition.toLowerCase()) {
@@ -784,12 +623,12 @@ function updateWeatherIcon(iconCode, condition) {
             bgClass = 'bg-yellow-100 dark:bg-yellow-900/30';
     }
     
-    iconContainer.className += ` ${bgClass}`;
+    iconContainer.className = `w-12 h-12 rounded-full flex items-center justify-center weather-icon-container ${bgClass}`;
     
     // Update icon with heroicon SVG
     iconContainer.innerHTML = `
-        <svg class="w-8 h-8 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            ${getHeroiconSVG(heroicon)}
+        <svg class="w-8 h-8 ${weatherIcon.color}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            ${getHeroiconSVG(weatherIcon.icon)}
         </svg>
     `;
 }
@@ -821,26 +660,17 @@ function updateWeatherDetails(current) {
 }
 
 function updateForecastData(weatherData) {
-    console.log('updateForecastData called with:', weatherData);
-    
-    // Extract forecast data from nested structure
-    // weatherData is the 'forecast' object from the API response
     const forecast = weatherData.forecast || [];
-    console.log('Extracted forecast data:', forecast);
-    
     const forecastContainer = document.getElementById('forecast-container');
     if (!forecastContainer || !Array.isArray(forecast)) {
-        console.log('Forecast container not found or forecast is not an array');
         return;
     }
 
     let forecastHTML = '';
-    
-    // Get day names for proper labeling
     const today = new Date();
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     
-    // Limit to 5 days (Today + 4 more days)
+    // Limit to 5 days
     const limitedForecast = forecast.slice(0, 5);
     
     limitedForecast.forEach((day, index) => {
@@ -848,32 +678,28 @@ function updateForecastData(weatherData) {
         const isToday = index === 0;
         const borderClass = (isLastItem || isToday) ? '' : 'border-b border-gray-200 dark:border-gray-600';
         
-        // Use our day labeling logic instead of API day names
+        // Day labeling
         let dayLabel;
         if (index === 0) {
             dayLabel = 'Today';
         } else if (index === 1) {
             dayLabel = 'Tomorrow';
         } else {
-            // Calculate the correct day for each forecast entry
             const forecastDate = new Date(today);
             forecastDate.setDate(today.getDate() + index);
             dayLabel = dayNames[forecastDate.getDay()];
         }
         
-        // Apply special styling for "Today"
-        const todayClasses = isToday ? 'rounded-lg  bg-gray-100 dark:bg-gray-700' : '';
-        
-        const heroicon = getWeatherHeroicon(day.condition);
-        const iconColor = getWeatherIconColor(day.condition);
+        const todayClasses = isToday ? 'rounded-lg bg-gray-100 dark:bg-gray-700' : '';
+        const weatherIcon = getWeatherIcon(day.condition);
         
         forecastHTML += `
             <div class="flex items-center justify-between py-2 px-3 ${todayClasses} ${borderClass}">
                 <div class="flex items-center space-x-3">
                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">${dayLabel}</span>
-                    <div class="w-6 h-6 ${iconColor}">
+                    <div class="w-6 h-6 ${weatherIcon.color}">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            ${getHeroiconSVG(heroicon)}
+                            ${getHeroiconSVG(weatherIcon.icon)}
                         </svg>
                     </div>
                     <span class="text-xs text-gray-500 dark:text-gray-400 flex-1 min-w-0">${day.description}</span>
@@ -943,23 +769,14 @@ function updateWeatherFooter(weatherData) {
 
 async function fetchWeatherData(retryCount = 0) {
     try {
-        console.log('Starting weather data fetch... retryCount:', retryCount);
-        
-        // Check if weather section exists before showing loading
         const weatherSection = document.querySelector('.weather-section');
         if (!weatherSection) {
-            if (retryCount < 10) { // Limit retries to prevent infinite loop
-                console.error('Weather section not found, retrying in 100ms... (attempt', retryCount + 1, 'of 10)');
+            if (retryCount < 5) {
                 setTimeout(() => fetchWeatherData(retryCount + 1), 100);
                 return;
-            } else {
-                console.error('Max retries reached, giving up on weather fetch');
-                return;
             }
+            return;
         }
-        
-        // Loading spinner removed to prevent element replacement
-        console.log('Weather data fetch started - no loading spinner to prevent element replacement');
         
         const response = await fetch('/weather/data', {
             method: 'GET',
@@ -969,72 +786,28 @@ async function fetchWeatherData(retryCount = 0) {
             }
         });
 
-        console.log('Weather API response status:', response.status);
-        console.log('Weather API response ok:', response.ok);
-
         if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Weather API error response:', errorText);
             throw new Error(`Weather API request failed: ${response.status}`);
         }
 
         const result = await response.json();
-        console.log('Weather API result:', result);
         
         if (result.success) {
-            console.log('Weather API result.data structure:', result.data);
-            console.log('result.data.current:', result.data.current);
-            console.log('result.data.forecast:', result.data.forecast);
             updateWeatherData(result.data);
         } else {
-            console.error('Weather API returned success: false');
             showWeatherError();
         }
     } catch (error) {
-        console.error('Weather fetch error:', error);
         showWeatherError();
     }
 }
 
-// Debug function to check DOM elements
-function debugWeatherElements() {
-    console.log('=== DEBUGGING WEATHER ELEMENTS ===');
-    console.log('All elements with weather-related classes:');
-    
-    const allElements = document.querySelectorAll('[class*="weather"], [class*="current"], [class*="feels"]');
-    allElements.forEach((el, index) => {
-        console.log(`${index + 1}. ${el.tagName} with classes: ${el.className}`);
-    });
-    
-    console.log('Specific weather elements:');
-    console.log('- .weather-section:', document.querySelector('.weather-section'));
-    console.log('- .current-temp:', document.querySelector('.current-temp'));
-    console.log('- .feels-like:', document.querySelector('.feels-like'));
-    console.log('- .weather-condition:', document.querySelector('.weather-condition'));
-    console.log('- .weather-location:', document.querySelector('.weather-location'));
-    
-    // Check what's actually inside the weather section
-    const weatherSection = document.querySelector('.weather-section');
-    if (weatherSection) {
-        console.log('Weather section innerHTML:', weatherSection.innerHTML);
-        console.log('Weather section children count:', weatherSection.children.length);
-        console.log('Weather section children:', Array.from(weatherSection.children).map(child => child.tagName + ' with classes: ' + child.className));
-    }
-    
-    console.log('=== END DEBUG ===');
-}
-
 async function refreshWeatherData() {
     try {
-        console.log('Refreshing weather data...');
-        
-        // Add visual feedback to the refresh button
         const refreshButton = document.querySelector('button[onclick="refreshWeatherData()"]');
         if (refreshButton) {
             refreshButton.disabled = true;
-            refreshButton.innerHTML = `
-                @svg('heroicon-o-arrow-path', 'w-5 h-5 animate-spin')
-            `;
+            refreshButton.innerHTML = `@svg('heroicon-o-arrow-path', 'w-5 h-5 animate-spin')`;
         }
         
         // Clear cache first
@@ -1048,26 +821,19 @@ async function refreshWeatherData() {
         
         // Fetch fresh data
         await fetchWeatherData();
-        
-        console.log('Weather data refreshed successfully');
     } catch (error) {
-        console.error('Weather refresh error:', error);
         showWeatherError();
     } finally {
-        // Restore refresh button
         const refreshButton = document.querySelector('button[onclick="refreshWeatherData()"]');
         if (refreshButton) {
             refreshButton.disabled = false;
-            refreshButton.innerHTML = `
-                @svg('heroicon-o-arrow-path', 'w-5 h-5')
-            `;
+            refreshButton.innerHTML = `@svg('heroicon-o-arrow-path', 'w-5 h-5')`;
         }
     }
 }
 
 async function checkUserLocationAndFetchWeather() {
     try {
-        // Check if user has saved location settings
         const response = await fetch('/weather/user-location', {
             method: 'GET',
             headers: {
@@ -1078,81 +844,21 @@ async function checkUserLocationAndFetchWeather() {
         });
         
         const data = await response.json();
-        console.log('User location check result:', data);
         
         if (data.hasLocation && data.latitude && data.longitude) {
-            console.log('User has saved location, using saved coordinates:', data);
-            // User has saved location, use it directly
-            setTimeout(() => {
-                console.log('=== DEBUGGING WEATHER ELEMENTS RIGHT BEFORE API CALL ===');
-                debugWeatherElements();
-                
-                // Additional focused debug before API call
-                console.log('=== FOCUSED WEATHER DEBUG BEFORE API CALL ===');
-                const weatherSection = document.querySelector('.weather-section');
-                console.log('Weather section found:', !!weatherSection);
-                if (weatherSection) {
-                    console.log('Weather section innerHTML length:', weatherSection.innerHTML.length);
-                    console.log('Contains current-temp:', weatherSection.innerHTML.includes('current-temp'));
-                    console.log('Contains weather-condition:', weatherSection.innerHTML.includes('weather-condition'));
-                    console.log('Contains weather-location:', weatherSection.innerHTML.includes('weather-location'));
-                    console.log('Contains feels-like:', weatherSection.innerHTML.includes('feels-like'));
-                }
-                
-                fetchWeatherData();
-            }, 500);
+            setTimeout(() => fetchWeatherData(), 500);
         } else {
-            console.log('No saved location found, detecting current location');
-            // No saved location, detect current location
             detectUserLocation();
-            // Wait for location detection before fetching weather
-            setTimeout(() => {
-                console.log('=== DEBUGGING WEATHER ELEMENTS RIGHT BEFORE API CALL ===');
-                debugWeatherElements();
-                
-                // Additional focused debug before API call
-                console.log('=== FOCUSED WEATHER DEBUG BEFORE API CALL ===');
-                const weatherSection = document.querySelector('.weather-section');
-                console.log('Weather section found:', !!weatherSection);
-                if (weatherSection) {
-                    console.log('Weather section innerHTML length:', weatherSection.innerHTML.length);
-                    console.log('Contains current-temp:', weatherSection.innerHTML.includes('current-temp'));
-                    console.log('Contains weather-condition:', weatherSection.innerHTML.includes('weather-condition'));
-                    console.log('Contains weather-location:', weatherSection.innerHTML.includes('weather-location'));
-                    console.log('Contains feels-like:', weatherSection.innerHTML.includes('feels-like'));
-                }
-                
-                fetchWeatherData();
-            }, 1000);
+            setTimeout(() => fetchWeatherData(), 1000);
         }
     } catch (error) {
-        console.error('Error checking user location:', error);
-        // Fallback: detect current location
         detectUserLocation();
-        setTimeout(() => {
-            console.log('=== DEBUGGING WEATHER ELEMENTS RIGHT BEFORE API CALL ===');
-            debugWeatherElements();
-            
-            // Additional focused debug before API call
-            console.log('=== FOCUSED WEATHER DEBUG BEFORE API CALL ===');
-            const weatherSection = document.querySelector('.weather-section');
-            console.log('Weather section found:', !!weatherSection);
-            if (weatherSection) {
-                console.log('Weather section innerHTML length:', weatherSection.innerHTML.length);
-                console.log('Contains current-temp:', weatherSection.innerHTML.includes('current-temp'));
-                console.log('Contains weather-condition:', weatherSection.innerHTML.includes('weather-condition'));
-                console.log('Contains weather-location:', weatherSection.innerHTML.includes('weather-location'));
-                console.log('Contains feels-like:', weatherSection.innerHTML.includes('feels-like'));
-            }
-            
-            fetchWeatherData();
-        }, 1000);
+        setTimeout(() => fetchWeatherData(), 1000);
     }
 }
 
 function detectUserLocation() {
     if (!navigator.geolocation) {
-        console.log('Geolocation not supported');
         return;
     }
 
@@ -1161,7 +867,6 @@ function detectUserLocation() {
             const { latitude, longitude } = position.coords;
             
             try {
-                // Update user location in database
                 await fetch('/weather/location', {
                     method: 'POST',
                     headers: {
@@ -1174,15 +879,12 @@ function detectUserLocation() {
                         longitude: longitude
                     })
                 });
-                
-                console.log('Location updated successfully');
             } catch (error) {
-                console.error('Location update error:', error);
+                // Silent fail for location update
             }
         },
         (error) => {
-            console.log('Geolocation error:', error.message);
-            // Use default location (Kuala Lumpur)
+            // Silent fail for geolocation error
         },
         {
             enableHighAccuracy: true,
@@ -1195,9 +897,5 @@ function detectUserLocation() {
 // Make functions globally available
 window.openGreetingModal = openGreetingModal;
 window.closeGreetingModal = closeGreetingModal;
-window.detectUserLocation = detectUserLocation;
-window.checkUserLocationAndFetchWeather = checkUserLocationAndFetchWeather;
 window.refreshWeatherData = refreshWeatherData;
-window.fetchWeatherData = fetchWeatherData;
-window.debugWeatherElements = debugWeatherElements;
 </script>
