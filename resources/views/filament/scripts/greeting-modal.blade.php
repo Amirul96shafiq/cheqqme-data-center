@@ -3,7 +3,7 @@ function openGreetingModal() {
     // Create modal overlay
     const modal = document.createElement('div');
     modal.id = 'greeting-modal-overlay';
-    modal.className = 'fixed inset-0 z-[9999] flex items-center justify-center';
+    modal.className = 'fixed inset-0 z-[9999] flex items-center justify-center p-4';
     modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
     modal.style.backdropFilter = 'blur(12px)';
     
@@ -17,10 +17,11 @@ function openGreetingModal() {
     const iconColor = hour >= 7 && hour <= 19 ? 'text-yellow-500' : 'text-blue-400';
     
     modal.innerHTML = `
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-5xl w-full mx-4 transform transition-all duration-300 scale-95 opacity-0 border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="flex">
-                <!-- Weather Information Section (40% width) -->
-                <div class="p-6 border-r border-gray-200 dark:border-gray-700 weather-section" style="width: 40%;">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] transform transition-all duration-300 scale-95 opacity-0 border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col">
+            <div class="flex flex-col lg:flex-row flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+                
+                <!-- Weather Information Section (40% width on desktop, 100% on mobile) -->
+                <div class="p-6 border-r-0 lg:border-r border-gray-200 dark:border-gray-700 border-b lg:border-b-0 weather-section w-full lg:w-2/5">
                     <div class="flex items-center justify-between mb-4">
                         <button onclick="refreshWeatherData()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="{{ __('weather.refresh_weather') }}">
                             @svg('heroicon-o-arrow-path', 'w-5 h-5')
@@ -143,13 +144,13 @@ function openGreetingModal() {
                     </div>
                 </div>
                 
-                <!-- Greeting Section (60% width) -->
-                <div class="p-6 flex flex-col justify-end bg-cover bg-center bg-no-repeat" 
-                     style="width: 60%; background-image: url('/images/greeting-light.png'); background-position: top center; background-size: contain;" 
+                <!-- Greeting Section (60% width on desktop, 100% on mobile) -->
+                <div class="p-6 flex flex-col justify-end bg-cover bg-center bg-no-repeat w-full lg:w-3/5" 
+                     style="background-image: url('/images/greeting-light.png'); background-position: top center; background-size: contain;" 
                      data-bg-light="/images/greeting-light.png" 
                      data-bg-dark="/images/greeting-dark.png">            
                     <div class="text-center mb-8">
-                        <div class="flex items-center justify-center space-x-2">
+                        <div class="flex items-center justify-center space-x-2 mt-32 lg:mt-0">
                             <svg class="w-4 h-4 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 ${icon === 'sun' ? 
                                     `@svg('heroicon-o-sun', 'w-4 h-4')` :
@@ -267,9 +268,9 @@ function openGreetingModal() {
             </div>
             
             <!-- Footer Actions -->
-            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
-                <div class="flex justify-between items-center">
-                    <div class="text-xs text-gray-500 dark:text-gray-400" id="weather-footer-text" data-last-updated-text="{{ __('weather.last_weather_updated') }}">
+            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 flex-shrink-0">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
+                    <div class="text-xs text-gray-500 dark:text-gray-400 text-center sm:text-left" id="weather-footer-text" data-last-updated-text="{{ __('weather.last_weather_updated') }}">
                         {{ __('greetingmodal.footer-text') }}
                     </div>
                     <div class="flex space-x-3">
