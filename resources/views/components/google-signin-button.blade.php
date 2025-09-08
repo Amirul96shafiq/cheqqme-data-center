@@ -6,7 +6,7 @@
     class="w-full py-3 mt-0 google-signin-button flex items-center justify-center gap-3 px-4 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
 >
     <img src="{{ asset('images/google-icon.svg') }}" alt="Google" class="w-6 h-6" />
-    <span class="text-gray-700 font-medium">Sign in with Google</span>
+    <span class="text-gray-700 font-medium">{{ __('login.actions.googleSignin') }}</span>
 </button>
 
 <style>
