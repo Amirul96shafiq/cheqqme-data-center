@@ -106,7 +106,7 @@ function openGreetingModal() {
                             <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('weather.forecast_high_low') }}</span>
                         </div>
                         <div class="space-y-2" id="forecast-container">
-                            <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
+                            <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-gradient-to-r from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">{{ __('weather.today') }}</span>
                                     @svg('heroicon-o-sun', 'w-6 h-6 text-yellow-500')
@@ -194,6 +194,9 @@ function openGreetingModal() {
                                 {{ __('greetingmodal.action-1-description') }}
                             </p>
                         </div>
+                        <div class="flex-shrink-0">
+                            @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
+                        </div>
                     </button>
                     <!-- Settings Quick Action -->
                     <button onclick="navigateToSettings()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
@@ -207,6 +210,9 @@ function openGreetingModal() {
                             <p class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
                                 {{ __('greetingmodal.action-2-description') }}
                             </p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
                         </div>
                     </button>
                     <!-- Action Board Quick Action -->
@@ -222,6 +228,9 @@ function openGreetingModal() {
                                 {{ __('greetingmodal.action-3-description') }}
                             </p>
                         </div>
+                        <div class="flex-shrink-0">
+                            @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
+                        </div>
                     </button>
                     <!-- Data Management Quick Action -->
                     <button onclick="toggleDataManagementVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
@@ -235,6 +244,9 @@ function openGreetingModal() {
                             <p class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
                                 {{ __('greetingmodal.action-4-description') }}
                             </p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
                         </div>
                     </button>
                 </div>
@@ -277,12 +289,6 @@ function openGreetingModal() {
                             class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200"
                         >
                             {{ __('greetingmodal.action-dismiss') }}
-                        </button>
-                        <button 
-                            onclick="closeGreetingModal()" 
-                            class="px-4 py-2 text-sm font-medium bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md" style="color: rgb(78, 29, 4);"
-                        >
-                            {{ __('greetingmodal.action-continue') }}
                         </button>
                     </div>
                 </div>
@@ -744,7 +750,8 @@ function updateForecastData(weatherData) {
     
     limitedForecast.forEach((day, index) => {
         const isLastItem = index === limitedForecast.length - 1;
-        const borderClass = isLastItem ? '' : 'border-b border-gray-200 dark:border-gray-600';
+        const isToday = index === 0;
+        const borderClass = (isLastItem || isToday) ? '' : 'border-b border-gray-200 dark:border-gray-600';
         
         // Use our day labeling logic instead of API day names
         let dayLabel;
@@ -759,8 +766,11 @@ function updateForecastData(weatherData) {
             dayLabel = dayNames[forecastDate.getDay()];
         }
         
+        // Apply special styling for "Today"
+        const todayClasses = isToday ? 'px-3 rounded-lg bg-gradient-to-r from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20' : '';
+        
         forecastHTML += `
-            <div class="flex items-center justify-between py-2 ${borderClass}">
+            <div class="flex items-center justify-between py-2 ${todayClasses} ${borderClass}">
                 <div class="flex items-center space-x-3">
                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">${dayLabel}</span>
                     <div class="w-12 h-12 flex items-center justify-center">

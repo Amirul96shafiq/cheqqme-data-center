@@ -20,16 +20,15 @@ return [
     'action-1-title' => 'Profil',
     'action-1-description' => 'Konfigurasi dan sesuaikan tetapan profil anda di sini',
     'action-2-title' => 'Tetapan',
-    'action-2-description' => 'Sediakan kunci API dan zon masa anda sendiri di sini',
+    'action-2-description' => 'Selaraskan kunci API, geolokasi dan zon masa anda di sini',
     'action-3-title' => 'Papan Tindakan',
     'action-3-description' => 'Lihat dan urus senarai tindakan produktif anda di sini',
     'action-4-title' => 'Pengurusan Data',
     'action-4-description' => 'Susun dan jejak semua data kerja anda di sini',
 
     // Footer modal content
-    'footer-text' => 'Log masuk terakhir: Hari ini',
+    'footer-text' => 'Menyegerakkan data terkini...',
     'action-dismiss' => 'Tolak',
-    'action-continue' => 'Teruskan',
 
     // Video container content
     'video-title' => 'Tutorial Pengurusan Data',

@@ -20,16 +20,15 @@ return [
     'action-1-title' => 'Profile',
     'action-1-description' => 'Configure and customize your profile settings here',
     'action-2-title' => 'Settings',
-    'action-2-description' => 'Setup your very own API key and timezone here',
+    'action-2-description' => 'Setup your very own API key, geolocation and timezone here',
     'action-3-title' => 'Action Board',
     'action-3-description' => 'View and manage your productive action list here',
     'action-4-title' => 'Data Management',
     'action-4-description' => 'Organize and track all your working data here',
 
     // Footer modal content
-    'footer-text' => 'Last login: Today',
+    'footer-text' => 'Syncing last updated data...',
     'action-dismiss' => 'Dismiss',
-    'action-continue' => 'Continue',
 
     // Video container content
     'video-title' => 'Data Management Tutorial',
