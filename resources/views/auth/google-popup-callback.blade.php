@@ -83,8 +83,19 @@
                 },
                 credentials: 'same-origin'
             })
-            .then(response => {
+            .then(async response => {
                 if (!response.ok) {
+                    // Try to parse error response
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.message) {
+                            sendErrorToParent(errorData.message);
+                            closePopupWithFallback(errorData.message, true);
+                            return;
+                        }
+                    } catch (parseError) {
+                        // Fallback if JSON parsing fails
+                    }
                     throw new Error('Network response was not ok: ' + response.status);
                 }
                 return response.json();

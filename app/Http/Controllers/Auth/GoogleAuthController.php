@@ -30,10 +30,10 @@ class GoogleAuthController extends Controller
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if (!$user) {
-                // User doesn't exist - return error
+                // User doesn't exist - return specific error message
                 return response()->json([
                     'success' => false,
-                    'message' => 'No account found with this Google email address.',
+                    'message' => 'Failed to login. The selected Google Account does not exist in the system.',
                 ], 404);
             }
 
