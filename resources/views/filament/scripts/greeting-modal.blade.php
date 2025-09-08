@@ -171,6 +171,7 @@ function openGreetingModal() {
                 
                     <!-- Quick Actions -->
                     <div class="space-y-3 mb-6">
+
                         <!-- Profile Quick Action -->
                         <button onclick="navigateToProfile()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
@@ -188,6 +189,7 @@ function openGreetingModal() {
                                 @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
                             </div>
                         </button>
+
                         <!-- Settings Quick Action -->
                         <button onclick="navigateToSettings()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
@@ -205,6 +207,7 @@ function openGreetingModal() {
                                 @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
                             </div>
                         </button>
+
                         <!-- Action Board Quick Action -->
                         <button onclick="navigateToActionBoard()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
@@ -222,6 +225,7 @@ function openGreetingModal() {
                                 @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
                             </div>
                         </button>
+                        
                         <!-- Data Management Quick Action -->
                         <button onclick="toggleDataManagementVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
@@ -442,7 +446,9 @@ window.navigateToActionBoard = function() {
 // Toggle data management video container
 window.toggleDataManagementVideo = function() {
     const videoContainer = document.getElementById('data-management-video');
-    if (videoContainer) {
+    const quickActionsContainer = videoContainer?.parentElement?.querySelector('.space-y-3');
+    
+    if (videoContainer && quickActionsContainer) {
         const isHidden = videoContainer.classList.contains('hidden');
         
         if (isHidden) {
@@ -453,6 +459,12 @@ window.toggleDataManagementVideo = function() {
             // Add animation classes
             videoContainer.classList.remove('opacity-0', 'scale-95');
             videoContainer.classList.add('opacity-100', 'scale-100');
+            
+            // Hide other quick actions
+            const otherActions = quickActionsContainer.querySelectorAll('button:not([onclick="toggleDataManagementVideo()"])');
+            otherActions.forEach(action => {
+                action.style.display = 'none';
+            });
             
             // Reset video to beginning when showing
             setTimeout(() => {
@@ -475,12 +487,17 @@ window.toggleDataManagementVideo = function() {
             // Hide element after animation completes
             setTimeout(() => {
                 videoContainer.classList.add('hidden');
+                
+                // Show other quick actions after video container is completely hidden
+                setTimeout(() => {
+                    const otherActions = quickActionsContainer.querySelectorAll('button:not([onclick="toggleDataManagementVideo()"])');
+                    otherActions.forEach(action => {
+                        action.style.display = 'flex';
+                    });
+                }, 100); // Additional delay after video container is hidden
             }, 300);
         }
     }
-
-
-
 };
 
 // Weather API Integration Functions
