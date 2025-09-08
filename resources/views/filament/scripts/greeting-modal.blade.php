@@ -36,15 +36,15 @@ function openGreetingModal() {
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center weather-icon-container">
-                                        @svg('heroicon-o-sun', 'w-6 h-6 text-yellow-600 dark:text-yellow-400')
+                                        @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
                                     </div>
                                     <div>
-                                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white weather-condition">{{ __('weather.loading') }}</h4>
+                                        <h4 class="text-lg font-semibold text-teal-700 dark:text-teal-100 weather-condition">{{ __('weather.loading') }}</h4>
                                         <p class="text-sm text-gray-600 dark:text-gray-400 weather-location">{{ __('weather.loading') }}</p>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-2xl font-bold text-gray-900 dark:text-white current-temp">{{ __('weather.loading') }}</div>
+                                    <div class="text-2xl font-bold text-teal-700 dark:text-teal-100 current-temp">{{ __('weather.loading') }}</div>
                                     <div class="text-sm text-gray-600 dark:text-gray-400 feels-like">{{ __('weather.feels_like') }} {{ __('weather.loading') }}</div>
                                 </div>
                             </div>
@@ -106,38 +106,38 @@ function openGreetingModal() {
                             <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('weather.forecast_high_low') }}</span>
                         </div>
                         <div class="space-y-2" id="forecast-container">
-                            <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-gradient-to-r from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20">
+                            <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-gray-100 dark:bg-gray-700">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">{{ __('weather.today') }}</span>
-                                    @svg('heroicon-o-sun', 'w-6 h-6 text-yellow-500')
+                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
                             <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tomorrow</span>
-                                    @svg('heroicon-o-cloud', 'w-6 h-6 text-blue-500')
+                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
                             <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tuesday</span>
-                                    @svg('heroicon-o-cloud', 'w-6 h-6 text-gray-500')
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 3</span>
+                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
                             <div class="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Wednesday</span>
-                                    @svg('heroicon-o-cloud', 'w-6 h-6 text-blue-500')
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 4</span>
+                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">{{ __('weather.loading') }} / {{ __('weather.loading') }}</div>
                             </div>
                             <div class="flex items-center justify-between py-2">
                                 <div class="flex items-center space-x-3">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Thursday</span>
-                                    @svg('heroicon-o-cloud', 'w-6 h-6 text-blue-500')
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 5</span>
+                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
@@ -695,7 +695,7 @@ function updateWeatherIcon(iconCode, condition) {
     iconContainer.innerHTML = `
         <img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" 
              alt="${condition}" 
-             class="w-12 h-12">
+             class="w-12 h-12 rounded-full">
     `;
 }
 
@@ -767,7 +767,7 @@ function updateForecastData(weatherData) {
         }
         
         // Apply special styling for "Today"
-        const todayClasses = isToday ? 'px-3 rounded-lg bg-gradient-to-r from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20' : '';
+        const todayClasses = isToday ? 'px-3 rounded-lg  bg-gray-100 dark:bg-gray-700' : '';
         
         forecastHTML += `
             <div class="flex items-center justify-between py-2 ${todayClasses} ${borderClass}">
@@ -935,7 +935,7 @@ async function refreshWeatherData() {
         if (refreshButton) {
             refreshButton.disabled = true;
             refreshButton.innerHTML = `
-                <x-heroicon-o-arrow-path class="w-5 h-5 animate-spin" />
+                @svg('heroicon-o-arrow-path', 'w-5 h-5 animate-spin')
             `;
         }
         
@@ -961,7 +961,7 @@ async function refreshWeatherData() {
         if (refreshButton) {
             refreshButton.disabled = false;
             refreshButton.innerHTML = `
-                <x-heroicon-o-arrow-path class="w-5 h-5" />
+                @svg('heroicon-o-arrow-path', 'w-5 h-5')
             `;
         }
     }
