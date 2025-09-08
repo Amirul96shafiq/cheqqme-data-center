@@ -543,6 +543,97 @@ window.toggleDataManagementVideo = function() {
 
 // Weather API Integration Functions (Global Scope)
 
+function getWeatherHeroicon(condition) {
+    if (!condition) return 'heroicon-o-sun';
+    
+    const conditionLower = condition.toLowerCase();
+    
+    // Sunny/Clear conditions
+    if (conditionLower.includes('sunny') || conditionLower.includes('clear') || conditionLower.includes('sun')) {
+        return 'heroicon-o-sun';
+    }
+    
+    // Cloudy conditions
+    if (conditionLower.includes('cloud') || conditionLower.includes('overcast') || conditionLower.includes('partly cloudy')) {
+        return 'heroicon-o-cloud';
+    }
+    
+    // Rainy conditions
+    if (conditionLower.includes('rain') || conditionLower.includes('drizzle') || conditionLower.includes('shower')) {
+        return 'heroicon-o-cloud-rain';
+    }
+    
+    // Stormy conditions
+    if (conditionLower.includes('storm') || conditionLower.includes('thunder') || conditionLower.includes('lightning')) {
+        return 'heroicon-o-bolt';
+    }
+    
+    // Snowy conditions
+    if (conditionLower.includes('snow') || conditionLower.includes('blizzard') || conditionLower.includes('sleet')) {
+        return 'heroicon-o-snowflake';
+    }
+    
+    // Foggy conditions
+    if (conditionLower.includes('fog') || conditionLower.includes('mist') || conditionLower.includes('haze')) {
+        return 'heroicon-o-eye-slash';
+    }
+    
+    // Default fallback
+    return 'heroicon-o-sun';
+}
+
+function getWeatherIconColor(condition) {
+    if (!condition) return 'text-yellow-500';
+    
+    const conditionLower = condition.toLowerCase();
+    
+    // Sunny/Clear conditions
+    if (conditionLower.includes('sunny') || conditionLower.includes('clear') || conditionLower.includes('sun')) {
+        return 'text-yellow-500';
+    }
+    
+    // Cloudy conditions
+    if (conditionLower.includes('cloud') || conditionLower.includes('overcast') || conditionLower.includes('partly cloudy')) {
+        return 'text-gray-500';
+    }
+    
+    // Rainy conditions
+    if (conditionLower.includes('rain') || conditionLower.includes('drizzle') || conditionLower.includes('shower')) {
+        return 'text-blue-500';
+    }
+    
+    // Stormy conditions
+    if (conditionLower.includes('storm') || conditionLower.includes('thunder') || conditionLower.includes('lightning')) {
+        return 'text-purple-500';
+    }
+    
+    // Snowy conditions
+    if (conditionLower.includes('snow') || conditionLower.includes('blizzard') || conditionLower.includes('sleet')) {
+        return 'text-blue-300';
+    }
+    
+    // Foggy conditions
+    if (conditionLower.includes('fog') || conditionLower.includes('mist') || conditionLower.includes('haze')) {
+        return 'text-gray-400';
+    }
+    
+    // Default fallback
+    return 'text-yellow-500';
+}
+
+function getHeroiconSVG(iconName) {
+    const svgPaths = {
+        'heroicon-o-sun': '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />',
+        'heroicon-o-cloud': '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" />',
+        'heroicon-o-cloud-rain': '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" /><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 19.5L12 15.75l3.75 3.75" />',
+        'heroicon-o-bolt': '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />',
+        'heroicon-o-snowflake': '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />',
+        'heroicon-o-eye-slash': '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 11-4.243-4.243m4.242 4.242L9.88 9.88" />'
+    };
+    
+    return svgPaths[iconName] || svgPaths['heroicon-o-sun'];
+}
+
 function showWeatherLoading() {
     // Loading spinner disabled to prevent replacing weather elements
     console.log('Loading spinner called but disabled to prevent element replacement');
@@ -654,11 +745,15 @@ function updateWeatherIcon(iconCode, condition) {
     const iconContainer = document.querySelector('.weather-icon-container');
     if (!iconContainer) return;
 
+    // Get the appropriate heroicon and color
+    const heroicon = getWeatherHeroicon(condition);
+    const iconColor = getWeatherIconColor(condition);
+    
     // Add weather-specific styling
     iconContainer.className = 'w-12 h-12 rounded-full flex items-center justify-center weather-icon-container';
     
     // Determine background color based on weather condition
-    let bgClass = 'bg-white/30 dark:bg-gray-700/30';
+    let bgClass = 'bg-yellow-100 dark:bg-yellow-900/30';
     
     // Handle undefined condition
     if (!condition) {
@@ -669,33 +764,33 @@ function updateWeatherIcon(iconCode, condition) {
     switch (condition.toLowerCase()) {
         case 'clear':
         case 'sunny':
-            bgClass = 'bg-white/30 dark:bg-gray-700/30';
+            bgClass = 'bg-yellow-100 dark:bg-yellow-900/30';
             break;
         case 'clouds':
         case 'cloudy':
-            bgClass = 'bg-white/30 dark:bg-gray-700/30';
+            bgClass = 'bg-gray-100 dark:bg-gray-700/30';
             break;
         case 'rain':
         case 'drizzle':
-            bgClass = 'bg-white/30 dark:bg-gray-700/30';
+            bgClass = 'bg-blue-100 dark:bg-blue-900/30';
             break;
         case 'thunderstorm':
-            bbgClass = 'bg-white/30 dark:bg-gray-700/30';
+            bgClass = 'bg-purple-100 dark:bg-purple-900/30';
             break;
         case 'snow':
-            bgClass = 'bg-white/30 dark:bg-gray-700/30';
+            bgClass = 'bg-blue-50 dark:bg-blue-800/30';
             break;
         default:
-            bgClass = 'bg-white/30 dark:bg-gray-700/30';
+            bgClass = 'bg-yellow-100 dark:bg-yellow-900/30';
     }
     
     iconContainer.className += ` ${bgClass}`;
     
-    // Update icon with OpenWeatherMap icon
+    // Update icon with heroicon SVG
     iconContainer.innerHTML = `
-        <img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" 
-             alt="${condition}" 
-             class="w-12 h-12 rounded-full">
+        <svg class="w-8 h-8 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            ${getHeroiconSVG(heroicon)}
+        </svg>
     `;
 }
 
@@ -769,14 +864,17 @@ function updateForecastData(weatherData) {
         // Apply special styling for "Today"
         const todayClasses = isToday ? 'rounded-lg  bg-gray-100 dark:bg-gray-700' : '';
         
+        const heroicon = getWeatherHeroicon(day.condition);
+        const iconColor = getWeatherIconColor(day.condition);
+        
         forecastHTML += `
             <div class="flex items-center justify-between py-2 px-3 ${todayClasses} ${borderClass}">
                 <div class="flex items-center space-x-3">
                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">${dayLabel}</span>
-                    <div class="w-12 h-12 flex items-center justify-center">
-                        <img src="https://openweathermap.org/img/wn/${day.icon}@2x.png" 
-                             alt="${day.condition}" 
-                             class="w-12 h-12">
+                    <div class="w-6 h-6 ${iconColor}">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            ${getHeroiconSVG(heroicon)}
+                        </svg>
                     </div>
                     <span class="text-xs text-gray-500 dark:text-gray-400 flex-1 min-w-0">${day.description}</span>
                 </div>
