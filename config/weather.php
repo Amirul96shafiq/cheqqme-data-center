@@ -2,13 +2,13 @@
 
 return [
  /*
- |--------------------------------------------------------------------------
- | Weather API Configuration
- |--------------------------------------------------------------------------
- |
- | Configuration for weather API integration using OpenWeatherMap
- |
- */
+|--------------------------------------------------------------------------
+| Weather API Configuration
+|--------------------------------------------------------------------------
+|
+| Configuration for weather API integration using OpenWeatherMap
+|
+*/
 
  'api' => [
   'key' => env('OPENWEATHERMAP_API_KEY'),
@@ -17,7 +17,7 @@ return [
  ],
 
  'cache' => [
-  'ttl_hours' => env('WEATHER_CACHE_TTL_HOURS', 3),
+  'ttl_hours' => env('WEATHER_CACHE_TTL_HOURS', 4),
   'key_prefix' => 'weather_',
  ],
 
@@ -35,7 +35,7 @@ return [
  ],
 
  'refresh' => [
-  'auto_refresh_hours' => 3,
+  'auto_refresh_hours' => 4,
   'only_when_logged_in' => true,
  ],
 
