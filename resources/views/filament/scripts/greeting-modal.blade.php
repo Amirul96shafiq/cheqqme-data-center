@@ -162,7 +162,7 @@ function openGreetingModal() {
                             </p>
                         </div>
                         <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                            <span class="text-primary-600 dark:text-primary-400">{{ \App\Helpers\ClientFormatter::formatClientName(auth()->user()?->name) }}</span>{{ __('greetingmodal.content-title') }}
+                            <span class="font-bold text-primary-600 dark:text-primary-400">{{ \App\Helpers\ClientFormatter::formatClientName(auth()->user()?->name) }}</span>{{ __('greetingmodal.content-title') }}
                         </h4>
                         <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
                             {{ __('greetingmodal.content-message') }}
