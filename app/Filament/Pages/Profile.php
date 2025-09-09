@@ -307,6 +307,18 @@ class Profile extends EditProfile
     }
 
     /**
+     * Show error notification for Google connection
+     */
+    public function showGoogleConnectionError(string $message): void
+    {
+        Notification::make()
+            ->title(__('user.form.google_connection_failed'))
+            ->body($message)
+            ->danger()
+            ->send();
+    }
+
+    /**
      * Open Google OAuth popup window for account connection
      */
     public function openGoogleAuthPopup(): void
@@ -336,7 +348,8 @@ class Profile extends EditProfile
                 } else if (event.data.success === false) {
                     popup.close();
                     window.removeEventListener("message", messageListener);
-                    alert(event.data.message || "Failed to connect Google account");
+                    // Show error notification instead of alert
+                    $wire.call("showGoogleConnectionError", event.data.message || "Failed to connect Google account");
                 }
             };
             

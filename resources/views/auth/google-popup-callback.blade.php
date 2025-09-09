@@ -88,11 +88,26 @@
                     // Try to parse error response
                     try {
                         const errorData = await response.json();
-                        if (errorData.message) {
-                            sendErrorToParent(errorData.message);
-                            closePopupWithFallback(errorData.message, true);
-                            return;
+
+                        // Determine if this error originated from Profile flow
+                        const isFromProfile = errorData.redirect_url && errorData.redirect_url.includes('/profile');
+
+                        if (window.opener && !window.opener.closed) {
+                            if (isFromProfile) {
+                                // Send structured error for Profile listener (to show Filament notification)
+                                window.opener.postMessage({
+                                    success: false,
+                                    message: errorData.message,
+                                    redirect_url: errorData.redirect_url,
+                                }, window.location.origin);
+                            } else {
+                                // Keep login behavior intact (existing handler consumes this)
+                                sendErrorToParent(errorData.message || 'Failed to authenticate with Google. Please try again.');
+                            }
                         }
+
+                        closePopupWithFallback(errorData.message || 'Failed to authenticate with Google. Please try again.', true);
+                        return;
                     } catch (parseError) {
                         // Fallback if JSON parsing fails
                     }
@@ -123,9 +138,23 @@
                         closePopupWithFallback('Successfully signed in!', false);
                     }
                 } else {
-                    // ERROR: Send error message to parent
-                    sendErrorToParent(data.message);
-                    closePopupWithFallback(data.message, true);
+                    // ERROR: Handle based on context
+                    const isFromProfile = data.redirect_url && data.redirect_url.includes('/profile');
+                    
+                    if (isFromProfile) {
+                        // PROFILE: Send error message to parent for notification
+                        if (window.opener && !window.opener.closed) {
+                            window.opener.postMessage({
+                                success: false,
+                                message: data.message
+                            }, window.location.origin);
+                        }
+                        closePopupWithFallback(data.message, true);
+                    } else {
+                        // LOGIN: Send error message to parent for alert
+                        sendErrorToParent(data.message);
+                        closePopupWithFallback(data.message, true);
+                    }
                 }
             })
             .catch(error => {

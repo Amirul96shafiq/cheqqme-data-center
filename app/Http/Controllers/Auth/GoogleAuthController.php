@@ -34,10 +34,21 @@ class GoogleAuthController extends Controller
             // Check if user exists by email
             $user = User::where('email', $googleUser->getEmail())->first();
 
+            // Determine redirect URL based on session source (used for both success and error cases)
+            $source = session('google_oauth_source', 'login');
+            $isFromProfile = $source === 'profile';
+            $redirectUrl = $isFromProfile
+                ? route('filament.admin.auth.profile')
+                : route('filament.admin.pages.dashboard');
+
             if (!$user) {
+                // Clear the session data even on error to avoid stale state
+                session()->forget('google_oauth_source');
+
                 return response()->json([
                     'success' => false,
                     'message' => 'Failed to login. The selected Google Account does not exist in the system.',
+                    'redirect_url' => $redirectUrl,
                 ], 404);
             }
 
@@ -51,14 +62,6 @@ class GoogleAuthController extends Controller
 
             // Log the user in
             Auth::login($user);
-
-            // Determine redirect URL based on session source
-            $source = session('google_oauth_source', 'login');
-            $isFromProfile = $source === 'profile';
-
-            $redirectUrl = $isFromProfile
-                ? route('filament.admin.auth.profile')
-                : route('filament.admin.pages.dashboard');
 
             $message = $isFromProfile
                 ? 'Google account connected successfully!'
@@ -74,9 +77,20 @@ class GoogleAuthController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            // On exception, try to include redirect context too
+            $source = session('google_oauth_source', 'login');
+            $isFromProfile = $source === 'profile';
+            $redirectUrl = $isFromProfile
+                ? route('filament.admin.auth.profile')
+                : route('filament.admin.pages.dashboard');
+
+            // Clear the session data
+            session()->forget('google_oauth_source');
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to authenticate with Google. Please try again.',
+                'redirect_url' => $redirectUrl,
             ], 500);
         }
     }

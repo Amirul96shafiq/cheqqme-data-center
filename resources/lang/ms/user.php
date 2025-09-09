@@ -73,6 +73,7 @@ return [
         'connect_google' => 'Sambung Sekarang',
         'google_connected' => 'Akaun Google Disambungkan',
         'google_connected_body' => 'Akaun Google anda telah berjaya disambungkan. Anda kini boleh log masuk menggunakan Google.',
+        'google_connection_failed' => 'Sambungan Google Gagal',
     ],
 
     'table' => [
