@@ -1,24 +1,24 @@
 <?php
 
 return [
+    // Navigation
     'navigation_group' => 'User Management',
     'navigation_label' => 'Users',
 
+    // Labels
     'labels' => [
         'singular' => 'User',
         'plural' => 'Users',
         'edit-user' => 'Edit User',
     ],
 
-    'navigation' => [
-        'labels' => 'Users',
-    ],
-
+    // Actions
     'actions' => [
         'create' => 'Create User',
         'delete' => 'Delete User',
     ],
 
+    // Sections
     'section' => [
         'profile_settings' => 'Profile Settings',
         'profile_settings_description' => 'Configure and customize your profile settings here',
@@ -34,6 +34,7 @@ return [
         'activity_logs' => 'Activity Logs',
     ],
 
+    // Form Fields
     'form' => [
         'saved' => 'Saved.',
         'saved_body' => 'Please re-login or refresh the page.',
@@ -60,6 +61,8 @@ return [
         'name_helper' => 'Automatically filled with username if left empty, changeable',
         'personalize' => 'Personalize',
         'uploading' => 'Uploading...',
+
+        // Google Connection
         'disconnect_google' => 'Disconnect',
         'disconnect_google_confirm' => 'Disconnect Google Account',
         'disconnect_google_description' => 'Are you sure you want to disconnect your Google account? You will no longer be able to sign in using Google, but you can still use your username and password.',
@@ -74,8 +77,17 @@ return [
         'google_connected_body' => 'Your Google account has been successfully connected. You can now sign in using Google.',
         'google_connection_failed' => 'Google Connection Failed',
         'connection_status' => 'Connection Status',
+
+        // Microsoft Connection
+        'microsoft_connection' => 'Microsoft oAuth',
+        'microsoft_description' => 'Connect your Microsoft account for faster login and synchronize your Microsoft avatar with your profile.',
+        'connect_microsoft' => 'Connect Now',
+        'disconnect_microsoft' => 'Disconnect',
+        'disconnect_microsoft_confirm' => 'Disconnect Microsoft Account',
+        'disconnect_microsoft_description' => 'Are you sure you want to disconnect your Microsoft account? You will no longer be able to sign in using Microsoft, but you can still use your username and password.',
     ],
 
+    // Table Columns
     'table' => [
         'id' => 'ID',
         'avatar' => 'Avatar',
@@ -87,6 +99,7 @@ return [
         'settings' => 'Settings',
     ],
 
+    // Filters
     'filter' => [
         'has_cover_image' => 'Has Cover Image',
         'timezone' => 'Timezone',

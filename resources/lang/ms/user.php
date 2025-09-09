@@ -1,30 +1,29 @@
 <?php
 
 return [
+    // Navigation
     'navigation_group' => 'Pengurusan Pengguna',
     'navigation_label' => 'Pengguna',
 
+    // Labels
     'labels' => [
         'singular' => 'Pengguna',
         'plural' => 'Pengguna',
         'edit-user' => 'Kemaskini Pengguna',
     ],
 
-    'navigation' => [
-        'labels' => 'Pengguna',
-    ],
-
+    // Actions
     'actions' => [
         'create' => 'Tambah Pengguna',
         'delete' => 'Padam Pengguna',
     ],
 
+    // Sections
     'section' => [
         'profile_settings' => 'Pengaturan Profil',
         'profile_settings_description' => 'Konfigurasikan dan personalisasi pengaturan profil anda di sini',
         'google_connection_settings' => 'Pengaturan Sambungan',
         'google_connection_settings_description' => 'Urus sambungan akaun dan integrasi anda',
-        'connection_settings_description' => 'Urus sambungan akaun dan integrasi anda',
         'password_settings' => 'Pengaturan Kata Laluan',
         'user_info' => 'Maklumat Pengguna',
         'password_info' => 'Maklumat Kata Laluan',
@@ -35,6 +34,7 @@ return [
         'activity_logs' => 'Log Aktiviti',
     ],
 
+    // Form Fields
     'form' => [
         'saved' => 'Disimpan.',
         'saved_body' => 'Sila log masuk semula atau muat semula halaman.',
@@ -61,6 +61,8 @@ return [
         'name_helper' => 'Dilengkapi dengan gelaran pengguna jika kosong, boleh diubah',
         'personalize' => 'Personalisasi',
         'uploading' => 'Sedang memuat naik...',
+
+        // Google Connection
         'disconnect_google' => 'Putuskan Sambungan',
         'disconnect_google_confirm' => 'Putuskan Sambungan Akaun Google',
         'disconnect_google_description' => 'Adakah anda pasti ingin memutuskan sambungan akaun Google anda? Anda tidak lagi boleh log masuk menggunakan Google, tetapi anda masih boleh menggunakan nama pengguna dan kata laluan.',
@@ -75,8 +77,17 @@ return [
         'google_connected_body' => 'Akaun Google anda telah berjaya disambungkan. Anda kini boleh log masuk menggunakan Google.',
         'google_connection_failed' => 'Sambungan Google Gagal',
         'connection_status' => 'Status Sambungan',
+
+        // Microsoft Connection
+        'microsoft_connection' => 'Microsoft oAuth',
+        'microsoft_description' => 'Sambungkan akaun Microsoft anda untuk log masuk yang lebih cepat & menyesuaikan avatar Microsoft dengan profil anda.',
+        'connect_microsoft' => 'Sambung Sekarang',
+        'disconnect_microsoft' => 'Putuskan Sambungan',
+        'disconnect_microsoft_confirm' => 'Putuskan Sambungan Akaun Microsoft',
+        'disconnect_microsoft_description' => 'Adakah anda pasti ingin memutuskan sambungan akaun Microsoft anda? Anda tidak lagi boleh log masuk menggunakan Microsoft, tetapi anda masih boleh menggunakan nama pengguna dan kata laluan.',
     ],
 
+    // Table Columns
     'table' => [
         'id' => 'ID',
         'avatar' => 'Avatar',
@@ -88,6 +99,7 @@ return [
         'settings' => 'Tetapan',
     ],
 
+    // Filters
     'filter' => [
         'has_cover_image' => 'Ada Gambar Cover',
         'timezone' => 'Zon Waktu',
