@@ -158,7 +158,6 @@
                 }
             })
             .catch(error => {
-                console.error('Error processing OAuth:', error);
                 sendErrorToParent('Failed to authenticate with Google. Please try again.');
                 closePopupWithFallback('Failed to authenticate with Google. Please try again.', true);
             });
