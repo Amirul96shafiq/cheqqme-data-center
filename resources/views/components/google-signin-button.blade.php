@@ -22,6 +22,11 @@
 }
 
 .google-signin-button:hover {
+    background-color: #eef1f5;
+    border-color: #eef1f5;
+}
+
+.dark .google-signin-button:hover {
     background-color: #ffffff;
     border-color: #ffffff;
 }
