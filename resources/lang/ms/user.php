@@ -77,6 +77,8 @@ return [
         'google_connected_body' => 'Akaun Google anda telah berjaya disambungkan. Anda kini boleh log masuk menggunakan Google.',
         'google_connection_failed' => 'Sambungan Google Gagal',
         'connection_status' => 'Status Sambungan',
+        'connected' => 'Disambungkan',
+        'not_connected' => 'Tidak Disambungkan',
 
         // Microsoft Connection
         'microsoft_connection' => 'Microsoft oAuth',

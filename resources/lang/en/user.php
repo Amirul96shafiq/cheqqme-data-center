@@ -77,6 +77,8 @@ return [
         'google_connected_body' => 'Your Google account has been successfully connected. You can now sign in using Google.',
         'google_connection_failed' => 'Google Connection Failed',
         'connection_status' => 'Connection Status',
+        'connected' => 'Connected',
+        'not_connected' => 'Not Connected',
 
         // Microsoft Connection
         'microsoft_connection' => 'Microsoft oAuth',
