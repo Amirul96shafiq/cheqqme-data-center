@@ -11,16 +11,20 @@ use Laravel\Socialite\Facades\Socialite;
 class GoogleAuthController extends Controller
 {
     /**
-     * Redirect to Google OAuth (for popup window)
+     * Redirect to Google OAuth
+     * Stores the source (login/profile) in session for proper redirect after callback
      */
-    public function redirectToGoogle()
+    public function redirectToGoogle(Request $request)
     {
+        $source = $request->get('source', 'login');
+        session(['google_oauth_source' => $source]);
+
         return Socialite::driver('google')->redirect();
     }
 
     /**
      * Handle Google OAuth callback
-     * Processes the OAuth response and authenticates the user
+     * Processes the OAuth response, authenticates the user, and redirects appropriately
      */
     public function handleGoogleCallback(Request $request)
     {
@@ -48,10 +52,25 @@ class GoogleAuthController extends Controller
             // Log the user in
             Auth::login($user);
 
+            // Determine redirect URL based on session source
+            $source = session('google_oauth_source', 'login');
+            $isFromProfile = $source === 'profile';
+
+            $redirectUrl = $isFromProfile
+                ? route('filament.admin.auth.profile')
+                : route('filament.admin.pages.dashboard');
+
+            $message = $isFromProfile
+                ? 'Google account connected successfully!'
+                : 'Successfully signed in with Google!';
+
+            // Clear the session data
+            session()->forget('google_oauth_source');
+
             return response()->json([
                 'success' => true,
-                'message' => 'Successfully signed in with Google!',
-                'redirect_url' => route('filament.admin.pages.dashboard'),
+                'message' => $message,
+                'redirect_url' => $redirectUrl,
             ]);
 
         } catch (\Exception $e) {
@@ -64,7 +83,7 @@ class GoogleAuthController extends Controller
 
     /**
      * Show popup callback page
-     * Renders the HTML page that handles the OAuth callback in the popup window
+     * Renders the HTML page that handles OAuth callback communication in popup windows
      */
     public function showPopupCallback()
     {

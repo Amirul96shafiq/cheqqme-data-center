@@ -122,9 +122,6 @@ class Profile extends EditProfile
                                         '<div class="flex items-center justify-between">
                                             <span class="text-sm text-gray-600 dark:text-gray-400">' . __('user.form.google_description') . '</span>
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
-                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                                </svg>
                                                 Connected
                                             </span>
                                         </div>'
@@ -135,9 +132,6 @@ class Profile extends EditProfile
                                     '<div class="flex items-center justify-between">
                                         <span class="text-sm text-gray-500 dark:text-gray-400">Not connected to Google</span>
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
-                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                            </svg>
                                             Not Connected
                                         </span>
                                     </div>'
@@ -146,7 +140,6 @@ class Profile extends EditProfile
                             ->columnSpanFull(),
                     ])
                     ->collapsible()
-                    ->collapsed()
                     ->headerActions([
                         Forms\Components\Actions\Action::make('disconnect_google')
                             ->label(__('user.form.disconnect_google'))
@@ -164,8 +157,7 @@ class Profile extends EditProfile
 
                         Forms\Components\Actions\Action::make('connect_google')
                             ->label(__('user.form.connect_google'))
-                            ->color('success')
-                            ->outlined()
+                            ->color('primary')
                             ->icon('heroicon-o-link')
                             ->visible(fn() => !auth()->user()->hasGoogleAuth())
                             ->requiresConfirmation()
@@ -174,7 +166,9 @@ class Profile extends EditProfile
                             ->modalSubmitActionLabel(__('user.form.connect_google'))
                             ->modalCancelActionLabel(__('user.form.cancel'))
                             ->modalWidth('md')
-                            ->action('connectGoogle'),
+                            ->action(function () {
+                                $this->openGoogleAuthPopup();
+                            }),
                     ])
                     ->columns(1),
 
@@ -288,11 +282,39 @@ class Profile extends EditProfile
     }
 
     /**
-     * Connect Google account
+     * Open Google OAuth popup window for account connection
      */
-    public function connectGoogle()
+    public function openGoogleAuthPopup(): void
     {
-        // Redirect to Google OAuth
-        return redirect()->route('auth.google');
+        $this->js('
+            const popup = window.open(
+                "' . route('auth.google', ['source' => 'profile']) . '",
+                "googleSignIn",
+                "width=460,height=800,scrollbars=yes,resizable=yes,top=100,left=100"
+            );
+            
+            if (!popup) {
+                alert("Popup window was blocked. Please allow popups for this site.");
+                return;
+            }
+            
+            // Listen for messages from the popup
+            const messageListener = (event) => {
+                if (event.origin !== window.location.origin) return;
+                
+                if (event.data.success) {
+                    popup.close();
+                    window.removeEventListener("message", messageListener);
+                    // Refresh the page to show updated connection status
+                    window.location.reload();
+                } else if (event.data.success === false) {
+                    popup.close();
+                    window.removeEventListener("message", messageListener);
+                    alert(event.data.message || "Failed to connect Google account");
+                }
+            };
+            
+            window.addEventListener("message", messageListener);
+        ');
     }
 }
