@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Support\Enums\Alignment;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\EditProfile;
@@ -126,63 +127,79 @@ class Profile extends EditProfile
                 Forms\Components\Section::make(__('user.section.google_connection_settings'))
                     ->description(__('user.section.google_connection_settings_description'))
                     ->schema([
-                        Forms\Components\Placeholder::make('google_connection')
-                            ->label(__('user.form.google_connection'))
-                            ->content(function () {
-                                $user = auth()->user();
-                                if ($user->hasGoogleAuth()) {
-                                    return new \Illuminate\Support\HtmlString(
-                                        '<div class="flex items-center justify-between">
-                                            <span class="text-sm text-gray-600 dark:text-gray-400">' . __('user.form.google_description') . '</span>
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
-                                                Connected
-                                            </span>
-                                        </div>'
-                                    );
-                                }
+                        // Google connection fieldset
+                        Forms\Components\Fieldset::make(__('user.form.google_connection'))
+                            ->schema([
+                                Forms\Components\Placeholder::make('google_status')
+                                    ->label(__('user.form.connection_status'))
+                                    ->content(function () {
+                                        $user = auth()->user();
+                                        if ($user->hasGoogleAuth()) {
+                                            return new \Illuminate\Support\HtmlString(
+                                                '<div class="flex items-center gap-2">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        Connected
+                                                    </span>
+                                                </div>'
+                                            );
+                                        }
 
-                                return new \Illuminate\Support\HtmlString(
-                                    '<div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-500 dark:text-gray-400">Not connected to Google</span>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
-                                            Not Connected
-                                        </span>
-                                    </div>'
-                                );
-                            })
+                                        return new \Illuminate\Support\HtmlString(
+                                            '<div class="flex items-center gap-2">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    Not Connected
+                                                </span>
+                                            </div>'
+                                        );
+                                    })
+                                    ->columnSpan(2),
+
+                                Forms\Components\Actions::make([
+                                    Forms\Components\Actions\Action::make('connect_google')
+                                        ->label(__('user.form.connect_google'))
+                                        ->color('primary')
+                                        ->icon('heroicon-o-link')
+                                        ->visible(fn() => !auth()->user()->hasGoogleAuth())
+                                        ->requiresConfirmation()
+                                        ->modalIcon('heroicon-o-link')
+                                        ->modalHeading(__('user.form.connect_google'))
+                                        ->modalDescription(__('user.form.google_description'))
+                                        ->modalSubmitActionLabel(__('user.form.connect_google'))
+                                        ->modalCancelActionLabel(__('user.form.cancel'))
+                                        ->modalWidth('md')
+                                        ->action(function () {
+                                            $this->openGoogleAuthPopup();
+                                        }),
+
+                                    Forms\Components\Actions\Action::make('disconnect_google')
+                                        ->label(__('user.form.disconnect_google'))
+                                        ->color('danger')
+                                        ->outlined()
+                                        ->icon('heroicon-o-link-slash')
+                                        ->visible(fn() => auth()->user()->hasGoogleAuth())
+                                        ->requiresConfirmation()
+                                        ->modalIcon('heroicon-o-link-slash')
+                                        ->modalHeading(__('user.form.disconnect_google_confirm'))
+                                        ->modalDescription(__('user.form.disconnect_google_description'))
+                                        ->modalSubmitActionLabel(__('user.form.disconnect'))
+                                        ->modalCancelActionLabel(__('user.form.cancel'))
+                                        ->modalWidth('md')
+                                        ->action('confirmDisconnectGoogle'),
+                                ])
+                                    ->columnSpan(1)
+                                    ->alignment(Alignment::End),
+                            ])
+                            ->columns(columns: 3)
                             ->columnSpanFull(),
                     ])
                     ->collapsible()
-                    ->headerActions([
-                        Forms\Components\Actions\Action::make('disconnect_google')
-                            ->label(__('user.form.disconnect_google'))
-                            ->color('danger')
-                            ->outlined()
-                            ->icon('heroicon-o-link-slash')
-                            ->visible(fn() => auth()->user()->hasGoogleAuth())
-                            ->requiresConfirmation()
-                            ->modalHeading(__('user.form.disconnect_google_confirm'))
-                            ->modalDescription(__('user.form.disconnect_google_description'))
-                            ->modalSubmitActionLabel(__('user.form.disconnect'))
-                            ->modalCancelActionLabel(__('user.form.cancel'))
-                            ->modalWidth('md')
-                            ->action('confirmDisconnectGoogle'),
-
-                        Forms\Components\Actions\Action::make('connect_google')
-                            ->label(__('user.form.connect_google'))
-                            ->color('primary')
-                            ->icon('heroicon-o-link')
-                            ->visible(fn() => !auth()->user()->hasGoogleAuth())
-                            ->requiresConfirmation()
-                            ->modalHeading(__('user.form.connect_google'))
-                            ->modalDescription(__('user.form.google_description'))
-                            ->modalSubmitActionLabel(__('user.form.connect_google'))
-                            ->modalCancelActionLabel(__('user.form.cancel'))
-                            ->modalWidth('md')
-                            ->action(function () {
-                                $this->openGoogleAuthPopup();
-                            }),
-                    ])
+                    ->collapsed()
                     ->columns(1),
 
                 Forms\Components\Section::make(__('user.section.password_settings'))
