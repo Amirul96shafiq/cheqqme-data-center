@@ -4,10 +4,10 @@ namespace App\Filament\Pages;
 
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
-use Filament\Support\Enums\Alignment;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\EditProfile;
+use Filament\Support\Enums\Alignment;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -190,7 +190,9 @@ class Profile extends EditProfile
                                         ->modalSubmitActionLabel(__('user.form.disconnect'))
                                         ->modalCancelActionLabel(__('user.form.cancel'))
                                         ->modalWidth('md')
-                                        ->action('confirmDisconnectGoogle'),
+                                        ->action(function () {
+                                            $this->confirmDisconnectGoogle();
+                                        }),
                                 ])
                                     ->columnSpan(1)
                                     ->alignment(Alignment::End),
