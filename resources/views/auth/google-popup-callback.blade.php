@@ -102,11 +102,26 @@
             })
             .then(data => {
                 if (data.success) {
-                    // SUCCESS: Redirect parent window and close popup
-                    if (window.opener && !window.opener.closed) {
-                        window.opener.location.href = data.redirect_url;
+                    // Check if this is from profile connection (source=profile)
+                    const isFromProfile = data.redirect_url && data.redirect_url.includes('/profile');
+                    
+                    if (isFromProfile) {
+                        // PROFILE: Send success message to parent window
+                        if (window.opener && !window.opener.closed) {
+                            window.opener.postMessage({
+                                success: true,
+                                message: data.message,
+                                redirect_url: data.redirect_url
+                            }, window.location.origin);
+                        }
+                        closePopupWithFallback('Successfully connected!', false);
+                    } else {
+                        // LOGIN: Redirect parent window directly
+                        if (window.opener && !window.opener.closed) {
+                            window.opener.location.href = data.redirect_url;
+                        }
+                        closePopupWithFallback('Successfully signed in!', false);
                     }
-                    closePopupWithFallback('Successfully signed in!', false);
                 } else {
                     // ERROR: Send error message to parent
                     sendErrorToParent(data.message);

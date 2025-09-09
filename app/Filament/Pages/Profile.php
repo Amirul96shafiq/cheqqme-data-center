@@ -17,6 +17,19 @@ class Profile extends EditProfile
 
     public string $old_password = ''; // For old password input
 
+    public function mount(): void
+    {
+        parent::mount();
+
+        // Check if user was redirected here after successful Google connection
+        $this->js('
+            if (sessionStorage.getItem("google_connection_success") === "true") {
+                sessionStorage.removeItem("google_connection_success");
+                $wire.call("showGoogleConnectionSuccess");
+            }
+        ');
+    }
+
     public function form(Form $form): Form
     {
         return $form
@@ -282,6 +295,18 @@ class Profile extends EditProfile
     }
 
     /**
+     * Show success notification for Google connection
+     */
+    public function showGoogleConnectionSuccess(): void
+    {
+        Notification::make()
+            ->title(__('user.form.google_connected'))
+            ->body(__('user.form.google_connected_body'))
+            ->success()
+            ->send();
+    }
+
+    /**
      * Open Google OAuth popup window for account connection
      */
     public function openGoogleAuthPopup(): void
@@ -305,8 +330,9 @@ class Profile extends EditProfile
                 if (event.data.success) {
                     popup.close();
                     window.removeEventListener("message", messageListener);
-                    // Refresh the page to show updated connection status
-                    window.location.reload();
+                    // Store success in session storage and redirect
+                    sessionStorage.setItem("google_connection_success", "true");
+                    window.location.href = "' . route('filament.admin.auth.profile') . '";
                 } else if (event.data.success === false) {
                     popup.close();
                     window.removeEventListener("message", messageListener);
