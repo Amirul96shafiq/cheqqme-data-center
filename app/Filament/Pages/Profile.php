@@ -128,7 +128,12 @@ class Profile extends EditProfile
                     ->description(__('user.section.google_connection_settings_description'))
                     ->schema([
                         // Google connection fieldset
-                        Forms\Components\Fieldset::make(__('user.form.google_connection'))
+                        Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
+                            '<div class="flex items-center gap-2">
+                                <img src="' . asset('images/google-icon.svg') . '" alt="Google" class="w-5 h-5">
+                                <span>Google oAuth</span>
+                            </div>'
+                        ))
                             ->schema([
                                 Forms\Components\Placeholder::make('google_status')
                                     ->label(__('user.form.connection_status'))
@@ -201,7 +206,12 @@ class Profile extends EditProfile
                             ->columnSpanFull(),
 
                         // Microsoft connection fieldset
-                        Forms\Components\Fieldset::make(__('user.form.microsoft_connection'))
+                        Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
+                            '<div class="flex items-center gap-2">
+                                <img src="' . asset('images/microsoft-icon.svg') . '" alt="Microsoft" class="w-5 h-5">
+                                <span>Microsoft oAuth</span>
+                            </div>'
+                        ))
                             ->schema([
                                 Forms\Components\Placeholder::make('microsoft_status')
                                     ->label(__('user.form.connection_status'))
