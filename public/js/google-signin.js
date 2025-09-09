@@ -8,7 +8,10 @@ function openGoogleSignIn() {
     const popup = window.open(
         "/auth/google",
         "googleSignIn",
-        "width=460,height=800,scrollbars=yes,resizable=yes,top=100,left=100"
+        "width=460,height=800,scrollbars=yes,resizable=yes,top=" + 
+        Math.max(0, (screen.height - 800) / 2) + 
+        ",left=" + 
+        Math.max(0, (screen.width - 460) / 2)
     );
 
     if (!popup) {
