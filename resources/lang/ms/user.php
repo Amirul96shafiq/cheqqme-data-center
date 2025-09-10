@@ -80,13 +80,6 @@ return [
         'connected' => 'Disambungkan',
         'not_connected' => 'Tidak Disambungkan',
 
-        // Microsoft Connection
-        'microsoft_connection' => 'Microsoft oAuth',
-        'microsoft_description' => 'Sambungkan akaun Microsoft anda untuk log masuk yang lebih cepat & menyesuaikan avatar Microsoft dengan profil anda.',
-        'connect_microsoft' => 'Sambung Sekarang',
-        'disconnect_microsoft' => 'Putuskan Sambungan',
-        'disconnect_microsoft_confirm' => 'Putuskan Sambungan Akaun Microsoft',
-        'disconnect_microsoft_description' => 'Adakah anda pasti ingin memutuskan sambungan akaun Microsoft anda? Anda tidak lagi boleh log masuk menggunakan Microsoft, tetapi anda masih boleh menggunakan nama pengguna dan kata laluan.',
     ],
 
     // Table Columns

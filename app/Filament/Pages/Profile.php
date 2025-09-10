@@ -22,12 +22,13 @@ class Profile extends EditProfile
     {
         parent::mount();
 
-        // Check if user was redirected here after successful Google connection
+        // Check if user was redirected here after successful OAuth connection
         $this->js('
             if (sessionStorage.getItem("google_connection_success") === "true") {
                 sessionStorage.removeItem("google_connection_success");
                 $wire.call("showGoogleConnectionSuccess");
             }
+            
         ');
     }
 
@@ -205,86 +206,6 @@ class Profile extends EditProfile
                             ->columns(columns: 3)
                             ->columnSpanFull(),
 
-                        // Microsoft connection fieldset
-                        Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
-                            '<div class="flex items-center gap-2">
-                                <img src="' . asset('images/microsoft-icon.svg') . '" alt="Microsoft" class="w-5 h-5">
-                                <span>Microsoft oAuth</span>
-                            </div>'
-                        ))
-                            ->schema([
-                                Forms\Components\Placeholder::make('microsoft_status')
-                                    ->label(__('user.form.connection_status'))
-                                    // ->content(function () {
-                                    //     $user = auth()->user();
-                                    //     if ($user->hasMicrosoftAuth()) {
-                                    //         return new \Illuminate\Support\HtmlString(
-                                    //             '<div class="flex items-center gap-2">
-                                    //                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
-                                    //                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    //                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                    //                     </svg>
-                                    //                     Connected
-                                    //                 </span>
-                                    //             </div>'
-                                    //         );
-                                    //     }
-
-                                    //     return new \Illuminate\Support\HtmlString(
-                                    //         '<div class="flex items-center gap-2">
-                                    //             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
-                                    //                 <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    //                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                    //                 </svg>
-                                    //                 Not Connected
-                                    //             </span>
-                                    //         </div>'
-                                    //     );
-                                    // })
-                                    ->columnSpan(2),
-
-                                Forms\Components\Actions::make([
-                                    Forms\Components\Actions\Action::make('connect_microsoft')
-                                        ->label(__('user.form.connect_microsoft'))
-                                        ->color('primary')
-                                        ->icon('heroicon-o-link')
-                                        // ->visible(fn() => !auth()->user()->hasMicrosoftAuth())
-                                        ->requiresConfirmation()
-                                        ->modalIcon('heroicon-o-link')
-                                        ->modalHeading(__('user.form.connect_microsoft'))
-                                        ->modalDescription(__('user.form.microsoft_description'))
-                                        ->modalSubmitActionLabel(__('user.form.connect_microsoft'))
-                                        ->modalCancelActionLabel(__('user.form.cancel'))
-                                        ->modalWidth('md')
-                                    // ->action(function () {
-                                    //     $this->openMicrosoftAuthPopup();
-                                    // })
-                                    ,
-
-                                    Forms\Components\Actions\Action::make('disconnect_microsoft')
-                                        ->label(__('user.form.disconnect_microsoft'))
-                                        ->color('danger')
-                                        ->outlined()
-                                        ->icon('heroicon-o-link-slash')
-                                        // ->visible(fn() => auth()->user()->hasMicrosoftAuth())
-                                        ->requiresConfirmation()
-                                        ->modalIcon('heroicon-o-link-slash')
-                                        ->modalHeading(__('user.form.disconnect_microsoft_confirm'))
-                                        ->modalDescription(__('user.form.disconnect_microsoft_description'))
-                                        ->modalSubmitActionLabel(__('user.form.disconnect'))
-                                        ->modalCancelActionLabel(__('user.form.cancel'))
-                                        ->modalWidth('md')
-                                    // ->action(function () {
-                                    //     $this->confirmDisconnectMicrosoft();
-                                    // })
-                                    ,
-                                ])
-                                    ->columnSpan(1)
-                                    ->alignment(Alignment::End)
-                                    ->hidden(),
-                            ])
-                            ->columns(columns: 3)
-                            ->columnSpanFull(),
                     ])
                     ->collapsible()
                     ->collapsed()

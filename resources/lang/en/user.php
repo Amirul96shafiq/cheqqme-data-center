@@ -80,13 +80,6 @@ return [
         'connected' => 'Connected',
         'not_connected' => 'Not Connected',
 
-        // Microsoft Connection
-        'microsoft_connection' => 'Microsoft oAuth',
-        'microsoft_description' => 'Connect your Microsoft account for faster login and synchronize your Microsoft avatar with your profile.',
-        'connect_microsoft' => 'Connect Now',
-        'disconnect_microsoft' => 'Disconnect',
-        'disconnect_microsoft_confirm' => 'Disconnect Microsoft Account',
-        'disconnect_microsoft_description' => 'Are you sure you want to disconnect your Microsoft account? You will no longer be able to sign in using Microsoft, but you can still use your username and password.',
     ],
 
     // Table Columns
