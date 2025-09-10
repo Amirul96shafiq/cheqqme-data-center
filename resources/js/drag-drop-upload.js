@@ -129,7 +129,8 @@ document.addEventListener("DOMContentLoaded", function () {
         validateFile(file) {
             if (!this.allowedTypes.includes(file.type)) {
                 alert(
-                    "File type not supported. Please upload PDF, Word, Excel, PowerPoint, images, videos, or CSV files."
+                    window.dragDropLang?.unsupportedFileType ||
+                        "File type not supported. Please upload PDF, Word, Excel, PowerPoint, images, videos, or CSV files."
                 );
                 return false;
             }
@@ -140,13 +141,14 @@ document.addEventListener("DOMContentLoaded", function () {
             // Check file size limit (20MB as per DocumentResource)
             const maxSize = 20 * 1024 * 1024; // 20MB in bytes
             if (file.size > maxSize) {
-                alert(
-                    `File size exceeds 20MB limit. Your file is ${(
-                        file.size /
-                        1024 /
-                        1024
-                    ).toFixed(1)}MB.`
-                );
+                const fileSizeMB = (file.size / 1024 / 1024).toFixed(1);
+                const message =
+                    window.dragDropLang?.fileTooLarge?.replace(
+                        ":sizeMB",
+                        fileSizeMB
+                    ) ||
+                    `File size exceeds 20MB limit. Your file is ${fileSizeMB}MB.`;
+                alert(message);
                 return;
             }
 
@@ -197,7 +199,11 @@ document.addEventListener("DOMContentLoaded", function () {
             } catch (error) {
                 console.error("Error storing large file metadata:", error);
                 alert(
-                    "File too large for drag-and-drop. Please use the upload form directly."
+                    window.dragDropLang?.fileTooLarge?.replace(
+                        ":sizeMB",
+                        (fileData.size / 1024 / 1024).toFixed(1)
+                    ) ||
+                        "File too large for drag-and-drop. Please use the upload form directly."
                 );
             }
         },

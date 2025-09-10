@@ -1,5 +1,13 @@
 <div>
     <script>
+        // Language data for drag-drop functionality
+        const dragDropLang = {
+            largeFileTitle: @json(__('document.drag_drop.large_file_title')),
+            largeFileMessage: @json(__('document.drag_drop.large_file_message')),
+            fileTooLarge: @json(__('document.drag_drop.file_too_large')),
+            unsupportedFileType: @json(__('document.drag_drop.unsupported_file_type'))
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
             const draggedFile = sessionStorage.getItem('draggedFile');
             if (!draggedFile) return;
@@ -129,8 +137,11 @@
                 return; // Notification already exists, don't create another
             }
             
-            // Create a notification for large files
-            const message = `Large file detected (${(fileData.size / 1024 / 1024).toFixed(1)}MB). Please use the file upload field below to upload "${fileData.name}".`;
+            // Create a notification for large files using language data
+            const fileSizeMB = (fileData.size / 1024 / 1024).toFixed(1);
+            const message = dragDropLang.largeFileMessage
+                .replace(':sizeMB', fileSizeMB + 'MB')
+                .replace(':filename', fileData.name);
             
             // Try to find a notification area or create one
             let notificationArea = document.querySelector('.fi-notifications') || 
@@ -150,7 +161,7 @@
                     font-size: 14px;
                 `;
                 notification.innerHTML = `
-                    <strong>📁 Large File Upload</strong><br>
+                    <strong>${dragDropLang.largeFileTitle}</strong><br>
                     ${message}
                 `;
                 

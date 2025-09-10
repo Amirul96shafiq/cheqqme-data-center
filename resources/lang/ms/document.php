@@ -78,4 +78,11 @@ return [
     'filter' => [
         'trashed' => 'Dihapus',
     ],
+
+    'drag_drop' => [
+        'large_file_title' => 'Lebih daripada 5MB dikesan, sila muat naik secara manual',
+        'large_file_message' => 'Fail besar dikesan (:sizeMB). Sila gunakan medan muat naik fail di bawah untuk memuat naik ":filename".',
+        'file_too_large' => 'Saiz fail melebihi had 20MB. Fail anda ialah :sizeMB.',
+        'unsupported_file_type' => 'Jenis fail tidak disokong. Sila muat naik fail PDF, Word, Excel, PowerPoint, imej, video, atau CSV.',
+    ],
 ];
