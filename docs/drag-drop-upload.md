@@ -7,21 +7,47 @@ This feature enables users to drag and drop files from anywhere in the admin pan
 ## How It Works
 
 1. **File Detection**: When a user drags a file over any admin page, a blue overlay appears
-2. **File Validation**: Only supported file types are accepted (PDF, Word, Excel, images, text)
-3. **Storage**: The file is converted to base64 and stored in `sessionStorage`
-4. **Redirect**: User is redirected to `/admin/documents/create`
-5. **Auto-fill**: The form is automatically filled with:
+2. **File Validation**: Only supported file types are accepted (PDF, Word, Excel, PowerPoint, images, videos, CSV)
+3. **Size Check**: Files are checked against the 20MB limit
+4. **Storage Strategy**:
+    - **Small files (≤ 5MB)**: Converted to base64 and stored in `sessionStorage` for auto-upload
+    - **Large files (5MB - 20MB)**: Only metadata stored, user must manually upload
+    - **Oversized files (> 20MB)**: Blocked with browser popup
+5. **Redirect**: User is redirected to `/admin/documents/create`
+6. **Auto-fill**: The form is automatically filled with:
     - Document title (from file name)
     - Document type (set to "Internal")
-    - File upload (starts uploading the dropped file)
+    - File upload (for small files only)
+    - Notification (for large files)
 
 ## Supported File Types
 
 -   PDF documents (`application/pdf`)
+-   Images (`image/jpeg`, `image/png`)
 -   Microsoft Word documents (`application/msword`, `.docx`)
 -   Microsoft Excel spreadsheets (`application/vnd.ms-excel`, `.xlsx`)
--   Images (`image/jpeg`, `image/png`, `image/gif`)
--   Text files (`text/plain`, `text/csv`)
+-   Microsoft PowerPoint presentations (`application/vnd.ms-powerpoint`, `.pptx`)
+-   CSV files (`text/csv`)
+-   Video files (`video/mp4`)
+
+## File Size Limits
+
+-   **Maximum file size**: 20MB (as per DocumentResource configuration)
+-   **Small files (≤ 5MB)**: Fully automated upload via drag-and-drop
+-   **Large files (5MB - 20MB)**: Title and document type auto-filled, manual upload required
+-   **Oversized files (> 20MB)**: Blocked with browser popup
+-   **sessionStorage limit**: ~5-10MB (browser dependent)
+
+## Large File Handling
+
+For files larger than 5MB, the system:
+
+1. Validates the file type and size
+2. Stores only metadata (name, size, type) in sessionStorage
+3. Redirects to the create document page
+4. Auto-fills the title and document type
+5. Shows a notification asking the user to manually upload the file
+6. The user can then use the file upload field to upload the large file
 
 ## Technical Implementation
 

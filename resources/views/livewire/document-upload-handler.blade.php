@@ -4,18 +4,28 @@
             const draggedFile = sessionStorage.getItem('draggedFile');
             if (!draggedFile) return;
             
-            console.log("Processing dragged file:", JSON.parse(draggedFile).name);
+            const fileData = JSON.parse(draggedFile);
+            console.log("Processing dragged file:", fileData.name);
             sessionStorage.removeItem('draggedFile');
             
-            const fileData = JSON.parse(draggedFile);
-            
-            // Initialize form auto-fill
-            initializeFormAutoFill(fileData);
-            
-            // Retry after Livewire loads
-            document.addEventListener('livewire:init', () => {
-                setTimeout(() => initializeFormAutoFill(fileData), 100);
-            });
+            // Check if this is a large file
+            if (fileData.isLargeFile) {
+                console.log("Large file detected, setting title and document type");
+                initializeLargeFileAutoFill(fileData);
+                
+                // Retry after Livewire loads
+                document.addEventListener('livewire:init', () => {
+                    setTimeout(() => initializeLargeFileAutoFill(fileData), 100);
+                });
+            } else {
+                // Initialize form auto-fill for regular files
+                initializeFormAutoFill(fileData);
+                
+                // Retry after Livewire loads
+                document.addEventListener('livewire:init', () => {
+                    setTimeout(() => initializeFormAutoFill(fileData), 100);
+                });
+            }
         });
         
         function initializeFormAutoFill(fileData) {
@@ -24,6 +34,17 @@
             
             // Set document type and file upload
             setDocumentTypeAndFile(fileData);
+        }
+        
+        function initializeLargeFileAutoFill(fileData) {
+            // Set title field
+            setTitleField(fileData.name);
+            
+            // Set document type
+            setDocumentType('internal');
+            
+            // Show notification
+            showLargeFileMessage(fileData);
         }
         
         function setTitleField(fileName) {
@@ -83,6 +104,68 @@
             
             // Proceed with file upload after a delay
             setTimeout(() => setFileUpload(fileData), 1000);
+        }
+        
+        function setDocumentType(type) {
+            const typeSelectors = [
+                'select[name="data[type]"]',
+                'select[wire\\:model="data.type"]',
+                'select[data-field="type"]',
+                '[data-field="type"]',
+                '[wire\\:model="data.type"]'
+            ];
+            
+            const documentTypeField = findElement(typeSelectors);
+            
+            if (documentTypeField) {
+                setFieldValue(documentTypeField, type);
+            }
+        }
+        
+        function showLargeFileMessage(fileData) {
+            // Check if notification already exists to prevent duplicates
+            const existingNotification = document.querySelector('.large-file-notification');
+            if (existingNotification) {
+                return; // Notification already exists, don't create another
+            }
+            
+            // Create a notification for large files
+            const message = `Large file detected (${(fileData.size / 1024 / 1024).toFixed(1)}MB). Please use the file upload field below to upload "${fileData.name}".`;
+            
+            // Try to find a notification area or create one
+            let notificationArea = document.querySelector('.fi-notifications') || 
+                                 document.querySelector('.notifications') ||
+                                 document.querySelector('.fi-form');
+            
+            if (notificationArea) {
+                const notification = document.createElement('div');
+                notification.className = 'large-file-notification'; // Add class for duplicate detection
+                notification.style.cssText = `
+                    background: #fef3c7;
+                    border: 1px solid #f59e0b;
+                    border-radius: 6px;
+                    padding: 12px 16px;
+                    margin: 16px 0;
+                    color: #92400e;
+                    font-size: 14px;
+                `;
+                notification.innerHTML = `
+                    <strong>📁 Large File Upload</strong><br>
+                    ${message}
+                `;
+                
+                // Insert at the top of the form
+                notificationArea.insertBefore(notification, notificationArea.firstChild);
+                
+                // Auto-remove after 10 seconds
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 10000);
+            }
+            
+            console.log("Large file message:", message);
         }
         
         function setFileUpload(fileData) {

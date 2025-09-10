@@ -36,7 +36,7 @@ return [
         'open_url' => 'Open URL',
         'document_url_helper' => 'Open URL in a new tab',
         'document_upload' => 'Upload Document',
-        'document_upload_helper' => 'Upload internal documents here (PDF, JPEG, PNG, DOC, DOCX, XLS, XLSX, PPT, PPTX) - max 20MB',
+        'document_upload_helper' => 'Upload internal documents here (PDF, JPEG, PNG, DOC, DOCX, XLS, XLSX, CSV, PPT, PPTX) - max 20MB',
         'notes' => 'Notes',
         'notes_helper' => 'Remaining characters: :count',
         'notes_warning' => 'Notes must not exceed 500 visible characters.',

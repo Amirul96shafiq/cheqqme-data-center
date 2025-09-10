@@ -12,15 +12,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         allowedTypes: [
             "application/pdf",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "application/vnd.ms-excel",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "image/jpeg",
             "image/png",
-            "image/gif",
-            "text/plain",
-            "text/csv",
+            "application/msword", // doc
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // docx
+            "application/vnd.ms-excel", // xls
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // xlsx
+            "text/csv", // csv
+            "application/vnd.ms-powerpoint", // ppt
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation", // pptx
+            "video/mp4", // mp4
         ],
 
         init() {
@@ -128,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
         validateFile(file) {
             if (!this.allowedTypes.includes(file.type)) {
                 alert(
-                    "File type not supported. Please upload PDF, Word, Excel, images, or text files."
+                    "File type not supported. Please upload PDF, Word, Excel, PowerPoint, images, videos, or CSV files."
                 );
                 return false;
             }
@@ -136,6 +137,19 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         processFile(file) {
+            // Check file size limit (20MB as per DocumentResource)
+            const maxSize = 20 * 1024 * 1024; // 20MB in bytes
+            if (file.size > maxSize) {
+                alert(
+                    `File size exceeds 20MB limit. Your file is ${(
+                        file.size /
+                        1024 /
+                        1024
+                    ).toFixed(1)}MB.`
+                );
+                return;
+            }
+
             const fileData = {
                 name: file.name,
                 size: file.size,
@@ -143,12 +157,49 @@ document.addEventListener("DOMContentLoaded", function () {
                 lastModified: file.lastModified,
             };
 
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                fileData.content = e.target.result;
-                this.storeAndRedirect(fileData);
+            // Simple size-based logic
+            if (file.size <= 5 * 1024 * 1024) {
+                // 5MB or less
+                console.log("Small file detected, using auto-upload approach");
+                // For small files, use base64 approach
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    fileData.content = e.target.result;
+                    this.storeAndRedirect(fileData);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                console.log(
+                    "Large file detected, using metadata-only approach"
+                );
+                this.handleLargeFile(fileData);
+            }
+        },
+
+        handleLargeFile(fileData) {
+            // For large files, we'll redirect without storing the file content
+            // The user will need to manually upload the file on the create page
+            console.log("Redirecting for large file upload:", fileData.name);
+
+            // Store only metadata, not the file content
+            const metadata = {
+                name: fileData.name,
+                size: fileData.size,
+                type: fileData.type,
+                lastModified: fileData.lastModified,
+                isLargeFile: true,
             };
-            reader.readAsDataURL(file);
+
+            try {
+                sessionStorage.setItem("draggedFile", JSON.stringify(metadata));
+                console.log("Large file metadata stored, redirecting...");
+                window.location.href = "/admin/documents/create";
+            } catch (error) {
+                console.error("Error storing large file metadata:", error);
+                alert(
+                    "File too large for drag-and-drop. Please use the upload form directly."
+                );
+            }
         },
 
         storeAndRedirect(fileData) {

@@ -146,8 +146,10 @@ class DocumentResource extends Resource
                                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
                                 'application/vnd.ms-excel', // xls
                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
+                                'text/csv', // csv
                                 'application/vnd.ms-powerpoint', // ppt
                                 'application/vnd.openxmlformats-officedocument.presentationml.presentation', // pptx
+                                'video/mp4', // mp4
                             ])
                             ->maxFiles(20480) // 20MB
                             ->nullable(),
