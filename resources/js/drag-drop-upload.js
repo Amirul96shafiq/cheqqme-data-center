@@ -74,26 +74,33 @@ document.addEventListener("DOMContentLoaded", function () {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(59, 130, 246, 0.1);
-                border: 5px dashed #fbb43e;
+                background: #fbb43e99;
+                border: 5px dashed rgb(78 29 4);
                 z-index: 9999;
                 display: none;
                 align-items: center;
                 justify-content: center;
                 font-size: 24px;
-                color: #fbb43e;
+                color: rgb(78 29 4);
                 font-weight: bold;
                 backdrop-filter: blur(10px);
                 flex-direction: column;
             `;
             this.overlay.innerHTML = `
-                <svg class="w-16 h-16 mb-4 animate-bounce" style="animation-duration: 2s;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg class="w-12 h-12 mb-4 animate-bounce" style="animation-duration: 2s;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path>
                 </svg>
-                <span>${
-                    window.dragDropLang?.drop_file_to_upload_document ||
-                    "Drop file to upload document"
-                }</span>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold; margin-bottom: 8px;">${
+                        window.dragDropLang?.drop_file_to_upload_document ||
+                        "Drop file to upload document"
+                    }</div>
+                    <div style="font-size: 16px; font-weight: semibold; opacity: 0.8;">${
+                        window.dragDropLang
+                            ?.drop_file_to_upload_document_helper ||
+                        "Automatically upload below 5MB files. If it's larger than 5MB, upload the file manually."
+                    }</div>
+                </div>
             `;
             document.body.appendChild(this.overlay);
         },
