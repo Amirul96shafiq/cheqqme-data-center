@@ -6,15 +6,18 @@ This feature enables users to drag and drop files from anywhere in the admin pan
 
 ## How It Works
 
-1. **File Detection**: When a user drags a file over any admin page, a blue overlay appears
-2. **File Validation**: Only supported file types are accepted (PDF, Word, Excel, PowerPoint, images, videos, CSV)
-3. **Size Check**: Files are checked against the 20MB limit
-4. **Storage Strategy**:
+1. **Page Detection**: Checks if the current page has Filament upload fields
+    - **If Filament upload fields found**: Disables global drag-drop, allows native Filament drag-drop
+    - **If no Filament upload fields**: Enables global drag-drop functionality
+2. **File Detection**: When a user drags a file over any admin page, a blue overlay appears
+3. **File Validation**: Only supported file types are accepted (PDF, Word, Excel, PowerPoint, images, videos, CSV)
+4. **Size Check**: Files are checked against the 20MB limit
+5. **Storage Strategy**:
     - **Small files (≤ 5MB)**: Converted to base64 and stored in `sessionStorage` for auto-upload
     - **Large files (5MB - 20MB)**: Only metadata stored, user must manually upload
     - **Oversized files (> 20MB)**: Blocked with browser popup
-5. **Redirect**: User is redirected to `/admin/documents/create`
-6. **Auto-fill**: The form is automatically filled with:
+6. **Redirect**: User is redirected to `/admin/documents/create`
+7. **Auto-fill**: The form is automatically filled with:
     - Document title (from file name)
     - Document type (set to "Internal")
     - File upload (for small files only)
@@ -48,6 +51,32 @@ For files larger than 5MB, the system:
 4. Auto-fills the title and document type
 5. Shows a notification asking the user to manually upload the file
 6. The user can then use the file upload field to upload the large file
+
+## Filament Upload Field Detection
+
+The system automatically detects when Filament upload fields are present on a page and disables the global drag-drop feature to prevent conflicts:
+
+### Detection Logic
+
+The system checks for various Filament upload field selectors:
+
+-   `input[type="file"]` - Standard file inputs
+-   `.fi-fo-file-upload` - Filament file upload component
+-   `[wire:model*="file"]` - Livewire file model bindings
+-   `[wire:model*="upload"]` - Livewire upload model bindings
+-   `.fi-input[data-field*="file"]` - Filament input with file field
+-   `input[name*="file"]` - Inputs with "file" in name
+
+### Behavior
+
+-   **Pages WITH Filament upload fields**: Global drag-drop disabled, native Filament drag-drop works
+-   **Pages WITHOUT Filament upload fields**: Global drag-drop enabled, redirects to document creation
+
+### Examples
+
+-   **Document creation page**: Has Filament upload field → Global drag-drop disabled
+-   **Document list page**: No upload fields → Global drag-drop enabled
+-   **User profile page**: No upload fields → Global drag-drop enabled
 
 ## Technical Implementation
 

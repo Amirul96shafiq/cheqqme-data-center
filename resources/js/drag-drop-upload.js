@@ -25,8 +25,44 @@ document.addEventListener("DOMContentLoaded", function () {
         ],
 
         init() {
+            // Check if page has Filament upload fields - if so, disable global drag-drop
+            if (this.hasFilamentUploadFields()) {
+                const message =
+                    window.dragDropLang?.filamentUploadDetected ||
+                    "Filament upload fields detected, using native drag-drop instead";
+                console.log(message);
+                return;
+            }
+
             this.createOverlay();
             this.bindEvents();
+        },
+
+        hasFilamentUploadFields() {
+            // Check for various Filament file upload field selectors
+            const uploadSelectors = [
+                'input[type="file"]', // Standard file inputs
+                ".fi-fo-file-upload", // Filament file upload component
+                '.fi-fo-file-upload input[type="file"]', // File input within Filament upload
+                '[wire\\:model*="file"]', // Livewire file model bindings
+                '[wire\\:model*="upload"]', // Livewire upload model bindings
+                '.fi-input[data-field*="file"]', // Filament input with file field
+                '.fi-input[data-field*="upload"]', // Filament input with upload field
+                'input[name*="file"]', // Inputs with "file" in name
+                'input[name*="upload"]', // Inputs with "upload" in name
+            ];
+
+            for (const selector of uploadSelectors) {
+                const elements = document.querySelectorAll(selector);
+                if (elements.length > 0) {
+                    console.log(
+                        `Found ${elements.length} Filament upload field(s) with selector: ${selector}`
+                    );
+                    return true;
+                }
+            }
+
+            return false;
         },
 
         createOverlay() {
