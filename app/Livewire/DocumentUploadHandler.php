@@ -4,16 +4,16 @@ namespace App\Livewire;
 
 use Livewire\Component;
 
+/**
+ * Document Upload Handler Component
+ *
+ * Handles the auto-fill functionality for the document creation form
+ * when files are dragged and dropped from other pages.
+ */
 class DocumentUploadHandler extends Component
 {
-  public function mount()
-  {
-    // This component will handle the file upload process
-    // The actual file handling will be done in the DocumentResource
-  }
-
-  public function render()
-  {
-    return view('livewire.document-upload-handler');
-  }
+    public function render()
+    {
+        return view('livewire.document-upload-handler');
+    }
 }
