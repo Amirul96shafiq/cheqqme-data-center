@@ -7,6 +7,11 @@ return [
     'title' => 'Tetapan',
   ],
 
+  // Actions
+  'actions' => [
+    'save' => 'Simpan',
+  ],
+
   // Section headers and descriptions
   'sections' => [
     'api' => 'Akses API',

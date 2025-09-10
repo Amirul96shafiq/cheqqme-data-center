@@ -5,7 +5,7 @@
         {{ $this->form }}
 
         <!-- Save Settings Button -->
-        <div class="flex justify-end mt-6">
+        <div class="flex justify-left mt-6">
             <x-filament::button
                 type="submit"
                 wire:loading.attr="disabled"
@@ -16,7 +16,7 @@
                     wire:target="save"
                     class="w-4 h-4 mr-2"
                 />
-                {{ __('settings.form.save') }}
+                {{ __('settings.actions.save') }}
             </x-filament::button>
         </div>
     </form>

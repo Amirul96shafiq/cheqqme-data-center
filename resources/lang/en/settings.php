@@ -7,6 +7,11 @@ return [
         'title' => 'Settings',
     ],
 
+    // Actions
+    'actions' => [
+        'save' => 'Save changes',
+    ],
+
     // Section headers and descriptions
     'sections' => [
         'api' => 'API Access',

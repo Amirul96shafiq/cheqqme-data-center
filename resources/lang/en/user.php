@@ -28,7 +28,7 @@ return [
         'user_info' => 'User Information',
         'password_info' => 'Password Information',
         'password_info_description' => 'Enable Change Password? toggle to view this field',
-        'password_info_description_profile' => '',
+        'password_info_description_profile' => 'Change and update your account password here',
         'danger_zone' => 'Danger Zone',
         'danger_zone_description' => 'Enable User Deletion? toggle to view this field',
         'activity_logs' => 'Activity Logs',

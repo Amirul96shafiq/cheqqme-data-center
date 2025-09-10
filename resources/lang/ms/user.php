@@ -28,7 +28,7 @@ return [
         'user_info' => 'Maklumat Pengguna',
         'password_info' => 'Maklumat Kata Laluan',
         'password_info_description' => 'Aktifkan toggle Tukar Kata Laluan? untuk melihat bahagian ini',
-        'password_info_description_profile' => '',
+        'password_info_description_profile' => 'Tukar dan kemaskini kata laluan akaun anda di sini',
         'danger_zone' => 'Zon Bahaya',
         'danger_zone_description' => 'Aktifkan toggle Padam Pengguna? untuk melihat bahagian ini',
         'activity_logs' => 'Log Aktiviti',

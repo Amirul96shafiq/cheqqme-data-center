@@ -56,7 +56,6 @@ class User extends Authenticatable implements HasAvatar
                 'cover_image',
                 'email_verified_at',
                 'deleted_at',
-                'google_id',
                 'timezone',
                 'api_key_generated_at',
                 'city',
@@ -75,12 +74,12 @@ class User extends Authenticatable implements HasAvatar
         // Don't log updates if no tracked fields actually changed
         if ($eventName === 'updated') {
             $dirtyFields = $this->getDirty();
-            $trackedFields = ['username', 'name', 'email', 'avatar', 'cover_image', 'email_verified_at', 'deleted_at'];
+            $trackedFields = ['username', 'name', 'email', 'avatar', 'cover_image', 'email_verified_at', 'deleted_at', 'timezone', 'api_key_generated_at', 'city', 'country', 'location_updated_at'];
 
             // Check if any tracked fields actually changed
-            $trackedFieldsChanged = ! empty(array_intersect(array_keys($dirtyFields), $trackedFields));
+            $trackedFieldsChanged = !empty(array_intersect(array_keys($dirtyFields), $trackedFields));
 
-            if (! $trackedFieldsChanged) {
+            if (!$trackedFieldsChanged) {
                 return false;
             }
         }
@@ -186,10 +185,10 @@ class User extends Authenticatable implements HasAvatar
         $initials = array_map(function ($p) {
             $ch = mb_substr($p, 0, 1);
 
-            return mb_strtoupper($ch).'.';
+            return mb_strtoupper($ch) . '.';
         }, $parts);
 
-        return $first.' '.implode(' ', $initials);
+        return $first . ' ' . implode(' ', $initials);
     }
 
     /**
@@ -198,7 +197,7 @@ class User extends Authenticatable implements HasAvatar
     public function generateApiKey(): string
     {
         // $apiKey = 'ak_' . bin2hex(random_bytes(32));
-        $apiKey = 'cheqqme_'.bin2hex(random_bytes(32));
+        $apiKey = 'cheqqme_' . bin2hex(random_bytes(32));
 
         $this->update([
             'api_key' => $apiKey,
@@ -213,7 +212,7 @@ class User extends Authenticatable implements HasAvatar
      */
     public function hasApiKey(): bool
     {
-        return ! empty($this->api_key);
+        return !empty($this->api_key);
     }
 
     /**
@@ -221,14 +220,14 @@ class User extends Authenticatable implements HasAvatar
      */
     public function getMaskedApiKey(): ?string
     {
-        if (! $this->api_key) {
+        if (!$this->api_key) {
             return null;
         }
 
         $prefix = substr($this->api_key, 0, 8);
         $suffix = substr($this->api_key, -4);
 
-        return $prefix.'****************************'.$suffix;
+        return $prefix . '****************************' . $suffix;
     }
 
     /**
@@ -245,7 +244,7 @@ class User extends Authenticatable implements HasAvatar
     public function updateGoogleAvatar(string $googleAvatarUrl): void
     {
         // Only update Google avatar if no custom avatar exists
-        if (! $this->avatar) {
+        if (!$this->avatar) {
             $this->update(['google_avatar_url' => $googleAvatarUrl]);
         }
         // If custom avatar exists, do nothing (preserve custom avatar)
@@ -256,7 +255,7 @@ class User extends Authenticatable implements HasAvatar
      */
     public function hasGoogleAuth(): bool
     {
-        return ! empty($this->google_id);
+        return !empty($this->google_id);
     }
 
     /**
