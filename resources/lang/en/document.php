@@ -82,7 +82,7 @@ return [
     'drag_drop' => [
         'large_file_title' => 'More than 5MB detected, please upload manually',
         'large_file_message' => 'Large file detected (:sizeMB). Please use the file upload field below to upload ":filename".',
-        'file_too_large' => 'File size exceeds 20MB limit. Your file is :sizeMB.',
+        'file_too_large' => 'File size exceeds 20MB limit. Your file is :sizeMBMB.',
         'unsupported_file_type' => 'Unsupported file type. Please upload PDF, Word, Excel, PowerPoint, images, videos, or CSV files.',
     ],
 ];
