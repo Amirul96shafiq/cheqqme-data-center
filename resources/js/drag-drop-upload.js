@@ -39,17 +39,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 width: 100%;
                 height: 100%;
                 background: rgba(59, 130, 246, 0.1);
-                border: 3px dashed #3b82f6;
+                border: 5px dashed #fbb43e;
                 z-index: 9999;
                 display: none;
                 align-items: center;
                 justify-content: center;
                 font-size: 24px;
-                color: #3b82f6;
+                color: #fbb43e;
                 font-weight: bold;
-                backdrop-filter: blur(2px);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
             `;
-            this.overlay.innerHTML = "Drop file to upload document";
+            this.overlay.innerHTML = `
+                <svg class="w-16 h-16 mb-4 animate-bounce" style="animation-duration: 2s;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"></path>
+                </svg>
+                <span>${
+                    window.dragDropLang?.drop_file_to_upload_document ||
+                    "Drop file to upload document"
+                }</span>
+            `;
             document.body.appendChild(this.overlay);
         },
 

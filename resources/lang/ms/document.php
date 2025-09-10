@@ -84,5 +84,6 @@ return [
         'large_file_message' => 'Fail besar dikesan (:sizeMB). Sila gunakan petak muat naik fail di bawah untuk memuat naik ":filename".',
         'file_too_large' => 'Saiz fail melebihi had 20MB. Fail anda ialah :sizeMBMB.',
         'unsupported_file_type' => 'Jenis fail tidak disokong. Sila muat naik fail PDF, Word, Excel, PowerPoint, imej, video, atau CSV.',
+        'drop_file_to_upload_document' => 'Letakkan fail untuk muat naik dokumen',
     ],
 ];
