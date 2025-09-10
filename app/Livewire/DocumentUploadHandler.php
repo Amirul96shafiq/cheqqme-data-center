@@ -12,8 +12,8 @@ use Livewire\Component;
  */
 class DocumentUploadHandler extends Component
 {
-    public function render()
-    {
-        return view('livewire.document-upload-handler');
-    }
+  public function render()
+  {
+    return view('livewire.document-upload-handler');
+  }
 }
