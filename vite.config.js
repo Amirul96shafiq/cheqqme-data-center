@@ -11,6 +11,7 @@ export default defineConfig({
                 "resources/js/chatbot.js",
                 "resources/js/app-custom.js",
                 "resources/js/drag-drop-upload.js",
+                "resources/js/document-upload-handler.js",
                 "resources/css/emoji-picker-theme.css",
             ],
             refresh: true,
