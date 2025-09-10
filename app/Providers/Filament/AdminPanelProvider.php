@@ -208,6 +208,7 @@ class AdminPanelProvider extends PanelProvider
                 'resources/css/app.css',
                 'resources/js/chatbot.js',
                 'resources/js/app-custom.js',
+                'resources/js/drag-drop-upload.js',
             ])
             ->pages([
                 \App\Filament\Pages\Dashboard::class,

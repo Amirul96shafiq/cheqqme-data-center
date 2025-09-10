@@ -10,6 +10,7 @@ export default defineConfig({
                 "resources/css/filament/admin/theme.css",
                 "resources/js/chatbot.js",
                 "resources/js/app-custom.js",
+                "resources/js/drag-drop-upload.js",
                 "resources/css/emoji-picker-theme.css",
             ],
             refresh: true,
