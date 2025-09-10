@@ -1,5 +1,16 @@
 <script>
-function openGreetingModal() {
+function openGreetingModal(forceOpen = false) {
+    // Check if user has enabled 'no show greeting today' for today
+    // Skip this check if forceOpen is true (manual click)
+    if (!forceOpen) {
+        const today = new Date().toDateString();
+        const lastDismissed = localStorage.getItem('greetingModalDismissed');
+        
+        if (lastDismissed === today) {
+            return; // Don't show modal if dismissed today
+        }
+    }
+    
     // Create modal overlay
     const modal = document.createElement('div');
     modal.id = 'greeting-modal-overlay';
@@ -277,7 +288,13 @@ function openGreetingModal() {
                     <div class="text-xs text-gray-500 dark:text-gray-400 text-center sm:text-left" id="weather-footer-text" data-last-updated-text="{{ __('weather.last_weather_updated') }}">
                         {{ __('greetingmodal.footer-text') }}
                     </div>
-                    <div class="flex space-x-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="noShowGreetingToday" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                            <label for="noShowGreetingToday" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                {{ __('greetingmodal.no-show-today') }}
+                            </label>
+                        </div>
                         <button 
                             onclick="closeGreetingModal()" 
                             class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200"
@@ -337,6 +354,14 @@ function openGreetingModal() {
 function closeGreetingModal() {
     const modal = document.getElementById('greeting-modal-overlay');
     if (modal) {
+        // Check if "no show greeting today" is checked
+        const noShowCheckbox = modal.querySelector('#noShowGreetingToday');
+        if (noShowCheckbox && noShowCheckbox.checked) {
+            // Store dismissal for today
+            const today = new Date().toDateString();
+            localStorage.setItem('greetingModalDismissed', today);
+        }
+        
         // Animate out
         const modalContent = modal.querySelector('.bg-white');
         modalContent.style.transform = 'scale(0.95)';
@@ -394,8 +419,16 @@ document.addEventListener('DOMContentLoaded', function() {
             greetingLink.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                openGreetingModal();
+                openGreetingModal(true); // Force open when manually clicked
             });
+        }
+    }, 2000);
+    
+    // Auto-open greeting modal on dashboard
+    setTimeout(function() {
+        const currentPath = window.location.pathname;
+        if (currentPath === '/admin' || currentPath === '/admin/') {
+            openGreetingModal();
         }
     }, 2000);
 });
@@ -419,7 +452,7 @@ document.addEventListener('click', function(e) {
                  element.closest('[role="menu"]'))) {
                 e.preventDefault();
                 e.stopPropagation();
-                openGreetingModal();
+                openGreetingModal(true); // Force open when manually clicked
                 break;
             }
         }
