@@ -25,14 +25,12 @@
                 >
                     @svg('heroicon-o-share', 'w-3 h-3 text-gray-600 dark:text-gray-300')
                 </button>
-                <a href="{{ $record['attributes']['featured_image']['value'] }}"
-                   target="_blank"
-                   class="block"
-                   onclick="event.stopPropagation();">
+                <div class="block cursor-pointer"
+                     onclick="window.location.href = '{{ \App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $record['id']]) }}'">
                     <img src="{{ $record['attributes']['featured_image']['value'] }}"
                          alt="Featured image"
                          class="w-full h-32 object-cover rounded-t-lg border-l border-r border-t border-gray-200 dark:border-gray-700 hover:opacity-90 transition-opacity">
-                </a>
+                </div>
             </div>
         @endif
 
