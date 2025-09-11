@@ -47,11 +47,11 @@ function openGreetingModal(forceOpen = false) {
                     <!-- Weather Content -->
                     <div class="space-y-4">
                         <!-- Current Weather -->
-                        <div class="bg-gradient-to-r from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20 rounded-lg p-4">
+                        <div class="bg-gradient-to-r from-white to-teal-100/50 dark:from-transparent dark:to-teal-700/50 rounded-lg p-4">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-3">
-                                    <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center weather-icon-container">
-                                        @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
+                                    <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center weather-icon-container">
+                                        @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
                                     </div>
                                     <div>
                                         <h4 class="text-lg font-semibold text-teal-700 dark:text-teal-100 weather-condition">{{ __('weather.loading') }}</h4>
@@ -124,35 +124,35 @@ function openGreetingModal(forceOpen = false) {
                             <div class="flex items-center justify-between py-4 px-3 rounded-lg bg-gray-100 dark:bg-gray-700">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">{{ __('weather.today') }}</span>
-                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
+                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
                             <div class="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tomorrow</span>
-                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
+                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
                             <div class="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 3</span>
-                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
+                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
                             <div class="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 4</span>
-                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
+                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">{{ __('weather.loading') }} / {{ __('weather.loading') }}</div>
                             </div>
                             <div class="flex items-center justify-between p-3">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 5</span>
-                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-yellow-600 dark:text-yellow-400 animate-spin')
+                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
@@ -556,8 +556,8 @@ window.toggleDataManagementVideo = function() {
 
 // Weather API Integration Functions
 const weatherIconMap = {
-    'sunny': { icon: 'heroicon-o-sun', color: 'text-yellow-500' },
-    'clear': { icon: 'heroicon-o-sun', color: 'text-yellow-500' },
+    'sunny': { icon: 'heroicon-o-sun', color: 'text-primary-500' },
+    'clear': { icon: 'heroicon-o-sun', color: 'text-primary-500' },
     'cloud': { icon: 'heroicon-o-cloud', color: 'text-gray-500' },
     'overcast': { icon: 'heroicon-o-cloud', color: 'text-gray-500' },
     'rain': { icon: 'heroicon-o-cloud-rain', color: 'text-blue-500' },
@@ -574,8 +574,9 @@ const weatherIconMap = {
     'haze': { icon: 'heroicon-o-eye-slash', color: 'text-gray-400' }
 };
 
+// Get weather icon
 function getWeatherIcon(condition) {
-    if (!condition) return { icon: 'heroicon-o-sun', color: 'text-yellow-500' };
+    if (!condition) return { icon: 'heroicon-o-sun', color: 'text-primary-500' };
     
     const conditionLower = condition.toLowerCase();
     
@@ -585,9 +586,10 @@ function getWeatherIcon(condition) {
         }
     }
     
-    return { icon: 'heroicon-o-sun', color: 'text-yellow-500' };
+    return { icon: 'heroicon-o-sun', color: 'text-primary-500' };
 }
 
+// Custom heroicon SVG
 function getHeroiconSVG(iconName) {
     const svgPaths = {
         'heroicon-o-sun': '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />',
@@ -601,6 +603,7 @@ function getHeroiconSVG(iconName) {
     return svgPaths[iconName] || svgPaths['heroicon-o-sun'];
 }
 
+// Update weather data
 function updateWeatherData(weatherData) {
     const weatherSection = document.querySelector('.weather-section');
     if (!weatherSection || !weatherData) {
@@ -624,6 +627,7 @@ function updateWeatherData(weatherData) {
     updateWeatherFooter(current);
 }
 
+// Update current weather
 function updateCurrentWeather(weatherData) {
     const actualCurrentDetails = weatherData.current || {};
     const locationDetails = weatherData.location || {};
@@ -658,6 +662,7 @@ function updateCurrentWeather(weatherData) {
     updateWeatherDetails(actualCurrentDetails);
 }
 
+// Update weather icon
 function updateWeatherIcon(iconCode, condition) {
     const iconContainer = document.querySelector('.weather-icon-container');
     if (!iconContainer) return;
@@ -704,6 +709,7 @@ function updateWeatherIcon(iconCode, condition) {
     `;
 }
 
+// Update weather details
 function updateWeatherDetails(current) {
     // Update humidity
     const humidityElement = document.querySelector('.humidity-value');
@@ -730,6 +736,7 @@ function updateWeatherDetails(current) {
     }
 }
 
+// Update forecast data
 function updateForecastData(weatherData) {
     const forecast = weatherData.forecast || [];
     const forecastContainer = document.getElementById('forecast-container');
@@ -785,6 +792,7 @@ function updateForecastData(weatherData) {
     forecastContainer.innerHTML = forecastHTML;
 }
 
+// Show weather error
 function showWeatherError() {
     const weatherSection = document.querySelector('.weather-section');
     if (weatherSection) {
@@ -799,6 +807,7 @@ function showWeatherError() {
     }
 }
 
+// Update weather footer
 function updateWeatherFooter(weatherData) {
     const weatherElement = document.getElementById('weather-last-updated');
     if (!weatherElement || !weatherData) {
@@ -838,6 +847,7 @@ function updateWeatherFooter(weatherData) {
     }
 }
 
+// Fetch weather data
 async function fetchWeatherData(retryCount = 0) {
     try {
         const weatherSection = document.querySelector('.weather-section');
@@ -873,6 +883,7 @@ async function fetchWeatherData(retryCount = 0) {
     }
 }
 
+// Refresh weather data
 async function refreshWeatherData() {
     try {
         const refreshButton = document.querySelector('button[onclick="refreshWeatherData()"]');
@@ -903,6 +914,7 @@ async function refreshWeatherData() {
     }
 }
 
+// Check user location and fetch weather
 async function checkUserLocationAndFetchWeather() {
     try {
         const response = await fetch('/weather/user-location', {
@@ -928,6 +940,7 @@ async function checkUserLocationAndFetchWeather() {
     }
 }
 
+// Detect user location
 function detectUserLocation() {
     if (!navigator.geolocation) {
         return;
