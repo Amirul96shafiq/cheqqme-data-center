@@ -6,6 +6,22 @@
         'fi-resource-record-' . $record->getKey(),
     ])
 >
+    {{-- JavaScript for scroll to comments functionality --}}
+    <script>
+        document.addEventListener('livewire:init', function () {
+            Livewire.on('scroll-to-comments', function () {
+                // Find the comments section
+                const commentsSection = document.querySelector('.comments-pane');
+                if (commentsSection) {
+                    // Scroll to the comments section with smooth behavior
+                    commentsSection.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
     {{-- Form content --}}
     @capture($form)
         <x-filament-panels::form

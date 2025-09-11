@@ -67,6 +67,7 @@ return [
         'save_changes' => 'Simpan',
         'cancel' => 'Batal',
         'share' => 'Kongsi',
+        'comment' => 'Komen',
     ],
     'notifications' => [
         'created_title' => 'Tugasan Dicipta',

@@ -67,6 +67,7 @@ return [
         'save_changes' => 'Save changes',
         'cancel' => 'Cancel',
         'share' => 'Share',
+        'comment' => 'Comment',
     ],
     'notifications' => [
         'created_title' => 'Task Created',

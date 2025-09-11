@@ -59,6 +59,18 @@ class EditTask extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('comment')
+                ->label(__('task.action.comment'))
+                ->icon('heroicon-o-chat-bubble-oval-left-ellipsis')
+                ->color('primary')
+                ->visible(fn() => true) // Will be controlled by CSS for responsive behavior
+                ->extraAttributes([
+                    'class' => '2xl:hidden', // Hide on large screens and above
+                ])
+                ->action(function () {
+                    // Dispatch browser event to scroll to comment section
+                    $this->dispatch('scroll-to-comments');
+                }),
             Actions\Action::make('share_task')
                 ->label(__('task.action.share'))
                 ->icon('heroicon-o-share')
