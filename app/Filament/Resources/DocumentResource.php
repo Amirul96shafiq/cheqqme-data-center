@@ -56,10 +56,10 @@ class DocumentResource extends Resource
                 $extension = $pathInfo['extension'] ?? '';
 
                 // Limit filename to 10 characters and add truncation indicator
-                $truncatedFilename = strlen($filename) > 20 ? substr($filename, 0, 20).'~' : $filename;
+                $truncatedFilename = strlen($filename) > 20 ? substr($filename, 0, 20) . '~' : $filename;
 
                 // Format: documents/1234567890~.pdf (using tilde to indicate truncation)
-                $formattedPath = 'documents/'.$truncatedFilename.'.'.$extension;
+                $formattedPath = 'documents/' . $truncatedFilename . '.' . $extension;
                 $details[__('document.search.file_path')] = $formattedPath;
             } else {
                 $details[__('document.search.file_path')] = $filePath;
@@ -68,7 +68,7 @@ class DocumentResource extends Resource
             $url = $record->url ?? '-';
             if ($url !== '-') {
                 // Limit URL to 20 characters and add truncation indicator
-                $truncatedUrl = strlen($url) > 40 ? substr($url, 0, 40).'...' : $url;
+                $truncatedUrl = strlen($url) > 40 ? substr($url, 0, 40) . '...' : $url;
                 $details[__('document.search.url')] = $truncatedUrl;
             } else {
                 $details[__('document.search.url')] = $url;
@@ -98,6 +98,31 @@ class DocumentResource extends Resource
                                     ->relationship('project', 'title')
                                     ->preload()
                                     ->searchable()
+                                    ->native(false)
+                                    ->dehydrated()
+                                    ->live()
+                                    ->prefixAction(
+                                        // Open the project in a new tab
+                                        Action::make('openProject')
+                                            ->icon('heroicon-o-pencil-square')
+                                            ->url(function (Get $get) {
+                                                $projectId = $get('project_id');
+                                                if (!$projectId) {
+                                                    return null;
+                                                }
+
+                                                return \App\Filament\Resources\ProjectResource::getUrl('edit', ['record' => $projectId]);
+                                            })
+                                            ->openUrlInNewTab()
+                                            ->visible(fn(Get $get) => (bool) $get('project_id'))
+                                    )
+                                    ->suffixAction(
+                                        Action::make('createProject')
+                                            ->icon('heroicon-o-plus')
+                                            ->url(\App\Filament\Resources\ProjectResource::getUrl('create'))
+                                            ->openUrlInNewTab()
+                                            ->label(__('document.form.create_project'))
+                                    )
                                     ->nullable(),
 
                                 Select::make('type')
@@ -115,14 +140,14 @@ class DocumentResource extends Resource
                         TextInput::make('url')
                             ->label(__('document.form.document_url'))
                             ->helperText(__('document.form.document_url_note'))
-                            ->visible(fn (Get $get) => $get('type') === 'external')
+                            ->visible(fn(Get $get) => $get('type') === 'external')
                             ->hintAction(
-                                fn (Get $get) => blank($get('url')) ? null : Action::make('openUrl')
+                                fn(Get $get) => blank($get('url')) ? null : Action::make('openUrl')
                                     ->icon('heroicon-m-arrow-top-right-on-square')
                                     ->label(__('document.form.open_url'))
-                                    ->url(fn () => $get('url'), true)
+                                    ->url(fn() => $get('url'), true)
                                     ->tooltip(__('document.form.document_url_helper'))
-                                    ->visible(fn (Get $get) => ! blank($get('url')) && filter_var($get('url'), FILTER_VALIDATE_URL))
+                                    ->visible(fn(Get $get) => !blank($get('url')) && filter_var($get('url'), FILTER_VALIDATE_URL))
                             )
                             ->url()
                             ->nullable(),
@@ -130,7 +155,7 @@ class DocumentResource extends Resource
                         FileUpload::make('file_path')
                             ->label(__('document.form.document_upload'))
                             ->helperText(__('document.form.document_upload_helper'))
-                            ->visible(fn (Get $get) => $get('type') === 'internal')
+                            ->visible(fn(Get $get) => $get('type') === 'internal')
                             ->directory('documents')
                             ->disk('public')
                             ->visibility('public')
@@ -164,9 +189,9 @@ class DocumentResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('document.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
+                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -286,7 +311,7 @@ class DocumentResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('document.form.title_placeholder_short'))
+                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('document.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -313,7 +338,7 @@ class DocumentResource extends Resource
                 TextColumn::make('type')
                     ->label(__('document.table.type'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
                         'internal' => __('document.table.internal'),
                         'external' => __('document.table.external'),
                         default => ucfirst($state),
@@ -329,7 +354,7 @@ class DocumentResource extends Resource
                         // Show '-' if there's no update or updated_by
                         $updatedAt = $record->updated_at;
                         $createdAt = $record->created_at;
-                        if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
+                        if (!$record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
                             return '-';
                         }
 
@@ -340,7 +365,7 @@ class DocumentResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -373,7 +398,7 @@ class DocumentResource extends Resource
                     ->url(function ($record) {
                         if ($record->type === 'internal' && $record->file_path) {
                             // For internal documents, use the uploaded file URL
-                            return asset('storage/'.$record->file_path);
+                            return asset('storage/' . $record->file_path);
                         } elseif ($record->type === 'external' && $record->url) {
                             // For external documents, use the provided URL
                             return $record->url;
@@ -385,12 +410,12 @@ class DocumentResource extends Resource
                     ->tooltip(function ($record) {
                         $url = '';
                         if ($record->type === 'internal' && $record->file_path) {
-                            $url = asset('storage/'.$record->file_path);
+                            $url = asset('storage/' . $record->file_path);
                         } elseif ($record->type === 'external' && $record->url) {
                             $url = $record->url;
                         }
 
-                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
+                        return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
                     })
                     ->visible(function ($record) {
                         // Only show the action if there's a valid URL or file
@@ -398,7 +423,7 @@ class DocumentResource extends Resource
                             ($record->type === 'external' && $record->url);
                     }),
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
