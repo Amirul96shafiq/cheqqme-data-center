@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Remove the default placeholder
         searchInput.placeholder = "";
 
+        // Remove TAB key functionality from search input
+        searchInput.setAttribute("tabindex", "-1");
+
         // Hide the default search icon
         const searchIcon = searchInput
             .closest(".fi-input-wrp")
@@ -19,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Create a styled overlay
         const overlay = document.createElement("div");
-        overlay.innerHTML = "<code>TAB</code> to search...";
+        overlay.innerHTML = "<code>CTRL+/</code> to search...";
         overlay.style.position = "absolute";
         overlay.style.left = "7px";
         overlay.style.top = "45%";
@@ -53,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         // Apply base styles
-        codeElement.style.padding = "3px 6px";
+        codeElement.style.padding = "4px 6px";
         codeElement.style.borderRadius = "4px";
         codeElement.style.fontSize = "11px";
         codeElement.style.fontWeight = "500";
@@ -96,16 +99,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // // Keyboard shortcut: /
-    // document.addEventListener("keydown", function (e) {
-    //     if (e.ctrlKey && e.key.toLowerCase() === "/") {
-    //         e.preventDefault();
-    //         const input = document.querySelector(".fi-global-search input");
-    //         if (input) {
-    //             input.focus();
-    //         }
-    //     }
-    // });
+    // Keyboard shortcut: CTRL + / only
+    document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey && e.key.toLowerCase() === "/") {
+            e.preventDefault();
+            const input = document.querySelector(".fi-global-search input");
+            if (input) {
+                input.focus();
+            }
+        }
+    });
 });
 // -----------------------------
 // Enable horizontal drag-scroll on Flowforge board
