@@ -5,7 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CheQQme Data Center</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark.min.css" media="(prefers-color-scheme: dark)">
     <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #24292f;
+            --border-color: #e1e4e8;
+            --code-bg: #f6f8fa;
+            --code-text: #24292f;
+            --link-color: #0969da;
+            --header-bg: #f6f8fa;
+            --error-bg: #ffeef0;
+            --error-border: #f1aeb5;
+            --error-text: #d73a49;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0d1117;
+            --text-color: #e6edf3;
+            --border-color: #30363d;
+            --code-bg: #161b22;
+            --code-text: #e6edf3;
+            --link-color: #58a6ff;
+            --header-bg: #161b22;
+            --error-bg: #490202;
+            --error-border: #f85149;
+            --error-text: #f85149;
+        }
+
         body {
             box-sizing: border-box;
             min-width: 200px;
@@ -13,10 +40,14 @@
             margin: 0 auto;
             padding: 45px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         .markdown-body {
             background-color: transparent;
+            color: var(--text-color);
         }
         
         .markdown-body img {
@@ -31,7 +62,7 @@
         }
         
         .markdown-body pre {
-            background-color: #f6f8fa;
+            background-color: var(--code-bg);
             border-radius: 6px;
             padding: 16px;
             overflow: auto;
@@ -53,30 +84,32 @@
             text-align: center;
             margin-bottom: 2rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid #e1e4e8;
+            border-bottom: 1px solid var(--border-color);
         }
         
         .header h1 {
             margin: 0;
-            color: #24292f;
+            color: var(--text-color);
         }
         
         .header p {
             margin: 0.5rem 0 0 0;
-            color: #656d76;
+            color: var(--text-color);
+            opacity: 0.7;
             font-size: 1.1rem;
         }
         
         .footer {
             margin-top: 3rem;
             padding-top: 2rem;
-            border-top: 1px solid #e1e4e8;
+            border-top: 1px solid var(--border-color);
             text-align: center;
-            color: #656d76;
+            color: var(--text-color);
+            opacity: 0.7;
         }
         
         .footer a {
-            color: #0969da;
+            color: var(--link-color);
             text-decoration: none;
         }
         
@@ -87,42 +120,96 @@
         .loading {
             text-align: center;
             padding: 2rem;
-            color: #656d76;
+            color: var(--text-color);
+            opacity: 0.7;
         }
         
         .error {
             text-align: center;
             padding: 2rem;
-            color: #d73a49;
-            background-color: #ffeef0;
-            border: 1px solid #f1aeb5;
+            color: var(--error-text);
+            background-color: var(--error-bg);
+            border: 1px solid var(--error-border);
             border-radius: 6px;
             margin: 1rem 0;
         }
         
         .refresh-info {
-            background-color: #f6f8fa;
-            border: 1px solid #d0d7de;
+            background-color: var(--header-bg);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 1rem;
             margin-bottom: 2rem;
             font-size: 0.9rem;
-            color: #656d76;
+            color: var(--text-color);
+            opacity: 0.8;
         }
         
         .refresh-info strong {
-            color: #24292f;
+            color: var(--text-color);
+        }
+
+        .theme-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .theme-toggle {
+            background: var(--header-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--border-color);
+        }
+
+        .theme-icon {
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+            
+            .theme-switcher {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .theme-toggle {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="theme-switcher">
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+            <span class="theme-icon" id="themeIcon">🌙</span>
+            <span id="themeText">Dark</span>
+        </button>
+    </div>
+
     <div class="header">
         <h1>CheQQme Data Center</h1>
         <p>Internal Knowledge & Operations Hub</p>
     </div>
     
     <div class="refresh-info">
-        <strong>🔄 Auto-Updated:</strong> This page automatically loads the latest content from the README.md file. 
+        <strong>Auto-Updated:</strong> This page automatically loads the latest content from the README.md file. 
         Any changes to the repository's README will be reflected here within minutes.
     </div>
     
@@ -143,6 +230,92 @@
     </div>
 
     <script>
+        // Theme management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const theme = savedTheme || 'system';
+            
+            applyTheme(theme);
+            updateThemeButton(theme);
+        }
+
+        function applyTheme(theme) {
+            const body = document.body;
+            const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            
+            if (isDark) {
+                body.setAttribute('data-theme', 'dark');
+                // Switch to dark markdown CSS
+                const lightCSS = document.querySelector('link[href*="github-markdown-css"][href*="light"]');
+                const darkCSS = document.querySelector('link[href*="github-markdown-css"][href*="dark"]');
+                if (lightCSS) lightCSS.media = 'not all';
+                if (darkCSS) darkCSS.media = 'all';
+            } else {
+                body.removeAttribute('data-theme');
+                // Switch to light markdown CSS
+                const lightCSS = document.querySelector('link[href*="github-markdown-css"][href*="light"]');
+                const darkCSS = document.querySelector('link[href*="github-markdown-css"][href*="dark"]');
+                if (lightCSS) lightCSS.media = 'all';
+                if (darkCSS) darkCSS.media = 'not all';
+            }
+        }
+
+        function updateThemeButton(theme) {
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            
+            switch(theme) {
+                case 'light':
+                    icon.textContent = '🌙';
+                    text.textContent = 'Dark';
+                    break;
+                case 'dark':
+                    icon.textContent = '☀️';
+                    text.textContent = 'Light';
+                    break;
+                case 'system':
+                    icon.textContent = '💻';
+                    text.textContent = 'System';
+                    break;
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem('theme') || 'system';
+            let nextTheme;
+            
+            switch(currentTheme) {
+                case 'light':
+                    nextTheme = 'dark';
+                    break;
+                case 'dark':
+                    nextTheme = 'system';
+                    break;
+                case 'system':
+                    nextTheme = 'light';
+                    break;
+            }
+            
+            localStorage.setItem('theme', nextTheme);
+            applyTheme(nextTheme);
+            updateThemeButton(nextTheme);
+        }
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            const currentTheme = localStorage.getItem('theme') || 'system';
+            if (currentTheme === 'system') {
+                applyTheme('system');
+            }
+        });
+
+        // Fix image paths in markdown content
+        function fixImagePaths(content) {
+            // Replace public/logos/ with relative path to docs/
+            return content.replace(/public\/logos\//g, './');
+        }
+
         // Load README content from GitHub
         async function loadReadme() {
             try {
@@ -152,7 +325,10 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
-                const markdown = await response.text();
+                let markdown = await response.text();
+                
+                // Fix image paths
+                markdown = fixImagePaths(markdown);
                 
                 // Convert markdown to HTML using marked.js
                 if (typeof marked !== 'undefined') {
@@ -180,8 +356,11 @@
             }
         }
         
-        // Load content when page loads
-        document.addEventListener('DOMContentLoaded', loadReadme);
+        // Initialize theme and load content when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadReadme();
+        });
         
         // Auto-refresh every 5 minutes to get latest content
         setInterval(loadReadme, 5 * 60 * 1000);
