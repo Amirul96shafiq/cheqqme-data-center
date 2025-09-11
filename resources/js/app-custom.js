@@ -20,12 +20,20 @@ document.addEventListener("DOMContentLoaded", () => {
             searchIcon.style.display = "none";
         }
 
-        // Create a styled overlay
+        // Create a styled overlay with language support
         const overlay = document.createElement("div");
-        overlay.innerHTML = "<code>CTRL+/</code> to search...";
+
+        // Get language from document or default to 'en'
+        const lang = document.documentElement.lang || "en";
+        const searchTexts = {
+            en: "Type <code>/</code> to search",
+            ms: "Taip <code>/</code> untuk carian",
+        };
+
+        overlay.innerHTML = searchTexts[lang] || searchTexts["en"];
         overlay.style.position = "absolute";
-        overlay.style.left = "7px";
-        overlay.style.top = "45%";
+        overlay.style.left = "12px";
+        overlay.style.top = "47%";
         overlay.style.transform = "translateY(-50%)";
         overlay.style.pointerEvents = "none";
         overlay.style.color = "#9CA3AF"; // gray-400
@@ -44,12 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (isDarkMode) {
                 // Dark mode styles (Next.js dark theme)
-                codeElement.style.backgroundColor = "#37415125"; // gray-800
                 codeElement.style.color = "#F3F4F680"; // gray-100
                 codeElement.style.border = "1px solid #6B728080"; // gray-500
             } else {
                 // Light mode styles (Next.js light theme)
-                codeElement.style.backgroundColor = "#F1F5F925"; // gray-100
                 codeElement.style.color = "#33415580"; // gray-700
                 codeElement.style.border = "1px solid #E2E8F0"; // gray-200
             }
@@ -99,13 +105,20 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Keyboard shortcut: CTRL + / only
+    // Keyboard shortcut: / key only
     document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.key.toLowerCase() === "/") {
-            e.preventDefault();
-            const input = document.querySelector(".fi-global-search input");
-            if (input) {
-                input.focus();
+        if (e.key === "/" && !e.ctrlKey && !e.altKey && !e.metaKey) {
+            // Only trigger if not typing in an input field
+            if (
+                e.target.tagName !== "INPUT" &&
+                e.target.tagName !== "TEXTAREA" &&
+                !e.target.isContentEditable
+            ) {
+                e.preventDefault();
+                const input = document.querySelector(".fi-global-search input");
+                if (input) {
+                    input.focus();
+                }
             }
         }
     });
