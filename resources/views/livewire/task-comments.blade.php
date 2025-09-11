@@ -17,7 +17,7 @@
     </div>
     <!-- Comments List (scroll area) -->
     <div class="flex-1 min-h-0 px-0 pb-0">
-        <div class="px-4 py-4 text-sm overflow-y-auto custom-thin-scroll h-full" data-comment-list style="max-height:calc(68vh - 270px);">
+        <div class="px-4 py-4 text-sm overflow-y-auto custom-thin-scroll h-full comment-list-container" data-comment-list>
             <div class="space-y-6">
                 <!-- Loop through comments -->
                 @forelse($this->comments as $comment)
@@ -181,6 +181,17 @@
         /* Set the placeholder text as a CSS custom property */
         .minimal-comment-editor {
             --comment-placeholder: @json(__('comments.composer.placeholder'));
+        }
+        
+        /* Responsive height for comments list */
+        .comment-list-container {
+            max-height: calc(82vh - 270px);
+        }
+        
+        @media (min-width: 1024px) {
+            .comment-list-container {
+                max-height: calc(68vh - 270px);
+            }
         }
     </style>
     

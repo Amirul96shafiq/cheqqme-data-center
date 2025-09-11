@@ -597,7 +597,14 @@ return false;
 
                                 ]),
                         ])
-                        ->columnSpan(3),
+                        ->columnSpan([
+                            'default' => 1,
+                            'sm' => 1,
+                            'md' => 1,
+                            'lg' => 1,
+                            'xl' => 1,
+                            '2xl' => 3,
+                        ]),
 
                     // Comments sidebar (right side) - spans 1 column
                     Forms\Components\Section::make(__('task.form.comments'))
@@ -616,10 +623,17 @@ return false;
                         ->visible(fn($record) => $record instanceof Task)
                         ->extraAttributes([
                             ' wire:ignore' => true,
-                            ' style' => 'height:68vh; max-height:68vh; position:sticky; top:9vh; display:flex; flex-direction:column; align-self:flex-start; overflow:hidden;',
-                            'class' => 'comments-pane',
+                            ' style' => 'display:flex; flex-direction:column; overflow:hidden;',
+                            'class' => 'comments-pane lg:sticky lg:top-16 lg:self-start h-[82vh] lg:h-[68vh] max-h-[82vh] lg:max-h-[68vh]',
                         ])
-                        ->columnSpan(2),
+                        ->columnSpan([
+                            'default' => 1,
+                            'sm' => 1,
+                            'md' => 1,
+                            'lg' => 1,
+                            'xl' => 1,
+                            '2xl' => 2,
+                        ]),
                 ]),
         ]);
     }
