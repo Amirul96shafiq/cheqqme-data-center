@@ -32,7 +32,7 @@
             <div class="flex flex-col items-end gap-y-1">
                 <x-filament::link
                     color="gray"
-                    href="https://filamentphp.com/docs"
+                    href="https://amirul96shafiq.github.io/cheqqme-data-center/"
                     icon="heroicon-m-book-open"
                     icon-alias="panels::widgets.filament-info.open-documentation-button"
                     rel="noopener noreferrer"
@@ -43,7 +43,7 @@
 
                 <x-filament::link
                     color="gray"
-                    href="https://github.com/filamentphp/filament"
+                    href="https://github.com/Amirul96shafiq/cheqqme-data-center"
                     icon-alias="panels::widgets.filament-info.open-github-button"
                     rel="noopener noreferrer"
                     target="_blank"
