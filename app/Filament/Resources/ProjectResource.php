@@ -15,6 +15,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
@@ -75,6 +76,31 @@ class ProjectResource extends Resource
                                     })
                                     ->searchable()
                                     ->preload()
+                                    ->native(false)
+                                    ->dehydrated()
+                                    ->live()
+                                    ->prefixAction(
+                                        // Open the client in a new tab
+                                        Action::make('openClient')
+                                            ->icon('heroicon-o-pencil-square')
+                                            ->url(function (Get $get) {
+                                                $clientId = $get('client_id');
+                                                if (!$clientId) {
+                                                    return null;
+                                                }
+
+                                                return \App\Filament\Resources\ClientResource::getUrl('edit', ['record' => $clientId]);
+                                            })
+                                            ->openUrlInNewTab()
+                                            ->visible(fn(Get $get) => (bool) $get('client_id'))
+                                    )
+                                    ->suffixAction(
+                                        Action::make('createClient')
+                                            ->icon('heroicon-o-plus')
+                                            ->url(\App\Filament\Resources\ClientResource::getUrl('create'))
+                                            ->openUrlInNewTab()
+                                            ->label(__('project.form.create_client'))
+                                    )
                                     ->nullable(),
 
                                 Select::make('status')

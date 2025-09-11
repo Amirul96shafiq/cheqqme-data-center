@@ -46,6 +46,7 @@ return [
         'add_extra_info' => '+ Tambah Maklumat Tambahan',
         'title_placeholder_short' => 'Tajuk di sini',
         'create_project' => 'Tambah Projek',
+        'create_client' => 'Tambah Pelanggan',
     ],
 
     'table' => [
