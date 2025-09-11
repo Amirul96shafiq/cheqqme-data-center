@@ -36,4 +36,16 @@ class Dashboard extends BaseDashboard
             \App\Filament\Widgets\RecentDocumentsWidget::class,
         ];
     }
+
+    public function getColumns(): int|array|string
+    {
+        return [
+            'default' => 1,
+            'sm' => 1,
+            'md' => 1,
+            'lg' => 1,
+            'xl' => 1,
+            '2xl' => 2,
+        ];
+    }
 }
