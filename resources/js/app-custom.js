@@ -4,21 +4,108 @@ document.addEventListener("DOMContentLoaded", () => {
     // -----------------------------
     const searchInput = document.querySelector(".fi-global-search input");
 
-    // Set placeholder
+    // Set placeholder with styled overlay
     if (searchInput) {
-        searchInput.placeholder = "CTRL + / to search";
+        // Remove the default placeholder
+        searchInput.placeholder = "";
+
+        // Hide the default search icon
+        const searchIcon = searchInput
+            .closest(".fi-input-wrp")
+            ?.querySelector(".fi-input-wrp-prefix");
+        if (searchIcon) {
+            searchIcon.style.display = "none";
+        }
+
+        // Create a styled overlay
+        const overlay = document.createElement("div");
+        overlay.innerHTML = "<code>TAB</code> to search...";
+        overlay.style.position = "absolute";
+        overlay.style.left = "7px";
+        overlay.style.top = "45%";
+        overlay.style.transform = "translateY(-50%)";
+        overlay.style.pointerEvents = "none";
+        overlay.style.color = "#9CA3AF"; // gray-400
+        overlay.style.fontSize = "14px";
+        overlay.style.fontFamily = "inherit";
+        overlay.style.zIndex = "1";
+
+        // Style the code element to match Next.js website
+        const codeElement = overlay.querySelector("code");
+
+        // Function to apply styles based on theme
+        const applyCodeStyles = () => {
+            const isDarkMode =
+                document.documentElement.classList.contains("dark") ||
+                document.body.classList.contains("dark");
+
+            if (isDarkMode) {
+                // Dark mode styles (Next.js dark theme)
+                codeElement.style.backgroundColor = "#37415125"; // gray-800
+                codeElement.style.color = "#F3F4F680"; // gray-100
+                codeElement.style.border = "1px solid #6B728080"; // gray-500
+            } else {
+                // Light mode styles (Next.js light theme)
+                codeElement.style.backgroundColor = "#F1F5F925"; // gray-100
+                codeElement.style.color = "#33415580"; // gray-700
+                codeElement.style.border = "1px solid #E2E8F0"; // gray-200
+            }
+        };
+
+        // Apply base styles
+        codeElement.style.padding = "3px 6px";
+        codeElement.style.borderRadius = "4px";
+        codeElement.style.fontSize = "11px";
+        codeElement.style.fontWeight = "500";
+        codeElement.style.fontFamily =
+            "ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace";
+        codeElement.style.letterSpacing = "0.025em";
+
+        // Apply theme-specific styles
+        applyCodeStyles();
+
+        // Listen for theme changes
+        const themeObserver = new MutationObserver(() => {
+            applyCodeStyles();
+        });
+        themeObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
+
+        // Make the search input container relative positioned
+        const searchContainer = searchInput.closest(".fi-global-search");
+        if (searchContainer) {
+            searchContainer.style.position = "relative";
+            searchContainer.appendChild(overlay);
+        }
+
+        // Hide overlay when user types
+        searchInput.addEventListener("input", () => {
+            overlay.style.display = searchInput.value ? "none" : "block";
+        });
+
+        // Hide overlay when focused (optional)
+        searchInput.addEventListener("focus", () => {
+            overlay.style.display = "none";
+        });
+
+        // Show overlay when blurred and empty
+        searchInput.addEventListener("blur", () => {
+            overlay.style.display = searchInput.value ? "none" : "block";
+        });
     }
 
-    // Keyboard shortcut: /
-    document.addEventListener("keydown", function (e) {
-        if (e.ctrlKey && e.key.toLowerCase() === "/") {
-            e.preventDefault();
-            const input = document.querySelector(".fi-global-search input");
-            if (input) {
-                input.focus();
-            }
-        }
-    });
+    // // Keyboard shortcut: /
+    // document.addEventListener("keydown", function (e) {
+    //     if (e.ctrlKey && e.key.toLowerCase() === "/") {
+    //         e.preventDefault();
+    //         const input = document.querySelector(".fi-global-search input");
+    //         if (input) {
+    //             input.focus();
+    //         }
+    //     }
+    // });
 });
 // -----------------------------
 // Enable horizontal drag-scroll on Flowforge board
