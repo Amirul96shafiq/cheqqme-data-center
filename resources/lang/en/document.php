@@ -85,7 +85,7 @@ return [
         'file_too_large' => 'File size exceeds 20MB limit. Your file is :sizeMBMB.',
         'unsupported_file_type' => 'Unsupported file type. Please upload PDF, Word, Excel, PowerPoint, images, videos, or CSV files.',
         'drop_file_to_upload_document' => 'Drop a file to upload document',
-        'drop_file_to_upload_document_helper' => 'Automatically upload below 5MB files. If it\'s larger than 5MB, upload the file manually.',
+        'drop_file_to_upload_document_helper' => 'Automatically upload below 5MB files. If it\'s larger than 5MB, you can upload the file manually after redirecting to the Create Document page.',
         'filament_upload_detected' => 'Filament upload fields detected, using native drag-drop instead',
     ],
 ];
