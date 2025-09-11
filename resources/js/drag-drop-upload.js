@@ -25,6 +25,15 @@ document.addEventListener("DOMContentLoaded", function () {
         ],
 
         init() {
+            // Check if we're on the Action Board page - if so, disable global drag-drop
+            if (this.isActionBoardPage()) {
+                const message =
+                    window.dragDropLang?.actionBoardDetected ||
+                    "Action Board page detected, disabling global drag-drop to allow card drag-drop";
+                console.log(message);
+                return;
+            }
+
             // Check if page has Filament upload fields - if so, disable global drag-drop
             if (this.hasFilamentUploadFields()) {
                 const message =
@@ -36,6 +45,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
             this.createOverlay();
             this.bindEvents();
+        },
+
+        isActionBoardPage() {
+            // Check if current URL matches Action Board page
+            const currentPath = window.location.pathname;
+            return currentPath === "/admin/action-board";
         },
 
         hasFilamentUploadFields() {
