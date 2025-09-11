@@ -95,7 +95,15 @@ class DocumentResource extends Resource
 
                                 Select::make('project_id')
                                     ->label(__('document.form.project'))
-                                    ->relationship('project', 'title')
+                                    ->options(function () {
+                                        return \App\Models\Project::all()->mapWithKeys(function ($project) {
+                                            $truncatedTitle = strlen($project->title) > 25
+                                                ? substr($project->title, 0, 25) . '...'
+                                                : $project->title;
+
+                                            return [$project->id => $truncatedTitle];
+                                        });
+                                    })
                                     ->preload()
                                     ->searchable()
                                     ->native(false)
