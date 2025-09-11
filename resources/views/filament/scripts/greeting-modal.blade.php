@@ -31,8 +31,8 @@ function openGreetingModal(forceOpen = false) {
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] transform transition-all duration-300 scale-95 opacity-0 border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col">
             <div class="flex flex-col lg:flex-row flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
                 
-                <!-- Weather Information Section (40% width on desktop, 100% on mobile) -->
-                <div class="p-6 border-r-0 lg:border-r border-gray-200 dark:border-gray-700 border-b lg:border-b-0 weather-section w-full lg:w-2/5">
+                <!-- Weather Information Section (40% width on desktop, 100% on mobile) - Order 2 on small devices, Order 1 on large devices -->
+                <div class="p-6 border-r-0 lg:border-r border-gray-200 dark:border-gray-700 border-b lg:border-b-0 weather-section w-full lg:w-2/5 order-2 lg:order-1">
                     <div class="flex items-center justify-between mb-4">
                         <button onclick="refreshWeatherData()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="{{ __('weather.refresh_weather') }}">
                             @svg('heroicon-o-arrow-path', 'w-5 h-5')
@@ -155,8 +155,8 @@ function openGreetingModal(forceOpen = false) {
                     </div>
                 </div>
                 
-                <!-- Greeting Section (60% width on desktop, 100% on mobile) -->
-                <div class="p-6 flex flex-col justify-end bg-cover bg-center bg-no-repeat w-full lg:w-3/5" 
+                <!-- Greeting Section (60% width on desktop, 100% on mobile) - Order 1 on small devices, Order 2 on large devices -->
+                <div class="p-6 flex flex-col justify-end bg-cover bg-center bg-no-repeat w-full lg:w-3/5 order-1 lg:order-2" 
                      style="background-image: url('/images/greeting-light.png'); background-position: top center; background-size: contain;" 
                      data-bg-light="/images/greeting-light.png" 
                      data-bg-dark="/images/greeting-dark.png">            
