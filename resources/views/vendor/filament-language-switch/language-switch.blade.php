@@ -45,7 +45,7 @@
 
     @if ($isVisibleOutsidePanels)
         <div class="fls-display-on">
-            <div class="rounded-lg bg-gray-50 dark:bg-gray-950">
+            <div class="rounded-lg bg-gray-50/50 dark:bg-gray-950/50 backdrop-blur-md">
                 @include('filament-language-switch::switch')
             </div>
         </div>

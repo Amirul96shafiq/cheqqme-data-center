@@ -8,31 +8,6 @@
         z-index: 9999 !important;
     }
 
-    /* Neutral palette swap: force Zinc neutrals in dark mode */
-    .dark {
-        /* Filament/Tailwind often reference gray/slate tokens; align both to Zinc */
-        --color-gray-50: 250 250 250; /* zinc-50 */
-        --color-gray-100: 244 244 245; /* zinc-100 */
-        --color-gray-200: 228 228 231; /* zinc-200 */
-        --color-gray-300: 212 212 216; /* zinc-300 */
-        --color-gray-400: 161 161 170; /* zinc-400 */
-        --color-gray-500: 113 113 122; /* zinc-500 */
-        --color-gray-600: 82 82 91; /* zinc-600 */
-        --color-gray-700: 63 63 70; /* zinc-700 */
-        --color-gray-800: 39 39 42; /* zinc-800 */
-        --color-gray-900: 24 24 27; /* zinc-900 */
-        --color-slate-50: var(--color-gray-50);
-        --color-slate-100: var(--color-gray-100);
-        --color-slate-200: var(--color-gray-200);
-        --color-slate-300: var(--color-gray-300);
-        --color-slate-400: var(--color-gray-400);
-        --color-slate-500: var(--color-gray-500);
-        --color-slate-600: var(--color-gray-600);
-        --color-slate-700: var(--color-gray-700);
-        --color-slate-800: var(--color-gray-800);
-        --color-slate-900: var(--color-gray-900);
-    }
-
     /* Dark mode primary buttons: ensure readable text */
     .dark .fi-btn.fi-btn-color-primary,
     .dark .fi-btn.fi-btn-color-primary * {
@@ -109,28 +84,6 @@
         font-size: 0.75rem !important;
     }
 
-    /* Language switch header trigger: force white background */
-    .language-switch-trigger {
-        background-color: #ffffff !important;
-        /* Fallback: inset shadow border ensures visibility even if cascade issues */
-        box-shadow: inset 0 0 0 1px rgb(3 7 18 / 0.1),
-            0 1px 2px 0 rgb(0 0 0 / 0.04);
-    }
-
-    /* Language switch header trigger: hover and focus styles */
-    .language-switch-trigger:hover,
-    .language-switch-trigger:focus-visible {
-        box-shadow: inset 0 0 0 1px rgb(3 7 18 / 0.2),
-            0 1px 2px 0 rgb(0 0 0 / 0.06);
-    }
-
-    /* Dark mode language switch header trigger: force white background */
-    .dark .language-switch-trigger {
-        background-color: rgb(255 255 255 / 0.05) !important;
-        border: 1px solid rgb(255 255 255 / 0.2) !important;
-        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-    }
-    
     /* Force override using more specific selectors */
     .fi-page .ff-column {
         background-color: rgb(255 255 255 / 0.3) !important;

@@ -9,7 +9,7 @@
     <x-slot name="trigger">
         <div
             @class([
-                'flex items-center justify-center w-9 h-9 language-switch-trigger text-primary-600 bg-gray-50/65 dark:bg-gray-900/5 border border-gray-100 dark:border-gray-800/50',
+                'flex items-center justify-center w-9 h-9 language-switch-trigger text-primary-600 bg-white dark:bg-gray-200/5 border border-gray-200 dark:border-gray-600 hover:border-gray-300 hover:dark:border-gray-500',
                 'rounded-full' => $isCircular,
                 'rounded-lg' => !$isCircular,
                 'p-1' => $isFlagsOnly || $hasFlags,
