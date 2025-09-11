@@ -54,115 +54,132 @@ class ClientResource extends Resource
             ->schema([
                 Section::make(__('client.section.client_info'))
                     ->schema([
-                        TextInput::make('pic_name')
-                            ->label(__('client.form.pic_name'))
-                            ->required()
-                            ->reactive()
-                            ->debounce(500) // Delay the reaction so user can finish typing
-                            ->extraAttributes([
-                                'x-on:blur' => "
-                                    if (\$refs.companyName && !\$refs.companyName.value) {
-                                        \$refs.companyName.value = \$el.value;
-                                        \$el.dispatchEvent(new Event('input')); // Force model update
-                                        \$refs.companyName.dispatchEvent(new Event('input'));
-                                    }
-                                ",
-                            ])
-                            ->extraAlpineAttributes(['x-ref' => 'picName']),
+                        Grid::make([
+                            'default' => 1,
+                            'sm' => 1,
+                            'md' => 1,
+                            'lg' => 1,
+                            'xl' => 1,
+                            '2xl' => 3,
+                        ])->schema([
+                                    TextInput::make('pic_name')
+                                        ->label(__('client.form.pic_name'))
+                                        ->required()
+                                        ->reactive()
+                                        ->debounce(500) // Delay the reaction so user can finish typing
+                                        ->extraAttributes([
+                                            'x-on:blur' => "
+                                            if (\$refs.companyName && !\$refs.companyName.value) {
+                                                \$refs.companyName.value = \$el.value;
+                                                \$el.dispatchEvent(new Event('input')); // Force model update
+                                                \$refs.companyName.dispatchEvent(new Event('input'));
+                                                }
+                                            }
+                                        ",
+                                        ])
+                                        ->extraAlpineAttributes(['x-ref' => 'picName']),
 
-                        TextInput::make('pic_email')
-                            ->label(__('client.form.pic_email'))
-                            ->email()
-                            ->required(),
+                                    TextInput::make('pic_email')
+                                        ->label(__('client.form.pic_email'))
+                                        ->email()
+                                        ->required(),
 
-                        PhoneInput::make('pic_contact_number')
-                            ->label(__('client.form.pic_contact_number'))
-                            ->required()
-                            ->countryStatePath('pic_contact_number_country')
-                            ->initialCountry('MY')
-                            ->countryOrder(['MY', 'ID', 'SG', 'PH', 'US'])
-                            ->onlyCountries(['MY', 'ID', 'SG', 'PH', 'US'])
-                            ->countrySearch(false)
-                            ->dropdownContainer(false)
-                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
-                                $digits = preg_replace('/\D+/', '', (string) $state);
-                                if ($digits === '') {
-                                    $set('pic_contact_number', '');
+                                    PhoneInput::make('pic_contact_number')
+                                        ->label(__('client.form.pic_contact_number'))
+                                        ->required()
+                                        ->countryStatePath('pic_contact_number_country')
+                                        ->initialCountry('MY')
+                                        ->countryOrder(['MY', 'ID', 'SG', 'PH', 'US'])
+                                        ->onlyCountries(['MY', 'ID', 'SG', 'PH', 'US'])
+                                        ->countrySearch(false)
+                                        ->dropdownContainer(false)
+                                        ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
+                                            $digits = preg_replace('/\D+/', '', (string) $state);
+                                            if ($digits === '') {
+                                                $set('pic_contact_number', '');
 
-                                    return;
-                                }
+                                                return;
+                                            }
 
-                                $country = $get('pic_contact_number_country') ?: 'MY';
-                                $dialCode = match ($country) {
-                                    'MY' => '60',
-                                    'ID' => '62',
-                                    'SG' => '65',
-                                    'PH' => '63',
-                                    'US' => '1',
-                                    default => '60',
-                                };
+                                            $country = $get('pic_contact_number_country') ?: 'MY';
+                                            $dialCode = match ($country) {
+                                                'MY' => '60',
+                                                'ID' => '62',
+                                                'SG' => '65',
+                                                'PH' => '63',
+                                                'US' => '1',
+                                                default => '60',
+                                            };
 
-                                if (!str_starts_with($digits, $dialCode)) {
-                                    $digits = ltrim($digits, '0');
-                                    if (!str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode . $digits;
-                                    }
-                                }
+                                            if (!str_starts_with($digits, $dialCode)) {
+                                                $digits = ltrim($digits, '0');
+                                                if (!str_starts_with($digits, $dialCode)) {
+                                                    $digits = $dialCode . $digits;
+                                                }
+                                            }
 
-                                $set('pic_contact_number', $digits);
-                            })
-                            ->dehydrateStateUsing(function (?string $state, Get $get): string {
-                                $digits = preg_replace('/\D+/', '', (string) $state);
-                                if ($digits === '') {
-                                    return '';
-                                }
+                                            $set('pic_contact_number', $digits);
+                                        })
+                                        ->dehydrateStateUsing(function (?string $state, Get $get): string {
+                                            $digits = preg_replace('/\D+/', '', (string) $state);
+                                            if ($digits === '') {
+                                                return '';
+                                            }
 
-                                $country = $get('pic_contact_number_country') ?: 'MY';
-                                $dialCode = match ($country) {
-                                    'MY' => '60',
-                                    'ID' => '62',
-                                    'SG' => '65',
-                                    'PH' => '63',
-                                    'US' => '1',
-                                    default => '60',
-                                };
+                                            $country = $get('pic_contact_number_country') ?: 'MY';
+                                            $dialCode = match ($country) {
+                                                'MY' => '60',
+                                                'ID' => '62',
+                                                'SG' => '65',
+                                                'PH' => '63',
+                                                'US' => '1',
+                                                default => '60',
+                                            };
 
-                                if (!str_starts_with($digits, $dialCode)) {
-                                    $digits = ltrim($digits, '0');
-                                    if (!str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode . $digits;
-                                    }
-                                }
+                                            if (!str_starts_with($digits, $dialCode)) {
+                                                $digits = ltrim($digits, '0');
+                                                if (!str_starts_with($digits, $dialCode)) {
+                                                    $digits = $dialCode . $digits;
+                                                }
+                                            }
 
-                                return $digits;
-                            }),
-                    ])
-                    ->columns(3),
+                                            return $digits;
+                                        }),
+                                ]),
+                    ]),
 
                 Section::make(__('client.section.company_info'))
                     ->schema([
-                        TextInput::make('company_name')
-                            ->label(__('client.form.company_name'))
-                            ->nullable()
-                            ->extraAlpineAttributes(['x-ref' => 'companyName'])
-                            ->helperText(__('client.form.company_name_helper'))
-                            ->placeholder(fn(callable $get) => $get('pic_name')),
+                        Grid::make([
+                            'default' => 1,
+                            'sm' => 1,
+                            'md' => 1,
+                            'lg' => 1,
+                            'xl' => 1,
+                            '2xl' => 2,
+                        ])->schema([
+                                    TextInput::make('company_name')
+                                        ->label(__('client.form.company_name'))
+                                        ->nullable()
+                                        ->extraAlpineAttributes(['x-ref' => 'companyName'])
+                                        ->helperText(__('client.form.company_name_helper'))
+                                        ->placeholder(fn(callable $get) => $get('pic_name')),
 
-                        TextInput::make('company_email')->label(__('client.form.company_email'))
-                            ->email()
-                            ->nullable(),
+                                    TextInput::make('company_email')->label(__('client.form.company_email'))
+                                        ->email()
+                                        ->nullable(),
 
-                        Textarea::make('company_address')
-                            ->label(__('client.form.company_address'))
-                            ->rows(2)
-                            ->nullable(),
+                                    Textarea::make('company_address')
+                                        ->label(__('client.form.company_address'))
+                                        ->rows(2)
+                                        ->nullable(),
 
-                        Textarea::make('billing_address')
-                            ->label(__('client.form.billing_address'))
-                            ->rows(2)
-                            ->nullable(),
-                    ])
-                    ->columns(2),
+                                    Textarea::make('billing_address')
+                                        ->label(__('client.form.billing_address'))
+                                        ->rows(2)
+                                        ->nullable(),
+                                ]),
+                    ]),
 
                 Section::make()
                     ->heading(function (Get $get) {
