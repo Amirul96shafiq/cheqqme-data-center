@@ -34,9 +34,14 @@ function openGreetingModal(forceOpen = false) {
                 <!-- Weather Information Section (40% width on desktop, 100% on mobile) - Order 2 on small devices, Order 1 on large devices -->
                 <div class="p-6 border-r-0 lg:border-r border-gray-200 dark:border-gray-700 border-b lg:border-b-0 weather-section w-full lg:w-2/5 order-2 lg:order-1">
                     <div class="flex items-center justify-between mb-4">
-                        <button onclick="refreshWeatherData()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="{{ __('weather.refresh_weather') }}">
-                            @svg('heroicon-o-arrow-path', 'w-5 h-5')
-                        </button>
+                        <div class="flex items-center space-x-3">
+                            <button onclick="refreshWeatherData()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="{{ __('weather.refresh_weather') }}">
+                                @svg('heroicon-o-arrow-path', 'w-5 h-5')
+                            </button>
+                            <div class="text-xs text-gray-500 dark:text-gray-400" id="weather-last-updated" data-last-updated-text="{{ __('weather.last_weather_updated') }}">
+                                {{ __('greetingmodal.footer-text') }}
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Weather Content -->
@@ -295,23 +300,18 @@ function openGreetingModal(forceOpen = false) {
             <!-- Footer Actions -->
             <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 flex-shrink-0">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
-                    <div class="text-xs text-gray-500 dark:text-gray-400 text-center sm:text-left" id="weather-footer-text" data-last-updated-text="{{ __('weather.last_weather_updated') }}">
-                        {{ __('greetingmodal.footer-text') }}
+                    <div class="flex items-center">
+                        <input type="checkbox" id="noShowGreetingToday" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                        <label for="noShowGreetingToday" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                            {{ __('greetingmodal.no-show-today') }}
+                        </label>
                     </div>
-                    <div class="flex items-center space-x-3">
-                        <div class="flex items-center">
-                            <input type="checkbox" id="noShowGreetingToday" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-                            <label for="noShowGreetingToday" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                                {{ __('greetingmodal.no-show-today') }}
-                            </label>
-                        </div>
-                        <button 
-                            onclick="closeGreetingModal()" 
-                            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200"
-                        >
-                            {{ __('greetingmodal.action-dismiss') }}
-                        </button>
-                    </div>
+                    <button 
+                        onclick="closeGreetingModal()" 
+                        class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200"
+                    >
+                        {{ __('greetingmodal.action-dismiss') }}
+                    </button>
                 </div>
             </div>
         </div>
@@ -800,14 +800,14 @@ function showWeatherError() {
 }
 
 function updateWeatherFooter(weatherData) {
-    const footerElement = document.getElementById('weather-footer-text');
-    if (!footerElement || !weatherData) {
-        console.log('Footer element not found or no weather data');
+    const weatherElement = document.getElementById('weather-last-updated');
+    if (!weatherElement || !weatherData) {
+        console.log('Weather element not found or no weather data');
         return;
     }
 
     // Get the localized text from the data attribute
-    const lastUpdatedText = footerElement.getAttribute('data-last-updated-text') || 'Last Weather updated';
+    const lastUpdatedText = weatherElement.getAttribute('data-last-updated-text') || 'Last Weather updated';
 
     // Extract timestamp from weather data
     const timestamp = weatherData.timestamp;
@@ -830,11 +830,11 @@ function updateWeatherFooter(weatherData) {
             hour12: true
         });
 
-        footerElement.textContent = `${lastUpdatedText}: ${formattedDate} ${formattedTime}`;
-        console.log('Updated footer with timestamp:', `${lastUpdatedText}: ${formattedDate} ${formattedTime}`);
+        weatherElement.textContent = `${lastUpdatedText}: ${formattedDate} ${formattedTime}`;
+        console.log('Updated weather section with timestamp:', `${lastUpdatedText}: ${formattedDate} ${formattedTime}`);
     } catch (error) {
         console.error('Error formatting timestamp:', error);
-        footerElement.textContent = `${lastUpdatedText}: Unknown`;
+        weatherElement.textContent = `${lastUpdatedText}: Unknown`;
     }
 }
 
