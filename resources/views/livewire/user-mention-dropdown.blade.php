@@ -11,8 +11,8 @@
         
         <!-- Dropdown -->
         <div 
-            class="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl max-h-64 w-80 user-mention-dropdown rounded-xl overflow-hidden"
-            style="left: {{ $dropdownX }}px; top: {{ $dropdownY }}px;"
+            class="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl max-h-64 w-80 user-mention-dropdown rounded-2xl overflow-hidden
+                   left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
             x-show="true"
             x-data="{
                 selectedIndex: {{ $selectedIndex }},
@@ -213,11 +213,11 @@
                 $el.classList.remove('instant-hide');
                 
                 $el.style.opacity = '0';
-                $el.style.transform = 'scale(0.9) translateY(-8px)';
+                $el.style.transform = 'translate(-50%, -50%) scale(0.9) translateY(-8px)';
                 $el.style.transition = 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)';
                 setTimeout(() => {
                     $el.style.opacity = '1';
-                    $el.style.transform = 'scale(1) translateY(0)';
+                    $el.style.transform = 'translate(-50%, -50%) scale(1) translateY(0)';
                 }, 10);
             "
             x-on:click.away="
@@ -340,6 +340,10 @@
             width: 20rem !important; /* 320px - matches w-80 */
             min-width: 20rem !important;
             max-width: 20rem !important;
+            /* Force centering - override any other positioning */
+            left: 50% !important;
+            top: 50% !important;
+            transform: translate(-50%, -50%) !important;
         }
         
         /* Consistent item heights */
@@ -423,7 +427,7 @@
         .user-mention-dropdown.instant-hide {
             transition: none !important;
             opacity: 0 !important;
-            transform: scale(0.95) translateY(-4px) !important;
+            transform: translate(-50%, -50%) scale(0.95) translateY(-4px) !important;
             visibility: hidden !important;
             pointer-events: none !important;
         }
