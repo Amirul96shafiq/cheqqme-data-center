@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CheQQme Data Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #24292f;
+            background-color: #ffffff;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #24292f;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #656d76;
+        }
+        
+        .content {
+            margin-bottom: 3rem;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            line-height: 1.25;
+        }
+        
+        h1 { font-size: 2rem; }
+        h2 { font-size: 1.5rem; border-bottom: 1px solid #e1e4e8; padding-bottom: 0.3rem; }
+        h3 { font-size: 1.25rem; }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        ul, ol {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+        
+        li {
+            margin-bottom: 0.25rem;
+        }
+        
+        code {
+            background-color: rgba(175, 184, 193, 0.2);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 85%;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+        
+        pre {
+            background-color: #f6f8fa;
+            border-radius: 6px;
+            padding: 16px;
+            overflow: auto;
+            margin-bottom: 1rem;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 85%;
+            line-height: 1.45;
+        }
+        
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            font-size: 100%;
+        }
+        
+        blockquote {
+            padding: 0 1rem;
+            margin: 0 0 1rem 0;
+            color: #656d76;
+            border-left: 0.25rem solid #d0d7de;
+        }
+        
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            width: 100%;
+            overflow: auto;
+        }
+        
+        table th {
+            font-weight: 600;
+            padding: 6px 13px;
+            border: 1px solid #d0d7de;
+            background-color: #f6f8fa;
+        }
+        
+        table td {
+            padding: 6px 13px;
+            border: 1px solid #d0d7de;
+        }
+        
+        table tr {
+            background-color: #ffffff;
+            border-top: 1px solid #c6cbd1;
+        }
+        
+        table tr:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 1rem;
+        }
+        
+        hr {
+            height: 0.25rem;
+            margin: 2rem 0;
+            background-color: #d0d7de;
+            border: 0;
+        }
+        
+        a {
+            color: #0969da;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e1e4e8;
+            text-align: center;
+            color: #656d76;
+        }
+        
+        .footer a {
+            color: #0969da;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .tech-stack {
+            background-color: #f6f8fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .feature-card {
+            background-color: #f6f8fa;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid #0969da;
+        }
+        
+        .feature-card h4 {
+            margin-top: 0;
+            color: #0969da;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>CheQQme Data Center</h1>
+        <p>Internal Knowledge & Operations Hub</p>
+    </div>
+    
+    <div class="content">
+        <h2>Overview</h2>
+        <p><strong>CheQQme Data Center</strong> is an internal knowledge & operations hub built with Laravel + Filament, now featuring MCP server integration for AI/semantic search. It centralizes:</p>
+        
+        <ul>
+            <li>Important / frequently used URLs (SharePoint, tools, internal dashboards)</li>
+            <li>Client & project records</li>
+            <li>Internal documents & reference files</li>
+            <li>Action Tasks (Kanban style board)</li>
+        </ul>
+        
+        <p>It improves discoverability, reduces context switching, and lays groundwork for future AI-assisted search and MCP-powered automation.</p>
+        
+        <h2>Core Objectives</h2>
+        <ul>
+            <li>Centralize scattered project & resource information</li>
+            <li>Provide fast navigation and lightweight task tracking (Action Board)</li>
+            <li>Serve as a structured dataset for upcoming AI / semantic search features</li>
+            <li>Personal full‑stack learning sandbox (Laravel, Filament, modern tooling)</li>
+        </ul>
+        
+        <hr>
+        
+        <h2>Tech Stack</h2>
+        <div class="tech-stack">
+            <table>
+                <tr>
+                    <td><strong>Language</strong></td>
+                    <td>PHP 8.2.29</td>
+                </tr>
+                <tr>
+                    <td><strong>Backend</strong></td>
+                    <td>Laravel 12.25.0</td>
+                </tr>
+                <tr>
+                    <td><strong>Admin / UI</strong></td>
+                    <td>Filament v3.3.37, Tailwind CSS v3.4.17</td>
+                </tr>
+                <tr>
+                    <td><strong>Realtime UX</strong></td>
+                    <td>Livewire v3.6.4 (Filament integrated)</td>
+                </tr>
+                <tr>
+                    <td><strong>Database</strong></td>
+                    <td>SQLite (dev) → MySQL/PostgreSQL (future)</td>
+                </tr>
+                <tr>
+                    <td><strong>MCP Server</strong></td>
+                    <td>Node.js, SQLite, bcrypt 6.0.0, dotenv 17.2.1</td>
+                </tr>
+                <tr>
+                    <td><strong>Build Tools</strong></td>
+                    <td>Vite v7.1.3, Laravel Vite Plugin v2.0.0, NPM</td>
+                </tr>
+                <tr>
+                    <td><strong>Testing</strong></td>
+                    <td>PHPUnit 11.5.34, Laravel testing utilities, Livewire component tests</td>
+                </tr>
+            </table>
+        </div>
+        
+        <hr>
+        
+        <h2>Major Features</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>🤖 AI-Powered Chatbot</h4>
+                <p>OpenAI integration with custom persona, floating chat button, context-aware responses, and conversation memory.</p>
+            </div>
+            <div class="feature-card">
+                <h4>🌤️ Weather System</h4>
+                <p>Real-time weather data, 7-day forecasts, smart location management with manual configuration and auto-detection.</p>
+            </div>
+            <div class="feature-card">
+                <h4>📋 Action Board (Kanban)</h4>
+                <p>Custom Filament page powered by Flowforge with due date badges, assignee highlighting, and attachment support.</p>
+            </div>
+            <div class="feature-card">
+                <h4>💬 Comments with @mentions</h4>
+                <p>Rich text with strict sanitization, mention extraction, inline badges, and Filament database notifications.</p>
+            </div>
+            <div class="feature-card">
+                <h4>📊 Activity & Audit Logging</h4>
+                <p>Spatie Activitylog across core models with Filament Activitylog plugin page enabled.</p>
+            </div>
+            <div class="feature-card">
+                <h4>🔗 MCP Server Integration</h4>
+                <p>Node.js/Express API reading the same SQLite DB as Laravel with auth via x-api-key header.</p>
+            </div>
+        </div>
+        
+        <h2>Quick Start</h2>
+        <ol>
+            <li>Clone the repository</li>
+            <li>Install dependencies: <code>composer install && npm install</code></li>
+            <li>Set up environment: <code>cp .env.example .env</code></li>
+            <li>Prepare database: <code>php artisan migrate --no-interaction</code></li>
+            <li>Seed sample data: <code>php artisan db:seed --no-interaction</code></li>
+            <li>Access at <code>http://127.0.0.1:8000/admin</code></li>
+        </ol>
+        
+        <p><strong>Default Login:</strong> test@example.com / password</p>
+        
+        <h2>Project Structure</h2>
+        <pre><code>app/
+    Filament/          # Resources, Pages (incl. ActionBoard), Widgets
+    Models/            # Core Eloquent models (Task, Project, Document, etc.)
+resources/
+    views/             # Blade templates
+database/
+    migrations/        # Schema definitions
+    seeders/           # Database seeders and examples
+mcp-server/           # Node.js MCP server (API endpoints, .env ignored)
+routes/
+    web.php            # Web routes (Filament auto-registers its own)
+public/              # Public assets (built via Vite)
+storage/             # Logs, cache, uploads (ignored from git)</code></pre>
+        
+        <h2>Roadmap</h2>
+        <table>
+            <tr>
+                <td><strong>Feature</strong></td>
+                <td><strong>Status</strong></td>
+                <td><strong>Notes</strong></td>
+            </tr>
+            <tr>
+                <td>AI-Powered Chatbot</td>
+                <td>✅ Done</td>
+                <td>OpenAI integration with custom persona</td>
+            </tr>
+            <tr>
+                <td>Action Board (Tasks)</td>
+                <td>✅ Done</td>
+                <td>Kanban columns + attribute badges</td>
+            </tr>
+            <tr>
+                <td>MCP Server Integration</td>
+                <td>✅ Done</td>
+                <td>Node.js API with Laravel compatibility</td>
+            </tr>
+            <tr>
+                <td>Tagging system</td>
+                <td>🔜 Planned</td>
+                <td>Polymorphic (tags)</td>
+            </tr>
+            <tr>
+                <td>Role-based Policies</td>
+                <td>🔜 Planned</td>
+                <td>Granular access control</td>
+            </tr>
+            <tr>
+                <td>Full‑text / AI Search</td>
+                <td>🔜 Planned</td>
+                <td>Scout + embeddings layer</td>
+            </tr>
+        </table>
+        
+        <hr>
+        
+        <h2>Local Development</h2>
+        <p>Run the development environment:</p>
+        <pre><code>composer dev</code></pre>
+        
+        <p>This runs:</p>
+        <ul>
+            <li>Laravel development server (<code>php artisan serve</code>)</li>
+            <li>Queue listener (<code>php artisan queue:listen --tries=1</code>)</li>
+            <li>Log viewer (<code>php artisan pail --timeout=0</code>)</li>
+            <li>Vite dev server (<code>npm run dev</code>)</li>
+        </ul>
+        
+        <p>In another terminal for MCP server:</p>
+        <pre><code>cd mcp-server && node index.js</code></pre>
+    </div>
+    
+    <div class="footer">
+        <p>
+            <a href="https://github.com/Amirul96shafiq/cheqqme-data-center">View on GitHub</a> | 
+            <a href="https://github.com/Amirul96shafiq/cheqqme-data-center/blob/main/README.md">Raw README</a>
+        </p>
+        <p>Crafted by <strong>Amirul</strong> (Creative Designer & Aspiring Developer)</p>
+        <p><em>A mini project farewell before leaving the current company.</em></p>
+    </div>
+</body>
+</html>

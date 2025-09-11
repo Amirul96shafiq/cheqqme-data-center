@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CheQQme Data Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css">
+    <style>
+        body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+        
+        .markdown-body {
+            background-color: transparent;
+        }
+        
+        .markdown-body img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .markdown-body table {
+            display: table;
+            width: 100%;
+            overflow: auto;
+        }
+        
+        .markdown-body pre {
+            background-color: #f6f8fa;
+            border-radius: 6px;
+            padding: 16px;
+            overflow: auto;
+        }
+        
+        .markdown-body code {
+            background-color: rgba(175, 184, 193, 0.2);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 85%;
+        }
+        
+        .markdown-body pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #24292f;
+        }
+        
+        .header p {
+            margin: 0.5rem 0 0 0;
+            color: #656d76;
+            font-size: 1.1rem;
+        }
+        
+        .footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e1e4e8;
+            text-align: center;
+            color: #656d76;
+        }
+        
+        .footer a {
+            color: #0969da;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>CheQQme Data Center</h1>
+        <p>Internal Knowledge & Operations Hub</p>
+    </div>
+    
+    <div class="markdown-body" id="content">
+        <!-- Content will be loaded here -->
+    </div>
+    
+    <div class="footer">
+        <p>
+            <a href="https://github.com/Amirul96shafiq/cheqqme-data-center">View on GitHub</a> | 
+            <a href="https://github.com/Amirul96shafiq/cheqqme-data-center/blob/main/README.md">Raw README</a>
+        </p>
+        <p>Crafted by <strong>Amirul</strong> (Creative Designer & Aspiring Developer)</p>
+    </div>
+
+    <script>
+        // Load README content from GitHub
+        fetch('https://raw.githubusercontent.com/Amirul96shafiq/cheqqme-data-center/main/README.md')
+            .then(response => response.text())
+            .then(markdown => {
+                // Convert markdown to HTML using marked.js
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js';
+                script.onload = () => {
+                    document.getElementById('content').innerHTML = marked.parse(markdown);
+                };
+                document.head.appendChild(script);
+            })
+            .catch(error => {
+                console.error('Error loading README:', error);
+                document.getElementById('content').innerHTML = '<p>Error loading content. Please check the <a href="https://github.com/Amirul96shafiq/cheqqme-data-center/blob/main/README.md">README on GitHub</a>.</p>';
+            });
+    </script>
+</body>
+</html>
