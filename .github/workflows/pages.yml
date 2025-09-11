@@ -27,10 +27,6 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Prepare static site
-        run: |
-          cp docs/index-static.html docs/index.html
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
