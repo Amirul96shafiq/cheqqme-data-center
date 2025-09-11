@@ -67,7 +67,14 @@ return false;
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Grid::make(5)
+            Forms\Components\Grid::make([
+                'default' => 1,
+                'sm' => 1,
+                'md' => 1,
+                'lg' => 1,
+                'xl' => 1,
+                '2xl' => 5,
+            ])
                 ->schema([
                     // Main content (left side) - spans 2 columns
                     Forms\Components\Grid::make(1)
