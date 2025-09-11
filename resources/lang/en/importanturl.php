@@ -40,6 +40,8 @@ return [
         'extra_value' => 'Value',
         'add_extra_info' => '+ Add Extra Information',
         'title_placeholder_short' => 'Title goes here',
+        'create_project' => 'Create Project',
+        'create_client' => 'Create Client',
     ],
 
     'table' => [
