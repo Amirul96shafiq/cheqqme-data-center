@@ -22,4 +22,5 @@ return [
 
     // Messages
     'last_weather_updated' => 'Last Weather updated',
+    'view_weather' => 'Weather',
 ];

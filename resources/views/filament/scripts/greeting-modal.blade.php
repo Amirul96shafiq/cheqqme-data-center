@@ -160,8 +160,18 @@ function openGreetingModal(forceOpen = false) {
                      style="background-image: url('/images/greeting-light.png'); background-position: top center; background-size: contain;" 
                      data-bg-light="/images/greeting-light.png" 
                      data-bg-dark="/images/greeting-dark.png">            
+                    
+                    <!-- Weather Scroll Button - Only visible on small devices -->
+                    <div class="lg:hidden mb-4 flex justify-end">
+                        <button onclick="scrollToWeatherSection()" 
+                                class="flex items-center space-x-2 px-4 py-2 bg-primary-500 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg border border-white dark:border-gray-500 transition-all duration-200">
+                            @svg('heroicon-o-cloud', 'w-4 h-4')
+                            <span class="text-sm font-medium">{{ __('weather.view_weather') }}</span>
+                        </button>
+                    </div>
+                    
                     <div class="text-center mb-8">
-                        <div class="flex items-center justify-center space-x-2 mt-32 lg:mt-0">
+                        <div class="flex items-center justify-center space-x-2 mt-28 lg:mt-0">
                             <svg class="w-4 h-4 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 ${icon === 'sun' ? 
                                     `@svg('heroicon-o-sun', 'w-4 h-4')` :
@@ -474,6 +484,17 @@ window.navigateToSettings = function() {
 window.navigateToActionBoard = function() {
     closeGreetingModal();
     window.location.href = '/admin/action-board';
+};
+
+// Scroll to weather section function
+window.scrollToWeatherSection = function() {
+    const weatherSection = document.querySelector('.weather-section');
+    if (weatherSection) {
+        weatherSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
 };
 
 // Toggle data management video container

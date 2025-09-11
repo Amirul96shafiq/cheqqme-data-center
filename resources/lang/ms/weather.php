@@ -22,4 +22,5 @@ return [
 
     // Messages
     'last_weather_updated' => 'Cuaca Terakhir Dikemaskini',
+    'view_weather' => 'Cuaca',
 ];
