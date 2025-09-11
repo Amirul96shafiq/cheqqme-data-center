@@ -7,6 +7,11 @@ return [
         'logout-label' => 'Log Keluar',
     ],
 
+    'widgets' => [
+        'welcome_back' => 'Selamat Kembali, :name',
+        'dashboard_subtitle' => 'Tengoklah apa yang berlaku didalam CheQQme Data Center hari ini',
+    ],
+
     'recent_documents' => [
         'title' => 'Dokumen Terkini',
         'id' => 'ID',

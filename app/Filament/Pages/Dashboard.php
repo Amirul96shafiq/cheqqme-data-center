@@ -25,4 +25,15 @@ class Dashboard extends BaseDashboard
     {
         return 'dashboard';
     }
+
+    public function getWidgets(): array
+    {
+        return [
+            \Filament\Widgets\AccountWidget::class,
+            \Filament\Widgets\FilamentInfoWidget::class,
+            \App\Filament\Widgets\TotalWidget::class,
+            \App\Filament\Widgets\RecentProjectsWidget::class,
+            \App\Filament\Widgets\RecentDocumentsWidget::class,
+        ];
+    }
 }

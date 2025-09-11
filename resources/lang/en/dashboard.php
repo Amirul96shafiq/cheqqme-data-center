@@ -7,6 +7,11 @@ return [
         'logout-label' => 'Logout',
     ],
 
+    'widgets' => [
+        'welcome_back' => 'Welcome Back, :name',
+        'dashboard_subtitle' => 'Here\'s what happening with CheQQme Data Center today',
+    ],
+
     'recent_documents' => [
         'title' => 'Recent Documents',
         'id' => 'ID',
@@ -42,9 +47,8 @@ return [
         'view_all' => 'View All',
         'view' => 'View',
         'edit' => 'Edit',
-        'view_all_clients' => 'View All Clients',
-        'view_all_projects' => 'View All Projects',
-        'view_all_documents' => 'View All Documents',
+        'view_all_clients' => 'View All Clients →',
+        'view_all_projects' => 'View All Projects →',
+        'view_all_documents' => 'View All Documents →',
     ],
-    'search_shortcut' => 'Type / to search',
 ];

@@ -5,21 +5,12 @@
 <x-filament-widgets::widget class="fi-account-widget">
     <x-filament::section>
         <div class="flex items-center gap-x-3">
-            <x-filament-panels::avatar.user size="lg" :user="$user" />
-
             <div class="flex-1">
-                <h2
-                    class="grid flex-1 text-base font-semibold leading-6 text-gray-950 dark:text-white"
-                >
-                    {{ __('filament-panels::widgets/account-widget.welcome', ['app' => config('app.name')]) }}
-                </h2>
-
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                    {{ filament()->getUserName($user) }}
-                </p>
+                <h2 class="flex-1 text-base font-medium leading-6 text-gray-950 dark:text-white">{!! __('dashboard.widgets.welcome_back', ['name' => '<span class="font-extrabold text-primary-600 dark:text-primary-400">' . filament()->getUserName($user) . '</span>']) !!}</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('dashboard.widgets.dashboard_subtitle') }}</p>
             </div>
 
-            <form
+            {{-- <form
                 action="{{ filament()->getLogoutUrl() }}"
                 method="post"
                 class="my-auto"
@@ -36,7 +27,7 @@
                 >
                     {{ __('filament-panels::widgets/account-widget.actions.logout.label') }}
                 </x-filament::button>
-            </form>
+            </form> --}}
         </div>
     </x-filament::section>
 </x-filament-widgets::widget>
