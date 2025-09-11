@@ -16,7 +16,7 @@
     color: #b7e9e6;
 }
 
-/* Custom scrollbar styles */
+/* Custom scrollbar styles - synced with global theme */
 .custom-thin-scroll::-webkit-scrollbar {
     width: 6px;
 }
@@ -26,29 +26,39 @@
 }
 
 .custom-thin-scroll::-webkit-scrollbar-thumb {
-    background: rgba(100, 116, 139, 0.35);
+    background: rgb(161 161 170); /* zinc-400 - synced with global */
     border-radius: 3px;
 }
 
-.dark .custom-thin-scroll::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.3);
+.custom-thin-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgb(113 113 122); /* zinc-500 - synced with global */
 }
 
-.custom-thin-scroll:hover::-webkit-scrollbar-thumb {
-    background: rgba(100, 116, 139, 0.55);
+/* Remove scrollbar buttons (arrows) */
+.custom-thin-scroll::-webkit-scrollbar-button {
+    display: none;
+}
+
+.custom-thin-scroll::-webkit-scrollbar-corner {
+    display: none;
+}
+
+/* Dark mode scrollbar styling - synced with global theme */
+.dark .custom-thin-scroll::-webkit-scrollbar-thumb {
+    background: rgb(113 113 122); /* zinc-500 - synced with global */
 }
 
 .dark .custom-thin-scroll:hover::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.5);
+    background: rgb(82 82 91); /* zinc-600 - synced with global */
 }
 
 .custom-thin-scroll {
     scrollbar-width: thin;
-    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+    scrollbar-color: rgb(161 161 170) transparent; /* zinc-400 - synced with global */
 }
 
 .dark .custom-thin-scroll {
-    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+    scrollbar-color: rgb(113 113 122) transparent; /* zinc-500 - synced with global */
 }
 
 /* Comment username styles */

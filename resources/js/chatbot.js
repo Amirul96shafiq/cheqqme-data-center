@@ -1317,22 +1317,22 @@
                     padding: 0px !important;
                 }
                 
-                /* Dark theme scrollbar */
+                /* Dark theme scrollbar - synced with global theme */
                 ::-webkit-scrollbar {
                     width: 8px !important;
                 }
                 
                 ::-webkit-scrollbar-track {
-                    background: rgb(39 39 42) !important;
+                    background: transparent !important; /* synced with global theme */
                 }
                 
                 ::-webkit-scrollbar-thumb {
-                    background: rgb(107 114 128) !important;
+                    background: rgb(113 113 122) !important; /* zinc-500 - synced with global */
                     border-radius: 4px !important;
                 }
                 
                 ::-webkit-scrollbar-thumb:hover {
-                    background: rgb(156 163 175) !important;
+                    background: rgb(82 82 91) !important; /* zinc-600 - synced with global */
                 }
                 
                 /* Ensure all interactive elements have proper dark theme styling */
@@ -1425,22 +1425,22 @@
                     padding: 0px !important;
                 }
                 
-                /* Light theme scrollbar - synced with chatbox scrollbar design */
+                /* Light theme scrollbar - synced with global theme */
                 ::-webkit-scrollbar {
                     width: 8px !important;
                 }
                 
                 ::-webkit-scrollbar-track {
-                    background: rgb(249 250 251) !important; /* gray-50 to match background */
+                    background: transparent !important; /* synced with global theme */
                 }
                 
                 ::-webkit-scrollbar-thumb {
-                    background: rgb(209 213 219) !important; /* gray-300 to match borders */
+                    background: rgb(161 161 170) !important; /* zinc-400 - synced with global */
                     border-radius: 4px !important;
                 }
                 
                 ::-webkit-scrollbar-thumb:hover {
-                    background: rgb(156 163 175) !important; /* gray-400 for hover */
+                    background: rgb(113 113 122) !important; /* zinc-500 - synced with global */
                 }
                 
                 /* Ensure all interactive elements have proper light theme styling */

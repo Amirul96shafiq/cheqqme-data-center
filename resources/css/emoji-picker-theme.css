@@ -1,42 +1,38 @@
 /* Emoji Picker Theme CSS - Automatically responds to theme changes */
 
-/* CSS Custom Properties for theming */
+/* CSS Custom Properties for theming - synced with global scrollbar theme */
 :root {
     /* Light mode colors - synced with chatbox design */
-    --emoji-picker-bg: rgb(249 250 251); /* gray-50 to match chat input */
-    --emoji-picker-border: rgb(209 213 219); /* gray-300 to match chat input */
+    --emoji-picker-bg: rgb(249 250 251); /* zinc-50 to match chat input */
+    --emoji-picker-border: rgb(209 213 219); /* zinc-300 to match chat input */
     --emoji-picker-text: rgb(0 0 0);
-    --emoji-picker-hover: rgb(243 244 246); /* gray-100 for subtle hover */
-    --emoji-picker-focus: rgb(243 244 246); /* gray-100 for focus */
-    --emoji-picker-active: rgb(229 231 235); /* gray-200 for active */
-    --emoji-picker-scrollbar-track: rgb(
-        249 250 251
-    ); /* gray-50 to match background */
+    --emoji-picker-hover: rgb(243 244 246); /* zinc-100 for subtle hover */
+    --emoji-picker-focus: rgb(243 244 246); /* zinc-100 for focus */
+    --emoji-picker-active: rgb(229 231 235); /* zinc-200 for active */
+    --emoji-picker-scrollbar-track: transparent; /* synced with global theme */
     --emoji-picker-scrollbar-thumb: rgb(
-        209 213 219
-    ); /* gray-300 to match borders */
+        161 161 170
+    ); /* zinc-400 - synced with global */
     --emoji-picker-scrollbar-thumb-hover: rgb(
-        156 163 175
-    ); /* gray-400 for hover */
+        113 113 122
+    ); /* zinc-500 - synced with global */
 }
 
-/* Dark mode colors - synced with chatbox design */
+/* Dark mode colors - synced with global scrollbar theme */
 .dark {
-    --emoji-picker-bg: rgb(31 41 55); /* gray-800 to match chat interface */
-    --emoji-picker-border: rgb(55 65 81); /* gray-700 to match chat interface */
+    --emoji-picker-bg: rgb(39 39 42); /* zinc-800 to match chat interface */
+    --emoji-picker-border: rgb(63 63 70); /* zinc-700 to match chat interface */
     --emoji-picker-text: rgb(255 255 255);
-    --emoji-picker-hover: rgb(55 65 81); /* gray-700 for hover */
-    --emoji-picker-focus: rgb(55 65 81); /* gray-700 for focus */
-    --emoji-picker-active: rgb(75 85 99); /* gray-600 for active */
-    --emoji-picker-scrollbar-track: rgb(
-        31 41 55
-    ); /* gray-800 to match background */
+    --emoji-picker-hover: rgb(63 63 70); /* zinc-700 for hover */
+    --emoji-picker-focus: rgb(63 63 70); /* zinc-700 for focus */
+    --emoji-picker-active: rgb(82 82 91); /* zinc-600 for active */
+    --emoji-picker-scrollbar-track: transparent; /* synced with global theme */
     --emoji-picker-scrollbar-thumb: rgb(
-        75 85 99
-    ); /* gray-600 to match borders */
+        113 113 122
+    ); /* zinc-500 - synced with global */
     --emoji-picker-scrollbar-thumb-hover: rgb(
-        107 114 128
-    ); /* gray-500 for hover */
+        82 82 91
+    ); /* zinc-600 - synced with global */
 }
 
 /* Emoji picker container styling - Light theme synced with chatbox */
@@ -147,35 +143,44 @@ emoji-picker [role="menuitem"]:active {
     background-color: rgb(63 63 70) !important; /* Dark gray active */
 }
 
-/* Scrollbar styling - Light theme synced with chatbox */
+/* Scrollbar styling - synced with global theme */
 emoji-picker ::-webkit-scrollbar {
     width: 8px !important;
 }
 
 emoji-picker ::-webkit-scrollbar-track {
-    background: rgb(249 250 251) !important; /* gray-50 to match background */
+    background: transparent !important; /* synced with global theme */
 }
 
 emoji-picker ::-webkit-scrollbar-thumb {
-    background: rgb(209 213 219) !important; /* gray-300 to match borders */
+    background: rgb(161 161 170) !important; /* zinc-400 - synced with global */
     border-radius: 4px !important;
 }
 
 emoji-picker ::-webkit-scrollbar-thumb:hover {
-    background: rgb(156 163 175) !important; /* gray-400 for hover */
+    background: rgb(113 113 122) !important; /* zinc-500 - synced with global */
 }
 
-/* Dark mode scrollbar - synced with chatbox design */
+/* Remove scrollbar buttons (arrows) */
+emoji-picker ::-webkit-scrollbar-button {
+    display: none !important;
+}
+
+emoji-picker ::-webkit-scrollbar-corner {
+    display: none !important;
+}
+
+/* Dark mode scrollbar - synced with global theme */
 .dark emoji-picker ::-webkit-scrollbar-track {
-    background: rgb(31 41 55) !important; /* gray-800 to match background */
+    background: transparent !important; /* synced with global theme */
 }
 
 .dark emoji-picker ::-webkit-scrollbar-thumb {
-    background: rgb(75 85 99) !important; /* gray-600 to match borders */
+    background: rgb(113 113 122) !important; /* zinc-500 - synced with global */
 }
 
 .dark emoji-picker ::-webkit-scrollbar-thumb:hover {
-    background: rgb(107 114 128) !important; /* gray-500 for hover */
+    background: rgb(82 82 91) !important; /* zinc-600 - synced with global */
 }
 
 /* Container styling */

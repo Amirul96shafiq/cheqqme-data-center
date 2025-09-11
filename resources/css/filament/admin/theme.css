@@ -161,7 +161,7 @@
         height: calc(100vh - 12.5rem) !important;
     }
 
-    /* Ensure columns region fills the board height and enables horizontal scrolling */
+    /* Ensure columns region fills the board height and enables horizontal scrolling - synced with global theme */
     .fi-page .ff-board__columns {
         height: 100% !important;
         overflow-x: auto !important;
@@ -170,10 +170,10 @@
         gap: 1rem !important;
         padding: 1rem !important;
         scrollbar-width: thin !important;
-        scrollbar-color: rgb(161 161 170) transparent !important;
+        scrollbar-color: rgb(161 161 170) transparent !important; /* zinc-400 - synced with global */
     }
 
-    /* Custom scrollbar styling for horizontal scrolling */
+    /* Custom scrollbar styling for horizontal scrolling - synced with global theme */
     .fi-page .ff-board__columns::-webkit-scrollbar {
         height: 8px !important;
     }
@@ -183,12 +183,25 @@
     }
 
     .fi-page .ff-board__columns::-webkit-scrollbar-thumb {
-        background: rgb(161 161 170) !important;
+        background: rgb(
+            161 161 170
+        ) !important; /* zinc-400 - synced with global */
         border-radius: 4px !important;
     }
 
     .fi-page .ff-board__columns::-webkit-scrollbar-thumb:hover {
-        background: rgb(113 113 122) !important;
+        background: rgb(
+            113 113 122
+        ) !important; /* zinc-500 - synced with global */
+    }
+
+    /* Remove scrollbar buttons (arrows) for horizontal scrolling */
+    .fi-page .ff-board__columns::-webkit-scrollbar-button {
+        display: none !important;
+    }
+
+    .fi-page .ff-board__columns::-webkit-scrollbar-corner {
+        display: none !important;
     }
 
     /* Columns respect the board height and maintain proper width for horizontal scrolling */
@@ -196,17 +209,17 @@
         max-height: 90% !important;
     }
 
-    /* Enable vertical scrolling for column content */
+    /* Enable vertical scrolling for column content - synced with global theme */
     .fi-page .ff-column__content {
         overflow-y: auto !important;
         overflow-x: hidden !important;
         flex: 1 1 auto !important;
         max-height: calc(100% - 3.25rem) !important;
         scrollbar-width: thin !important;
-        scrollbar-color: rgb(161 161 170) transparent !important;
+        scrollbar-color: rgb(161 161 170) transparent !important; /* zinc-400 - synced with global */
     }
 
-    /* Custom vertical scrollbar styling for column content */
+    /* Custom vertical scrollbar styling for column content - synced with global theme */
     .fi-page .ff-column__content::-webkit-scrollbar {
         width: 6px !important;
     }
@@ -216,12 +229,25 @@
     }
 
     .fi-page .ff-column__content::-webkit-scrollbar-thumb {
-        background: rgb(161 161 170) !important;
+        background: rgb(
+            161 161 170
+        ) !important; /* zinc-400 - synced with global */
         border-radius: 3px !important;
     }
 
     .fi-page .ff-column__content::-webkit-scrollbar-thumb:hover {
-        background: rgb(113 113 122) !important;
+        background: rgb(
+            113 113 122
+        ) !important; /* zinc-500 - synced with global */
+    }
+
+    /* Remove scrollbar buttons (arrows) for vertical scrolling */
+    .fi-page .ff-column__content::-webkit-scrollbar-button {
+        display: none !important;
+    }
+
+    .fi-page .ff-column__content::-webkit-scrollbar-corner {
+        display: none !important;
     }
 
     /* While drag-scrolling, prevent text selection cursor and highlight */

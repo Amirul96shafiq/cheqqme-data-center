@@ -371,11 +371,11 @@
             flex-shrink: 0;
         }
         
-        /* Smooth scrolling for the user list */
+        /* Smooth scrolling for the user list - synced with global theme */
         #user-mention-list {
             scroll-behavior: smooth;
             scrollbar-width: thin;
-            scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+            scrollbar-color: rgb(161 161 170) transparent; /* zinc-400 - synced with global */
         }
         
         #user-mention-list::-webkit-scrollbar {
@@ -387,12 +387,34 @@
         }
         
         #user-mention-list::-webkit-scrollbar-thumb {
-            background-color: rgba(156, 163, 175, 0.5);
+            background-color: rgb(161 161 170); /* zinc-400 - synced with global */
             border-radius: 3px;
         }
         
         #user-mention-list::-webkit-scrollbar-thumb:hover {
-            background-color: rgba(156, 163, 175, 0.7);
+            background-color: rgb(113 113 122); /* zinc-500 - synced with global */
+        }
+        
+        /* Remove scrollbar buttons (arrows) */
+        #user-mention-list::-webkit-scrollbar-button {
+            display: none;
+        }
+        
+        #user-mention-list::-webkit-scrollbar-corner {
+            display: none;
+        }
+        
+        /* Dark mode scrollbar styling - synced with global theme */
+        .dark #user-mention-list {
+            scrollbar-color: rgb(113 113 122) transparent; /* zinc-500 - synced with global */
+        }
+        
+        .dark #user-mention-list::-webkit-scrollbar-thumb {
+            background-color: rgb(113 113 122); /* zinc-500 - synced with global */
+        }
+        
+        .dark #user-mention-list::-webkit-scrollbar-thumb:hover {
+            background-color: rgb(82 82 91); /* zinc-600 - synced with global */
         }
         
         /* Focus styles removed - dropdown doesn't need focus for typing */

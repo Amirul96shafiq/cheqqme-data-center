@@ -10,6 +10,52 @@
 
 @layer utilities {
     /* Removed forced black text for dark mode buttons; rely on Filament defaults. */
+
+    /* Standardized scrollbar styling for all elements */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: rgb(161 161 170) transparent; /* zinc-400 */
+    }
+
+    *::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    *::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background: rgb(161 161 170); /* zinc-400 */
+        border-radius: 4px;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+        background: rgb(113 113 122); /* zinc-500 */
+    }
+
+    /* Remove scrollbar buttons (arrows) - these are the key rules */
+    *::-webkit-scrollbar-button {
+        display: none;
+    }
+
+    *::-webkit-scrollbar-corner {
+        display: none;
+    }
+
+    /* Dark mode scrollbar styling */
+    .dark * {
+        scrollbar-color: rgb(113 113 122) transparent; /* zinc-500 */
+    }
+
+    .dark *::-webkit-scrollbar-thumb {
+        background: rgb(113 113 122); /* zinc-500 */
+    }
+
+    .dark *::-webkit-scrollbar-thumb:hover {
+        background: rgb(82 82 91); /* zinc-600 */
+    }
 }
 
 select {
