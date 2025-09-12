@@ -190,7 +190,7 @@
         
         @media (min-width: 1024px) {
             .comment-list-container {
-                max-height: calc(68vh - 270px);
+                max-height: calc(78vh - 270px);
             }
         }
     </style>

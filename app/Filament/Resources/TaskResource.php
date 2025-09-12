@@ -624,7 +624,7 @@ return false;
                         ->extraAttributes([
                             ' wire:ignore' => true,
                             ' style' => 'display:flex; flex-direction:column; overflow:hidden;',
-                            'class' => 'comments-pane lg:sticky lg:top-16 lg:self-start h-[82vh] lg:h-[68vh] max-h-[82vh] lg:max-h-[68vh]',
+                            'class' => 'comments-pane lg:sticky lg:top-24 lg:self-start h-[82vh] lg:h-[78vh] max-h-[82vh] lg:max-h-[78vh]',
                         ])
                         ->columnSpan([
                             'default' => 1,
