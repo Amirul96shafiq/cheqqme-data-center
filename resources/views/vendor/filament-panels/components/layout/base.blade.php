@@ -73,10 +73,24 @@
             .fi-body {
                 position: relative;
                 background-image: url('{{ asset('images/bg-light.png') }}');
-                background-size: contain;
-                background-position: bottom;
+                background-size: cover;
+                background-position: bottom left;
                 background-repeat: no-repeat;
                 background-attachment: fixed;
+            }
+
+            /* Use bottom center for larger screens (lg and above) */
+            @media (min-width: 1024px) {
+                .fi-body {
+                    background-position: bottom;
+                }
+            }
+
+            /* Use contain for larger screens (3xl and above) */
+            @media (min-width: 1728px) {
+                .fi-body {
+                    background-size: contain;
+                }
             }
 
             .fi-body::before {
