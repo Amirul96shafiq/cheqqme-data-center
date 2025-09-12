@@ -1,0 +1,180 @@
+# Cursor IDE Guidelines for CheQQme Data Center Project
+
+## Playwright MCP Server Integration
+
+### Installation & Configuration
+
+-   **Server**: Playwright MCP server is installed globally via `npm install -g @playwright/mcp`
+-   **Command**: Use `npx @playwright/mcp` to run the server
+-   **Configuration**: Add to Cursor Settings > MCP > Add new MCP Server:
+    -   Name: "playwright"
+    -   Command: `npx @playwright/mcp`
+
+### Efficient Playwright MCP Usage
+
+#### Browser Automation Tasks
+
+When working with browser automation, use Playwright MCP for:
+
+-   **Web scraping**: Extract data from websites, APIs, or web services
+-   **E2E testing**: Automate user interactions for testing workflows
+-   **UI validation**: Verify that web interfaces work correctly
+-   **Data collection**: Gather information from external sources
+-   **Form automation**: Fill out forms, submit data programmatically
+-   **Screenshot capture**: Take screenshots of web pages or specific elements
+-   **PDF generation**: Convert web pages to PDF documents
+
+#### Best Practices
+
+1. **Start with headless mode** for faster execution: `--headless`
+2. **Use specific timeouts** to avoid hanging: `--timeout-action 5000 --timeout-navigation 60000`
+3. **Save sessions** for debugging: `--save-session --output-dir ./playwright-sessions`
+4. **Use isolated sessions** for testing: `--isolated`
+5. **Specify viewport size** for consistent rendering: `--viewport-size "1280,720"`
+
+#### Common Use Cases for This Project
+
+-   **Trello integration**: Automate Trello board interactions for task management
+-   **Client data collection**: Scrape client information from various sources
+-   **Document processing**: Convert web-based documents to PDF
+-   **API testing**: Verify external API endpoints and responses
+-   **Dashboard validation**: Ensure Filament admin panels work correctly
+-   **User workflow testing**: Test complete user journeys through the application
+
+#### Command Examples
+
+```bash
+# Basic headless browser automation
+npx @playwright/mcp --headless --timeout-action 5000
+
+# With session saving for debugging
+npx @playwright/mcp --save-session --output-dir ./sessions
+
+# With specific browser and viewport
+npx @playwright/mcp --browser chrome --viewport-size "1920,1080"
+
+# With device emulation for mobile testing
+npx @playwright/mcp --device "iPhone 15"
+```
+
+## Laravel Development Guidelines
+
+### Code Standards
+
+-   **Functions**: Use verbs; variables use nouns. Avoid abbreviations
+-   **Types**: Annotate function signatures and exported APIs in TypeScript
+-   **Control Flow**: Use guard clauses and early returns; avoid deep nesting
+-   **Comments**: Only for complex logic; explain why, not how
+-   **Formatting**: Match existing style; don't reformat unrelated code
+
+### Laravel Best Practices
+
+-   **Eloquent**: Use relationships and eager loading; avoid raw `DB::` unless necessary
+-   **Validation**: Create Form Requests for validation; avoid inline controller validation
+-   **Routing**: Use named routes and `route()` for URL generation
+-   **Jobs**: Use queued jobs for slow tasks
+-   **Testing**: Prefer feature tests; use model factories
+
+### Filament Development
+
+-   **Generators**: Use Filament Artisan generators with `--no-interaction`
+-   **SDUI Patterns**: Configure Forms, Tables, Actions declaratively
+-   **Relationships**: Use `relationship()` method on form components
+-   **Resources**: Place in `app/Filament/Resources/`
+-   **Notifications**: Use for user feedback within actions
+
+### Testing Guidelines
+
+-   **Feature Tests**: Prefer over unit tests for business logic
+-   **Factories**: Use model factories in tests
+-   **Filament Testing**: Authenticate and set current panel when required
+-   **Livewire Testing**: Use `Livewire::test()` for component interactions
+
+## File Organization
+
+-   **Filament Resources**: `app/Filament/Resources/`
+-   **Livewire Components**: `app/Livewire/` with `App\Livewire` namespace
+-   **Blade Components**: `resources/views/components/`
+-   **Models**: `app/Models/`
+-   **Controllers**: `app/Http/Controllers/`
+
+## Development Workflow
+
+-   **Artisan Commands**: Always pass `--no-interaction`
+-   **Code Formatting**: Run `vendor/bin/pint --dirty` after edits
+-   **Testing**: Run `php artisan test` before committing
+-   **Documentation**: Use Boost tools for Laravel-specific queries
+
+## Error Handling
+
+-   **Early Returns**: Handle edge cases first
+-   **Guard Clauses**: Avoid deep nesting
+-   **Type Hints**: Add proper type hints to function signatures
+-   **Exception Handling**: Don't swallow exceptions silently
+
+## Performance Considerations
+
+-   **Eager Loading**: Prevent N+1 query problems
+-   **Caching**: Use appropriate caching strategies
+-   **Queue Jobs**: Use for time-consuming operations
+-   **Database Indexes**: Add for frequently queried columns
+
+## Security Best Practices
+
+-   **Validation**: Always validate input data
+-   **Authorization**: Use Laravel's built-in auth features
+-   **CSRF Protection**: Ensure forms have CSRF tokens
+-   **Environment Variables**: Use in config files, not directly with `env()`
+
+## Integration Guidelines
+
+-   **APIs**: Use Eloquent API Resources for consistent responses
+-   **External Services**: Use proper error handling and timeouts
+-   **File Uploads**: Validate file types and sizes
+-   **Background Jobs**: Use queues for heavy processing
+
+## Debugging
+
+-   **Logs**: Use `mcp_laravel-boost_read-log-entries` for backend errors
+-   **Browser Logs**: Use `mcp_laravel-boost_browser-logs` for frontend errors
+-   **Tinker**: Use `mcp_laravel-boost_tinker` for PHP evaluation
+-   **Database**: Use `mcp_laravel-boost_database-query` for read-only queries
+
+## Laravel Boost + Playwright MCP Integration
+
+### Combined Workflow
+
+When debugging issues that span both backend and frontend:
+
+1. **Use Laravel Boost first** for backend investigation:
+
+    - Check logs with `mcp_laravel-boost_read-log-entries`
+    - Query database with `mcp_laravel-boost_database-query`
+    - Test PHP code with `mcp_laravel-boost_tinker`
+
+2. **Use Playwright MCP for frontend validation**:
+    - Test UI interactions and workflows
+    - Validate form submissions and data display
+    - Screenshot capture for visual debugging
+    - E2E testing of complete user journeys
+
+### Integration Points
+
+-   **Browser Logs**: Laravel Boost captures browser errors, Playwright MCP can trigger and validate fixes
+-   **Database State**: Laravel Boost queries data, Playwright MCP validates UI representation
+-   **API Testing**: Laravel Boost tests endpoints, Playwright MCP tests frontend consumption
+-   **Error Handling**: Combined approach for full-stack debugging
+
+### Best Practices for Combined Usage
+
+1. Start with Laravel Boost for backend investigation
+2. Use Playwright MCP to reproduce and validate frontend issues
+3. Combine both tools for comprehensive E2E testing
+4. Use Playwright MCP for automated testing of Laravel Boost findings
+
+## Documentation
+
+-   **Boost Tools**: Use `mcp_laravel-boost_search-docs` for Laravel ecosystem docs
+-   **Version Specific**: Always use version-specific documentation
+-   **Code Comments**: Keep minimal and focused on business logic
+-   **README Updates**: Keep project documentation current

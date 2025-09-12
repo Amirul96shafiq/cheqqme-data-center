@@ -29,7 +29,7 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 | Admin / UI   | Filament v3.3.37, Tailwind CSS v3.4.17                               |
 | Realtime UX  | Livewire v3.6.4 (Filament integrated)                                |
 | Database     | SQLite (dev) → MySQL/PostgreSQL (future)                             |
-| MCP Server   | Node.js, SQLite, bcrypt 6.0.0, dotenv 17.2.1                         |
+| MCP Servers  | Node.js, SQLite, bcrypt 6.0.0, dotenv 17.2.1, Playwright MCP v0.0.37 |
 | Build Tools  | Vite v7.1.3, Laravel Vite Plugin v2.0.0, NPM                         |
 | Testing      | PHPUnit 11.5.34, Laravel testing utilities, Livewire component tests |
 | Activity Log | Spatie Activitylog + Filament Activitylog plugin (enabled)           |
@@ -350,6 +350,8 @@ WEATHER_DEFAULT_LONGITUDE=101.6869
 
 ## MCP Server: First-Time Setup
 
+### Data MCP Server (Existing)
+
 1. Navigate to the `mcp-server` folder:
     ```bash
     cd mcp-server
@@ -383,6 +385,57 @@ MCP API notes (current state):
 -   Core endpoints for Tasks, Comments, Phone Numbers, and Important URLs are functional.
 -   Password hash compatibility: bcrypt `$2b$` is converted to `$2y$` for Laravel.
 -   All endpoints use `x-api-key` header authentication.
+
+### Playwright MCP Server (Browser Automation)
+
+The project now includes Playwright MCP server integration for browser automation, web scraping, E2E testing, and UI validation.
+
+#### Quick Setup
+
+1. **Install Playwright MCP** (already done):
+
+    ```bash
+    npm install -g @playwright/mcp
+    ```
+
+2. **Configure Cursor IDE**:
+
+    - Go to Cursor Settings → MCP → Add new MCP Server
+    - Name: `playwright`
+    - Command: `npx @playwright/mcp`
+
+3. **Start the server**:
+
+    ```bash
+    # Windows
+    scripts\start-playwright-mcp.bat
+
+    # Linux/Mac
+    ./scripts/start-playwright-mcp.sh
+
+    # Manual
+    npx @playwright/mcp --headless --timeout-action 5000
+    ```
+
+4. **Verify installation**:
+    ```bash
+    node scripts/test-playwright-mcp.js
+    ```
+
+#### Use Cases
+
+-   **Trello Integration**: Automate Trello board interactions for task management
+-   **Client Data Collection**: Scrape client information from various sources
+-   **Document Processing**: Convert web-based documents to PDF
+-   **API Testing**: Verify external API endpoints and responses
+-   **Dashboard Validation**: Ensure Filament admin panels work correctly
+-   **User Workflow Testing**: Test complete user journeys through the application
+
+#### Configuration
+
+The project includes a pre-configured `playwright-mcp.config.json` with optimal settings for the CheQQme Data Center project.
+
+For detailed documentation, see [docs/playwright-mcp-integration.md](docs/playwright-mcp-integration.md).
 
 ---
 
@@ -527,6 +580,7 @@ Legend: ✅ Done · 🛠 In Progress · 🔜 Planned
 | Basic Auth (Filament)   | ✅     | Panel restricted                       |
 | Environment template    | ✅     | `.env.example` structured              |
 | MCP Server Integration  | ✅     | Node.js API with Laravel compatibility |
+| Playwright MCP Server   | ✅     | Browser automation & E2E testing       |
 | Activity / Audit Log    | ✅     | Spatie + Filament plugin enabled       |
 | Tagging system          | 🔜     | Polymorphic (tags)                     |
 | Role-based Policies     | 🔜     | Granular access control                |

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\PlaywrightMcpController;
 use App\Http\Controllers\Api\UserController as ApiUserController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CommentController;
@@ -26,6 +27,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/comments/{comment}', [CommentController::class, 'show'])->name('api.comments.show');
     Route::get('/trello-boards', [TrelloBoardController::class, 'index'])->name('api.trello-boards');
     Route::get('/openai-logs', [OpenaiLogController::class, 'apiIndex'])->name('api.openai.logs');
+
+    // Playwright MCP integration endpoints
+    Route::prefix('playwright')->group(function () {
+        Route::get('/status', [PlaywrightMcpController::class, 'status'])->name('api.playwright.status');
+        Route::post('/screenshot', [PlaywrightMcpController::class, 'screenshot'])->name('api.playwright.screenshot');
+        Route::post('/test-url', [PlaywrightMcpController::class, 'testUrl'])->name('api.playwright.test-url');
+        Route::post('/extract-data', [PlaywrightMcpController::class, 'extractData'])->name('api.playwright.extract-data');
+        Route::post('/test-filament', [PlaywrightMcpController::class, 'testFilamentPanel'])->name('api.playwright.test-filament');
+        Route::post('/test-action-board', [PlaywrightMcpController::class, 'testActionBoard'])->name('api.playwright.test-action-board');
+        Route::post('/test-api', [PlaywrightMcpController::class, 'testApiEndpoint'])->name('api.playwright.test-api');
+        Route::post('/test-report', [PlaywrightMcpController::class, 'generateTestReport'])->name('api.playwright.test-report');
+        Route::post('/test-boost-integration', [PlaywrightMcpController::class, 'testBoostIntegration'])->name('api.playwright.test-boost-integration');
+    });
 });
 
 // Public API documentation endpoint with pretty JSON
@@ -181,7 +195,7 @@ Route::get('/documentation', function () {
                 'meta' => [
                     'timestamp' => 'ISO 8601 timestamp',
                     'request_id' => 'unique request identifier (UUID)',
-                ]
+                ],
             ],
         ],
     ], 200, [], JSON_PRETTY_PRINT);

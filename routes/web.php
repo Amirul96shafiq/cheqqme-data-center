@@ -39,7 +39,7 @@ Route::post('/set-locale', function (Request $request) {
 
 // Home route
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/admin');
 });
 
 // Test route for mentions

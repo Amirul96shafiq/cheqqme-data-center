@@ -1,0 +1,17 @@
+{
+  "browser": "chrome",
+  "headless": true,
+  "timeoutAction": 5000,
+  "timeoutNavigation": 60000,
+  "viewportSize": "1280,720",
+  "outputDir": "./playwright-sessions",
+  "saveSession": true,
+  "saveTrace": true,
+  "allowedOrigins": "*",
+  "imageResponses": "allow",
+  "ignoreHttpsErrors": false,
+  "isolated": false,
+  "userDataDir": "./playwright-user-data"
+}
+
+
