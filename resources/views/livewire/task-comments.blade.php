@@ -188,11 +188,13 @@
         /* Responsive height for comments list */
         .comment-list-container {
             max-height: calc(80vh - 270px);
+            min-height: calc(80vh - 270px);
         }
         
         @media (min-width: 1024px) {
             .comment-list-container {
                 max-height: calc(76vh - 270px);
+                min-height: calc(76vh - 270px);
             }
         }
     </style>
