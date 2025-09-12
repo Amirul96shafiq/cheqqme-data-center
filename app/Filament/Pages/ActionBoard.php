@@ -76,11 +76,7 @@ class ActionBoard extends KanbanBoardPage
                 'archived' => __('action.status.archived'),
             ])
             ->columnColors([
-                'todo' => 'gray',
-                'in_progress' => 'gray',
-                'toreview' => 'gray',
-                'completed' => 'teal',
-                'archived' => 'teal',
+                'todo', 'in_progress', 'toreview', 'completed', 'archived' => 'gray',
             ])
             ->cardLabel(__('action.card_label'))
             ->pluralCardLabel(__('action.card_label_plural'));
