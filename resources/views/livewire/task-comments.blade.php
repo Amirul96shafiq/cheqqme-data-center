@@ -63,7 +63,7 @@
                                         @if($this->editingId !== $comment->id)
                                             <!-- Edit button -->
                                             <button type="button" wire:click="startEdit({{ $comment->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.edit') }}">
-                                                @svg('heroicon-o-pencil', 'w-4 h-4 transition-transform duration-200')
+                                                @svg('heroicon-o-pencil-square', 'w-4 h-4 transition-transform duration-200')
                                             </button>
                                             <!-- Delete button -->
                                             <button type="button" wire:click="confirmDelete({{ $comment->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/20 focus:outline-none focus:ring-2 focus:ring-danger-500/40 transition-all duration-200" title="{{ __('comments.buttons.delete') }}">
