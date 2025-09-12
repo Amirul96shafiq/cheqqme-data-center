@@ -502,7 +502,7 @@ class TaskComments extends Component implements HasForms
                     ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
                     ->extraAttributes(['class' => 'minimal-comment-editor'])
                     ->maxLength(200)
-                    ->extraInputAttributes(['style' => 'min-height:4.5rem;max-height:29rem;overflow-y:auto;resize:vertical;'])
+                    ->extraInputAttributes(['style' => 'min-height:6rem;max-height:29rem;overflow-y:auto;resize:vertical;'])
                     ->default('')
                     ->formatStateUsing(function ($state) {
                         if (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') {
@@ -528,7 +528,7 @@ class TaskComments extends Component implements HasForms
                     ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
                     ->extraAttributes(['class' => 'minimal-comment-editor'])
                     ->maxLength(200)
-                    ->extraInputAttributes(['style' => 'min-height:4.5rem;max-height:15rem;overflow-y:auto;resize:vertical;'])
+                    ->extraInputAttributes(['style' => 'min-height:6rem;max-height:15rem;overflow-y:auto;resize:vertical;'])
                     ->default('')
                     ->formatStateUsing(function ($state) {
                         if (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') {
