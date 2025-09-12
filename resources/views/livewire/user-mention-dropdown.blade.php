@@ -445,7 +445,7 @@
             background-color: rgb(82 82 91); /* zinc-600 - synced with global */
         }
         
-        /* Focus styles removed - dropdown doesn't need focus for typing */
+        /* Focus styles removed - dropdown doesn't need focus for typing 
         
         /* Instant hide class for zero-delay closing */
         .user-mention-dropdown.instant-hide {

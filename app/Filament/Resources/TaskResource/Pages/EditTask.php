@@ -66,11 +66,8 @@ class EditTask extends EditRecord
                 ->visible(fn() => true) // Will be controlled by CSS for responsive behavior
                 ->extraAttributes([
                     'class' => '2xl:hidden', // Hide on large screens and above
-                ])
-                ->action(function () {
-                    // Dispatch browser event to scroll to comment section
-                    $this->dispatch('scroll-to-comments');
-                }),
+                    'onclick' => 'scrollToComments(); return false;', // Client-side scroll, prevent default action
+                ]),
             Actions\Action::make('share_task')
                 ->label(__('task.action.share'))
                 ->icon('heroicon-o-share')

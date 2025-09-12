@@ -8,17 +8,23 @@
 >
     {{-- JavaScript for scroll to comments functionality --}}
     <script>
+        // Client-side function for instant scroll to comments (no Livewire round-trip)
+        function scrollToComments() {
+            // Find the comments section
+            const commentsSection = document.querySelector('.comments-pane');
+            if (commentsSection) {
+                // Scroll to the comments section with smooth behavior
+                commentsSection.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+        
+        // Keep the Livewire listener for backward compatibility (if needed elsewhere)
         document.addEventListener('livewire:init', function () {
             Livewire.on('scroll-to-comments', function () {
-                // Find the comments section
-                const commentsSection = document.querySelector('.comments-pane');
-                if (commentsSection) {
-                    // Scroll to the comments section with smooth behavior
-                    commentsSection.scrollIntoView({ 
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
+                scrollToComments();
             });
         });
     </script>
