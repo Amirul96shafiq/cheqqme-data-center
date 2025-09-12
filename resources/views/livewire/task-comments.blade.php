@@ -22,28 +22,30 @@
                 <!-- Loop through comments -->
                 @forelse($this->comments as $comment)
                     <div class="group relative flex gap-3" wire:key="comment-{{ $comment->id }}">
-                        <div class="flex-shrink-0">
+                        <div class="flex-shrink-0 relative">
                         @php
                             $avatarPath = $comment->user->avatar ?? null;
                             $avatarUrl = $avatarPath ? \Storage::url($avatarPath) : null;
                         @endphp
                         @if($avatarUrl)
-                            <img src="{{ $avatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm" loading="lazy">
+                            <img src="{{ $avatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm relative z-10 {{ auth()->id() === $comment->user_id ? 'border-2 border-primary-500/80' : '' }}" loading="lazy">
                         @else
                             <!-- Default avatar if no avatar is set -->
                             @php
                                 $defaultAvatarUrl = (new \Filament\AvatarProviders\UiAvatarsProvider())->get($comment->user);
                             @endphp
                             @if($defaultAvatarUrl)
-                                <img src="{{ $defaultAvatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm" loading="lazy">
+                                <img src="{{ $defaultAvatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm relative z-10 {{ auth()->id() === $comment->user_id ? 'border-2 border-primary-500/80' : '' }}" loading="lazy">
                             @else
-                                <div class="w-10 h-10 rounded-full bg-primary-500 ring-1 ring-white/20 dark:ring-gray-800 shadow-sm flex items-center justify-center">
+                                <div class="w-10 h-10 rounded-full bg-primary-500 ring-1 ring-white/20 dark:ring-gray-800 shadow-sm flex items-center justify-center relative z-10 {{ auth()->id() === $comment->user_id ? 'border-2 border-white/80' : '' }}">
                                     <span class="text-sm font-medium text-white">
                                         {{ substr($comment->user->username ?? __('comments.meta.user_fallback'), 0, 1) }}
                                     </span>
                                 </div>
                             @endif
                         @endif
+                        <!-- Vertical connecting line that extends from avatar -->
+                        <div class="absolute left-1/2 top-10 w-[0.5px] {{ auth()->id() === $comment->user_id ? 'bg-primary-500/80' : 'bg-gray-300/80 dark:bg-gray-600/80' }} transform -translate-x-1/2 z-0" style="height: calc(100% + 1.5rem);"></div>
                         </div>
                         <!-- Comment content -->
                         <div class="flex-1 min-w-0">
@@ -103,13 +105,13 @@
             </div>
             <!-- Show total comments -->
             @if($this->totalComments > 0)
-                <div class="mt-3 text-[10px] text-gray-400 text-center">{{ __('comments.list.showing', ['shown' => $this->comments->count(), 'total' => $this->totalComments]) }}</div>
+                <div class="mt-3 text-[10px] text-gray-400 text-center relative z-10">{{ __('comments.list.showing', ['shown' => $this->comments->count(), 'total' => $this->totalComments]) }}</div>
             @endif
             <!-- Show more comments button -->
             @if($this->totalComments > $visibleCount)
                 @php $remaining = $this->totalComments - $visibleCount; @endphp
-                <div class="mt-2">
-                    <button wire:click="showMore" type="button" class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40">{{ __('comments.list.show_more', ['count' => ($remaining < 5 ? $remaining : 5)]) }}</button>
+                <div class="mt-2 relative z-10">
+                    <button wire:click="showMore" type="button" class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40 relative z-10">{{ __('comments.list.show_more', ['count' => ($remaining < 5 ? $remaining : 5)]) }}</button>
                 </div>
             @endif
         </div>
