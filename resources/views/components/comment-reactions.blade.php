@@ -11,7 +11,7 @@
                 data-emoji="{{ $reaction['emoji'] }}"
                 data-count="{{ $reaction['count'] }}"
                 @click="addReaction('{{ $reaction['emoji'] }}')"
-                title="{{ $reaction['users'][0]['name'] ?? $reaction['users'][0]['username'] ?? 'Unknown' }}{{ count($reaction['users']) > 1 ? ' and ' . (count($reaction['users']) - 1) . ' others' : '' }}"
+                title="{{ ($reaction['users'][0]['name'] ?? $reaction['users'][0]['username'] ?? 'Unknown') . ($reaction['users'][0]['reacted_at'] ? ' (' . \Carbon\Carbon::parse($reaction['users'][0]['reacted_at'])->format('d/n/y • g:i A') . ')' : '') }}{{ count($reaction['users']) > 1 ? ' and ' . (count($reaction['users']) - 1) . ' others' : '' }}"
             >
                 <span class="text-sm">{{ $reaction['emoji'] }}</span>
                 <span class="text-xs font-medium">{{ $reaction['count'] }}</span>

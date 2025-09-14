@@ -45,6 +45,7 @@ class CommentReactions extends Component
                             'id' => $reaction->user->id,
                             'username' => $reaction->user->username,
                             'name' => $reaction->user->name,
+                            'reacted_at' => $reaction->created_at,
                         ];
                     })->toArray(),
                     'user_reacted' => $emojiReactions->contains('user_id', auth()->id()),

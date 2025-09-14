@@ -64,6 +64,7 @@ class CommentReactionController extends Controller
                         'username' => $user->username,
                         'name' => $user->name,
                     ],
+                    'reacted_at' => $reaction->created_at,
                 ],
             ], 'Reaction added successfully');
 
@@ -149,6 +150,7 @@ class CommentReactionController extends Controller
                                 'id' => $reaction->user->id,
                                 'username' => $reaction->user->username,
                                 'name' => $reaction->user->name,
+                                'reacted_at' => $reaction->created_at,
                             ];
                         })->toArray(),
                         'user_reacted' => $emojiReactions->contains('user_id', Auth::id()),

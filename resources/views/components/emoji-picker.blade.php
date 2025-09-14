@@ -123,6 +123,27 @@ function emojiPicker(commentId) {
             this.open = false;
         },
 
+        formatDateTime(dateTimeString) {
+            try {
+                const date = new Date(dateTimeString);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = String(date.getFullYear()).slice(-2); // Get last 2 digits of year
+                
+                let hours = date.getHours();
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12; // 0 should be 12
+                const timeStr = `${hours}:${minutes} ${ampm}`;
+                
+                return `${day}/${month}/${year} • ${timeStr}`;
+            } catch (error) {
+                console.error('Error formatting date:', error);
+                return '';
+            }
+        },
+
         calculateCenterPosition() {
             // Find the comment listing container
             const commentListContainer = document.querySelector('[data-comment-list]');
@@ -196,6 +217,7 @@ function emojiPicker(commentId) {
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('API response data:', data);
                     this.userReactions = data.data
                         .filter(reaction => reaction.user_reacted)
                         .map(reaction => reaction.emoji);
@@ -354,10 +376,24 @@ function emojiPicker(commentId) {
             button.setAttribute('data-emoji', reaction.emoji);
             button.setAttribute('data-count', reaction.count);
             
-            // Add tooltip
-            const tooltip = reaction.users.length > 0 ? 
-                `${reaction.users[0].name || reaction.users[0].username || 'Unknown'}${reaction.users.length > 1 ? ` and ${reaction.users.length - 1} others` : ''}` : 
-                '';
+            // Add tooltip with date and time
+            let tooltip = '';
+            if (reaction.users.length > 0) {
+                const user = reaction.users[0];
+                const userName = user.name || user.username || 'Unknown';
+                const reactedAt = user.reacted_at ? this.formatDateTime(user.reacted_at) : '';
+                
+                console.log('Creating tooltip for user:', user);
+                console.log('Formatted date:', reactedAt);
+                
+                tooltip = `${userName}${reactedAt ? ` (${reactedAt})` : ''}`;
+                
+                if (reaction.users.length > 1) {
+                    tooltip += ` and ${reaction.users.length - 1} others`;
+                }
+            }
+            
+            console.log('Final tooltip:', tooltip);
             button.setAttribute('title', tooltip);
             
             // Add click handler
