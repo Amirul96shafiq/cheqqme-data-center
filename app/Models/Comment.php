@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -35,6 +37,22 @@ class Comment extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the emoji reactions for the comment.
+     */
+    public function emojiReactions(): HasMany
+    {
+        return $this->hasMany(CommentEmojiReaction::class);
+    }
+
+    /**
+     * Get the current user's emoji reaction for this comment.
+     */
+    public function currentUserEmojiReaction(): HasOne
+    {
+        return $this->hasOne(CommentEmojiReaction::class)->where('user_id', auth()->id());
     }
 
     /**

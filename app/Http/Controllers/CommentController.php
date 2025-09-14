@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CommentApiResource;
 use App\Models\Comment;
+use App\Models\CommentEmojiReaction;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 
@@ -48,7 +49,7 @@ class CommentController extends Controller
                     // Check if search is numeric (could be an ID)
                     if (is_numeric($search)) {
                         $q->where('id', $search)
-                          ->orWhere('comment', 'like', "%{$search}%");
+                            ->orWhere('comment', 'like', "%{$search}%");
                     } else {
                         $q->where('comment', 'like', "%{$search}%");
                     }
@@ -233,6 +234,150 @@ class CommentController extends Controller
                 500,
                 ['error' => $e->getMessage()]
             );
+        }
+    }
+
+    /**
+     * Add emoji reaction to a comment
+     */
+    public function addEmojiReaction(Comment $comment, Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'emoji' => 'required|string|max:10',
+            ]);
+
+            // Check if user already has an emoji reaction for this comment
+            $existingReaction = CommentEmojiReaction::where('comment_id', $comment->id)
+                ->where('user_id', $request->user()->id)
+                ->first();
+
+            if ($existingReaction) {
+                // Update existing reaction
+                $existingReaction->update(['emoji' => $validated['emoji']]);
+                $reaction = $existingReaction;
+            } else {
+                // Create new reaction
+                $reaction = CommentEmojiReaction::create([
+                    'comment_id' => $comment->id,
+                    'user_id' => $request->user()->id,
+                    'emoji' => $validated['emoji'],
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Emoji reaction added successfully',
+                'emoji' => $reaction->emoji,
+                'username' => $request->user()->username ?? $request->user()->name,
+                'created_at' => $reaction->created_at->format('M j, Y g:i A'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add emoji reaction',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove emoji reaction from a comment
+     */
+    public function removeEmojiReaction(Comment $comment, Request $request)
+    {
+        try {
+            $reaction = CommentEmojiReaction::where('comment_id', $comment->id)
+                ->where('user_id', $request->user()->id)
+                ->first();
+
+            if ($reaction) {
+                $reaction->delete();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Emoji reaction removed successfully',
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'No emoji reaction found to remove',
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to remove emoji reaction',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get emoji reactions for a comment
+     */
+    public function getEmojiReactions(Comment $comment, Request $request)
+    {
+        try {
+            $reaction = CommentEmojiReaction::where('comment_id', $comment->id)
+                ->where('user_id', $request->user()->id)
+                ->first();
+
+            return response()->json([
+                'success' => true,
+                'emoji' => $reaction ? $reaction->emoji : null,
+                'username' => $reaction ? ($reaction->user->username ?? $reaction->user->name) : null,
+                'created_at' => $reaction ? $reaction->created_at->format('M j, Y g:i A') : null,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get emoji reaction',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get emoji reactions for multiple comments
+     */
+    public function getEmojiReactionsForComments(Request $request)
+    {
+        try {
+            $commentIds = $request->input('comment_ids', []);
+
+            if (empty($commentIds)) {
+                return response()->json([
+                    'success' => true,
+                    'reactions' => [],
+                ]);
+            }
+
+            $reactions = CommentEmojiReaction::whereIn('comment_id', $commentIds)
+                ->where('user_id', $request->user()->id)
+                ->with('user')
+                ->get()
+                ->keyBy('comment_id');
+
+            $result = [];
+            foreach ($commentIds as $commentId) {
+                $reaction = $reactions->get($commentId);
+                $result[$commentId] = $reaction ? [
+                    'emoji' => $reaction->emoji,
+                    'username' => $reaction->user->username ?? $reaction->user->name,
+                    'created_at' => $reaction->created_at->format('M j, Y g:i A'),
+                ] : null;
+            }
+
+            return response()->json([
+                'success' => true,
+                'reactions' => $result,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get emoji reactions',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 }

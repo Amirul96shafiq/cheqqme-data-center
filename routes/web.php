@@ -74,6 +74,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
+    // Emoji reaction routes
+    Route::post('/comments/{comment}/emoji', [CommentController::class, 'addEmojiReaction'])->name('comments.emoji.add');
+    Route::delete('/comments/{comment}/emoji', [CommentController::class, 'removeEmojiReaction'])->name('comments.emoji.remove');
+    Route::get('/comments/{comment}/emoji', [CommentController::class, 'getEmojiReactions'])->name('comments.emoji.get');
+    Route::post('/comments/emoji/batch', [CommentController::class, 'getEmojiReactionsForComments'])->name('comments.emoji.batch');
+
     // Chatbot routes
     Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])->name('chatbot.chat');
     Route::get('/chatbot/conversations', [ChatbotController::class, 'listConversations'])->name('chatbot.list');

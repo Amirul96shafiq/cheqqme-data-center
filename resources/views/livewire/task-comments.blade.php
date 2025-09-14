@@ -92,6 +92,22 @@
                                     <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4">
                                         <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[13px] text-gray-700 dark:text-gray-300 break-words">{!! $comment->rendered_comment !!}</div>
                                     </div>
+                                    
+                                    <!-- Emoji Reaction Button - Below Comment -->
+                                    <div class="mt-1 flex items-center justify-start">
+                                        <div class="emoji-container-livewire" data-comment-id="{{ $comment->id }}">
+                                            <button 
+                                                type="button"
+                                                class="emoji-reaction-btn-livewire p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900/20 focus:outline-none focus:ring-1 focus:ring-gray-500/40 transition-all duration-200"
+                                                data-comment-id="{{ $comment->id }}"
+                                                title="Add emoji reaction"
+                                            >
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
                                 @endif
                             </div>
                     </div>
@@ -1867,11 +1883,371 @@
             // Fallback: use getCaretCoordinates with the index as position
             return getCaretCoordinates(element, index);
         }
+        
+        // Livewire Comments Emoji Picker Functions
+        let livewireEmojiPickerInitialized = false;
+        let currentLivewireCommentId = null;
+        let livewireCommentEmojiStates = {}; // Track emoji state per comment
+        
+        function toggleLivewireEmojiPicker(commentId, button) {
+            const emojiPickerContainer = document.getElementById("livewire-comments-emoji-picker-container");
+            const emojiPicker = document.getElementById("livewire-comments-emoji-picker");
+            
+            if (!emojiPickerContainer || !emojiPicker) {
+                console.error('Livewire comments emoji picker elements not found');
+                return;
+            }
+            
+            currentLivewireCommentId = commentId;
+            
+            if (emojiPickerContainer.classList.contains("hidden")) {
+                // Position the emoji picker to the left of the comment
+                const buttonRect = button.getBoundingClientRect();
+                const commentElement = button.closest('[wire\\:key^="comment-"]');
+                
+                if (commentElement) {
+                    const commentRect = commentElement.getBoundingClientRect();
+                    
+                    // Position to the left of the comment with some spacing
+                    const leftPosition = commentRect.left - 430; // 420px width + 10px spacing
+                    
+                    // Position vertically centered with the comment
+                    const topPosition = commentRect.top + (commentRect.height / 2) - 200; // Center vertically
+                    
+                    // Ensure it doesn't go off-screen
+                    const finalLeftPosition = Math.max(20, Math.min(leftPosition, window.innerWidth - 420));
+                    const finalTopPosition = Math.max(20, Math.min(topPosition, window.innerHeight - 420));
+                    
+                    emojiPickerContainer.style.left = finalLeftPosition + "px";
+                    emojiPickerContainer.style.top = finalTopPosition + "px";
+                    
+                    emojiPickerContainer.classList.remove("hidden");
+                    
+                    // Add animation
+                    emojiPickerContainer.style.opacity = "0";
+                    emojiPickerContainer.style.transform = "translateX(-20px) scale(0.95)";
+                    requestAnimationFrame(() => {
+                        emojiPickerContainer.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+                        emojiPickerContainer.style.opacity = "1";
+                        emojiPickerContainer.style.transform = "translateX(0) scale(1)";
+                    });
+                    
+                    // Focus the emoji picker
+                    emojiPicker.focus();
+                }
+            } else {
+                // Close the picker
+                emojiPickerContainer.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+                emojiPickerContainer.style.opacity = "0";
+                emojiPickerContainer.style.transform = "translateX(-20px) scale(0.95)";
+                setTimeout(() => {
+                    emojiPickerContainer.classList.add("hidden");
+                }, 200);
+            }
+        }
+        
+        function initializeLivewireEmojiPicker() {
+            if (livewireEmojiPickerInitialized) {
+                return;
+            }
+            
+            const emojiPicker = document.getElementById("livewire-comments-emoji-picker");
+            if (!emojiPicker) {
+                return;
+            }
+            
+            livewireEmojiPickerInitialized = true;
+            
+            // Configure emoji picker
+            emojiPicker.addEventListener("emoji-click", (event) => {
+                const emoji = event.detail.unicode;
+                addLivewireEmojiReaction(emoji);
+            });
+            
+            // Set emoji picker properties
+            emojiPicker.style.setProperty("--category-emoji-size", "1.5rem");
+            emojiPicker.style.setProperty("--emoji-size", "1.5rem");
+            emojiPicker.style.setProperty("--num-columns", "8");
+            emojiPicker.style.setProperty("--border-radius", "0.5rem");
+            
+            // Close picker when clicking outside
+            document.addEventListener('click', (e) => {
+                const container = document.getElementById("livewire-comments-emoji-picker-container");
+                const button = e.target.closest('.emoji-reaction-btn-livewire');
+                
+                if (container && !container.contains(e.target) && !button) {
+                    if (!container.classList.contains("hidden")) {
+                        container.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+                        container.style.opacity = "0";
+                        container.style.transform = "translateX(-20px) scale(0.95)";
+                        setTimeout(() => {
+                            container.classList.add("hidden");
+                        }, 200);
+                    }
+                }
+            });
+        }
+        
+        function addLivewireEmojiReaction(emoji) {
+            if (!currentLivewireCommentId) {
+                console.error('No comment ID set for Livewire emoji reaction');
+                return;
+            }
+            
+            console.log('Adding Livewire emoji reaction:', emoji, 'to comment:', currentLivewireCommentId);
+            
+            // Capture the comment ID before making the request
+            const commentId = currentLivewireCommentId;
+            
+            // Send emoji reaction to server
+            const csrfToken = document.querySelector('[data-csrf-token]')?.getAttribute('data-csrf-token') || 
+                             document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+                             document.querySelector('input[name="_token"]')?.value || '';
+            
+            fetch(`/comments/${commentId}/emoji`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ emoji: emoji })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Store the emoji state for this comment
+                    livewireCommentEmojiStates[commentId] = {
+                        emoji: emoji,
+                        username: data.username,
+                        created_at: data.created_at
+                    };
+                    
+                    // Find the comment element and replace the button with the emoji
+                    const commentElement = document.querySelector(`[wire\\:key="comment-${commentId}"]`);
+                    if (commentElement) {
+                        const emojiContainer = commentElement.querySelector('.emoji-container-livewire');
+                        if (emojiContainer) {
+                            // Replace the button with the emoji
+                            emojiContainer.innerHTML = `
+                                <button 
+                                    type="button"
+                                    class="emoji-display-btn-livewire p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900/20 focus:outline-none focus:ring-1 focus:ring-gray-500/40 transition-all duration-200"
+                                    data-comment-id="${commentId}"
+                                    title="${data.username} - ${data.created_at}"
+                                >
+                                    <span class="text-lg">${emoji}</span>
+                                </button>
+                            `;
+                            
+                            // Add click handler to remove the emoji
+                            const emojiDisplayBtn = emojiContainer.querySelector('.emoji-display-btn-livewire');
+                            const commentIdToRemove = commentId; // Capture the comment ID
+                            emojiDisplayBtn.addEventListener('click', function() {
+                                removeLivewireEmojiReaction(commentIdToRemove);
+                            });
+                        }
+                    }
+                } else {
+                    console.error('Failed to save Livewire emoji reaction:', data.message);
+                    alert('Failed to save emoji reaction: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error saving Livewire emoji reaction:', error);
+                alert('Error saving emoji reaction: ' + error.message);
+            });
+            
+            // Close the emoji picker
+            const container = document.getElementById("livewire-comments-emoji-picker-container");
+            if (container) {
+                container.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+                container.style.opacity = "0";
+                container.style.transform = "translateX(-20px) scale(0.95)";
+                setTimeout(() => {
+                    container.classList.add("hidden");
+                }, 200);
+            }
+            
+            // Reset current comment ID
+            currentLivewireCommentId = null;
+        }
+        
+        function removeLivewireEmojiReaction(commentId) {
+            console.log('removeLivewireEmojiReaction called with commentId:', commentId);
+            console.log('Current Livewire emoji states:', livewireCommentEmojiStates);
+            
+            // Send remove request to server
+            const csrfToken = document.querySelector('[data-csrf-token]')?.getAttribute('data-csrf-token') || 
+                             document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+                             document.querySelector('input[name="_token"]')?.value || '';
+            
+            fetch(`/comments/${commentId}/emoji`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the emoji state for this comment
+                    delete livewireCommentEmojiStates[commentId];
+                    
+                    // Find the comment element and restore the picker button
+                    const commentElement = document.querySelector(`[wire\\:key="comment-${commentId}"]`);
+                    console.log('Found Livewire comment element:', commentElement);
+                    
+                    if (commentElement) {
+                        const emojiContainer = commentElement.querySelector('.emoji-container-livewire');
+                        console.log('Found Livewire emoji container:', emojiContainer);
+                        
+                        if (emojiContainer) {
+                            // Restore the original picker button
+                            emojiContainer.innerHTML = `
+                                <button 
+                                    type="button"
+                                    class="emoji-reaction-btn-livewire p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900/20 focus:outline-none focus:ring-1 focus:ring-gray-500/40 transition-all duration-200"
+                                    data-comment-id="${commentId}"
+                                    title="Add emoji reaction"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </button>
+                            `;
+                            console.log('Restored Livewire picker button for comment:', commentId);
+                        }
+                    }
+                } else {
+                    console.error('Failed to remove Livewire emoji reaction:', data.message);
+                    alert('Failed to remove emoji reaction: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error removing Livewire emoji reaction:', error);
+                alert('Error removing emoji reaction: ' + error.message);
+            });
+        }
+        
+        // Load existing emoji reactions for all Livewire comments
+        function loadExistingLivewireEmojiReactions() {
+            // Get all comment IDs from the page
+            const commentElements = document.querySelectorAll('[wire\\:key^="comment-"]');
+            const commentIds = Array.from(commentElements).map(el => {
+                const wireKey = el.getAttribute('wire:key');
+                return wireKey ? wireKey.replace('comment-', '') : null;
+            }).filter(id => id !== null);
+            
+            if (commentIds.length === 0) {
+                console.log('No Livewire comments found to load emoji reactions for');
+                return;
+            }
+            
+            console.log('Loading Livewire emoji reactions for comments:', commentIds);
+            
+            // Send batch request to get emoji reactions
+            const csrfToken = document.querySelector('[data-csrf-token]')?.getAttribute('data-csrf-token') || 
+                             document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+                             document.querySelector('input[name="_token"]')?.value || '';
+            
+            fetch('/comments/emoji/batch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ comment_ids: commentIds })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Loaded Livewire emoji reactions:', data.reactions);
+                    
+                    // Update UI for each comment with an emoji reaction
+                    Object.keys(data.reactions).forEach(commentId => {
+                        const reactionData = data.reactions[commentId];
+                        if (reactionData) {
+                            // Store in local state
+                            livewireCommentEmojiStates[commentId] = {
+                                emoji: reactionData.emoji,
+                                username: reactionData.username,
+                                created_at: reactionData.created_at
+                            };
+                            
+                            // Update UI
+                            const commentElement = document.querySelector(`[wire\\:key="comment-${commentId}"]`);
+                            if (commentElement) {
+                                const emojiContainer = commentElement.querySelector('.emoji-container-livewire');
+                                if (emojiContainer) {
+                                    // Replace the button with the emoji
+                                    emojiContainer.innerHTML = `
+                                        <button 
+                                            type="button"
+                                            class="emoji-display-btn-livewire p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900/20 focus:outline-none focus:ring-1 focus:ring-gray-500/40 transition-all duration-200"
+                                            data-comment-id="${commentId}"
+                                            title="${reactionData.username} - ${reactionData.created_at}"
+                                        >
+                                            <span class="text-lg">${reactionData.emoji}</span>
+                                        </button>
+                                    `;
+                                    
+                                    // Add click handler to remove the emoji
+                                    const emojiDisplayBtn = emojiContainer.querySelector('.emoji-display-btn-livewire');
+                                    const commentIdToRemove = commentId; // Capture the comment ID
+                                    emojiDisplayBtn.addEventListener('click', function() {
+                                        removeLivewireEmojiReaction(commentIdToRemove);
+                                    });
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    console.error('Failed to load Livewire emoji reactions:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading Livewire emoji reactions:', error);
+            });
+        }
+        
+        // Initialize Livewire emoji picker when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLivewireEmojiPicker();
+            // Load existing emoji reactions after a short delay to ensure DOM is fully loaded
+            setTimeout(loadExistingLivewireEmojiReactions, 100);
+        });
+        
+        // Handle Livewire emoji reaction button clicks
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('emoji-reaction-btn-livewire') || e.target.closest('.emoji-reaction-btn-livewire')) {
+                const btn = e.target.classList.contains('emoji-reaction-btn-livewire') ? e.target : e.target.closest('.emoji-reaction-btn-livewire');
+                const commentId = btn.getAttribute('data-comment-id');
+                toggleLivewireEmojiPicker(commentId, btn);
+            }
+        });
     </script>
 
     <!-- Include the User Mention Dropdown Component -->
     <div wire:ignore>
         @livewire('user-mention-dropdown')
     </div>
+    
+    <!-- Floating Emoji Picker Container for Livewire Comments -->
+    <div id="livewire-comments-emoji-picker-container" class="fixed hidden z-[11]">
+        <emoji-picker id="livewire-comments-emoji-picker"></emoji-picker>
+    </div>
+    
+    <!-- Emoji Picker Element -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+    
+    <!-- Emoji Picker Theme CSS -->
+    @vite('resources/css/emoji-picker-theme.css')
 </div>
 
