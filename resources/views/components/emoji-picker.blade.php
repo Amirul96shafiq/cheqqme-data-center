@@ -59,20 +59,59 @@
             </button>
         </div>
 
+        <!-- Search Input -->
+        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    x-model="searchQuery"
+                    @input="filterEmojis()"
+                    placeholder="Search emojis..."
+                    class="w-full px-3 py-2 pl-8 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <button 
+                    x-show="searchQuery"
+                    @click="clearSearch()"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
         <!-- Emoji Grid -->
         <div class="p-4">
             <div class="grid grid-cols-6 gap-3">
-                @foreach($getPopularEmojis() as $emoji)
+                <template x-for="emojiItem in filteredEmojis" :key="emojiItem.emoji">
                     <button
                         type="button"
                         class="emoji-button w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-2xl focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        data-emoji="{{ $emoji }}"
-                        @click="addReaction('{{ $emoji }}')"
-                        :class="{ 'bg-primary-100 dark:bg-primary-900': userReactions.includes('{{ $emoji }}') }"
+                        :data-emoji="emojiItem.emoji"
+                        @click="addReaction(emojiItem.emoji)"
+                        :class="{ 'bg-primary-100 dark:bg-primary-900': userReactions.includes(emojiItem.emoji) }"
                     >
-                        {{ $emoji }}
+                        <span x-text="emojiItem.emoji"></span>
                     </button>
-                @endforeach
+                </template>
+                
+                <!-- No results message -->
+                <div x-show="filteredEmojis.length === 0" class="col-span-6 text-center py-8">
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">No emojis found for "<span x-text="searchQuery"></span>"</p>
+                    <button 
+                        type="button"
+                        @click="clearSearch()"
+                        class="mt-2 text-xs text-primary-600 dark:text-primary-400 hover:underline"
+                    >
+                        Clear search
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -91,6 +130,9 @@ function emojiPicker(commentId) {
         userReactions: [],
         loading: false,
         pickerStyle: {},
+        searchQuery: '',
+        allEmojis: [],
+        filteredEmojis: [],
 
         init() {
             console.log('=== EMOJI PICKER INIT ===');
@@ -98,6 +140,9 @@ function emojiPicker(commentId) {
             console.log('Element:', this.$el);
             console.log('Button found:', this.$el.querySelector('.emoji-picker-trigger'));
             console.log('========================');
+            
+            // Initialize emoji data
+            this.initializeEmojis();
             
             // Load existing user reactions for this comment
             this.loadUserReactions();
@@ -144,6 +189,56 @@ function emojiPicker(commentId) {
             }
         },
 
+        initializeEmojis() {
+            // Define a comprehensive list of emojis with search terms
+            this.allEmojis = [
+                { emoji: '👍', keywords: ['thumbs up', 'like', 'good', 'approve', 'yes', 'up'] },
+                { emoji: '👎', keywords: ['thumbs down', 'dislike', 'bad', 'disapprove', 'no', 'down'] },
+                { emoji: '❤️', keywords: ['heart', 'love', 'red heart', 'like', 'favorite'] },
+                { emoji: '😂', keywords: ['laughing', 'funny', 'lol', 'happy', 'joy', 'tears'] },
+                { emoji: '😍', keywords: ['heart eyes', 'love', 'adore', 'infatuated', 'attractive'] },
+                { emoji: '🤔', keywords: ['thinking', 'ponder', 'consider', 'hmm', 'question'] },
+                { emoji: '😢', keywords: ['crying', 'sad', 'tears', 'upset', 'unhappy'] },
+                { emoji: '😮', keywords: ['surprised', 'shock', 'wow', 'amazed', 'astonished'] },
+                { emoji: '😴', keywords: ['sleeping', 'tired', 'sleepy', 'zzz', 'rest'] },
+                { emoji: '🔥', keywords: ['fire', 'hot', 'lit', 'amazing', 'awesome'] },
+                { emoji: '💯', keywords: ['100', 'perfect', 'century', 'complete', 'score'] },
+                { emoji: '✨', keywords: ['sparkles', 'magic', 'shine', 'beautiful', 'special'] },
+                { emoji: '🚀', keywords: ['rocket', 'launch', 'fast', 'speed', 'success'] },
+                { emoji: '💪', keywords: ['muscle', 'strong', 'power', 'flex', 'biceps'] },
+                { emoji: '👻', keywords: ['ghost', 'spooky', 'halloween', 'scary', 'invisible'] },
+                { emoji: '🎉', keywords: ['party', 'celebration', 'confetti', 'happy', 'festive'] },
+                { emoji: '👏', keywords: ['clap', 'applause', 'congratulations', 'bravo', 'praise'] },
+                { emoji: '🙌', keywords: ['praise', 'hallelujah', 'celebration', 'victory', 'raise hands'] },
+                { emoji: '🤝', keywords: ['handshake', 'deal', 'agreement', 'partnership', 'shake'] },
+                { emoji: '👌', keywords: ['ok', 'okay', 'good', 'perfect', 'fine', 'alright', 'nice'] },
+                { emoji: '❤️‍🩹', keywords: ['mending heart', 'healing', 'recovery', 'broken heart'] },
+                { emoji: '🥳', keywords: ['party face', 'celebration', 'birthday', 'festive', 'fun'] },
+                { emoji: '😎', keywords: ['cool', 'sunglasses', 'awesome', 'smug', 'confident'] },
+                { emoji: '🤩', keywords: ['star eyes', 'amazed', 'impressed', 'fascinated', 'wow'] },
+            ];
+            
+            // Initialize filtered emojis with all emojis
+            this.filteredEmojis = [...this.allEmojis];
+        },
+
+        filterEmojis() {
+            if (!this.searchQuery.trim()) {
+                this.filteredEmojis = [...this.allEmojis];
+                return;
+            }
+            
+            const query = this.searchQuery.toLowerCase();
+            this.filteredEmojis = this.allEmojis.filter(item => 
+                item.keywords.some(keyword => keyword.toLowerCase().includes(query))
+            );
+        },
+
+        clearSearch() {
+            this.searchQuery = '';
+            this.filterEmojis();
+        },
+
         calculateCenterPosition() {
             // Find the comment listing container
             const commentListContainer = document.querySelector('[data-comment-list]');
@@ -156,7 +251,7 @@ function emojiPicker(commentId) {
             // Get the container's position and dimensions
             const containerRect = commentListContainer.getBoundingClientRect();
             const pickerWidth = 320; // w-80 = 20rem = 320px
-            const pickerHeight = 320; // Approximate height with larger emojis and footer
+            const pickerHeight = 380; // Approximate height with larger emojis, search, and footer
 
             // Calculate center position
             const centerX = containerRect.left + (containerRect.width / 2) - (pickerWidth / 2);
@@ -183,7 +278,7 @@ function emojiPicker(commentId) {
         centerInViewport() {
             // Fallback: center in viewport if comment list container not found
             const pickerWidth = 320; // w-80 = 20rem = 320px
-            const pickerHeight = 320; // Approximate height with larger emojis and footer
+            const pickerHeight = 380; // Approximate height with larger emojis, search, and footer
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
 
