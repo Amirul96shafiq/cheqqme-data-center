@@ -7,7 +7,7 @@
         @keydown.enter.prevent="toggle()"
         @keydown.space.prevent="toggle()"
         :aria-expanded="open"
-        aria-label="__('comments.emoji_picker.add_reaction')"
+        aria-label="{{ __('comments.emoji_picker.add_reaction') }}"
     >
         <x-heroicon-o-face-smile class="w-4 h-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200" />
     </button>
@@ -370,17 +370,17 @@ function emojiPicker(commentId) {
                         this.userReactions.push(emoji);
                         this.addToRecentEmojis(emoji);
                         this.$dispatch('emojiReactionNotification', {
-                            message: __('comments.emoji_picker.reaction_added_successfully'),
+                            message: '{{ __("comments.emoji_picker.reaction_added_successfully") }}',
                             type: 'success'
                         });
-                        this.showCustomNotification(__('comments.emoji_picker.reaction_added_successfully'), 'success');
+                        this.showCustomNotification('{{ __("comments.emoji_picker.reaction_added_successfully") }}', 'success');
                     } else if (data.data.action === 'removed') {
                         this.userReactions = this.userReactions.filter(e => e !== emoji);
                         this.$dispatch('emojiReactionNotification', {
-                            message: __('comments.emoji_picker.reaction_removed_successfully'),
+                            message: '{{ __("comments.emoji_picker.reaction_removed_successfully") }}',
                             type: 'info'
                         });
-                        this.showCustomNotification(__('comments.emoji_picker.reaction_removed_successfully'), 'info');
+                        this.showCustomNotification('{{ __("comments.emoji_picker.reaction_removed_successfully") }}', 'info');
                     }
                     
                     // Refresh the reactions display
@@ -414,14 +414,14 @@ function emojiPicker(commentId) {
                 } else {
                     console.error('API Error:', data);
                     this.$dispatch('emojiReactionNotification', {
-                        message: data.message || __('comments.emoji_picker.failed_to_add_reaction'),
+                        message: data.message || '{{ __("comments.emoji_picker.failed_to_add_reaction") }}',
                         type: 'danger'
                     });
                 }
             } catch (error) {
                 console.error('Failed to add reaction:', error);
                 this.$dispatch('emojiReactionNotification', {
-                    message: __('comments.emoji_picker.failed_to_add_reaction'),
+                    message: '{{ __("comments.emoji_picker.failed_to_add_reaction") }}',
                     type: 'danger'
                 });
             } finally {
@@ -571,7 +571,7 @@ window.createReactionButton = function(reaction, commentId, addReactionCallback 
         tooltip = `${userName}${reactedAt ? ` (${reactedAt})` : ''}`;
         
         if (reaction.users.length > 1) {
-            tooltip += ` and ${reaction.users.length - 1} __('comments.emoji_picker.others')`;
+            tooltip += ` and ${reaction.users.length - 1} {{ __("comments.emoji_picker.others") }}`;
         }
     }
     

@@ -18,6 +18,7 @@ class Comment extends Model
     protected $fillable = [
         'task_id',
         'user_id',
+        'parent_id',
         'comment',
         'mentions',
     ];
@@ -42,6 +43,22 @@ class Comment extends Model
     public function reactions(): HasMany
     {
         return $this->hasMany(CommentReaction::class);
+    }
+
+    /**
+     * Get the parent comment (for replies)
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Comment::class, 'parent_id');
+    }
+
+    /**
+     * Get the replies to this comment
+     */
+    public function replies(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'parent_id')->whereNull('deleted_at')->orderBy('created_at');
     }
 
     /**

@@ -107,6 +107,14 @@
                                         @endif
                                     </div>
                                 @endif
+                                <!-- Reply button (always visible) -->
+                                @if($this->editingId !== $comment->id && $this->replyingToId !== $comment->id)
+                                    <div class="flex items-center gap-1">
+                                        <button type="button" wire:click="startReply({{ $comment->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.reply') }}">
+                                            @svg('heroicon-o-chat-bubble-left-right', 'w-4 h-4 transition-transform duration-200')
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                             <div class="mt-2">
                                 <!-- Edit form -->
@@ -139,6 +147,82 @@
                                     
                                     <!-- Comment Reactions -->
                                     <x-comment-reactions :comment="$comment" />
+                                    
+                                    <!-- Reply form -->
+                                    @if($this->replyingToId === $comment->id)
+                                        <div class="mt-4 space-y-2">
+                                            <div class="fi-form reply-form" data-reply-form="true">{{ $this->replyForm }}</div>
+                                            <div class="flex items-center gap-2">
+                                                <!-- Submit Reply button -->
+                                                <button wire:click="addReply" 
+                                                        type="button" 
+                                                        class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-primary-900 hover:bg-primary-500 hover:dark:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="addReply">
+                                                    <span wire:loading.remove wire:target="addReply">
+                                                        {{ __('comments.buttons.save') }}
+                                                    </span>
+                                                    <span wire:loading wire:target="addReply">
+                                                        {{ __('comments.buttons.submitting') }}
+                                                    </span>
+                                                </button>
+                                                <!-- Cancel Reply button -->
+                                                <button wire:click="cancelReply" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    
+                                    <!-- Display replies -->
+                                    @if($comment->replies->count() > 0)
+                                        <div class="mt-4 ml-6 space-y-3">
+                                            @foreach($comment->replies as $reply)
+                                                <div class="flex gap-3" wire:key="reply-{{ $reply->id }}" data-comment-id="{{ $reply->id }}">
+                                                    <div class="flex-shrink-0 relative">
+                                                        @php
+                                                            $avatarPath = $reply->user->avatar ?? null;
+                                                            $avatarUrl = $avatarPath ? \Storage::url($avatarPath) : null;
+                                                        @endphp
+                                                        @if($avatarUrl)
+                                                            <img src="{{ $avatarUrl }}" alt="{{ $reply->user->username ?? __('comments.meta.user_fallback') }}" class="w-8 h-8 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm relative z-10 {{ auth()->id() === $reply->user_id ? 'border-2 border-primary-500/80' : '' }}" loading="lazy">
+                                                        @else
+                                                            @php
+                                                                $defaultAvatarUrl = (new \Filament\AvatarProviders\UiAvatarsProvider())->get($reply->user);
+                                                            @endphp
+                                                            @if($defaultAvatarUrl)
+                                                                <img src="{{ $defaultAvatarUrl }}" alt="{{ $reply->user->username ?? __('comments.meta.user_fallback') }}" class="w-8 h-8 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm relative z-10 {{ auth()->id() === $reply->user_id ? 'border-2 border-primary-500/80' : '' }}" loading="lazy">
+                                                            @else
+                                                                <div class="w-8 h-8 rounded-full bg-primary-500 ring-1 ring-white/20 dark:ring-gray-800 shadow-sm flex items-center justify-center relative z-10 {{ auth()->id() === $reply->user_id ? 'border-2 border-white/80' : '' }}">
+                                                                    <span class="text-xs font-medium text-white">
+                                                                        {{ substr($reply->user->username ?? __('comments.meta.user_fallback'), 0, 1) }}
+                                                                    </span>
+                                                                </div>
+                                                            @endif
+                                                        @endif
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="flex items-start justify-between gap-2">
+                                                            <div class="flex flex-col">
+                                                                <span class="comment-username text-gray-900 dark:text-gray-100 leading-none text-sm">{{ $reply->user->username ?? __('comments.meta.unknown') }}</span>
+                                                                <span class="mt-1 comment-meta text-gray-500 dark:text-gray-400 text-xs" title="{{ $reply->created_at->format('j/n/y, h:i A') }}">
+                                                                    {{ $reply->created_at->diffForHumans(short: true) }} · {{ $reply->created_at->format('j/n/y, h:i A') }}
+                                                                    @if($reply->updated_at->gt($reply->created_at))
+                                                                        <span class="italic text-gray-400 comment-meta">· {{ __('comments.meta.edited') }}</span>
+                                                                    @endif
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mt-2">
+                                                            <div class="bg-gray-200/20 dark:bg-gray-700/30 rounded-lg p-2 mt-2">
+                                                                <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[12px] text-gray-700 dark:text-gray-300 break-words">{!! $reply->rendered_comment !!}</div>
+                                                            </div>
+                                                            <!-- Reply Reactions -->
+                                                            <x-comment-reactions :comment="$reply" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 @endif
                             </div>
                     </div>
@@ -484,6 +568,48 @@
                             id: activeEditor.id
                         } : 'none found');
                     }
+                } else if (data.inputId === 'replyData.replyText') {
+                    console.log('🎯 Looking for REPLY FORM editor based on inputId');
+                    
+                    // For reply forms, prioritize reply form editors first
+                    const replyForm = document.querySelector('.reply-form[data-reply-form="true"]');
+                    if (replyForm) {
+                        activeEditor = replyForm.querySelector('trix-editor') ||
+                                     replyForm.querySelector('.ProseMirror') ||
+                                     replyForm.querySelector('[contenteditable="true"]');
+                    }
+                    
+                    console.log('🔍 Step 1 - Specific reply form editor:', activeEditor ? {
+                        tagName: activeEditor.tagName,
+                        className: activeEditor.className,
+                        id: activeEditor.id
+                    } : 'none found');
+                    
+                    // Fallback to any reply form
+                    if (!activeEditor) {
+                        activeEditor = document.querySelector('.reply-form trix-editor') ||
+                                     document.querySelector('.reply-form .ProseMirror') ||
+                                     document.querySelector('.reply-form [contenteditable="true"]');
+                                     
+                        console.log('🔍 Step 2 - General reply form editor:', activeEditor ? {
+                            tagName: activeEditor.tagName,
+                            className: activeEditor.className,
+                            id: activeEditor.id
+                        } : 'none found');
+                    }
+                    
+                    // Last resort: check for focused editors
+                    if (!activeEditor) {
+                        activeEditor = document.querySelector('trix-editor:focus') || 
+                                     document.querySelector('.ProseMirror:focus') ||
+                                     document.querySelector('[contenteditable="true"]:focus');
+                                     
+                        console.log('🔍 Step 3 - Focused editor (fallback):', activeEditor ? {
+                            tagName: activeEditor.tagName,
+                            className: activeEditor.className,
+                            id: activeEditor.id
+                        } : 'none found');
+                    }
                 } else {
                     console.log('🎯 Looking for COMPOSER editor based on inputId or default logic');
                     
@@ -684,12 +810,14 @@
                     // Check if this editor is in an edit form (not composer)
                     const editForm = target.closest('.fi-form');
                     const specificEditForm = target.closest('.edit-form[data-edit-form="true"]');
+                    const specificReplyForm = target.closest('.reply-form[data-reply-form="true"]');
                     
-                    if ((editForm && !editForm.closest('[data-composer]')) || specificEditForm) {
-                        console.log('🎯 Edit form editor focused, initializing mentions...', {
+                    if ((editForm && !editForm.closest('[data-composer]')) || specificEditForm || specificReplyForm) {
+                        console.log('🎯 Form editor focused, initializing mentions...', {
                             tagName: target.tagName,
                             isInEditForm: !!editForm,
                             isInSpecificEditForm: !!specificEditForm,
+                            isInSpecificReplyForm: !!specificReplyForm,
                             alreadyInitialized: !!target.dataset.mentionsInitialized
                         });
                         
@@ -716,6 +844,20 @@
                             initializeEditor(editFormEditor);
                         }
                     }, 1500); // Wait for Livewire to update and render the edit form
+                }
+                
+                // Listen for reply button clicks to prepare for reply form appearing
+                const replyButton = e.target.closest('button[wire\\:click*="startReply"]');
+                if (replyButton) {
+                    console.log('🔧 Reply button clicked, preparing for reply form...');
+                    // Wait a bit for the reply form to appear, then initialize
+                    setTimeout(function() {
+                        const replyFormEditor = document.querySelector('.reply-form[data-reply-form="true"] trix-editor, .reply-form[data-reply-form="true"] .ProseMirror');
+                        if (replyFormEditor && !replyFormEditor.dataset.mentionsInitialized) {
+                            console.log('🎯 Reply form appeared, initializing editor...');
+                            initializeEditor(replyFormEditor);
+                        }
+                    }, 1500); // Wait for Livewire to update and render the reply form
                 }
             });
 
@@ -866,7 +1008,27 @@
                     dropdownActive = true;
 
                     // Determine input ID based on editor context
-                    const inputId = trixEditor.closest('[data-composer]') ? 'composerData.newComment' : 'editData.editingText';
+                    let inputId;
+                    
+                    if (trixEditor.closest('[data-composer]')) {
+                        inputId = 'composerData.newComment';
+                    } else if (trixEditor.closest('.edit-form[data-edit-form="true"]')) {
+                        inputId = 'editData.editingText';
+                    } else if (trixEditor.closest('.reply-form[data-reply-form="true"]')) {
+                        inputId = 'replyData.replyText';
+                    } else {
+                        // Fallback: try to determine by form class
+                        const editForm = trixEditor.closest('.edit-form');
+                        const replyForm = trixEditor.closest('.reply-form');
+                        
+                        if (editForm) {
+                            inputId = 'editData.editingText';
+                        } else if (replyForm) {
+                            inputId = 'replyData.replyText';
+                        } else {
+                            inputId = 'composerData.newComment'; // Default fallback
+                        }
+                    }
                     
                     console.log('� Dispatching Trix showMentionDropdown:', { 
                         inputId, 
@@ -910,7 +1072,28 @@
             atSymbolPosition = finalPosition;
             dropdownActive = true;
 
-            const inputId = trixEditor.closest('[data-composer]') ? 'composerData.newComment' : 'editData.editingText';
+            // Determine input ID based on editor context
+            let inputId;
+            
+            if (trixEditor.closest('[data-composer]')) {
+                inputId = 'composerData.newComment';
+            } else if (trixEditor.closest('.edit-form[data-edit-form="true"]')) {
+                inputId = 'editData.editingText';
+            } else if (trixEditor.closest('.reply-form[data-reply-form="true"]')) {
+                inputId = 'replyData.replyText';
+            } else {
+                // Fallback: try to determine by form class
+                const editForm = trixEditor.closest('.edit-form');
+                const replyForm = trixEditor.closest('.reply-form');
+                
+                if (editForm) {
+                    inputId = 'editData.editingText';
+                } else if (replyForm) {
+                    inputId = 'replyData.replyText';
+                } else {
+                    inputId = 'composerData.newComment'; // Default fallback
+                }
+            }
             
             console.log('📡 Dispatching Trix showMentionDropdown (fallback):', { 
                 inputId, 
@@ -929,7 +1112,28 @@
 
         // Update mention dropdown for Trix editor
         function updateTrixMentionDropdown(trixEditor, searchTerm) {
-            const inputId = trixEditor.closest('[data-composer]') ? 'composerData.newComment' : 'editData.editingText';
+            let inputId;
+            
+            // Determine which form this editor belongs to
+            if (trixEditor.closest('[data-composer]')) {
+                inputId = 'composerData.newComment';
+            } else if (trixEditor.closest('.edit-form[data-edit-form="true"]')) {
+                inputId = 'editData.editingText';
+            } else if (trixEditor.closest('.reply-form[data-reply-form="true"]')) {
+                inputId = 'replyData.replyText';
+            } else {
+                // Fallback: try to determine by form class
+                const editForm = trixEditor.closest('.edit-form');
+                const replyForm = trixEditor.closest('.reply-form');
+                
+                if (editForm) {
+                    inputId = 'editData.editingText';
+                } else if (replyForm) {
+                    inputId = 'replyData.replyText';
+                } else {
+                    inputId = 'composerData.newComment'; // Default fallback
+                }
+            }
             
             console.log('📡 Dispatching Trix showMentionDropdown (update):', { 
                 inputId, 
@@ -945,6 +1149,46 @@
                 y: atSymbolPosition.top
             });
         }
+        // Find the reply form editor specifically
+        function findReplyEditor() {
+            // Look for Trix editor in reply form (when replying to a comment)
+            let replyForm = document.querySelector('.reply-form[data-reply-form="true"]');
+
+            if (!replyForm) {
+                // Try alternative selectors
+                replyForm = document.querySelector('.reply-form');
+            }
+
+            if (replyForm) {
+                // Try multiple ways to find the editor within the reply form
+                const richEditor = replyForm.querySelector('.fi-fo-rich-editor, .fi-fo-rich-editor-container');
+                if (richEditor) {
+                    let editor = richEditor.querySelector('trix-editor');
+                    if (editor) {
+                        return editor;
+                    }
+
+                    editor = richEditor.querySelector('.ProseMirror, [contenteditable="true"], [role="textbox"]');
+                    if (editor) {
+                        return editor;
+                    }
+                }
+                
+                // Direct search in reply form
+                let editor = replyForm.querySelector('trix-editor');
+                if (editor) {
+                    return editor;
+                }
+                
+                editor = replyForm.querySelector('.ProseMirror, [contenteditable="true"], [role="textbox"]');
+                if (editor) {
+                    return editor;
+                }
+            }
+
+            return null;
+        }
+
         // Find the edit form editor specifically
         function findEditEditor() {
             // Look for Trix editor in edit form (when editing a comment)
@@ -1256,7 +1500,27 @@
                     dropdownActive = true;
 
                     // Determine the input ID based on the editor element
-                    const inputId = editor.closest('[data-composer]') ? 'composerData.newComment' : 'editData.editingText';
+                    let inputId;
+                    
+                    if (editor.closest('[data-composer]')) {
+                        inputId = 'composerData.newComment';
+                    } else if (editor.closest('.edit-form[data-edit-form="true"]')) {
+                        inputId = 'editData.editingText';
+                    } else if (editor.closest('.reply-form[data-reply-form="true"]')) {
+                        inputId = 'replyData.replyText';
+                    } else {
+                        // Fallback: try to determine by form class
+                        const editForm = editor.closest('.edit-form');
+                        const replyForm = editor.closest('.reply-form');
+                        
+                        if (editForm) {
+                            inputId = 'editData.editingText';
+                        } else if (replyForm) {
+                            inputId = 'replyData.replyText';
+                        } else {
+                            inputId = 'composerData.newComment'; // Default fallback
+                        }
+                    }
                     
                     console.log('📡 Dispatching showMentionDropdown:', { 
                         inputId, 
@@ -1278,7 +1542,27 @@
                 console.log('🔄 Updating existing dropdown...');
                 // Update existing dropdown with new search term
                 // Determine the input ID based on the editor element
-                const inputId = editor.closest('[data-composer]') ? 'composerData.newComment' : 'editData.editingText';
+                let inputId;
+                
+                if (editor.closest('[data-composer]')) {
+                    inputId = 'composerData.newComment';
+                } else if (editor.closest('.edit-form[data-edit-form="true"]')) {
+                    inputId = 'editData.editingText';
+                } else if (editor.closest('.reply-form[data-reply-form="true"]')) {
+                    inputId = 'replyData.replyText';
+                } else {
+                    // Fallback: try to determine by form class
+                    const editForm = editor.closest('.edit-form');
+                    const replyForm = editor.closest('.reply-form');
+                    
+                    if (editForm) {
+                        inputId = 'editData.editingText';
+                    } else if (replyForm) {
+                        inputId = 'replyData.replyText';
+                    } else {
+                        inputId = 'composerData.newComment'; // Default fallback
+                    }
+                }
                 
                 console.log('📡 Dispatching showMentionDropdown (update):', { 
                     inputId, 

@@ -28,10 +28,17 @@ class TaskComments extends Component implements HasForms
 
     public ?array $editData = [];
 
+    public ?array $replyData = [];
+
     // Editing state
     public ?int $editingId = null;
 
     public string $editingText = '';
+
+    // Reply state
+    public ?int $replyingToId = null;
+
+    public string $replyText = '';
 
     public int $visibleCount = 5; // number of comments to display initially / currently
 
@@ -117,6 +124,10 @@ class TaskComments extends Component implements HasForms
         $this->editData = $this->editData ?? [];
         if (! array_key_exists('editingText', $this->editData)) {
             $this->editData['editingText'] = '';
+        }
+        $this->replyData = $this->replyData ?? [];
+        if (! array_key_exists('replyText', $this->replyData)) {
+            $this->replyData['replyText'] = '';
         }
         if (method_exists($this, 'composerForm')) {
             $this->composerForm->fill(['newComment' => '']);
@@ -266,6 +277,161 @@ class TaskComments extends Component implements HasForms
         $this->editingText = '';
     }
 
+    // Start replying to a comment
+    public function startReply(int $commentId): void
+    {
+        $comment = $this->task->comments()->whereNull('deleted_at')->findOrFail($commentId);
+        $this->replyingToId = $comment->id;
+        $this->replyText = '';
+        // Ensure underlying form state array has key
+        $this->replyData = $this->replyData ?? [];
+        $this->replyData['replyText'] = $this->replyText;
+        if (method_exists($this, 'replyForm')) {
+            $this->replyForm->fill(['replyText' => $this->replyText]);
+        }
+    }
+
+    // Cancel replying to a comment
+    public function cancelReply(): void
+    {
+        $this->replyingToId = null;
+        $this->replyText = '';
+    }
+
+    // Add a reply
+    public function addReply(): void
+    {
+        if (! $this->replyingToId) {
+            return;
+        }
+
+        // Pull latest value from reply form state
+        if (method_exists($this, 'replyForm')) {
+            $state = $this->replyForm->getState();
+            $this->replyText = $this->normalizeEditorInput($state['replyText'] ?? $this->replyText);
+        } else {
+            // Fallback: use replyData directly
+            // Use replyText property if replyData is empty
+            if (empty($this->replyData['replyText']) && ! empty($this->replyText)) {
+                $this->replyText = $this->normalizeEditorInput($this->replyText);
+            } else {
+                $this->replyText = $this->normalizeEditorInput($this->replyData['replyText'] ?? $this->replyText);
+            }
+        }
+
+        $this->validateOnly('replyText');
+
+        // Check for whitespace issues BEFORE sanitization
+        $preTextOnly = trim(strip_tags($this->replyText));
+        if ($preTextOnly === '') {
+            return;
+        }
+
+        // Get the original text content without trimming to check for leading/trailing whitespace
+        $originalTextOnly = strip_tags($this->replyText);
+
+        // Additional check: ensure reply doesn't start with whitespace
+        if (preg_match('/^\s/', $originalTextOnly)) {
+            Notification::make()
+                ->title(__('comments.notifications.error_title', ['title' => 'Invalid Reply']))
+                ->body(__('comments.notifications.starts_with_space', ['message' => 'Reply cannot start with a space or newline']))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        // Additional check: ensure reply doesn't end with whitespace
+        if (preg_match('/\s$/', $originalTextOnly)) {
+            Notification::make()
+                ->title(__('comments.notifications.error_title', ['title' => 'Invalid Reply']))
+                ->body(__('comments.notifications.ends_with_space', ['message' => 'Reply cannot end with a space or newline']))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        // Aggressively remove trailing newlines and empty elements before sanitizing
+        // First remove any trailing <br> tags with whitespace
+        $this->replyText = preg_replace('/<br\s*\/?>\s*$/', '', $this->replyText);
+
+        // Remove empty paragraphs at the end (<p>&nbsp;</p> or <p></p> or <p> </p>)
+        $this->replyText = preg_replace('/<p[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/p>\s*$/', '', $this->replyText);
+
+        // Remove any <div> tags that might contain only whitespace at the end
+        $this->replyText = preg_replace('/<div[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/div>\s*$/', '', $this->replyText);
+
+        // Remove any trailing whitespace
+        $this->replyText = rtrim($this->replyText);
+
+        $sanitized = $this->sanitizeHtml($this->replyText);
+        $textOnly = trim(strip_tags($sanitized));
+
+        // Extract mentions from reply text
+        $mentions = Comment::extractMentions($sanitized);
+        \Log::info('🔍 Reply mentions extracted', [
+            'extractedMentions' => $mentions,
+            'pendingMentionUserIds' => $this->pendingMentionUserIds,
+            'sanitizedReply' => $sanitized,
+        ]);
+
+        // Merge with any user IDs selected via the dropdown tracking
+        if (! empty($this->pendingMentionUserIds)) {
+            // Merge all mentions (including @Everyone if present)
+            $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
+        }
+
+        \Log::info('✅ Final mentions for reply', [
+            'finalMentions' => $mentions,
+            'hasEveryone' => in_array('@Everyone', $mentions),
+        ]);
+
+        // Create the reply
+        $reply = Comment::create([
+            'task_id' => $this->task->id,
+            'user_id' => auth()->id(),
+            'parent_id' => $this->replyingToId,
+            'comment' => $sanitized,
+            'mentions' => $mentions,
+        ]);
+
+        // Process mentions and send notifications
+        \Log::info('🚀 Calling processMentions for reply', [
+            'replyId' => $reply->id,
+            'mentions' => $reply->mentions,
+            'hasEveryone' => in_array('@Everyone', $reply->mentions),
+        ]);
+
+        $reply->processMentions();
+
+        \Log::info('✅ processMentions completed for reply', [
+            'replyId' => $reply->id,
+        ]);
+
+        // Send notification
+        Notification::make()
+            ->title(__('comments.notifications.reply_added_title'))
+            ->body(Str::limit($textOnly, 120))
+            ->success()
+            ->send();
+
+        // Clear the reply form
+        $this->replyText = '';
+        $this->pendingMentionUserIds = [];
+        if (method_exists($this, 'replyForm')) {
+            $this->replyForm->fill(['replyText' => '']);
+        }
+        $this->replyData['replyText'] = '';
+        $this->replyingToId = null;
+        // keep visibleCount stable (newest-first list already includes new reply)
+        $this->dispatch('refreshTaskComments');
+        // Browser event to forcibly clear editor DOM (fallback)
+        $this->dispatch('resetReplyEditor');
+        // Dispatch event to hide any error messages
+        $this->dispatch('reply-added');
+    }
+
     // Save editing a comment
     public function saveEdit(): void
     {
@@ -391,6 +557,17 @@ class TaskComments extends Component implements HasForms
         }
     }
 
+    // Update the reply data
+    public function updatedReplyData($value): void
+    {
+        if (is_array($value) && isset($value['replyText'])) {
+            $this->replyText = $this->normalizeEditorInput($value['replyText']);
+            if (method_exists($this, 'replyForm')) {
+                $this->replyForm->fill(['replyText' => $this->replyText]);
+            }
+        }
+    }
+
     // Delete a comment
     public function deleteComment(int $commentId): void
     {
@@ -444,7 +621,8 @@ class TaskComments extends Component implements HasForms
     {
         return $this->task->comments()
             ->whereNull('deleted_at')
-            ->with(['user', 'reactions.user'])
+            ->whereNull('parent_id') // Only top-level comments
+            ->with(['user', 'reactions.user', 'replies.user', 'replies.reactions.user'])
             ->orderByDesc('created_at')
             ->take($this->visibleCount)
             ->get();
@@ -453,7 +631,7 @@ class TaskComments extends Component implements HasForms
     // Get the total comments
     public function getTotalCommentsProperty(): int
     {
-        return $this->task->comments()->whereNull('deleted_at')->count();
+        return $this->task->comments()->whereNull('deleted_at')->whereNull('parent_id')->count();
     }
 
     // Show more comments
@@ -461,7 +639,7 @@ class TaskComments extends Component implements HasForms
     {
         $this->isLoadingMore = true;
 
-        $total = $this->task->comments()->whereNull('deleted_at')->count();
+        $total = $this->task->comments()->whereNull('deleted_at')->whereNull('parent_id')->count();
         $remaining = $total - $this->visibleCount;
         if ($remaining <= 0) {
             $this->isLoadingMore = false;
@@ -512,6 +690,7 @@ class TaskComments extends Component implements HasForms
         return [
             'newComment' => 'required|string|max:1000',
             'editingText' => 'required|string|max:1000',
+            'replyText' => 'required|string|max:1000',
         ];
     }
 
@@ -571,6 +750,32 @@ class TaskComments extends Component implements HasForms
                     })
                     ->columnSpanFull(),
             ])->statePath('editData'),
+            // Reply form
+            'replyForm' => $this->makeForm()->schema([
+                RichEditor::make('replyText')
+                    ->label('')
+                    ->placeholder(__('comments.composer.reply_placeholder'))
+                    ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
+                    ->extraAttributes(['class' => 'minimal-comment-editor'])
+                    ->maxLength(200)
+                    ->extraInputAttributes(['style' => 'min-height:6rem;max-height:15rem;overflow-y:auto;resize:vertical;'])
+                    ->default('')
+                    ->formatStateUsing(function ($state) {
+                        if (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') {
+                            return '';
+                        }
+
+                        return $state;
+                    })
+                    ->mutateDehydratedStateUsing(function (?string $state) {
+                        if (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') {
+                            return '';
+                        }
+
+                        return $state;
+                    })
+                    ->columnSpanFull(),
+            ])->statePath('replyData'),
         ];
     }
 
