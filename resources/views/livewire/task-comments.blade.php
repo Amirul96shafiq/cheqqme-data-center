@@ -115,7 +115,18 @@
                                         <div class="fi-form edit-form" wire:ignore.self data-edit-form="true">{{ $this->editForm }}</div>
                                         <div class="flex items-center gap-2">
                                             <!-- Save Edit form button -->
-                                            <button wire:click="saveEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-primary-900 hover:bg-primary-500 hover:dark:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.save') }}</button>
+                                            <button wire:click="saveEdit" 
+                                                    type="button" 
+                                                    class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-primary-900 hover:bg-primary-500 hover:dark:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                                                    wire:loading.attr="disabled"
+                                                    wire:target="saveEdit">
+                                                <span wire:loading.remove wire:target="saveEdit">
+                                                    {{ __('comments.buttons.save') }}
+                                                </span>
+                                                <span wire:loading wire:target="saveEdit">
+                                                    {{ __('comments.buttons.submitting') }}
+                                                </span>
+                                            </button>
                                             <!-- Cancel Edit form button -->
                                             <button wire:click="cancelEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.cancel') }}</button>
                                         </div>

@@ -16,6 +16,7 @@ return [
         'save' => 'Submit changes',
         'cancel' => 'Cancel',
         'save_comment' => 'Submit Comment',
+        'submitting' => 'Submitting...',
     ],
     'list' => [
         'none' => 'No comments yet.',
@@ -53,6 +54,8 @@ return [
         'error_title' => 'Error: :title',
         'starts_with_space' => 'Comment cannot start with a space or newline. Please remove any leading spaces and try again.',
         'ends_with_space' => 'Comment cannot end with a space or newline. Please remove any trailing spaces and try again.',
+        'duplicate_content_title' => 'Duplicate Content',
+        'duplicate_content' => 'Unable to submit same comment content. Please make changes before submitting.',
     ],
     'mentions' => [
         'no_users_found' => 'No users found',

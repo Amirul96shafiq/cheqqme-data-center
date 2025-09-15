@@ -16,6 +16,7 @@ return [
         'save' => 'Simpan',
         'cancel' => 'Batal',
         'save_comment' => 'Simpan Komen',
+        'submitting' => 'Menyimpan...',
     ],
     'list' => [
         'none' => 'Belum ada komen.',
@@ -53,6 +54,8 @@ return [
         'error_title' => 'Ralat: :title',
         'starts_with_space' => 'Komen tidak boleh bermula dengan ruang atau baris baru. Sila buang sebarang ruang di hadapan dan cuba lagi.',
         'ends_with_space' => 'Komen tidak boleh berakhir dengan ruang atau baris baru. Sila buang sebarang ruang di belakang dan cuba lagi.',
+        'duplicate_content_title' => 'Komen Duplikat',
+        'duplicate_content' => 'Tidak dapat menyimpan komen yang sama. Sila buat perubahan sebelum menyimpan.',
     ],
     'mentions' => [
         'no_users_found' => 'Tiada pengguna ditemui',
