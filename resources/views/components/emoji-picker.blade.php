@@ -135,33 +135,17 @@ function emojiPicker(commentId) {
         filteredEmojis: [],
 
         init() {
-            console.log('=== EMOJI PICKER INIT ===');
-            console.log('Comment ID:', this.commentId);
-            console.log('Element:', this.$el);
-            console.log('Button found:', this.$el.querySelector('.emoji-picker-trigger'));
-            console.log('========================');
-            
-            // Initialize emoji data
             this.initializeEmojis();
-            
-            // Load existing user reactions for this comment
             this.loadUserReactions();
         },
 
 
         toggle() {
-            console.log('=== TOGGLE CALLED ===');
-            console.log('Current state:', this.open);
-            console.log('Comment ID:', this.commentId);
-            
             if (!this.open) {
                 this.calculateCenterPosition();
             }
             
             this.open = !this.open;
-            
-            console.log('New state:', this.open);
-            console.log('==================');
         },
 
         close() {
@@ -312,7 +296,6 @@ function emojiPicker(commentId) {
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('API response data:', data);
                     this.userReactions = data.data
                         .filter(reaction => reaction.user_reacted)
                         .map(reaction => reaction.emoji);
@@ -325,13 +308,10 @@ function emojiPicker(commentId) {
         async addReaction(emoji) {
             if (this.loading) return;
 
-            console.log('Adding reaction:', emoji, 'for comment:', this.commentId);
-            console.log('Emoji picker component state:', { open: this.open, userReactions: this.userReactions, loading: this.loading });
             this.loading = true;
             
             try {
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                console.log('CSRF Token:', csrfToken ? 'Found' : 'Missing');
                 
                 const response = await fetch('/api/comment-reactions', {
                     method: 'POST',
@@ -347,17 +327,23 @@ function emojiPicker(commentId) {
                     })
                 });
 
-                console.log('Response status:', response.status);
                 const data = await response.json();
-                console.log('Response data:', data);
 
                 if (response.ok) {
                     if (data.data.action === 'added') {
                         this.userReactions.push(emoji);
-                        this.showNotification('Reaction added', 'success');
+                        this.$dispatch('emojiReactionNotification', {
+                            message: 'Reaction added successfully',
+                            type: 'success'
+                        });
+                        this.showCustomNotification('Reaction added successfully', 'success');
                     } else if (data.data.action === 'removed') {
                         this.userReactions = this.userReactions.filter(e => e !== emoji);
-                        this.showNotification('Reaction removed', 'info');
+                        this.$dispatch('emojiReactionNotification', {
+                            message: 'Reaction removed successfully',
+                            type: 'info'
+                        });
+                        this.showCustomNotification('Reaction removed successfully', 'info');
                     }
                     
                     // Refresh the reactions display
@@ -390,23 +376,22 @@ function emojiPicker(commentId) {
                     // setTimeout(() => { location.reload(); }, 1000);
                 } else {
                     console.error('API Error:', data);
-                    this.showNotification(data.message || 'Failed to add reaction', 'error');
+                    this.$dispatch('emojiReactionNotification', {
+                        message: data.message || 'Failed to add reaction',
+                        type: 'danger'
+                    });
                 }
             } catch (error) {
                 console.error('Failed to add reaction:', error);
-                this.showNotification('Failed to add reaction', 'error');
+                this.$dispatch('emojiReactionNotification', {
+                    message: 'Failed to add reaction',
+                    type: 'danger'
+                });
             } finally {
                 this.loading = false;
             }
         },
 
-        showNotification(message, type = 'info') {
-            // Dispatch a custom event for notifications
-            this.$dispatch('show-notification', {
-                message: message,
-                type: type
-            });
-        },
 
         async refreshReactionsDisplay() {
             console.log('Refreshing reactions display for comment:', this.commentId);
@@ -503,6 +488,19 @@ function emojiPicker(commentId) {
             `;
             
             return button;
+        },
+
+        showCustomNotification(message, type = 'info') {
+            // Use the global notification system
+            if (window.showCustomNotification) {
+                window.showCustomNotification(message, type);
+            } else {
+                // Fallback: dispatch a custom event
+                this.$dispatch('show-notification', {
+                    message: message,
+                    type: type
+                });
+            }
         }
     }
 }
