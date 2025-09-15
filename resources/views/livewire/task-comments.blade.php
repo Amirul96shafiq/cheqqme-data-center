@@ -549,11 +549,9 @@
         
         // Set up global userSelected event listener
         function setupGlobalUserSelectedListener() {
-            console.log('🚀 Setting up global userSelected listener');
             
             // Remove any existing listeners first to avoid duplicates
             if (window.userSelectedListenerSetup) {
-                console.log('⚠️ Global listener already exists, skipping');
                 return;
             }
             
@@ -576,13 +574,6 @@
             
             // Listen for the new instant custom event (zero-delay) - with proper cleanup
             const userSelectedHandler = function(event) {
-                console.log('🎯 Instant userSelected event received:', {
-                    detail: event.detail,
-                    username: event.detail?.username,
-                    userId: event.detail?.userId,
-                    inputId: event.detail?.inputId,
-                    timestamp: new Date().toISOString()
-                });
                 handleUserSelected(event.detail);
             };
             
@@ -592,28 +583,19 @@
             window.userSelectedHandler = userSelectedHandler;
             
             function handleUserSelected(data) {
-                console.log('🎯 Global userSelected event received:', data);
                 
                 // Prevent multiple mentions from being processed
                 if (mentionSelectionLock) {
-                    console.log('🚫 Mention selection blocked - already processing');
                     return;
                 }
                 
                 // Validate data
                 if (!data || !data.username) {
-                    console.log('❌ Invalid userSelected data:', data);
                     return;
                 }
                 
                 // Handle special @Everyone case
                 if (data.userId === '@Everyone') {
-                    console.log('🎯 Processing @Everyone mention:', {
-                        userId: data.userId,
-                        username: data.username,
-                        inputId: data.inputId,
-                        timestamp: new Date().toISOString()
-                    });
                     // For @Everyone, we'll let the backend handle the special case
                     // Just insert the text and let the server process it
                 }
@@ -630,7 +612,6 @@
                 
                 // IMPROVED LOGIC: Use inputId to determine which editor to prioritize
                 if (data.inputId === 'editData.editingText') {
-                    console.log('🎯 Looking for EDIT FORM editor based on inputId');
                     
                     // For edit forms, prioritize edit form editors first
                     const editForm = document.querySelector('.edit-form[data-edit-form="true"]');
@@ -640,11 +621,6 @@
                                      editForm.querySelector('[contenteditable="true"]');
                     }
                     
-                    console.log('🔍 Step 1 - Specific edit form editor:', activeEditor ? {
-                        tagName: activeEditor.tagName,
-                        className: activeEditor.className,
-                        id: activeEditor.id
-                    } : 'none found');
                     
                     // Fallback to any fi-form that's not the composer
                     if (!activeEditor) {
@@ -652,11 +628,6 @@
                                      document.querySelector('.fi-form:not([data-composer]) .ProseMirror') ||
                                      document.querySelector('.fi-form:not([data-composer]) [contenteditable="true"]');
                                      
-                        console.log('🔍 Step 2 - General edit form editor:', activeEditor ? {
-                            tagName: activeEditor.tagName,
-                            className: activeEditor.className,
-                            id: activeEditor.id
-                        } : 'none found');
                     }
                     
                     // Last resort: check for focused editors
@@ -665,14 +636,8 @@
                                      document.querySelector('.ProseMirror:focus') ||
                                      document.querySelector('[contenteditable="true"]:focus');
                                      
-                        console.log('🔍 Step 3 - Focused editor (fallback):', activeEditor ? {
-                            tagName: activeEditor.tagName,
-                            className: activeEditor.className,
-                            id: activeEditor.id
-                        } : 'none found');
                     }
                 } else if (data.inputId === 'editReplyData.editingReplyText') {
-                    console.log('🎯 Looking for EDIT REPLY FORM editor based on inputId');
                     
                     // For edit reply forms, prioritize edit reply form editors first
                     const editReplyForm = document.querySelector('.edit-reply-form[data-edit-reply-form="true"]');
@@ -682,11 +647,6 @@
                                      editReplyForm.querySelector('[contenteditable="true"]');
                     }
                     
-                    console.log('🔍 Step 1 - Specific edit reply form editor:', activeEditor ? {
-                        tagName: activeEditor.tagName,
-                        className: activeEditor.className,
-                        id: activeEditor.id
-                    } : 'none found');
                     
                     // Fallback to any fi-form that's not the composer
                     if (!activeEditor) {
@@ -694,11 +654,6 @@
                                      document.querySelector('.fi-form:not([data-composer]) .ProseMirror') ||
                                      document.querySelector('.fi-form:not([data-composer]) [contenteditable="true"]');
                                      
-                        console.log('🔍 Step 2 - General edit form editor:', activeEditor ? {
-                            tagName: activeEditor.tagName,
-                            className: activeEditor.className,
-                            id: activeEditor.id
-                        } : 'none found');
                     }
                     
                     // Last resort: check for focused editors
@@ -707,14 +662,8 @@
                                      document.querySelector('.ProseMirror:focus') ||
                                      document.querySelector('[contenteditable="true"]:focus');
                                      
-                        console.log('🔍 Step 3 - Focused editor (fallback):', activeEditor ? {
-                            tagName: activeEditor.tagName,
-                            className: activeEditor.className,
-                            id: activeEditor.id
-                        } : 'none found');
                     }
                 } else if (data.inputId === 'replyData.replyText') {
-                    console.log('🎯 Looking for REPLY FORM editor based on inputId');
                     
                     // For reply forms, prioritize reply form editors first
                     const replyForm = document.querySelector('.reply-form[data-reply-form="true"]');
@@ -724,11 +673,6 @@
                                      replyForm.querySelector('[contenteditable="true"]');
                     }
                     
-                    console.log('🔍 Step 1 - Specific reply form editor:', activeEditor ? {
-                        tagName: activeEditor.tagName,
-                        className: activeEditor.className,
-                        id: activeEditor.id
-                    } : 'none found');
                     
                     // Fallback to any reply form
                     if (!activeEditor) {
@@ -736,11 +680,6 @@
                                      document.querySelector('.reply-form .ProseMirror') ||
                                      document.querySelector('.reply-form [contenteditable="true"]');
                                      
-                        console.log('🔍 Step 2 - General reply form editor:', activeEditor ? {
-                            tagName: activeEditor.tagName,
-                            className: activeEditor.className,
-                            id: activeEditor.id
-                        } : 'none found');
                     }
                     
                     // Last resort: check for focused editors
@@ -749,14 +688,8 @@
                                      document.querySelector('.ProseMirror:focus') ||
                                      document.querySelector('[contenteditable="true"]:focus');
                                      
-                        console.log('🔍 Step 3 - Focused editor (fallback):', activeEditor ? {
-                            tagName: activeEditor.tagName,
-                            className: activeEditor.className,
-                            id: activeEditor.id
-                        } : 'none found');
                     }
                 } else {
-                    console.log('🎯 Looking for COMPOSER editor based on inputId or default logic');
                     
                     // For composer or unknown inputId, use original logic
                     // First try to find focused editors
@@ -764,11 +697,6 @@
                                  document.querySelector('.ProseMirror:focus') ||
                                  document.querySelector('[contenteditable="true"]:focus');
                     
-                    console.log('🔍 Step 1 - Focused editor:', activeEditor ? {
-                        tagName: activeEditor.tagName,
-                        className: activeEditor.className,
-                        id: activeEditor.id
-                    } : 'none found');
                     
                     // If no focused editor, try to find the composer editor
                     if (!activeEditor) {
@@ -776,11 +704,6 @@
                                      document.querySelector('[data-composer] .ProseMirror') ||
                                      document.querySelector('[data-composer] [contenteditable="true"]');
                                      
-                        console.log('🔍 Step 2 - Composer editor:', activeEditor ? {
-                            tagName: activeEditor.tagName,
-                            className: activeEditor.className,
-                            id: activeEditor.id
-                        } : 'none found');
                     }
                     
                     // If still no editor, try to find any edit form editor
@@ -793,11 +716,6 @@
                                          editForm.querySelector('[contenteditable="true"]');
                         }
                         
-                        console.log('🔍 Step 3a - Specific edit form editor:', activeEditor ? {
-                            tagName: activeEditor.tagName,
-                            className: activeEditor.className,
-                            id: activeEditor.id
-                        } : 'none found');
                         
                         // Fallback to any fi-form that's not the composer
                         if (!activeEditor) {
@@ -805,20 +723,10 @@
                                          document.querySelector('.fi-form:not([data-composer]) .ProseMirror') ||
                                          document.querySelector('.fi-form:not([data-composer]) [contenteditable="true"]');
                                          
-                            console.log('🔍 Step 3b - General edit form editor:', activeEditor ? {
-                                tagName: activeEditor.tagName,
-                                className: activeEditor.className,
-                                id: activeEditor.id
-                            } : 'none found');
                         }
                     }
                 }
                 
-                console.log('🎯 Found active editor:', activeEditor ? {
-                    tagName: activeEditor.tagName,
-                    className: activeEditor.className,
-                    id: activeEditor.id
-                } : null);
                 
                 if (activeEditor && data.username) {
                     // Check if this username is already properly inserted to prevent duplicates
@@ -833,7 +741,6 @@
                     
                     const fullMention = `@${data.username} `;
                     if (currentText.includes(fullMention)) {
-                        console.log('⚠️ Username already properly inserted, skipping duplicate event');
                         // Release the selection lock
                         setTimeout(() => {
                             mentionSelectionLock = false;
@@ -841,30 +748,16 @@
                         return;
                     }
                     
-                    console.log('✅ Calling insertMention with:', {
-                        editor: activeEditor.tagName,
-                        username: data.username,
-                        currentText: currentText.substring(0, 50) + (currentText.length > 50 ? '...' : '')
-                    });
                     
                     // Use the comprehensive insertMention function
                     insertMention(activeEditor, data.username);
                     
                     // Notify server of selected user id
                     if (typeof data.userId !== 'undefined') {
-                        console.log('📡 Dispatching mentionSelected event:', {
-                            userId: data.userId,
-                            username: data.username,
-                            inputId: data.inputId,
-                            isEveryone: data.userId === '@Everyone',
-                            timestamp: new Date().toISOString()
-                        });
                         
                         Livewire.dispatch('mentionSelected', { userId: data.userId });
                         
-                        console.log('✅ mentionSelected event dispatched successfully');
                     } else {
-                        console.log('⚠️ No userId in data, skipping mentionSelected dispatch:', data);
                     }
                     
                     // Release the selection lock after a longer delay to prevent rapid duplicates
@@ -872,11 +765,6 @@
                         mentionSelectionLock = false;
                     }, 500); // Increased from 200ms to 500ms
                 } else {
-                    console.log('❌ No active editor found or no username provided', {
-                        hasEditor: !!activeEditor,
-                        hasUsername: !!data.username,
-                        data: data
-                    });
                     
                     // Release the selection lock even if no editor found
                     setTimeout(() => {
@@ -890,7 +778,6 @@
             waitForLivewire();
             // Re-initialize after Livewire updates
             document.addEventListener('livewire:update', function() {
-                console.log('🔄 Livewire update detected, re-initializing mentions...');
                 setTimeout(initializeMentions, 500);
                 
                 // Also check for any edit form editors that might have appeared
@@ -898,7 +785,6 @@
                     const editFormEditors = document.querySelectorAll('.edit-form[data-edit-form="true"] trix-editor, .fi-form:not([data-composer]) trix-editor, .edit-form[data-edit-form="true"] .ProseMirror, .fi-form:not([data-composer]) .ProseMirror');
                     editFormEditors.forEach(function(editor) {
                         if (!editor.dataset.mentionsInitialized) {
-                            console.log('🔧 Found uninitialized edit form editor, initializing...');
                             initializeEditor(editor);
                         }
                     });
@@ -906,7 +792,6 @@
             });
             // Re-initialize after Livewire navigated
             document.addEventListener('livewire:navigated', function() {
-                console.log('🔄 Livewire navigated, re-setting up mentions...');
                 // Reset the listener flag so it can be re-setup
                 window.userSelectedListenerSetup = false;
                 setupGlobalUserSelectedListener(); // Re-setup global listener
@@ -932,7 +817,6 @@
                                 if (specificEditForm || editForm || 
                                    (node.classList && node.classList.contains('edit-form')) ||
                                    (node.classList && node.classList.contains('fi-form') && !node.closest('[data-composer]'))) {
-                                    console.log('🔍 Edit form detected in DOM, initializing mentions...');
                                     // Wait longer for the edit form to be fully rendered
                                     setTimeout(initializeMentions, 1500);
                                 }
@@ -959,14 +843,6 @@
                     const specificReplyForm = target.closest('.reply-form[data-reply-form="true"]');
                     
                     if ((editForm && !editForm.closest('[data-composer]')) || specificEditForm || specificEditReplyForm || specificReplyForm) {
-                        console.log('🎯 Form editor focused, initializing mentions...', {
-                            tagName: target.tagName,
-                            isInEditForm: !!editForm,
-                            isInSpecificEditForm: !!specificEditForm,
-                            isInSpecificEditReplyForm: !!specificEditReplyForm,
-                            isInSpecificReplyForm: !!specificReplyForm,
-                            alreadyInitialized: !!target.dataset.mentionsInitialized
-                        });
                         
                         // Small delay to ensure the editor is fully ready
                         setTimeout(function() {
@@ -982,12 +858,10 @@
             document.addEventListener('click', function(e) {
                 const editButton = e.target.closest('button[wire\\:click*="startEdit"]');
                 if (editButton) {
-                    console.log('🔧 Edit button clicked, preparing for edit form...');
                     // Wait a bit for the edit form to appear, then initialize
                     setTimeout(function() {
                         const editFormEditor = document.querySelector('.edit-form[data-edit-form="true"] trix-editor, .edit-form[data-edit-form="true"] .ProseMirror');
                         if (editFormEditor && !editFormEditor.dataset.mentionsInitialized) {
-                            console.log('🎯 Edit form appeared, initializing editor...');
                             initializeEditor(editFormEditor);
                         }
                     }, 1500); // Wait for Livewire to update and render the edit form
@@ -996,12 +870,10 @@
                 // Listen for reply button clicks to prepare for reply form appearing
                 const replyButton = e.target.closest('button[wire\\:click*="startReply"]');
                 if (replyButton) {
-                    console.log('🔧 Reply button clicked, preparing for reply form...');
                     // Wait a bit for the reply form to appear, then initialize
                     setTimeout(function() {
                         const replyFormEditor = document.querySelector('.reply-form[data-reply-form="true"] trix-editor, .reply-form[data-reply-form="true"] .ProseMirror');
                         if (replyFormEditor && !replyFormEditor.dataset.mentionsInitialized) {
-                            console.log('🎯 Reply form appeared, initializing editor...');
                             initializeEditor(replyFormEditor);
                         }
                     }, 1500); // Wait for Livewire to update and render the reply form
@@ -1137,6 +1009,34 @@
         }
 
         // Show mention dropdown for Trix editor
+        // Helper function to determine input ID based on editor context
+        function getInputIdFromEditor(trixEditor) {
+            if (trixEditor.closest('[data-composer]')) {
+                return 'composerData.newComment';
+            } else if (trixEditor.closest('.edit-form[data-edit-form="true"]')) {
+                return 'editData.editingText';
+            } else if (trixEditor.closest('.edit-reply-form[data-edit-reply-form="true"]')) {
+                return 'editReplyData.editingReplyText';
+            } else if (trixEditor.closest('.reply-form[data-reply-form="true"]')) {
+                return 'replyData.replyText';
+            } else {
+                // Fallback: try to determine by form class
+                const editForm = trixEditor.closest('.edit-form');
+                const editReplyForm = trixEditor.closest('.edit-reply-form');
+                const replyForm = trixEditor.closest('.reply-form');
+                
+                if (editForm) {
+                    return 'editData.editingText';
+                } else if (editReplyForm) {
+                    return 'editReplyData.editingReplyText';
+                } else if (replyForm) {
+                    return 'replyData.replyText';
+                } else {
+                    return 'composerData.newComment'; // Default fallback
+                }
+            }
+        }
+
         function showTrixMentionDropdown(trixEditor, searchTerm, atIndex) {
             try {
                 // Get position using Trix's built-in method
@@ -1155,32 +1055,7 @@
                     dropdownActive = true;
 
                     // Determine input ID based on editor context
-                    let inputId;
-                    
-                    if (trixEditor.closest('[data-composer]')) {
-                        inputId = 'composerData.newComment';
-                    } else if (trixEditor.closest('.edit-form[data-edit-form="true"]')) {
-                        inputId = 'editData.editingText';
-                    } else if (trixEditor.closest('.edit-reply-form[data-edit-reply-form="true"]')) {
-                        inputId = 'editReplyData.editingReplyText';
-                    } else if (trixEditor.closest('.reply-form[data-reply-form="true"]')) {
-                        inputId = 'replyData.replyText';
-                    } else {
-                        // Fallback: try to determine by form class
-                        const editForm = trixEditor.closest('.edit-form');
-                        const editReplyForm = trixEditor.closest('.edit-reply-form');
-                        const replyForm = trixEditor.closest('.reply-form');
-                        
-                        if (editForm) {
-                            inputId = 'editData.editingText';
-                        } else if (editReplyForm) {
-                            inputId = 'editReplyData.editingReplyText';
-                        } else if (replyForm) {
-                            inputId = 'replyData.replyText';
-                        } else {
-                            inputId = 'composerData.newComment'; // Default fallback
-                        }
-                    }
+                    const inputId = getInputIdFromEditor(trixEditor);
                     
                     console.log('� Dispatching Trix showMentionDropdown:', { 
                         inputId, 
@@ -1225,39 +1100,8 @@
             dropdownActive = true;
 
             // Determine input ID based on editor context
-            let inputId;
+            const inputId = getInputIdFromEditor(trixEditor);
             
-            if (trixEditor.closest('[data-composer]')) {
-                inputId = 'composerData.newComment';
-            } else if (trixEditor.closest('.edit-form[data-edit-form="true"]')) {
-                inputId = 'editData.editingText';
-            } else if (trixEditor.closest('.edit-reply-form[data-edit-reply-form="true"]')) {
-                inputId = 'editReplyData.editingReplyText';
-            } else if (trixEditor.closest('.reply-form[data-reply-form="true"]')) {
-                inputId = 'replyData.replyText';
-            } else {
-                // Fallback: try to determine by form class
-                const editForm = trixEditor.closest('.edit-form');
-                const editReplyForm = trixEditor.closest('.edit-reply-form');
-                const replyForm = trixEditor.closest('.reply-form');
-                
-                if (editForm) {
-                    inputId = 'editData.editingText';
-                } else if (editReplyForm) {
-                    inputId = 'editReplyData.editingReplyText';
-                } else if (replyForm) {
-                    inputId = 'replyData.replyText';
-                } else {
-                    inputId = 'composerData.newComment'; // Default fallback
-                }
-            }
-            
-            console.log('📡 Dispatching Trix showMentionDropdown (fallback):', { 
-                inputId, 
-                searchTerm, 
-                x: finalPosition.left, 
-                y: finalPosition.top 
-            });
 
             Livewire.dispatch('showMentionDropdown', {
                 inputId: inputId,
@@ -1269,33 +1113,8 @@
 
         // Update mention dropdown for Trix editor
         function updateTrixMentionDropdown(trixEditor, searchTerm) {
-            let inputId;
-            
             // Determine which form this editor belongs to
-            if (trixEditor.closest('[data-composer]')) {
-                inputId = 'composerData.newComment';
-            } else if (trixEditor.closest('.edit-form[data-edit-form="true"]')) {
-                inputId = 'editData.editingText';
-            } else if (trixEditor.closest('.edit-reply-form[data-edit-reply-form="true"]')) {
-                inputId = 'editReplyData.editingReplyText';
-            } else if (trixEditor.closest('.reply-form[data-reply-form="true"]')) {
-                inputId = 'replyData.replyText';
-            } else {
-                // Fallback: try to determine by form class
-                const editForm = trixEditor.closest('.edit-form');
-                const editReplyForm = trixEditor.closest('.edit-reply-form');
-                const replyForm = trixEditor.closest('.reply-form');
-                
-                if (editForm) {
-                    inputId = 'editData.editingText';
-                } else if (editReplyForm) {
-                    inputId = 'editReplyData.editingReplyText';
-                } else if (replyForm) {
-                    inputId = 'replyData.replyText';
-                } else {
-                    inputId = 'composerData.newComment'; // Default fallback
-                }
-            }
+            const inputId = getInputIdFromEditor(trixEditor);
             
             // Calculate position for this specific editor instead of using global atSymbolPosition
             const editorRect = trixEditor.getBoundingClientRect();
@@ -1480,7 +1299,6 @@
             });
             
             if (editor.dataset.mentionsInitialized) {
-                console.log('⚠️ Editor already initialized, skipping');
                 return;
             }
 
@@ -1488,7 +1306,6 @@
             
             // Add event listeners
             editor.addEventListener('input', function(e) {
-                console.log('⌨️ Input event fired on editor');
                 handleMentionInput(e, editor);
             });
             
@@ -1502,7 +1319,6 @@
                 handleMentionKeydown(e, editor);
             });
             
-            console.log('✅ Editor initialized with mention listeners');
 
             // Insert mention into Trix editor
             function insertTrixMention(trixEditor, username) {
@@ -1598,17 +1414,11 @@
         }
         // Handle mention input debounced
         function handleMentionInputDebounced(e, editor) {
-            console.log('🔍 handleMentionInputDebounced called', { editor: editor.tagName, editorId: editor.id });
             
             const text = editor.textContent || '';
             const cursorPosition = getCursorPosition(editor);
             const beforeCursor = text.substring(0, cursorPosition);
             
-            console.log('📝 Text analysis:', { 
-                text: text.substring(0, 50) + (text.length > 50 ? '...' : ''), 
-                cursorPosition, 
-                beforeCursor: beforeCursor.substring(Math.max(0, beforeCursor.length - 20)) 
-            });
             
             // ENHANCED LOGIC: Handle both new @ and search updates with better pattern matching
             

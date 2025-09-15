@@ -24,13 +24,6 @@
                 selectionLock: false,
                 
                 init() {
-                    console.log('🚀 Initializing Alpine.js dropdown component', {
-                        targetInputId: this.targetInputId,
-                        users: this.users,
-                        showDropdown: this.showDropdown,
-                        selectedIndex: this.selectedIndex,
-                        timestamp: new Date().toISOString()
-                    });
                     
                     // Initialize client-side state
                     this.selectedIndex = {{ $selectedIndex }};
@@ -48,7 +41,6 @@
                         
                         // Debug logging for navigation keys
                         if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === 'Escape') {
-                            console.log('🎯 Keyboard event received:', e.key, 'selectedIndex:', this.selectedIndex);
                         }
                         
                         if (e.key === 'ArrowUp') {
@@ -73,16 +65,12 @@
                 },
                 
                 navigateUp() {
-                    console.log('⬆️ navigateUp called, current index:', this.selectedIndex);
                     this.selectedIndex = this.selectedIndex > 0 ? this.selectedIndex - 1 : this.users.length - 1;
-                    console.log('⬆️ navigateUp new index:', this.selectedIndex);
                     this.updateSelection();
                 },
                 
                 navigateDown() {
-                    console.log('⬇️ navigateDown called, current index:', this.selectedIndex);
                     this.selectedIndex = this.selectedIndex < this.users.length - 1 ? this.selectedIndex + 1 : 0;
-                    console.log('⬇️ navigateDown new index:', this.selectedIndex);
                     this.updateSelection();
                 },
                 
@@ -108,33 +96,17 @@
                 },
                 
                 selectUser() {
-                    console.log('🎯 Alpine.js selectUser called:', {
-                        selectedIndex: this.selectedIndex,
-                        totalUsers: this.users.length,
-                        selectionLock: this.selectionLock,
-                        isSelecting: this.isSelecting,
-                        targetInputId: this.targetInputId,
-                        timestamp: new Date().toISOString()
-                    });
                     
                     // Prevent multiple selections
                     if (this.selectionLock || this.isSelecting) {
-                        console.log('🚫 Selection blocked - already selecting');
                         return;
                     }
                     
                     if (this.users[this.selectedIndex]) {
                         const user = this.users[this.selectedIndex];
-                        console.log('🎯 Alpine.js selectUser processing user:', { 
-                            username: user.username, 
-                            userId: user.id,
-                            selectedIndex: this.selectedIndex,
-                            totalUsers: this.users.length
-                        });
                         
                         // Validate user data
                         if (!user.username || !user.id) {
-                            console.log('❌ Invalid user data:', user);
                             return;
                         }
                         
@@ -154,7 +126,6 @@
                                     inputId: this.targetInputId
                                 }
                             }));
-                            console.log('✅ userSelected event dispatched successfully');
                         } catch (error) {
                             console.error('❌ Error dispatching userSelected event:', error);
                         }
@@ -165,42 +136,29 @@
                             this.isSelecting = false;
                         }, 300); // Increased from 100ms to 300ms
                     } else {
-                        console.log('❌ No user found at selected index:', this.selectedIndex);
                     }
                 },
                 
                 selectUserByIndex(index) {
-                    console.log('🎯 Alpine.js selectUserByIndex called:', { 
-                        index, 
-                        totalUsers: this.users.length,
-                        selectionLock: this.selectionLock,
-                        isSelecting: this.isSelecting,
-                        targetInputId: this.targetInputId,
-                        timestamp: new Date().toISOString()
-                    });
                     
                     // Prevent multiple selections
                     if (this.selectionLock || this.isSelecting) {
-                        console.log('🚫 Selection blocked - already selecting');
                         return;
                     }
                     
                     // Validate index
                     if (index < 0 || index >= this.users.length) {
-                        console.log('❌ Invalid index:', index);
                         return;
                     }
                     
                     // Set the selected index first
                     this.selectedIndex = index;
-                    console.log('✅ Selected index set to:', this.selectedIndex);
                     
                     // Then select the user
                     this.selectUser();
                 },
                 
                 hideDropdown() {
-                    console.log('🎯 Alpine.js hideDropdown called');
                     // Hide instantly - no delays
                     this.$el.classList.add('instant-hide');
                     
@@ -217,17 +175,14 @@
                             if (this.$wire && this.$wire.$el && document.contains(this.$wire.$el)) {
                                 $wire.hideDropdown();
                             } else {
-                                console.log('⚠️ Livewire component not found in DOM, skipping hideDropdown call');
                             }
                         } catch (error) {
-                            console.log('⚠️ Error calling hideDropdown:', error.message);
                         }
                     }, 10);
                 },
                 
                 // Cleanup method for component destruction
                 destroy() {
-                    console.log('🧹 Alpine.js component destroying');
                     
                     // Remove global keyboard listener
                     if (this.keydownHandler) {
@@ -275,10 +230,8 @@
                         if ($wire && $wire.$el && document.contains($wire.$el)) {
                             $wire.hideDropdown();
                         } else {
-                            console.log('⚠️ Livewire component not found in DOM (click away), skipping hideDropdown call');
                         }
                     } catch (error) {
-                        console.log('⚠️ Error calling hideDropdown (click away):', error.message);
                     }
                 }, 0);
             "
@@ -313,7 +266,7 @@
                         class="flex items-center space-x-3 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 user-mention-item transition-colors duration-75 {{ $index === $selectedIndex ? 'bg-blue-50 dark:bg-blue-900/20' : '' }} {{ isset($user['is_special']) && $user['is_special'] ? 'border-l-4 border-orange-500 bg-orange-50 dark:bg-orange-900/20' : '' }}"
                         wire:key="user-{{ $user['id'] }}"
                         x-on:mouseenter="selectedIndex = {{ $index }}; updateSelection()"
-                        x-on:click.stop="console.log('🖱️ Mouse click detected on user item:', {{ $index }}); selectUserByIndex({{ $index }})"
+                        x-on:click.stop="selectUserByIndex({{ $index }})"
                     >
                         <!-- User Avatar -->
                         <div class="flex-shrink-0 user-mention-avatar">

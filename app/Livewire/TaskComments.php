@@ -79,33 +79,15 @@ class TaskComments extends Component implements HasForms
     #[On('mentionSelected')]
     public function onMentionSelected(?array $payload = null): void
     {
-        \Log::info('🎯 TaskComments::onMentionSelected called', [
-            'payload' => $payload,
-            'timestamp' => now()->toISOString(),
-        ]);
-
         if (!$payload) {
-            \Log::warning('❌ No payload received in onMentionSelected');
-
             return;
         }
 
         $userId = $payload['userId'] ?? 0;
 
-        \Log::info('🔍 Processing mentionSelected', [
-            'userId' => $userId,
-            'userIdType' => gettype($userId),
-            'isEveryone' => $userId === '@Everyone',
-            'currentPendingMentions' => $this->pendingMentionUserIds,
-        ]);
-
         // Handle special @Everyone case
         if ($userId === '@Everyone') {
-            \Log::info('🎯 Adding @Everyone to pending mentions');
             $this->pendingMentionUserIds[] = '@Everyone';
-            \Log::info('✅ @Everyone added to pending mentions', [
-                'pendingMentions' => $this->pendingMentionUserIds,
-            ]);
 
             return;
         }
@@ -113,10 +95,6 @@ class TaskComments extends Component implements HasForms
         // Handle regular user IDs
         $userId = (int) $userId;
         if ($userId > 0 && !in_array($userId, $this->pendingMentionUserIds, true)) {
-            \Log::info('🎯 Adding regular user to pending mentions', [
-                'userId' => $userId,
-                'pendingMentions' => $this->pendingMentionUserIds,
-            ]);
             $this->pendingMentionUserIds[] = $userId;
         }
     }
@@ -202,22 +180,12 @@ class TaskComments extends Component implements HasForms
 
         // Extract mentions from comment text
         $mentions = Comment::extractMentions($sanitized);
-        \Log::info('🔍 Comment mentions extracted', [
-            'extractedMentions' => $mentions,
-            'pendingMentionUserIds' => $this->pendingMentionUserIds,
-            'sanitizedComment' => $sanitized,
-        ]);
 
         // Merge with any user IDs selected via the dropdown tracking
         if (!empty($this->pendingMentionUserIds)) {
             // Merge all mentions (including @Everyone if present)
             $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
         }
-
-        \Log::info('✅ Final mentions for comment', [
-            'finalMentions' => $mentions,
-            'hasEveryone' => in_array('@Everyone', $mentions),
-        ]);
 
         // Create the comment
         $comment = Comment::create([
@@ -228,17 +196,7 @@ class TaskComments extends Component implements HasForms
         ]);
 
         // Process mentions and send notifications
-        \Log::info('🚀 Calling processMentions', [
-            'commentId' => $comment->id,
-            'mentions' => $comment->mentions,
-            'hasEveryone' => in_array('@Everyone', $comment->mentions),
-        ]);
-
         $comment->processMentions();
-
-        \Log::info('✅ processMentions completed', [
-            'commentId' => $comment->id,
-        ]);
 
         // Send notification
         Notification::make()
@@ -479,22 +437,12 @@ class TaskComments extends Component implements HasForms
 
         // Extract mentions from reply text
         $mentions = Comment::extractMentions($sanitized);
-        \Log::info('🔍 Reply mentions extracted', [
-            'extractedMentions' => $mentions,
-            'pendingMentionUserIds' => $this->pendingMentionUserIds,
-            'sanitizedReply' => $sanitized,
-        ]);
 
         // Merge with any user IDs selected via the dropdown tracking
         if (!empty($this->pendingMentionUserIds)) {
             // Merge all mentions (including @Everyone if present)
             $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
         }
-
-        \Log::info('✅ Final mentions for reply', [
-            'finalMentions' => $mentions,
-            'hasEveryone' => in_array('@Everyone', $mentions),
-        ]);
 
         // Create the reply
         $reply = Comment::create([
@@ -506,17 +454,7 @@ class TaskComments extends Component implements HasForms
         ]);
 
         // Process mentions and send notifications
-        \Log::info('🚀 Calling processMentions for reply', [
-            'replyId' => $reply->id,
-            'mentions' => $reply->mentions,
-            'hasEveryone' => in_array('@Everyone', $reply->mentions),
-        ]);
-
         $reply->processMentions();
-
-        \Log::info('✅ processMentions completed for reply', [
-            'replyId' => $reply->id,
-        ]);
 
         // Send notification
         Notification::make()
