@@ -20,6 +20,8 @@ return [
         'cancel' => 'Cancel',
         'save_comment' => 'Submit Comment',
         'submitting' => 'Submitting...',
+        'show_replies' => 'Show Reply (:count)',
+        'hide_replies' => 'Hide Reply',
     ],
     'list' => [
         'none' => 'No comments yet.',

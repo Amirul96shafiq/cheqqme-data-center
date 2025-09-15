@@ -20,6 +20,8 @@ return [
         'cancel' => 'Batal',
         'save_comment' => 'Simpan Komen',
         'submitting' => 'Menyimpan...',
+        'show_replies' => 'Tunjukkan balasan (:count)',
+        'hide_replies' => 'Sembunyikan balasan',
     ],
     'list' => [
         'none' => 'Belum ada komen.',

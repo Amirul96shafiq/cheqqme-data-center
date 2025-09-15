@@ -172,8 +172,36 @@
                                     
                                     <!-- Display replies -->
                                     @if($comment->replies->count() > 0)
-                                        <div class="mt-4 space-y-3">
-                                            @foreach($comment->replies as $reply)
+                                        <!-- Show/Hide replies button -->
+                                        <div class="mt-3" x-data="{ 
+                                            expanded: @js(in_array($comment->id, $expandedReplies)),
+                                            toggle() { 
+                                                this.expanded = !this.expanded;
+                                            }
+                                        }">
+                                            <button type="button" 
+                                                    @click="toggle()" 
+                                                    class="text-xs text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors duration-200 flex items-center gap-1">
+                                                <span x-show="expanded" class="flex items-center gap-1">
+                                                    @svg('heroicon-o-chevron-up', 'w-4 h-4')
+                                                    {{ __('comments.buttons.hide_replies') }}
+                                                </span>
+                                                <span x-show="!expanded" class="flex items-center gap-1">
+                                                    @svg('heroicon-o-chevron-down', 'w-4 h-4')
+                                                    {{ __('comments.buttons.show_replies', ['count' => $comment->replies->count()]) }}
+                                                </span>
+                                            </button>
+                                            
+                                            <!-- Replies container -->
+                                            <div x-show="expanded" 
+                                                 x-transition:enter="transition ease-out duration-200"
+                                                 x-transition:enter-start="opacity-0 transform scale-95"
+                                                 x-transition:enter-end="opacity-100 transform scale-100"
+                                                 x-transition:leave="transition ease-in duration-150"
+                                                 x-transition:leave-start="opacity-100 transform scale-100"
+                                                 x-transition:leave-end="opacity-0 transform scale-95"
+                                                 class="mt-4 space-y-3">
+                                                @foreach($comment->replies as $reply)
                                                 <div class="flex gap-3" wire:key="reply-{{ $reply->id }}" data-comment-id="{{ $reply->id }}">
                                                     <div class="flex-shrink-0 relative">
                                                         <!-- Horizontal connecting line for first reply -->
@@ -271,7 +299,8 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            @endforeach
+                                                @endforeach
+                                            </div>
                                         </div>
                                     @endif
                                 @endif

@@ -58,6 +58,9 @@ class TaskComments extends Component implements HasForms
     // Track mentions selected from dropdown to avoid relying only on text parsing
     public array $pendingMentionUserIds = [];
 
+    // Track which comments have their replies expanded
+    public array $expandedReplies = [];
+
     #[On('refreshTaskComments')]
     public function refresh(): void
     {
