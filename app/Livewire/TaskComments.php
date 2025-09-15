@@ -356,6 +356,14 @@ class TaskComments extends Component implements HasForms
         // Process mentions for notifications
         $reply->processMentions();
 
+        // Send success notification
+        $plain = trim(strip_tags($sanitized));
+        Notification::make()
+            ->title(__('comments.notifications.updated_title'))
+            ->body(Str::limit($plain, 120))
+            ->success()
+            ->send();
+
         // Refresh the comment to ensure UI updates
         $this->dispatch('refreshTaskComments');
 

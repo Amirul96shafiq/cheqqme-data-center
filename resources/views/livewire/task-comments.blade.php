@@ -127,7 +127,7 @@
                                                     wire:loading.attr="disabled"
                                                     wire:target="saveEdit">
                                                 <span wire:loading.remove wire:target="saveEdit">
-                                                    {{ __('comments.buttons.save') }}
+                                                    {{ __('comments.buttons.save_edit') }}
                                                 </span>
                                                 <span wire:loading wire:target="saveEdit">
                                                     {{ __('comments.buttons.submitting') }}
@@ -158,7 +158,7 @@
                                                         wire:loading.attr="disabled"
                                                         wire:target="addReply">
                                                     <span wire:loading.remove wire:target="addReply">
-                                                        {{ __('comments.buttons.save') }}
+                                                        {{ __('comments.buttons.send_reply') }}
                                                     </span>
                                                     <span wire:loading wire:target="addReply">
                                                         {{ __('comments.buttons.submitting') }}
@@ -237,10 +237,10 @@
                                                                                 wire:loading.attr="disabled"
                                                                                 wire:target="saveEditReply">
                                                                             <span wire:loading.remove wire:target="saveEditReply">
-                                                                                {{ __('comments.buttons.save') }}
+                                                                                {{ __('comments.buttons.save_edit') }}
                                                                             </span>
                                                                             <span wire:loading wire:target="saveEditReply">
-                                                                                {{ __('comments.buttons.saving') }}
+                                                                                {{ __('comments.buttons.submitting') }}
                                                                             </span>
                                                                         </button>
                                                                         <!-- Cancel Edit Reply button -->
