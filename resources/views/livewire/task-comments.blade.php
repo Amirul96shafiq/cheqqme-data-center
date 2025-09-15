@@ -37,10 +37,10 @@
                 </p> 
             @enderror <!-- Error message -->
             <!-- Button to add a new comment -->
-            <button wire:click="addComment" wire:loading.attr="disabled" wire:target="addComment,saveEdit,performDelete,deleteComment" type="button" class="w-full inline-flex items-center justify-center gap-1.5 p-2.5 bg-primary-600 hover:bg-primary-500 text-primary-900 text-sm font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50 relative">
+            <button wire:click="addComment" wire:loading.attr="disabled" wire:target="addComment" type="button" class="w-full inline-flex items-center justify-center gap-1.5 p-2.5 bg-primary-600 hover:bg-primary-500 text-primary-900 text-sm font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50 relative">
                 <div class="flex items-center gap-1.5">
-                    <span wire:loading.remove wire:target="addComment,saveEdit,performDelete,deleteComment">{{ __('comments.composer.send') }}</span>
-                    <span wire:loading wire:target="addComment,saveEdit,performDelete,deleteComment">{{ __('comments.composer.saving') }}</span>
+                    <span wire:loading.remove wire:target="addComment">{{ __('comments.composer.send') }}</span>
+                    <span wire:loading wire:target="addComment">{{ __('comments.composer.saving') }}</span>
                 </div>
                 <div class="absolute right-2 flex items-center gap-1 text-primary-800 text-[11px] font-semibold">
                     <kbd class="px-1 py-0.5 bg-primary-transparent border border-primary-800 rounded font-mono">CTRL + ENTER</kbd>
@@ -115,7 +115,7 @@
                                         <div class="fi-form edit-form" wire:ignore.self data-edit-form="true">{{ $this->editForm }}</div>
                                         <div class="flex items-center gap-2">
                                             <!-- Save Edit form button -->
-                                            <button wire:click="saveEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-white hover:bg-primary-500 hover:dark:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.save') }}</button>
+                                            <button wire:click="saveEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-primary-900 hover:bg-primary-500 hover:dark:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.save') }}</button>
                                             <!-- Cancel Edit form button -->
                                             <button wire:click="cancelEdit" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.cancel') }}</button>
                                         </div>

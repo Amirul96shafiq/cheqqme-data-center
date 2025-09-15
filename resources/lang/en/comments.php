@@ -13,9 +13,9 @@ return [
     'buttons' => [
         'edit' => 'Edit',
         'delete' => 'Delete',
-        'save' => 'Save changes',
+        'save' => 'Submit changes',
         'cancel' => 'Cancel',
-        'save_comment' => 'Save Comment',
+        'save_comment' => 'Submit Comment',
     ],
     'list' => [
         'none' => 'No comments yet.',
