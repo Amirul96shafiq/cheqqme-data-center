@@ -106,9 +106,28 @@
             </div>
         </div>
 
-        <!-- Footer -->
-        <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <p class="text-xs text-gray-500 dark:text-gray-400">Click an emoji to react</p>
+        <!-- Footer with Recent Emojis -->
+        <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+            <div class="mb-2">
+                <p class="text-xs text-gray-500 dark:text-gray-400">Recent</p>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+                <template x-for="emoji in recentEmojis.slice(0, 8)" :key="emoji">
+                    <button
+                        type="button"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        :data-emoji="emoji"
+                        @click="addReaction(emoji)"
+                        :class="{ 'bg-primary-100 dark:bg-primary-900': userReactions.includes(emoji) }"
+                        :title="`Recently used: ${emoji}`"
+                    >
+                        <span x-text="emoji"></span>
+                    </button>
+                </template>
+                <div x-show="recentEmojis.length === 0" class="text-xs text-gray-400 dark:text-gray-500 italic">
+                    No recent emojis
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -124,10 +143,12 @@ function emojiPicker(commentId) {
         searchQuery: '',
         allEmojis: [],
         filteredEmojis: [],
+        recentEmojis: [],
 
         init() {
             this.initializeEmojis();
             this.loadUserReactions();
+            this.loadRecentEmojis();
         },
 
 
@@ -212,6 +233,39 @@ function emojiPicker(commentId) {
         clearSearch() {
             this.searchQuery = '';
             this.filterEmojis();
+        },
+
+        loadRecentEmojis() {
+            try {
+                const userId = window.chatbotUserId || 'anonymous';
+                const recentKey = `recent_emojis_${userId}`;
+                const stored = localStorage.getItem(recentKey);
+                this.recentEmojis = stored ? JSON.parse(stored) : [];
+            } catch (error) {
+                console.error('Failed to load recent emojis:', error);
+                this.recentEmojis = [];
+            }
+        },
+
+        saveRecentEmojis() {
+            try {
+                const userId = window.chatbotUserId || 'anonymous';
+                const recentKey = `recent_emojis_${userId}`;
+                localStorage.setItem(recentKey, JSON.stringify(this.recentEmojis));
+            } catch (error) {
+                console.error('Failed to save recent emojis:', error);
+            }
+        },
+
+        addToRecentEmojis(emoji) {
+            // Remove emoji if it already exists
+            this.recentEmojis = this.recentEmojis.filter(e => e !== emoji);
+            // Add to beginning of array
+            this.recentEmojis.unshift(emoji);
+            // Keep only last 20 emojis
+            this.recentEmojis = this.recentEmojis.slice(0, 20);
+            // Save to localStorage
+            this.saveRecentEmojis();
         },
 
         calculateCenterPosition() {
@@ -320,6 +374,7 @@ function emojiPicker(commentId) {
                 if (response.ok) {
                     if (data.data.action === 'added') {
                         this.userReactions.push(emoji);
+                        this.addToRecentEmojis(emoji);
                         this.$dispatch('emojiReactionNotification', {
                             message: 'Reaction added successfully',
                             type: 'success'
