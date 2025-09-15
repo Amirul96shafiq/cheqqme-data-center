@@ -1,5 +1,6 @@
 <!-- Task Comments Component -->
-<div class="flex flex-col flex-1 h-full min-h-0 rounded-xl">
+<div class="flex flex-col flex-1 h-full min-h-0 rounded-xl" 
+     x-data="notificationHandler()">
     <!-- Composer (Top) -->
     <div class="px-0 pt-0 pb-5" data-composer>
         <div class="space-y-3">
@@ -21,7 +22,7 @@
             <div class="space-y-6">
                 <!-- Loop through comments -->
                 @forelse($this->comments as $comment)
-                    <div class="group relative flex gap-3" wire:key="comment-{{ $comment->id }}">
+                    <div class="group relative flex gap-3" wire:key="comment-{{ $comment->id }}" data-comment-id="{{ $comment->id }}">
                         <div class="flex-shrink-0 relative">
                         @php
                             $avatarPath = $comment->user->avatar ?? null;
@@ -93,21 +94,8 @@
                                         <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[13px] text-gray-700 dark:text-gray-300 break-words">{!! $comment->rendered_comment !!}</div>
                                     </div>
                                     
-                                    <!-- Emoji Reaction Button - Below Comment -->
-                                    <div class="mt-1 flex items-center justify-start">
-                                        <div class="emoji-container-livewire" data-comment-id="{{ $comment->id }}">
-                                            <button 
-                                                type="button"
-                                                class="emoji-reaction-btn-livewire p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900/20 focus:outline-none focus:ring-1 focus:ring-gray-500/40 transition-all duration-200"
-                                                data-comment-id="{{ $comment->id }}"
-                                                title="Add emoji reaction"
-                                            >
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <!-- Comment Reactions -->
+                                    <x-comment-reactions :comment="$comment" />
                                 @endif
                             </div>
                     </div>
@@ -2232,6 +2220,49 @@
                 toggleLivewireEmojiPicker(commentId, btn);
             }
         });
+    </script>
+
+    <!-- Notification Handler Script -->
+    <script>
+        function notificationHandler() {
+            return {
+                notifications: [],
+
+                init() {
+                    // Listen for notification events from child components
+                    this.$el.addEventListener('show-notification', (event) => {
+                        this.showNotification(event.detail.message, event.detail.type);
+                    });
+                },
+
+                showNotification(message, type = 'info') {
+                    const id = Date.now() + Math.random();
+                    const notification = {
+                        id: id,
+                        message: message,
+                        type: type,
+                        visible: true
+                    };
+
+                    this.notifications.push(notification);
+
+                    // Auto-remove after 5 seconds
+                    setTimeout(() => {
+                        this.removeNotification(id);
+                    }, 5000);
+                },
+
+                removeNotification(id) {
+                    const index = this.notifications.findIndex(n => n.id === id);
+                    if (index !== -1) {
+                        this.notifications[index].visible = false;
+                        setTimeout(() => {
+                            this.notifications.splice(index, 1);
+                        }, 200); // Wait for transition to complete
+                    }
+                }
+            }
+        }
     </script>
 
     <!-- Include the User Mention Dropdown Component -->

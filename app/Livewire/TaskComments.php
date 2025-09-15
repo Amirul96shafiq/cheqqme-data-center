@@ -46,6 +46,17 @@ class TaskComments extends Component implements HasForms
         // Refresh the component
     }
 
+    // Handle emoji reaction notifications
+    public function onEmojiReactionNotification(?array $payload = null): void
+    {
+        if ($payload && isset($payload['message']) && isset($payload['type'])) {
+            Notification::make()
+                        ->title($payload['message'])
+                ->{$payload['type']}()
+                    ->send();
+        }
+    }
+
     // Handle mention selected
     #[On('mentionSelected')]
     public function onMentionSelected(?array $payload = null): void
@@ -425,7 +436,7 @@ class TaskComments extends Component implements HasForms
     {
         return $this->task->comments()
             ->whereNull('deleted_at')
-            ->with('user')
+            ->with(['user', 'reactions.user'])
             ->orderByDesc('created_at')
             ->take($this->visibleCount)
             ->get();

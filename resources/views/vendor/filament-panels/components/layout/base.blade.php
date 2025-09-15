@@ -159,7 +159,8 @@
                     'fi-body',
                     'fi-panel-' . filament()->getId(),
                     'min-h-screen bg-gray-50 font-normal text-gray-950 antialiased dark:bg-gray-950 dark:text-white',
-                ]) }}
+                ])
+                ->merge(['data-user-id' => auth()->id() ?? 0]) }}
     >
         @include('components.global-loader')
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::BODY_START, scopes: $livewire?->getRenderHookScopes()) }}
@@ -168,9 +169,117 @@
 
         @livewire(Filament\Livewire\Notifications::class)
 
+        <!-- Custom Notification Container -->
+        <div id="custom-notification-container" 
+             x-data="notificationContainer()"
+             class="fixed top-4 right-4 z-[99999] space-y-2" 
+             style="z-index: 99999 !important;">
+            <template x-for="notification in notifications" :key="notification.id">
+                <div 
+                    x-show="notification.visible"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 translate-x-12"
+                    x-transition:enter-end="opacity-100 translate-x-0"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 translate-x-0"
+                    x-transition:leave-end="opacity-0 scale-95"
+                    class="max-w-md w-full overflow-hidden transition duration-300 rounded-xl bg-white shadow-lg ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10 pointer-events-auto"
+                    :class="{
+                        'ring-success-600/20 dark:ring-success-400/30 bg-success-50 dark:bg-success-400/10': notification.type === 'success',
+                        'ring-danger-600/20 dark:ring-danger-400/30 bg-danger-50 dark:bg-danger-400/10': notification.type === 'error',
+                        'ring-info-600/20 dark:ring-info-400/30 bg-info-50 dark:bg-info-400/10': notification.type === 'info'
+                    }"
+                >
+                    <div class="flex items-start justify-between w-full gap-3 px-6 py-4">
+                        <!-- Content -->
+                        <div class="flex-1 items-center justify-center min-w-0">
+                            <p class="text-sm font-medium text-gray-950 dark:text-white" x-text="notification.message"></p>
+                        </div>
+
+                        <!-- Close Button -->
+                        <div class="flex-shrink-0 ml-2">
+                            <button @click="removeCustomNotification(notification.id)" class="inline-flex items-center justify-center w-8 h-8 text-gray-400 transition duration-150 ease-in-out rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:text-gray-500 dark:hover:text-gray-400">
+                                <span class="sr-only">Close</span>
+                                <x-heroicon-o-x-mark class="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::SCRIPTS_BEFORE, scopes: $livewire?->getRenderHookScopes()) }}
 
         @filamentScripts(withCore: true)
+
+        <!-- Custom Notification System -->
+        <script data-navigate-once>
+            // Initialize global notification system
+            window.customNotifications = [];
+            
+            // Show notification function
+            window.showCustomNotification = function(message, type = 'info') {
+                const id = Date.now() + Math.random();
+                const notification = {
+                    id: id,
+                    message: message,
+                    type: type,
+                    visible: true
+                };
+                
+                window.customNotifications.push(notification);
+                
+                // Dispatch custom event to notify Alpine.js
+                document.dispatchEvent(new CustomEvent('custom-notification-added', {
+                    detail: { notification, total: window.customNotifications.length }
+                }));
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    window.removeCustomNotification(id);
+                }, 5000);
+            };
+            
+            // Remove notification function
+            window.removeCustomNotification = function(id) {
+                const index = window.customNotifications.findIndex(n => n.id === id);
+                if (index !== -1) {
+                    window.customNotifications[index].visible = false;
+                    setTimeout(() => {
+                        window.customNotifications.splice(index, 1);
+                        
+                        // Dispatch custom event to notify Alpine.js
+                        document.dispatchEvent(new CustomEvent('custom-notification-removed', {
+                            detail: { id, remaining: window.customNotifications.length }
+                        }));
+                    }, 200); // Wait for transition to complete
+                }
+            };
+            
+            // Alpine.js component for notification container
+            window.notificationContainer = function() {
+                return {
+                    notifications: window.customNotifications || [],
+                    
+                    init() {
+                        this.updateNotifications();
+                        
+                        // Listen for custom events to update notifications
+                        document.addEventListener('custom-notification-added', () => {
+                            this.updateNotifications();
+                        });
+                        
+                        document.addEventListener('custom-notification-removed', () => {
+                            this.updateNotifications();
+                        });
+                    },
+                    
+                    updateNotifications() {
+                        this.notifications = [...(window.customNotifications || [])];
+                    }
+                }
+            };
+        </script>
 
         @if (filament()->hasBroadcasting() && config('filament.broadcasting.echo'))
             <script data-navigate-once>

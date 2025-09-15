@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\PlaywrightMcpController;
 use App\Http\Controllers\Api\UserController as ApiUserController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CommentReactionController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ImportantUrlController;
 use App\Http\Controllers\OpenaiLogController;
@@ -25,6 +26,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/tasks', [TaskController::class, 'index'])->name('api.tasks');
     Route::get('/comments', [CommentController::class, 'index'])->name('api.comments');
     Route::get('/comments/{comment}', [CommentController::class, 'show'])->name('api.comments.show');
+    Route::post('/comments', [CommentController::class, 'store'])->name('api.comments.store');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('api.comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('api.comments.destroy');
+
+    // Comment reactions
+    Route::get('/comments/{comment}/reactions', [CommentReactionController::class, 'index'])->name('api.comment-reactions.index');
+    Route::post('/comment-reactions', [CommentReactionController::class, 'store'])->name('api.comment-reactions.store');
+    Route::delete('/comments/{comment}/reactions', [CommentReactionController::class, 'destroy'])->name('api.comment-reactions.destroy');
+
     Route::get('/trello-boards', [TrelloBoardController::class, 'index'])->name('api.trello-boards');
     Route::get('/openai-logs', [OpenaiLogController::class, 'apiIndex'])->name('api.openai.logs');
 
@@ -48,7 +58,7 @@ Route::get('/documentation', function () {
         'success' => true,
         'message' => 'API Documentation',
         'data' => [
-            'base_url' => config('app.url') . '/api',
+            'base_url' => config('app.url').'/api',
             'authentication' => 'Bearer token in Authorization header',
             'features' => [
                 'pretty_json' => 'All responses are formatted with proper indentation using JSON_PRETTY_PRINT',
@@ -72,7 +82,7 @@ Route::get('/documentation', function () {
                 'GET /comments' => 'Get all comments with search, filtering, sorting, and ID search',
                 'GET /comments/{comment}' => 'Get specific comment by ID',
             ],
-            'example_request' => 'GET ' . config('app.url') . '/api/profile',
+            'example_request' => 'GET '.config('app.url').'/api/profile',
             'headers' => [
                 'Authorization' => 'Bearer YOUR_API_KEY',
                 'Accept' => 'application/json',

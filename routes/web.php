@@ -47,7 +47,7 @@ Route::get('/test-mentions', function () {
     $user = \App\Models\User::first();
     $task = \App\Models\Task::first();
 
-    if (!$user || !$task) {
+    if (! $user || ! $task) {
         return response()->json([
             'error' => 'No user or task found. Please ensure you have test data.',
             'users_count' => \App\Models\User::count(),
@@ -79,6 +79,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/comments/{comment}/emoji', [CommentController::class, 'removeEmojiReaction'])->name('comments.emoji.remove');
     Route::get('/comments/{comment}/emoji', [CommentController::class, 'getEmojiReactions'])->name('comments.emoji.get');
     Route::post('/comments/emoji/batch', [CommentController::class, 'getEmojiReactionsForComments'])->name('comments.emoji.batch');
+    
+    // Comment reactions (web interface)
+    Route::get('/api/comments/{comment}/reactions', [\App\Http\Controllers\CommentReactionController::class, 'index'])->name('web.comment-reactions.index');
+    Route::post('/api/comment-reactions', [\App\Http\Controllers\CommentReactionController::class, 'store'])->name('web.comment-reactions.store');
+    Route::delete('/api/comments/{comment}/reactions', [\App\Http\Controllers\CommentReactionController::class, 'destroy'])->name('web.comment-reactions.destroy');
 
     // Chatbot routes
     Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])->name('chatbot.chat');
@@ -93,11 +98,11 @@ Route::middleware('auth')->group(function () {
 
     // Fallback polling endpoint (kept for compatibility, will be removed after WebSocket migration)
     Route::get('/action-board/assigned-active-count', function () {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return response()->json(['count' => 0]);
         }
         $count = \App\Models\Task::query()
-            ->where('assigned_to', 'like', '%' . auth()->id() . '%')
+            ->where('assigned_to', 'like', '%'.auth()->id().'%')
             ->whereIn('status', ['todo', 'in_progress', 'toreview'])
             ->count();
 
