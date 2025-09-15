@@ -176,6 +176,10 @@
                                             @foreach($comment->replies as $reply)
                                                 <div class="flex gap-3" wire:key="reply-{{ $reply->id }}" data-comment-id="{{ $reply->id }}">
                                                     <div class="flex-shrink-0 relative">
+                                                        <!-- Horizontal connecting line for first reply -->
+                                                        @if($loop->first)
+                                                            <div class="absolute -left-8 top-4 w-10 h-[0.5px] {{ auth()->id() === $comment->user_id ? 'bg-primary-500/80' : 'bg-gray-300/80 dark:bg-gray-600/80' }} z-0"></div>
+                                                        @endif
                                                         @php
                                                             $avatarPath = $reply->user->avatar ?? null;
                                                             $avatarUrl = $avatarPath ? \Storage::url($avatarPath) : null;
@@ -195,6 +199,10 @@
                                                                     </span>
                                                                 </div>
                                                             @endif
+                                                        @endif
+                                                        <!-- Vertical connecting line below reply avatar -->
+                                                        @if(!$loop->last)
+                                                            <div class="absolute left-1/2 top-8 w-[0.5px] {{ auth()->id() === $comment->user_id ? 'bg-primary-500/80' : 'bg-gray-300/80 dark:bg-gray-600/80' }} transform -translate-x-1/2 z-0" style="height: calc(100% + 0.75rem);"></div>
                                                         @endif
                                                     </div>
                                                     <div class="flex-1 min-w-0">
