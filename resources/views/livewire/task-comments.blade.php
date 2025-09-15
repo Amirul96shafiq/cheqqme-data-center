@@ -208,13 +208,58 @@
                                                                     @endif
                                                                 </span>
                                                             </div>
+                                                            <!-- Reply action buttons: Edit, Delete -->
+                                                            @if($this->editingReplyId !== $reply->id)
+                                                                @if(auth()->id() === $reply->user_id)
+                                                                    <div class="flex items-center gap-1">
+                                                                        <!-- Edit button -->
+                                                                        <button type="button" wire:click="startEditReply({{ $reply->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.edit') }}">
+                                                                            @svg('heroicon-o-pencil-square', 'w-4 h-4 transition-transform duration-200')
+                                                                        </button>
+                                                                        <!-- Delete button -->
+                                                                        <button type="button" wire:click="confirmDeleteReply({{ $reply->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/20 focus:outline-none focus:ring-2 focus:ring-danger-500/40 transition-all duration-200" title="{{ __('comments.buttons.delete') }}">
+                                                                            @svg('heroicon-o-trash', 'w-4 h-4 transition-transform duration-200')
+                                                                        </button>
+                                                                    </div>
+                                                                @endif
+                                                            @endif
                                                         </div>
                                                         <div class="mt-2">
-                                                            <div class="bg-gray-200/20 dark:bg-gray-700/30 rounded-lg p-2 mt-2">
-                                                                <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[12px] text-gray-700 dark:text-gray-300 break-words">{!! $reply->rendered_comment !!}</div>
-                                                            </div>
-                                                            <!-- Reply Reactions -->
-                                                            <x-comment-reactions :comment="$reply" />
+                                                            <!-- Edit reply form -->
+                                                            @if($this->editingReplyId === $reply->id)
+                                                                <div class="space-y-2">
+                                                                    <div class="fi-form edit-reply-form" data-edit-reply-form="true">{{ $this->editReplyForm }}</div>
+                                                                    <div class="flex items-center gap-2">
+                                                                        <!-- Save Edit Reply button -->
+                                                                        <button wire:click="saveEditReply" 
+                                                                                type="button" 
+                                                                                class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-primary-600 text-primary-900 hover:bg-primary-500 hover:dark:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                                                                                wire:loading.attr="disabled"
+                                                                                wire:target="saveEditReply">
+                                                                            <span wire:loading.remove wire:target="saveEditReply">
+                                                                                {{ __('comments.buttons.save') }}
+                                                                            </span>
+                                                                            <span wire:loading wire:target="saveEditReply">
+                                                                                {{ __('comments.buttons.saving') }}
+                                                                            </span>
+                                                                        </button>
+                                                                        <!-- Cancel Edit Reply button -->
+                                                                        <button wire:click="cancelEditReply" 
+                                                                                type="button" 
+                                                                                class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
+                                                                                wire:loading.attr="disabled"
+                                                                                wire:target="cancelEditReply">
+                                                                            {{ __('comments.buttons.cancel') }}
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            @else
+                                                                <div class="bg-gray-200/20 dark:bg-gray-700/30 rounded-lg p-2 mt-2">
+                                                                    <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[12px] text-gray-700 dark:text-gray-300 break-words">{!! $reply->rendered_comment !!}</div>
+                                                                </div>
+                                                                <!-- Reply Reactions -->
+                                                                <x-comment-reactions :comment="$reply" />
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </div>
@@ -310,8 +355,62 @@
         </div>
         <!-- Single backdrop already blocks clicks; extra blocker removed -->
     @endif
+    <!-- Delete reply modal -->
+    @if($confirmingDeleteReplyId)
+        <!-- Elevated z-index to ensure overlay sits above form action buttons -->
+        <div wire:ignore
+            x-data
+            x-init="
+                const root = document.documentElement;
+                root.classList.add('comment-delete-open');
+                const prev = document.activeElement;
+                $nextTick(() => { $el.querySelector('[data-modal-initial]')?.focus(); });
+                // Fallback safety: ensure class removed if this element is ever removed without Alpine cleanup
+                const observer = new MutationObserver(() => {
+                    if (!document.body.contains($el)) {
+                        root.classList.remove('comment-delete-open');
+                        observer.disconnect();
+                        prev && prev.focus && prev.focus();
+                    }
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+            "
+            x-on:keydown.window.escape.prevent.stop="$wire.cancelDeleteReply()"
+            class="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-auto comment-delete-modal-container"
+        >
+            <!-- Delete reply modal backdrop -->
+            <div class="comment-delete-modal-backdrop absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75" wire:click="cancelDeleteReply" aria-hidden="true"></div>
+            <!-- Delete reply modal -->
+            <div role="dialog" aria-modal="true" aria-labelledby="delete-reply-heading" class="comment-delete-modal fi-modal-window relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
+                <!-- Delete reply modal close button -->
+                <button type="button" wire:click="cancelDeleteReply" class="fi-modal-close-btn absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900" aria-label="{{ __('comments.modal.delete.close') }}">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+                <!-- Delete reply modal content -->
+                <div class="flex flex-col items-center text-center">
+                    <div class="mb-5 flex items-center justify-center">
+                        <div class="p-3 rounded-full bg-danger-100 text-danger-600 dark:bg-danger-500/20 dark:text-danger-400">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                        </div>
+                    </div>
+                    <!-- Delete reply modal heading -->
+                    <h2 id="delete-reply-heading" class="fi-modal-heading text-base font-semibold text-gray-900 dark:text-gray-100">{{ __('comments.modal.delete_reply.title') }}</h2>
+                    <!-- Delete reply modal description -->
+                    <p class="fi-modal-description mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{{ __('comments.modal.delete_reply.description') }}</p>
+                    <!-- Delete reply modal actions -->
+                    <div class="mt-6 flex w-full items-stretch gap-3">
+                        <!-- Delete reply modal cancel button -->
+                        <button data-modal-initial type="button" wire:click="cancelDeleteReply" class="fi-btn flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-sm font-medium tracking-tight border border-gray-300 bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:border-gray-500 dark:focus:ring-primary-500/40 dark:focus:ring-offset-gray-900">{{ __('comments.modal.delete.cancel') }}</button>
+                        <!-- Delete reply modal confirm button -->
+                        <button type="button" wire:click="deleteReply" class="fi-btn fi-color-danger flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-sm font-medium tracking-tight bg-danger-600 text-white hover:bg-danger-500 focus:outline-none focus:ring-2 focus:ring-danger-500/40 focus:ring-offset-2 focus:ring-offset-white dark:bg-danger-600 dark:hover:bg-danger-500 dark:focus:ring-offset-gray-900">{{ __('comments.modal.delete.confirm') }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Single backdrop already blocks clicks; extra blocker removed -->
+    @endif
     <!-- Ensure the helper class is cleared when modal not present -->
-    @if(!$confirmingDeleteId)
+    @if(!$confirmingDeleteId && !$confirmingDeleteReplyId)
         <script>
             // Ensure the helper class is cleared when modal not present
             document.documentElement.classList.remove('comment-delete-open');
@@ -536,6 +635,48 @@
                     }
                     
                     console.log('🔍 Step 1 - Specific edit form editor:', activeEditor ? {
+                        tagName: activeEditor.tagName,
+                        className: activeEditor.className,
+                        id: activeEditor.id
+                    } : 'none found');
+                    
+                    // Fallback to any fi-form that's not the composer
+                    if (!activeEditor) {
+                        activeEditor = document.querySelector('.fi-form:not([data-composer]) trix-editor') ||
+                                     document.querySelector('.fi-form:not([data-composer]) .ProseMirror') ||
+                                     document.querySelector('.fi-form:not([data-composer]) [contenteditable="true"]');
+                                     
+                        console.log('🔍 Step 2 - General edit form editor:', activeEditor ? {
+                            tagName: activeEditor.tagName,
+                            className: activeEditor.className,
+                            id: activeEditor.id
+                        } : 'none found');
+                    }
+                    
+                    // Last resort: check for focused editors
+                    if (!activeEditor) {
+                        activeEditor = document.querySelector('trix-editor:focus') || 
+                                     document.querySelector('.ProseMirror:focus') ||
+                                     document.querySelector('[contenteditable="true"]:focus');
+                                     
+                        console.log('🔍 Step 3 - Focused editor (fallback):', activeEditor ? {
+                            tagName: activeEditor.tagName,
+                            className: activeEditor.className,
+                            id: activeEditor.id
+                        } : 'none found');
+                    }
+                } else if (data.inputId === 'editReplyData.editingReplyText') {
+                    console.log('🎯 Looking for EDIT REPLY FORM editor based on inputId');
+                    
+                    // For edit reply forms, prioritize edit reply form editors first
+                    const editReplyForm = document.querySelector('.edit-reply-form[data-edit-reply-form="true"]');
+                    if (editReplyForm) {
+                        activeEditor = editReplyForm.querySelector('trix-editor') ||
+                                     editReplyForm.querySelector('.ProseMirror') ||
+                                     editReplyForm.querySelector('[contenteditable="true"]');
+                    }
+                    
+                    console.log('🔍 Step 1 - Specific edit reply form editor:', activeEditor ? {
                         tagName: activeEditor.tagName,
                         className: activeEditor.className,
                         id: activeEditor.id
@@ -808,13 +949,15 @@
                     // Check if this editor is in an edit form (not composer)
                     const editForm = target.closest('.fi-form');
                     const specificEditForm = target.closest('.edit-form[data-edit-form="true"]');
+                    const specificEditReplyForm = target.closest('.edit-reply-form[data-edit-reply-form="true"]');
                     const specificReplyForm = target.closest('.reply-form[data-reply-form="true"]');
                     
-                    if ((editForm && !editForm.closest('[data-composer]')) || specificEditForm || specificReplyForm) {
+                    if ((editForm && !editForm.closest('[data-composer]')) || specificEditForm || specificEditReplyForm || specificReplyForm) {
                         console.log('🎯 Form editor focused, initializing mentions...', {
                             tagName: target.tagName,
                             isInEditForm: !!editForm,
                             isInSpecificEditForm: !!specificEditForm,
+                            isInSpecificEditReplyForm: !!specificEditReplyForm,
                             isInSpecificReplyForm: !!specificReplyForm,
                             alreadyInitialized: !!target.dataset.mentionsInitialized
                         });
@@ -1082,10 +1225,13 @@
             } else {
                 // Fallback: try to determine by form class
                 const editForm = trixEditor.closest('.edit-form');
+                const editReplyForm = trixEditor.closest('.edit-reply-form');
                 const replyForm = trixEditor.closest('.reply-form');
                 
                 if (editForm) {
                     inputId = 'editData.editingText';
+                } else if (editReplyForm) {
+                    inputId = 'editReplyData.editingReplyText';
                 } else if (replyForm) {
                     inputId = 'replyData.replyText';
                 } else {
@@ -1117,15 +1263,20 @@
                 inputId = 'composerData.newComment';
             } else if (trixEditor.closest('.edit-form[data-edit-form="true"]')) {
                 inputId = 'editData.editingText';
+            } else if (trixEditor.closest('.edit-reply-form[data-edit-reply-form="true"]')) {
+                inputId = 'editReplyData.editingReplyText';
             } else if (trixEditor.closest('.reply-form[data-reply-form="true"]')) {
                 inputId = 'replyData.replyText';
             } else {
                 // Fallback: try to determine by form class
                 const editForm = trixEditor.closest('.edit-form');
+                const editReplyForm = trixEditor.closest('.edit-reply-form');
                 const replyForm = trixEditor.closest('.reply-form');
                 
                 if (editForm) {
                     inputId = 'editData.editingText';
+                } else if (editReplyForm) {
+                    inputId = 'editReplyData.editingReplyText';
                 } else if (replyForm) {
                     inputId = 'replyData.replyText';
                 } else {
@@ -1638,7 +1789,12 @@
             console.log('🎯 Starting insertMention:', { 
                 editor: editor.tagName, 
                 username: username,
-                editorClass: editor.className 
+                editorClass: editor.className,
+                isEditReplyForm: !!editor.closest('.edit-reply-form[data-edit-reply-form="true"]'),
+                formType: editor.closest('.edit-reply-form[data-edit-reply-form="true"]') ? 'edit-reply-form' : 
+                         editor.closest('.edit-form[data-edit-form="true"]') ? 'edit-form' :
+                         editor.closest('.reply-form[data-reply-form="true"]') ? 'reply-form' :
+                         editor.closest('[data-composer]') ? 'composer' : 'unknown'
             });
             
             insertingMention = true;
@@ -2018,6 +2174,31 @@
             // Reset flag and restore Livewire functionality after insertion
             setTimeout(() => {
                 insertingMention = false;
+                
+                // Trigger specific Livewire update for edit reply forms
+                if (editor.closest('.edit-reply-form[data-edit-reply-form="true"]')) {
+                    console.log('🔄 Triggering Livewire update for edit reply form');
+                    console.log('🔍 Editor content after insertion:', editor.innerHTML || editor.textContent);
+                    
+                    // Get the current content and update Livewire state
+                    const currentContent = editor.innerHTML || editor.textContent || '';
+                    console.log('📝 Updating Livewire state with content:', currentContent);
+                    
+                    // Force Livewire to detect the change
+                    editor.dispatchEvent(new Event('input', { bubbles: true }));
+                    editor.dispatchEvent(new Event('change', { bubbles: true }));
+                    
+                    // Also try to update the Livewire state directly
+                    try {
+                        // This should trigger the updatedEditReplyData method
+                        Livewire.find(editor.closest('[wire\\:id]')?.getAttribute('wire:id')).set('editReplyData.editingReplyText', currentContent);
+                        console.log('✅ Livewire state updated directly');
+                    } catch (error) {
+                        console.log('⚠️ Could not update Livewire state directly:', error);
+                    }
+                    
+                    console.log('✅ Livewire update events dispatched for edit reply form');
+                }
 
             }, 500); // Longer delay to ensure cursor positioning is stable
         }

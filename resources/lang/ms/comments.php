@@ -43,6 +43,10 @@ return [
             'confirm' => 'Padam',
             'close' => 'Tutup',
         ],
+        'delete_reply' => [
+            'title' => 'Padam Balasan',
+            'description' => 'Adakah anda pasti mahu memadam balasan ini? Tindakan ini hanya boleh diundur oleh admin.',
+        ],
     ],
     'sidebar' => [
         'task_not_loaded' => 'Tugasan tidak dimuat.',

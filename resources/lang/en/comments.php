@@ -43,6 +43,10 @@ return [
             'confirm' => 'Delete',
             'close' => 'Close',
         ],
+        'delete_reply' => [
+            'title' => 'Delete Reply',
+            'description' => 'Are you sure you would like to delete this reply? This action can be reversed only by an admin.',
+        ],
     ],
     'sidebar' => [
         'task_not_loaded' => 'Task not loaded.',

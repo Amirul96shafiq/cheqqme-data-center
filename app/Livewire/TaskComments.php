@@ -28,12 +28,19 @@ class TaskComments extends Component implements HasForms
 
     public ?array $editData = [];
 
+    public ?array $editReplyData = [];
+
     public ?array $replyData = [];
 
     // Editing state
     public ?int $editingId = null;
 
     public string $editingText = '';
+
+    // Reply editing state
+    public ?int $editingReplyId = null;
+
+    public string $editingReplyText = '';
 
     // Reply state
     public ?int $replyingToId = null;
@@ -45,6 +52,8 @@ class TaskComments extends Component implements HasForms
     public bool $isLoadingMore = false; // loading state for show more button
 
     public ?int $confirmingDeleteId = null;
+
+    public ?int $confirmingDeleteReplyId = null;
 
     // Track mentions selected from dropdown to avoid relying only on text parsing
     public array $pendingMentionUserIds = [];
@@ -60,9 +69,9 @@ class TaskComments extends Component implements HasForms
     {
         if ($payload && isset($payload['message']) && isset($payload['type'])) {
             Notification::make()
-                ->title($payload['message'])
+                        ->title($payload['message'])
                 ->{$payload['type']}()
-                ->send();
+                    ->send();
         }
     }
 
@@ -75,7 +84,7 @@ class TaskComments extends Component implements HasForms
             'timestamp' => now()->toISOString(),
         ]);
 
-        if (! $payload) {
+        if (!$payload) {
             \Log::warning('❌ No payload received in onMentionSelected');
 
             return;
@@ -103,7 +112,7 @@ class TaskComments extends Component implements HasForms
 
         // Handle regular user IDs
         $userId = (int) $userId;
-        if ($userId > 0 && ! in_array($userId, $this->pendingMentionUserIds, true)) {
+        if ($userId > 0 && !in_array($userId, $this->pendingMentionUserIds, true)) {
             \Log::info('🎯 Adding regular user to pending mentions', [
                 'userId' => $userId,
                 'pendingMentions' => $this->pendingMentionUserIds,
@@ -118,15 +127,15 @@ class TaskComments extends Component implements HasForms
         $this->task = Task::findOrFail($taskId);
         // Ensure base form array keys exist before Filament/Livewire entangle
         $this->composerData = $this->composerData ?? [];
-        if (! array_key_exists('newComment', $this->composerData)) {
+        if (!array_key_exists('newComment', $this->composerData)) {
             $this->composerData['newComment'] = '';
         }
         $this->editData = $this->editData ?? [];
-        if (! array_key_exists('editingText', $this->editData)) {
+        if (!array_key_exists('editingText', $this->editData)) {
             $this->editData['editingText'] = '';
         }
         $this->replyData = $this->replyData ?? [];
-        if (! array_key_exists('replyText', $this->replyData)) {
+        if (!array_key_exists('replyText', $this->replyData)) {
             $this->replyData['replyText'] = '';
         }
         if (method_exists($this, 'composerForm')) {
@@ -200,7 +209,7 @@ class TaskComments extends Component implements HasForms
         ]);
 
         // Merge with any user IDs selected via the dropdown tracking
-        if (! empty($this->pendingMentionUserIds)) {
+        if (!empty($this->pendingMentionUserIds)) {
             // Merge all mentions (including @Everyone if present)
             $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
         }
@@ -277,6 +286,102 @@ class TaskComments extends Component implements HasForms
         $this->editingText = '';
     }
 
+    // Start editing a reply
+    public function startEditReply(int $replyId): void
+    {
+        $reply = $this->task->comments()->whereNull('deleted_at')->findOrFail($replyId);
+        if ($reply->user_id !== auth()->id()) {
+            return;
+        }
+        $this->editingReplyId = $reply->id;
+        $this->editingReplyText = $reply->comment;
+        // Ensure underlying form state array has key
+        $this->editReplyData = $this->editReplyData ?? [];
+        $this->editReplyData['editingReplyText'] = $this->editingReplyText;
+        if (method_exists($this, 'editReplyForm')) {
+            $this->editReplyForm->fill(['editingReplyText' => $this->editingReplyText]);
+        }
+    }
+
+    // Cancel editing a reply
+    public function cancelEditReply(): void
+    {
+        $this->editingReplyId = null;
+        $this->editingReplyText = '';
+    }
+
+    // Save edited reply
+    public function saveEditReply(): void
+    {
+        if (!$this->editingReplyId) {
+            return;
+        }
+
+        $reply = $this->task->comments()->findOrFail($this->editingReplyId);
+        if ($reply->user_id !== auth()->id()) {
+            return;
+        }
+
+        // Pull latest value from edit reply form state
+        if (method_exists($this, 'editReplyForm')) {
+            $state = $this->editReplyForm->getState();
+            $this->editingReplyText = $state['editingReplyText'] ?? $this->editingReplyText;
+        } else {
+            // Fallback: use editReplyData directly
+            $this->editingReplyText = $this->editReplyData['editingReplyText'] ?? $this->editingReplyText;
+        }
+
+        $this->validateOnly('editingReplyText');
+
+        $normalizedText = $this->normalizeEditorInput($this->editingReplyText);
+
+        // Extract mentions from the normalized text
+        $mentions = Comment::extractMentions($normalizedText);
+
+        $reply->update([
+            'comment' => $normalizedText,
+            'mentions' => $mentions,
+        ]);
+
+        // Process mentions for notifications
+        $reply->processMentions();
+
+        $this->editingReplyId = null;
+        $this->editingReplyText = '';
+    }
+
+    // Confirm delete reply
+    public function confirmDeleteReply(int $replyId): void
+    {
+        $reply = $this->task->comments()->whereNull('deleted_at')->findOrFail($replyId);
+        if ($reply->user_id !== auth()->id()) {
+            return;
+        }
+        $this->confirmingDeleteReplyId = $replyId;
+    }
+
+    // Cancel delete reply
+    public function cancelDeleteReply(): void
+    {
+        $this->confirmingDeleteReplyId = null;
+    }
+
+    // Delete reply
+    public function deleteReply(): void
+    {
+        if (!$this->confirmingDeleteReplyId) {
+            return;
+        }
+
+        $reply = $this->task->comments()->findOrFail($this->confirmingDeleteReplyId);
+        if ($reply->user_id !== auth()->id()) {
+            return;
+        }
+
+        $this->deleteComment($this->confirmingDeleteReplyId);
+        $this->confirmingDeleteReplyId = null;
+    }
+
     // Start replying to a comment
     public function startReply(int $commentId): void
     {
@@ -301,7 +406,7 @@ class TaskComments extends Component implements HasForms
     // Add a reply
     public function addReply(): void
     {
-        if (! $this->replyingToId) {
+        if (!$this->replyingToId) {
             return;
         }
 
@@ -312,7 +417,7 @@ class TaskComments extends Component implements HasForms
         } else {
             // Fallback: use replyData directly
             // Use replyText property if replyData is empty
-            if (empty($this->replyData['replyText']) && ! empty($this->replyText)) {
+            if (empty($this->replyData['replyText']) && !empty($this->replyText)) {
                 $this->replyText = $this->normalizeEditorInput($this->replyText);
             } else {
                 $this->replyText = $this->normalizeEditorInput($this->replyData['replyText'] ?? $this->replyText);
@@ -377,7 +482,7 @@ class TaskComments extends Component implements HasForms
         ]);
 
         // Merge with any user IDs selected via the dropdown tracking
-        if (! empty($this->pendingMentionUserIds)) {
+        if (!empty($this->pendingMentionUserIds)) {
             // Merge all mentions (including @Everyone if present)
             $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
         }
@@ -435,7 +540,7 @@ class TaskComments extends Component implements HasForms
     // Save editing a comment
     public function saveEdit(): void
     {
-        if (! $this->editingId) {
+        if (!$this->editingId) {
             return;
         }
         if (method_exists($this, 'editForm')) {
@@ -510,7 +615,7 @@ class TaskComments extends Component implements HasForms
 
         // Extract mentions from updated comment text
         $mentions = Comment::extractMentions($sanitized);
-        if (! empty($this->pendingMentionUserIds)) {
+        if (!empty($this->pendingMentionUserIds)) {
             // Merge all mentions (including @Everyone if present)
             $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
         }
@@ -568,6 +673,22 @@ class TaskComments extends Component implements HasForms
         }
     }
 
+    public function updatedEditReplyData($value, $key): void
+    {
+        // Handle both array and direct string updates
+        if (is_array($value) && isset($value['editingReplyText'])) {
+            // Array format: editReplyData = ['editingReplyText' => 'value']
+            $this->editingReplyText = $this->normalizeEditorInput($value['editingReplyText']);
+        } elseif (is_string($value) && $key === 'editingReplyText') {
+            // Direct format: editReplyData.editingReplyText = 'value'
+            $this->editingReplyText = $this->normalizeEditorInput($value);
+        }
+
+        if (method_exists($this, 'editReplyForm')) {
+            $this->editReplyForm->fill(['editingReplyText' => $this->editingReplyText]);
+        }
+    }
+
     // Delete a comment
     public function deleteComment(int $commentId): void
     {
@@ -603,7 +724,7 @@ class TaskComments extends Component implements HasForms
     // Perform deleting a comment
     public function performDelete(): void
     {
-        if (! $this->confirmingDeleteId) {
+        if (!$this->confirmingDeleteId) {
             return;
         }
         $this->deleteComment($this->confirmingDeleteId);
@@ -690,6 +811,7 @@ class TaskComments extends Component implements HasForms
         return [
             'newComment' => 'required|string|max:1000',
             'editingText' => 'required|string|max:1000',
+            'editingReplyText' => 'required|string|max:1000',
             'replyText' => 'required|string|max:1000',
         ];
     }
@@ -776,6 +898,32 @@ class TaskComments extends Component implements HasForms
                     })
                     ->columnSpanFull(),
             ])->statePath('replyData'),
+            // Edit reply form
+            'editReplyForm' => $this->makeForm()->schema([
+                RichEditor::make('editingReplyText')
+                    ->label('')
+                    ->placeholder(__('comments.composer.edit_placeholder'))
+                    ->toolbarButtons(['bold', 'italic', 'strike', 'bulletList', 'orderedList', 'link', 'codeBlock'])
+                    ->extraAttributes(['class' => 'minimal-comment-editor'])
+                    ->maxLength(200)
+                    ->extraInputAttributes(['style' => 'min-height:6rem;max-height:15rem;overflow-y:auto;resize:vertical;'])
+                    ->default('')
+                    ->formatStateUsing(function ($state) {
+                        if (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') {
+                            return '';
+                        }
+
+                        return $state;
+                    })
+                    ->mutateDehydratedStateUsing(function (?string $state) {
+                        if (is_string($state) && Str::lower(trim(strip_tags($state))) === 'undefined') {
+                            return '';
+                        }
+
+                        return $state;
+                    })
+                    ->columnSpanFull(),
+            ])->statePath('editReplyData'),
         ];
     }
 
@@ -813,12 +961,12 @@ class TaskComments extends Component implements HasForms
                 } elseif (preg_match("/href\s*=\s*'([^']*)'/i", $attr, $hrefMatch)) {
                     $href = $hrefMatch[1];
                 }
-                if ($href && ! preg_match('/^https?:\/\//i', $href)) {
-                    $href = 'https://'.ltrim($href);
+                if ($href && !preg_match('/^https?:\/\//i', $href)) {
+                    $href = 'https://' . ltrim($href);
                 }
                 $safe = htmlspecialchars($href, ENT_QUOTES, 'UTF-8');
 
-                return '<a href="'.$safe.'" target="_blank" rel="nofollow noopener">';
+                return '<a href="' . $safe . '" target="_blank" rel="nofollow noopener">';
             }, $html);
             // Drop event handlers / javascript: remnants just in case
             $html = preg_replace('/<a([^>]*)(on[a-z]+\s*=\s*"[^"]*")([^>]*)>/i', '<a$1$3>', $html);
@@ -827,7 +975,7 @@ class TaskComments extends Component implements HasForms
 
         // 6) Strip attributes from all other allowed tags
         $html = preg_replace_callback('/<(?!a\b)(strong|em|s|code|pre|ul|ol|li|br|p)([^>]*)>/i', function ($m) {
-            return '<'.strtolower($m[1]).'>';
+            return '<' . strtolower($m[1]) . '>';
         }, $html);
 
         // 7) Collapse excessive <br>
