@@ -7,7 +7,7 @@
         @foreach($reactions as $reaction)
             <button
                 type="button"
-                class="reaction-button inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm transition-colors duration-200 {{ $reaction['user_reacted'] ? 'bg-primary-100/10 text-primary-700 border border-primary-200 dark:bg-primary-900/10 dark:text-primary-300 dark:border-primary-700 cursor-default' : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600' }}"
+                class="reaction-button inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm transition-colors duration-200 {{ $reaction['user_reacted'] ? 'bg-primary-100/10 text-primary-700 border border-primary-200 dark:bg-primary-900/10 dark:text-primary-300 dark:border-primary-700 cursor-default' : 'bg-gray-100/10 text-gray-700 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700/10 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600' }}"
                 data-emoji="{{ $reaction['emoji'] }}"
                 data-count="{{ $reaction['count'] }}"
                 @if(!$reaction['user_reacted'])
