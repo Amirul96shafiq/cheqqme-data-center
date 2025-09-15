@@ -246,8 +246,6 @@ function emojiPicker(commentId) {
                 zIndex: 9999
             };
 
-            console.log('Comment list container found:', containerRect);
-            console.log('Center position calculated:', this.pickerStyle);
         },
 
         centerInViewport() {
@@ -267,7 +265,6 @@ function emojiPicker(commentId) {
                 zIndex: 9999
             };
 
-            console.log('Centered in viewport:', this.pickerStyle);
         },
 
 
@@ -385,8 +382,6 @@ function emojiPicker(commentId) {
 
 
         async refreshReactionsDisplay() {
-            console.log('Refreshing reactions display for comment:', this.commentId);
-            
             // Use the global function as a fallback
             if (window.refreshCommentReactions) {
                 window.refreshCommentReactions(this.commentId);
@@ -396,7 +391,6 @@ function emojiPicker(commentId) {
             // Fallback to local implementation
             const reactionsContainer = document.querySelector(`[data-comment-id="${this.commentId}"] .comment-reactions`);
             if (!reactionsContainer) {
-                console.log('Reactions container not found for comment:', this.commentId);
                 return;
             }
 
@@ -412,12 +406,8 @@ function emojiPicker(commentId) {
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Fresh reactions data:', data.data);
-                    
                     // Update the reactions display
                     this.updateReactionsHTML(reactionsContainer, data.data);
-                } else {
-                    console.error('Failed to fetch reactions:', response.status);
                 }
             } catch (error) {
                 console.error('Error refreshing reactions:', error);
@@ -425,8 +415,6 @@ function emojiPicker(commentId) {
         },
 
         updateReactionsHTML(container, reactions) {
-            console.log('Updating reactions HTML:', reactions);
-            
             // Clear existing reactions (except emoji picker)
             const existingReactions = container.querySelectorAll('.reaction-button');
             existingReactions.forEach(btn => btn.remove());
@@ -441,46 +429,7 @@ function emojiPicker(commentId) {
         },
 
         createReactionButton(reaction) {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = `reaction-button inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm transition-colors duration-200 ${reaction.user_reacted ? 'bg-primary-100/25 text-primary-700 border border-primary-200 dark:bg-primary-900/25 dark:text-primary-300 dark:border-primary-700 cursor-default' : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'}`;
-            button.setAttribute('data-emoji', reaction.emoji);
-            button.setAttribute('data-count', reaction.count);
-            
-            // Add tooltip with date and time
-            let tooltip = '';
-            if (reaction.users.length > 0) {
-                const user = reaction.users[0];
-                const userName = user.name || user.username || 'Unknown';
-                const reactedAt = user.reacted_at ? this.formatDateTime(user.reacted_at) : '';
-                
-                console.log('Creating tooltip for user:', user);
-                console.log('Formatted date:', reactedAt);
-                
-                tooltip = `${userName}${reactedAt ? ` (${reactedAt})` : ''}`;
-                
-                if (reaction.users.length > 1) {
-                    tooltip += ` and ${reaction.users.length - 1} others`;
-                }
-            }
-                    
-            console.log('Final tooltip:', tooltip);
-            button.setAttribute('title', tooltip);
-            
-            // Only add click handler for non-user-reacted emojis
-            if (!reaction.user_reacted) {
-                button.addEventListener('click', () => {
-                    this.addReaction(reaction.emoji);
-                });
-            }
-            
-            // Add content
-            button.innerHTML = `
-                <span class="text-sm">${reaction.emoji}</span>
-                <span class="text-xs font-medium">${reaction.count}</span>
-            `;
-            
-            return button;
+            return window.createReactionButton(reaction, this.commentId, this.addReaction.bind(this));
         },
 
         showCustomNotification(message, type = 'info') {
@@ -522,11 +471,8 @@ window.formatDateTime = function(dateTimeString) {
 
 // Global function to refresh reactions for any comment
 window.refreshCommentReactions = async function(commentId) {
-    console.log('Global refresh function called for comment:', commentId);
-    
     const reactionsContainer = document.querySelector(`[data-comment-id="${commentId}"] .comment-reactions`);
     if (!reactionsContainer) {
-        console.log('Reactions container not found for comment:', commentId);
         return;
     }
 
@@ -541,7 +487,6 @@ window.refreshCommentReactions = async function(commentId) {
 
         if (response.ok) {
             const data = await response.json();
-            console.log('Global refresh - Fresh reactions data:', data.data);
             
             // Clear existing reactions (except emoji picker)
             const existingReactions = reactionsContainer.querySelectorAll('.reaction-button');
@@ -549,23 +494,21 @@ window.refreshCommentReactions = async function(commentId) {
             
             // Add new reactions
             data.data.forEach(reaction => {
-                const button = createReactionButton(reaction, commentId);
+                const button = window.createReactionButton(reaction, commentId);
                 const emojiPicker = reactionsContainer.querySelector('.emoji-picker-trigger').parentElement;
                 reactionsContainer.insertBefore(button, emojiPicker);
             });
-        } else {
-            console.error('Global refresh - Failed to fetch reactions:', response.status);
         }
     } catch (error) {
-        console.error('Global refresh - Error refreshing reactions:', error);
+        console.error('Error refreshing reactions:', error);
     }
 };
 
 // Helper function to create reaction button
-function createReactionButton(reaction, commentId) {
+window.createReactionButton = function(reaction, commentId, addReactionCallback = null) {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = `reaction-button inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm transition-colors duration-200 ${reaction.user_reacted ? 'bg-primary-100/25 text-primary-700 border border-primary-200 dark:bg-primary-900/25 dark:text-primary-300 dark:border-primary-700 cursor-default' : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'}`;
+    button.className = `reaction-button inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm transition-colors duration-200 ${reaction.user_reacted ? 'bg-primary-100/10 text-primary-700 border border-primary-200 dark:bg-primary-900/10 dark:text-primary-300 dark:border-primary-700 cursor-default' : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'}`;
     button.setAttribute('data-emoji', reaction.emoji);
     button.setAttribute('data-count', reaction.count);
     
@@ -574,7 +517,7 @@ function createReactionButton(reaction, commentId) {
     if (reaction.users.length > 0) {
         const user = reaction.users[0];
         const userName = user.name || user.username || 'Unknown';
-        const reactedAt = user.reacted_at ? formatDateTime(user.reacted_at) : '';
+        const reactedAt = user.reacted_at ? window.formatDateTime(user.reacted_at) : '';
         
         tooltip = `${userName}${reactedAt ? ` (${reactedAt})` : ''}`;
         
@@ -588,14 +531,17 @@ function createReactionButton(reaction, commentId) {
     // Only add click handler for non-user-reacted emojis
     if (!reaction.user_reacted) {
         button.addEventListener('click', () => {
-            // Trigger the emoji picker's addReaction function
-            const emojiPickerElement = document.querySelector(`[data-comment-id="${commentId}"] [x-data*="emojiPicker"]`);
-            if (emojiPickerElement && emojiPickerElement._x_dataStack && emojiPickerElement._x_dataStack[0]) {
-                emojiPickerElement._x_dataStack[0].addReaction(reaction.emoji);
+            if (addReactionCallback) {
+                addReactionCallback(reaction.emoji);
             } else {
-                console.log('Emoji picker component not found, falling back to global refresh');
-                // Fallback: just refresh the reactions
-                window.refreshCommentReactions(commentId);
+                // Fallback: trigger the emoji picker's addReaction function
+                const emojiPickerElement = document.querySelector(`[data-comment-id="${commentId}"] [x-data*="emojiPicker"]`);
+                if (emojiPickerElement && emojiPickerElement._x_dataStack && emojiPickerElement._x_dataStack[0]) {
+                    emojiPickerElement._x_dataStack[0].addReaction(reaction.emoji);
+                } else {
+                    console.log('Emoji picker component not found, falling back to global refresh');
+                    window.refreshCommentReactions(commentId);
+                }
             }
         });
     }
@@ -607,5 +553,5 @@ function createReactionButton(reaction, commentId) {
     `;
     
     return button;
-}
+};
 </script>
