@@ -14,3 +14,10 @@ Schedule::command('weather:refresh')
     ->withoutOverlapping()
     ->runInBackground()
     ->appendOutputTo(storage_path('logs/weather-refresh.log'));
+
+// Schedule resource lock cleanup every 5 minutes
+Schedule::command('resource-lock:cleanup --force')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/resource-lock-cleanup.log'));
