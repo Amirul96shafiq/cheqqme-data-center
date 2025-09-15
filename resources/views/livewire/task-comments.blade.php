@@ -172,7 +172,7 @@
                                     
                                     <!-- Display replies -->
                                     @if($comment->replies->count() > 0)
-                                        <div class="mt-4 ml-6 space-y-3">
+                                        <div class="mt-4 space-y-3">
                                             @foreach($comment->replies as $reply)
                                                 <div class="flex gap-3" wire:key="reply-{{ $reply->id }}" data-comment-id="{{ $reply->id }}">
                                                     <div class="flex-shrink-0 relative">
