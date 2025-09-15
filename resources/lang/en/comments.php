@@ -22,6 +22,7 @@ return [
         'none_long' => 'No comments yet. Be the first to comment!',
         'showing' => 'Showing :shown of :total comments',
         'show_more' => 'Show more (:count)',
+        'loading' => 'Loading...',
     ],
     'meta' => [
         'unknown' => 'Unknown',

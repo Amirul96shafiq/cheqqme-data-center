@@ -147,7 +147,18 @@
             @if($this->totalComments > $visibleCount)
                 @php $remaining = $this->totalComments - $visibleCount; @endphp
                 <div class="mt-2 relative z-10">
-                    <button wire:click="showMore" type="button" class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40 relative z-10">{{ __('comments.list.show_more', ['count' => ($remaining < 5 ? $remaining : 5)]) }}</button>
+                    <button wire:click="showMore" 
+                            type="button" 
+                            class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40 relative z-10"
+                            wire:loading.attr="disabled"
+                            wire:target="showMore">
+                        <span wire:loading.remove wire:target="showMore">
+                            {{ __('comments.list.show_more', ['count' => ($remaining < 5 ? $remaining : 5)]) }}
+                        </span>
+                        <span wire:loading wire:target="showMore">
+                            {{ __('comments.list.loading') }}
+                        </span>
+                    </button>
                 </div>
             @endif
         </div>

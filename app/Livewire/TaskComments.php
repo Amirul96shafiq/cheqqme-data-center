@@ -35,6 +35,8 @@ class TaskComments extends Component implements HasForms
 
     public int $visibleCount = 5; // number of comments to display initially / currently
 
+    public bool $isLoadingMore = false; // loading state for show more button
+
     public ?int $confirmingDeleteId = null;
 
     // Track mentions selected from dropdown to avoid relying only on text parsing
@@ -453,13 +455,19 @@ class TaskComments extends Component implements HasForms
     // Show more comments
     public function showMore(): void
     {
+        $this->isLoadingMore = true;
+
         $total = $this->task->comments()->whereNull('deleted_at')->count();
         $remaining = $total - $this->visibleCount;
         if ($remaining <= 0) {
+            $this->isLoadingMore = false;
+
             return;
         }
         $this->visibleCount += min(5, $remaining);
         $this->dispatch('comments-show-more');
+
+        $this->isLoadingMore = false;
     }
 
     // Render the component

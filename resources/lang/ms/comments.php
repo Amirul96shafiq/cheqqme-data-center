@@ -22,6 +22,7 @@ return [
         'none_long' => 'Belum ada komen. Jadilah orang yang pertama memberikan komen!',
         'showing' => 'Memaparkan :shown daripada :total komen',
         'show_more' => 'Tunjukkan lagi (:count)',
+        'loading' => 'Memuatkan...',
     ],
     'meta' => [
         'unknown' => 'Tidak diketahui',
