@@ -13,6 +13,7 @@ export default defineConfig({
                 "resources/js/drag-drop-upload.js",
                 "resources/js/document-upload-handler.js",
                 "resources/css/emoji-picker-theme.css",
+                "resources/css/task-comments.css",
             ],
             refresh: true,
         }),

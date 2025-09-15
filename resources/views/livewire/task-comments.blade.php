@@ -2846,6 +2846,9 @@
     <!-- Emoji Picker Element -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
     
+    <!-- Task Comments CSS -->
+    @vite('resources/css/task-comments.css')
+    
     <!-- Emoji Picker Theme CSS -->
     @vite('resources/css/emoji-picker-theme.css')
 </div>
