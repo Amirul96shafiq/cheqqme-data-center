@@ -183,39 +183,24 @@
                     x-transition:leave="transition ease-in duration-200"
                     x-transition:leave-start="opacity-100 translate-x-0"
                     x-transition:leave-end="opacity-0 scale-95"
-                    class="max-w-sm w-full overflow-hidden transition duration-300 rounded-xl bg-white shadow-lg ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10 pointer-events-auto"
+                    class="max-w-md w-full overflow-hidden transition duration-300 rounded-xl bg-white shadow-lg ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10 pointer-events-auto"
                     :class="{
                         'ring-success-600/20 dark:ring-success-400/30 bg-success-50 dark:bg-success-400/10': notification.type === 'success',
                         'ring-danger-600/20 dark:ring-danger-400/30 bg-danger-50 dark:bg-danger-400/10': notification.type === 'error',
                         'ring-info-600/20 dark:ring-info-400/30 bg-info-50 dark:bg-info-400/10': notification.type === 'info'
                     }"
                 >
-                    <div class="flex w-full gap-3 p-4">
-                        <!-- Icon -->
-                        <div class="flex-shrink-0">
-                            <svg x-show="notification.type === 'success'" class="h-6 w-6 text-success-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <svg x-show="notification.type === 'error'" class="h-6 w-6 text-danger-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <svg x-show="notification.type === 'info'" class="h-6 w-6 text-info-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-
+                    <div class="flex items-start justify-between w-full gap-3 px-6 py-4">
                         <!-- Content -->
-                        <div class="mt-0.5 grid flex-1">
+                        <div class="flex-1 items-center justify-center min-w-0">
                             <p class="text-sm font-medium text-gray-950 dark:text-white" x-text="notification.message"></p>
                         </div>
 
                         <!-- Close Button -->
-                        <div class="flex-shrink-0">
+                        <div class="flex-shrink-0 ml-2">
                             <button @click="removeCustomNotification(notification.id)" class="inline-flex items-center justify-center w-8 h-8 text-gray-400 transition duration-150 ease-in-out rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:text-gray-500 dark:hover:text-gray-400">
                                 <span class="sr-only">Close</span>
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <x-heroicon-o-x-mark class="w-4 h-4" />
                             </button>
                         </div>
                     </div>
