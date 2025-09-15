@@ -2,14 +2,14 @@
     <!-- Emoji Picker Trigger Button -->
     <button 
         type="button"
-        class="{{ $triggerClass }} inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors duration-200 group"
+        class="{{ $triggerClass }} inline-flex items-center justify-center w-8 h-8 rounded-full text-transition-colors duration-200"
         @click="toggle()"
         @keydown.enter.prevent="toggle()"
         @keydown.space.prevent="toggle()"
         :aria-expanded="open"
         aria-label="Add reaction"
     >
-        <x-heroicon-o-face-smile class="w-4 h-4 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-200" />
+        <x-heroicon-o-face-smile class="w-4 h-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200" />
     </button>
 
     <!-- Overlay Background -->
