@@ -291,8 +291,59 @@ class TaskComments extends Component implements HasForms
 
         $this->validateOnly('editingReplyText');
 
+        // Get the original text content without trimming to check for leading/trailing whitespace
+        $originalTextOnly = strip_tags($this->editingReplyText);
+
+        // Additional check: ensure reply doesn't start with whitespace
+        if (preg_match('/^\s/', $originalTextOnly)) {
+            Notification::make()
+                ->title(__('comments.notifications.error_title', ['title' => 'Invalid Reply']))
+                ->body(__('comments.notifications.starts_with_space', ['message' => 'Reply cannot start with a space or newline']))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        // Additional check: ensure reply doesn't end with whitespace
+        if (preg_match('/\s$/', $originalTextOnly)) {
+            Notification::make()
+                ->title(__('comments.notifications.error_title', ['title' => 'Invalid Reply']))
+                ->body(__('comments.notifications.ends_with_space', ['message' => 'Reply cannot end with a space or newline']))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        // Aggressively remove trailing newlines and empty elements before sanitizing
+        // First remove any trailing <br> tags with whitespace
+        $this->editingReplyText = preg_replace('/<br\s*\/?>\s*$/', '', $this->editingReplyText);
+
+        // Remove empty paragraphs at the end (<p>&nbsp;</p> or <p></p> or <p> </p>)
+        $this->editingReplyText = preg_replace('/<p[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/p>\s*$/', '', $this->editingReplyText);
+
+        // Remove any <div> tags that might contain only whitespace at the end
+        $this->editingReplyText = preg_replace('/<div[^>]*>(\s|&nbsp;|<br\s*\/?>)*<\/div>\s*$/', '', $this->editingReplyText);
+
+        // Remove any trailing whitespace
+        $this->editingReplyText = rtrim($this->editingReplyText);
+
         // Use the same sanitization as saveEdit for consistency
         $sanitized = $this->sanitizeHtml($this->editingReplyText);
+        $original = $reply->comment;
+
+        // Check if content is the same as original
+        if ($sanitized === $original) {
+            // No change; show error message and prevent submission
+            Notification::make()
+                ->title(__('comments.notifications.error_title', ['title' => __('comments.notifications.duplicate_content_title')]))
+                ->body(__('comments.notifications.duplicate_content'))
+                ->danger()
+                ->send();
+
+            return;
+        }
 
         // Extract mentions from the sanitized text
         $mentions = Comment::extractMentions($sanitized);
