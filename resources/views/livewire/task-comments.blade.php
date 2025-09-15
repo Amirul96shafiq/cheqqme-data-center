@@ -92,10 +92,16 @@
                                         @endif
                                     </span>
                                 </div>
-                                <!-- Edit and Delete buttons -->
-                                @if(auth()->id() === $comment->user_id)
+                                <!-- Action buttons: Reply, Edit, Delete -->
+                                @if($this->editingId !== $comment->id && $this->replyingToId !== $comment->id)
                                     <div class="flex items-center gap-1">
-                                        @if($this->editingId !== $comment->id)
+                                        <!-- Reply button (always visible) -->
+                                        <button type="button" wire:click="startReply({{ $comment->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.reply') }}">
+                                            @svg('heroicon-o-chat-bubble-left-right', 'w-4 h-4 transition-transform duration-200')
+                                        </button>
+                                        
+                                        <!-- Edit and Delete buttons (only for comment owner) -->
+                                        @if(auth()->id() === $comment->user_id)
                                             <!-- Edit button -->
                                             <button type="button" wire:click="startEdit({{ $comment->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.edit') }}">
                                                 @svg('heroicon-o-pencil-square', 'w-4 h-4 transition-transform duration-200')
@@ -105,14 +111,6 @@
                                                 @svg('heroicon-o-trash', 'w-4 h-4 transition-transform duration-200')
                                             </button>
                                         @endif
-                                    </div>
-                                @endif
-                                <!-- Reply button (always visible) -->
-                                @if($this->editingId !== $comment->id && $this->replyingToId !== $comment->id)
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" wire:click="startReply({{ $comment->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.reply') }}">
-                                            @svg('heroicon-o-chat-bubble-left-right', 'w-4 h-4 transition-transform duration-200')
-                                        </button>
                                     </div>
                                 @endif
                             </div>
