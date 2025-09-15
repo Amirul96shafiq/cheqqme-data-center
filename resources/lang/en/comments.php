@@ -5,8 +5,8 @@ return [
         'title' => 'Comments',
     ],
     'composer' => [
-        'send' => 'Send',
-        'saving' => 'Saving...',
+        'send' => 'Submit',
+        'saving' => 'Submitting...',
         'placeholder' => 'Write a comment here. Use @ to mention users.',
         'edit_placeholder' => 'Edit comment...',
     ],

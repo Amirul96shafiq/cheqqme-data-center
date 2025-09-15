@@ -1,6 +1,21 @@
 <!-- Task Comments Component -->
 <div class="flex flex-col flex-1 h-full min-h-0 rounded-xl" 
-     x-data="notificationHandler()">
+     x-data="notificationHandler()"
+     x-on:keydown.ctrl.enter.prevent="
+         if ($event.target.closest('[data-composer]') || $event.target.closest('.minimal-comment-editor')) {
+             $wire.addComment().then(() => {
+                 // Additional clearing after Livewire completes
+                 setTimeout(() => {
+                     const editor = document.querySelector('[data-composer] trix-editor');
+                     if (editor) {
+                         editor.textContent = '';
+                         editor.innerHTML = '';
+                         editor.dispatchEvent(new Event('input', { bubbles: true }));
+                     }
+                 }, 100);
+             });
+         }
+     ">
     <!-- Composer (Top) -->
     <div class="px-0 pt-0 pb-5" data-composer>
         <div class="space-y-3">
@@ -23,10 +38,14 @@
                 </p> 
             @enderror <!-- Error message -->
             <!-- Button to add a new comment -->
-            <button wire:click="addComment" wire:loading.attr="disabled" wire:target="addComment,saveEdit,performDelete,deleteComment" type="button" class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-                <span wire:loading.remove wire:target="addComment,saveEdit,performDelete,deleteComment">{{ __('comments.composer.send') }}</span>
-                <span wire:loading wire:target="addComment,saveEdit,performDelete,deleteComment">{{ __('comments.composer.saving') }}</span>
+            <button wire:click="addComment" wire:loading.attr="disabled" wire:target="addComment,saveEdit,performDelete,deleteComment" type="button" class="w-full inline-flex items-center justify-center gap-1.5 p-2.5 bg-primary-600 hover:bg-primary-500 text-primary-900 text-sm font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50 relative">
+                <div class="flex items-center gap-1.5">
+                    <span wire:loading.remove wire:target="addComment,saveEdit,performDelete,deleteComment">{{ __('comments.composer.send') }}</span>
+                    <span wire:loading wire:target="addComment,saveEdit,performDelete,deleteComment">{{ __('comments.composer.saving') }}</span>
+                </div>
+                <div class="absolute right-2 flex items-center gap-1 text-primary-800 text-[11px] font-semibold">
+                    <kbd class="px-1 py-0.5 bg-primary-transparent border border-primary-800 rounded font-mono">CTRL + ENTER</kbd>
+                </div>
             </button>
         </div>
     </div>
@@ -233,6 +252,7 @@
             }
         }
             
+            
         // Function to prevent comments from starting with whitespace
         function preventLeadingWhitespace(event) {
             const editor = event.target;
@@ -273,18 +293,35 @@
         
         // Reset composer editor
         document.addEventListener('resetComposerEditor', () => {
-            const wrapper = document.querySelector('.minimal-comment-editor');
-            const pm = wrapper?.querySelector('.ProseMirror');
-            if (pm) {
-                pm.textContent='';
-                pm.dispatchEvent(new Event('input',{bubbles:true}));
-            }
+            console.log('🔄 resetComposerEditor event received, clearing editor...');
+            
+            // Add a small delay to ensure DOM is ready
+            setTimeout(() => {
+                // Find the composer trix-editor (Filament RichEditor)
+                const editor = document.querySelector('[data-composer] trix-editor');
+                
+                if (editor) {
+                    console.log('✅ Found composer trix-editor, clearing...');
+                    
+                    // Clear the editor content
+                    editor.textContent = '';
+                    editor.innerHTML = '';
+                    
+                    // Trigger events to update form state
+                    editor.dispatchEvent(new Event('input', { bubbles: true }));
+                    editor.dispatchEvent(new Event('change', { bubbles: true }));
+                    
+                    console.log('✅ Editor cleared successfully');
+                } else {
+                    console.error('❌ Could not find composer trix-editor');
+                }
+            }, 50);
         });
         
         // Add input event listeners to prevent leading whitespace
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
-                const editors = document.querySelectorAll('.minimal-comment-editor .ProseMirror, [data-composer] .ProseMirror');
+                const editors = document.querySelectorAll('[data-composer] trix-editor, .minimal-comment-editor .ProseMirror');
                 editors.forEach(editor => {
                     editor.addEventListener('input', preventLeadingWhitespace);
                 });
@@ -294,7 +331,7 @@
         // Re-add listeners after Livewire updates
         document.addEventListener('livewire:update', function() {
             setTimeout(() => {
-                const editors = document.querySelectorAll('.minimal-comment-editor .ProseMirror, [data-composer] .ProseMirror');
+                const editors = document.querySelectorAll('[data-composer] trix-editor, .minimal-comment-editor .ProseMirror');
                 editors.forEach(editor => {
                     editor.removeEventListener('input', preventLeadingWhitespace);
                     editor.addEventListener('input', preventLeadingWhitespace);
