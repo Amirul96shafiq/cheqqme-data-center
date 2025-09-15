@@ -189,29 +189,23 @@ function emojiPicker(commentId) {
             // Define a comprehensive list of emojis with search terms
             this.allEmojis = [
                 { emoji: '👍', keywords: ['thumbs up', 'like', 'good', 'approve', 'yes', 'up'] },
-                { emoji: '👎', keywords: ['thumbs down', 'dislike', 'bad', 'disapprove', 'no', 'down'] },
                 { emoji: '❤️', keywords: ['heart', 'love', 'red heart', 'like', 'favorite'] },
                 { emoji: '😂', keywords: ['laughing', 'funny', 'lol', 'happy', 'joy', 'tears'] },
                 { emoji: '😍', keywords: ['heart eyes', 'love', 'adore', 'infatuated', 'attractive'] },
                 { emoji: '🤔', keywords: ['thinking', 'ponder', 'consider', 'hmm', 'question'] },
                 { emoji: '😢', keywords: ['crying', 'sad', 'tears', 'upset', 'unhappy'] },
                 { emoji: '😮', keywords: ['surprised', 'shock', 'wow', 'amazed', 'astonished'] },
-                { emoji: '😴', keywords: ['sleeping', 'tired', 'sleepy', 'zzz', 'rest'] },
                 { emoji: '🔥', keywords: ['fire', 'hot', 'lit', 'amazing', 'awesome'] },
                 { emoji: '💯', keywords: ['100', 'perfect', 'century', 'complete', 'score'] },
-                { emoji: '✨', keywords: ['sparkles', 'magic', 'shine', 'beautiful', 'special'] },
                 { emoji: '🚀', keywords: ['rocket', 'launch', 'fast', 'speed', 'success'] },
                 { emoji: '💪', keywords: ['muscle', 'strong', 'power', 'flex', 'biceps'] },
-                { emoji: '👻', keywords: ['ghost', 'spooky', 'halloween', 'scary', 'invisible'] },
                 { emoji: '🎉', keywords: ['party', 'celebration', 'confetti', 'happy', 'festive'] },
                 { emoji: '👏', keywords: ['clap', 'applause', 'congratulations', 'bravo', 'praise'] },
                 { emoji: '🙌', keywords: ['praise', 'hallelujah', 'celebration', 'victory', 'raise hands'] },
                 { emoji: '🤝', keywords: ['handshake', 'deal', 'agreement', 'partnership', 'shake'] },
                 { emoji: '👌', keywords: ['ok', 'okay', 'good', 'perfect', 'fine', 'alright', 'nice'] },
-                { emoji: '❤️‍🩹', keywords: ['mending heart', 'healing', 'recovery', 'broken heart'] },
                 { emoji: '🥳', keywords: ['party face', 'celebration', 'birthday', 'festive', 'fun'] },
                 { emoji: '😎', keywords: ['cool', 'sunglasses', 'awesome', 'smug', 'confident'] },
-                { emoji: '🤩', keywords: ['star eyes', 'amazed', 'impressed', 'fascinated', 'wow'] },
             ];
             
             // Initialize filtered emojis with all emojis

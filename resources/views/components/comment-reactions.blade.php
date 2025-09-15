@@ -1,4 +1,4 @@
-<div class="comment-reactions flex flex-wrap gap-2 mt-3" x-data="commentReactions" x-init="commentId = {{ $comment->id }}">
+<div class="comment-reactions flex flex-wrap gap-2 mt-1" x-data="commentReactions" x-init="commentId = {{ $comment->id }}">
     @php
         $reactions = $getReactions();
     @endphp
