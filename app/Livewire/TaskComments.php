@@ -236,6 +236,8 @@ class TaskComments extends Component implements HasForms
         $this->dispatch('refreshTaskComments');
         // Browser event to forcibly clear editor DOM (fallback)
         $this->dispatch('resetComposerEditor');
+        // Dispatch event to hide any error messages
+        $this->dispatch('comment-added');
     }
 
     // Start editing a comment

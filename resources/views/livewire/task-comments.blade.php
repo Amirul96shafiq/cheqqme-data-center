@@ -7,7 +7,21 @@
             <div class="fi-form" wire:ignore.self>
                 {{ $this->composerForm }} <!-- Filament RichEditor -->
             </div>
-            @error('newComment') <p class="text-xs text-danger-600">{{ $message }}</p> @enderror <!-- Error message -->
+            @error('newComment') 
+                <p class="text-xs text-danger-600" 
+                   wire:key="error-newComment-{{ time() }}"
+                   x-data="{ show: true }" 
+                   x-show="show" 
+                   x-init="
+                       setTimeout(() => show = false, 3000);
+                       $wire.on('comment-added', () => show = false);
+                   "
+                   x-transition:leave="transition ease-in duration-300"
+                   x-transition:leave-start="opacity-100"
+                   x-transition:leave-end="opacity-0">
+                   {{ $message }}
+                </p> 
+            @enderror <!-- Error message -->
             <!-- Button to add a new comment -->
             <button wire:click="addComment" wire:loading.attr="disabled" wire:target="addComment,saveEdit,performDelete,deleteComment" type="button" class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-primary-600 hover:bg-primary-500 text-white text-xs font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
