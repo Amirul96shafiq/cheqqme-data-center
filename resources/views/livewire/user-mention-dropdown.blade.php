@@ -6,7 +6,7 @@
         <!-- Backdrop for click outside -->
         <div 
             class="fixed inset-0 z-40"
-            wire:click="hideDropdown"
+            x-on:click="hideDropdown()"
         ></div>
         
         <!-- Dropdown -->
@@ -24,7 +24,13 @@
                 selectionLock: false,
                 
                 init() {
-                    console.log('🚀 Initializing Alpine.js dropdown component');
+                    console.log('🚀 Initializing Alpine.js dropdown component', {
+                        targetInputId: this.targetInputId,
+                        users: this.users,
+                        showDropdown: this.showDropdown,
+                        selectedIndex: this.selectedIndex,
+                        timestamp: new Date().toISOString()
+                    });
                     
                     // Initialize client-side state
                     this.selectedIndex = {{ $selectedIndex }};
@@ -102,6 +108,15 @@
                 },
                 
                 selectUser() {
+                    console.log('🎯 Alpine.js selectUser called:', {
+                        selectedIndex: this.selectedIndex,
+                        totalUsers: this.users.length,
+                        selectionLock: this.selectionLock,
+                        isSelecting: this.isSelecting,
+                        targetInputId: this.targetInputId,
+                        timestamp: new Date().toISOString()
+                    });
+                    
                     // Prevent multiple selections
                     if (this.selectionLock || this.isSelecting) {
                         console.log('🚫 Selection blocked - already selecting');
@@ -110,7 +125,7 @@
                     
                     if (this.users[this.selectedIndex]) {
                         const user = this.users[this.selectedIndex];
-                        console.log('🎯 Alpine.js selectUser called:', { 
+                        console.log('🎯 Alpine.js selectUser processing user:', { 
                             username: user.username, 
                             userId: user.id,
                             selectedIndex: this.selectedIndex,
@@ -155,7 +170,14 @@
                 },
                 
                 selectUserByIndex(index) {
-                    console.log('🎯 Alpine.js selectUserByIndex called:', { index });
+                    console.log('🎯 Alpine.js selectUserByIndex called:', { 
+                        index, 
+                        totalUsers: this.users.length,
+                        selectionLock: this.selectionLock,
+                        isSelecting: this.isSelecting,
+                        targetInputId: this.targetInputId,
+                        timestamp: new Date().toISOString()
+                    });
                     
                     // Prevent multiple selections
                     if (this.selectionLock || this.isSelecting) {
@@ -163,8 +185,16 @@
                         return;
                     }
                     
+                    // Validate index
+                    if (index < 0 || index >= this.users.length) {
+                        console.log('❌ Invalid index:', index);
+                        return;
+                    }
+                    
                     // Set the selected index first
                     this.selectedIndex = index;
+                    console.log('✅ Selected index set to:', this.selectedIndex);
+                    
                     // Then select the user
                     this.selectUser();
                 },
@@ -283,7 +313,7 @@
                         class="flex items-center space-x-3 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 user-mention-item transition-colors duration-75 {{ $index === $selectedIndex ? 'bg-blue-50 dark:bg-blue-900/20' : '' }} {{ isset($user['is_special']) && $user['is_special'] ? 'border-l-4 border-orange-500 bg-orange-50 dark:bg-orange-900/20' : '' }}"
                         wire:key="user-{{ $user['id'] }}"
                         x-on:mouseenter="selectedIndex = {{ $index }}; updateSelection()"
-                        x-on:click="selectUserByIndex({{ $index }})"
+                        x-on:click.stop="console.log('🖱️ Mouse click detected on user item:', {{ $index }}); selectUserByIndex({{ $index }})"
                     >
                         <!-- User Avatar -->
                         <div class="flex-shrink-0 user-mention-avatar">

@@ -576,7 +576,13 @@
             
             // Listen for the new instant custom event (zero-delay) - with proper cleanup
             const userSelectedHandler = function(event) {
-                console.log('🎯 Instant userSelected event received:', event.detail);
+                console.log('🎯 Instant userSelected event received:', {
+                    detail: event.detail,
+                    username: event.detail?.username,
+                    userId: event.detail?.userId,
+                    inputId: event.detail?.inputId,
+                    timestamp: new Date().toISOString()
+                });
                 handleUserSelected(event.detail);
             };
             
@@ -1155,15 +1161,20 @@
                         inputId = 'composerData.newComment';
                     } else if (trixEditor.closest('.edit-form[data-edit-form="true"]')) {
                         inputId = 'editData.editingText';
+                    } else if (trixEditor.closest('.edit-reply-form[data-edit-reply-form="true"]')) {
+                        inputId = 'editReplyData.editingReplyText';
                     } else if (trixEditor.closest('.reply-form[data-reply-form="true"]')) {
                         inputId = 'replyData.replyText';
                     } else {
                         // Fallback: try to determine by form class
                         const editForm = trixEditor.closest('.edit-form');
+                        const editReplyForm = trixEditor.closest('.edit-reply-form');
                         const replyForm = trixEditor.closest('.reply-form');
                         
                         if (editForm) {
                             inputId = 'editData.editingText';
+                        } else if (editReplyForm) {
+                            inputId = 'editReplyData.editingReplyText';
                         } else if (replyForm) {
                             inputId = 'replyData.replyText';
                         } else {
@@ -1220,6 +1231,8 @@
                 inputId = 'composerData.newComment';
             } else if (trixEditor.closest('.edit-form[data-edit-form="true"]')) {
                 inputId = 'editData.editingText';
+            } else if (trixEditor.closest('.edit-reply-form[data-edit-reply-form="true"]')) {
+                inputId = 'editReplyData.editingReplyText';
             } else if (trixEditor.closest('.reply-form[data-reply-form="true"]')) {
                 inputId = 'replyData.replyText';
             } else {
@@ -1284,18 +1297,27 @@
                 }
             }
             
+            // Calculate position for this specific editor instead of using global atSymbolPosition
+            const editorRect = trixEditor.getBoundingClientRect();
+            const position = {
+                left: editorRect.left + 20, // Offset from editor left edge
+                top: editorRect.bottom + 5   // Position below editor
+            };
+            
             console.log('📡 Dispatching Trix showMentionDropdown (update):', { 
                 inputId, 
                 searchTerm, 
-                x: atSymbolPosition.left, 
-                y: atSymbolPosition.top 
+                x: position.left, 
+                y: position.top,
+                editorId: trixEditor.id,
+                editorClass: trixEditor.className
             });
 
             Livewire.dispatch('showMentionDropdown', {
                 inputId: inputId,
                 searchTerm: searchTerm,
-                x: atSymbolPosition.left,
-                y: atSymbolPosition.top
+                x: position.left,
+                y: position.top
             });
         }
         // Find the reply form editor specifically
@@ -1655,15 +1677,20 @@
                         inputId = 'composerData.newComment';
                     } else if (editor.closest('.edit-form[data-edit-form="true"]')) {
                         inputId = 'editData.editingText';
+                    } else if (editor.closest('.edit-reply-form[data-edit-reply-form="true"]')) {
+                        inputId = 'editReplyData.editingReplyText';
                     } else if (editor.closest('.reply-form[data-reply-form="true"]')) {
                         inputId = 'replyData.replyText';
                     } else {
                         // Fallback: try to determine by form class
                         const editForm = editor.closest('.edit-form');
+                        const editReplyForm = editor.closest('.edit-reply-form');
                         const replyForm = editor.closest('.reply-form');
                         
                         if (editForm) {
                             inputId = 'editData.editingText';
+                        } else if (editReplyForm) {
+                            inputId = 'editReplyData.editingReplyText';
                         } else if (replyForm) {
                             inputId = 'replyData.replyText';
                         } else {
@@ -1697,15 +1724,20 @@
                     inputId = 'composerData.newComment';
                 } else if (editor.closest('.edit-form[data-edit-form="true"]')) {
                     inputId = 'editData.editingText';
+                } else if (editor.closest('.edit-reply-form[data-edit-reply-form="true"]')) {
+                    inputId = 'editReplyData.editingReplyText';
                 } else if (editor.closest('.reply-form[data-reply-form="true"]')) {
                     inputId = 'replyData.replyText';
                 } else {
                     // Fallback: try to determine by form class
                     const editForm = editor.closest('.edit-form');
+                    const editReplyForm = editor.closest('.edit-reply-form');
                     const replyForm = editor.closest('.reply-form');
                     
                     if (editForm) {
                         inputId = 'editData.editingText';
+                    } else if (editReplyForm) {
+                        inputId = 'editReplyData.editingReplyText';
                     } else if (replyForm) {
                         inputId = 'replyData.replyText';
                     } else {
@@ -2188,14 +2220,23 @@
                     editor.dispatchEvent(new Event('input', { bubbles: true }));
                     editor.dispatchEvent(new Event('change', { bubbles: true }));
                     
-                    // Also try to update the Livewire state directly
-                    try {
-                        // This should trigger the updatedEditReplyData method
-                        Livewire.find(editor.closest('[wire\\:id]')?.getAttribute('wire:id')).set('editReplyData.editingReplyText', currentContent);
-                        console.log('✅ Livewire state updated directly');
-                    } catch (error) {
-                        console.log('⚠️ Could not update Livewire state directly:', error);
-                    }
+                    // Also try to update the Livewire state directly with a delay to ensure DOM is updated
+                    setTimeout(() => {
+                        try {
+                            // This should trigger the updatedEditReplyData method
+                            const livewireComponent = Livewire.find(editor.closest('[wire\\:id]')?.getAttribute('wire:id'));
+                            if (livewireComponent) {
+                                // Update both paths to ensure synchronization
+                                livewireComponent.set('editReplyData.editingReplyText', currentContent);
+                                livewireComponent.set('editingReplyText', currentContent);
+                                console.log('✅ Livewire state updated directly with delay (both paths)');
+                            } else {
+                                console.log('⚠️ Could not find Livewire component');
+                            }
+                        } catch (error) {
+                            console.log('⚠️ Could not update Livewire state directly:', error);
+                        }
+                    }, 100);
                     
                     console.log('✅ Livewire update events dispatched for edit reply form');
                 }

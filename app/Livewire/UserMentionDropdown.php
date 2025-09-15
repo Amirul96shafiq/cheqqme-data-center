@@ -37,6 +37,8 @@ class UserMentionDropdown extends Component
             'searchTerm' => $searchTerm,
             'x' => $x,
             'y' => $y,
+            'isEditReplyForm' => $inputId === 'editReplyData.editingReplyText',
+            'timestamp' => now()->toISOString(),
         ]);
 
         $this->targetInputId = $inputId; // Set the target input id
@@ -129,7 +131,9 @@ class UserMentionDropdown extends Component
             'index' => $index,
             'totalUsers' => count($this->users),
             'targetInputId' => $this->targetInputId,
+            'isEditReplyForm' => $this->targetInputId === 'editReplyData.editingReplyText',
             'users' => $this->users,
+            'timestamp' => now()->toISOString(),
         ]);
 
         // Check if the user exists
