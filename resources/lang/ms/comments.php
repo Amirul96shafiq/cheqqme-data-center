@@ -79,4 +79,17 @@ return [
         'confirm_delete' => 'Adakah anda pasti mahu memadam komen ini?',
         'error_deleting_comment' => 'Ralat memadam komen',
     ],
+    'emoji_picker' => [
+        'add_reaction' => 'Tambah Reaksi',
+        'close' => 'Tutup',
+        'search_emojis' => 'Cari emojis',
+        'no_emojis_found' => 'Tiada emojis ditemui untuk',
+        'clear_search' => 'Bersihkan pencarian',
+        'recent' => 'Baru-baru ini',
+        'no_recent_emojis' => 'Tiada emojis baru-baru ini',
+        'reaction_added_successfully' => 'Reaksi berjaya ditambah',
+        'reaction_removed_successfully' => 'Reaksi berjaya dihapus',
+        'failed_to_add_reaction' => 'Gagal menambah reaksi',
+        'others' => 'lain-lain',
+    ],
 ];

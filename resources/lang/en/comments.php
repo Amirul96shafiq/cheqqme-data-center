@@ -79,4 +79,17 @@ return [
         'confirm_delete' => 'Are you sure you want to delete this comment?',
         'error_deleting_comment' => 'Error deleting comment',
     ],
+    'emoji_picker' => [
+        'add_reaction' => 'Add Reaction',
+        'close' => 'Close',
+        'search_emojis' => 'Search emojis',
+        'no_emojis_found' => 'No emojis found for',
+        'clear_search' => 'Clear search',
+        'recent' => 'Recent',
+        'no_recent_emojis' => 'No recent emojis',
+        'reaction_added_successfully' => 'Reaction added successfully',
+        'reaction_removed_successfully' => 'Reaction removed successfully',
+        'failed_to_add_reaction' => 'Failed to add reaction',
+        'others' => 'others',
+    ],
 ];
