@@ -2,19 +2,18 @@
 <div class="flex flex-col flex-1 h-full min-h-0 rounded-xl" 
      x-data="notificationHandler()"
      x-on:keydown.ctrl.enter.prevent="
-         if ($event.target.closest('[data-composer]') || $event.target.closest('.minimal-comment-editor')) {
-             $wire.addComment().then(() => {
-                 // Additional clearing after Livewire completes
-                 setTimeout(() => {
-                     const editor = document.querySelector('[data-composer] trix-editor');
-                     if (editor) {
-                         editor.textContent = '';
-                         editor.innerHTML = '';
-                         editor.dispatchEvent(new Event('input', { bubbles: true }));
-                     }
-                 }, 100);
-             });
-         }
+         ($event.target.closest('[data-composer]') || $event.target.closest('.minimal-comment-editor')) && 
+         ($wire.editingId === null || $wire.editingId === undefined) && 
+         $wire.addComment().then(() => {
+             setTimeout(() => {
+                 const editor = document.querySelector('[data-composer] trix-editor');
+                 if (editor) {
+                     editor.textContent = '';
+                     editor.innerHTML = '';
+                     editor.dispatchEvent(new Event('input', { bubbles: true }));
+                 }
+             }, 100);
+         })
      ">
     <!-- Composer (Top) -->
     <div class="px-0 pt-0 pb-5" data-composer>
@@ -293,16 +292,12 @@
         
         // Reset composer editor
         document.addEventListener('resetComposerEditor', () => {
-            console.log('🔄 resetComposerEditor event received, clearing editor...');
-            
             // Add a small delay to ensure DOM is ready
             setTimeout(() => {
                 // Find the composer trix-editor (Filament RichEditor)
                 const editor = document.querySelector('[data-composer] trix-editor');
                 
                 if (editor) {
-                    console.log('✅ Found composer trix-editor, clearing...');
-                    
                     // Clear the editor content
                     editor.textContent = '';
                     editor.innerHTML = '';
@@ -310,10 +305,6 @@
                     // Trigger events to update form state
                     editor.dispatchEvent(new Event('input', { bubbles: true }));
                     editor.dispatchEvent(new Event('change', { bubbles: true }));
-                    
-                    console.log('✅ Editor cleared successfully');
-                } else {
-                    console.error('❌ Could not find composer trix-editor');
                 }
             }, 50);
         });
