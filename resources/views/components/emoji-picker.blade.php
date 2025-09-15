@@ -443,7 +443,7 @@ function emojiPicker(commentId) {
         createReactionButton(reaction) {
             const button = document.createElement('button');
             button.type = 'button';
-            button.className = `reaction-button inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm transition-colors duration-200 ${reaction.user_reacted ? 'bg-primary-100 text-primary-700 border border-primary-200 dark:bg-primary-900 dark:text-primary-300 dark:border-primary-700' : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'}`;
+            button.className = `reaction-button inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm transition-colors duration-200 ${reaction.user_reacted ? 'bg-primary-100/25 text-primary-700 border border-primary-200 dark:bg-primary-900/25 dark:text-primary-300 dark:border-primary-700 cursor-default' : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'}`;
             button.setAttribute('data-emoji', reaction.emoji);
             button.setAttribute('data-count', reaction.count);
             
@@ -463,14 +463,16 @@ function emojiPicker(commentId) {
                     tooltip += ` and ${reaction.users.length - 1} others`;
                 }
             }
-            
+                    
             console.log('Final tooltip:', tooltip);
             button.setAttribute('title', tooltip);
             
-            // Add click handler
-            button.addEventListener('click', () => {
-                this.addReaction(reaction.emoji);
-            });
+            // Only add click handler for non-user-reacted emojis
+            if (!reaction.user_reacted) {
+                button.addEventListener('click', () => {
+                    this.addReaction(reaction.emoji);
+                });
+            }
             
             // Add content
             button.innerHTML = `
@@ -495,6 +497,28 @@ function emojiPicker(commentId) {
         }
     }
 }
+
+// Global function to format date and time
+window.formatDateTime = function(dateTimeString) {
+    try {
+        const date = new Date(dateTimeString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = String(date.getFullYear()).slice(-2); // Get last 2 digits of year
+        
+        let hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0 should be 12
+        const timeStr = `${hours}:${minutes} ${ampm}`;
+        
+        return `${day}/${month}/${year} • ${timeStr}`;
+    } catch (error) {
+        console.error('Error formatting date:', error);
+        return '';
+    }
+};
 
 // Global function to refresh reactions for any comment
 window.refreshCommentReactions = async function(commentId) {
@@ -541,28 +565,40 @@ window.refreshCommentReactions = async function(commentId) {
 function createReactionButton(reaction, commentId) {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = `reaction-button inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm transition-colors duration-200 ${reaction.user_reacted ? 'bg-primary-100 text-primary-700 border border-primary-200 dark:bg-primary-900 dark:text-primary-300 dark:border-primary-700' : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'}`;
+    button.className = `reaction-button inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm transition-colors duration-200 ${reaction.user_reacted ? 'bg-primary-100/25 text-primary-700 border border-primary-200 dark:bg-primary-900/25 dark:text-primary-300 dark:border-primary-700 cursor-default' : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'}`;
     button.setAttribute('data-emoji', reaction.emoji);
     button.setAttribute('data-count', reaction.count);
     
-    // Add tooltip
-    const tooltip = reaction.users.length > 0 ? 
-        `${reaction.users[0].name || reaction.users[0].username || 'Unknown'}${reaction.users.length > 1 ? ` and ${reaction.users.length - 1} others` : ''}` : 
-        '';
+    // Add tooltip with date and time
+    let tooltip = '';
+    if (reaction.users.length > 0) {
+        const user = reaction.users[0];
+        const userName = user.name || user.username || 'Unknown';
+        const reactedAt = user.reacted_at ? formatDateTime(user.reacted_at) : '';
+        
+        tooltip = `${userName}${reactedAt ? ` (${reactedAt})` : ''}`;
+        
+        if (reaction.users.length > 1) {
+            tooltip += ` and ${reaction.users.length - 1} others`;
+        }
+    }
+    
     button.setAttribute('title', tooltip);
     
-    // Add click handler
-    button.addEventListener('click', () => {
-        // Trigger the emoji picker's addReaction function
-        const emojiPickerElement = document.querySelector(`[data-comment-id="${commentId}"] [x-data*="emojiPicker"]`);
-        if (emojiPickerElement && emojiPickerElement._x_dataStack && emojiPickerElement._x_dataStack[0]) {
-            emojiPickerElement._x_dataStack[0].addReaction(reaction.emoji);
-        } else {
-            console.log('Emoji picker component not found, falling back to global refresh');
-            // Fallback: just refresh the reactions
-            window.refreshCommentReactions(commentId);
-        }
-    });
+    // Only add click handler for non-user-reacted emojis
+    if (!reaction.user_reacted) {
+        button.addEventListener('click', () => {
+            // Trigger the emoji picker's addReaction function
+            const emojiPickerElement = document.querySelector(`[data-comment-id="${commentId}"] [x-data*="emojiPicker"]`);
+            if (emojiPickerElement && emojiPickerElement._x_dataStack && emojiPickerElement._x_dataStack[0]) {
+                emojiPickerElement._x_dataStack[0].addReaction(reaction.emoji);
+            } else {
+                console.log('Emoji picker component not found, falling back to global refresh');
+                // Fallback: just refresh the reactions
+                window.refreshCommentReactions(commentId);
+            }
+        });
+    }
     
     // Add content
     button.innerHTML = `
