@@ -57,6 +57,20 @@ return [
             'title' => 'Delete Reply',
             'description' => 'Are you sure you would like to delete this reply? This action can be reversed only by an admin.',
         ],
+        'force_delete' => [
+            'title' => 'Permanently Delete Comment',
+            'description' => 'Are you sure you would like to permanently delete this comment? This action cannot be undone.',
+            'cancel' => 'Cancel',
+            'confirm' => 'Permanently Delete',
+            'close' => 'Close',
+        ],
+        'force_delete_reply' => [
+            'title' => 'Permanently Delete Reply',
+            'description' => 'Are you sure you would like to permanently delete this reply? This action cannot be undone.',
+            'cancel' => 'Cancel',
+            'confirm' => 'Permanently Delete',
+            'close' => 'Close',
+        ],
     ],
     'sidebar' => [
         'task_not_loaded' => 'Task not loaded.',

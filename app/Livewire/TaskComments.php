@@ -1081,6 +1081,9 @@ class TaskComments extends Component implements HasForms
             }
         }
 
+        // Clear the confirmation state to close the modal
+        $this->confirmingForceDeleteId = null;
+
         $this->dispatch('refreshTaskComments');
     }
 

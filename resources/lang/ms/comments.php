@@ -57,6 +57,20 @@ return [
             'title' => 'Padam Balasan',
             'description' => 'Adakah anda pasti mahu memadam balasan ini? Tindakan ini hanya boleh diundur oleh admin.',
         ],
+        'force_delete' => [
+            'title' => 'Padam Komen Kekal',
+            'description' => 'Adakah anda pasti mahu memadam komen ini secara kekal? Tindakan ini tidak boleh dibatalkan.',
+            'cancel' => 'Batal',
+            'confirm' => 'Padam Kekal',
+            'close' => 'Tutup',
+        ],
+        'force_delete_reply' => [
+            'title' => 'Padam Balasan Kekal',
+            'description' => 'Adakah anda pasti mahu memadam balasan ini secara kekal? Tindakan ini tidak boleh dibatalkan.',
+            'cancel' => 'Batal',
+            'confirm' => 'Padam Kekal',
+            'close' => 'Tutup',
+        ],
     ],
     'sidebar' => [
         'task_not_loaded' => 'Tugasan tidak dimuat.',
