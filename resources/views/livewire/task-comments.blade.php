@@ -80,7 +80,7 @@
                 </button>
             </div>
             
-            <div class="space-y-6 flex-1">
+            <div class="space-y-6 flex-1 pt-1">
                 <!-- Loop through comments -->
                 @forelse($this->comments as $comment)
                     <div class="group relative flex gap-3" 
