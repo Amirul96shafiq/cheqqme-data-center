@@ -128,6 +128,5 @@ return [
     // Chatbot-related translations
     'chatbot' => [
         'create_backup' => 'Create Backup',
-        'refresh' => 'Refresh',
     ],
 ];

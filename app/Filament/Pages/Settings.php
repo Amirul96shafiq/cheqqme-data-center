@@ -663,61 +663,37 @@ class Settings extends Page
                 Forms\Components\Section::make(__('settings.sections.chatbot_history'))
                     ->description(__('settings.sections.chatbot_history_description'))
                     ->collapsible()
+                    ->headerActions([
+                        \Filament\Forms\Components\Actions\Action::make('create_backup')
+                            ->label(__('settings.chatbot.create_backup'))
+                            ->icon('heroicon-o-archive-box')
+                            ->color('primary')
+                            ->action(function () {
+                                try {
+                                    $user = Auth::user();
+                                    $backupService = new ChatbotBackupService;
+                                    $backup = $backupService->createBackup($user, 'manual');
+
+                                    Notification::make()
+                                        ->title(__('settings.notifications.backup_created'))
+                                        ->body(__('settings.notifications.backup_created_body', ['name' => $backup->backup_name]))
+                                        ->success()
+                                        ->send();
+
+                                    // Dispatch browser event to refresh backup list
+                                    $this->js('
+                                        window.dispatchEvent(new CustomEvent("backup-created"));
+                                    ');
+                                } catch (\Exception $e) {
+                                    Notification::make()
+                                        ->title(__('settings.notifications.backup_failed'))
+                                        ->body($e->getMessage())
+                                        ->danger()
+                                        ->send();
+                                }
+                            }),
+                    ])
                     ->schema([
-                        // Manual backup action
-                        Forms\Components\Grid::make(12)
-                            ->schema([
-                                Forms\Components\Placeholder::make('chatbot_actions_label')
-                                    ->label('')
-                                    ->columnSpan(4),
-
-                                Forms\Components\Actions::make([
-                                    \Filament\Forms\Components\Actions\Action::make('create_backup')
-                                        ->label(__('settings.chatbot.create_backup'))
-                                        ->icon('heroicon-o-archive-box')
-                                        ->color('primary')
-                                        ->action(function () {
-                                            try {
-                                                $user = Auth::user();
-                                                $backupService = new ChatbotBackupService;
-                                                $backup = $backupService->createBackup($user, 'manual');
-
-                                                Notification::make()
-                                                    ->title(__('settings.notifications.backup_created'))
-                                                    ->body(__('settings.notifications.backup_created_body', ['name' => $backup->backup_name]))
-                                                    ->success()
-                                                    ->send();
-
-                                                // Dispatch browser event to refresh backup list
-                                                $this->js('
-                                                    window.dispatchEvent(new CustomEvent("backup-created"));
-                                                ');
-                                            } catch (\Exception $e) {
-                                                Notification::make()
-                                                    ->title(__('settings.notifications.backup_failed'))
-                                                    ->body($e->getMessage())
-                                                    ->danger()
-                                                    ->send();
-                                            }
-                                        }),
-
-                                    \Filament\Forms\Components\Actions\Action::make('refresh_backups')
-                                        ->label(__('settings.chatbot.refresh'))
-                                        ->icon('heroicon-o-arrow-path')
-                                        ->color('gray')
-                                        ->action(function () {
-                                            $this->dispatch('$refresh');
-
-                                            Notification::make()
-                                                ->title(__('settings.notifications.backups_refreshed'))
-                                                ->body(__('settings.notifications.backups_refreshed_body'))
-                                                ->success()
-                                                ->send();
-                                        }),
-                                ])
-                                    ->columnSpan(8),
-                            ]),
-
                         // Backups table
                         Forms\Components\Grid::make(12)
                             ->schema([
