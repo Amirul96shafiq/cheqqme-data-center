@@ -7,13 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Comment extends Model
 {
-    use HasFactory, LogsActivity, SoftDeletes;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'task_id',
@@ -60,7 +59,7 @@ class Comment extends Model
      */
     public function replies(): HasMany
     {
-        return $this->hasMany(Comment::class, 'parent_id')->whereNull('deleted_at')->where('status', '!=', 'deleted')->orderBy('created_at');
+        return $this->hasMany(Comment::class, 'parent_id')->orderBy('created_at');
     }
 
     /**
