@@ -1,4 +1,35 @@
 <div id="chatbot-backups-table">
+    <!-- Search Input - Filament Style -->
+    <div class="mb-4 flex justify-end">
+        <div class="relative w-80">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <input 
+                type="text" 
+                wire:model.live.debounce.300ms="search"
+                placeholder="Search"
+                class="fi-input block w-full rounded-lg bg-transparent px-3 py-1.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-700 text-base text-gray-950 outline-none transition duration-75 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-500 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-400 sm:text-sm sm:leading-6 pl-10 pr-10"
+            >
+            @if($search)
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                    <button 
+                        type="button"
+                        wire:click="clearSearch"
+                        class="text-gray-400 hover:text-gray-300 transition-colors duration-200"
+                        title="Clear search"
+                    >
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            @endif
+        </div>
+    </div>
+
     @if($backups->count() > 0)
         <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -169,7 +200,11 @@
                         wire:loading.attr="disabled"
                         wire:target="showMore">
                     <span wire:loading.remove wire:target="showMore">
-                        {{ __('settings.chatbot.load_more', ['count' => $remaining < 5 ? $remaining : 5]) }}
+                        @if($search)
+                            Load {{ $remaining < 5 ? $remaining : 5 }} more result{{ $remaining === 1 ? '' : 's' }}
+                        @else
+                            {{ __('settings.chatbot.load_more', ['count' => $remaining < 5 ? $remaining : 5]) }}
+                        @endif
                     </span>
                     <span wire:loading wire:target="showMore">
                         {{ __('settings.chatbot.loading') }}
@@ -179,11 +214,28 @@
         @endif
     @else
         <div class="text-center py-12">
-            <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-            </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('settings.chatbot.no_backups') }}</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('settings.chatbot.no_backups_description') }}</p>
+            @if($search)
+                <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No backups found</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">No backups match your search for "{{ $search }}"</p>
+                <div class="mt-4">
+                    <button 
+                        wire:click="clearSearch"
+                        type="button"
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800"
+                    >
+                        Clear search
+                    </button>
+                </div>
+            @else
+                <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('settings.chatbot.no_backups') }}</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('settings.chatbot.no_backups_description') }}</p>
+            @endif
         </div>
     @endif
 

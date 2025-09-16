@@ -21,10 +21,22 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
 
     public bool $isLoadingMore = false; // loading state for show more button
 
+    public string $search = ''; // search term for filtering backups
+
     public function render()
     {
-        $backups = ChatbotBackup::where('user_id', Auth::id())
-            ->orderBy('backup_date', 'desc')
+        $query = ChatbotBackup::where('user_id', Auth::id());
+
+        // Apply search filter if search term is provided
+        if (!empty($this->search)) {
+            $query->where(function ($q) {
+                $q->where('backup_name', 'like', '%' . $this->search . '%')
+                  ->orWhere('backup_type', 'like', '%' . $this->search . '%')
+                  ->orWhere('formatted_date_range', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        $backups = $query->orderBy('backup_date', 'desc')
             ->take($this->visibleCount)
             ->get();
 
@@ -33,10 +45,21 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
         ]);
     }
 
-    // Get the total backups
+    // Get the total backups (filtered by search if applicable)
     public function getTotalBackupsProperty(): int
     {
-        return ChatbotBackup::where('user_id', Auth::id())->count();
+        $query = ChatbotBackup::where('user_id', Auth::id());
+
+        // Apply search filter if search term is provided
+        if (!empty($this->search)) {
+            $query->where(function ($q) {
+                $q->where('backup_name', 'like', '%' . $this->search . '%')
+                  ->orWhere('backup_type', 'like', '%' . $this->search . '%')
+                  ->orWhere('formatted_date_range', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        return $query->count();
     }
 
     // Show more backups
@@ -195,5 +218,18 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
         // This method is called when a new backup is created
         // The component will automatically re-render with updated data
         // No additional logic needed as the render() method fetches fresh data
+    }
+
+    // Clear search and reset visible count
+    public function clearSearch(): void
+    {
+        $this->search = '';
+        $this->visibleCount = 5;
+    }
+
+    // Updated search method that resets visible count when searching
+    public function updatedSearch(): void
+    {
+        $this->visibleCount = 5; // Reset to initial count when searching
     }
 }
