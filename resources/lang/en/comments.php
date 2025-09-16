@@ -26,6 +26,7 @@ return [
         'click_to_focus' => 'Click to focus on this comment',
         'exit_focus_mode' => 'Exit Focus Mode',
         'enter_focus_mode' => 'Enter Focus Mode',
+        'focus' => 'Focus',
     ],
     'list' => [
         'none' => 'No comments yet.',

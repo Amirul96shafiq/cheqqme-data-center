@@ -141,7 +141,7 @@
                                             @svg('heroicon-o-chat-bubble-left-right', 'w-4 h-4 transition-transform duration-200')
                                         </button>
                                         
-                                        <!-- Group actions dropdown (Edit, Delete) -->
+                                        <!-- Group actions dropdown (Focus, Edit, Delete) -->
                                         @if(auth()->id() === $comment->user_id)
                                             <x-comment-actions-dropdown 
                                                 :comment-id="$comment->id"
@@ -149,6 +149,16 @@
                                                 :can-edit="true"
                                                 :can-delete="true"
                                                 :show-reply="false"
+                                                :show-focus="true"
+                                            />
+                                        @else
+                                            <x-comment-actions-dropdown 
+                                                :comment-id="$comment->id"
+                                                :is-reply="false"
+                                                :can-edit="false"
+                                                :can-delete="false"
+                                                :show-reply="false"
+                                                :show-focus="true"
                                             />
                                         @endif
                                     </div>
@@ -179,19 +189,7 @@
                                     </div>
                                 @else
                                     <!-- Comment content -->
-                                    <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4 transition-colors duration-200 relative"
-                                         :class="isFocusMode ? 'cursor-default' : 'cursor-pointer hover:bg-gray-300/25 dark:hover:bg-gray-800/70'"
-                                         x-on:click="!isFocusMode && !$event.target.closest('a') && enterFocusMode({{ $comment->id }})"
-                                         x-on:mouseover="$event.target.closest('a') ? $el.title = '' : $el.title = isFocusMode ? '' : '{{ __('comments.buttons.click_to_focus') }}'"
-                                         x-on:mouseout="$el.title = isFocusMode ? '' : '{{ __('comments.buttons.click_to_focus') }}'">
-                                        <!-- Enter Focus Mode button (only visible on hover and when not in focus mode) -->
-                                        <button type="button" 
-                                                x-on:click.stop="enterFocusMode({{ $comment->id }})" 
-                                                x-show="!isFocusMode"
-                                                class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200 z-10" 
-                                                title="{{ __('comments.buttons.enter_focus_mode') }}">
-                                            @svg('heroicon-o-eye', 'w-4 h-4 transition-transform duration-200')
-                                        </button>
+                                    <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4 transition-colors duration-200 relative">
                                         <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[13px] text-gray-700 dark:text-gray-300 break-words">{!! $comment->rendered_comment !!}</div>
                                     </div>
                                     
@@ -296,20 +294,30 @@
                                                                     @endif
                                                                 </span>
                                                             </div>
-                                                            <!-- Reply group actions dropdown (Edit, Delete) -->
-                                                            @if($this->editingReplyId !== $reply->id)
-                                                                <div class="flex items-center gap-1">
-                                                                    @if(auth()->id() === $reply->user_id)
-                                                                        <x-comment-actions-dropdown 
-                                                                            :comment-id="$reply->id"
-                                                                            :is-reply="true"
-                                                                            :can-edit="true"
-                                                                            :can-delete="true"
-                                                                            :show-reply="false"
-                                                                        />
-                                                                    @endif
-                                                                </div>
-                                                            @endif
+                                                             <!-- Reply group actions dropdown (Focus, Edit, Delete) -->
+                                                             @if($this->editingReplyId !== $reply->id)
+                                                                 <div class="flex items-center gap-1">
+                                                                     @if(auth()->id() === $reply->user_id)
+                                                                         <x-comment-actions-dropdown 
+                                                                             :comment-id="$reply->id"
+                                                                             :is-reply="true"
+                                                                             :can-edit="true"
+                                                                             :can-delete="true"
+                                                                             :show-reply="false"
+                                                                             :show-focus="true"
+                                                                         />
+                                                                     @else
+                                                                         <x-comment-actions-dropdown 
+                                                                             :comment-id="$reply->id"
+                                                                             :is-reply="true"
+                                                                             :can-edit="false"
+                                                                             :can-delete="false"
+                                                                             :show-reply="false"
+                                                                             :show-focus="true"
+                                                                         />
+                                                                     @endif
+                                                                 </div>
+                                                             @endif
                                                         </div>
                                                         <div class="mt-2">
                                                             <!-- Edit reply form -->

@@ -26,6 +26,7 @@ return [
         'click_to_focus' => 'Klik untuk fokus pada komen ini',
         'exit_focus_mode' => 'Keluar dari Mode Fokus',
         'enter_focus_mode' => 'Masuk ke Mode Fokus',
+        'focus' => 'Fokus',
     ],
     'list' => [
         'none' => 'Belum ada komen.',
