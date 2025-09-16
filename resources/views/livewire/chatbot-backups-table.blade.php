@@ -1,37 +1,34 @@
 <div id="chatbot-backups-table">
-    <!-- Search Input - Filament Style -->
-    <div class="mb-4 flex justify-end">
-        <div class="relative w-80">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </div>
-            <input 
-                type="text" 
-                wire:model.live.debounce.300ms="search"
-                placeholder="Search"
-                class="fi-input block w-full rounded-lg bg-transparent px-3 py-1.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-700 text-base text-gray-950 outline-none transition duration-75 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-500 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-400 sm:text-sm sm:leading-6 pl-10 pr-10"
-            >
-            @if($search)
-                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <button 
-                        type="button"
-                        wire:click="clearSearch"
-                        class="text-gray-400 hover:text-gray-300 transition-colors duration-200"
-                        title="Clear search"
-                    >
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            @endif
-        </div>
-    </div>
-
     @if($backups->count() > 0)
         <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+            <!-- Search Input - Above Table Header -->
+            <div class="bg-white dark:bg-gray-900 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex justify-end">
+                    <div class="relative w-60">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <x-heroicon-o-magnifying-glass class="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                        </div>
+                        <input 
+                            type="text" 
+                            wire:model.live.debounce.300ms="search"
+                            placeholder="Search"
+                            class="fi-input block w-full rounded-lg bg-transparent px-3 py-1.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-700 text-base text-gray-950 outline-none transition duration-75 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-500 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-400 sm:text-sm sm:leading-6 pl-10 pr-10"
+                        >
+                        @if($search)
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <button 
+                                    type="button"
+                                    wire:click="clearSearch"
+                                    class="text-gray-400 hover:text-gray-300 transition-colors duration-200"
+                                    title="Clear search"
+                                >
+                                    <x-heroicon-o-x-mark class="h-4 w-4" />
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-800">
                     <tr>
