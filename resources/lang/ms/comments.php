@@ -14,6 +14,7 @@ return [
     'buttons' => [
         'edit' => 'Sunting',
         'delete' => 'Padam',
+        'force_delete' => 'Padam Kekal',
         'reply' => 'Balas',
         'more_actions' => 'Lebih banyak tindakan',
         'send_reply' => 'Hantar Balasan',
@@ -64,6 +65,7 @@ return [
         'added_title' => 'Komen ditambah',
         'updated_title' => 'Komen dikemas kini',
         'deleted_title' => 'Komen dipadam',
+        'force_deleted_title' => 'Komen dipadam kekal',
         'reply_added_title' => 'Balasan ditambah',
         'not_updated_title' => 'Komen tidak dikemas kini',
         'edited_empty' => 'Komen yang disunting tidak boleh kosong.',

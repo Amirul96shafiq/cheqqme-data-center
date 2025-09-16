@@ -14,6 +14,7 @@ return [
     'buttons' => [
         'edit' => 'Edit',
         'delete' => 'Delete',
+        'force_delete' => 'Force Delete',
         'reply' => 'Reply',
         'more_actions' => 'More actions',
         'send_reply' => 'Submit Reply',
@@ -64,6 +65,7 @@ return [
         'added_title' => 'Comment added',
         'updated_title' => 'Comment updated',
         'deleted_title' => 'Comment deleted',
+        'force_deleted_title' => 'Comment permanently deleted',
         'reply_added_title' => 'Reply added',
         'not_updated_title' => 'Comment not updated',
         'edited_empty' => 'Edited comment cannot be empty.',

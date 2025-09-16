@@ -55,6 +55,10 @@ class TaskComments extends Component implements HasForms
 
     public ?int $confirmingDeleteReplyId = null;
 
+    public ?int $confirmingForceDeleteId = null;
+
+    public ?int $confirmingForceDeleteReplyId = null;
+
     // Track mentions selected from dropdown to avoid relying only on text parsing
     public array $pendingMentionUserIds = [];
 
@@ -768,7 +772,6 @@ class TaskComments extends Component implements HasForms
     public function getCommentsProperty()
     {
         return $this->task->comments()
-            ->whereNull('deleted_at')
             ->whereNull('parent_id') // Only top-level comments
             ->with(['user', 'reactions.user', 'replies.user', 'replies.reactions.user'])
             ->orderByDesc('created_at')
@@ -787,7 +790,7 @@ class TaskComments extends Component implements HasForms
     {
         $this->isLoadingMore = true;
 
-        $total = $this->task->comments()->whereNull('deleted_at')->where('status', '!=', 'deleted')->whereNull('parent_id')->count();
+        $total = $this->task->comments()->where('status', '!=', 'deleted')->whereNull('parent_id')->count();
         $remaining = $total - $this->visibleCount;
         if ($remaining <= 0) {
             $this->isLoadingMore = false;
@@ -1045,5 +1048,92 @@ class TaskComments extends Component implements HasForms
         $value = rtrim($value);
 
         return $value;
+    }
+
+    // Force delete a comment (permanently remove from database)
+    public function forceDeleteComment(int $commentId): void
+    {
+        $comment = $this->task->comments()->findOrFail($commentId);
+        if ($comment->user_id !== auth()->id()) {
+            return;
+        }
+
+        // Only allow force delete for deleted comments
+        if ($comment->status !== 'deleted') {
+            return;
+        }
+
+        // Permanently delete the comment
+        $comment->delete();
+
+        // Send notification
+        Notification::make()
+            ->title(__('comments.notifications.force_deleted_title'))
+            ->body(Str::limit($comment->comment, 120))
+            ->danger()
+            ->send();
+
+        // Adjust visibleCount if it exceeds remaining comments
+        if (is_null($comment->parent_id)) {
+            $total = $this->task->comments()->where('status', '!=', 'deleted')->whereNull('parent_id')->count();
+            if ($this->visibleCount > $total) {
+                $this->visibleCount = $total;
+            }
+        }
+
+        $this->dispatch('refreshTaskComments');
+    }
+
+    // Confirm force deleting a comment
+    public function confirmForceDelete(int $commentId): void
+    {
+        $comment = $this->task->comments()->where('status', '=', 'deleted')->findOrFail($commentId);
+        if ($comment->user_id !== auth()->id()) {
+            return;
+        }
+        $this->confirmingForceDeleteId = $commentId;
+    }
+
+    // Cancel force delete confirmation
+    public function cancelForceDelete(): void
+    {
+        $this->confirmingForceDeleteId = null;
+    }
+
+    // Force delete a reply (permanently remove from database)
+    public function forceDeleteReply(): void
+    {
+        if (!$this->confirmingForceDeleteReplyId) {
+            return;
+        }
+
+        $reply = $this->task->comments()->findOrFail($this->confirmingForceDeleteReplyId);
+        if ($reply->user_id !== auth()->id()) {
+            return;
+        }
+
+        // Only allow force delete for deleted replies
+        if ($reply->status !== 'deleted') {
+            return;
+        }
+
+        $this->forceDeleteComment($this->confirmingForceDeleteReplyId);
+        $this->confirmingForceDeleteReplyId = null;
+    }
+
+    // Confirm force deleting a reply
+    public function confirmForceDeleteReply(int $replyId): void
+    {
+        $reply = $this->task->comments()->where('status', '=', 'deleted')->findOrFail($replyId);
+        if ($reply->user_id !== auth()->id()) {
+            return;
+        }
+        $this->confirmingForceDeleteReplyId = $replyId;
+    }
+
+    // Cancel force delete reply confirmation
+    public function cancelForceDeleteReply(): void
+    {
+        $this->confirmingForceDeleteReplyId = null;
     }
 }

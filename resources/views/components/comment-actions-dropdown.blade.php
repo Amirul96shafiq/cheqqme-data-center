@@ -3,13 +3,14 @@
     'isReply' => false,
     'canEdit' => false,
     'canDelete' => false,
+    'canForceDelete' => false,
     'showReply' => false,
     'showFocus' => false,
 ])
 
 <x-filament::dropdown
     placement="bottom-end"
-    width="!max-w-[8rem]"
+    width="!max-w-[10rem]"
     :attributes="new \Illuminate\View\ComponentAttributeBag(['style' => 'z-index: 9999;'])"
     x-on:close-dropdown="$el.querySelector('button[data-dropdown-trigger]')?.click()"
 >
@@ -60,10 +61,21 @@
             <!-- Delete action -->
             <x-filament::dropdown.list.item
                 :icon="'heroicon-o-trash'"
-                :color="'danger'"
+                :color="'warning'"
                 wire:click="{{ $isReply ? 'confirmDeleteReply(' . $commentId . ')' : 'confirmDelete(' . $commentId . ')' }}"
             >
                 {{ __('comments.buttons.delete') }}
+            </x-filament::dropdown.list.item>
+        @endif
+
+        @if($canForceDelete)
+            <!-- Force Delete action -->
+            <x-filament::dropdown.list.item
+                :icon="'heroicon-o-trash'"
+                :color="'danger'"
+                wire:click="{{ $isReply ? 'confirmForceDeleteReply(' . $commentId . ')' : 'confirmForceDelete(' . $commentId . ')' }}"
+            >
+                {{ __('comments.buttons.force_delete') }}
             </x-filament::dropdown.list.item>
         @endif
     </x-filament::dropdown.list>

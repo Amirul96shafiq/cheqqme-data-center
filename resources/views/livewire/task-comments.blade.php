@@ -138,33 +138,50 @@
                                         </span>
                                 </div>
                                 <!-- Action buttons: Reply (separate) + Group actions dropdown -->
-                                @if($this->editingId !== $comment->id && $this->replyingToId !== $comment->id && !$comment->isDeleted())
+                                @if($this->editingId !== $comment->id && $this->replyingToId !== $comment->id)
                                     <div class="flex items-center gap-1">
-                                        <!-- Reply button (always visible, separate from group actions) -->
-                                        <button type="button" wire:click="startReply({{ $comment->id }})" class="flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.reply') }}">
-                                            <span class="text-[10px] font-light">{{ __('comments.buttons.reply') }}</span>
-                                            @svg('heroicon-o-chat-bubble-left-right', 'w-4 h-4 transition-transform duration-200')
-                                        </button>
-                                        
-                                        <!-- Group actions dropdown (Focus, Edit, Delete) -->
-                                        @if(auth()->id() === $comment->user_id)
-                                            <x-comment-actions-dropdown 
-                                                :comment-id="$comment->id"
-                                                :is-reply="false"
-                                                :can-edit="true"
-                                                :can-delete="true"
-                                                :show-reply="false"
-                                                :show-focus="true"
-                                            />
+                                        @if(!$comment->isDeleted())
+                                            <!-- Reply button (always visible, separate from group actions) -->
+                                            <button type="button" wire:click="startReply({{ $comment->id }})" class="flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.reply') }}">
+                                                <span class="text-[10px] font-light">{{ __('comments.buttons.reply') }}</span>
+                                                @svg('heroicon-o-chat-bubble-left-right', 'w-4 h-4 transition-transform duration-200')
+                                            </button>
+                                            
+                                            <!-- Group actions dropdown (Focus, Edit, Delete) -->
+                                            @if(auth()->id() === $comment->user_id)
+                                                <x-comment-actions-dropdown 
+                                                    :comment-id="$comment->id"
+                                                    :is-reply="false"
+                                                    :can-edit="true"
+                                                    :can-delete="true"
+                                                    :can-force-delete="false"
+                                                    :show-reply="false"
+                                                    :show-focus="true"
+                                                />
+                                            @else
+                                                <x-comment-actions-dropdown 
+                                                    :comment-id="$comment->id"
+                                                    :is-reply="false"
+                                                    :can-edit="false"
+                                                    :can-delete="false"
+                                                    :can-force-delete="false"
+                                                    :show-reply="false"
+                                                    :show-focus="true"
+                                                />
+                                            @endif
                                         @else
-                                            <x-comment-actions-dropdown 
-                                                :comment-id="$comment->id"
-                                                :is-reply="false"
-                                                :can-edit="false"
-                                                :can-delete="false"
-                                                :show-reply="false"
-                                                :show-focus="true"
-                                            />
+                                            <!-- Force delete dropdown for deleted comments -->
+                                            @if(auth()->id() === $comment->user_id)
+                                                <x-comment-actions-dropdown 
+                                                    :comment-id="$comment->id"
+                                                    :is-reply="false"
+                                                    :can-edit="false"
+                                                    :can-delete="false"
+                                                    :can-force-delete="true"
+                                                    :show-reply="false"
+                                                    :show-focus="false"
+                                                />
+                                            @endif
                                         @endif
                                     </div>
                                 @endif
@@ -307,26 +324,43 @@
                                                                 </span>
                                                             </div>
                                                              <!-- Reply group actions dropdown (Focus, Edit, Delete) -->
-                                                             @if($this->editingReplyId !== $reply->id && !$reply->isDeleted())
+                                                             @if($this->editingReplyId !== $reply->id)
                                                                  <div class="flex items-center gap-1">
-                                                                     @if(auth()->id() === $reply->user_id)
-                                                                         <x-comment-actions-dropdown 
-                                                                             :comment-id="$reply->id"
-                                                                             :is-reply="true"
-                                                                             :can-edit="true"
-                                                                             :can-delete="true"
-                                                                             :show-reply="false"
-                                                                             :show-focus="true"
-                                                                         />
+                                                                     @if(!$reply->isDeleted())
+                                                                         @if(auth()->id() === $reply->user_id)
+                                                                             <x-comment-actions-dropdown 
+                                                                                 :comment-id="$reply->id"
+                                                                                 :is-reply="true"
+                                                                                 :can-edit="true"
+                                                                                 :can-delete="true"
+                                                                                 :can-force-delete="false"
+                                                                                 :show-reply="false"
+                                                                                 :show-focus="true"
+                                                                             />
+                                                                         @else
+                                                                             <x-comment-actions-dropdown 
+                                                                                 :comment-id="$reply->id"
+                                                                                 :is-reply="true"
+                                                                                 :can-edit="false"
+                                                                                 :can-delete="false"
+                                                                                 :can-force-delete="false"
+                                                                                 :show-reply="false"
+                                                                                 :show-focus="true"
+                                                                             />
+                                                                         @endif
                                                                      @else
-                                                                         <x-comment-actions-dropdown 
-                                                                             :comment-id="$reply->id"
-                                                                             :is-reply="true"
-                                                                             :can-edit="false"
-                                                                             :can-delete="false"
-                                                                             :show-reply="false"
-                                                                             :show-focus="true"
-                                                                         />
+                                                                         <!-- Force delete dropdown for deleted replies -->
+                                                                         @if(auth()->id() === $reply->user_id)
+                                                                             <x-comment-actions-dropdown 
+                                                                                 :comment-id="$reply->id"
+                                                                                 :is-reply="true"
+                                                                                 :can-edit="false"
+                                                                                 :can-delete="false"
+                                                                                 :can-force-delete="true"
+                                                                                 :show-reply="false"
+                                                                                 :show-focus="false"
+                                                                             />
+                                                                         @endif
                                                                      @endif
                                                                  </div>
                                                              @endif
