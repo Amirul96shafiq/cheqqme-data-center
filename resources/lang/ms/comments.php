@@ -23,6 +23,7 @@ return [
         'show_replies' => 'Tunjukkan balasan (:count)',
         'hide_replies' => 'Sembunyikan balasan',
         'exit_focus_mode' => 'Keluar dari Mode Fokus',
+        'enter_focus_mode' => 'Masuk ke Mode Fokus',
     ],
     'list' => [
         'none' => 'Belum ada komen.',

@@ -62,8 +62,8 @@
     </div>
     <!-- Comments List (scroll area) -->
     <div class="flex-1 min-h-0 px-0 pb-0">
-        <div class="px-4 py-4 text-sm overflow-y-auto custom-thin-scroll h-full comment-list-container flex flex-col" data-comment-list>
-            <!-- Focus Mode Exit Button - At Top -->
+        <div class="px-2 py-0 text-sm overflow-y-auto custom-thin-scroll h-full comment-list-container flex flex-col" data-comment-list>
+            <!-- Focus Mode Exit Button - Sticky at Top -->
             <div wire:ignore
                  x-show="isFocusMode" 
                  x-transition:enter="transition ease-out duration-200"
@@ -72,7 +72,7 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 transform translate-y-0"
                  x-transition:leave-end="opacity-0 transform translate-y-2"
-                 class="pb-2 border-b border-gray-200 dark:border-gray-700 mb-4">
+                 class="sticky top-0 z-20 bg-white dark:bg-gray-900 pb-2 border-b border-gray-200 dark:border-gray-700 mb-4">
                 <button x-on:click="exitFocusMode()" 
                         type="button" 
                         class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40">
@@ -177,9 +177,17 @@
                                     </div>
                                 @else
                                     <!-- Comment content -->
-                                    <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4 cursor-pointer hover:bg-gray-300/25 dark:hover:bg-gray-800/70 transition-colors duration-200"
+                                    <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4 cursor-pointer hover:bg-gray-300/25 dark:hover:bg-gray-800/70 transition-colors duration-200 relative"
                                          x-on:click="enterFocusMode({{ $comment->id }})"
                                          title="Click to focus on this comment">
+                                        <!-- Enter Focus Mode button (only visible on hover and when not in focus mode) -->
+                                        <button type="button" 
+                                                x-on:click.stop="enterFocusMode({{ $comment->id }})" 
+                                                x-show="!isFocusMode"
+                                                class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200 z-10" 
+                                                title="{{ __('comments.buttons.enter_focus_mode') }}">
+                                            @svg('heroicon-o-eye', 'w-4 h-4 transition-transform duration-200')
+                                        </button>
                                         <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[13px] text-gray-700 dark:text-gray-300 break-words">{!! $comment->rendered_comment !!}</div>
                                     </div>
                                     
@@ -242,7 +250,7 @@
                                                  x-transition:leave-end="opacity-0 transform scale-95"
                                                  class="mt-4 space-y-3">
                                                 @foreach($comment->replies as $reply)
-                                                <div class="flex gap-3" wire:key="reply-{{ $reply->id }}" data-comment-id="{{ $reply->id }}">
+                                                <div class="group flex gap-3" wire:key="reply-{{ $reply->id }}" data-comment-id="{{ $reply->id }}">
                                                     <div class="flex-shrink-0 relative">
                                                         <!-- Horizontal connecting line for first reply -->
                                                         @if($loop->first)
@@ -286,8 +294,8 @@
                                                             </div>
                                                             <!-- Reply action buttons: Edit, Delete -->
                                                             @if($this->editingReplyId !== $reply->id)
-                                                                @if(auth()->id() === $reply->user_id)
-                                                                    <div class="flex items-center gap-1">
+                                                                <div class="flex items-center gap-1">
+                                                                    @if(auth()->id() === $reply->user_id)
                                                                         <!-- Edit button -->
                                                                         <button type="button" wire:click="startEditReply({{ $reply->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.edit') }}">
                                                                             @svg('heroicon-o-pencil-square', 'w-4 h-4 transition-transform duration-200')
@@ -296,8 +304,8 @@
                                                                         <button type="button" wire:click="confirmDeleteReply({{ $reply->id }})" class="p-1.5 rounded-md text-gray-400 hover:text-danger-600 hover:bg-danger-50 dark:hover:bg-danger-900/20 focus:outline-none focus:ring-2 focus:ring-danger-500/40 transition-all duration-200" title="{{ __('comments.buttons.delete') }}">
                                                                             @svg('heroicon-o-trash', 'w-4 h-4 transition-transform duration-200')
                                                                         </button>
-                                                                    </div>
-                                                                @endif
+                                                                    @endif
+                                                                </div>
                                                             @endif
                                                         </div>
                                                         <div class="mt-2">
@@ -330,7 +338,15 @@
                                                                     </div>
                                                                 </div>
                                                             @else
-                                                                <div class="bg-gray-200/20 dark:bg-gray-700/30 rounded-lg p-2 mt-2">
+                                                                <div class="bg-gray-200/20 dark:bg-gray-700/30 rounded-lg p-2 mt-2 relative">
+                                                                    <!-- Enter Focus Mode button (only visible on hover and when not in focus mode) -->
+                                                                    <button type="button" 
+                                                                            x-on:click.stop="enterFocusMode({{ $reply->id }})" 
+                                                                            x-show="!isFocusMode"
+                                                                            class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200 z-10" 
+                                                                            title="{{ __('comments.buttons.enter_focus_mode') }}">
+                                                                        @svg('heroicon-o-eye', 'w-3 h-3 transition-transform duration-200')
+                                                                    </button>
                                                                     <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[12px] text-gray-700 dark:text-gray-300 break-words">{!! $reply->rendered_comment !!}</div>
                                                                 </div>
                                                                 <!-- Reply Reactions -->
