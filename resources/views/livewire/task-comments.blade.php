@@ -28,7 +28,7 @@
          })
      ">
     <!-- Composer (Top) -->
-    <div class="px-0 pt-0 pb-5" data-composer>
+    <div class="px-0 pt-0 pb-5" data-composer x-show="!isFocusMode">
         <div class="space-y-3">
             <div class="fi-form" wire:ignore.self>
                 {{ $this->composerForm }} <!-- Filament RichEditor -->
@@ -61,8 +61,10 @@
         </div>
     </div>
     <!-- Comments List (scroll area) -->
-    <div class="flex-1 min-h-0 px-0 pb-0">
-        <div class="px-2 pb-6 text-sm overflow-y-auto custom-thin-scroll h-full comment-list-container flex flex-col" data-comment-list>
+    <div class="flex-1 min-h-0 px-0 pb-0" :class="isFocusMode ? 'focus-mode-parent' : ''">
+        <div class="px-2 pb-6 text-sm overflow-y-auto custom-thin-scroll h-full comment-list-container flex flex-col" 
+             data-comment-list
+             :class="isFocusMode ? 'focus-mode-full-height' : ''">
             <!-- Focus Mode Exit Button - Sticky at Top -->
             <div wire:ignore
                  x-show="isFocusMode" 
@@ -529,6 +531,12 @@
                 max-height: calc(76vh - 270px);
                 min-height: calc(76vh - 270px);
             }
+        }
+        
+        /* Full height when in focus mode */
+        .comment-list-container.focus-mode-full-height {
+            min-height: calc(80vh - 120px) !important;
+            max-height: calc(80vh - 120px) !important;
         }
     </style>
     
