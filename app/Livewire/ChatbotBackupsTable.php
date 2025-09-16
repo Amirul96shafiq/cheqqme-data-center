@@ -36,9 +36,14 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
             });
         }
 
-        $backups = $query->orderBy('backup_date', 'desc')
-            ->take($this->visibleCount)
-            ->get();
+        // When searching, show all results. Otherwise, limit to visible count
+        if (!empty($this->search)) {
+            $backups = $query->orderBy('backup_date', 'desc')->get();
+        } else {
+            $backups = $query->orderBy('backup_date', 'desc')
+                ->take($this->visibleCount)
+                ->get();
+        }
 
         return view('livewire.chatbot-backups-table', [
             'backups' => $backups,

@@ -1,64 +1,65 @@
 <div id="chatbot-backups-table">
-    @if($backups->count() > 0)
-        <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-            <!-- Search Input - Above Table Header -->
-            <div class="bg-white dark:bg-gray-900 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
-                <div class="flex justify-end">
-                    <div class="relative w-60">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <x-heroicon-o-magnifying-glass class="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                        </div>
-                        <input 
-                            type="text" 
-                            wire:model.live.debounce.300ms="search"
-                            placeholder="Search"
-                            class="fi-input block w-full rounded-lg bg-transparent px-3 py-1.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-700 text-base text-gray-950 outline-none transition duration-75 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-500 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-400 sm:text-sm sm:leading-6 pl-10 pr-10"
-                        >
-                        @if($search)
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                                <button 
-                                    type="button"
-                                    wire:click="clearSearch"
-                                    class="text-gray-400 hover:text-gray-300 transition-colors duration-200"
-                                    title="Clear search"
-                                >
-                                    <x-heroicon-o-x-mark class="h-4 w-4" />
-                                </button>
-                            </div>
-                        @endif
+    <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+        <!-- Search Input - Above Table Header -->
+        <div class="bg-white dark:bg-gray-900 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex justify-end">
+                <div class="relative w-60">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <x-heroicon-o-magnifying-glass class="h-4 w-4 text-gray-400 dark:text-gray-500" />
                     </div>
+                    <input 
+                        type="text" 
+                        wire:model.live.debounce.300ms="search"
+                        placeholder="Search"
+                        class="fi-input block w-full rounded-lg bg-transparent px-3 py-1.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-700 text-base text-gray-950 outline-none transition duration-75 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-500 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-400 sm:text-sm sm:leading-6 pl-10 pr-10"
+                    >
+                    @if($search)
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <button 
+                                type="button"
+                                wire:click="clearSearch"
+                                class="text-gray-400 hover:text-gray-300 transition-colors duration-200"
+                                title="Clear search"
+                            >
+                                <x-heroicon-o-x-mark class="h-4 w-4" />
+                            </button>
+                        </div>
+                    @endif
                 </div>
             </div>
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-800">
-                    <tr>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400">
-                            {{ __('settings.chatbot.backup_id') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                            {{ __('settings.chatbot.backup_name') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                            {{ __('settings.chatbot.backup_type') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                            {{ __('settings.chatbot.backup_messages') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                            {{ __('settings.chatbot.backup_date_range') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                            {{ __('settings.chatbot.backup_backed_up') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                            {{ __('settings.chatbot.backup_size') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
-                            {{-- {{ __('settings.chatbot.backup_actions') }} --}}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+        </div>
+        
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('settings.chatbot.backup_id') }}
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('settings.chatbot.backup_name') }}
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('settings.chatbot.backup_type') }}
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('settings.chatbot.backup_messages') }}
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('settings.chatbot.backup_date_range') }}
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('settings.chatbot.backup_backed_up') }}
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {{ __('settings.chatbot.backup_size') }}
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {{-- {{ __('settings.chatbot.backup_actions') }} --}}
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                @if($backups->count() > 0)
                     @foreach($backups as $backup)
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
@@ -176,19 +177,42 @@
                             </td>
                         </tr>
                     @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Show total backups -->
-        @if($this->totalBackups > 0)
+                @else
+                    <tr>
+                        <td colspan="8" class="px-6 py-12 text-center">
+                            @if($search)
+                                <x-heroicon-o-magnifying-glass class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+                                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No backups found</h3>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">No backups match your search for "{{ $search }}"</p>
+                                <div class="mt-4">
+                                    <button 
+                                        wire:click="clearSearch"
+                                        type="button"
+                                        class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800"
+                                    >
+                                        Clear search
+                                    </button>
+                                </div>
+                            @else
+                                <x-heroicon-o-archive-box class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+                                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('settings.chatbot.no_backups') }}</h3>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('settings.chatbot.no_backups_description') }}</p>
+                            @endif
+                        </td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
+        
+        <!-- Show total backups - only show when not searching -->
+        @if(!$search && $this->totalBackups > 0)
             <div class="mt-3 text-[10px] text-gray-400 text-center">
                 {{ __('settings.chatbot.showing', ['shown' => $backups->count(), 'total' => $this->totalBackups]) }}
             </div>
         @endif
 
-        <!-- Show more backups button -->
-        @if($this->totalBackups > $visibleCount)
+        <!-- Show more backups button - only show when not searching -->
+        @if(!$search && $this->totalBackups > $visibleCount)
             @php $remaining = $this->totalBackups - $visibleCount; @endphp
             <div class="mt-2">
                 <button wire:click="showMore" 
@@ -197,11 +221,7 @@
                         wire:loading.attr="disabled"
                         wire:target="showMore">
                     <span wire:loading.remove wire:target="showMore">
-                        @if($search)
-                            Load {{ $remaining < 5 ? $remaining : 5 }} more result{{ $remaining === 1 ? '' : 's' }}
-                        @else
-                            {{ __('settings.chatbot.load_more', ['count' => $remaining < 5 ? $remaining : 5]) }}
-                        @endif
+                        {{ __('settings.chatbot.load_more', ['count' => $remaining < 5 ? $remaining : 5]) }}
                     </span>
                     <span wire:loading wire:target="showMore">
                         {{ __('settings.chatbot.loading') }}
@@ -209,32 +229,7 @@
                 </button>
             </div>
         @endif
-    @else
-        <div class="text-center py-12">
-            @if($search)
-                <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No backups found</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">No backups match your search for "{{ $search }}"</p>
-                <div class="mt-4">
-                    <button 
-                        wire:click="clearSearch"
-                        type="button"
-                        class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800"
-                    >
-                        Clear search
-                    </button>
-                </div>
-            @else
-                <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('settings.chatbot.no_backups') }}</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('settings.chatbot.no_backups_description') }}</p>
-            @endif
-        </div>
-    @endif
+    </div>
 
     <!-- Download Script -->
     <script>
