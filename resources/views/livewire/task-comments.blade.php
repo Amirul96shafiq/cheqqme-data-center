@@ -230,13 +230,13 @@
                                         }">
                                             <button type="button" 
                                                     @click="toggle()" 
-                                                    class="text-xs text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors duration-200 flex items-center gap-1">
+                                                    class="text-[10px] text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors duration-200 flex items-center gap-1">
                                                 <span x-show="expanded" class="flex items-center gap-1">
-                                                    @svg('heroicon-o-chevron-up', 'w-4 h-4')
+                                                    @svg('heroicon-o-chevron-up', 'w-3 h-3')
                                                     {{ __('comments.buttons.hide_replies') }}
                                                 </span>
                                                 <span x-show="!expanded" class="flex items-center gap-1">
-                                                    @svg('heroicon-o-chevron-down', 'w-4 h-4')
+                                                    @svg('heroicon-o-chevron-down', 'w-3 h-3')
                                                     {{ __('comments.buttons.show_replies', ['count' => $comment->replies->count()]) }}
                                                 </span>
                                             </button>
