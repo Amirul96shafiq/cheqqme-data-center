@@ -79,7 +79,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/comments/{comment}/emoji', [CommentController::class, 'removeEmojiReaction'])->name('comments.emoji.remove');
     Route::get('/comments/{comment}/emoji', [CommentController::class, 'getEmojiReactions'])->name('comments.emoji.get');
     Route::post('/comments/emoji/batch', [CommentController::class, 'getEmojiReactionsForComments'])->name('comments.emoji.batch');
-    
+
     // Comment reactions (web interface)
     Route::get('/api/comments/{comment}/reactions', [\App\Http\Controllers\CommentReactionController::class, 'index'])->name('web.comment-reactions.index');
     Route::post('/api/comment-reactions', [\App\Http\Controllers\CommentReactionController::class, 'store'])->name('web.comment-reactions.store');
@@ -91,6 +91,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/chatbot/session', [ChatbotController::class, 'getSessionInfo'])->name('chatbot.session');
     Route::get('/chatbot/conversation', [ChatbotController::class, 'getConversationHistory'])->name('chatbot.history');
     Route::post('/chatbot/clear', [ChatbotController::class, 'clearConversation'])->name('chatbot.clear');
+
+    // Chatbot backup routes
+    Route::get('/chatbot/backup/{backup}/download', [ChatbotController::class, 'downloadBackup'])->name('chatbot.backup.download');
+    Route::post('/chatbot/backup/create', [ChatbotController::class, 'createManualBackup'])->name('chatbot.backup.create');
 
     // WebSocket broadcast authentication
     Route::post('/broadcasting/auth', [\App\Http\Controllers\BroadcastController::class, 'authenticate'])

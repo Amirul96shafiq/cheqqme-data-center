@@ -7,6 +7,7 @@
     let isLoadingConversation = false;
     let conversationLoaded = false;
     let emojiPickerInitialized = false; // Flag to prevent multiple initializations
+    let addingInitialMessages = false; // Flag to prevent duplicate initial messages
 
     // Get user-specific conversation ID from localStorage
     function getUserConversationKey() {
@@ -35,6 +36,7 @@
             // and be matched with database records by user_id
             conversationLoaded = false;
             conversation = [];
+            addingInitialMessages = false;
 
             console.log(`User changed from ${lastUserId} to ${currentUserId}`);
         } else {
@@ -151,6 +153,11 @@
             chatIcon.classList.add("hidden");
             closeIcon.style.display = "inline-flex";
             closeIcon.classList.remove("hidden");
+
+            // Scroll to bottom after opening
+            setTimeout(() => {
+                scrollToBottom();
+            }, 200);
         } else {
             // Hide chatbot interface
             interfaceEl.classList.add("hidden");
@@ -257,6 +264,10 @@
             interfaceEl.classList.add("open");
             requestAnimationFrame(() => {
                 // ensure animation frame after state application
+                // Scroll to bottom after opening
+                setTimeout(() => {
+                    scrollToBottom();
+                }, 100);
             });
             if (!isLoadingConversation) {
                 loadConversationHistory();
@@ -291,14 +302,11 @@
             return;
         }
 
-        // Always reset conversation loaded flag on page load to ensure fresh loading
-        // This ensures conversations load properly after page refresh
-        if (!conversationLoaded || document.visibilityState === "visible") {
-            conversationLoaded = false;
-        }
-
-        if (conversationLoaded) {
-            console.log("Conversation already loaded");
+        // Check if conversation is already loaded or initial messages are being added
+        if (conversationLoaded || addingInitialMessages) {
+            console.log(
+                "Conversation already loaded or initial messages being added"
+            );
             return;
         }
 
@@ -351,9 +359,16 @@
                         data.conversation.length,
                         "messages from conversation"
                     );
+
+                    // Scroll to bottom after loading conversation history
+                    setTimeout(() => {
+                        scrollToBottom();
+                    }, 100);
                 } else {
                     // No conversation history found - this is normal for new conversations
+                    addingInitialMessages = true; // Prevent duplicate calls
                     conversationLoaded = true; // Mark as loaded to prevent re-loading
+
                     // Initiate a friendly first message from the chatbot
                     const welcomeTs = new Date().toLocaleTimeString("en-US", {
                         hour: "2-digit",
@@ -373,6 +388,12 @@
                             "assistant",
                             welcomeTs
                         );
+                        addingInitialMessages = false; // Reset flag after messages are added
+
+                        // Ensure scroll to bottom after initial messages
+                        setTimeout(() => {
+                            scrollToBottom();
+                        }, 100);
                     }, 1000); // Delay to show after welcome message
                     console.log(
                         "No conversation messages found in database - empty conversation; greeting posted"
@@ -468,6 +489,17 @@
                 // Remove leading/trailing whitespace from the entire content
                 .trim()
         );
+    }
+
+    // Scroll chat messages to bottom
+    function scrollToBottom() {
+        const chatMessages = document.getElementById("chat-messages");
+        if (chatMessages) {
+            // Use requestAnimationFrame to ensure DOM updates are complete
+            requestAnimationFrame(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+        }
     }
 
     // Add a message to the chatbot UI
@@ -586,7 +618,7 @@
         }
 
         chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        scrollToBottom();
     }
 
     // Show loading indicator
@@ -612,7 +644,7 @@
             "</div>" +
             "</div>";
         chatMessages.appendChild(loadingDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        scrollToBottom();
     }
 
     // Hide loading indicator
@@ -756,30 +788,46 @@
             localStorage.setItem(getUserConversationKey(), conversationId);
         }
 
-        // Clear local conversation UI with a short delay for better UX
+        // Clear local conversation UI and add initial messages
         setTimeout(() => {
             const chatMessages = document.getElementById("chat-messages");
             if (chatMessages) {
-                chatMessages.innerHTML =
-                    '<div class="flex flex-col space-y-1 items-start">' +
-                    '<div class="text-gray-600 dark:text-gray-400 font-semibold text-sm px-1">Arem AI</div>' +
-                    '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%] message-bubble">' +
-                    '<p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">' +
+                // Clear the chat messages
+                chatMessages.innerHTML = "";
+
+                // Set flags to prevent loadConversationHistory from adding duplicate messages
+                addingInitialMessages = true;
+                conversationLoaded = true;
+
+                // Add initial messages using the proper addMessage function
+                const readyTs = new Date().toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+
+                addMessage(
                     processTranslation(
                         window.chatbot?.ready_message ||
                             "Ready for a fresh start! What would you like to know or work on?"
-                    ) +
-                    "</p>" +
-                    "</div>" +
-                    "</div>";
+                    ),
+                    "assistant",
+                    readyTs
+                );
 
                 // Add help information message
                 setTimeout(() => {
                     addMessage(
                         window.chatbot?.help_message ||
                             "Use :help_command to call my available functions!",
-                        "assistant"
+                        "assistant",
+                        readyTs
                     );
+                    addingInitialMessages = false; // Reset flag after messages are added
+
+                    // Ensure scroll to bottom after clearing and adding new messages
+                    setTimeout(() => {
+                        scrollToBottom();
+                    }, 100);
                 }, 1000); // Delay to show after initial message
             }
         }, 500); // 500ms delay
@@ -787,9 +835,8 @@
         // Keep chatbot open for new conversation
         localStorage.setItem(getUserChatStateKey(), "true");
 
-        // Reset conversation state
+        // Reset conversation state (but keep loaded flags as they're set above)
         conversation = [];
-        conversationLoaded = false;
 
         console.log(
             "Conversation cleared successfully. New ID:",
@@ -1512,6 +1559,23 @@
     themeObserver.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ["class"],
+    });
+
+    // Listen for backup restored event to refresh conversation list
+    document.addEventListener("livewire:init", () => {
+        Livewire.on("backup-restored", () => {
+            console.log(
+                "Backup restored event received, refreshing conversation list..."
+            );
+            // Reset conversation loaded flag to force reload
+            conversationLoaded = false;
+            // Reload conversation history if chatbot is open
+            if (conversationId) {
+                setTimeout(() => {
+                    loadConversationHistory();
+                }, 500); // Small delay to ensure backend is ready
+            }
+        });
     });
 
     // Export functions to the window object

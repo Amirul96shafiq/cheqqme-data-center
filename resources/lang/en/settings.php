@@ -20,6 +20,8 @@ return [
         'location_description' => 'Set your location for weather data and geolocation services.',
         'timezone' => 'Timezone',
         'timezone_description' => 'Set your timezone for the application.',
+        'chatbot_history' => 'Chatbot History',
+        'chatbot_history_description' => 'Manage your chatbot conversation backups and restore previous conversations.',
     ],
 
     // API-related translations
@@ -116,5 +118,16 @@ return [
         'location_cleared_body' => 'Your location data has been cleared.',
         'settings_saved' => 'Settings Saved',
         'settings_saved_body' => 'Your settings have been successfully saved.',
+        'backup_created' => 'Backup Created',
+        'backup_created_body' => 'Backup ":name" has been created successfully.',
+        'backup_failed' => 'Backup Failed',
+        'backups_refreshed' => 'Backups Refreshed',
+        'backups_refreshed_body' => 'The backup list has been refreshed.',
+    ],
+
+    // Chatbot-related translations
+    'chatbot' => [
+        'create_backup' => 'Create Backup',
+        'refresh' => 'Refresh',
     ],
 ];

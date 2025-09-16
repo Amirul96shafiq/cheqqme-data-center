@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ChatbotBackup;
 use App\Models\ChatbotConversation;
 use App\Models\OpenaiLog;
+use App\Services\ChatbotBackupService;
 use App\Services\ChatbotService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +25,7 @@ class ChatbotController extends Controller
             $user = Auth::user();
 
             // If the user is not authenticated, return an error
-            if (!$user) {
+            if (! $user) {
                 return response()->json(['error' => 'Unauthenticated.'], 401);
             }
 
@@ -304,7 +306,7 @@ class ChatbotController extends Controller
         ];
 
         // If tools are provided, add them to the payload
-        if (!empty($tools)) {
+        if (! empty($tools)) {
             $payload['tools'] = $tools;
             $payload['tool_choice'] = 'auto';
         }
@@ -375,7 +377,7 @@ class ChatbotController extends Controller
             if ($firstMessage) {
                 $conversationDetails[] = [
                     'conversation_id' => $firstMessage->conversation_id,
-                    'title' => substr($firstMessage->content, 0, 50) . '...', // Use the start of the first message as a title
+                    'title' => substr($firstMessage->content, 0, 50).'...', // Use the start of the first message as a title
                     'last_activity' => $conv->last_message_at,
                 ];
             }
@@ -395,9 +397,9 @@ class ChatbotController extends Controller
         // Get the user
         $user = Auth::user();
 
-        // Find the most recent active conversation for the user within 24 hours
+        // Find the most recent active conversation for the user within 7 days
         $lastConversation = ChatbotConversation::where('user_id', $user->id)
-            ->where('last_activity', '>', now()->subHours(24))
+            ->where('last_activity', '>', now()->subDays(7))
             ->orderBy('last_activity', 'desc')
             ->first();
 
@@ -406,7 +408,7 @@ class ChatbotController extends Controller
             $conversationId = $lastConversation->conversation_id;
         } else {
             // Create a new conversation ID if no recent conversation exists
-            $conversationId = 'conv_' . uniqid() . '_' . time();
+            $conversationId = 'conv_'.uniqid().'_'.time();
         }
 
         // Return the conversation ID and user ID
@@ -431,7 +433,7 @@ class ChatbotController extends Controller
         // Get the conversation history
         $messages = ChatbotConversation::where('user_id', $user->id)
             ->where('conversation_id', $conversationId)
-            ->where('last_activity', '>', now()->subHours(24)) // Only load recent messages
+            ->where('last_activity', '>', now()->subDays(7)) // Only load recent messages (7 days)
             ->orderBy('created_at', 'asc')
             ->get(['role', 'content', 'created_at']);
 
@@ -448,13 +450,73 @@ class ChatbotController extends Controller
     }
 
     /**
-     * Clean up conversations older than 24 hours for a specific user
+     * Download a backup as JSON file
+     */
+    public function downloadBackup(ChatbotBackup $backup)
+    {
+        // Ensure user can only download their own backups
+        if ($backup->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $backupService = new ChatbotBackupService;
+        $fileName = $backupService->downloadBackup($backup);
+
+        return response()->json($backup->backup_data)
+            ->header('Content-Disposition', 'attachment; filename="'.$fileName.'"')
+            ->header('Content-Type', 'application/json');
+    }
+
+    /**
+     * Create a manual backup
+     */
+    public function createManualBackup(Request $request)
+    {
+        $user = Auth::user();
+
+        try {
+            $backupService = new ChatbotBackupService;
+            $backup = $backupService->createBackup($user, 'manual');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Backup created successfully',
+                'backup' => [
+                    'id' => $backup->id,
+                    'name' => $backup->backup_name,
+                    'message_count' => $backup->message_count,
+                    'backup_date' => $backup->formatted_backup_date,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Manual backup creation failed', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create backup: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Clean up old conversations using backup service
      */
     protected function cleanupOldConversations(int $userId): void
     {
-        ChatbotConversation::where('user_id', $userId)
-            ->where('last_activity', '<', now()->subHours(24))
-            ->delete();
+        $backupService = new ChatbotBackupService;
+
+        // Check if weekly cleanup should run
+        if ($backupService->shouldRunWeeklyCleanup()) {
+            $backupService->performWeeklyCleanup();
+        } else {
+            // Only cleanup very old conversations (older than 30 days)
+            ChatbotConversation::where('user_id', $userId)
+                ->where('last_activity', '<', now()->subDays(30))
+                ->delete();
+        }
     }
 
     /**
@@ -488,7 +550,7 @@ class ChatbotController extends Controller
                 }
 
                 // Clear all user's chatbot caches if no specific conversation
-                if (!$conversationId) {
+                if (! $conversationId) {
                     $this->flushUserCache($user->id);
                 }
             }
@@ -498,7 +560,7 @@ class ChatbotController extends Controller
         }
 
         // Create a new conversation ID for the client to use going forward
-        $newConversationId = 'conv_' . uniqid() . '_' . time();
+        $newConversationId = 'conv_'.uniqid().'_'.time();
 
         // Return the new conversation ID
         return response()->json([
