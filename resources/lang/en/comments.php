@@ -15,6 +15,7 @@ return [
         'edit' => 'Edit',
         'delete' => 'Delete',
         'reply' => 'Reply',
+        'more_actions' => 'More actions',
         'send_reply' => 'Submit Reply',
         'save_edit' => 'Submit changes',
         'cancel' => 'Cancel',

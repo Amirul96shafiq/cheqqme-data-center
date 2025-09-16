@@ -15,6 +15,7 @@ return [
         'edit' => 'Sunting',
         'delete' => 'Padam',
         'reply' => 'Balas',
+        'more_actions' => 'Lebih banyak tindakan',
         'send_reply' => 'Hantar Balasan',
         'save_edit' => 'Simpan Perubahan',
         'cancel' => 'Batal',
