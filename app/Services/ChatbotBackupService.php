@@ -73,23 +73,30 @@ class ChatbotBackupService
     }
 
     /**
-     * Generate backup name based on type and date range
+     * Generate backup name based on custom format: arem_chat_{user_id}_{backed_up_at}_0001
      */
     private function generateBackupName(string $backupType, $conversations): string
     {
-        $startDate = $conversations->first()->created_at->format('M d');
-        $endDate = $conversations->last()->created_at->format('M d, Y');
+        $userId = $conversations->first()->user_id;
+        $backedUpAt = now()->format('Ymd_His');
 
-        switch ($backupType) {
-            case 'weekly':
-                return "Weekly Backup ({$startDate} - {$endDate})";
-            case 'manual':
-                return "Manual Backup ({$endDate})";
-            case 'import':
-                return "Imported Backup ({$endDate})";
-            default:
-                return "Backup ({$endDate})";
-        }
+        // Get the next sequence number for this user
+        $sequenceNumber = $this->getNextSequenceNumber($userId);
+
+        return "arem_chat_{$userId}_{$backedUpAt}_{$sequenceNumber}";
+    }
+
+    /**
+     * Get the next sequence number for a user's backups
+     */
+    private function getNextSequenceNumber(int $userId): string
+    {
+        // Count existing backups for this user and add 1
+        $existingCount = ChatbotBackup::where('user_id', $userId)->count();
+        $nextNumber = $existingCount + 1;
+
+        // Format as 4-digit zero-padded number
+        return str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     /**
