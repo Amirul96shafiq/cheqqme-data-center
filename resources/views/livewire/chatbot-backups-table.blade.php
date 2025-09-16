@@ -75,7 +75,7 @@
                         <div class="fi-dropdown-list p-1">
                             <!-- Backup Type Filter -->
                             <div class="px-2 py-1.5">
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-3">
                                     Backup Type
                                 </label>
                                 <select 
