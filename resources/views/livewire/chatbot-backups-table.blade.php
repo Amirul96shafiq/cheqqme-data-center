@@ -29,11 +29,10 @@
                 </div>
 
                 <!-- Filter Button -->
-                <div class="relative" x-data="{ open: false }">
+                <div class="relative" x-data="{ open: false }" x-on:click.outside="open = false">
                     <button 
                         type="button"
                         @click="open = !open"
-                        @click.away="open = false"
                         class="fi-btn fi-btn-color-gray fi-btn-size-sm fi-btn-outlined flex items-center border-0 text-sm font-medium text-gray-700 transition duration-75 disabled:bg-gray-50 disabled:text-gray-500 dark:text-gray-500 hover:dark:text-gray-400 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
                     >
                     <svg class="fi-icon-btn-icon h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
@@ -53,6 +52,7 @@
                         x-transition:enter-end="opacity-100 scale-100"
                         x-transition:leave-start="opacity-100 scale-100"
                         x-transition:leave-end="opacity-0 scale-95"
+                        @click.stop
                         class="fi-dropdown-panel absolute top-full right-0 z-10 mt-1 w-screen max-w-xs divide-y divide-gray-100 rounded-lg bg-white shadow-lg ring-1 ring-gray-950/5 transition dark:divide-white/5 dark:bg-gray-900 dark:ring-white/10"
                         style="display: none;"
                     >
@@ -74,19 +74,27 @@
 
                         <div class="fi-dropdown-list p-1">
                             <!-- Backup Type Filter -->
-                            <div class="px-2 py-1.5">
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-3">
+                            <div class="px-3 py-2">
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Backup Type
                                 </label>
-                                <select 
-                                    wire:model.live="backupTypeFilter"
-                                    class="fi-input block w-full rounded-lg bg-transparent px-3 py-1.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-700 text-base text-gray-950 outline-none transition duration-75 focus:ring-2 focus:ring-primary-500 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-400 sm:text-sm sm:leading-6"
-                                >
-                                    <option value="">All</option>
-                                    <option value="weekly">Weekly</option>
-                                    <option value="manual">Manual</option>
-                                    <option value="import">Import</option>
-                                </select>
+                                <div class="relative">
+                                    <select 
+                                        wire:model.live="backupTypeFilter"
+                                        class="fi-input block w-full rounded-lg bg-transparent px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-700 text-sm text-gray-950 outline-none transition duration-75 focus:ring-2 focus:ring-primary-500 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-400 appearance-none cursor-pointer"
+                                    >
+                                        <option value="">All backup types</option>
+                                        <option value="weekly">Weekly backups</option>
+                                        <option value="manual">Manual backups</option>
+                                        <option value="import">Import backups</option>
+                                    </select>
+                                    <!-- Custom dropdown arrow -->
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                        <svg class="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
