@@ -342,14 +342,6 @@
                                                                 </div>
                                                             @else
                                                                 <div class="bg-gray-200/20 dark:bg-gray-700/30 rounded-lg p-2 mt-2 relative">
-                                                                    <!-- Enter Focus Mode button (only visible on hover and when not in focus mode) -->
-                                                                    <button type="button" 
-                                                                            x-on:click.stop="enterFocusMode({{ $reply->id }})" 
-                                                                            x-show="!isFocusMode"
-                                                                            class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200 z-10" 
-                                                                            title="{{ __('comments.buttons.enter_focus_mode') }}">
-                                                                        @svg('heroicon-o-eye', 'w-3 h-3 transition-transform duration-200')
-                                                                    </button>
                                                                     <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[12px] text-gray-700 dark:text-gray-300 break-words">{!! $reply->rendered_comment !!}</div>
                                                                 </div>
                                                                 <!-- Reply Reactions -->
