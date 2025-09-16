@@ -28,6 +28,12 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
         ]);
     }
 
+    public function refreshBackups()
+    {
+        // This method will be called when the backup-created event is received
+        // The render() method will automatically refresh the data
+    }
+
     public function downloadBackup($backupId)
     {
         $backup = ChatbotBackup::where('id', $backupId)

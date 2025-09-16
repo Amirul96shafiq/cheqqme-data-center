@@ -16,6 +16,11 @@ class ChatbotBackupService
      */
     public function createBackup(User $user, string $backupType = 'weekly'): ChatbotBackup
     {
+        // Validate backup type
+        if (! in_array($backupType, ['weekly', 'manual', 'import'])) {
+            throw new \Exception('Invalid backup type');
+        }
+
         // Get all conversations for the user
         $conversations = ChatbotConversation::where('user_id', $user->id)
             ->orderBy('created_at', 'asc')
@@ -171,45 +176,90 @@ class ChatbotBackupService
      */
     public function restoreFromBackup(ChatbotBackup $backup, ?string $conversationId = null): int
     {
-        $restoredCount = 0;
+        // Validate backup data integrity
+        if (! $this->validateBackupData($backup->backup_data)) {
+            throw new \Exception('Invalid backup data format');
+        }
 
-        // Use database transaction to ensure all operations complete before refresh
-        \DB::transaction(function () use ($backup, $conversationId, &$restoredCount) {
-            // Use provided conversation ID or get the current session's conversation ID for the user
-            $currentConversationId = $conversationId ?: $this->getCurrentConversationId($backup->user_id);
+        if (empty($backup->backup_data['conversations'])) {
+            throw new \Exception('No conversations found in backup data');
+        }
+
+        $restoredCount = 0;
+        $currentConversationId = $conversationId ?: $this->getCurrentConversationId($backup->user_id);
+
+        // Use database transaction to ensure all operations complete atomically
+        \DB::transaction(function () use ($backup, $currentConversationId, &$restoredCount) {
+            // Get existing conversation IDs to avoid duplicates
+            $existingIds = ChatbotConversation::whereIn('id',
+                array_column($backup->backup_data['conversations'], 'id')
+            )->pluck('id')->toArray();
 
             foreach ($backup->backup_data['conversations'] as $conversationData) {
-                // Check if conversation already exists (by content and role to avoid duplicates)
-                $existing = ChatbotConversation::where('user_id', $backup->user_id)
-                    ->where('conversation_id', $currentConversationId)
-                    ->where('content', $conversationData['content'])
-                    ->where('role', $conversationData['role'])
-                    ->first();
+                // Skip if conversation already exists
+                if (in_array($conversationData['id'], $existingIds)) {
+                    continue;
+                }
 
-                if (! $existing) {
+                try {
                     ChatbotConversation::create([
                         'user_id' => $backup->user_id,
-                        'conversation_id' => $currentConversationId, // Use current session's conversation ID
+                        'conversation_id' => $currentConversationId,
                         'role' => $conversationData['role'],
                         'content' => $conversationData['content'],
                         'created_at' => Carbon::parse($conversationData['created_at']),
-                        'last_activity' => now(), // Set to current time so restored conversations are visible
+                        'last_activity' => now(),
                     ]);
                     $restoredCount++;
+                } catch (\Exception $e) {
+                    Log::warning('Failed to restore conversation', [
+                        'conversation_id' => $conversationData['id'],
+                        'error' => $e->getMessage(),
+                    ]);
                 }
             }
 
             Log::info('Backup restored', [
                 'backup_id' => $backup->id,
                 'restored_count' => $restoredCount,
+                'total_in_backup' => count($backup->backup_data['conversations']),
                 'conversation_id' => $currentConversationId,
             ]);
         });
 
-        // Clear any relevant caches to ensure restored data is immediately available
+        // Clear relevant caches to ensure restored data is immediately available
         \Cache::forget("chatbot_conversations_{$backup->user_id}");
 
         return $restoredCount;
+    }
+
+    /**
+     * Validate backup data integrity
+     */
+    public function validateBackupData(array $backupData): bool
+    {
+        $requiredFields = ['user_id', 'user_name', 'backup_created_at', 'conversations'];
+
+        foreach ($requiredFields as $field) {
+            if (! isset($backupData[$field])) {
+                return false;
+            }
+        }
+
+        if (! is_array($backupData['conversations'])) {
+            return false;
+        }
+
+        foreach ($backupData['conversations'] as $conversation) {
+            $requiredConversationFields = ['id', 'conversation_id', 'role', 'content', 'created_at', 'last_activity'];
+            foreach ($requiredConversationFields as $field) {
+                if (! isset($conversation[$field])) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**

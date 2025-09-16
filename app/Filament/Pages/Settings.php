@@ -687,6 +687,11 @@ class Settings extends Page
                                                     ->body(__('settings.notifications.backup_created_body', ['name' => $backup->backup_name]))
                                                     ->success()
                                                     ->send();
+
+                                                // Dispatch browser event to refresh backup list
+                                                $this->js('
+                                                    window.dispatchEvent(new CustomEvent("backup-created"));
+                                                ');
                                             } catch (\Exception $e) {
                                                 Notification::make()
                                                     ->title(__('settings.notifications.backup_failed'))

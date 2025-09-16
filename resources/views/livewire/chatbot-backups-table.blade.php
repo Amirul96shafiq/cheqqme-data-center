@@ -1,4 +1,4 @@
-<div>
+<div id="chatbot-backups-table">
     @if($backups->count() > 0)
         <div class="overflow-visible rounded-lg border border-gray-200 dark:border-gray-700">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -149,6 +149,31 @@
                 link.click();
                 document.body.removeChild(link);
             });
+
+            // Listen for refresh-backups event as backup method
+            Livewire.on('refresh-backups', function () {
+                $wire.call('refreshBackups');
+            });
+        });
+
+        // Listen for backup created event to refresh the backup list
+        window.addEventListener('backup-created', () => {
+            // Add a small delay to ensure component is fully initialized
+            setTimeout(() => {
+                const container = document.getElementById('chatbot-backups-table');
+                if (container) {
+                    const wireId = container.getAttribute('wire:id');
+                    if (wireId) {
+                        const component = Livewire.find(wireId);
+                        if (component && component.call) {
+                            component.call('refreshBackups');
+                        } else {
+                            // Fallback: trigger Livewire event
+                            Livewire.dispatch('refresh-backups');
+                        }
+                    }
+                }
+            }, 500);
         });
     </script>
 </div>
