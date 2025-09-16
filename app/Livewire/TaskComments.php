@@ -76,9 +76,9 @@ class TaskComments extends Component implements HasForms
     {
         if ($payload && isset($payload['message']) && isset($payload['type'])) {
             Notification::make()
-                        ->title($payload['message'])
+                ->title($payload['message'])
                 ->{$payload['type']}()
-                    ->send();
+                ->send();
         }
     }
 
@@ -86,7 +86,7 @@ class TaskComments extends Component implements HasForms
     #[On('mentionSelected')]
     public function onMentionSelected(?array $payload = null): void
     {
-        if (!$payload) {
+        if (! $payload) {
             return;
         }
 
@@ -101,7 +101,7 @@ class TaskComments extends Component implements HasForms
 
         // Handle regular user IDs
         $userId = (int) $userId;
-        if ($userId > 0 && !in_array($userId, $this->pendingMentionUserIds, true)) {
+        if ($userId > 0 && ! in_array($userId, $this->pendingMentionUserIds, true)) {
             $this->pendingMentionUserIds[] = $userId;
         }
     }
@@ -112,15 +112,15 @@ class TaskComments extends Component implements HasForms
         $this->task = Task::findOrFail($taskId);
         // Ensure base form array keys exist before Filament/Livewire entangle
         $this->composerData = $this->composerData ?? [];
-        if (!array_key_exists('newComment', $this->composerData)) {
+        if (! array_key_exists('newComment', $this->composerData)) {
             $this->composerData['newComment'] = '';
         }
         $this->editData = $this->editData ?? [];
-        if (!array_key_exists('editingText', $this->editData)) {
+        if (! array_key_exists('editingText', $this->editData)) {
             $this->editData['editingText'] = '';
         }
         $this->replyData = $this->replyData ?? [];
-        if (!array_key_exists('replyText', $this->replyData)) {
+        if (! array_key_exists('replyText', $this->replyData)) {
             $this->replyData['replyText'] = '';
         }
         if (method_exists($this, 'composerForm')) {
@@ -189,7 +189,7 @@ class TaskComments extends Component implements HasForms
         $mentions = Comment::extractMentions($sanitized);
 
         // Merge with any user IDs selected via the dropdown tracking
-        if (!empty($this->pendingMentionUserIds)) {
+        if (! empty($this->pendingMentionUserIds)) {
             // Merge all mentions (including @Everyone if present)
             $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
         }
@@ -278,7 +278,7 @@ class TaskComments extends Component implements HasForms
     // Save edited reply
     public function saveEditReply(): void
     {
-        if (!$this->editingReplyId) {
+        if (! $this->editingReplyId) {
             return;
         }
 
@@ -397,7 +397,7 @@ class TaskComments extends Component implements HasForms
     // Delete reply
     public function deleteReply(): void
     {
-        if (!$this->confirmingDeleteReplyId) {
+        if (! $this->confirmingDeleteReplyId) {
             return;
         }
 
@@ -434,7 +434,7 @@ class TaskComments extends Component implements HasForms
     // Add a reply
     public function addReply(): void
     {
-        if (!$this->replyingToId) {
+        if (! $this->replyingToId) {
             return;
         }
 
@@ -445,7 +445,7 @@ class TaskComments extends Component implements HasForms
         } else {
             // Fallback: use replyData directly
             // Use replyText property if replyData is empty
-            if (empty($this->replyData['replyText']) && !empty($this->replyText)) {
+            if (empty($this->replyData['replyText']) && ! empty($this->replyText)) {
                 $this->replyText = $this->normalizeEditorInput($this->replyText);
             } else {
                 $this->replyText = $this->normalizeEditorInput($this->replyData['replyText'] ?? $this->replyText);
@@ -505,7 +505,7 @@ class TaskComments extends Component implements HasForms
         $mentions = Comment::extractMentions($sanitized);
 
         // Merge with any user IDs selected via the dropdown tracking
-        if (!empty($this->pendingMentionUserIds)) {
+        if (! empty($this->pendingMentionUserIds)) {
             // Merge all mentions (including @Everyone if present)
             $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
         }
@@ -548,7 +548,7 @@ class TaskComments extends Component implements HasForms
     // Save editing a comment
     public function saveEdit(): void
     {
-        if (!$this->editingId) {
+        if (! $this->editingId) {
             return;
         }
         if (method_exists($this, 'editForm')) {
@@ -623,7 +623,7 @@ class TaskComments extends Component implements HasForms
 
         // Extract mentions from updated comment text
         $mentions = Comment::extractMentions($sanitized);
-        if (!empty($this->pendingMentionUserIds)) {
+        if (! empty($this->pendingMentionUserIds)) {
             // Merge all mentions (including @Everyone if present)
             $mentions = array_values(array_unique(array_merge($mentions, $this->pendingMentionUserIds)));
         }
@@ -728,7 +728,7 @@ class TaskComments extends Component implements HasForms
         Notification::make()
             ->title(__('comments.notifications.deleted_title'))
             ->body(Str::limit($comment->comment, 120))
-            ->danger()
+            ->warning()
             ->send();
 
         // Only adjust visibleCount for main comments (not replies)
@@ -755,7 +755,7 @@ class TaskComments extends Component implements HasForms
     // Perform deleting a comment
     public function performDelete(): void
     {
-        if (!$this->confirmingDeleteId) {
+        if (! $this->confirmingDeleteId) {
             return;
         }
         $this->deleteComment($this->confirmingDeleteId);
@@ -991,12 +991,12 @@ class TaskComments extends Component implements HasForms
                 } elseif (preg_match("/href\s*=\s*'([^']*)'/i", $attr, $hrefMatch)) {
                     $href = $hrefMatch[1];
                 }
-                if ($href && !preg_match('/^https?:\/\//i', $href)) {
-                    $href = 'https://' . ltrim($href);
+                if ($href && ! preg_match('/^https?:\/\//i', $href)) {
+                    $href = 'https://'.ltrim($href);
                 }
                 $safe = htmlspecialchars($href, ENT_QUOTES, 'UTF-8');
 
-                return '<a href="' . $safe . '" target="_blank" rel="nofollow noopener">';
+                return '<a href="'.$safe.'" target="_blank" rel="nofollow noopener">';
             }, $html);
             // Drop event handlers / javascript: remnants just in case
             $html = preg_replace('/<a([^>]*)(on[a-z]+\s*=\s*"[^"]*")([^>]*)>/i', '<a$1$3>', $html);
@@ -1005,7 +1005,7 @@ class TaskComments extends Component implements HasForms
 
         // 6) Strip attributes from all other allowed tags
         $html = preg_replace_callback('/<(?!a\b)(strong|em|s|code|pre|ul|ol|li|br|p)([^>]*)>/i', function ($m) {
-            return '<' . strtolower($m[1]) . '>';
+            return '<'.strtolower($m[1]).'>';
         }, $html);
 
         // 7) Collapse excessive <br>
@@ -1106,7 +1106,7 @@ class TaskComments extends Component implements HasForms
     // Force delete a reply (permanently remove from database)
     public function forceDeleteReply(): void
     {
-        if (!$this->confirmingForceDeleteReplyId) {
+        if (! $this->confirmingForceDeleteReplyId) {
             return;
         }
 
