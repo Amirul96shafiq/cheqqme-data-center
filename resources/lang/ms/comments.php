@@ -39,6 +39,7 @@ return [
         'unknown' => 'Tidak diketahui',
         'unknown_user' => 'Pengguna Tidak Dikenali',
         'edited' => 'disunting',
+        'deleted' => 'dipadam',
         'user_fallback' => 'Pengguna',
         'you' => 'Anda',
         'just_now' => 'Baru sahaja',

@@ -58,12 +58,34 @@ It improves discoverability, reduces context switching, and lays groundwork for 
     -   Columns: To Do / In Progress / To Review / Completed / Archived
     -   Due date color badges (red/yellow/gray/green), single assignee badge with self-highlighting, attachments counter
     -   Inline resource selectors for client, projects, documents, important URLs
--   Comments with @mentions on tasks
-    -   Rich text with strict sanitization (only semantic tags/links)
-    -   Mention extraction supports usernames and full names (longest-prefix match)
-    -   Mentions rendered as inline badges at view-time; exact match only (no over-highlighting)
-    -   Filament database notifications for mentioned users with deep-link to the task
-    -   Leading/trailing whitespace in comments is prevented and validated
+-   **Advanced Comments System** with comprehensive features
+    -   **Rich Text Editor**: Trix-based editor with strict HTML sanitization (only semantic tags/links)
+    -   **@Mentions System**:
+        -   Smart mention extraction supporting usernames and full names (longest-prefix match)
+        -   Real-time user mention dropdown with search functionality
+        -   @Everyone special mention for notifying all users
+        -   Mentions rendered as inline badges at view-time with exact matching
+        -   Filament database notifications for mentioned users with deep-link to tasks
+    -   **Focus Mode**:
+        -   Click-to-focus on individual comments for distraction-free reading
+        -   Full-height scrollable view with sticky exit button
+        -   Auto-hide composer and connecting lines in focus mode
+        -   Smart dropdown integration with auto-close functionality
+    -   **Comment Reactions**:
+        -   Emoji reaction system with comprehensive picker
+        -   Searchable emoji library with keyword matching
+        -   Recent emojis tracking and quick access
+        -   Real-time reaction updates with user attribution
+        -   Reaction counts and user tooltips with timestamps
+    -   **Threaded Replies**:
+        -   Nested comment structure with visual hierarchy
+        -   Reply-specific actions and editing capabilities
+        -   Visual connecting lines and avatar indicators
+    -   **Content Management**:
+        -   Inline editing with live preview
+        -   Soft delete with restoration capabilities
+        -   Leading/trailing whitespace prevention and validation
+        -   Activity logging for all comment operations
 -   Activity & audit logging
     -   Spatie Activitylog across core models; Task move events logged with old/new status and order
     -   Filament Activitylog plugin page enabled in the admin panel
@@ -481,6 +503,82 @@ Create uses a streamlined modal; edit navigates to the Task Resource edit page.
 
 ---
 
+## Advanced Comments System
+
+The application features a comprehensive comments system with modern, interactive capabilities:
+
+### **Core Features**
+
+#### **Rich Text Editor**
+
+-   **Trix Integration**: Professional-grade rich text editor with toolbar
+-   **HTML Sanitization**: Strict security with only semantic tags and links allowed
+-   **Real-time Preview**: Live content rendering with proper formatting
+-   **Keyboard Shortcuts**: Ctrl+Enter for quick comment submission
+
+#### **@Mentions System**
+
+-   **Smart Detection**: Automatic @mention recognition with longest-prefix matching
+-   **User Search**: Real-time dropdown with username, email, and full name search
+-   **@Everyone Support**: Special mention for notifying all users
+-   **Visual Badges**: Mentions rendered as styled inline badges
+-   **Notifications**: Automatic Filament notifications with deep-links to tasks
+
+#### **Focus Mode**
+
+-   **Click-to-Focus**: Distraction-free single comment viewing
+-   **Full-Height View**: Scrollable full-height interface
+-   **Smart UI**: Auto-hide composer and connecting lines
+-   **Sticky Controls**: Persistent exit button at top
+-   **Dropdown Integration**: Auto-close functionality for seamless UX
+
+#### **Emoji Reactions**
+
+-   **Comprehensive Picker**: Searchable emoji library with keyword matching
+-   **Recent Tracking**: Quick access to frequently used emojis
+-   **Real-time Updates**: Live reaction counts and user attribution
+-   **User Tooltips**: Timestamp and user information on hover
+-   **Toggle Functionality**: Add/remove reactions with visual feedback
+
+#### **Threaded Replies**
+
+-   **Nested Structure**: Visual hierarchy with proper indentation
+-   **Reply Actions**: Edit, delete, and focus capabilities for replies
+-   **Visual Indicators**: Connecting lines and avatar differentiation
+-   **Independent Management**: Separate state management for replies
+
+#### **Content Management**
+
+-   **Inline Editing**: Live preview with form validation
+-   **Soft Delete**: Safe deletion with restoration capabilities
+-   **Whitespace Control**: Prevention of leading/trailing spaces
+-   **Activity Logging**: Complete audit trail for all operations
+
+### **Technical Implementation**
+
+#### **Frontend Technologies**
+
+-   **Livewire v3**: Real-time component interactions
+-   **Alpine.js**: Client-side reactivity and state management
+-   **Trix Editor**: Rich text editing capabilities
+-   **Tailwind CSS**: Responsive design and styling
+
+#### **Backend Architecture**
+
+-   **Eloquent Models**: Comment, CommentReaction, CommentEmojiReaction
+-   **API Endpoints**: RESTful routes for reactions and mentions
+-   **Event System**: Real-time notifications and updates
+-   **Activity Logging**: Spatie integration for audit trails
+
+#### **Database Schema**
+
+-   **Comments Table**: Core comment data with mentions array
+-   **Reactions Tables**: Separate tables for different reaction types
+-   **Soft Deletes**: Safe data retention with restoration
+-   **Foreign Keys**: Proper relationships and cascading rules
+
+---
+
 ## Testing
 
 -   Feature tests exist for the comment system, mentions extraction, and notifications
@@ -490,11 +588,16 @@ Create uses a streamlined modal; edit navigates to the Task Resource edit page.
 
 **Current Test Coverage:**
 
--   Comment system with @mentions
--   Task management and Kanban operations
--   User authentication and authorization
--   Livewire component interactions
--   Database operations and relationships
+-   **Advanced Comment System**:
+    -   @mentions extraction and processing
+    -   Comment reactions and emoji functionality
+    -   Focus mode and threaded replies
+    -   Rich text editor integration
+    -   User notification system
+-   **Task Management**: Kanban operations and workflow
+-   **User Authentication**: Authorization and session management
+-   **Livewire Components**: Real-time interactions and state management
+-   **Database Operations**: Relationships and data integrity
 
 **Future Testing Goals:**
 

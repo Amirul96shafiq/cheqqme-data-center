@@ -19,7 +19,9 @@
     @endif
 
     <!-- Emoji Picker -->
-    <x-emoji-picker :comment-id="$comment->id" trigger-class="emoji-picker-trigger" />
+    @if(!$comment->isDeleted())
+        <x-emoji-picker :comment-id="$comment->id" trigger-class="emoji-picker-trigger" />
+    @endif
 </div>
 
 <script>

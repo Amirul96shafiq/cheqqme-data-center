@@ -39,6 +39,7 @@ return [
         'unknown' => 'Unknown',
         'unknown_user' => 'Unknown User',
         'edited' => 'edited',
+        'deleted' => 'deleted',
         'user_fallback' => 'User',
         'you' => 'You',
         'just_now' => 'Just now',

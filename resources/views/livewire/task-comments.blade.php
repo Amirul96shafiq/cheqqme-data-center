@@ -118,22 +118,27 @@
                             @endif
                         @endif
                         <!-- Vertical connecting line that extends from avatar -->
-                        <div class="absolute left-1/2 top-10 w-[0.5px] {{ auth()->id() === $comment->user_id ? 'bg-primary-500/80' : 'bg-gray-300/80 dark:bg-gray-600/80' }} transform -translate-x-1/2 z-0" style="height: calc(100% + 1.5rem);"></div>
+                        <div class="absolute left-1/2 top-10 w-[0.5px] {{ auth()->id() === $comment->user_id ? 'bg-primary-500/80' : 'bg-gray-300/80 dark:bg-gray-600/80' }} {{ $comment->isDeleted() ? 'opacity-25' : '' }} transform -translate-x-1/2 z-0" style="height: calc(100% + 1.5rem);"></div>
                         </div>
                         <!-- Comment content -->
                         <div class="flex-1 min-w-0">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="flex flex-col">
                                         <span class="comment-username text-gray-900 dark:text-gray-100 leading-none">{{ $comment->user->username ?? __('comments.meta.unknown') }}</span>
-                                        <span class="mt-1 comment-meta text-gray-500 dark:text-gray-400" title="{{ $comment->created_at->format('j/n/y, h:i A') }}">
-                                            {{ $comment->created_at->diffForHumans(short: true) }} · {{ $comment->created_at->format('j/n/y, h:i A') }}
-                                        @if($comment->updated_at->gt($comment->created_at))
-                                                <span class="italic text-gray-400 comment-meta">· {{ __('comments.meta.edited') }}</span>
-                                        @endif
-                                    </span>
+                                        <span class="mt-1 comment-meta text-gray-500 dark:text-gray-400" title="{{ $comment->isDeleted() && $comment->deletion_timestamp ? $comment->deletion_timestamp->format('j/n/y, h:i A') : $comment->created_at->format('j/n/y, h:i A') }}">
+                                            @if($comment->isDeleted() && $comment->deletion_timestamp)
+                                                {{ $comment->deletion_timestamp->diffForHumans(short: true) }} · {{ $comment->deletion_timestamp->format('j/n/y, h:i A') }}
+                                                <span class="italic text-gray-400 comment-meta">· {{ __('comments.meta.deleted') }}</span>
+                                            @else
+                                                {{ $comment->created_at->diffForHumans(short: true) }} · {{ $comment->created_at->format('j/n/y, h:i A') }}
+                                                @if($comment->updated_at->gt($comment->created_at))
+                                                    <span class="italic text-gray-400 comment-meta">· {{ __('comments.meta.edited') }}</span>
+                                                @endif
+                                            @endif
+                                        </span>
                                 </div>
                                 <!-- Action buttons: Reply (separate) + Group actions dropdown -->
-                                @if($this->editingId !== $comment->id && $this->replyingToId !== $comment->id)
+                                @if($this->editingId !== $comment->id && $this->replyingToId !== $comment->id && !$comment->isDeleted())
                                     <div class="flex items-center gap-1">
                                         <!-- Reply button (always visible, separate from group actions) -->
                                         <button type="button" wire:click="startReply({{ $comment->id }})" class="flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.reply') }}">
@@ -189,12 +194,14 @@
                                     </div>
                                 @else
                                     <!-- Comment content -->
-                                    <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4 transition-colors duration-200 relative">
+                                    <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4 transition-colors duration-200 relative {{ $comment->isDeleted() ? 'opacity-25' : '' }}">
                                         <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[13px] text-gray-700 dark:text-gray-300 break-words">{!! $comment->rendered_comment !!}</div>
                                     </div>
                                     
                                     <!-- Comment Reactions -->
-                                    <x-comment-reactions :comment="$comment" />
+                                    @if(!$comment->isDeleted())
+                                        <x-comment-reactions :comment="$comment" />
+                                    @endif
                                     
                                     <!-- Reply form -->
                                     @if($this->replyingToId === $comment->id)
@@ -256,7 +263,7 @@
                                                     <div class="flex-shrink-0 relative">
                                                         <!-- Horizontal connecting line for first reply -->
                                                         @if($loop->first)
-                                                            <div class="absolute -left-8 top-4 w-10 h-[0.5px] {{ auth()->id() === $comment->user_id ? 'bg-primary-500/80' : 'bg-gray-300/80 dark:bg-gray-600/80' }} z-0"></div>
+                                                            <div class="absolute -left-8 top-4 w-10 h-[0.5px] {{ auth()->id() === $comment->user_id ? 'bg-primary-500/80' : 'bg-gray-300/80 dark:bg-gray-600/80' }} {{ $reply->isDeleted() ? 'opacity-25' : '' }} z-0"></div>
                                                         @endif
                                                         @php
                                                             $avatarPath = $reply->user->avatar ?? null;
@@ -280,22 +287,27 @@
                                                         @endif
                                                         <!-- Vertical connecting line below reply avatar -->
                                                         @if(!$loop->last)
-                                                            <div class="absolute left-1/2 top-8 w-[0.5px] {{ auth()->id() === $comment->user_id ? 'bg-primary-500/80' : 'bg-gray-300/80 dark:bg-gray-600/80' }} transform -translate-x-1/2 z-0" style="height: calc(100% + 0.75rem);"></div>
+                                                            <div class="absolute left-1/2 top-8 w-[0.5px] {{ auth()->id() === $comment->user_id ? 'bg-primary-500/80' : 'bg-gray-300/80 dark:bg-gray-600/80' }} {{ $reply->isDeleted() ? 'opacity-25' : '' }} transform -translate-x-1/2 z-0" style="height: calc(100% + 0.75rem);"></div>
                                                         @endif
                                                     </div>
                                                     <div class="flex-1 min-w-0">
                                                         <div class="flex items-start justify-between gap-2">
                                                             <div class="flex flex-col">
                                                                 <span class="comment-username text-gray-900 dark:text-gray-100 leading-none text-sm">{{ $reply->user->username ?? __('comments.meta.unknown') }}</span>
-                                                                <span class="mt-1 comment-meta text-gray-500 dark:text-gray-400 text-xs" title="{{ $reply->created_at->format('j/n/y, h:i A') }}">
-                                                                    {{ $reply->created_at->diffForHumans(short: true) }} · {{ $reply->created_at->format('j/n/y, h:i A') }}
-                                                                    @if($reply->updated_at->gt($reply->created_at))
-                                                                        <span class="italic text-gray-400 comment-meta">· {{ __('comments.meta.edited') }}</span>
+                                                                <span class="mt-1 comment-meta text-gray-500 dark:text-gray-400 text-xs" title="{{ $reply->isDeleted() && $reply->deletion_timestamp ? $reply->deletion_timestamp->format('j/n/y, h:i A') : $reply->created_at->format('j/n/y, h:i A') }}">
+                                                                    @if($reply->isDeleted() && $reply->deletion_timestamp)
+                                                                        {{ $reply->deletion_timestamp->diffForHumans(short: true) }} · {{ $reply->deletion_timestamp->format('j/n/y, h:i A') }}
+                                                                        <span class="italic text-gray-400 comment-meta">· {{ __('comments.meta.deleted') }}</span>
+                                                                    @else
+                                                                        {{ $reply->created_at->diffForHumans(short: true) }} · {{ $reply->created_at->format('j/n/y, h:i A') }}
+                                                                        @if($reply->updated_at->gt($reply->created_at))
+                                                                            <span class="italic text-gray-400 comment-meta">· {{ __('comments.meta.edited') }}</span>
+                                                                        @endif
                                                                     @endif
                                                                 </span>
                                                             </div>
                                                              <!-- Reply group actions dropdown (Focus, Edit, Delete) -->
-                                                             @if($this->editingReplyId !== $reply->id)
+                                                             @if($this->editingReplyId !== $reply->id && !$reply->isDeleted())
                                                                  <div class="flex items-center gap-1">
                                                                      @if(auth()->id() === $reply->user_id)
                                                                          <x-comment-actions-dropdown 
@@ -349,11 +361,13 @@
                                                                     </div>
                                                                 </div>
                                                             @else
-                                                                <div class="bg-gray-200/20 dark:bg-gray-700/30 rounded-lg p-2 mt-2 relative">
+                                                                <div class="bg-gray-200/20 dark:bg-gray-700/30 rounded-lg p-2 mt-2 relative {{ $reply->isDeleted() ? 'opacity-25' : '' }}">
                                                                     <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[12px] text-gray-700 dark:text-gray-300 break-words">{!! $reply->rendered_comment !!}</div>
                                                                 </div>
                                                                 <!-- Reply Reactions -->
-                                                                <x-comment-reactions :comment="$reply" />
+                                                                @if(!$reply->isDeleted())
+                                                                    <x-comment-reactions :comment="$reply" />
+                                                                @endif
                                                             @endif
                                                         </div>
                                                     </div>

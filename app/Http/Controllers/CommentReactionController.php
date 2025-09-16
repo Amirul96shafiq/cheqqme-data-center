@@ -25,6 +25,15 @@ class CommentReactionController extends Controller
             ]);
 
             $comment = Comment::findOrFail($validated['comment_id']);
+
+            // Prevent reactions on deleted comments
+            if ($comment->isDeleted()) {
+                return $this->errorResponse(
+                    'Cannot react to deleted comments',
+                    403
+                );
+            }
+
             $user = Auth::user();
 
             // Check if user already reacted with this emoji
@@ -89,6 +98,14 @@ class CommentReactionController extends Controller
     public function destroy(Request $request, Comment $comment)
     {
         try {
+            // Prevent reactions on deleted comments
+            if ($comment->isDeleted()) {
+                return $this->errorResponse(
+                    'Cannot react to deleted comments',
+                    403
+                );
+            }
+
             $validated = $request->validate([
                 'emoji' => 'required|string|max:10',
             ]);
@@ -137,6 +154,14 @@ class CommentReactionController extends Controller
     public function index(Comment $comment)
     {
         try {
+            // Prevent reactions on deleted comments
+            if ($comment->isDeleted()) {
+                return $this->errorResponse(
+                    'Cannot retrieve reactions for deleted comments',
+                    403
+                );
+            }
+
             $reactions = $comment->reactions()
                 ->with('user:id,username,name')
                 ->get()
