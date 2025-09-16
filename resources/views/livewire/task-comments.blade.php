@@ -177,9 +177,10 @@
                                     </div>
                                 @else
                                     <!-- Comment content -->
-                                    <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4 cursor-pointer hover:bg-gray-300/25 dark:hover:bg-gray-800/70 transition-colors duration-200 relative"
-                                         x-on:click="enterFocusMode({{ $comment->id }})"
-                                         title="Click to focus on this comment">
+                                    <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4 transition-colors duration-200 relative"
+                                         :class="isFocusMode ? 'cursor-default' : 'cursor-pointer hover:bg-gray-300/25 dark:hover:bg-gray-800/70'"
+                                         x-on:click="!isFocusMode && enterFocusMode({{ $comment->id }})"
+                                         :title="isFocusMode ? '' : '{{ __('comments.buttons.click_to_focus') }}'">
                                         <!-- Enter Focus Mode button (only visible on hover and when not in focus mode) -->
                                         <button type="button" 
                                                 x-on:click.stop="enterFocusMode({{ $comment->id }})" 

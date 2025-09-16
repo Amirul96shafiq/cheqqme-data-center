@@ -22,6 +22,7 @@ return [
         'submitting' => 'Submitting...',
         'show_replies' => 'Show Reply (:count)',
         'hide_replies' => 'Hide Reply',
+        'click_to_focus' => 'Click to focus on this comment',
         'exit_focus_mode' => 'Exit Focus Mode',
         'enter_focus_mode' => 'Enter Focus Mode',
     ],

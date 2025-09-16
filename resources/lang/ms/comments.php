@@ -22,6 +22,7 @@ return [
         'submitting' => 'Menyimpan...',
         'show_replies' => 'Tunjukkan balasan (:count)',
         'hide_replies' => 'Sembunyikan balasan',
+        'click_to_focus' => 'Klik untuk fokus pada komen ini',
         'exit_focus_mode' => 'Keluar dari Mode Fokus',
         'enter_focus_mode' => 'Masuk ke Mode Fokus',
     ],
