@@ -22,6 +22,7 @@ return [
         'submitting' => 'Menyimpan...',
         'show_replies' => 'Tunjukkan balasan (:count)',
         'hide_replies' => 'Sembunyikan balasan',
+        'exit_focus_mode' => 'Keluar dari Mode Fokus',
     ],
     'list' => [
         'none' => 'Belum ada komen.',

@@ -1,6 +1,18 @@
 <!-- Task Comments Component -->
 <div class="flex flex-col flex-1 h-full min-h-0 rounded-xl" 
-     x-data="notificationHandler()"
+     x-data="{
+         ...notificationHandler(),
+         isFocusMode: false,
+         focusedCommentId: null,
+         enterFocusMode(commentId) {
+             this.focusedCommentId = commentId;
+             this.isFocusMode = true;
+         },
+         exitFocusMode() {
+             this.isFocusMode = false;
+             this.focusedCommentId = null;
+         }
+     }"
      x-on:keydown.ctrl.enter.prevent="
          ($event.target.closest('[data-composer]') || $event.target.closest('.minimal-comment-editor')) && 
          ($wire.editingId === null || $wire.editingId === undefined) && 
@@ -50,11 +62,37 @@
     </div>
     <!-- Comments List (scroll area) -->
     <div class="flex-1 min-h-0 px-0 pb-0">
-        <div class="px-4 py-4 text-sm overflow-y-auto custom-thin-scroll h-full comment-list-container" data-comment-list>
-            <div class="space-y-6">
+        <div class="px-4 py-4 text-sm overflow-y-auto custom-thin-scroll h-full comment-list-container flex flex-col" data-comment-list>
+            <!-- Focus Mode Exit Button - At Top -->
+            <div wire:ignore
+                 x-show="isFocusMode" 
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform translate-y-2"
+                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                 x-transition:leave-end="opacity-0 transform translate-y-2"
+                 class="pb-2 border-b border-gray-200 dark:border-gray-700 mb-4">
+                <button x-on:click="exitFocusMode()" 
+                        type="button" 
+                        class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40">
+                    {{ __('comments.buttons.exit_focus_mode') }}
+                </button>
+            </div>
+            
+            <div class="space-y-6 flex-1">
                 <!-- Loop through comments -->
                 @forelse($this->comments as $comment)
-                    <div class="group relative flex gap-3" wire:key="comment-{{ $comment->id }}" data-comment-id="{{ $comment->id }}">
+                    <div class="group relative flex gap-3" 
+                         wire:key="comment-{{ $comment->id }}" 
+                         data-comment-id="{{ $comment->id }}"
+                         x-show="!isFocusMode || focusedCommentId === {{ $comment->id }}"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform scale-95"
+                         x-transition:enter-end="opacity-100 transform scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform scale-100"
+                         x-transition:leave-end="opacity-0 transform scale-95">
                         <div class="flex-shrink-0 relative">
                         @php
                             $avatarPath = $comment->user->avatar ?? null;
@@ -139,7 +177,9 @@
                                     </div>
                                 @else
                                     <!-- Comment content -->
-                                    <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4">
+                                    <div class="bg-gray-300/15 dark:bg-gray-800/50 rounded-lg p-3 mt-4 cursor-pointer hover:bg-gray-300/25 dark:hover:bg-gray-800/70 transition-colors duration-200"
+                                         x-on:click="enterFocusMode({{ $comment->id }})"
+                                         title="Click to focus on this comment">
                                         <div class="prose prose-xs dark:prose-invert max-w-none leading-snug text-[13px] text-gray-700 dark:text-gray-300 break-words">{!! $comment->rendered_comment !!}</div>
                                     </div>
                                     
@@ -316,12 +356,12 @@
             </div>
             <!-- Show total comments -->
             @if($this->totalComments > 0)
-                <div class="mt-3 text-[10px] text-gray-400 text-center relative z-10">{{ __('comments.list.showing', ['shown' => $this->comments->count(), 'total' => $this->totalComments]) }}</div>
+                <div class="mt-3 text-[10px] text-gray-400 text-center relative z-10" x-show="!isFocusMode">{{ __('comments.list.showing', ['shown' => $this->comments->count(), 'total' => $this->totalComments]) }}</div>
             @endif
             <!-- Show more comments button -->
             @if($this->totalComments > $visibleCount)
                 @php $remaining = $this->totalComments - $visibleCount; @endphp
-                <div class="mt-2 relative z-10">
+                <div class="mt-2 relative z-10" x-show="!isFocusMode">
                     <button wire:click="showMore" 
                             type="button" 
                             class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40 relative z-10"
