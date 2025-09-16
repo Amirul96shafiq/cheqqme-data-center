@@ -136,5 +136,10 @@ return [
         'backup_backed_up' => 'Backed Up At',
         'backup_size' => 'Size',
         'backup_actions' => 'Actions',
+        'showing' => 'Showing :shown of :total backups',
+        'load_more' => 'Load :count more backups',
+        'loading' => 'Loading...',
+        'no_backups' => 'No backups yet',
+        'no_backups_description' => 'Create your first backup to save your chatbot conversations.',
     ],
 ];

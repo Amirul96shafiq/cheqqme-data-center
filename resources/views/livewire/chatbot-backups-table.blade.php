@@ -151,13 +151,39 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Show total backups -->
+        @if($this->totalBackups > 0)
+            <div class="mt-3 text-[10px] text-gray-400 text-center">
+                {{ __('settings.chatbot.showing', ['shown' => $backups->count(), 'total' => $this->totalBackups]) }}
+            </div>
+        @endif
+
+        <!-- Show more backups button -->
+        @if($this->totalBackups > $visibleCount)
+            @php $remaining = $this->totalBackups - $visibleCount; @endphp
+            <div class="mt-2">
+                <button wire:click="showMore" 
+                        type="button" 
+                        class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-primary-500 dark:bg-primary-600 hover:bg-primary-400 dark:hover:bg-primary-500 text-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-500/40"
+                        wire:loading.attr="disabled"
+                        wire:target="showMore">
+                    <span wire:loading.remove wire:target="showMore">
+                        {{ __('settings.chatbot.load_more', ['count' => $remaining < 5 ? $remaining : 5]) }}
+                    </span>
+                    <span wire:loading wire:target="showMore">
+                        {{ __('settings.chatbot.loading') }}
+                    </span>
+                </button>
+            </div>
+        @endif
     @else
         <div class="text-center py-12">
             <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No backups yet</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Create your first backup to save your chatbot conversations.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ __('settings.chatbot.no_backups') }}</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('settings.chatbot.no_backups_description') }}</p>
         </div>
     @endif
 

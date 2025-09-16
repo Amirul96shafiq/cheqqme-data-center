@@ -17,15 +17,43 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
     use InteractsWithActions;
     use InteractsWithForms;
 
+    public int $visibleCount = 5; // number of backups to display initially / currently
+
+    public bool $isLoadingMore = false; // loading state for show more button
+
     public function render()
     {
         $backups = ChatbotBackup::where('user_id', Auth::id())
             ->orderBy('backup_date', 'desc')
+            ->take($this->visibleCount)
             ->get();
 
         return view('livewire.chatbot-backups-table', [
             'backups' => $backups,
         ]);
+    }
+
+    // Get the total backups
+    public function getTotalBackupsProperty(): int
+    {
+        return ChatbotBackup::where('user_id', Auth::id())->count();
+    }
+
+    // Show more backups
+    public function showMore(): void
+    {
+        $this->isLoadingMore = true;
+
+        $total = $this->totalBackups;
+        $remaining = $total - $this->visibleCount;
+        if ($remaining <= 0) {
+            $this->isLoadingMore = false;
+
+            return;
+        }
+
+        $this->visibleCount += min(5, $remaining);
+        $this->isLoadingMore = false;
     }
 
     public function downloadBackup($backupId)
