@@ -54,7 +54,7 @@
                     <span wire:loading.remove wire:target="addComment">{{ __('comments.composer.send') }}</span>
                     <span wire:loading wire:target="addComment">{{ __('comments.composer.saving') }}</span>
                 </div>
-                <div class="absolute right-2 flex items-center gap-1 text-primary-800 text-[11px] font-semibold">
+                <div class="absolute right-2 flex items-center gap-1 text-primary-800 text-[10px] font-semibold">
                     <kbd class="px-1 py-0.5 bg-primary-transparent border border-primary-800 rounded font-mono">CTRL + ENTER</kbd>
                 </div>
             </button>
