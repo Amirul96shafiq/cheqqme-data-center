@@ -1,35 +1,41 @@
 <div id="chatbot-backups-table">
     @if($backups->count() > 0)
-        <div class="overflow-visible rounded-lg border border-gray-200 dark:border-gray-700">
+        <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Backup Name
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400">
+                            {{ __('settings.chatbot.backup_id') }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Type
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                            {{ __('settings.chatbot.backup_name') }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Messages
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                            {{ __('settings.chatbot.backup_type') }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Date Range
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                            {{ __('settings.chatbot.backup_messages') }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Backed Up
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                            {{ __('settings.chatbot.backup_date_range') }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Size
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                            {{ __('settings.chatbot.backup_backed_up') }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Actions
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                            {{ __('settings.chatbot.backup_size') }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">
+                            {{-- {{ __('settings.chatbot.backup_actions') }} --}}
                         </th>
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                     @foreach($backups as $backup)
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                                {{ $backup->id }}
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                 {{ $backup->backup_name }}
                             </td>

@@ -128,5 +128,13 @@ return [
     // Chatbot-related translations
     'chatbot' => [
         'create_backup' => 'Create Backup',
+        'backup_id' => 'ID',
+        'backup_name' => 'Backup Title',
+        'backup_type' => 'Type',
+        'backup_messages' => 'Total Messages',
+        'backup_date_range' => 'Date Range',
+        'backup_backed_up' => 'Backed Up At',
+        'backup_size' => 'Size',
+        'backup_actions' => 'Actions',
     ],
 ];
