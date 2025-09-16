@@ -62,7 +62,7 @@
     </div>
     <!-- Comments List (scroll area) -->
     <div class="flex-1 min-h-0 px-0 pb-0">
-        <div class="px-2 py-0 text-sm overflow-y-auto custom-thin-scroll h-full comment-list-container flex flex-col" data-comment-list>
+        <div class="px-2 pb-6 text-sm overflow-y-auto custom-thin-scroll h-full comment-list-container flex flex-col" data-comment-list>
             <!-- Focus Mode Exit Button - Sticky at Top -->
             <div wire:ignore
                  x-show="isFocusMode" 
