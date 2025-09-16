@@ -66,9 +66,23 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center justify-end">
-                                    <div class="relative" x-data="{ open: false }">
+                                    <div class="relative" x-data="{ open: false }" x-init="
+                                        $watch('open', value => {
+                                            if (value) {
+                                                // Position dropdown outside table overflow
+                                                const dropdown = $refs.dropdown;
+                                                const button = $refs.button;
+                                                const rect = button.getBoundingClientRect();
+                                                dropdown.style.position = 'fixed';
+                                                dropdown.style.top = (rect.top - dropdown.offsetHeight - 4) + 'px';
+                                                dropdown.style.left = (rect.right - dropdown.offsetWidth) + 'px';
+                                                dropdown.style.zIndex = '9999';
+                                            }
+                                        })
+                                    ">
                                         <!-- Dropdown trigger button with horizontal dots -->
                                         <button 
+                                            x-ref="button"
                                             type="button"
                                             @click="open = !open"
                                             @click.away="open = false"
@@ -82,10 +96,13 @@
 
                                         <!-- Filament native dropdown menu -->
                                         <div 
+                                            x-ref="dropdown"
                                             x-show="open"
-                                            x-transition:enter-start="opacity-0"
-                                            x-transition:leave-end="opacity-0"
-                                            class="fi-dropdown-panel absolute right-0 bottom-full mb-1 z-50 w-screen divide-y divide-gray-100 rounded-lg bg-white shadow-lg ring-1 ring-gray-950/5 transition dark:divide-white/5 dark:bg-gray-900 dark:ring-white/10 !max-w-[14rem] overflow-y-auto"
+                                            x-transition:enter-start="opacity-0 scale-95"
+                                            x-transition:enter-end="opacity-100 scale-100"
+                                            x-transition:leave-start="opacity-100 scale-100"
+                                            x-transition:leave-end="opacity-0 scale-95"
+                                            class="fi-dropdown-panel w-screen divide-y divide-gray-100 rounded-lg bg-white shadow-lg ring-1 ring-gray-950/5 transition dark:divide-white/5 dark:bg-gray-900 dark:ring-white/10 !max-w-[14rem] overflow-y-auto"
                                             style="display: none;"
                                         >
                                             <div class="fi-dropdown-list p-1">
