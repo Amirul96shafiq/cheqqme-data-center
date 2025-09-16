@@ -35,8 +35,8 @@
             </x-filament::dropdown.list.item>
         @endif
 
-        @if($showFocus)
-            <!-- Focus action -->
+        @if($showFocus && !$isReply)
+            <!-- Focus action (only for main comments, not replies) -->
             <x-filament::dropdown.list.item
                 :icon="'heroicon-o-eye'"
                 x-on:click="enterFocusMode({{ $commentId }}); $dispatch('close-dropdown')"
