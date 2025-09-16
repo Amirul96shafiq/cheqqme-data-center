@@ -169,6 +169,9 @@
 
         @livewire(Filament\Livewire\Notifications::class)
 
+        <!-- Global Modal Container -->
+        <x-global-modals />
+
         <!-- Custom Notification Container -->
         <div id="custom-notification-container" 
              x-data="notificationContainer()"

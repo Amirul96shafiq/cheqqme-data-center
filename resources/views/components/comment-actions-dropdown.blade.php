@@ -11,7 +11,7 @@
 <x-filament::dropdown
     placement="bottom-end"
     width="!max-w-[10rem]"
-    :attributes="new \Illuminate\View\ComponentAttributeBag(['style' => 'z-index: 9999;'])"
+    :attributes="new \Illuminate\View\ComponentAttributeBag(['style' => 'z-index: 9995;'])"
     x-on:close-dropdown="$el.querySelector('button[data-dropdown-trigger]')?.click()"
 >
     <x-slot name="trigger">

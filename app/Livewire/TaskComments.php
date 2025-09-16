@@ -51,24 +51,20 @@ class TaskComments extends Component implements HasForms
 
     public bool $isLoadingMore = false; // loading state for show more button
 
-    public ?int $confirmingDeleteId = null;
-
-    public ?int $confirmingDeleteReplyId = null;
-
-    public ?int $confirmingForceDeleteId = null;
-
-    public ?int $confirmingForceDeleteReplyId = null;
-
     // Track mentions selected from dropdown to avoid relying only on text parsing
     public array $pendingMentionUserIds = [];
 
     // Track which comments have their replies expanded
     public array $expandedReplies = [];
 
+    // Timestamp to force re-render
+    public int $lastRefresh = 0;
+
     #[On('refreshTaskComments')]
     public function refresh(): void
     {
-        // Refresh the component
+        // Force Livewire to re-render by updating timestamp
+        $this->lastRefresh = time();
     }
 
     // Handle emoji reaction notifications
@@ -385,29 +381,23 @@ class TaskComments extends Component implements HasForms
         if ($reply->user_id !== auth()->id()) {
             return;
         }
-        $this->confirmingDeleteReplyId = $replyId;
+
+        // Use global modal instead of local state
+        $this->dispatch('showGlobalModal', type: 'deleteReply', id: $replyId);
     }
 
-    // Cancel delete reply
-    public function cancelDeleteReply(): void
-    {
-        $this->confirmingDeleteReplyId = null;
-    }
+ 
 
     // Delete reply
-    public function deleteReply(): void
+    #[On('deleteReply')]
+    public function deleteReply(int $replyId): void
     {
-        if (!$this->confirmingDeleteReplyId) {
-            return;
-        }
-
-        $reply = $this->task->comments()->findOrFail($this->confirmingDeleteReplyId);
+        $reply = $this->task->comments()->findOrFail($replyId);
         if ($reply->user_id !== auth()->id()) {
             return;
         }
 
-        $this->deleteComment($this->confirmingDeleteReplyId);
-        $this->confirmingDeleteReplyId = null;
+        $this->deleteComment($replyId);
     }
 
     // Start replying to a comment
@@ -733,7 +723,7 @@ class TaskComments extends Component implements HasForms
 
         // Only adjust visibleCount for main comments (not replies)
         if (is_null($comment->parent_id)) {
-            $total = $this->task->comments()->where('status', '!=', 'deleted')->whereNull('parent_id')->count();
+            $total = $this->task->comments()->whereNull('parent_id')->count();
             if ($this->visibleCount > $total) {
                 $this->visibleCount = $total;
             }
@@ -749,29 +739,28 @@ class TaskComments extends Component implements HasForms
         if ($comment->user_id !== auth()->id()) {
             return;
         }
-        $this->confirmingDeleteId = $commentId;
+
+        // Use global modal instead of local state
+        $this->dispatch('showGlobalModal', type: 'deleteComment', id: $commentId);
     }
 
     // Perform deleting a comment
-    public function performDelete(): void
+    #[On('performDelete')]
+    public function performDelete(int $commentId): void
     {
-        if (!$this->confirmingDeleteId) {
+        $comment = $this->task->comments()->findOrFail($commentId);
+        if ($comment->user_id !== auth()->id()) {
             return;
         }
-        $this->deleteComment($this->confirmingDeleteId);
-        $this->confirmingDeleteId = null;
-    }
 
-    // Cancel deleting a comment
-    public function cancelDelete(): void
-    {
-        $this->confirmingDeleteId = null;
+        $this->deleteComment($commentId);
     }
 
     // Get the comments
     public function getCommentsProperty()
     {
         return $this->task->comments()
+            // Remove the deleted filter to show deleted comments
             ->whereNull('parent_id') // Only top-level comments
             ->with(['user', 'reactions.user', 'replies.user', 'replies.reactions.user'])
             ->orderByDesc('created_at')
@@ -782,7 +771,7 @@ class TaskComments extends Component implements HasForms
     // Get the total comments
     public function getTotalCommentsProperty(): int
     {
-        return $this->task->comments()->where('status', '!=', 'deleted')->whereNull('parent_id')->count();
+        return $this->task->comments()->whereNull('parent_id')->count();
     }
 
     // Show more comments
@@ -1051,6 +1040,7 @@ class TaskComments extends Component implements HasForms
     }
 
     // Force delete a comment (permanently remove from database)
+    #[On('forceDeleteComment')]
     public function forceDeleteComment(int $commentId): void
     {
         $comment = $this->task->comments()->findOrFail($commentId);
@@ -1064,25 +1054,24 @@ class TaskComments extends Component implements HasForms
         }
 
         // Permanently delete the comment
+        $commentText = $comment->comment; // Store comment text before deletion
+        $isMainComment = is_null($comment->parent_id); // Store parent_id check before deletion
         $comment->delete();
 
         // Send notification
         Notification::make()
             ->title(__('comments.notifications.force_deleted_title'))
-            ->body(Str::limit($comment->comment, 120))
+            ->body(Str::limit($commentText, 120))
             ->danger()
             ->send();
 
         // Adjust visibleCount if it exceeds remaining comments
-        if (is_null($comment->parent_id)) {
-            $total = $this->task->comments()->where('status', '!=', 'deleted')->whereNull('parent_id')->count();
+        if ($isMainComment) {
+            $total = $this->task->comments()->whereNull('parent_id')->count();
             if ($this->visibleCount > $total) {
                 $this->visibleCount = $total;
             }
         }
-
-        // Clear the confirmation state to close the modal
-        $this->confirmingForceDeleteId = null;
 
         $this->dispatch('refreshTaskComments');
     }
@@ -1113,23 +1102,15 @@ class TaskComments extends Component implements HasForms
             }
         }
 
-        $this->confirmingForceDeleteId = $commentId;
-    }
-
-    // Cancel force delete confirmation
-    public function cancelForceDelete(): void
-    {
-        $this->confirmingForceDeleteId = null;
+        // Use global modal instead of local state
+        $this->dispatch('showGlobalModal', type: 'forceDeleteComment', id: $commentId);
     }
 
     // Force delete a reply (permanently remove from database)
-    public function forceDeleteReply(): void
+    #[On('forceDeleteReply')]
+    public function forceDeleteReply(int $replyId): void
     {
-        if (!$this->confirmingForceDeleteReplyId) {
-            return;
-        }
-
-        $reply = $this->task->comments()->findOrFail($this->confirmingForceDeleteReplyId);
+        $reply = $this->task->comments()->findOrFail($replyId);
         if ($reply->user_id !== auth()->id()) {
             return;
         }
@@ -1139,8 +1120,7 @@ class TaskComments extends Component implements HasForms
             return;
         }
 
-        $this->forceDeleteComment($this->confirmingForceDeleteReplyId);
-        $this->confirmingForceDeleteReplyId = null;
+        $this->forceDeleteComment($replyId);
     }
 
     // Confirm force deleting a reply
@@ -1150,12 +1130,8 @@ class TaskComments extends Component implements HasForms
         if ($reply->user_id !== auth()->id()) {
             return;
         }
-        $this->confirmingForceDeleteReplyId = $replyId;
-    }
 
-    // Cancel force delete reply confirmation
-    public function cancelForceDeleteReply(): void
-    {
-        $this->confirmingForceDeleteReplyId = null;
+        // Use global modal instead of local state
+        $this->dispatch('showGlobalModal', type: 'forceDeleteReply', id: $replyId);
     }
 }
