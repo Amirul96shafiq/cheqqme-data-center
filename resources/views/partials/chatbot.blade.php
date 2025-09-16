@@ -379,14 +379,14 @@
             alt="Chat with Arem"
             onclick="toggleChatbot()"
             title="Chat with Arem"
-            class="w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg opacity-80 hover:opacity-100 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600"
+            class="w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg opacity-80 hover:opacity-100 bg-white dark:bg-gray-800"
         >
         <!-- Close Icon (shown when chat is open) -->
         <div
             id="close-icon"
             onclick="toggleChatbot()"
             title="Close chat"
-            class="w-14 h-14 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg bg-primary-600 hover:bg-primary-500 text-white hidden"
+            class="w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg bg-primary-600 hover:bg-primary-500 text-white hidden"
         >
             <div class="flex items-center justify-center w-full h-full">
                 @svg('heroicon-o-x-mark', 'w-8 h-8')
@@ -395,10 +395,10 @@
     </div>
 
     <!-- Chat Interface -->
-    <div id="chatbot-interface" class="absolute bottom-24 right-0 w-[380px] h-[680px] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden">
+    <div id="chatbot-interface" class="absolute bottom-16 right-0 w-[380px] h-[680px] bg-white/65 dark:bg-gray-800/65 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden backdrop-blur-sm">
         <div class="flex flex-col h-full w-full">
         <!-- Header -->
-        <div class="bg-primary-600 text-white px-3 py-1 rounded-t-xl flex items-center justify-between">
+        <div class="bg-primary-600 text-primary-900 px-3 py-1 rounded-t-xl flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <!-- Arem AI Logo -->
                 <div class="flex-shrink-0">
@@ -407,7 +407,7 @@
                 <!-- Arem AI Text -->
                 <div>
                     <h3 class="font-semibold text-base">Arem AI</h3>
-                    <p class="text-sm text-primary-100/80">Your brilliant assistant</p>
+                    <p class="text-sm text-primary-900/80">Your brilliant assistant</p>
                 </div>
             </div>
             <!-- Close and Clear Buttons -->
@@ -415,7 +415,7 @@
                 <!-- Clear Conversation Button -->
                 <button
                     onclick="clearConversation()"
-                    class="fi-btn fi-btn-size-sm fi-btn-color-gray fi-btn-variant-ghost text-white hover:bg-white/20 focus:bg-white/20 rounded-lg p-2 transition-colors"
+                    class="fi-btn fi-btn-size-sm fi-btn-color-gray fi-btn-variant-ghost text-primary-900 hover:bg-white/20 focus:bg-white/20 rounded-lg p-2 transition-colors"
                     title="Clear conversation"
                 >
                     @svg('heroicon-o-trash', 'w-4 h-4')
@@ -423,7 +423,7 @@
                 <!-- Close Chat Button -->
                 <button
                     onclick="toggleChatbot()"
-                    class="fi-btn fi-btn-size-sm fi-btn-color-gray fi-btn-variant-ghost text-white hover:bg-white/20 focus:bg-white/20 rounded-lg p-2 transition-colors"
+                    class="fi-btn fi-btn-size-sm fi-btn-color-gray fi-btn-variant-ghost text-primary-900 hover:bg-white/20 focus:bg-white/20 rounded-lg p-2 transition-colors"
                     title="Close chat"
                 >
                     @svg('heroicon-o-chevron-down', 'w-4 h-4')
