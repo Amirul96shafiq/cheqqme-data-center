@@ -1,8 +1,9 @@
 <div id="chatbot-backups-table">
     <div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-        <!-- Search Input - Above Table Header -->
+        <!-- Search Input and Filters - Above Table Header -->
         <div class="bg-white dark:bg-gray-900 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
-            <div class="flex justify-end">
+            <div class="flex items-center justify-end gap-4">
+                <!-- Search Input -->
                 <div class="relative w-60">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <x-heroicon-o-magnifying-glass class="h-4 w-4 text-gray-400 dark:text-gray-500" />
@@ -25,6 +26,70 @@
                             </button>
                         </div>
                     @endif
+                </div>
+
+                <!-- Filter Button -->
+                <div class="relative" x-data="{ open: false }">
+                    <button 
+                        type="button"
+                        @click="open = !open"
+                        @click.away="open = false"
+                        class="fi-btn fi-btn-color-gray fi-btn-size-sm fi-btn-outlined flex items-center border-0 text-sm font-medium text-gray-700 transition duration-75 disabled:bg-gray-50 disabled:text-gray-500 dark:text-gray-500 hover:dark:text-gray-400 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
+                    >
+                    <svg class="fi-icon-btn-icon h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+                        <path fill-rule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clip-rule="evenodd"></path>
+                    </svg>
+                        @if($this->hasActiveFilters)
+                            <span class="fi-badge fi-color-danger fi-size-xs inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-red-50 text-red-700 ring-red-600/10 dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/30">
+                                {{ ($search ? 1 : 0) + ($backupTypeFilter ? 1 : 0) }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <!-- Filter Dropdown Panel -->
+                    <div 
+                        x-show="open"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="fi-dropdown-panel absolute top-full right-0 z-10 mt-1 w-screen max-w-xs divide-y divide-gray-100 rounded-lg bg-white shadow-lg ring-1 ring-gray-950/5 transition dark:divide-white/5 dark:bg-gray-900 dark:ring-white/10"
+                        style="display: none;"
+                    >
+                        <div class="fi-dropdown-list p-1">
+                            <!-- Filter Header -->
+                            <div class="flex items-center justify-between px-2 py-1.5">
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Filters</span>
+                                @if($this->hasActiveFilters)
+                                    <button 
+                                        type="button"
+                                        wire:click="clearFilters"
+                                        class="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                    >
+                                        Reset
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="fi-dropdown-list p-1">
+                            <!-- Backup Type Filter -->
+                            <div class="px-2 py-1.5">
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
+                                    Backup Type
+                                </label>
+                                <select 
+                                    wire:model.live="backupTypeFilter"
+                                    class="fi-input block w-full rounded-lg bg-transparent px-3 py-1.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-700 text-base text-gray-950 outline-none transition duration-75 focus:ring-2 focus:ring-primary-500 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-400 sm:text-sm sm:leading-6"
+                                >
+                                    <option value="">All</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="manual">Manual</option>
+                                    <option value="import">Import</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -180,17 +245,25 @@
                 @else
                     <tr>
                         <td colspan="8" class="px-6 py-12 text-center">
-                            @if($search)
+                            @if($this->hasActiveFilters)
                                 <x-heroicon-o-magnifying-glass class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
                                 <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No backups found</h3>
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">No backups match your search for "{{ $search }}"</p>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    @if($search && $backupTypeFilter)
+                                        No backups match your search for "{{ $search }}" and backup type "{{ ucfirst($backupTypeFilter) }}"
+                                    @elseif($search)
+                                        No backups match your search for "{{ $search }}"
+                                    @elseif($backupTypeFilter)
+                                        No backups found for backup type "{{ ucfirst($backupTypeFilter) }}"
+                                    @endif
+                                </p>
                                 <div class="mt-4">
                                     <button 
-                                        wire:click="clearSearch"
+                                        wire:click="clearFilters"
                                         type="button"
                                         class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800"
                                     >
-                                        Clear search
+                                        Clear filters
                                     </button>
                                 </div>
                             @else
@@ -204,15 +277,15 @@
             </tbody>
         </table>
         
-        <!-- Show total backups - only show when not searching -->
-        @if(!$search && $this->totalBackups > 0)
+        <!-- Show total backups - only show when not searching or filtering -->
+        @if(!$this->hasActiveFilters && $this->totalBackups > 0)
             <div class="mt-3 text-[10px] text-gray-400 text-center">
                 {{ __('settings.chatbot.showing', ['shown' => $backups->count(), 'total' => $this->totalBackups]) }}
             </div>
         @endif
 
-        <!-- Show more backups button - only show when not searching -->
-        @if(!$search && $this->totalBackups > $visibleCount)
+        <!-- Show more backups button - only show when not searching or filtering -->
+        @if(!$this->hasActiveFilters && $this->totalBackups > $visibleCount)
             @php $remaining = $this->totalBackups - $visibleCount; @endphp
             <div class="mt-2">
                 <button wire:click="showMore" 

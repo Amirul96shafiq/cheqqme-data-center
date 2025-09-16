@@ -23,21 +23,28 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
 
     public string $search = ''; // search term for filtering backups
 
+    public ?string $backupTypeFilter = null; // filter by backup type
+
     public function render()
     {
         $query = ChatbotBackup::where('user_id', Auth::id());
 
         // Apply search filter if search term is provided
-        if (!empty($this->search)) {
+        if (! empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('backup_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('backup_type', 'like', '%' . $this->search . '%')
-                  ->orWhere('formatted_date_range', 'like', '%' . $this->search . '%');
+                $q->where('backup_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('backup_type', 'like', '%'.$this->search.'%')
+                    ->orWhere('formatted_date_range', 'like', '%'.$this->search.'%');
             });
         }
 
-        // When searching, show all results. Otherwise, limit to visible count
-        if (!empty($this->search)) {
+        // Apply backup type filter if selected
+        if (! empty($this->backupTypeFilter)) {
+            $query->where('backup_type', $this->backupTypeFilter);
+        }
+
+        // When searching or filtering, show all results. Otherwise, limit to visible count
+        if (! empty($this->search) || ! empty($this->backupTypeFilter)) {
             $backups = $query->orderBy('backup_date', 'desc')->get();
         } else {
             $backups = $query->orderBy('backup_date', 'desc')
@@ -56,12 +63,17 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
         $query = ChatbotBackup::where('user_id', Auth::id());
 
         // Apply search filter if search term is provided
-        if (!empty($this->search)) {
+        if (! empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('backup_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('backup_type', 'like', '%' . $this->search . '%')
-                  ->orWhere('formatted_date_range', 'like', '%' . $this->search . '%');
+                $q->where('backup_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('backup_type', 'like', '%'.$this->search.'%')
+                    ->orWhere('formatted_date_range', 'like', '%'.$this->search.'%');
             });
+        }
+
+        // Apply backup type filter if selected
+        if (! empty($this->backupTypeFilter)) {
+            $query->where('backup_type', $this->backupTypeFilter);
         }
 
         return $query->count();
@@ -236,5 +248,25 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
     public function updatedSearch(): void
     {
         $this->visibleCount = 5; // Reset to initial count when searching
+    }
+
+    // Updated backup type filter method that resets visible count when filtering
+    public function updatedBackupTypeFilter(): void
+    {
+        $this->visibleCount = 5; // Reset to initial count when filtering
+    }
+
+    // Clear all filters and reset visible count
+    public function clearFilters(): void
+    {
+        $this->search = '';
+        $this->backupTypeFilter = null;
+        $this->visibleCount = 5;
+    }
+
+    // Check if any filters are active
+    public function getHasActiveFiltersProperty(): bool
+    {
+        return ! empty($this->search) || ! empty($this->backupTypeFilter);
     }
 }
