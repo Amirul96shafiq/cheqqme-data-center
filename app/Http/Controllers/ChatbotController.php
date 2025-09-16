@@ -63,6 +63,15 @@ class ChatbotController extends Controller
                 ]);
             }
 
+            // Store user message FIRST (before API call) to ensure it's saved even if API fails
+            ChatbotConversation::create([
+                'user_id' => $user->id,
+                'conversation_id' => $conversationId,
+                'role' => 'user',
+                'content' => $message,
+                'last_activity' => now(),
+            ]);
+
             // Get the conversation history
             $conversationHistory = ChatbotConversation::where('conversation_id', $conversationId)
                 ->orderBy('created_at')
@@ -112,15 +121,6 @@ class ChatbotController extends Controller
                 $botReply = $this->normalizeContent($response['choices'][0]['message']['content']);
             }
 
-            // Store user message
-            ChatbotConversation::create([
-                'user_id' => $user->id,
-                'conversation_id' => $conversationId,
-                'role' => 'user',
-                'content' => $message,
-                'last_activity' => now(),
-            ]);
-
             // Store bot reply
             ChatbotConversation::create([
                 'user_id' => $user->id,
@@ -138,6 +138,23 @@ class ChatbotController extends Controller
         } catch (\Exception $e) {
             // Log the error
             Log::error('ChatbotController@chat: An error occurred', ['error' => $e->getMessage()]);
+
+            // Store an error message in the database so the user can see what happened
+            // This ensures the conversation history is complete even when API fails
+            $errorMessage = 'Sorry, I encountered an error. Please try again.';
+
+            try {
+                ChatbotConversation::create([
+                    'user_id' => $user->id,
+                    'conversation_id' => $conversationId,
+                    'role' => 'assistant',
+                    'content' => $errorMessage,
+                    'last_activity' => now(),
+                ]);
+            } catch (\Exception $dbError) {
+                // If we can't even store the error message, log it but don't fail the request
+                Log::error('Failed to store error message in database', ['error' => $dbError->getMessage()]);
+            }
 
             // Return an error response
             return response()->json(['error' => 'Internal server error'], 500);

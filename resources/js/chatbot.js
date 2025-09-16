@@ -81,6 +81,8 @@
                 // Load the history automatically after getting session info
                 // Add a small delay to ensure the conversation ID is properly set
                 setTimeout(() => {
+                    // Reset conversation loaded flag to ensure fresh loading
+                    conversationLoaded = false;
                     loadConversationHistory();
                 }, 200);
             } else {
@@ -113,8 +115,9 @@
         // Use the centralized visibility setter for consistency
         setChatVisibility(shouldBeOpen);
 
-        // If the chatbox should be open, ensure conversation history is loaded
-        if (shouldBeOpen && conversationId && !conversationLoaded) {
+        // Always try to load conversation history if we have a conversation ID
+        // This ensures conversations load properly after page refresh
+        if (conversationId) {
             setTimeout(() => {
                 loadConversationHistory();
             }, 300);
@@ -288,11 +291,9 @@
             return;
         }
 
-        // Reset conversation loaded flag if conversation ID changed
-        const storedConversationId = localStorage.getItem(
-            getUserConversationKey()
-        );
-        if (storedConversationId !== conversationId) {
+        // Always reset conversation loaded flag on page load to ensure fresh loading
+        // This ensures conversations load properly after page refresh
+        if (!conversationLoaded || document.visibilityState === "visible") {
             conversationLoaded = false;
         }
 
@@ -1540,6 +1541,27 @@
             const shouldBeOpen =
                 localStorage.getItem(getUserChatStateKey()) === "true";
             setChatVisibility(shouldBeOpen);
+
+            // Reload conversation history after page resume
+            if (conversationId) {
+                conversationLoaded = false;
+                setTimeout(() => {
+                    loadConversationHistory();
+                }, 100);
+            }
+        }
+    });
+
+    // Handle page visibility changes to reload conversations when page becomes visible
+    document.addEventListener("visibilitychange", function () {
+        if (!document.hidden && conversationId && !isLoadingConversation) {
+            // Page became visible, ensure conversation is loaded
+            console.log("Page became visible, checking conversation loading");
+            setTimeout(() => {
+                if (!conversationLoaded) {
+                    loadConversationHistory();
+                }
+            }, 100);
         }
     });
 
