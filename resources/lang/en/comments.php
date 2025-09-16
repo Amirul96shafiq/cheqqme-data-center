@@ -88,6 +88,8 @@ return [
         'ends_with_space' => 'Comment cannot end with a space or newline. Please remove any trailing spaces and try again.',
         'duplicate_content_title' => 'Duplicate Content',
         'duplicate_content' => 'Unable to submit same comment content. Please make changes before submitting.',
+        'cannot_force_delete_with_replies_title' => 'Cannot permanently delete comment',
+        'cannot_force_delete_with_replies_body' => 'This comment has replies and cannot be permanently deleted. All replies must be deleted first.',
     ],
     'mentions' => [
         'no_users_found' => 'No users found',

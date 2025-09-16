@@ -88,6 +88,8 @@ return [
         'ends_with_space' => 'Komen tidak boleh berakhir dengan ruang atau baris baru. Sila buang sebarang ruang di belakang dan cuba lagi.',
         'duplicate_content_title' => 'Komen Duplikat',
         'duplicate_content' => 'Tidak dapat menyimpan komen yang sama. Sila buat perubahan sebelum menyimpan.',
+        'cannot_force_delete_with_replies_title' => 'Tidak dapat padam komen kekal',
+        'cannot_force_delete_with_replies_body' => 'Komen ini mempunyai balasan dan tidak boleh dipadam kekal. Semua balasan perlu dipadam terlebih dahulu.',
     ],
     'mentions' => [
         'no_users_found' => 'Tiada pengguna ditemui',
