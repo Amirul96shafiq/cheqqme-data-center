@@ -1,6 +1,6 @@
 @props([])
 
-<!-- Global Modal Container for Delete Confirmations -->
+<!-- Global Modal Container for Global Modals -->
 <div id="global-modal-container" 
      x-data="globalModalContainer()"
      class="fixed inset-0 z-[99999] pointer-events-none"
@@ -42,13 +42,7 @@
             <div class="flex flex-col items-center text-center">
                 <div class="mb-5 flex items-center justify-center">
                     <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
-                            <path d="M10 11v6"/>
-                            <path d="M14 11v6"/>
-                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                        </svg>
+                        <x-heroicon-o-trash class="h-6 w-6" />
                     </div>
                 </div>
                 
@@ -104,23 +98,14 @@
                     @click="closeModal('deleteReply')" 
                     class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900" 
                     aria-label="Close">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
+                <x-heroicon-o-x-mark class="w-6 h-6" />
             </button>
             
             <!-- Content -->
             <div class="flex flex-col items-center text-center">
                 <div class="mb-5 flex items-center justify-center">
                     <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
-                            <path d="M10 11v6"/>
-                            <path d="M14 11v6"/>
-                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                        </svg>
+                        <x-heroicon-o-trash class="h-6 w-6" />
                     </div>
                 </div>
                 
@@ -176,23 +161,14 @@
                     @click="closeModal('forceDeleteComment')" 
                     class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900" 
                     aria-label="Close">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
+                <x-heroicon-o-x-mark class="w-6 h-6" />
             </button>
             
             <!-- Content -->
             <div class="flex flex-col items-center text-center">
                 <div class="mb-5 flex items-center justify-center">
                     <div class="p-3 rounded-full bg-danger-100 text-danger-600 dark:bg-danger-500/20 dark:text-danger-400">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 6 5 6 21 6"/>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
-                            <path d="M10 11v6"/>
-                            <path d="M14 11v6"/>
-                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                        </svg>
+                        <x-heroicon-o-trash class="h-6 w-6" />
                     </div>
                 </div>
                 
@@ -248,10 +224,7 @@
                     @click="closeModal('forceDeleteReply')"
                     class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                     aria-label="Close">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
+                <x-heroicon-o-x-mark class="w-6 h-6" />
             </button>
 
             <!-- Content -->
@@ -320,19 +293,14 @@
                     @click="closeModal('createBackup')"
                     class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                     aria-label="Close">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
+                <x-heroicon-o-x-mark class="w-6 h-6" />
             </button>
 
             <!-- Content -->
             <div class="flex flex-col items-center text-center">
                 <div class="mb-5 flex items-center justify-center">
                     <div class="p-3 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M5 5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16l-7-3.5L5 21V5Z"/>
-                        </svg>
+                        <x-heroicon-o-archive-box class="h-6 w-6" />
                     </div>
                 </div>
 
@@ -354,7 +322,7 @@
 
                     <button type="button"
                             @click="confirmCreateBackup()"
-                            class="fi-btn flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-sm font-medium tracking-tight bg-primary-600 text-white hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:ring-offset-2 focus:ring-offset-white dark:bg-primary-600 dark:hover:bg-primary-500 dark:focus:ring-offset-gray-900">
+                            class="fi-btn flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-sm font-medium tracking-tight bg-primary-600 text-primary-900 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:ring-offset-2 focus:ring-offset-white dark:bg-primary-600 dark:hover:bg-primary-500 dark:focus:ring-offset-gray-900">
                         {{ __('settings.chatbot.create_backup') }}
                     </button>
                 </div>
@@ -388,21 +356,14 @@
                     @click="closeModal('restoreBackup')"
                     class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                     aria-label="Close">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
+                <x-heroicon-o-x-mark class="w-6 h-6" />
             </button>
 
             <!-- Content -->
             <div class="flex flex-col items-center text-center">
                 <div class="mb-5 flex items-center justify-center">
-                    <div class="p-3 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2Z"/>
-                            <path d="m8 5 4-3 4 3"/>
-                            <path d="M9 12l2 2 4-4"/>
-                        </svg>
+                    <div class="p-3 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400">
+                        <x-heroicon-o-arrow-path class="h-6 w-6" />
                     </div>
                 </div>
 
@@ -424,7 +385,7 @@
 
                     <button type="button"
                             @click="confirmRestoreBackup()"
-                            class="fi-btn flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-sm font-medium tracking-tight bg-blue-600 text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:ring-offset-2 focus:ring-offset-white dark:bg-blue-600 dark:hover:bg-blue-500 dark:focus:ring-offset-gray-900">
+                            class="fi-btn flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-sm font-medium tracking-tight bg-primary-600 text-primary-900 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:ring-offset-2 focus:ring-offset-white dark:bg-primary-600 dark:hover:bg-primary-500 dark:focus:ring-offset-gray-900">
                         {{ __('settings.chatbot.actions_menu.restore') }}
                     </button>
                 </div>
@@ -458,19 +419,14 @@
                     @click="closeModal('deleteBackup')"
                     class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                     aria-label="Close">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
+                <x-heroicon-o-x-mark class="w-6 h-6" />
             </button>
 
             <!-- Content -->
             <div class="flex flex-col items-center text-center">
                 <div class="mb-5 flex items-center justify-center">
                     <div class="p-3 rounded-full bg-danger-100 text-danger-600 dark:bg-danger-500/20 dark:text-danger-400">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
+                        <x-heroicon-o-trash class="h-6 w-6" />
                     </div>
                 </div>
 
