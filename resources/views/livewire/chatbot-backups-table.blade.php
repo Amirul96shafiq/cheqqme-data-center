@@ -12,14 +12,10 @@
                         wire:loading.attr="disabled"
                         wire:target="showCreateBackupConfirmation"
                     >
-                        <span wire:loading.remove wire:target="showCreateBackupConfirmation" class="inline-flex items-center">
-                            <x-heroicon-o-archive-box class="h-4 w-4 mr-2" />
-                            {{ __('settings.chatbot.create_backup') }}
-                        </span>
-                        <span wire:loading wire:target="showCreateBackupConfirmation" class="inline-flex items-center">
-                            <x-heroicon-o-arrow-path class="h-4 w-4 mr-2 animate-spin" />
-                            {{ __('settings.chatbot.creating_backup') }}
-                        </span>
+                        <x-heroicon-o-archive-box wire:loading.remove wire:target="showCreateBackupConfirmation" class="h-4 w-4 mr-2" />
+                        <x-heroicon-o-arrow-path wire:loading wire:target="showCreateBackupConfirmation" class="h-4 w-4 mr-2 animate-spin" />
+                        <span wire:loading.remove wire:target="showCreateBackupConfirmation">{{ __('settings.chatbot.create_backup') }}</span>
+                        <span wire:loading wire:target="showCreateBackupConfirmation">{{ __('settings.chatbot.creating_backup') }}</span>
                     </button>
                 </div>
 
@@ -202,17 +198,13 @@
                                                 wire:loading.attr="disabled"
                                                 wire:target="showRestoreBackupConfirmation"
                                             >
-                                                <span wire:loading.remove wire:target="showRestoreBackupConfirmation" class="flex items-center gap-2 w-full">
-                                                    <x-heroicon-o-arrow-path class="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                                                    <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
-                                                        {{ __('settings.chatbot.actions_menu.restore') }}
-                                                    </span>
+                                                <x-heroicon-o-arrow-path wire:loading.remove wire:target="showRestoreBackupConfirmation" class="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                                                <x-heroicon-o-arrow-path wire:loading wire:target="showRestoreBackupConfirmation" class="h-4 w-4 animate-spin text-gray-400 dark:text-gray-500" />
+                                                <span wire:loading.remove wire:target="showRestoreBackupConfirmation" class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
+                                                    {{ __('settings.chatbot.actions_menu.restore') }}
                                                 </span>
-                                                <span wire:loading wire:target="showRestoreBackupConfirmation" class="flex items-center gap-2 w-full">
-                                                    <x-heroicon-o-arrow-path class="h-4 w-4 animate-spin text-gray-400 dark:text-gray-500" />
-                                                    <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
-                                                        {{ __('settings.chatbot.loading') }}
-                                                    </span>
+                                                <span wire:loading wire:target="showRestoreBackupConfirmation" class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
+                                                    {{ __('settings.chatbot.loading') }}
                                                 </span>
                                             </button>
 
@@ -224,17 +216,13 @@
                                                 wire:loading.attr="disabled"
                                                 wire:target="showDeleteBackupConfirmation"
                                             >
-                                                <span wire:loading.remove wire:target="showDeleteBackupConfirmation" class="flex items-center gap-2 w-full">
-                                                    <x-heroicon-o-trash class="h-4 w-4 text-red-500 dark:text-red-400" />
-                                                    <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-red-600 dark:text-red-400">
-                                                        {{ __('settings.chatbot.actions_menu.delete') }}
-                                                    </span>
+                                                <x-heroicon-o-trash wire:loading.remove wire:target="showDeleteBackupConfirmation" class="h-4 w-4 text-red-500 dark:text-red-400" />
+                                                <x-heroicon-o-arrow-path wire:loading wire:target="showDeleteBackupConfirmation" class="h-4 w-4 animate-spin text-red-500 dark:text-red-400" />
+                                                <span wire:loading.remove wire:target="showDeleteBackupConfirmation" class="fi-dropdown-list-item-label flex-1 truncate text-start text-red-600 dark:text-red-400">
+                                                    {{ __('settings.chatbot.actions_menu.delete') }}
                                                 </span>
-                                                <span wire:loading wire:target="showDeleteBackupConfirmation" class="flex items-center gap-2 w-full">
-                                                    <x-heroicon-o-arrow-path class="h-4 w-4 animate-spin text-red-500 dark:text-red-400" />
-                                                    <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-red-600 dark:text-red-400">
-                                                        {{ __('settings.chatbot.loading') }}
-                                                    </span>
+                                                <span wire:loading wire:target="showDeleteBackupConfirmation" class="fi-dropdown-list-item-label flex-1 truncate text-start text-red-600 dark:text-red-400">
+                                                    {{ __('settings.chatbot.loading') }}
                                                 </span>
                                             </button>
                                         </div>
