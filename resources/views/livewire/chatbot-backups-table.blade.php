@@ -277,7 +277,7 @@
             <div class="mt-2">
                 <button wire:click="showMore" 
                         type="button" 
-                        class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-primary-500 dark:bg-primary-600 hover:bg-primary-400 dark:hover:bg-primary-500 text-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-500/40"
+                        class="w-full text-xs font-medium px-3 py-2 rounded-b-lg bg-primary-500 dark:bg-primary-600 hover:bg-primary-400 dark:hover:bg-primary-500 text-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-500/40"
                         wire:loading.attr="disabled"
                         wire:target="showMore">
                     <span wire:loading.remove wire:target="showMore">
