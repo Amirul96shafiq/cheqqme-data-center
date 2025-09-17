@@ -104,8 +104,8 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
 
         if (! $backup) {
             Notification::make()
-                ->title('Backup not found')
-                ->body('The requested backup could not be found.')
+                ->title(__('settings.backups.not_found'))
+                ->body(__('settings.backups.not_found_body'))
                 ->danger()
                 ->send();
 
@@ -146,8 +146,8 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
         ");
 
         Notification::make()
-            ->title('Download Started')
-            ->body("Downloading backup: {$backup->backup_name}")
+            ->title(__('settings.downloads.started'))
+            ->body(__('settings.downloads.started_body', ['name' => $backup->backup_name]))
             ->success()
             ->send();
     }
@@ -160,8 +160,8 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
 
         if (! $backup) {
             Notification::make()
-                ->title('Backup not found')
-                ->body('The requested backup could not be found.')
+                ->title(__('settings.backups.not_found'))
+                ->body(__('settings.backups.not_found_body'))
                 ->danger()
                 ->send();
 
@@ -184,8 +184,8 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
             ');
         } catch (\Exception $e) {
             Notification::make()
-                ->title('Restore Failed')
-                ->body('Failed to restore backup: '.$e->getMessage())
+                ->title(__('settings.backups.restore_failed'))
+                ->body(__('settings.backups.restore_failed_body', ['error' => $e->getMessage()]))
                 ->danger()
                 ->send();
         }
@@ -199,8 +199,8 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
 
         if (! $backup) {
             Notification::make()
-                ->title('Backup not found')
-                ->body('The requested backup could not be found.')
+                ->title(__('settings.backups.not_found'))
+                ->body(__('settings.backups.not_found_body'))
                 ->danger()
                 ->send();
 
@@ -212,8 +212,8 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
             $restoredCount = $backupService->restoreFromBackup($backup, $conversationId);
 
             Notification::make()
-                ->title('Backup Restored')
-                ->body("Successfully restored {$restoredCount} conversations from backup.")
+                ->title(__('settings.backups.restored'))
+                ->body(__('settings.backups.restored_body', ['count' => $restoredCount]))
                 ->success()
                 ->send();
 
@@ -221,8 +221,8 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
             $this->dispatch('backup-restored');
         } catch (\Exception $e) {
             Notification::make()
-                ->title('Restore Failed')
-                ->body('Failed to restore backup: '.$e->getMessage())
+                ->title(__('settings.backups.restore_failed'))
+                ->body(__('settings.backups.restore_failed_body', ['error' => $e->getMessage()]))
                 ->danger()
                 ->send();
         }
@@ -236,8 +236,8 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
 
         if (! $backup) {
             Notification::make()
-                ->title('Backup not found')
-                ->body('The requested backup could not be found.')
+                ->title(__('settings.backups.not_found'))
+                ->body(__('settings.backups.not_found_body'))
                 ->danger()
                 ->send();
 
@@ -248,8 +248,8 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
         $backup->delete();
 
         Notification::make()
-            ->title('Backup Deleted')
-            ->body("Backup '{$backupName}' has been deleted.")
+            ->title(__('settings.backups.deleted'))
+            ->body(__('settings.backups.deleted_body', ['name' => $backupName]))
             ->success()
             ->send();
     }
@@ -303,8 +303,8 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
             $backup = $backupService->createBackup($user, 'manual');
 
             Notification::make()
-                ->title(__('settings.notifications.backup_created'))
-                ->body(__('settings.notifications.backup_created_body', ['name' => $backup->backup_name]))
+                ->title(__('settings.backups.created'))
+                ->body(__('settings.backups.created_body', ['name' => $backup->backup_name]))
                 ->success()
                 ->send();
 
@@ -312,7 +312,7 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
             $this->refreshBackups();
         } catch (\Exception $e) {
             Notification::make()
-                ->title(__('settings.notifications.backup_failed'))
+                ->title(__('settings.backups.failed'))
                 ->body($e->getMessage())
                 ->danger()
                 ->send();

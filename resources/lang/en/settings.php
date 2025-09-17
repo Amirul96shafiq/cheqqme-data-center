@@ -118,11 +118,29 @@ return [
         'location_cleared_body' => 'Your location data has been cleared.',
         'settings_saved' => 'Settings Saved',
         'settings_saved_body' => 'Your settings have been successfully saved.',
-        'backup_created' => 'Backup Created',
-        'backup_created_body' => 'Backup ":name" has been created successfully.',
-        'backup_failed' => 'Backup Failed',
-        'backups_refreshed' => 'Backups Refreshed',
-        'backups_refreshed_body' => 'The backup list has been refreshed.',
+    ],
+
+    // Backup-related messages
+    'backups' => [
+        'created' => 'Backup Created',
+        'created_body' => 'Backup ":name" has been created successfully.',
+        'failed' => 'Backup Failed',
+        'not_found' => 'Backup Not Found',
+        'not_found_body' => 'The requested backup could not be found.',
+        'restore_failed' => 'Restore Failed',
+        'restore_failed_body' => 'Failed to restore backup: :error',
+        'restored' => 'Backup Restored',
+        'restored_body' => 'Successfully restored :count conversations from backup.',
+        'deleted' => 'Backup Deleted',
+        'deleted_body' => 'Backup ":name" has been deleted.',
+        'refreshed' => 'Backups Refreshed',
+        'refreshed_body' => 'The backup list has been refreshed.',
+    ],
+
+    // Download-related messages
+    'downloads' => [
+        'started' => 'Download Started',
+        'started_body' => 'Downloading backup: :name',
     ],
 
     // Chatbot-related translations

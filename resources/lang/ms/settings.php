@@ -118,11 +118,29 @@ return [
         'location_cleared_body' => 'Data lokasi anda telah dihapus.',
         'settings_saved' => 'Tetapan Disimpan',
         'settings_saved_body' => 'Tetapan anda telah berjaya disimpan.',
-        'backup_created' => 'Sandaran Dibuat',
-        'backup_created_body' => 'Sandaran ":name" telah berjaya dibuat.',
-        'backup_failed' => 'Sandaran Gagal',
-        'backups_refreshed' => 'Sandaran Dikemas Kini',
-        'backups_refreshed_body' => 'Senarai sandaran telah dikemas kini.',
+    ],
+
+    // Backup-related messages
+    'backups' => [
+        'created' => 'Sandaran Dibuat',
+        'created_body' => 'Sandaran ":name" telah berjaya dibuat.',
+        'failed' => 'Sandaran Gagal',
+        'not_found' => 'Sandaran Tidak Dijumpai',
+        'not_found_body' => 'Sandaran yang diminta tidak dapat dijumpai.',
+        'restore_failed' => 'Pemulihan Gagal',
+        'restore_failed_body' => 'Gagal memulihkan sandaran: :error',
+        'restored' => 'Sandaran Dipulihkan',
+        'restored_body' => 'Berjaya memulihkan :count perbualan dari sandaran.',
+        'deleted' => 'Sandaran Dipadam',
+        'deleted_body' => 'Sandaran ":name" telah dipadam.',
+        'refreshed' => 'Sandaran Dikemas Kini',
+        'refreshed_body' => 'Senarai sandaran telah dikemas kini.',
+    ],
+
+    // Download-related messages
+    'downloads' => [
+        'started' => 'Muat Turun Dimulakan',
+        'started_body' => 'Memuat turun sandaran: :name',
     ],
 
     // Chatbot-related translations
