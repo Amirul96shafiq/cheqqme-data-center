@@ -269,4 +269,29 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
     {
         return ! empty($this->search) || ! empty($this->backupTypeFilter);
     }
+
+    // Create a new backup
+    public function createBackup(): void
+    {
+        try {
+            $user = Auth::user();
+            $backupService = new ChatbotBackupService;
+            $backup = $backupService->createBackup($user, 'manual');
+
+            Notification::make()
+                ->title(__('settings.notifications.backup_created'))
+                ->body(__('settings.notifications.backup_created_body', ['name' => $backup->backup_name]))
+                ->success()
+                ->send();
+
+            // Refresh the backups list
+            $this->refreshBackups();
+        } catch (\Exception $e) {
+            Notification::make()
+                ->title(__('settings.notifications.backup_failed'))
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+        }
+    }
 }

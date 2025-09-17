@@ -2,7 +2,30 @@
     <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
         <!-- Search Input and Filters - Above Table Header -->
         <div class="bg-white dark:bg-gray-900 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
-            <div class="flex items-center justify-end gap-4">
+            <div class="flex items-center justify-between">
+                <!-- Create Backup Button -->
+                <div>
+                    <button 
+                        type="button"
+                        wire:click="createBackup"
+                        wire:confirm="Are you sure you want to create a backup? This will save all your current chatbot conversations."
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800"
+                        wire:loading.attr="disabled"
+                        wire:target="createBackup"
+                    >
+                        <span wire:loading.remove wire:target="createBackup">
+                            <x-heroicon-o-archive-box class="h-4 w-4 mr-2" />
+                            {{ __('settings.chatbot.create_backup') }}
+                        </span>
+                        <span wire:loading wire:target="createBackup">
+                            <x-heroicon-o-arrow-path class="h-4 w-4 mr-2 animate-spin" />
+                            {{ __('settings.chatbot.creating_backup') }}
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="flex items-center gap-4">
                 <!-- Search Input -->
                 <div class="relative w-60">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -75,6 +98,7 @@
                         </div>
                     </div>
                 </x-filament::dropdown>
+                </div>
             </div>
         </div>
         

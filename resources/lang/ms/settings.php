@@ -128,6 +128,7 @@ return [
     // Chatbot-related translations
     'chatbot' => [
         'create_backup' => 'Buat Sandaran',
+        'creating_backup' => 'Sedang membuat...',
         'backup_id' => 'ID',
         'backup_name' => 'Tajuk Sandaran',
         'backup_type' => 'Jenis',
