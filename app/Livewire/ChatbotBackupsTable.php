@@ -270,7 +270,7 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
         return ! empty($this->search) || ! empty($this->backupTypeFilter);
     }
 
-    // Create a new backup
+    // Create backup with confirmation
     public function createBackup(): void
     {
         try {
@@ -293,5 +293,24 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
                 ->danger()
                 ->send();
         }
+    }
+
+    // Show confirmation modal using global modal system
+    public function showCreateBackupConfirmation(): void
+    {
+        // Use JavaScript to directly call the modal function
+        $this->js('window.showGlobalModal("createBackup")');
+    }
+
+    // Show restore backup confirmation modal
+    public function showRestoreBackupConfirmation($backupId): void
+    {
+        $this->js('window.showRestoreBackupModal('.$backupId.')');
+    }
+
+    // Show delete backup confirmation modal
+    public function showDeleteBackupConfirmation($backupId): void
+    {
+        $this->js('window.showDeleteBackupModal('.$backupId.')');
     }
 }

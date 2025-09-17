@@ -129,6 +129,12 @@ return [
     'chatbot' => [
         'create_backup' => 'Create Backup',
         'creating_backup' => 'Creating...',
+        'confirm_backup_creation' => 'Create Backup?',
+        'confirm_backup_description' => 'Are you sure you want to create a backup? This will save all your current chatbot conversations.',
+        'confirm_backup_restore' => 'Restore Backup?',
+        'confirm_backup_restore_description' => 'Are you sure you want to restore this backup? This will add the conversations from the backup to your current chatbot.',
+        'confirm_backup_delete' => 'Delete Backup?',
+        'confirm_backup_delete_description' => 'Are you sure you want to delete this backup? This action cannot be undone.',
         'backup_id' => 'ID',
         'backup_name' => 'Backup Title',
         'backup_type' => 'Type',

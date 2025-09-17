@@ -129,6 +129,12 @@ return [
     'chatbot' => [
         'create_backup' => 'Buat Sandaran',
         'creating_backup' => 'Sedang membuat...',
+        'confirm_backup_creation' => 'Buat Sandaran?',
+        'confirm_backup_description' => 'Adakah anda pasti ingin membuat sandaran? Ini akan menyimpan semua perbualan chatbot semasa anda.',
+        'confirm_backup_restore' => 'Pulihkan Sandaran?',
+        'confirm_backup_restore_description' => 'Adakah anda pasti ingin memulihkan sandaran ini? Ini akan menambah perbualan dari sandaran ke chatbot semasa anda.',
+        'confirm_backup_delete' => 'Padam Sandaran?',
+        'confirm_backup_delete_description' => 'Adakah anda pasti ingin memadam sandaran ini? Tindakan ini tidak boleh dibuat asal.',
         'backup_id' => 'ID',
         'backup_name' => 'Tajuk Sandaran',
         'backup_type' => 'Jenis',

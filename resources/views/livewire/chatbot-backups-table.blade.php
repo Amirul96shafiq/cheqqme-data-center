@@ -5,19 +5,18 @@
             <div class="flex items-center justify-between">
                 <!-- Create Backup Button -->
                 <div>
-                    <button 
+                    <button
                         type="button"
-                        wire:click="createBackup"
-                        wire:confirm="Are you sure you want to create a backup? This will save all your current chatbot conversations."
+                        wire:click="showCreateBackupConfirmation"
                         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-900 bg-primary-600 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800"
                         wire:loading.attr="disabled"
-                        wire:target="createBackup"
+                        wire:target="showCreateBackupConfirmation"
                     >
-                        <span wire:loading.remove wire:target="createBackup" class="inline-flex items-center">
+                        <span wire:loading.remove wire:target="showCreateBackupConfirmation" class="inline-flex items-center">
                             <x-heroicon-o-archive-box class="h-4 w-4 mr-2" />
                             {{ __('settings.chatbot.create_backup') }}
                         </span>
-                        <span wire:loading wire:target="createBackup" class="inline-flex items-center">
+                        <span wire:loading wire:target="showCreateBackupConfirmation" class="inline-flex items-center">
                             <x-heroicon-o-arrow-path class="h-4 w-4 mr-2 animate-spin" />
                             {{ __('settings.chatbot.creating_backup') }}
                         </span>
@@ -196,28 +195,46 @@
                                             </button>
 
                                             <!-- Restore action -->
-                                            <button 
+                                            <button
                                                 type="button"
-                                                wire:click="restoreBackup({{ $backup->id }})"
-                                                wire:confirm="Are you sure you want to restore this backup? This will add the conversations to your current chatbot."
+                                                wire:click="showRestoreBackupConfirmation({{ $backup->id }})"
                                                 class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70 hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5"
+                                                wire:loading.attr="disabled"
+                                                wire:target="showRestoreBackupConfirmation"
                                             >
-                                                <x-heroicon-o-arrow-path class="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                                                <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
-                                                    {{ __('settings.chatbot.actions_menu.restore') }}
+                                                <span wire:loading.remove wire:target="showRestoreBackupConfirmation" class="flex items-center gap-2 w-full">
+                                                    <x-heroicon-o-arrow-path class="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                                                    <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
+                                                        {{ __('settings.chatbot.actions_menu.restore') }}
+                                                    </span>
+                                                </span>
+                                                <span wire:loading wire:target="showRestoreBackupConfirmation" class="flex items-center gap-2 w-full">
+                                                    <x-heroicon-o-arrow-path class="h-4 w-4 animate-spin text-gray-400 dark:text-gray-500" />
+                                                    <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
+                                                        {{ __('settings.chatbot.loading') }}
+                                                    </span>
                                                 </span>
                                             </button>
 
                                             <!-- Delete action -->
-                                            <button 
+                                            <button
                                                 type="button"
-                                                wire:click="deleteBackup({{ $backup->id }})"
-                                                wire:confirm="Are you sure you want to delete this backup? This action cannot be undone."
+                                                wire:click="showDeleteBackupConfirmation({{ $backup->id }})"
                                                 class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70 hover:bg-red-50 focus-visible:bg-red-50 dark:hover:bg-red-500/20 dark:focus-visible:bg-red-500/20"
+                                                wire:loading.attr="disabled"
+                                                wire:target="showDeleteBackupConfirmation"
                                             >
-                                                <x-heroicon-o-trash class="h-4 w-4 text-red-500 dark:text-red-400" />
-                                                <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-red-600 dark:text-red-400">
-                                                    {{ __('settings.chatbot.actions_menu.delete') }}
+                                                <span wire:loading.remove wire:target="showDeleteBackupConfirmation" class="flex items-center gap-2 w-full">
+                                                    <x-heroicon-o-trash class="h-4 w-4 text-red-500 dark:text-red-400" />
+                                                    <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-red-600 dark:text-red-400">
+                                                        {{ __('settings.chatbot.actions_menu.delete') }}
+                                                    </span>
+                                                </span>
+                                                <span wire:loading wire:target="showDeleteBackupConfirmation" class="flex items-center gap-2 w-full">
+                                                    <x-heroicon-o-arrow-path class="h-4 w-4 animate-spin text-red-500 dark:text-red-400" />
+                                                    <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-red-600 dark:text-red-400">
+                                                        {{ __('settings.chatbot.loading') }}
+                                                    </span>
                                                 </span>
                                             </button>
                                         </div>

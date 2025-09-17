@@ -699,6 +699,27 @@ class Settings extends Page
             ->send();
     }
 
+    // Handle AJAX request for backup table
+    public function getBackupTable()
+    {
+        // Get query parameters for search and filters
+        $search = request('backup_search', '');
+        $filter = request('backup_type_filter', '');
+        $visibleCount = request('backup_visible_count', 5);
+
+        // Render the Livewire component with parameters
+        $component = app(\App\Livewire\ChatbotBackupsTable::class);
+        $component->search = $search;
+        $component->backupTypeFilter = $filter;
+        $component->visibleCount = $visibleCount;
+
+        // Mount the component
+        $component->mount();
+
+        // Return the rendered view
+        return view('livewire.chatbot-backups-table', $component->render()->getData())->render();
+    }
+
     // Get masked API key for display
     private function getMaskedApiKey(string $apiKey): string
     {
