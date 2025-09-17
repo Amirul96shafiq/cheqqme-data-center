@@ -164,7 +164,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center justify-end">
                                     <!-- Use Filament's native dropdown to avoid conflicts -->
-                                    <x-filament::dropdown width="xs">
+                                    <x-filament::dropdown width="!max-w-[12rem]">
                                         <x-slot name="trigger">
                                             <button 
                                                 type="button"
