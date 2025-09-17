@@ -115,11 +115,35 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
         $backupService = new ChatbotBackupService;
         $fileName = $backupService->downloadBackup($backup);
 
-        // Trigger download via JavaScript
-        $this->dispatch('download-backup', [
-            'url' => route('chatbot.backup.download', $backup->id),
-            'filename' => $fileName,
-        ]);
+        // Use js() method to execute JavaScript directly
+        $jsonData = json_encode($backup->backup_data);
+        $escapedFilename = addslashes($fileName);
+
+        $this->js("
+            console.log('Direct JS execution for download');
+            try {
+                const backupData = {$jsonData};
+                const filename = '{$escapedFilename}';
+
+                console.log('Backup data:', backupData);
+                console.log('Filename:', filename);
+
+                const jsonString = JSON.stringify(backupData, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                URL.revokeObjectURL(link.href);
+                console.log('Download completed successfully');
+            } catch (error) {
+                console.error('Download failed:', error);
+            }
+        ");
 
         Notification::make()
             ->title('Download Started')
@@ -312,5 +336,11 @@ class ChatbotBackupsTable extends Component implements HasActions, HasForms
     public function showDeleteBackupConfirmation($backupId): void
     {
         $this->js('window.showDeleteBackupModal('.$backupId.')');
+    }
+
+    // Show download backup confirmation modal
+    public function showDownloadBackupConfirmation($backupId): void
+    {
+        $this->js('window.showDownloadBackupModal('.$backupId.')');
     }
 }

@@ -135,6 +135,8 @@ return [
         'confirm_backup_restore_description' => 'Are you sure you want to restore this backup? This will add the conversations from the backup to your current chatbot.',
         'confirm_backup_delete' => 'Delete Backup?',
         'confirm_backup_delete_description' => 'Are you sure you want to delete this backup? This action cannot be undone.',
+        'confirm_backup_download' => 'Download Backup?',
+        'confirm_backup_download_description' => 'Are you sure you want to download this backup file?',
         'backup_id' => 'ID',
         'backup_name' => 'Backup Title',
         'backup_type' => 'Type',

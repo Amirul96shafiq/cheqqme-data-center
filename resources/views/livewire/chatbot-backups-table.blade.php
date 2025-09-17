@@ -177,10 +177,12 @@
 
                                         <div class="fi-dropdown-list p-1">
                                             <!-- Download action -->
-                                            <button 
+                                            <button
                                                 type="button"
-                                                wire:click="downloadBackup({{ $backup->id }})"
+                                                wire:click="showDownloadBackupConfirmation({{ $backup->id }})"
                                                 class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70 hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5"
+                                                wire:loading.attr="disabled"
+                                                wire:target="showDownloadBackupConfirmation"
                                             >
                                                 <x-heroicon-o-arrow-down-tray class="h-4 w-4 text-gray-400 dark:text-gray-500" />
                                                 <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
@@ -294,15 +296,6 @@
     <!-- Download Script -->
     <script>
         document.addEventListener('livewire:init', function () {
-            Livewire.on('download-backup', function (data) {
-                const link = document.createElement('a');
-                link.href = data.url;
-                link.download = data.filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            });
-
             // Listen for refresh-backups event as backup method
             Livewire.on('refresh-backups', function () {
                 $wire.call('refreshBackups');

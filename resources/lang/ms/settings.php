@@ -135,6 +135,8 @@ return [
         'confirm_backup_restore_description' => 'Adakah anda pasti ingin memulihkan sandaran ini? Ini akan menambah perbualan dari sandaran ke chatbot semasa anda.',
         'confirm_backup_delete' => 'Padam Sandaran?',
         'confirm_backup_delete_description' => 'Adakah anda pasti ingin memadam sandaran ini? Tindakan ini tidak boleh dibuat asal.',
+        'confirm_backup_download' => 'Muat Turun Sandaran?',
+        'confirm_backup_download_description' => 'Adakah anda pasti ingin memuat turun fail sandaran ini?',
         'backup_id' => 'ID',
         'backup_name' => 'Tajuk Sandaran',
         'backup_type' => 'Jenis',

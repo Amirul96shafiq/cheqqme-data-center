@@ -455,6 +455,72 @@
             </div>
         </div>
     </div>
+
+    <!-- Download Backup Modal -->
+    <div x-show="modals.downloadBackup.show"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
+
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75"
+             @click="closeModal('downloadBackup')"
+             aria-hidden="true"></div>
+
+        <!-- Modal -->
+        <div role="dialog"
+             aria-modal="true"
+             aria-labelledby="download-backup-heading"
+             class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
+
+            <!-- Close Button -->
+            <button type="button"
+                    @click="closeModal('downloadBackup')"
+                    class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                    aria-label="Close">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+
+            <!-- Content -->
+            <div class="flex flex-col items-center text-center">
+                <div class="mb-5 flex items-center justify-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
+                        <x-heroicon-o-arrow-down-tray class="h-6 w-6" />
+                    </div>
+                </div>
+
+                <h2 id="download-backup-heading" class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ __('settings.chatbot.confirm_backup_download') }}
+                </h2>
+
+                <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                    {{ __('settings.chatbot.confirm_backup_download_description') }}
+                </p>
+
+                <!-- Actions -->
+                <div class="mt-6 flex w-full items-stretch gap-3">
+                    <button type="button"
+                            @click="closeModal('downloadBackup')"
+                            class="fi-btn flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-sm font-medium tracking-tight border border-gray-300 bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:border-gray-500 dark:focus:ring-primary-500/40 dark:focus:ring-offset-gray-900">
+                        {{ __('Cancel') }}
+                    </button>
+
+                    <button type="button"
+                            @click="confirmDownloadBackup()"
+                            class="fi-btn flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-sm font-medium tracking-tight bg-primary-600 text-primary-900 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:ring-offset-2 focus:ring-offset-white dark:bg-primary-600 dark:hover:bg-primary-500 dark:focus:ring-offset-gray-900">
+                        {{ __('settings.chatbot.actions_menu.download') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script data-navigate-once>
@@ -466,7 +532,8 @@
         forceDeleteReply: { show: false, replyId: null },
         createBackup: { show: false },
         restoreBackup: { show: false, backupId: null },
-        deleteBackup: { show: false, backupId: null }
+        deleteBackup: { show: false, backupId: null },
+        downloadBackup: { show: false, backupId: null }
     };
     
     // Show modal function
@@ -480,7 +547,7 @@
         if (window.globalModals[type]) {
             window.globalModals[type].show = true;
             if (type !== 'createBackup') {
-                if (type === 'restoreBackup' || type === 'deleteBackup') {
+                if (type === 'restoreBackup' || type === 'deleteBackup' || type === 'downloadBackup') {
                     window.globalModals[type].backupId = id;
                 } else {
                     window.globalModals[type][type.includes('Reply') ? 'replyId' : 'commentId'] = id;
@@ -502,6 +569,11 @@
     // Show delete backup modal
     window.showDeleteBackupModal = function(backupId) {
         window.showGlobalModal('deleteBackup', backupId);
+    };
+
+    // Show download backup modal
+    window.showDownloadBackupModal = function(backupId) {
+        window.showGlobalModal('downloadBackup', backupId);
     };
     
     // Listen for Livewire events (keeping for other modals)
@@ -673,6 +745,30 @@
                     }
                 }
                 this.closeModal('deleteBackup');
+            },
+
+            confirmDownloadBackup() {
+                const backupId = this.modals.downloadBackup.backupId;
+                if (backupId) {
+                    const backupsContainer = document.getElementById('chatbot-backups-table');
+                    if (backupsContainer) {
+                        let componentId = backupsContainer.getAttribute('wire:id');
+                        if (!componentId) {
+                            const livewireElement = backupsContainer.querySelector('[wire\\:id]');
+                            if (livewireElement) {
+                                componentId = livewireElement.getAttribute('wire:id');
+                            }
+                        }
+
+                        if (componentId) {
+                            const component = Livewire.find(componentId);
+                            if (component) {
+                                component.call('downloadBackup', backupId);
+                            }
+                        }
+                    }
+                }
+                this.closeModal('downloadBackup');
             }
         }
     };

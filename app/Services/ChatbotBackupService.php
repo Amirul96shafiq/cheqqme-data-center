@@ -170,12 +170,54 @@ class ChatbotBackupService
      */
     public function downloadBackup(ChatbotBackup $backup): string
     {
-        $fileName = "chatbot_backup_{$backup->id}_{$backup->user->name}_".now()->format('Y-m-d_H-i-s').'.json';
+        // Use backup name as filename, sanitized for file system
+        $baseFileName = $this->sanitizeFileName($backup->backup_name);
+
+        // Add random characters for security
+        $randomSuffix = $this->generateRandomSuffix();
+        $fileName = $baseFileName.'_'.$randomSuffix.'.json';
 
         // Update backup record with file name
         $backup->update(['file_name' => $fileName]);
 
         return $fileName;
+    }
+
+    /**
+     * Sanitize filename to be safe for file systems
+     */
+    private function sanitizeFileName(string $fileName): string
+    {
+        // Remove or replace characters that are problematic in filenames
+        $fileName = preg_replace('/[\/:*?"<>|\\\\]/', '_', $fileName);
+
+        // Remove multiple consecutive underscores
+        $fileName = preg_replace('/_+/', '_', $fileName);
+
+        // Remove leading/trailing underscores and spaces
+        $fileName = trim($fileName, '_ ');
+
+        // Ensure filename is not empty
+        if (empty($fileName)) {
+            $fileName = 'backup';
+        }
+
+        return $fileName;
+    }
+
+    /**
+     * Generate a random suffix for backup filenames (security enhancement)
+     */
+    private function generateRandomSuffix(int $length = 10): string
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+        $suffix = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $suffix .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+
+        return $suffix;
     }
 
     /**
