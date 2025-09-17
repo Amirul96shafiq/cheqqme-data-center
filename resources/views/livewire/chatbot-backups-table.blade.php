@@ -9,15 +9,15 @@
                         type="button"
                         wire:click="createBackup"
                         wire:confirm="Are you sure you want to create a backup? This will save all your current chatbot conversations."
-                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-primary-900 bg-primary-600 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800"
                         wire:loading.attr="disabled"
                         wire:target="createBackup"
                     >
-                        <span wire:loading.remove wire:target="createBackup">
+                        <span wire:loading.remove wire:target="createBackup" class="inline-flex items-center">
                             <x-heroicon-o-archive-box class="h-4 w-4 mr-2" />
                             {{ __('settings.chatbot.create_backup') }}
                         </span>
-                        <span wire:loading wire:target="createBackup">
+                        <span wire:loading wire:target="createBackup" class="inline-flex items-center">
                             <x-heroicon-o-arrow-path class="h-4 w-4 mr-2 animate-spin" />
                             {{ __('settings.chatbot.creating_backup') }}
                         </span>
