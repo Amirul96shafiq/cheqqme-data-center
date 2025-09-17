@@ -20,6 +20,8 @@ return [
         'location_description' => 'Tetapkan lokasi anda untuk data cuaca dan perkhidmatan geolokasi.',
         'timezone' => 'Zon Masa',
         'timezone_description' => 'Tetapkan zon masa anda untuk aplikasi.',
+        'chatbot_history' => 'Sejarah Chatbot',
+        'chatbot_history_description' => 'Urus sandaran perbualan chatbot anda dan pulihkan perbualan sebelumnya.',
     ],
 
     // API-related translations
@@ -139,5 +141,37 @@ return [
         'loading' => 'Memuatkan...',
         'no_backups' => 'Tiada sandaran lagi',
         'no_backups_description' => 'Buat sandaran pertama anda untuk menyimpan perbualan chatbot anda.',
+
+        'filter' => [
+            'reset' => 'Set Semula',
+            'label' => 'Tapisan',
+            'backup_type' => 'Jenis Sandaran',
+            'all_types' => 'Semua jenis sandaran',
+            'types' => [
+                'weekly' => 'Sandaran mingguan',
+                'manual' => 'Sandaran manual',
+                'import' => 'Sandaran import',
+            ],
+        ],
+
+        'search' => [
+            'placeholder' => 'Cari',
+            'clear' => 'Padam carian',
+        ],
+
+        'actions_menu' => [
+            'title' => 'Tindakan',
+            'download' => 'Muat Turun Sandaran',
+            'restore' => 'Pulihkan Sandaran',
+            'delete' => 'Padam Sandaran',
+            'clear_filters' => 'Padam tapisan',
+        ],
+
+        'empty' => [
+            'no_results_title' => 'Tiada sandaran ditemui',
+            'no_results_both' => 'Tiada sandaran sepadan dengan carian ":search" dan jenis ":type"',
+            'no_results_search' => 'Tiada sandaran sepadan dengan carian ":search"',
+            'no_results_type' => 'Tiada sandaran ditemui untuk jenis ":type"',
+        ],
     ],
 ];

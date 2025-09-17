@@ -141,5 +141,37 @@ return [
         'loading' => 'Loading...',
         'no_backups' => 'No backups yet',
         'no_backups_description' => 'Create your first backup to save your chatbot conversations.',
+
+        'filter' => [
+            'reset' => 'Reset',
+            'label' => 'Filters',
+            'backup_type' => 'Backup Type',
+            'all_types' => 'All backup types',
+            'types' => [
+                'weekly' => 'Weekly backups',
+                'manual' => 'Manual backups',
+                'import' => 'Import backups',
+            ],
+        ],
+
+        'search' => [
+            'placeholder' => 'Search',
+            'clear' => 'Clear search',
+        ],
+
+        'actions_menu' => [
+            'title' => 'Actions',
+            'download' => 'Download Backup',
+            'restore' => 'Restore Backup',
+            'delete' => 'Delete Backup',
+            'clear_filters' => 'Clear filters',
+        ],
+
+        'empty' => [
+            'no_results_title' => 'No backups found',
+            'no_results_both' => 'No backups match your search for ":search" and backup type ":type"',
+            'no_results_search' => 'No backups match your search for ":search"',
+            'no_results_type' => 'No backups found for backup type ":type"',
+        ],
     ],
 ];
