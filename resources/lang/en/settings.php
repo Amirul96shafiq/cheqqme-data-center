@@ -167,6 +167,12 @@ return [
             'clear_filters' => 'Clear filters',
         ],
 
+        'actions' => [
+            'download' => 'Download',
+            'restore' => 'Restore',
+            'delete' => 'Delete',
+        ],
+
         'empty' => [
             'no_results_title' => 'No backups found',
             'no_results_both' => 'No backups match your search for ":search" and backup type ":type"',

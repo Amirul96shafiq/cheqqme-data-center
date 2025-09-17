@@ -167,6 +167,12 @@ return [
             'clear_filters' => 'Padam tapisan',
         ],
 
+        'actions' => [
+            'download' => 'Muat Turun',
+            'restore' => 'Pulihkan',
+            'delete' => 'Padam',
+        ],
+
         'empty' => [
             'no_results_title' => 'Tiada sandaran ditemui',
             'no_results_both' => 'Tiada sandaran sepadan dengan carian ":search" dan jenis ":type"',

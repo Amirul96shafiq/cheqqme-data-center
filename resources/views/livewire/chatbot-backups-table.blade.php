@@ -144,84 +144,60 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex items-center justify-end">
-                                    <div class="relative" x-data="{ open: false }" x-init="
-                                        $watch('open', value => {
-                                            if (value) {
-                                                // Position dropdown outside table overflow
-                                                const dropdown = $refs.dropdown;
-                                                const button = $refs.button;
-                                                const rect = button.getBoundingClientRect();
-                                                dropdown.style.position = 'fixed';
-                                                dropdown.style.top = (rect.top - dropdown.offsetHeight - 4) + 'px';
-                                                dropdown.style.left = (rect.right - dropdown.offsetWidth) + 'px';
-                                                dropdown.style.zIndex = '9999';
-                                            }
-                                        })
-                                    ">
-                                        <!-- Dropdown trigger button with horizontal dots -->
-                                        <button 
-                                            x-ref="button"
-                                            type="button"
-                                            @click="open = !open"
-                                            @click.away="open = false"
-                                            class="inline-flex items-center p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors duration-200"
-                                            title="{{ __('settings.chatbot.actions_menu.title') }}"
-                                        >
-                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-                                            </svg>
-                                        </button>
+                                    <!-- Use Filament's native dropdown to avoid conflicts -->
+                                    <x-filament::dropdown width="xs">
+                                        <x-slot name="trigger">
+                                            <button 
+                                                type="button"
+                                                class="inline-flex items-center p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors duration-200"
+                                                title="{{ __('settings.chatbot.actions_menu.title') }}"
+                                            >
+                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                                </svg>
+                                            </button>
+                                        </x-slot>
 
-                                        <!-- Filament native dropdown menu -->
-                                        <div 
-                                            x-ref="dropdown"
-                                            x-show="open"
-                                            x-transition:enter-start="opacity-0 scale-95"
-                                            x-transition:enter-end="opacity-100 scale-100"
-                                            x-transition:leave-start="opacity-100 scale-100"
-                                            x-transition:leave-end="opacity-0 scale-95"
-                                            class="fi-dropdown-panel w-screen divide-y divide-gray-100 rounded-lg bg-white shadow-lg ring-1 ring-gray-950/5 transition dark:divide-white/5 dark:bg-gray-900 dark:ring-white/10 !max-w-[14rem] overflow-y-auto"
-                                            style="display: none;"
-                                        >
-                                            <div class="fi-dropdown-list p-1">
-                                                <!-- Download action -->
-                                                <button 
-                                                    type="button"
-                                                    wire:click="downloadBackup({{ $backup->id }})"
-                                                    class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70 hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5"
-                                                >
-                                                    <x-heroicon-o-arrow-down-tray class="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                                                    <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
-                                                        {{ __('settings.chatbot.actions_menu.download') }}
-                                                    </span>
-                                                </button>
+                                        <div class="fi-dropdown-list p-1">
+                                            <!-- Download action -->
+                                            <button 
+                                                type="button"
+                                                wire:click="downloadBackup({{ $backup->id }})"
+                                                class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70 hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5"
+                                            >
+                                                <x-heroicon-o-arrow-down-tray class="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                                                <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
+                                                    {{ __('settings.chatbot.actions_menu.download') }}
+                                                </span>
+                                            </button>
 
-                                                <!-- Restore action -->
-                                                <button 
-                                                    type="button"
-                                                    wire:click="restoreBackup({{ $backup->id }})"
-                                                    class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70 hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5"
-                                                >
-                                                    <x-heroicon-o-arrow-path class="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                                                    <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
-                                                        {{ __('settings.chatbot.actions_menu.restore') }}
-                                                    </span>
-                                                </button>
+                                            <!-- Restore action -->
+                                            <button 
+                                                type="button"
+                                                wire:click="restoreBackup({{ $backup->id }})"
+                                                wire:confirm="Are you sure you want to restore this backup? This will add the conversations to your current chatbot."
+                                                class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70 hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5"
+                                            >
+                                                <x-heroicon-o-arrow-path class="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                                                <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
+                                                    {{ __('settings.chatbot.actions_menu.restore') }}
+                                                </span>
+                                            </button>
 
-                                                <!-- Delete action -->
-                                                <button 
-                                                    type="button"
-                                                    wire:click="deleteBackup({{ $backup->id }})"
-                                                    class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70 hover:bg-red-50 focus-visible:bg-red-50 dark:hover:bg-red-500/20 dark:focus-visible:bg-red-500/20"
-                                                >
-                                                    <x-heroicon-o-trash class="h-4 w-4 text-red-500 dark:text-red-400" />
-                                                    <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-red-600 dark:text-red-400">
-                                                        {{ __('settings.chatbot.actions_menu.delete') }}
-                                                    </span>
-                                                </button>
-                                            </div>
+                                            <!-- Delete action -->
+                                            <button 
+                                                type="button"
+                                                wire:click="deleteBackup({{ $backup->id }})"
+                                                wire:confirm="Are you sure you want to delete this backup? This action cannot be undone."
+                                                class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70 hover:bg-red-50 focus-visible:bg-red-50 dark:hover:bg-red-500/20 dark:focus-visible:bg-red-500/20"
+                                            >
+                                                <x-heroicon-o-trash class="h-4 w-4 text-red-500 dark:text-red-400" />
+                                                <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-red-600 dark:text-red-400">
+                                                    {{ __('settings.chatbot.actions_menu.delete') }}
+                                                </span>
+                                            </button>
                                         </div>
-                                    </div>
+                                    </x-filament::dropdown>
                                 </div>
                             </td>
                         </tr>

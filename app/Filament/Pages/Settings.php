@@ -317,8 +317,150 @@ class Settings extends Page
                             ->schema([
                                 Forms\Components\Grid::make(12)
                                     ->schema([
-                                        Forms\Components\Livewire::make('api-documentation')
+                                        Forms\Components\Placeholder::make('api_documentation')
                                             ->label('')
+                                            ->content(function () {
+                                                $user = Auth::user();
+                                                $baseUrl = config('app.url').'/api';
+                                                $apiDocsUrl = route('api.documentation', [], false);
+                                                $apiKey = $user?->api_key ?? 'YOUR_API_KEY';
+                                                $maskedApiKey = $this->getMaskedApiKey($apiKey);
+
+                                                $html = '<div class="space-y-4">';
+
+                                                // Base URL
+                                                $html .= '<div class="flex items-center justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">';
+                                                $html .= '<div class="flex-1">';
+                                                $html .= '<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">'.__('settings.api.documentation_content.base_url').':</p>';
+                                                $html .= '<code class="text-sm text-gray-600 dark:text-gray-400">'.$baseUrl.'</code>';
+                                                $html .= '</div>';
+                                                $html .= '<button type="button" onclick="copyWithFeedback(this, \''.addslashes($baseUrl).'\')" class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors">';
+                                                $html .= '<svg class="copy-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                                                $html .= '<svg class="check-icon w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                                                $html .= '</button>';
+                                                $html .= '</div>';
+
+                                                // API Header
+                                                $html .= '<div class="flex items-center justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">';
+                                                $html .= '<div class="flex-1">';
+                                                $html .= '<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">'.__('settings.api.documentation_content.api_header').':</p>';
+                                                $html .= '<code class="text-sm text-gray-600 dark:text-gray-400">Accept: application/json</code>';
+                                                $html .= '</div>';
+                                                $html .= '<button type="button" onclick="copyWithFeedback(this, \'Accept: application/json\')" class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors">';
+                                                $html .= '<svg class="copy-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                                                $html .= '<svg class="check-icon w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                                                $html .= '</button>';
+                                                $html .= '</div>';
+
+                                                // Authentication
+                                                $html .= '<div class="flex items-center justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">';
+                                                $html .= '<div class="flex-1">';
+                                                $html .= '<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">'.__('settings.api.documentation_content.authentication').':</p>';
+                                                $html .= '<code class="text-sm text-gray-600 dark:text-gray-400">Authorization: Bearer '.$maskedApiKey.'</code>';
+                                                $html .= '</div>';
+                                                $html .= '<button type="button" onclick="copyWithFeedback(this, \'Authorization: Bearer '.addslashes($apiKey).'\')" class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors">';
+                                                $html .= '<svg class="copy-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                                                $html .= '<svg class="check-icon w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                                                $html .= '</button>';
+                                                $html .= '</div>';
+
+                                                // Example Request
+                                                $html .= '<div class="flex items-center justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">';
+                                                $html .= '<div class="flex-1">';
+                                                $html .= '<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">'.__('settings.api.documentation_content.example_request').':</p>';
+                                                $html .= '<code class="text-sm text-gray-600 dark:text-gray-400">';
+                                                $html .= 'GET '.$baseUrl.'/clients<br>';
+                                                $html .= 'Accept: application/json<br>';
+                                                $html .= 'Authorization: Bearer '.$maskedApiKey;
+                                                $html .= '</code>';
+                                                $html .= '</div>';
+                                                $html .= '<button type="button" onclick="copyWithFeedback(this, \'GET '.addslashes($baseUrl).'/clients\\nAccept: application/json\\nAuthorization: Bearer '.addslashes($apiKey).'\')" class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors">';
+                                                $html .= '<svg class="copy-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                                                $html .= '<svg class="check-icon w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                                                $html .= '</button>';
+                                                $html .= '</div>';
+
+                                                // Sample Screenshot
+                                                $html .= '<div class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">';
+                                                $html .= '<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">'.__('settings.api.documentation_content.sample_screenshot').':</p>';
+                                                $html .= '<a href="/images/api-sample-screenshot.png" target="_blank" class="block">';
+                                                $html .= '<img src="/images/api-sample-screenshot.png" alt="API Documentation: Sample Screenshot" class="w-full h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity">';
+                                                $html .= '</a>';
+                                                $html .= '</div>';
+
+                                                // List of Supported API
+                                                $html .= '<div class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">';
+                                                $html .= '<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">'.__('settings.api.documentation_content.list_of_supported_api').':</p>';
+
+                                                // User Endpoints
+                                                $html .= '<div class="space-y-2 mb-4">';
+                                                $html .= '<h4 class="text-[10px] font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">User Endpoints</h4>';
+
+                                                $userEndpoints = [
+                                                    'GET '.$baseUrl.'/profile',
+                                                    'GET '.$baseUrl.'/api-key-info',
+                                                ];
+
+                                                foreach ($userEndpoints as $endpoint) {
+                                                    $html .= '<div class="flex items-center justify-between">';
+                                                    $html .= '<code class="text-sm text-gray-600 dark:text-gray-400">'.$endpoint.'</code>';
+                                                    $html .= '<button type="button" onclick="copyWithFeedback(this, \''.addslashes($endpoint).'\')" class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors">';
+                                                    $html .= '<svg class="copy-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                                                    $html .= '<svg class="check-icon w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                                                    $html .= '</button>';
+                                                    $html .= '</div>';
+                                                }
+                                                $html .= '</div>';
+
+                                                // Resource Endpoints
+                                                $html .= '<div class="space-y-2 mb-4">';
+                                                $html .= '<h4 class="text-[10px] font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Resource Endpoints</h4>';
+
+                                                $resourceEndpoints = [
+                                                    'GET '.$baseUrl.'/clients',
+                                                    'GET '.$baseUrl.'/projects',
+                                                    'GET '.$baseUrl.'/documents',
+                                                    'GET '.$baseUrl.'/important-urls',
+                                                    'GET '.$baseUrl.'/phone-numbers',
+                                                    'GET '.$baseUrl.'/users',
+                                                    'GET '.$baseUrl.'/tasks',
+                                                    'GET '.$baseUrl.'/comments',
+                                                    'GET '.$baseUrl.'/comments/{comment}',
+                                                    'GET '.$baseUrl.'/trello-boards',
+                                                    'GET '.$baseUrl.'/openai-logs',
+                                                ];
+
+                                                foreach ($resourceEndpoints as $endpoint) {
+                                                    $html .= '<div class="flex items-center justify-between">';
+                                                    $html .= '<code class="text-sm text-gray-600 dark:text-gray-400">'.$endpoint.'</code>';
+                                                    $html .= '<button type="button" onclick="copyWithFeedback(this, \''.addslashes($endpoint).'\')" class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors">';
+                                                    $html .= '<svg class="copy-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                                                    $html .= '<svg class="check-icon w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                                                    $html .= '</button>';
+                                                    $html .= '</div>';
+                                                }
+                                                $html .= '</div>';
+
+                                                // Copy All Endpoints
+                                                $html .= '<div class="pt-3 border-t border-gray-200 dark:border-gray-700">';
+                                                $html .= '<div class="flex items-center justify-between">';
+                                                $html .= '<span class="text-sm text-gray-500 dark:text-gray-400">Copy all endpoints:</span>';
+                                                $allEndpoints = implode('\\n', array_merge($userEndpoints, $resourceEndpoints));
+                                                $html .= '<button type="button" onclick="copyWithFeedback(this, \''.addslashes($allEndpoints).'\')" class="inline-flex items-center px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors">';
+                                                $html .= '<svg class="copy-icon w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>';
+                                                $html .= '<svg class="check-icon w-4 h-4 mr-1 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                                                $html .= '<span class="copy-text">Copy All</span>';
+                                                $html .= '<span class="copied-text hidden">Copied!</span>';
+                                                $html .= '</button>';
+                                                $html .= '</div>';
+                                                $html .= '</div>';
+
+                                                $html .= '</div>';
+
+                                                $html .= '</div>';
+
+                                                return new \Illuminate\Support\HtmlString($html);
+                                            })
                                             ->columnSpan(12),
                                     ]),
                             ]),
@@ -680,10 +822,8 @@ class Settings extends Page
                                         ->success()
                                         ->send();
 
-                                    // Dispatch browser event to refresh backup list
-                                    $this->js('
-                                        window.dispatchEvent(new CustomEvent("backup-created"));
-                                    ');
+                                    // Refresh the page to show the new backup
+                                    $this->redirect(request()->url());
                                 } catch (\Exception $e) {
                                     Notification::make()
                                         ->title(__('settings.notifications.backup_failed'))
@@ -694,11 +834,271 @@ class Settings extends Page
                             }),
                     ])
                     ->schema([
-                        // Backups table
+                        // Backups table - Direct implementation without nested Livewire
                         Forms\Components\Grid::make(12)
                             ->schema([
-                                Forms\Components\Livewire::make('chatbot-backups-table')
+                                Forms\Components\Placeholder::make('backups_table')
                                     ->label('')
+                                    ->content(function () {
+                                        // Get search and filter parameters from request
+                                        $search = request()->get('backup_search', '');
+                                        $backupTypeFilter = request()->get('backup_type_filter', '');
+                                        $visibleCount = request()->get('backup_visible_count', 5);
+
+                                        $query = \App\Models\ChatbotBackup::where('user_id', Auth::id());
+
+                                        // Apply search filter if search term is provided
+                                        if (! empty($search)) {
+                                            $query->where(function ($q) use ($search) {
+                                                $q->where('backup_name', 'like', '%'.$search.'%')
+                                                    ->orWhere('backup_type', 'like', '%'.$search.'%')
+                                                    ->orWhere('formatted_date_range', 'like', '%'.$search.'%');
+                                            });
+                                        }
+
+                                        // Apply backup type filter if selected
+                                        if (! empty($backupTypeFilter)) {
+                                            $query->where('backup_type', $backupTypeFilter);
+                                        }
+
+                                        // When searching or filtering, show all results. Otherwise, limit to visible count
+                                        if (! empty($search) || ! empty($backupTypeFilter)) {
+                                            $backups = $query->orderBy('backup_date', 'desc')->get();
+                                        } else {
+                                            $backups = $query->orderBy('backup_date', 'desc')
+                                                ->take($visibleCount)
+                                                ->get();
+                                        }
+
+                                        // Get total count for pagination
+                                        $totalQuery = \App\Models\ChatbotBackup::where('user_id', Auth::id());
+                                        if (! empty($search)) {
+                                            $totalQuery->where(function ($q) use ($search) {
+                                                $q->where('backup_name', 'like', '%'.$search.'%')
+                                                    ->orWhere('backup_type', 'like', '%'.$search.'%')
+                                                    ->orWhere('formatted_date_range', 'like', '%'.$search.'%');
+                                            });
+                                        }
+                                        if (! empty($backupTypeFilter)) {
+                                            $totalQuery->where('backup_type', $backupTypeFilter);
+                                        }
+                                        $totalBackups = $totalQuery->count();
+                                        $hasActiveFilters = ! empty($search) || ! empty($backupTypeFilter);
+
+                                        $html = '<div id="chatbot-backups-table" class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">';
+
+                                        // Search Input and Filters - Above Table Header
+                                        $html .= '<div class="bg-white dark:bg-gray-900 px-6 py-3 border-b border-gray-200 dark:border-gray-700">';
+                                        $html .= '<div class="flex items-center justify-end gap-4">';
+
+                                        // Search Input
+                                        $html .= '<div class="relative w-60">';
+                                        $html .= '<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">';
+                                        $html .= '<svg class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+                                        $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>';
+                                        $html .= '</svg>';
+                                        $html .= '</div>';
+                                        $html .= '<input type="text" id="backup-search" placeholder="'.__('settings.chatbot.search.placeholder').'" value="'.$search.'" class="fi-input block w-full rounded-lg bg-transparent px-3 py-1.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-700 text-base text-gray-950 outline-none transition duration-75 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-500 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-400 sm:text-sm sm:leading-6 pl-10 pr-10">';
+                                        if ($search) {
+                                            $html .= '<div class="absolute inset-y-0 right-0 pr-3 flex items-center">';
+                                            $html .= '<button type="button" onclick="clearBackupSearch()" class="text-gray-400 hover:text-gray-300 transition-colors duration-200" title="'.__('settings.chatbot.search.clear').'">';
+                                            $html .= '<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+                                            $html .= '</button>';
+                                            $html .= '</div>';
+                                        }
+                                        $html .= '</div>';
+
+                                        // Filter Button / Dropdown
+                                        $html .= '<div class="relative inline-block text-left">';
+                                        $html .= '<div>';
+                                        $html .= '<button type="button" onclick="toggleBackupFilters()" class="fi-btn fi-btn-color-gray fi-btn-size-sm fi-btn-outlined flex items-center border-0 text-sm font-medium text-gray-400 hover:text-gray-500 transition duration-75 disabled:bg-gray-50 disabled:text-gray-500 dark:text-gray-500 hover:dark:text-gray-400 dark:disabled:bg-gray-800 dark:disabled:text-gray-500">';
+                                        $html .= '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>';
+                                        if ($hasActiveFilters) {
+                                            $filterCount = ($search ? 1 : 0) + ($backupTypeFilter ? 1 : 0);
+                                            $html .= '<span class="fi-badge fi-color-danger fi-size-xs inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-primary-50 text-primary-700 ring-primary-600/10 dark:bg-primary-400/10 dark:text-primary-400 dark:ring-primary-400/30 ml-1">';
+                                            $html .= $filterCount;
+                                            $html .= '</span>';
+                                        }
+                                        $html .= '</button>';
+                                        $html .= '</div>';
+
+                                        // Filter dropdown
+                                        $html .= '<div id="backup-filters-dropdown" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">';
+                                        $html .= '<div class="py-1" role="menu" aria-orientation="vertical">';
+
+                                        // Filter Header
+                                        $html .= '<div class="flex items-center justify-between px-2 py-1.5">';
+                                        $html .= '<span class="text-sm font-medium text-gray-700 dark:text-gray-200">'.__('settings.chatbot.filter.label').'</span>';
+                                        if ($hasActiveFilters) {
+                                            $html .= '<button type="button" onclick="clearBackupFilters()" class="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">';
+                                            $html .= __('settings.chatbot.filter.reset');
+                                            $html .= '</button>';
+                                        }
+                                        $html .= '</div>';
+
+                                        // Backup Type Filter
+                                        $html .= '<div class="px-3 py-2">';
+                                        $html .= '<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">'.__('settings.chatbot.filter.backup_type').'</label>';
+                                        $html .= '<select id="backup-type-filter" class="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">';
+                                        $html .= '<option value="">'.__('settings.chatbot.filter.all_types').'</option>';
+                                        $html .= '<option value="weekly"'.($backupTypeFilter === 'weekly' ? ' selected' : '').'>'.__('settings.chatbot.filter.types.weekly').'</option>';
+                                        $html .= '<option value="manual"'.($backupTypeFilter === 'manual' ? ' selected' : '').'>'.__('settings.chatbot.filter.types.manual').'</option>';
+                                        $html .= '<option value="import"'.($backupTypeFilter === 'import' ? ' selected' : '').'>'.__('settings.chatbot.filter.types.import').'</option>';
+                                        $html .= '</select>';
+                                        $html .= '</div>';
+
+                                        $html .= '</div>';
+                                        $html .= '</div>';
+                                        $html .= '</div>';
+                                        $html .= '</div>';
+                                        $html .= '</div>';
+
+                                        // Table
+                                        $html .= '<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">';
+
+                                        // Table header
+                                        $html .= '<thead class="bg-gray-50 dark:bg-gray-800">';
+                                        $html .= '<tr>';
+                                        $html .= '<th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_id').'</th>';
+                                        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_name').'</th>';
+                                        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_type').'</th>';
+                                        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_messages').'</th>';
+                                        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_date_range').'</th>';
+                                        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_backed_up').'</th>';
+                                        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_size').'</th>';
+                                        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400"></th>';
+                                        $html .= '</tr>';
+                                        $html .= '</thead>';
+
+                                        // Table body
+                                        $html .= '<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">';
+
+                                        if ($backups->count() > 0) {
+                                            foreach ($backups as $backup) {
+                                                $badgeColors = [
+                                                    'weekly' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+                                                    'manual' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                                                    'import' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                                                ];
+                                                $color = $badgeColors[$backup->backup_type] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+
+                                                $html .= '<tr class="hover:bg-gray-50 dark:hover:bg-gray-800">';
+                                                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">'.$backup->id.'</td>';
+                                                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">'.$backup->backup_name.'</td>';
+                                                $html .= '<td class="px-6 py-4 whitespace-nowrap">';
+                                                $html .= '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full '.$color.'">'.ucfirst($backup->backup_type).'</span>';
+                                                $html .= '</td>';
+                                                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">'.number_format($backup->message_count).'</td>';
+                                                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">'.$backup->formatted_date_range.'</td>';
+                                                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">'.$backup->formatted_backup_date.'</td>';
+                                                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">'.$backup->file_size.'</td>';
+                                                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">';
+                                                $html .= '<div class="flex items-center justify-end">';
+
+                                                // Actions dropdown
+                                                $html .= '<div class="relative inline-block text-left">';
+                                                $html .= '<div>';
+                                                $html .= '<button type="button" onclick="toggleActionsDropdown('.$backup->id.')" class="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors" aria-expanded="false" aria-haspopup="true">';
+                                                $html .= '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">';
+                                                $html .= '<path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>';
+                                                $html .= '</svg>';
+                                                $html .= '</button>';
+                                                $html .= '</div>';
+
+                                                // Dropdown menu
+                                                $html .= '<div id="actions-dropdown-'.$backup->id.'" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">';
+                                                $html .= '<div class="py-1" role="menu" aria-orientation="vertical">';
+
+                                                // Download action
+                                                $html .= '<button type="button" onclick="downloadBackup('.$backup->id.'); hideActionsDropdown('.$backup->id.');" class="group flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">';
+                                                $html .= '<svg class="w-4 h-4 mr-3 text-gray-400 group-hover:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+                                                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>';
+                                                $html .= '</svg>';
+                                                $html .= __('settings.chatbot.actions.download');
+                                                $html .= '</button>';
+
+                                                // Restore action
+                                                $html .= '<button type="button" onclick="restoreBackup('.$backup->id.'); hideActionsDropdown('.$backup->id.');" class="group flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">';
+                                                $html .= '<svg class="w-4 h-4 mr-3 text-gray-400 group-hover:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+                                                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>';
+                                                $html .= '</svg>';
+                                                $html .= __('settings.chatbot.actions.restore');
+                                                $html .= '</button>';
+
+                                                // Divider
+                                                $html .= '<div class="border-t border-gray-200 dark:border-gray-600 my-1"></div>';
+
+                                                // Delete action
+                                                $html .= '<button type="button" onclick="deleteBackup('.$backup->id.'); hideActionsDropdown('.$backup->id.');" class="group flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/20" role="menuitem">';
+                                                $html .= '<svg class="w-4 h-4 mr-3 text-red-400 group-hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+                                                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>';
+                                                $html .= '</svg>';
+                                                $html .= __('settings.chatbot.actions.delete');
+                                                $html .= '</button>';
+
+                                                $html .= '</div>';
+                                                $html .= '</div>';
+                                                $html .= '</div>';
+                                                $html .= '</div>';
+                                                $html .= '</td>';
+                                                $html .= '</tr>';
+                                            }
+                                        } else {
+                                            $html .= '<tr>';
+                                            $html .= '<td colspan="8" class="px-6 py-12 text-center">';
+                                            if ($hasActiveFilters) {
+                                                $html .= '<svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+                                                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>';
+                                                $html .= '</svg>';
+                                                $html .= '<h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">'.__('settings.chatbot.empty.no_results_title').'</h3>';
+                                                $html .= '<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">';
+                                                if ($search && $backupTypeFilter) {
+                                                    $html .= __('settings.chatbot.empty.no_results_both', ['search' => $search, 'type' => ucfirst($backupTypeFilter)]);
+                                                } elseif ($search) {
+                                                    $html .= __('settings.chatbot.empty.no_results_search', ['search' => $search]);
+                                                } elseif ($backupTypeFilter) {
+                                                    $html .= __('settings.chatbot.empty.no_results_type', ['type' => ucfirst($backupTypeFilter)]);
+                                                }
+                                                $html .= '</p>';
+                                                $html .= '<div class="mt-4">';
+                                                $html .= '<button onclick="clearBackupFilters()" type="button" class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800">';
+                                                $html .= __('settings.chatbot.actions_menu.clear_filters');
+                                                $html .= '</button>';
+                                                $html .= '</div>';
+                                            } else {
+                                                $html .= '<svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+                                                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>';
+                                                $html .= '</svg>';
+                                                $html .= '<h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">'.__('settings.chatbot.no_backups').'</h3>';
+                                                $html .= '<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">'.__('settings.chatbot.no_backups_description').'</p>';
+                                            }
+                                            $html .= '</td>';
+                                            $html .= '</tr>';
+                                        }
+                                        $html .= '</tbody>';
+                                        $html .= '</table>';
+
+                                        // Show total backups - only show when not searching or filtering
+                                        if (! $hasActiveFilters && $totalBackups > 0) {
+                                            $html .= '<div class="mt-3 text-[10px] text-gray-400 text-center">';
+                                            $html .= __('settings.chatbot.showing', ['shown' => $backups->count(), 'total' => $totalBackups]);
+                                            $html .= '</div>';
+                                        }
+
+                                        // Show more backups button - only show when not searching or filtering
+                                        if (! $hasActiveFilters && $totalBackups > $visibleCount) {
+                                            $remaining = $totalBackups - $visibleCount;
+                                            $html .= '<div class="mt-2">';
+                                            $html .= '<button onclick="loadMoreBackups('.$visibleCount.')" type="button" class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-primary-500 dark:bg-primary-600 hover:bg-primary-400 dark:hover:bg-primary-500 text-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-500/40">';
+                                            $html .= __('settings.chatbot.load_more', ['count' => $remaining < 5 ? $remaining : 5]);
+                                            $html .= '</button>';
+                                            $html .= '</div>';
+                                        }
+
+                                        $html .= '</div>';
+
+                                        return new \Illuminate\Support\HtmlString($html);
+                                    })
                                     ->columnSpan(12),
                             ]),
                     ]),
@@ -777,6 +1177,269 @@ class Settings extends Page
 
         // Default English format
         return $date->format('l, F j, Y');
+    }
+
+    // AJAX endpoint for backup table updates
+    public function getBackupTable()
+    {
+        // Get search and filter parameters from request
+        $search = request()->get('backup_search', '');
+        $backupTypeFilter = request()->get('backup_type_filter', '');
+        $visibleCount = request()->get('backup_visible_count', 5);
+
+        $query = \App\Models\ChatbotBackup::where('user_id', Auth::id());
+
+        // Apply search filter if search term is provided
+        if (! empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('backup_name', 'like', '%'.$search.'%')
+                    ->orWhere('backup_type', 'like', '%'.$search.'%')
+                    ->orWhere('formatted_date_range', 'like', '%'.$search.'%');
+            });
+        }
+
+        // Apply backup type filter if selected
+        if (! empty($backupTypeFilter)) {
+            $query->where('backup_type', $backupTypeFilter);
+        }
+
+        // When searching or filtering, show all results. Otherwise, limit to visible count
+        if (! empty($search) || ! empty($backupTypeFilter)) {
+            $backups = $query->orderBy('backup_date', 'desc')->get();
+        } else {
+            $backups = $query->orderBy('backup_date', 'desc')
+                ->take($visibleCount)
+                ->get();
+        }
+
+        // Get total count for pagination
+        $totalQuery = \App\Models\ChatbotBackup::where('user_id', Auth::id());
+        if (! empty($search)) {
+            $totalQuery->where(function ($q) use ($search) {
+                $q->where('backup_name', 'like', '%'.$search.'%')
+                    ->orWhere('backup_type', 'like', '%'.$search.'%')
+                    ->orWhere('formatted_date_range', 'like', '%'.$search.'%');
+            });
+        }
+        if (! empty($backupTypeFilter)) {
+            $totalQuery->where('backup_type', $backupTypeFilter);
+        }
+        $totalBackups = $totalQuery->count();
+        $hasActiveFilters = ! empty($search) || ! empty($backupTypeFilter);
+
+        $html = '<div id="chatbot-backups-table" class="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">';
+
+        // Search Input and Filters - Above Table Header
+        $html .= '<div class="bg-white dark:bg-gray-900 px-6 py-3 border-b border-gray-200 dark:border-gray-700">';
+        $html .= '<div class="flex items-center justify-end gap-4">';
+
+        // Search Input
+        $html .= '<div class="relative w-60">';
+        $html .= '<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">';
+        $html .= '<svg class="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+        $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>';
+        $html .= '</svg>';
+        $html .= '</div>';
+        $html .= '<input type="text" id="backup-search" placeholder="'.__('settings.chatbot.search.placeholder').'" value="'.$search.'" class="fi-input block w-full rounded-lg bg-transparent px-3 py-1.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-700 text-base text-gray-950 outline-none transition duration-75 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-500 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-400 sm:text-sm sm:leading-6 pl-10 pr-10">';
+        if ($search) {
+            $html .= '<div class="absolute inset-y-0 right-0 pr-3 flex items-center">';
+            $html .= '<button type="button" onclick="clearBackupSearch()" class="text-gray-400 hover:text-gray-300 transition-colors duration-200" title="'.__('settings.chatbot.search.clear').'">';
+            $html .= '<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+            $html .= '</button>';
+            $html .= '</div>';
+        }
+        $html .= '</div>';
+
+        // Filter Button / Dropdown
+        $html .= '<div class="relative inline-block text-left">';
+        $html .= '<div>';
+        $html .= '<button type="button" onclick="toggleBackupFilters()" class="fi-btn fi-btn-color-gray fi-btn-size-sm fi-btn-outlined flex items-center border-0 text-sm font-medium text-gray-400 hover:text-gray-500 transition duration-75 disabled:bg-gray-50 disabled:text-gray-500 dark:text-gray-500 hover:dark:text-gray-400 dark:disabled:bg-gray-800 dark:disabled:text-gray-500">';
+        $html .= '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>';
+        if ($hasActiveFilters) {
+            $filterCount = ($search ? 1 : 0) + ($backupTypeFilter ? 1 : 0);
+            $html .= '<span class="fi-badge fi-color-danger fi-size-xs inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-primary-50 text-primary-700 ring-primary-600/10 dark:bg-primary-400/10 dark:text-primary-400 dark:ring-primary-400/30 ml-1">';
+            $html .= $filterCount;
+            $html .= '</span>';
+        }
+        $html .= '</button>';
+        $html .= '</div>';
+
+        // Filter dropdown
+        $html .= '<div id="backup-filters-dropdown" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">';
+        $html .= '<div class="py-1" role="menu" aria-orientation="vertical">';
+
+        // Filter Header
+        $html .= '<div class="flex items-center justify-between px-2 py-1.5">';
+        $html .= '<span class="text-sm font-medium text-gray-700 dark:text-gray-200">'.__('settings.chatbot.filter.label').'</span>';
+        if ($hasActiveFilters) {
+            $html .= '<button type="button" onclick="clearBackupFilters()" class="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">';
+            $html .= __('settings.chatbot.filter.reset');
+            $html .= '</button>';
+        }
+        $html .= '</div>';
+
+        // Backup Type Filter
+        $html .= '<div class="px-3 py-2">';
+        $html .= '<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">'.__('settings.chatbot.filter.backup_type').'</label>';
+        $html .= '<select id="backup-type-filter" class="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">';
+        $html .= '<option value="">'.__('settings.chatbot.filter.all_types').'</option>';
+        $html .= '<option value="weekly"'.($backupTypeFilter === 'weekly' ? ' selected' : '').'>'.__('settings.chatbot.filter.types.weekly').'</option>';
+        $html .= '<option value="manual"'.($backupTypeFilter === 'manual' ? ' selected' : '').'>'.__('settings.chatbot.filter.types.manual').'</option>';
+        $html .= '<option value="import"'.($backupTypeFilter === 'import' ? ' selected' : '').'>'.__('settings.chatbot.filter.types.import').'</option>';
+        $html .= '</select>';
+        $html .= '</div>';
+
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</div>';
+
+        // Table
+        $html .= '<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">';
+
+        // Table header
+        $html .= '<thead class="bg-gray-50 dark:bg-gray-800">';
+        $html .= '<tr>';
+        $html .= '<th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_id').'</th>';
+        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_name').'</th>';
+        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_type').'</th>';
+        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_messages').'</th>';
+        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_date_range').'</th>';
+        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_backed_up').'</th>';
+        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400">'.__('settings.chatbot.backup_size').'</th>';
+        $html .= '<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400"></th>';
+        $html .= '</tr>';
+        $html .= '</thead>';
+
+        // Table body
+        $html .= '<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">';
+
+        if ($backups->count() > 0) {
+            foreach ($backups as $backup) {
+                $badgeColors = [
+                    'weekly' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+                    'manual' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                    'import' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                ];
+                $color = $badgeColors[$backup->backup_type] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+
+                $html .= '<tr class="hover:bg-gray-50 dark:hover:bg-gray-800">';
+                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">'.$backup->id.'</td>';
+                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">'.$backup->backup_name.'</td>';
+                $html .= '<td class="px-6 py-4 whitespace-nowrap">';
+                $html .= '<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full '.$color.'">'.ucfirst($backup->backup_type).'</span>';
+                $html .= '</td>';
+                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">'.number_format($backup->message_count).'</td>';
+                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">'.$backup->formatted_date_range.'</td>';
+                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">'.$backup->formatted_backup_date.'</td>';
+                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">'.$backup->file_size.'</td>';
+                $html .= '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">';
+                $html .= '<div class="flex items-center justify-end">';
+
+                // Actions dropdown
+                $html .= '<div class="relative inline-block text-left">';
+                $html .= '<div>';
+                $html .= '<button type="button" onclick="toggleActionsDropdown('.$backup->id.')" class="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors" aria-expanded="false" aria-haspopup="true">';
+                $html .= '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">';
+                $html .= '<path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>';
+                $html .= '</svg>';
+                $html .= '</button>';
+                $html .= '</div>';
+
+                // Dropdown menu
+                $html .= '<div id="actions-dropdown-'.$backup->id.'" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">';
+                $html .= '<div class="py-1" role="menu" aria-orientation="vertical">';
+
+                // Download action
+                $html .= '<button type="button" onclick="downloadBackup('.$backup->id.'); hideActionsDropdown('.$backup->id.');" class="group flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">';
+                $html .= '<svg class="w-4 h-4 mr-3 text-gray-400 group-hover:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>';
+                $html .= '</svg>';
+                $html .= __('settings.chatbot.actions.download');
+                $html .= '</button>';
+
+                // Restore action
+                $html .= '<button type="button" onclick="restoreBackup('.$backup->id.'); hideActionsDropdown('.$backup->id.');" class="group flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">';
+                $html .= '<svg class="w-4 h-4 mr-3 text-gray-400 group-hover:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>';
+                $html .= '</svg>';
+                $html .= __('settings.chatbot.actions.restore');
+                $html .= '</button>';
+
+                // Divider
+                $html .= '<div class="border-t border-gray-200 dark:border-gray-600 my-1"></div>';
+
+                // Delete action
+                $html .= '<button type="button" onclick="deleteBackup('.$backup->id.'); hideActionsDropdown('.$backup->id.');" class="group flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/20" role="menuitem">';
+                $html .= '<svg class="w-4 h-4 mr-3 text-red-400 group-hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>';
+                $html .= '</svg>';
+                $html .= __('settings.chatbot.actions.delete');
+                $html .= '</button>';
+
+                $html .= '</div>';
+                $html .= '</div>';
+                $html .= '</div>';
+                $html .= '</div>';
+                $html .= '</td>';
+                $html .= '</tr>';
+            }
+        } else {
+            $html .= '<tr>';
+            $html .= '<td colspan="8" class="px-6 py-12 text-center">';
+            if ($hasActiveFilters) {
+                $html .= '<svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>';
+                $html .= '</svg>';
+                $html .= '<h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">'.__('settings.chatbot.empty.no_results_title').'</h3>';
+                $html .= '<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">';
+                if ($search && $backupTypeFilter) {
+                    $html .= __('settings.chatbot.empty.no_results_both', ['search' => $search, 'type' => ucfirst($backupTypeFilter)]);
+                } elseif ($search) {
+                    $html .= __('settings.chatbot.empty.no_results_search', ['search' => $search]);
+                } elseif ($backupTypeFilter) {
+                    $html .= __('settings.chatbot.empty.no_results_type', ['type' => ucfirst($backupTypeFilter)]);
+                }
+                $html .= '</p>';
+                $html .= '<div class="mt-4">';
+                $html .= '<button onclick="clearBackupFilters()" type="button" class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800">';
+                $html .= __('settings.chatbot.actions_menu.clear_filters');
+                $html .= '</button>';
+                $html .= '</div>';
+            } else {
+                $html .= '<svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>';
+                $html .= '</svg>';
+                $html .= '<h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">'.__('settings.chatbot.no_backups').'</h3>';
+                $html .= '<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">'.__('settings.chatbot.no_backups_description').'</p>';
+            }
+            $html .= '</td>';
+            $html .= '</tr>';
+        }
+        $html .= '</tbody>';
+        $html .= '</table>';
+
+        // Show total backups - only show when not searching or filtering
+        if (! $hasActiveFilters && $totalBackups > 0) {
+            $html .= '<div class="mt-3 text-[10px] text-gray-400 text-center">';
+            $html .= __('settings.chatbot.showing', ['shown' => $backups->count(), 'total' => $totalBackups]);
+            $html .= '</div>';
+        }
+
+        // Show more backups button - only show when not searching or filtering
+        if (! $hasActiveFilters && $totalBackups > $visibleCount) {
+            $remaining = $totalBackups - $visibleCount;
+            $html .= '<div class="mt-2">';
+            $html .= '<button onclick="loadMoreBackups('.$visibleCount.')" type="button" class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-primary-500 dark:bg-primary-600 hover:bg-primary-400 dark:hover:bg-primary-500 text-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-500/40">';
+            $html .= __('settings.chatbot.load_more', ['count' => $remaining < 5 ? $remaining : 5]);
+            $html .= '</button>';
+            $html .= '</div>';
+        }
+
+        $html .= '</div>';
+
+        return response($html);
     }
 
     // Get weather preview data
@@ -947,5 +1610,25 @@ class Settings extends Page
         ];
 
         return $countryTemps[strtoupper($country)] ?? 20; // Default temperate
+    }
+
+    // Get masked API key
+    private function getMaskedApiKey(string $apiKey): string
+    {
+        if (empty($apiKey) || $apiKey === 'YOUR_API_KEY') {
+            return $apiKey;
+        }
+
+        $length = strlen($apiKey);
+        if ($length <= 8) {
+            return str_repeat('*', $length);
+        }
+
+        // Show first 4 and last 4 characters, mask the rest
+        $first = substr($apiKey, 0, 4);
+        $last = substr($apiKey, -4);
+        $masked = str_repeat('*', $length - 8);
+
+        return $first.$masked.$last;
     }
 }

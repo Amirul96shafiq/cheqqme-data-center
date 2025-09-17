@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 // OpenAI logs API endpoint moved to routes/api.php ( Sanctum-protected )
 Route::get('/openai-logs', [\App\Http\Controllers\OpenaiLogController::class, 'index'])->name('openai.logs')->middleware('auth');
 
+// Settings backup table AJAX endpoint
+Route::get('/settings/backup-table', [\App\Filament\Pages\Settings::class, 'getBackupTable'])->name('settings.backup-table')->middleware('auth');
+
 // Forgot password route
 Route::get('forgot-password', function () {
     App::setLocale(session('locale', config('app.locale')));
