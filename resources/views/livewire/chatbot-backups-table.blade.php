@@ -28,77 +28,53 @@
                     @endif
                 </div>
 
-                <!-- Filter Button -->
-                <div class="relative" x-data="{ open: false }" x-on:click.outside="open = false">
-                    <button 
-                        type="button"
-                        @click="open = !open"
-                        class="fi-btn fi-btn-color-gray fi-btn-size-sm fi-btn-outlined flex items-center border-0 text-sm font-medium text-gray-400 hover:text-gray-500 transition duration-75 disabled:bg-gray-50 disabled:text-gray-500 dark:text-gray-500 hover:dark:text-gray-400 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
-                    >
-                    <svg class="fi-icon-btn-icon h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                        <path fill-rule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clip-rule="evenodd"></path>
-                    </svg>
-                        @if($this->hasActiveFilters)
-                            <span class="fi-badge fi-color-danger fi-size-xs inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-red-50 text-red-700 ring-red-600/10 dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/30">
-                                {{ ($search ? 1 : 0) + ($backupTypeFilter ? 1 : 0) }}
-                            </span>
-                        @endif
-                    </button>
+                <!-- Filter Button / Dropdown (Filament native) -->
+                <x-filament::dropdown width="xs">
+                    <x-slot name="trigger">
+                        <button 
+                            type="button"
+                            class="fi-btn fi-btn-color-gray fi-btn-size-sm fi-btn-outlined flex items-center border-0 text-sm font-medium text-gray-400 hover:text-gray-500 transition duration-75 disabled:bg-gray-50 disabled:text-gray-500 dark:text-gray-500 hover:dark:text-gray-400 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
+                        >
+                            <x-heroicon-o-funnel class="h-5 w-5" />
+                            @if($this->hasActiveFilters)
+                                <span class="fi-badge fi-color-danger fi-size-xs inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-primary-50 text-primary-700 ring-primary-600/10 dark:bg-primary-400/10 dark:text-primary-400 dark:ring-primary-400/30">
+                                    {{ ($search ? 1 : 0) + ($backupTypeFilter ? 1 : 0) }}
+                                </span>
+                            @endif
+                        </button>
+                    </x-slot>
 
-                    <!-- Filter Dropdown Panel -->
-                    <div 
-                        x-show="open"
-                        x-transition:enter-start="opacity-0 scale-95"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave-start="opacity-100 scale-100"
-                        x-transition:leave-end="opacity-0 scale-95"
-                        @click.stop
-                        class="fi-dropdown-panel absolute top-full right-0 z-10 mt-1 w-screen max-w-xs divide-y divide-gray-100 rounded-lg bg-white shadow-lg ring-1 ring-gray-950/5 transition dark:divide-white/5 dark:bg-gray-900 dark:ring-white/10"
-                        style="display: none;"
-                    >
-                        <div class="fi-dropdown-list p-1">
-                            <!-- Filter Header -->
-                            <div class="flex items-center justify-between px-2 py-1.5">
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Filters</span>
-                                @if($this->hasActiveFilters)
-                                    <button 
-                                        type="button"
-                                        wire:click="clearFilters"
-                                        class="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                                    >
-                                        Reset
-                                    </button>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="fi-dropdown-list p-1">
-                            <!-- Backup Type Filter -->
-                            <div class="px-3 py-2">
-                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-2">
-                                    Backup Type
-                                </label>
-                                <div class="relative">
-                                    <select 
-                                        wire:model.live="backupTypeFilter"
-                                        class="fi-input block w-full rounded-lg bg-transparent px-3 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-gray-700 text-sm text-gray-950 outline-none transition duration-75 focus:ring-2 focus:ring-primary-500 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-primary-400 appearance-none cursor-pointer"
-                                    >
-                                        <option value="">All backup types</option>
-                                        <option value="weekly">Weekly backups</option>
-                                        <option value="manual">Manual backups</option>
-                                        <option value="import">Import backups</option>
-                                    </select>
-                                    <!-- Custom dropdown arrow -->
-                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                        <svg class="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="fi-dropdown-list p-1">
+                        <!-- Filter Header -->
+                        <div class="flex items-center justify-between px-2 py-1.5">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Filters</span>
+                            @if($this->hasActiveFilters)
+                                <button 
+                                    type="button"
+                                    wire:click="clearFilters"
+                                    class="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                >
+                                    Reset
+                                </button>
+                            @endif
                         </div>
                     </div>
-                </div>
+
+                    <div class="fi-dropdown-list p-1">
+                        <!-- Backup Type Filter -->
+                        <div class="px-3 py-2">
+                            <label class="sr-only">Backup Type</label>
+                            <x-filament::input.wrapper :prefix="'Backup Type'">
+                                <x-filament::input.select wire:model.live="backupTypeFilter">
+                                    <option value="">All backup types</option>
+                                    <option value="weekly">Weekly backups</option>
+                                    <option value="manual">Manual backups</option>
+                                    <option value="import">Import backups</option>
+                                </x-filament::input.select>
+                            </x-filament::input.wrapper>
+                        </div>
+                    </div>
+                </x-filament::dropdown>
             </div>
         </div>
         
