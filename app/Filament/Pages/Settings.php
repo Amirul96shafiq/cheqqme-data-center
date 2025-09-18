@@ -332,341 +332,6 @@ class Settings extends Page
                         ]),
                 ]),
 
-            // Location section
-            Forms\Components\Section::make(__('settings.sections.location'))
-                ->description(__('settings.sections.location_description'))
-                ->collapsible()
-                ->schema([
-                    // Location actions
-                    Forms\Components\Grid::make(12)
-                        ->schema([
-                            Forms\Components\Placeholder::make('location_actions_label')
-                                ->label('')
-                                ->columnSpan(4),
-
-                            Forms\Components\Actions::make([
-                                \Filament\Forms\Components\Actions\Action::make('detect_location')
-                                    ->label(__('settings.location.detect'))
-                                    ->icon('heroicon-o-map-pin')
-                                    ->color('gray')
-                                    ->action(function ($set) {
-                                        // Dispatch browser event to detect location
-                                        $this->dispatch('detect-user-location');
-
-                                        Notification::make()
-                                            ->title(__('settings.notifications.location_detection_started'))
-                                            ->body(__('settings.notifications.location_detection_started_body'))
-                                            ->info()
-                                            ->send();
-                                    }),
-
-                                \Filament\Forms\Components\Actions\Action::make('clear_location')
-                                    ->label(__('settings.location.clear'))
-                                    ->icon('heroicon-o-trash')
-                                    ->color('danger')
-                                    ->outlined()
-                                    ->visible(function ($get) {
-                                        return ! empty($get('city')) ||
-                                            ! empty($get('country')) ||
-                                            ! empty($get('latitude')) ||
-                                            ! empty($get('longitude'));
-                                    })
-                                    ->action(function ($set) {
-                                        $set('city', '');
-                                        $set('country', '');
-                                        $set('latitude', '');
-                                        $set('longitude', '');
-
-                                        Notification::make()
-                                            ->title(__('settings.notifications.location_cleared'))
-                                            ->body(__('settings.notifications.location_cleared_body'))
-                                            ->success()
-                                            ->send();
-                                    }),
-                            ])
-                                ->columns(2)
-                                ->columnSpan(8),
-                        ]),
-                    // Location fields
-                    Forms\Components\Grid::make(12)
-                        ->schema([
-                            Forms\Components\Placeholder::make('location_label')
-                                ->label(__('settings.location.settings'))
-                                ->content('')
-                                ->columnSpan(4),
-
-                            Forms\Components\Grid::make(8)
-                                ->schema([
-                                    Forms\Components\TextInput::make('city')
-                                        ->label(__('settings.location.city'))
-                                        ->placeholder('e.g., Kuala Lumpur')
-                                        ->live()
-                                        ->columnSpan(4),
-
-                                    Forms\Components\TextInput::make('country')
-                                        ->label(__('settings.location.country'))
-                                        ->placeholder('e.g., MY')
-                                        ->live()
-                                        ->columnSpan(4),
-
-                                    Forms\Components\TextInput::make('latitude')
-                                        ->label(__('settings.location.latitude'))
-                                        ->placeholder('e.g., 3.1390')
-                                        ->numeric()
-                                        ->step(0.0000001)
-                                        ->minValue(-90)
-                                        ->maxValue(90)
-                                        ->columnSpan(4),
-
-                                    Forms\Components\TextInput::make('longitude')
-                                        ->label(__('settings.location.longitude'))
-                                        ->placeholder('e.g., 101.6869')
-                                        ->numeric()
-                                        ->step(0.0000001)
-                                        ->minValue(-180)
-                                        ->maxValue(180)
-                                        ->columnSpan(4),
-                                ])
-                                ->columnSpan(8),
-                        ]),
-
-                    // Weather preview section
-                    Forms\Components\Section::make(__('settings.weather.preview'))
-                        ->collapsible()
-                        ->collapsed()
-                        ->description(__('settings.weather.preview_description'))
-                        ->schema([
-                            Forms\Components\Grid::make(12)
-                                ->schema([
-                                    Forms\Components\Placeholder::make('weather_preview')
-                                        ->label('')
-                                        ->live()
-                                        ->content(function ($get) {
-                                            $city = $get('city');
-                                            $country = $get('country');
-
-                                            if (empty($city) || empty($country)) {
-                                                $html = '<div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                                                    <div class="text-2xl font-bold">null</div>
-                                                    <div class="text-sm mt-2">'.__('settings.weather.no_location_data_available').'</div>
-                                                </div>';
-
-                                                return new \Illuminate\Support\HtmlString($html);
-                                            }
-
-                                            try {
-                                                $weatherData = $this->getWeatherPreviewData($city, $country);
-
-                                                if (isset($weatherData['error']) && $weatherData['error']) {
-                                                    $html = '<div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">';
-                                                    $html .= '<div class="flex items-center">';
-                                                    $html .= '<div class="flex-shrink-0">';
-                                                    $html .= '<svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">';
-                                                    $html .= '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />';
-                                                    $html .= '</svg>';
-                                                    $html .= '</div>';
-                                                    $html .= '<div class="ml-3">';
-                                                    $html .= '<p class="text-sm font-medium text-red-800 dark:text-red-200">'.$weatherData['message'].'</p>';
-                                                    $html .= '</div>';
-                                                    $html .= '</div>';
-                                                    $html .= '</div>';
-
-                                                    return new \Illuminate\Support\HtmlString($html);
-                                                }
-
-                                                $current = $weatherData['current'];
-                                                $location = $weatherData['location'];
-
-                                                $html = '<div class="bg-gradient-to-r from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20 p-6 rounded-lg text-teal-700 dark:text-teal-100">';
-                                                $html .= '<div class="flex items-center justify-between">';
-
-                                                // Left side - Weather icon and condition
-                                                $html .= '<div class="flex items-center space-x-4">';
-                                                $html .= '<div class="flex-shrink-0">';
-                                                $html .= '<div class="w-16 h-16 bg-gray-100 dark:bg-gray-700/30 rounded-full flex items-center justify-center">';
-                                                $html .= '<svg class="w-8 h-8 text-gray-500 dark:text-white" fill="currentColor" viewBox="0 0 20 20">';
-                                                $html .= '<path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z" />';
-                                                $html .= '</svg>';
-                                                $html .= '</div>';
-                                                $html .= '</div>';
-                                                $html .= '<div>';
-                                                $html .= '<h3 class="text-lg font-semibold">'.ucfirst($current['condition']).'</h3>';
-                                                $html .= '<p class="text-gray-600 dark:text-gray-400 text-sm">'.ucfirst($current['description']).'</p>';
-                                                $html .= '</div>';
-                                                $html .= '</div>';
-
-                                                // Right side - Temperature and location
-                                                $html .= '<div class="text-right">';
-                                                $html .= '<div class="text-3xl font-bold">'.$current['temperature'].'°C</div>';
-                                                $html .= '<div class="text-gray-600 dark:text-gray-400 text-sm">'.__('settings.weather.feels_like').' '.$current['feels_like'].'°C</div>';
-                                                $html .= '<div class="text-gray-600 dark:text-gray-400 text-sm mt-1">'.$location['city'].', '.$location['country'].'</div>';
-                                                $html .= '</div>';
-
-                                                $html .= '</div>';
-                                                $html .= '</div>';
-
-                                                return new \Illuminate\Support\HtmlString($html);
-                                            } catch (\Exception $e) {
-                                                \Log::error('Weather preview error: '.$e->getMessage());
-                                                $html = '<div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">';
-                                                $html .= '<div class="flex items-center">';
-                                                $html .= '<div class="flex-shrink-0">';
-                                                $html .= '<svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">';
-                                                $html .= '<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />';
-                                                $html .= '</svg>';
-                                                $html .= '</div>';
-                                                $html .= '<div class="ml-3">';
-                                                $html .= '<p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">'.__('settings.weather.error').'</p>';
-                                                $html .= '</div>';
-                                                $html .= '</div>';
-                                                $html .= '</div>';
-
-                                                return new \Illuminate\Support\HtmlString($html);
-                                            }
-                                        })
-                                        ->columnSpan(12),
-                                ]),
-                        ]),
-                ]),
-
-            // Timezone section
-            Forms\Components\Section::make(__('settings.sections.timezone'))
-                ->description(__('settings.sections.timezone_description'))
-                ->collapsible()
-                ->schema([
-                    // Timezone row with label and field
-                    Forms\Components\Grid::make(12)
-                        ->schema([
-                            Forms\Components\Placeholder::make('timezone_label')
-                                ->label(__('settings.timezone.settings'))
-                                ->content('')
-                                ->columnSpan(4),
-
-                            TimezoneField::make('timezone')
-                                ->label('')
-                                ->required()
-                                ->live()
-                                ->afterStateUpdated(function ($state, $set) {
-                                    if ($state) {
-                                        try {
-                                            $timezone = new \DateTimeZone($state);
-                                            $now = new \DateTime('now', $timezone);
-                                            $set('timezone_preview', $now->format('Y-m-d H:i:s T'));
-                                        } catch (\Exception $e) {
-                                            $set('timezone_preview', 'Invalid timezone');
-                                        }
-                                    } else {
-                                        $set('timezone_preview', '');
-                                    }
-                                })
-                                ->columnSpan(8),
-                        ]),
-
-                    // Timezone preview section
-                    Forms\Components\Section::make(__('settings.timezone.current_time_preview'))
-                        ->collapsible()
-                        ->collapsed()
-                        ->description(__('settings.timezone.preview_description'))
-                        ->schema([
-                            Forms\Components\Grid::make(12)
-                                ->schema([
-                                    Forms\Components\Placeholder::make('timezone_preview')
-                                        ->label('')
-                                        ->content(function ($get) {
-                                            $timezone = $get('timezone');
-                                            if (! $timezone) {
-                                                return __('settings.timezone.select_to_preview');
-                                            }
-
-                                            try {
-                                                $tz = new \DateTimeZone($timezone);
-                                                $now = new \DateTime('now', $tz);
-
-                                                // Create timestamps based on current time in selected timezone
-                                                $now = new \DateTime('now', $tz);
-                                                $createdAt = clone $now;
-                                                $updatedAt = clone $now;
-                                                $updatedAt->modify('+30 minutes');
-
-                                                // Get the current logged-in user
-                                                $currentUser = Auth::user();
-                                                $userName = $currentUser ? $currentUser->name : 'System User';
-
-                                                $html = '<div class="grid grid-cols-2 gap-6">';
-
-                                                // Current time - Left side
-                                                $html .= '<div class="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-lg">';
-                                                $html .= '<h4 class="font-medium text-teal-900 dark:text-teal-100 mb-3">'.__('settings.timezone.current_time').'</h4>';
-                                                $html .= '<div class="text-center">';
-                                                $html .= '<div class="text-2xl font-bold text-teal-700 dark:text-teal-300 mb-2">'.$now->format('g:i A').'</div>';
-                                                $html .= '<div class="text-sm text-teal-600 dark:text-teal-400">'.$this->getLocalizedDate($now).'</div>';
-                                                $html .= '<div class="text-xs text-teal-500 dark:text-teal-500 mt-1">'.$now->format('P').'</div>';
-                                                $html .= '</div>';
-                                                $html .= '</div>';
-
-                                                // Timezone information - Right side
-                                                $html .= '<div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">';
-                                                $html .= '<h4 class="font-medium text-amber-900 dark:text-amber-100 mb-3">'.__('settings.timezone.information').'</h4>';
-                                                $html .= '<div class="space-y-2 text-sm">';
-                                                $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.timezone.identifier_name').':</span> <span class="text-amber-600 dark:text-amber-400">'.$timezone.'</span></div>';
-                                                $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.timezone.country_code').':</span> <span class="text-amber-600 dark:text-amber-400">'.$this->getCountryFromTimezone($timezone).'</span></div>';
-                                                $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.timezone.utc_offset').':</span> <span class="text-amber-600 dark:text-amber-400">'.$now->format('P').'</span></div>';
-                                                $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.timezone.abbreviation').':</span> <span class="text-amber-600 dark:text-amber-400">'.$now->format('T').'</span></div>';
-                                                $html .= '</div>';
-                                                $html .= '</div>';
-
-                                                $html .= '</div>';
-
-                                                // Sample data table - Full width below
-                                                $html .= '<div class="mt-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">';
-                                                $html .= '<h4 class="font-medium text-gray-900 dark:text-gray-100 mb-3">'.__('settings.timezone.sample_data_preview').'</h4>';
-                                                $html .= '<div class="overflow-x-auto">';
-                                                $html .= '<table class="min-w-full text-sm">';
-                                                $html .= '<thead class="border-b border-gray-200 dark:border-gray-700">';
-                                                $html .= '<tr>';
-                                                $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.timezone.id').'</th>';
-                                                $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.timezone.title').'</th>';
-                                                $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.timezone.created_at').'</th>';
-                                                $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.timezone.updated_at').'</th>';
-                                                $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.timezone.by').'</th>';
-                                                $html .= '</tr>';
-                                                $html .= '</thead>';
-                                                $html .= '<tbody class="divide-y divide-gray-200 dark:divide-gray-700">';
-
-                                                // Sample rows with current time-based timestamps
-                                                $sampleData = [
-                                                    ['id' => 1, 'title' => __('settings.timezone.sample_project_alpha'), 'created' => clone $createdAt, 'updated' => clone $updatedAt, 'by' => $userName],
-                                                    ['id' => 2, 'title' => __('settings.timezone.sample_task_review'), 'created' => (clone $createdAt)->modify('-1 day'), 'updated' => (clone $updatedAt)->modify('-1 day'), 'by' => $userName],
-                                                    ['id' => 3, 'title' => 'Meeting Notes', 'created' => (clone $createdAt)->modify('-3 days'), 'updated' => (clone $updatedAt)->modify('-2 days'), 'by' => $userName],
-                                                ];
-
-                                                foreach ($sampleData as $row) {
-                                                    $html .= '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">';
-                                                    $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">'.$row['id'].'</td>';
-                                                    $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">'.$row['title'].'</td>';
-                                                    $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['created']->format('j/n/y, h:i A').'</td>';
-                                                    $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['updated']->format('j/n/y, h:i A').'</td>';
-                                                    $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['by'].'</td>';
-                                                    $html .= '</tr>';
-                                                }
-
-                                                $html .= '</tbody>';
-                                                $html .= '</table>';
-                                                $html .= '</div>';
-                                                $html .= '</div>';
-
-                                                return new \Illuminate\Support\HtmlString($html);
-                                            } catch (\Exception $e) {
-                                                return 'Invalid timezone';
-                                            }
-                                        })
-                                        ->visible(fn ($get) => ! empty($get('timezone')))
-                                        ->extraAttributes(['class' => 'text-sm text-gray-600 dark:text-gray-400'])
-                                        ->columnSpan(12),
-                                ]),
-                        ]),
-                ]),
-
             // Chatbot History section
             Forms\Components\Section::make(__('settings.sections.chatbot_history'))
                 ->description(__('settings.sections.chatbot_history_description'))
@@ -683,6 +348,341 @@ class Settings extends Page
                                 ->columnSpanFull(),
                         ]),
                 ]),
+
+            // Location & Timezone Tabs section
+            Forms\Components\Tabs::make('location_timezone_tabs')
+                ->tabs([
+                    // Location Tab
+                    Forms\Components\Tabs\Tab::make(__('settings.sections.location'))
+                        ->schema([
+                            // Location actions
+                            Forms\Components\Grid::make(12)
+                                ->schema([
+                                    Forms\Components\Placeholder::make('location_actions_label')
+                                        ->label('')
+                                        ->columnSpan(4),
+
+                                    Forms\Components\Actions::make([
+                                        \Filament\Forms\Components\Actions\Action::make('detect_location')
+                                            ->label(__('settings.location.detect'))
+                                            ->icon('heroicon-o-map-pin')
+                                            ->color('gray')
+                                            ->action(function ($set) {
+                                                // Dispatch browser event to detect location
+                                                $this->dispatch('detect-user-location');
+
+                                                Notification::make()
+                                                    ->title(__('settings.notifications.location_detection_started'))
+                                                    ->body(__('settings.notifications.location_detection_started_body'))
+                                                    ->info()
+                                                    ->send();
+                                            }),
+
+                                        \Filament\Forms\Components\Actions\Action::make('clear_location')
+                                            ->label(__('settings.location.clear'))
+                                            ->icon('heroicon-o-trash')
+                                            ->color('danger')
+                                            ->outlined()
+                                            ->visible(function ($get) {
+                                                return ! empty($get('city')) ||
+                                                    ! empty($get('country')) ||
+                                                    ! empty($get('latitude')) ||
+                                                    ! empty($get('longitude'));
+                                            })
+                                            ->action(function ($set) {
+                                                $set('city', '');
+                                                $set('country', '');
+                                                $set('latitude', '');
+                                                $set('longitude', '');
+
+                                                Notification::make()
+                                                    ->title(__('settings.notifications.location_cleared'))
+                                                    ->body(__('settings.notifications.location_cleared_body'))
+                                                    ->success()
+                                                    ->send();
+                                            }),
+                                    ])
+                                        ->columns(2)
+                                        ->columnSpan(8),
+                                ]),
+
+                            // Location fields
+                            Forms\Components\Grid::make(12)
+                                ->schema([
+                                    Forms\Components\Placeholder::make('location_label')
+                                        ->label(__('settings.location.settings'))
+                                        ->content('')
+                                        ->columnSpan(4),
+
+                                    Forms\Components\Grid::make(8)
+                                        ->schema([
+                                            Forms\Components\TextInput::make('city')
+                                                ->label(__('settings.location.city'))
+                                                ->placeholder('e.g., Kuala Lumpur')
+                                                ->live()
+                                                ->columnSpan(4),
+
+                                            Forms\Components\TextInput::make('country')
+                                                ->label(__('settings.location.country'))
+                                                ->placeholder('e.g., MY')
+                                                ->live()
+                                                ->columnSpan(4),
+
+                                            Forms\Components\TextInput::make('latitude')
+                                                ->label(__('settings.location.latitude'))
+                                                ->placeholder('e.g., 3.1390')
+                                                ->numeric()
+                                                ->step(0.0000001)
+                                                ->minValue(-90)
+                                                ->maxValue(90)
+                                                ->columnSpan(4),
+
+                                            Forms\Components\TextInput::make('longitude')
+                                                ->label(__('settings.location.longitude'))
+                                                ->placeholder('e.g., 101.6869')
+                                                ->numeric()
+                                                ->step(0.0000001)
+                                                ->minValue(-180)
+                                                ->maxValue(180)
+                                                ->columnSpan(4),
+                                        ])
+                                        ->columnSpan(8),
+                                ]),
+
+                            // Weather preview section
+                            Forms\Components\Section::make(__('settings.weather.preview'))
+                                ->collapsible()
+                                ->description(__('settings.weather.preview_description'))
+                                ->schema([
+                                    Forms\Components\Grid::make(12)
+                                        ->schema([
+                                            Forms\Components\Placeholder::make('weather_preview')
+                                                ->label('')
+                                                ->live()
+                                                ->content(function ($get) {
+                                                    $city = $get('city');
+                                                    $country = $get('country');
+
+                                                    if (empty($city) || empty($country)) {
+                                                        $html = '<div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                                                    <div class="text-2xl font-bold">null</div>
+                                                                    <div class="text-sm mt-2">'.__('settings.weather.no_location_data_available').'</div>
+                                                                </div>';
+
+                                                        return new \Illuminate\Support\HtmlString($html);
+                                                    }
+
+                                                    try {
+                                                        $weatherData = $this->getWeatherPreviewData($city, $country);
+
+                                                        if (isset($weatherData['error']) && $weatherData['error']) {
+                                                            $html = '<div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">';
+                                                            $html .= '<div class="flex items-center">';
+                                                            $html .= '<div class="flex-shrink-0">';
+                                                            $html .= '<svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">';
+                                                            $html .= '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />';
+                                                            $html .= '</svg>';
+                                                            $html .= '</div>';
+                                                            $html .= '<div class="ml-3">';
+                                                            $html .= '<p class="text-sm font-medium text-red-800 dark:text-red-200">'.$weatherData['message'].'</p>';
+                                                            $html .= '</div>';
+                                                            $html .= '</div>';
+                                                            $html .= '</div>';
+
+                                                            return new \Illuminate\Support\HtmlString($html);
+                                                        }
+
+                                                        $current = $weatherData['current'];
+                                                        $location = $weatherData['location'];
+
+                                                        $html = '<div class="bg-gradient-to-r from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20 p-6 rounded-lg text-teal-700 dark:text-teal-100">';
+                                                        $html .= '<div class="flex items-center justify-between">';
+
+                                                        // Left side - Weather icon and condition
+                                                        $html .= '<div class="flex items-center space-x-4">';
+                                                        $html .= '<div class="flex-shrink-0">';
+                                                        $html .= '<div class="w-16 h-16 bg-gray-100 dark:bg-gray-700/30 rounded-full flex items-center justify-center">';
+                                                        $html .= '<svg class="w-8 h-8 text-gray-500 dark:text-white" fill="currentColor" viewBox="0 0 20 20">';
+                                                        $html .= '<path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z" />';
+                                                        $html .= '</svg>';
+                                                        $html .= '</div>';
+                                                        $html .= '</div>';
+                                                        $html .= '<div>';
+                                                        $html .= '<h3 class="text-lg font-semibold">'.ucfirst($current['condition']).'</h3>';
+                                                        $html .= '<p class="text-gray-600 dark:text-gray-400 text-sm">'.ucfirst($current['description']).'</p>';
+                                                        $html .= '</div>';
+                                                        $html .= '</div>';
+
+                                                        // Right side - Temperature and location
+                                                        $html .= '<div class="text-right">';
+                                                        $html .= '<div class="text-3xl font-bold">'.$current['temperature'].'°C</div>';
+                                                        $html .= '<div class="text-gray-600 dark:text-gray-400 text-sm">'.__('settings.weather.feels_like').' '.$current['feels_like'].'°C</div>';
+                                                        $html .= '<div class="text-gray-600 dark:text-gray-400 text-sm mt-1">'.$location['city'].', '.$location['country'].'</div>';
+                                                        $html .= '</div>';
+
+                                                        $html .= '</div>';
+                                                        $html .= '</div>';
+
+                                                        return new \Illuminate\Support\HtmlString($html);
+                                                    } catch (\Exception $e) {
+                                                        \Log::error('Weather preview error: '.$e->getMessage());
+                                                        $html = '<div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">';
+                                                        $html .= '<div class="flex items-center">';
+                                                        $html .= '<div class="flex-shrink-0">';
+                                                        $html .= '<svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">';
+                                                        $html .= '<path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />';
+                                                        $html .= '</svg>';
+                                                        $html .= '</div>';
+                                                        $html .= '<div class="ml-3">';
+                                                        $html .= '<p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">'.__('settings.weather.error').'</p>';
+                                                        $html .= '</div>';
+                                                        $html .= '</div>';
+                                                        $html .= '</div>';
+
+                                                        return new \Illuminate\Support\HtmlString($html);
+                                                    }
+                                                })
+                                                ->columnSpan(12),
+                                        ]),
+                                ]),
+                        ]),
+
+                    // Timezone Tab
+                    Forms\Components\Tabs\Tab::make(__('settings.sections.timezone'))
+                        ->schema([
+                            // Timezone row with label and field
+                            Forms\Components\Grid::make(12)
+                                ->schema([
+                                    Forms\Components\Placeholder::make('timezone_label')
+                                        ->label(__('settings.timezone.settings'))
+                                        ->content('')
+                                        ->columnSpan(4),
+
+                                    TimezoneField::make('timezone')
+                                        ->label('')
+                                        ->required()
+                                        ->live()
+                                        ->afterStateUpdated(function ($state, $set) {
+                                            if ($state) {
+                                                try {
+                                                    $timezone = new \DateTimeZone($state);
+                                                    $now = new \DateTime('now', $timezone);
+                                                    $set('timezone_preview', $now->format('Y-m-d H:i:s T'));
+                                                } catch (\Exception $e) {
+                                                    $set('timezone_preview', 'Invalid timezone');
+                                                }
+                                            } else {
+                                                $set('timezone_preview', '');
+                                            }
+                                        })
+                                        ->columnSpan(8),
+                                ]),
+
+                            // Timezone preview section
+                            Forms\Components\Section::make(__('settings.timezone.current_time_preview'))
+                                ->collapsible()
+                                ->description(__('settings.timezone.preview_description'))
+                                ->schema([
+                                    Forms\Components\Grid::make(12)
+                                        ->schema([
+                                            Forms\Components\Placeholder::make('timezone_preview')
+                                                ->label('')
+                                                ->content(function ($get) {
+                                                    $timezone = $get('timezone');
+                                                    if (! $timezone) {
+                                                        return __('settings.timezone.select_to_preview');
+                                                    }
+
+                                                    try {
+                                                        $tz = new \DateTimeZone($timezone);
+                                                        $now = new \DateTime('now', $tz);
+
+                                                        // Create timestamps based on current time in selected timezone
+                                                        $now = new \DateTime('now', $tz);
+                                                        $createdAt = clone $now;
+                                                        $updatedAt = clone $now;
+                                                        $updatedAt->modify('+30 minutes');
+
+                                                        // Get the current logged-in user
+                                                        $currentUser = Auth::user();
+                                                        $userName = $currentUser ? $currentUser->name : 'System User';
+
+                                                        $html = '<div class="grid grid-cols-2 gap-6">';
+
+                                                        // Current time - Left side
+                                                        $html .= '<div class="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-lg">';
+                                                        $html .= '<h4 class="font-medium text-teal-900 dark:text-teal-100 mb-3">'.__('settings.timezone.current_time').'</h4>';
+                                                        $html .= '<div class="text-center">';
+                                                        $html .= '<div class="text-2xl font-bold text-teal-700 dark:text-teal-300 mb-2">'.$now->format('g:i A').'</div>';
+                                                        $html .= '<div class="text-sm text-teal-600 dark:text-teal-400">'.$this->getLocalizedDate($now).'</div>';
+                                                        $html .= '<div class="text-xs text-teal-500 dark:text-teal-500 mt-1">'.$now->format('P').'</div>';
+                                                        $html .= '</div>';
+                                                        $html .= '</div>';
+
+                                                        // Timezone information - Right side
+                                                        $html .= '<div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">';
+                                                        $html .= '<h4 class="font-medium text-amber-900 dark:text-amber-100 mb-3">'.__('settings.timezone.information').'</h4>';
+                                                        $html .= '<div class="space-y-2 text-sm">';
+                                                        $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.timezone.identifier_name').':</span> <span class="text-amber-600 dark:text-amber-400">'.$timezone.'</span></div>';
+                                                        $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.timezone.country_code').':</span> <span class="text-amber-600 dark:text-amber-400">'.$this->getCountryFromTimezone($timezone).'</span></div>';
+                                                        $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.timezone.utc_offset').':</span> <span class="text-amber-600 dark:text-amber-400">'.$now->format('P').'</span></div>';
+                                                        $html .= '<div class="flex justify-between"><span class="font-medium text-amber-700 dark:text-amber-300">'.__('settings.timezone.abbreviation').':</span> <span class="text-amber-600 dark:text-amber-400">'.$now->format('T').'</span></div>';
+                                                        $html .= '</div>';
+                                                        $html .= '</div>';
+
+                                                        $html .= '</div>';
+
+                                                        // Sample data table - Full width below
+                                                        $html .= '<div class="mt-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">';
+                                                        $html .= '<h4 class="font-medium text-gray-900 dark:text-gray-100 mb-3">'.__('settings.timezone.sample_data_preview').'</h4>';
+                                                        $html .= '<div class="overflow-x-auto">';
+                                                        $html .= '<table class="min-w-full text-sm">';
+                                                        $html .= '<thead class="border-b border-gray-200 dark:border-gray-700">';
+                                                        $html .= '<tr>';
+                                                        $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.timezone.id').'</th>';
+                                                        $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.timezone.title').'</th>';
+                                                        $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.timezone.created_at').'</th>';
+                                                        $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.timezone.updated_at').'</th>';
+                                                        $html .= '<th class="text-left py-2 px-3 font-medium text-gray-700 dark:text-gray-300">'.__('settings.timezone.by').'</th>';
+                                                        $html .= '</tr>';
+                                                        $html .= '</thead>';
+                                                        $html .= '<tbody class="divide-y divide-gray-200 dark:divide-gray-700">';
+
+                                                        // Sample rows with current time-based timestamps
+                                                        $sampleData = [
+                                                            ['id' => 1, 'title' => __('settings.timezone.sample_project_alpha'), 'created' => clone $createdAt, 'updated' => clone $updatedAt, 'by' => $userName],
+                                                            ['id' => 2, 'title' => __('settings.timezone.sample_task_review'), 'created' => (clone $createdAt)->modify('-1 day'), 'updated' => (clone $updatedAt)->modify('-1 day'), 'by' => $userName],
+                                                            ['id' => 3, 'title' => 'Meeting Notes', 'created' => (clone $createdAt)->modify('-3 days'), 'updated' => (clone $updatedAt)->modify('-2 days'), 'by' => $userName],
+                                                        ];
+
+                                                        foreach ($sampleData as $row) {
+                                                            $html .= '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">';
+                                                            $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">'.$row['id'].'</td>';
+                                                            $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">'.$row['title'].'</td>';
+                                                            $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['created']->format('j/n/y, h:i A').'</td>';
+                                                            $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['updated']->format('j/n/y, h:i A').'</td>';
+                                                            $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['by'].'</td>';
+                                                            $html .= '</tr>';
+                                                        }
+
+                                                        $html .= '</tbody>';
+                                                        $html .= '</table>';
+                                                        $html .= '</div>';
+                                                        $html .= '</div>';
+
+                                                        return new \Illuminate\Support\HtmlString($html);
+                                                    } catch (\Exception $e) {
+                                                        return 'Invalid timezone';
+                                                    }
+                                                })
+                                                ->visible(fn ($get) => ! empty($get('timezone')))
+                                                ->extraAttributes(['class' => 'text-sm text-gray-600 dark:text-gray-400'])
+                                                ->columnSpan(12),
+                                        ]),
+                                ]),
+                        ]),
+                ])
+                ->columnSpanFull(),
         ];
 
         return $schema;
@@ -696,8 +696,6 @@ class Settings extends Page
 
         // Update user data
         $user->update([
-            'name' => $data['name'],
-            'email' => $data['email'],
             'timezone' => $data['timezone'],
             'city' => $data['city'],
             'country' => $data['country'],
@@ -711,7 +709,8 @@ class Settings extends Page
         }
 
         Notification::make()
-            ->title(__('settings.notifications.saved'))
+            ->title(__('settings.notifications.settings_saved'))
+            ->body(__('settings.notifications.settings_saved_body'))
             ->success()
             ->send();
     }
