@@ -64,6 +64,7 @@ return [
         'manually_set' => 'Ditentukan Secara Manual',
         'auto_detected' => 'Dikesan Secara Automatik',
         'auto_default' => 'Lalai Automatik',
+        'not_set' => 'Tidak Ditetapkan',
     ],
 
     // Timezone-related translations

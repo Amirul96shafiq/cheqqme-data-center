@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class Settings extends Page
 {
@@ -73,6 +74,21 @@ class Settings extends Page
             $data['longitude'] = config('weather.default_location.longitude', 101.6869);
         }
 
+        // Ensure location intent fields have proper defaults
+        $data['location_manually_set'] = $data['location_manually_set'] ?? false;
+        $data['location_source'] = $data['location_source'] ?? 'auto';
+        $data['timezone_manually_set'] = $data['timezone_manually_set'] ?? false;
+        $data['timezone_source'] = $data['timezone_source'] ?? 'auto';
+
+        // Debug: Log the data being loaded
+        \Log::info('Settings mount - Loading user data:', [
+            'location_manually_set' => $data['location_manually_set'],
+            'location_source' => $data['location_source'],
+            'timezone_manually_set' => $data['timezone_manually_set'],
+            'timezone_source' => $data['timezone_source'],
+            'city' => $data['city'] ?? 'not set',
+        ]);
+
         // Set initial timezone preview
         if (! empty($data['timezone'])) {
             try {
@@ -124,8 +140,8 @@ class Settings extends Page
         // Get current form state to preserve existing data
         $currentData = $this->form->getState();
 
-        // Debug: Log current timezone before update
-        \Log::info('Location detected - Current timezone before update:', [
+        // Debug: Log current data before update
+        \Log::info('Location detected - Current data before update:', [
             'timezone' => $currentData['timezone'] ?? 'not set',
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -133,15 +149,56 @@ class Settings extends Page
             'country' => $country,
         ]);
 
-        // Update only specific location fields without affecting other form data
+        // If city/country not provided, try to get them from reverse geocoding
+        if (empty($city) || empty($country)) {
+            $locationData = $this->getLocationFromCoordinates($latitude, $longitude);
+            $city = $locationData['city'] ?? $city;
+            $country = $locationData['country'] ?? $country;
+        }
+
+        // Auto-detect timezone based on city
+        $detectedTimezone = null;
+        if (! empty($city)) {
+            $detectedTimezone = TimezoneHelper::getTimezoneFromCity($city);
+        }
+
+        // If timezone not detected from city, use default
+        if (empty($detectedTimezone)) {
+            $detectedTimezone = TimezoneHelper::getDefaultTimezone();
+            $country = $country ?: TimezoneHelper::getDefaultCountry();
+        }
+
+        // Update location fields
         $this->data['latitude'] = $latitude;
         $this->data['longitude'] = $longitude;
         $this->data['city'] = $city ?? '';
         $this->data['country'] = $country ?? '';
 
-        // Preserve all other existing data
+        // Update timezone
+        $this->data['timezone'] = $detectedTimezone;
+
+        // Set location and timezone intent fields to auto-detected
+        $this->data['location_manually_set'] = false;
+        $this->data['location_source'] = 'greeting_modal'; // Auto-detected via location button
+        $this->data['timezone_manually_set'] = false;
+        $this->data['timezone_source'] = 'greeting_modal'; // Auto-detected via location button
+
+        // Update timezone preview
+        try {
+            $timezone = new \DateTimeZone($detectedTimezone);
+            $now = new \DateTime('now', $timezone);
+            $this->data['timezone_preview'] = $now->format('Y-m-d H:i:s T');
+        } catch (\Exception $e) {
+            $this->data['timezone_preview'] = 'Invalid timezone';
+        }
+
+        // Preserve other existing data
         foreach ($currentData as $key => $value) {
-            if (! in_array($key, ['latitude', 'longitude', 'city', 'country'])) {
+            if (! in_array($key, [
+                'latitude', 'longitude', 'city', 'country', 'timezone',
+                'location_manually_set', 'location_source',
+                'timezone_manually_set', 'timezone_source', 'timezone_preview',
+            ])) {
                 $this->data[$key] = $value;
             }
         }
@@ -149,9 +206,15 @@ class Settings extends Page
         // Update the form with the modified data
         $this->form->fill($this->data);
 
-        // Debug: Log timezone after update
-        \Log::info('Location detected - Timezone after update:', [
-            'timezone' => $this->data['timezone'] ?? 'not set',
+        // Debug: Log final data after update
+        \Log::info('Location detected - Final data after update:', [
+            'latitude' => $this->data['latitude'],
+            'longitude' => $this->data['longitude'],
+            'city' => $this->data['city'],
+            'country' => $this->data['country'],
+            'timezone' => $this->data['timezone'],
+            'location_source' => $this->data['location_source'],
+            'timezone_source' => $this->data['timezone_source'],
         ]);
 
         Notification::make()
@@ -172,6 +235,52 @@ class Settings extends Page
             ->body(__('settings.notifications.location_detection_failed_body'))
             ->danger()
             ->send();
+    }
+
+    // Get location data from coordinates using reverse geocoding
+    private function getLocationFromCoordinates(float $latitude, float $longitude): array
+    {
+        try {
+            // Use OpenWeatherMap reverse geocoding API
+            $apiKey = env('OPENWEATHERMAP_API_KEY', '561e5fef9f7edc71ec464a21eb7e0b54');
+            $url = "https://api.openweathermap.org/geo/1.0/reverse?lat={$latitude}&lon={$longitude}&limit=1&appid={$apiKey}";
+
+            $response = Http::timeout(10)->get($url);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                if (! empty($data) && isset($data[0])) {
+                    $location = $data[0];
+
+                    return [
+                        'city' => $location['name'] ?? null,
+                        'country' => $location['country'] ?? null,
+                        'state' => $location['state'] ?? null,
+                    ];
+                }
+            }
+
+            \Log::warning('Reverse geocoding API call failed', [
+                'status' => $response->status(),
+                'response' => $response->body(),
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Reverse geocoding error: '.$e->getMessage(), [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+            ]);
+        }
+
+        // Fallback: return empty data
+        return [
+            'city' => null,
+            'country' => null,
+            'state' => null,
+        ];
     }
 
     // Get form
@@ -388,13 +497,27 @@ class Settings extends Page
                                                 return ! empty($get('city')) ||
                                                     ! empty($get('country')) ||
                                                     ! empty($get('latitude')) ||
-                                                    ! empty($get('longitude'));
+                                                    ! empty($get('longitude')) ||
+                                                    ! empty($get('timezone'));
                                             })
                                             ->action(function ($set) {
+                                                // Clear all location fields
                                                 $set('city', '');
                                                 $set('country', '');
                                                 $set('latitude', '');
                                                 $set('longitude', '');
+
+                                                // Clear timezone field
+                                                $set('timezone', '');
+
+                                                // Reset location and timezone intent fields to empty state
+                                                $set('location_manually_set', false);
+                                                $set('location_source', '');
+                                                $set('timezone_manually_set', false);
+                                                $set('timezone_source', '');
+
+                                                // Clear timezone preview
+                                                $set('timezone_preview', '');
 
                                                 Notification::make()
                                                     ->title(__('settings.notifications.location_cleared'))
@@ -417,12 +540,29 @@ class Settings extends Page
 
                                     Forms\Components\Grid::make(8)
                                         ->schema([
+                                            // Hidden fields to track location intent
+                                            Forms\Components\Hidden::make('location_manually_set')
+                                                ->dehydrated(),
+                                            Forms\Components\Hidden::make('location_source')
+                                                ->dehydrated(),
+                                            Forms\Components\Hidden::make('timezone_manually_set')
+                                                ->dehydrated(),
+                                            Forms\Components\Hidden::make('timezone_source')
+                                                ->dehydrated(),
+
                                             Forms\Components\TextInput::make('city')
                                                 ->label(__('settings.location.city'))
                                                 ->placeholder('e.g., Kuala Lumpur')
                                                 ->live(onBlur: true)
                                                 ->afterStateUpdated(function ($state, $set) {
                                                     if ($state) {
+                                                        // Debug: Log the manual setting
+                                                        \Log::info('City field updated - Setting manual flags:', [
+                                                            'city' => $state,
+                                                            'location_manually_set' => true,
+                                                            'location_source' => 'manual',
+                                                        ]);
+
                                                         // Mark as manually set
                                                         $set('location_manually_set', true);
                                                         $set('location_source', 'manual');
@@ -515,8 +655,8 @@ class Settings extends Page
                                         ->columnSpan(8),
                                 ]),
 
-                                // Location status indicator
-                                Forms\Components\Grid::make(12)
+                            // Location status indicator
+                            Forms\Components\Grid::make(12)
                                 ->schema([
                                     Forms\Components\Placeholder::make('location_status_label')
                                         ->label(__('settings.location.status'))
@@ -529,7 +669,18 @@ class Settings extends Page
                                             $source = $get('location_source');
                                             $manuallySet = $get('location_manually_set');
 
-                                            if ($manuallySet) {
+                                            // Check if all location fields are empty
+                                            $allFieldsEmpty = empty($get('city')) &&
+                                                             empty($get('country')) &&
+                                                             empty($get('latitude')) &&
+                                                             empty($get('longitude')) &&
+                                                             empty($get('timezone'));
+
+                                            if ($allFieldsEmpty) {
+                                                // Show empty status when all fields are cleared
+                                                $text = '';
+                                                $color = 'text-gray-400 dark:text-gray-500';
+                                            } elseif ($manuallySet) {
                                                 $text = __('settings.location.manually_set');
                                                 $color = 'text-teal-600 dark:text-teal-400';
                                             } elseif ($source === 'greeting_modal') {
@@ -538,6 +689,14 @@ class Settings extends Page
                                             } else {
                                                 $text = __('settings.location.auto_default');
                                                 $color = 'text-gray-600 dark:text-gray-400';
+                                            }
+
+                                            if ($allFieldsEmpty) {
+                                                return new \Illuminate\Support\HtmlString(
+                                                    '<div class="flex items-center space-x-2 '.$color.'">'.
+                                                    '<span class="text-sm font-medium italic">'.__('settings.location.not_set').'</span>'.
+                                                    '</div>'
+                                                );
                                             }
 
                                             return new \Illuminate\Support\HtmlString(
@@ -685,7 +844,7 @@ class Settings extends Page
                             Forms\Components\Grid::make(12)
                                 ->schema([
                                     Forms\Components\Placeholder::make('timezone_status_label')
-                                        ->label(__('settings.timezone.status'))
+                                        ->label(__('settings.location.status'))
                                         ->content('')
                                         ->columnSpan(4),
 
@@ -695,7 +854,18 @@ class Settings extends Page
                                             $source = $get('timezone_source');
                                             $manuallySet = $get('timezone_manually_set');
 
-                                            if ($manuallySet) {
+                                            // Check if all location and timezone fields are empty
+                                            $allFieldsEmpty = empty($get('city')) &&
+                                                             empty($get('country')) &&
+                                                             empty($get('latitude')) &&
+                                                             empty($get('longitude')) &&
+                                                             empty($get('timezone'));
+
+                                            if ($allFieldsEmpty) {
+                                                // Show empty status when all fields are cleared
+                                                $text = '';
+                                                $color = 'text-gray-400 dark:text-gray-500';
+                                            } elseif ($manuallySet) {
                                                 $text = __('settings.timezone.manually_set');
                                                 $color = 'text-teal-600 dark:text-teal-400';
                                             } elseif ($source === 'greeting_modal') {
@@ -704,6 +874,14 @@ class Settings extends Page
                                             } else {
                                                 $text = __('settings.timezone.auto_default');
                                                 $color = 'text-gray-600 dark:text-gray-400';
+                                            }
+
+                                            if ($allFieldsEmpty) {
+                                                return new \Illuminate\Support\HtmlString(
+                                                    '<div class="flex items-center space-x-2 '.$color.'">'.
+                                                    '<span class="text-sm font-medium italic">'.__('settings.location.not_set').'</span>'.
+                                                    '</div>'
+                                                );
                                             }
 
                                             return new \Illuminate\Support\HtmlString(
@@ -831,13 +1009,27 @@ class Settings extends Page
         $data = $this->form->getState();
         $user = Auth::user();
 
-        // Update user data
+        // Debug: Log the data being saved
+        \Log::info('Settings save - Form data:', [
+            'location_manually_set' => $data['location_manually_set'] ?? 'not set',
+            'location_source' => $data['location_source'] ?? 'not set',
+            'timezone_manually_set' => $data['timezone_manually_set'] ?? 'not set',
+            'timezone_source' => $data['timezone_source'] ?? 'not set',
+            'city' => $data['city'] ?? 'not set',
+        ]);
+
+        // Update user data including location intent fields
         $user->update([
             'timezone' => $data['timezone'],
             'city' => $data['city'],
             'country' => $data['country'],
             'latitude' => $data['latitude'],
             'longitude' => $data['longitude'],
+            // Include location intent fields to preserve manual/auto status
+            'location_manually_set' => $data['location_manually_set'] ?? false,
+            'location_source' => $data['location_source'] ?? 'auto',
+            'timezone_manually_set' => $data['timezone_manually_set'] ?? false,
+            'timezone_source' => $data['timezone_source'] ?? 'auto',
         ]);
 
         // Update API key if provided

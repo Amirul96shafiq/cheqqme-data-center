@@ -64,6 +64,7 @@ return [
         'manually_set' => 'Manually Set',
         'auto_detected' => 'Auto-Detected',
         'auto_default' => 'Auto Default',
+        'not_set' => 'Not Set',
     ],
 
     // Timezone-related translations
