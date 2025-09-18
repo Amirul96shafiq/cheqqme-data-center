@@ -511,33 +511,41 @@ class Settings extends Page
                                                 ->minValue(-180)
                                                 ->maxValue(180)
                                                 ->columnSpan(4),
-
-                                            // Location status indicator
-                                            Forms\Components\Placeholder::make('location_status')
-                                                ->label(__('settings.location.status'))
-                                                ->content(function ($get) {
-                                                    $source = $get('location_source');
-                                                    $manuallySet = $get('location_manually_set');
-
-                                                    if ($manuallySet) {
-                                                        $text = __('settings.location.manually_set');
-                                                        $color = 'text-blue-600 dark:text-blue-400';
-                                                    } elseif ($source === 'greeting_modal') {
-                                                        $text = __('settings.location.auto_detected');
-                                                        $color = 'text-green-600 dark:text-green-400';
-                                                    } else {
-                                                        $text = __('settings.location.auto_default');
-                                                        $color = 'text-gray-600 dark:text-gray-400';
-                                                    }
-
-                                                    return new \Illuminate\Support\HtmlString(
-                                                        '<div class="flex items-center space-x-2 '.$color.'">'.
-                                                        '<span class="text-sm font-medium">'.$text.'</span>'.
-                                                        '</div>'
-                                                    );
-                                                })
-                                                ->columnSpan(12),
                                         ])
+                                        ->columnSpan(8),
+                                ]),
+
+                                // Location status indicator
+                                Forms\Components\Grid::make(12)
+                                ->schema([
+                                    Forms\Components\Placeholder::make('location_status_label')
+                                        ->label(__('settings.location.status'))
+                                        ->content('')
+                                        ->columnSpan(4),
+
+                                    Forms\Components\Placeholder::make('location_status_data')
+                                        ->label('')
+                                        ->content(function ($get) {
+                                            $source = $get('location_source');
+                                            $manuallySet = $get('location_manually_set');
+
+                                            if ($manuallySet) {
+                                                $text = __('settings.location.manually_set');
+                                                $color = 'text-teal-600 dark:text-teal-400';
+                                            } elseif ($source === 'greeting_modal') {
+                                                $text = __('settings.location.auto_detected');
+                                                $color = 'text-primary-600 dark:text-primary-400';
+                                            } else {
+                                                $text = __('settings.location.auto_default');
+                                                $color = 'text-gray-600 dark:text-gray-400';
+                                            }
+
+                                            return new \Illuminate\Support\HtmlString(
+                                                '<div class="flex items-center space-x-2 '.$color.'">'.
+                                                '<span class="text-sm font-medium">'.$text.'</span>'.
+                                                '</div>'
+                                            );
+                                        })
                                         ->columnSpan(8),
                                 ]),
 
@@ -676,18 +684,23 @@ class Settings extends Page
                             // Timezone status indicator
                             Forms\Components\Grid::make(12)
                                 ->schema([
-                                    Forms\Components\Placeholder::make('timezone_status')
+                                    Forms\Components\Placeholder::make('timezone_status_label')
                                         ->label(__('settings.timezone.status'))
+                                        ->content('')
+                                        ->columnSpan(4),
+
+                                    Forms\Components\Placeholder::make('timezone_status_data')
+                                        ->label('')
                                         ->content(function ($get) {
                                             $source = $get('timezone_source');
                                             $manuallySet = $get('timezone_manually_set');
 
                                             if ($manuallySet) {
                                                 $text = __('settings.timezone.manually_set');
-                                                $color = 'text-blue-600 dark:text-blue-400';
+                                                $color = 'text-teal-600 dark:text-teal-400';
                                             } elseif ($source === 'greeting_modal') {
                                                 $text = __('settings.timezone.auto_detected');
-                                                $color = 'text-green-600 dark:text-green-400';
+                                                $color = 'text-primary-600 dark:text-primary-400';
                                             } else {
                                                 $text = __('settings.timezone.auto_default');
                                                 $color = 'text-gray-600 dark:text-gray-400';
@@ -699,7 +712,7 @@ class Settings extends Page
                                                 '</div>'
                                             );
                                         })
-                                        ->columnSpan(12),
+                                        ->columnSpan(8),
                                 ]),
 
                             // Timezone preview section
