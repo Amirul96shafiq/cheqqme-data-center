@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Forms\Components\TimezoneField;
+use App\Helpers\TimezoneHelper;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -419,7 +420,66 @@ class Settings extends Page
                                             Forms\Components\TextInput::make('city')
                                                 ->label(__('settings.location.city'))
                                                 ->placeholder('e.g., Kuala Lumpur')
-                                                ->live()
+                                                ->live(onBlur: true)
+                                                ->afterStateUpdated(function ($state, $set) {
+                                                    if ($state) {
+                                                        // Try to get timezone and country from city name
+                                                        $timezone = TimezoneHelper::getTimezoneFromCity($state);
+                                                        $country = TimezoneHelper::getCountryFromCity($state);
+
+                                                        if ($timezone && $country) {
+                                                            // Set the timezone and country automatically
+                                                            $set('timezone', $timezone);
+                                                            $set('country', $country);
+
+                                                            // Update timezone preview
+                                                            try {
+                                                                $tz = new \DateTimeZone($timezone);
+                                                                $now = new \DateTime('now', $tz);
+                                                                $set('timezone_preview', $now->format('Y-m-d H:i:s T'));
+                                                            } catch (\Exception $e) {
+                                                                $set('timezone_preview', 'Invalid timezone');
+                                                            }
+
+                                                            // Show notification
+                                                            Notification::make()
+                                                                ->title(__('settings.notifications.location_auto_selected'))
+                                                                ->body(__('settings.notifications.location_auto_selected_body', [
+                                                                    'city' => $state,
+                                                                    'country' => $country,
+                                                                    'timezone' => $timezone,
+                                                                ]))
+                                                                ->success()
+                                                                ->send();
+                                                        } else {
+                                                            // City not found, use default timezone and country
+                                                            $defaultTimezone = TimezoneHelper::getDefaultTimezone();
+                                                            $defaultCountry = TimezoneHelper::getDefaultCountry();
+                                                            $set('timezone', $defaultTimezone);
+                                                            $set('country', $defaultCountry);
+
+                                                            // Update timezone preview
+                                                            try {
+                                                                $tz = new \DateTimeZone($defaultTimezone);
+                                                                $now = new \DateTime('now', $tz);
+                                                                $set('timezone_preview', $now->format('Y-m-d H:i:s T'));
+                                                            } catch (\Exception $e) {
+                                                                $set('timezone_preview', 'Invalid timezone');
+                                                            }
+
+                                                            // Show notification
+                                                            Notification::make()
+                                                                ->title(__('settings.notifications.location_default_selected'))
+                                                                ->body(__('settings.notifications.location_default_selected_body', [
+                                                                    'city' => $state,
+                                                                    'country' => $defaultCountry,
+                                                                    'timezone' => $defaultTimezone,
+                                                                ]))
+                                                                ->warning()
+                                                                ->send();
+                                                        }
+                                                    }
+                                                })
                                                 ->columnSpan(4),
 
                                             Forms\Components\TextInput::make('country')
