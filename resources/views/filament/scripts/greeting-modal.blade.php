@@ -951,6 +951,23 @@ function detectUserLocation() {
             const { latitude, longitude } = position.coords;
             
             try {
+                // First, try to get city and country from reverse geocoding
+                let city = null;
+                let country = null;
+                
+                try {
+                    const geocodeResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+                    if (geocodeResponse.ok) {
+                        const geocodeData = await geocodeResponse.json();
+                        city = geocodeData.city || geocodeData.locality || null;
+                        country = geocodeData.countryCode || null;
+                    }
+                } catch (geocodeError) {
+                    // Silent fail for reverse geocoding
+                    console.log('Reverse geocoding failed, proceeding with coordinates only');
+                }
+                
+                // Update location with city and country if available
                 await fetch('/weather/location', {
                     method: 'POST',
                     headers: {
@@ -960,7 +977,9 @@ function detectUserLocation() {
                     },
                     body: JSON.stringify({
                         latitude: latitude,
-                        longitude: longitude
+                        longitude: longitude,
+                        city: city,
+                        country: country
                     })
                 });
             } catch (error) {
