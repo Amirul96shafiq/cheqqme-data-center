@@ -21,3 +21,10 @@ Schedule::command('resource-lock:cleanup --force')
     ->withoutOverlapping()
     ->runInBackground()
     ->appendOutputTo(storage_path('logs/resource-lock-cleanup.log'));
+
+// Schedule weekly chatbot cleanup with automatic backup
+Schedule::command('chatbot:weekly-cleanup')
+    ->weeklyOn(0, '00:00') // Sunday at midnight
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/chatbot-weekly-cleanup.log'));
