@@ -51,10 +51,10 @@ class AdminPanelProvider extends PanelProvider
                 ->get(['id', 'name', 'url'])
                 ->map(function ($board) {
                     return NavigationItem::make("trello-board-{$board->id}")
-                        ->label(fn() => (strlen($board->name) > 10 ? substr($board->name, 0, 10) . '...' : $board->name) . ' ' . __('navigation.trello_board_suffix'))
+                        ->label(fn () => (strlen($board->name) > 10 ? substr($board->name, 0, 10).'...' : $board->name).' '.__('navigation.trello_board_suffix'))
                         ->url($board->url)
                         ->openUrlInNewTab()
-                        ->group(fn() => __('navigation.groups.boards'))
+                        ->group(fn () => __('navigation.groups.boards'))
                         ->sort(2);
                 })
                 ->toArray();
@@ -174,7 +174,7 @@ class AdminPanelProvider extends PanelProvider
 
         return $panel
             ->default()
-            ->homeUrl(fn() => route('filament.admin.pages.dashboard'))
+            ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
             ->favicon(asset('images/favicon.png'))
@@ -212,6 +212,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->pages([
                 \App\Filament\Pages\Dashboard::class,
+                \App\Filament\Pages\ChatbotHistory::class,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -247,12 +248,12 @@ class AdminPanelProvider extends PanelProvider
                         if ($hour >= 20 && $hour <= 23) {
                             return 'heroicon-o-moon';
                         } // Evening
-            
+
                         return 'heroicon-o-moon'; // Goodnight (12AM-6AM)
                     })
                     ->label(function () {
                         $userName = auth()->user()?->name ?? '';
-                        if (!$userName) {
+                        if (! $userName) {
                             return __('greetings.profile');
                         }
 
@@ -270,23 +271,28 @@ class AdminPanelProvider extends PanelProvider
                         return "{$greeting}, {$formattedName}";
                     })
                     ->color('primary')
-                    ->url(fn() => 'javascript:void(0)'),
+                    ->url(fn () => 'javascript:void(0)'),
                 MenuItem::make()
-                    ->label(fn() => __('dashboard.user-menu.profile-label'))
+                    ->label(fn () => __('dashboard.user-menu.profile-label'))
                     ->icon('heroicon-o-user')
-                    ->url(fn() => filament()->getProfileUrl())
+                    ->url(fn () => filament()->getProfileUrl())
                     ->sort(-1),
                 MenuItem::make()
-                    ->label(fn() => __('dashboard.user-menu.settings-label'))
+                    ->label(fn () => __('dashboard.user-menu.settings-label'))
                     ->icon('heroicon-o-cog-6-tooth')
-                    ->url(fn() => route('filament.admin.pages.settings'))
+                    ->url(fn () => route('filament.admin.pages.settings'))
                     ->sort(0),
+                MenuItem::make()
+                    ->label(fn () => __('chatbot.history.navigation_label'))
+                    ->icon('heroicon-o-chat-bubble-left-right')
+                    ->url(fn () => '/admin/chatbot-history')
+                    ->sort(1),
                 'logout' => MenuItem::make()
-                    ->label(fn() => __('dashboard.user-menu.logout-label'))
+                    ->label(fn () => __('dashboard.user-menu.logout-label'))
                     ->icon('heroicon-o-arrow-right-on-rectangle')
                     ->color('danger')
-                    ->url(fn() => filament()->getLogoutUrl())
-                    ->sort(1),
+                    ->url(fn () => filament()->getLogoutUrl())
+                    ->sort(2),
             ])
             ->navigationGroups([
                 NavigationGroup::make()
@@ -323,7 +329,7 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 'panels::scripts.after',
                 function () {
-                    return view('filament.scripts.greeting-modal') .
+                    return view('filament.scripts.greeting-modal').
                         view('components.drag-drop-lang');
                 },
             )
@@ -339,7 +345,7 @@ class AdminPanelProvider extends PanelProvider
                     ->expandedUrlTarget(enabled: false),
 
                 ActivitylogPlugin::make()
-                    ->navigationGroup(fn() => __('activitylog.navigation_group'))
+                    ->navigationGroup(fn () => __('activitylog.navigation_group'))
                     ->navigationSort(11),
 
                 ResourceLockPlugin::make(),
