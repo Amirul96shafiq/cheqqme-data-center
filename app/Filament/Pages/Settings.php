@@ -423,6 +423,12 @@ class Settings extends Page
                                                 ->live(onBlur: true)
                                                 ->afterStateUpdated(function ($state, $set) {
                                                     if ($state) {
+                                                        // Mark as manually set
+                                                        $set('location_manually_set', true);
+                                                        $set('location_source', 'manual');
+                                                        $set('timezone_manually_set', true);
+                                                        $set('timezone_source', 'manual');
+
                                                         // Try to get timezone and country from city name
                                                         $timezone = TimezoneHelper::getTimezoneFromCity($state);
                                                         $country = TimezoneHelper::getCountryFromCity($state);
@@ -443,8 +449,8 @@ class Settings extends Page
 
                                                             // Show notification
                                                             Notification::make()
-                                                                ->title(__('settings.notifications.location_auto_selected'))
-                                                                ->body(__('settings.notifications.location_auto_selected_body', [
+                                                                ->title(__('settings.notifications.location_manually_selected'))
+                                                                ->body(__('settings.notifications.location_manually_selected_body', [
                                                                     'city' => $state,
                                                                     'country' => $country,
                                                                     'timezone' => $timezone,
@@ -469,8 +475,8 @@ class Settings extends Page
 
                                                             // Show notification
                                                             Notification::make()
-                                                                ->title(__('settings.notifications.location_default_selected'))
-                                                                ->body(__('settings.notifications.location_default_selected_body', [
+                                                                ->title(__('settings.notifications.location_manual_default'))
+                                                                ->body(__('settings.notifications.location_manual_default_body', [
                                                                     'city' => $state,
                                                                     'country' => $defaultCountry,
                                                                     'timezone' => $defaultTimezone,
@@ -505,6 +511,32 @@ class Settings extends Page
                                                 ->minValue(-180)
                                                 ->maxValue(180)
                                                 ->columnSpan(4),
+
+                                            // Location status indicator
+                                            Forms\Components\Placeholder::make('location_status')
+                                                ->label(__('settings.location.status'))
+                                                ->content(function ($get) {
+                                                    $source = $get('location_source');
+                                                    $manuallySet = $get('location_manually_set');
+
+                                                    if ($manuallySet) {
+                                                        $text = __('settings.location.manually_set');
+                                                        $color = 'text-blue-600 dark:text-blue-400';
+                                                    } elseif ($source === 'greeting_modal') {
+                                                        $text = __('settings.location.auto_detected');
+                                                        $color = 'text-green-600 dark:text-green-400';
+                                                    } else {
+                                                        $text = __('settings.location.auto_default');
+                                                        $color = 'text-gray-600 dark:text-gray-400';
+                                                    }
+
+                                                    return new \Illuminate\Support\HtmlString(
+                                                        '<div class="flex items-center space-x-2 '.$color.'">'.
+                                                        '<span class="text-sm font-medium">'.$text.'</span>'.
+                                                        '</div>'
+                                                    );
+                                                })
+                                                ->columnSpan(12),
                                         ])
                                         ->columnSpan(8),
                                 ]),
@@ -620,10 +652,13 @@ class Settings extends Page
 
                                     TimezoneField::make('timezone')
                                         ->label('')
-                                        ->required()
                                         ->live()
                                         ->afterStateUpdated(function ($state, $set) {
                                             if ($state) {
+                                                // Mark as manually set
+                                                $set('timezone_manually_set', true);
+                                                $set('timezone_source', 'manual');
+
                                                 try {
                                                     $timezone = new \DateTimeZone($state);
                                                     $now = new \DateTime('now', $timezone);
@@ -636,6 +671,35 @@ class Settings extends Page
                                             }
                                         })
                                         ->columnSpan(8),
+                                ]),
+
+                            // Timezone status indicator
+                            Forms\Components\Grid::make(12)
+                                ->schema([
+                                    Forms\Components\Placeholder::make('timezone_status')
+                                        ->label(__('settings.timezone.status'))
+                                        ->content(function ($get) {
+                                            $source = $get('timezone_source');
+                                            $manuallySet = $get('timezone_manually_set');
+
+                                            if ($manuallySet) {
+                                                $text = __('settings.timezone.manually_set');
+                                                $color = 'text-blue-600 dark:text-blue-400';
+                                            } elseif ($source === 'greeting_modal') {
+                                                $text = __('settings.timezone.auto_detected');
+                                                $color = 'text-green-600 dark:text-green-400';
+                                            } else {
+                                                $text = __('settings.timezone.auto_default');
+                                                $color = 'text-gray-600 dark:text-gray-400';
+                                            }
+
+                                            return new \Illuminate\Support\HtmlString(
+                                                '<div class="flex items-center space-x-2 '.$color.'">'.
+                                                '<span class="text-sm font-medium">'.$text.'</span>'.
+                                                '</div>'
+                                            );
+                                        })
+                                        ->columnSpan(12),
                                 ]),
 
                             // Timezone preview section

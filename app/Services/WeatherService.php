@@ -69,7 +69,17 @@ class WeatherService
      */
     protected function getUserLocation(User $user): array
     {
-        if ($user->latitude && $user->longitude) {
+        // If user manually set location, always use their settings
+        if ($user->location_manually_set && $user->latitude && $user->longitude) {
+            Log::info('Using manually set location for weather', [
+                'user_id' => $user->id,
+                'location_source' => $user->location_source,
+                'latitude' => $user->latitude,
+                'longitude' => $user->longitude,
+                'city' => $user->city,
+                'country' => $user->country,
+            ]);
+
             return [
                 'lat' => $user->latitude,
                 'lon' => $user->longitude,
@@ -77,6 +87,30 @@ class WeatherService
                 'country' => $user->country ?? config('weather.default_location.country'),
             ];
         }
+
+        // Otherwise, use auto-detected location or default
+        if ($user->latitude && $user->longitude) {
+            Log::info('Using auto-detected location for weather', [
+                'user_id' => $user->id,
+                'location_source' => $user->location_source,
+                'latitude' => $user->latitude,
+                'longitude' => $user->longitude,
+                'city' => $user->city,
+                'country' => $user->country,
+            ]);
+
+            return [
+                'lat' => $user->latitude,
+                'lon' => $user->longitude,
+                'city' => $user->city ?? config('weather.default_location.city'),
+                'country' => $user->country ?? config('weather.default_location.country'),
+            ];
+        }
+
+        Log::info('Using default location for weather', [
+            'user_id' => $user->id,
+            'reason' => 'No location data available',
+        ]);
 
         return [
             'lat' => config('weather.default_location.latitude'),
@@ -411,33 +445,59 @@ class WeatherService
             'location_updated_at' => now(),
         ];
 
-        // If city is provided, try to automatically set timezone and country
-        if ($city) {
-            $timezone = TimezoneHelper::getTimezoneFromCity($city);
-            $countryFromCity = TimezoneHelper::getCountryFromCity($city);
+        // Only auto-update if user hasn't manually set location
+        if (! $user->location_manually_set) {
+            $updateData['location_source'] = 'greeting_modal';
+            $updateData['last_auto_location_update'] = now();
 
-            if ($timezone) {
-                $updateData['timezone'] = $timezone;
-                Log::info('Auto-selected timezone from city', [
-                    'city' => $city,
-                    'timezone' => $timezone,
-                    'user_id' => $user->id,
-                ]);
+            Log::info('Auto-updating location from greeting modal', [
+                'user_id' => $user->id,
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'city' => $city,
+                'country' => $country,
+            ]);
+
+            // Auto-set timezone if not manually set
+            if (! $user->timezone_manually_set && $city) {
+                $timezone = TimezoneHelper::getTimezoneFromCity($city);
+                if ($timezone) {
+                    $updateData['timezone'] = $timezone;
+                    $updateData['timezone_source'] = 'greeting_modal';
+
+                    Log::info('Auto-selected timezone from city', [
+                        'city' => $city,
+                        'timezone' => $timezone,
+                        'user_id' => $user->id,
+                    ]);
+                }
             }
 
-            if ($countryFromCity && ! $country) {
-                $updateData['country'] = $countryFromCity;
-                Log::info('Auto-selected country from city', [
-                    'city' => $city,
-                    'country' => $countryFromCity,
-                    'user_id' => $user->id,
-                ]);
+            // Auto-set country if not manually set and not provided
+            if (! $user->location_manually_set && ! $country && $city) {
+                $countryFromCity = TimezoneHelper::getCountryFromCity($city);
+                if ($countryFromCity) {
+                    $updateData['country'] = $countryFromCity;
+
+                    Log::info('Auto-selected country from city', [
+                        'city' => $city,
+                        'country' => $countryFromCity,
+                        'user_id' => $user->id,
+                    ]);
+                }
             }
+        } else {
+            Log::info('Skipping auto-location update - user has manually set location', [
+                'user_id' => $user->id,
+                'location_manually_set' => $user->location_manually_set,
+            ]);
         }
 
         // If no timezone was set and no existing timezone, set default
         if (! isset($updateData['timezone']) && empty($user->timezone)) {
             $updateData['timezone'] = TimezoneHelper::getDefaultTimezone();
+            $updateData['timezone_source'] = 'auto';
+
             Log::info('Set default timezone for user', [
                 'user_id' => $user->id,
                 'timezone' => $updateData['timezone'],
@@ -447,6 +507,7 @@ class WeatherService
         // If no country was set and no existing country, set default
         if (! isset($updateData['country']) && empty($user->country)) {
             $updateData['country'] = TimezoneHelper::getDefaultCountry();
+
             Log::info('Set default country for user', [
                 'user_id' => $user->id,
                 'country' => $updateData['country'],

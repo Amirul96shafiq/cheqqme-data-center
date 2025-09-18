@@ -34,6 +34,7 @@ class User extends Authenticatable implements HasAvatar
         'google_id',
         'google_avatar_url',
         'timezone',
+        'timezone_source',
         'password',
         'api_key',
         'api_key_generated_at',
@@ -43,6 +44,10 @@ class User extends Authenticatable implements HasAvatar
         'city',
         'country',
         'location_updated_at',
+        'location_source',
+        'location_manually_set',
+        'timezone_manually_set',
+        'last_auto_location_update',
     ];
 
     public function getActivityLogOptions(): LogOptions
@@ -57,10 +62,14 @@ class User extends Authenticatable implements HasAvatar
                 'email_verified_at',
                 'deleted_at',
                 'timezone',
+                'timezone_source',
                 'api_key_generated_at',
                 'city',
                 'country',
                 'location_updated_at',
+                'location_source',
+                'location_manually_set',
+                'timezone_manually_set',
             ])
             ->logOnlyDirty() // Only log when values actually change
             ->useLogName('Users');
@@ -74,7 +83,7 @@ class User extends Authenticatable implements HasAvatar
         // Don't log updates if no tracked fields actually changed
         if ($eventName === 'updated') {
             $dirtyFields = $this->getDirty();
-            $trackedFields = ['username', 'name', 'email', 'avatar', 'cover_image', 'email_verified_at', 'deleted_at', 'timezone', 'api_key_generated_at', 'city', 'country', 'location_updated_at'];
+            $trackedFields = ['username', 'name', 'email', 'avatar', 'cover_image', 'email_verified_at', 'deleted_at', 'timezone', 'timezone_source', 'api_key_generated_at', 'city', 'country', 'location_updated_at', 'location_source', 'location_manually_set', 'timezone_manually_set'];
 
             // Check if any tracked fields actually changed
             $trackedFieldsChanged = ! empty(array_intersect(array_keys($dirtyFields), $trackedFields));
@@ -110,6 +119,7 @@ class User extends Authenticatable implements HasAvatar
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
             'location_updated_at' => 'datetime',
+            'last_auto_location_update' => 'datetime',
         ];
     }
 
