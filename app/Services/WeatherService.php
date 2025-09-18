@@ -432,6 +432,149 @@ class WeatherService
     }
 
     /**
+     * Generate preview weather data for settings page
+     */
+    public function getPreviewWeatherData(string $city, string $country): array
+    {
+        try {
+            return $this->generateMockWeatherData($city, $country);
+        } catch (\Exception $e) {
+            Log::error('Weather preview error: '.$e->getMessage());
+
+            return [
+                'error' => true,
+                'message' => __('settings.weather.error'),
+                'location' => [
+                    'city' => $city,
+                    'country' => $country,
+                ],
+                'current' => [
+                    'temperature' => '-',
+                    'feels_like' => '-',
+                    'condition' => 'Unknown',
+                    'description' => __('settings.weather.data_unavailable'),
+                    'icon' => '01d',
+                ],
+            ];
+        }
+    }
+
+    /**
+     * Generate mock weather data based on location
+     */
+    private function generateMockWeatherData(string $city, string $country): array
+    {
+        // Mock weather conditions with localized names
+        $conditions = [
+            'clear' => [
+                'en' => 'Clear',
+                'ms' => 'Cerah',
+                'description_en' => 'clear sky',
+                'description_ms' => 'langit cerah',
+            ],
+            'cloudy' => [
+                'en' => 'Cloudy',
+                'ms' => 'Mendung',
+                'description_en' => 'scattered clouds',
+                'description_ms' => 'awan berterabur',
+            ],
+            'rainy' => [
+                'en' => 'Rainy',
+                'ms' => 'Hujan',
+                'description_en' => 'light rain',
+                'description_ms' => 'hujan ringan',
+            ],
+            'sunny' => [
+                'en' => 'Sunny',
+                'ms' => 'Panas',
+                'description_en' => 'sunny',
+                'description_ms' => 'panas terik',
+            ],
+            'overcast' => [
+                'en' => 'Overcast',
+                'ms' => 'Mendung',
+                'description_en' => 'overcast clouds',
+                'description_ms' => 'awan tebal',
+            ],
+            'drizzle' => [
+                'en' => 'Drizzle',
+                'ms' => 'Gerimis',
+                'description_en' => 'light drizzle',
+                'description_ms' => 'gerimis ringan',
+            ],
+        ];
+
+        // Get current locale
+        $locale = app()->getLocale();
+        $isMalay = $locale === 'ms';
+
+        // Select random condition
+        $conditionKeys = array_keys($conditions);
+        $selectedKey = $conditionKeys[mt_rand(0, count($conditionKeys) - 1)];
+        $selectedCondition = $conditions[$selectedKey];
+
+        $condition = $isMalay ? $selectedCondition['ms'] : $selectedCondition['en'];
+        $description = $isMalay ? $selectedCondition['description_ms'] : $selectedCondition['description_en'];
+
+        // Generate temperature based on country (rough climate zones)
+        $baseTemp = $this->getBaseTemperatureForCountry($country);
+        $temperature = $baseTemp + mt_rand(-5, 10);
+        $feelsLike = $temperature + mt_rand(-2, 3);
+
+        return [
+            'location' => [
+                'city' => $city,
+                'country' => $country,
+            ],
+            'current' => [
+                'temperature' => $temperature,
+                'feels_like' => $feelsLike,
+                'condition' => $condition,
+                'description' => $description,
+                'icon' => '01d',
+                'humidity' => mt_rand(40, 80),
+                'pressure' => mt_rand(1000, 1020),
+                'wind_speed' => mt_rand(5, 25),
+                'visibility' => mt_rand(8, 15),
+            ],
+        ];
+    }
+
+    /**
+     * Get base temperature for country (rough climate estimation)
+     */
+    private function getBaseTemperatureForCountry(string $countryCode): int
+    {
+        $climateMap = [
+            'MY' => 28, // Malaysia - tropical
+            'SG' => 28, // Singapore - tropical
+            'TH' => 30, // Thailand - tropical
+            'ID' => 27, // Indonesia - tropical
+            'PH' => 27, // Philippines - tropical
+            'VN' => 26, // Vietnam - subtropical/tropical
+            'US' => 20, // USA - temperate (average)
+            'CA' => 15, // Canada - cool temperate
+            'AU' => 22, // Australia - varied (average)
+            'JP' => 18, // Japan - temperate
+            'KR' => 16, // South Korea - temperate
+            'CN' => 18, // China - varied (average)
+            'IN' => 28, // India - tropical/subtropical
+            'GB' => 12, // UK - cool temperate
+            'DE' => 10, // Germany - temperate
+            'FR' => 14, // France - temperate
+            'IT' => 18, // Italy - Mediterranean
+            'ES' => 20, // Spain - Mediterranean
+            'BR' => 25, // Brazil - tropical
+            'AR' => 18, // Argentina - temperate
+            'MX' => 22, // Mexico - varied
+            'EG' => 25, // Egypt - desert
+            'ZA' => 20, // South Africa - temperate
+        ];
+
+        return $climateMap[$countryCode] ?? 20; // Default to 20°C
+    }
+
+    /**
      * Update user location
      */
     public function updateUserLocation(User $user, float $latitude, float $longitude, ?string $city = null, ?string $country = null): void
