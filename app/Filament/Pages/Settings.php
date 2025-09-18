@@ -313,6 +313,23 @@ class Settings extends Page
                                 ->columns(3)
                                 ->columnSpan(8),
                         ]),
+
+                    // API Documentation section
+                    Forms\Components\Section::make(__('settings.api.documentation'))
+                        ->collapsible()
+                        ->collapsed()
+                        ->description(__('settings.api.documentation_description'))
+                        ->schema([
+                            Forms\Components\Grid::make(12)
+                                ->schema([
+                                    Forms\Components\ViewField::make('api_documentation')
+                                        ->label('')
+                                        ->view('components.livewire-wrapper', [
+                                            'component' => 'api-documentation',
+                                        ])
+                                        ->columnSpanFull(),
+                                ]),
+                        ]),
                 ]),
 
             // Location section
