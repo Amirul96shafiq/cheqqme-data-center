@@ -202,7 +202,7 @@ class AdminPanelProvider extends PanelProvider
                 // Add native danger palette so Filament can style danger buttons (fi-color-danger)
                 'danger' => Color::Red,
             ])
-            ->sidebarWidth('17rem')
+            ->sidebarCollapsibleOnDesktop()
             ->viteTheme([
                 'resources/css/filament/admin/theme.css',
                 'resources/css/app.css',

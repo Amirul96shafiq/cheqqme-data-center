@@ -15,11 +15,11 @@
     }
 
     .fi-modal-close-overlay {
-        /* Ensure overlays sit above custom fixed sidebar */
+        /* Ensure overlays sit above modal content */
         z-index: 80 !important;
     }
 
-    /* Modal root containers also need higher stacking to cover the sidebar */
+    /* Modal root containers also need higher stacking to cover content */
     .fi-modal .fixed.inset-0 {
         z-index: 90 !important; /* above overlay */
     }
@@ -109,24 +109,8 @@
         border-color: rgb(250 250 250 / 0.25) !important;
     }
 
-    /* Force sidebar to pin on large screens, with full viewport height */
+    /* Action Board: remove vertical scrolling on the page when Flowforge board is present */
     @media (min-width: 1024px) {
-        /* Pin the sidebar */
-        .fi-main-sidebar.fi-sidebar,
-        .fi-main-sidebar .fi-sidebar {
-            position: fixed !important;
-            top: 0;
-            inset-inline-start: 0;
-            height: 100vh;
-            z-index: 10 !important; /* keep under modal overlays */
-        }
-
-        /* Reserve space for the fixed sidebar */
-        .fi-main-ctn {
-            margin-inline-start: var(--sidebar-width) !important;
-        }
-
-        /* Action Board: remove vertical scrolling on the page when Flowforge board is present */
         .fi-main:has(.ff-board),
         .fi-page:has(.ff-board) {
             overflow-y: hidden !important;
@@ -405,24 +389,8 @@
         border: none !important;
     }
 
-    /* Force sidebar to pin on large screens, with full viewport height */
+    /* Action Board: remove vertical scrolling on the page when Flowforge board is present */
     @media (min-width: 1024px) {
-        /* Pin the sidebar */
-        .fi-main-sidebar.fi-sidebar,
-        .fi-main-sidebar .fi-sidebar {
-            position: fixed !important;
-            top: 0;
-            inset-inline-start: 0;
-            height: 100vh;
-            z-index: 10 !important; /* keep under modal overlays */
-        }
-
-        /* Reserve space for the fixed sidebar */
-        .fi-main-ctn {
-            margin-inline-start: var(--sidebar-width) !important;
-        }
-
-        /* Action Board: remove vertical scrolling on the page when Flowforge board is present */
         .fi-main:has(.ff-board),
         .fi-page:has(.ff-board) {
             overflow-y: hidden !important;
