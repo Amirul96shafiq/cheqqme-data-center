@@ -389,6 +389,57 @@
         border: none !important;
     }
 
+    /* Hide the default sidebar collapse button */
+    .fi-sidebar-header .fi-icon-btn.ms-auto,
+    .fi-sidebar-header .fi-icon-btn.mx-auto,
+    .fi-sidebar-header button[aria-label*="collapse"],
+    .fi-sidebar-header button[aria-label*="expand"],
+    .fi-sidebar-header button[title*="collapse"],
+    .fi-sidebar-header button[title*="expand"],
+    .fi-sidebar-header button[class*="chevron"],
+    /* More specific selectors */
+    .fi-sidebar .fi-sidebar-header .fi-icon-btn.ms-auto,
+    .fi-sidebar .fi-sidebar-header .fi-icon-btn.mx-auto,
+    .fi-sidebar .fi-sidebar-header button[aria-label*="collapse"],
+    .fi-sidebar .fi-sidebar-header button[aria-label*="expand"],
+    /* Target any button with chevron icons in sidebar header */
+    .fi-sidebar-header button svg[data-lucide="chevron-left"],
+    .fi-sidebar-header button svg[data-lucide="chevron-right"],
+    .fi-sidebar-header button [data-lucide="chevron-left"],
+    .fi-sidebar-header button [data-lucide="chevron-right"] {
+        display: none !important;
+    }
+
+    /* Custom sidebar footer styling - Chatbox-inspired design */
+    .fi-sidebar-footer {
+        @apply flex items-center justify-start p-4;
+    }
+
+    .fi-sidebar-collapse-button,
+    .fi-sidebar-expand-button {
+        @apply w-12 h-12 flex items-center justify-center rounded-lg transition-all duration-200 cursor-pointer;
+        @apply shadow-lg hover:shadow-xl bg-primary-500 ;
+        @apply opacity-80 hover:opacity-100;
+        @apply border border-primary-500 dark:border-primary-500;
+        @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    }
+
+    .fi-sidebar-collapse-button-icon,
+    .fi-sidebar-expand-button-icon {
+        @apply w-6 h-6 text-gray-600 dark:text-gray-400 transition-all duration-200;
+    }
+
+    .fi-sidebar-collapse-button:hover .fi-sidebar-collapse-button-icon,
+    .fi-sidebar-expand-button:hover .fi-sidebar-expand-button-icon {
+        @apply text-gray-900 dark:text-gray-100;
+    }
+
+    /* Active state for better visual feedback */
+    .fi-sidebar-collapse-button:active,
+    .fi-sidebar-expand-button:active {
+        @apply transform scale-95 shadow-md;
+    }
+
     /* Action Board: remove vertical scrolling on the page when Flowforge board is present */
     @media (min-width: 1024px) {
         .fi-main:has(.ff-board),

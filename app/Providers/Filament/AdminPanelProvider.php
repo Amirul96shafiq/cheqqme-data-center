@@ -19,6 +19,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\MaxWidth;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -331,6 +332,12 @@ class AdminPanelProvider extends PanelProvider
                 function () {
                     return view('filament.scripts.greeting-modal').
                         view('components.drag-drop-lang');
+                },
+            )
+            ->renderHook(
+                PanelsRenderHook::SIDEBAR_FOOTER,
+                function () {
+                    return view('filament.sidebar-footer');
                 },
             )
             ->plugins([
