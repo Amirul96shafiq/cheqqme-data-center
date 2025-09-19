@@ -10,7 +10,7 @@
         x-show="$store.sidebar.isOpen"
     >
         <x-filament::icon
-            icon="heroicon-o-chevron-left"
+            icon="heroicon-m-chevron-left"
             class="fi-sidebar-collapse-button-icon"
         />
     </button>
@@ -26,7 +26,7 @@
         x-show="!$store.sidebar.isOpen"
     >
         <x-filament::icon
-            icon="heroicon-o-chevron-right"
+            icon="heroicon-m-chevron-right"
             class="fi-sidebar-expand-button-icon"
         />
     </button>
