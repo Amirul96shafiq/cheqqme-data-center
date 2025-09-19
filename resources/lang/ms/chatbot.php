@@ -89,4 +89,13 @@ return [
         'backup_download' => 'Muat Turun Backup?',
         'backup_download_description' => 'Adakah anda pasti ingin memuat turun fail backup ini?',
     ],
+
+    // Tabs
+    'tabs' => [
+        'all' => 'Semua',
+        'today' => 'Hari Ini',
+        'this_week' => 'Minggu Ini',
+        'this_month' => 'Bulan Ini',
+        'this_year' => 'Tahun Ini',
+    ],
 ];

@@ -16,6 +16,7 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
 class ChatbotHistory extends Page implements HasTable
@@ -100,6 +101,33 @@ class ChatbotHistory extends Page implements HasTable
                     ->alignCenter(),
             ])
             ->filters([
+                SelectFilter::make('time_period')
+                    ->label(__('chatbot.filter.time_period'))
+                    ->options([
+                        'today' => __('chatbot.tabs.today'),
+                        'this_week' => __('chatbot.tabs.this_week'),
+                        'this_month' => __('chatbot.tabs.this_month'),
+                        'this_year' => __('chatbot.tabs.this_year'),
+                    ])
+                    ->placeholder(__('chatbot.tabs.all'))
+                    ->searchable()
+                    ->query(function (Builder $query, array $data): Builder {
+                        return match ($data['value'] ?? null) {
+                            'today' => $query->whereBetween('backup_date', [
+                                now()->startOfDay(),
+                                now()->endOfDay(),
+                            ]),
+                            'this_week' => $query->whereBetween('backup_date', [
+                                now()->startOfWeek(),
+                                now()->endOfWeek(),
+                            ]),
+                            'this_month' => $query->whereMonth('backup_date', now()->month)
+                                ->whereYear('backup_date', now()->year),
+                            'this_year' => $query->whereYear('backup_date', now()->year),
+                            default => $query,
+                        };
+                    }),
+
                 SelectFilter::make('backup_type')
                     ->label(__('chatbot.filter.backup_type'))
                     ->options([
@@ -107,7 +135,8 @@ class ChatbotHistory extends Page implements HasTable
                         'manual' => __('chatbot.filter.types.manual'),
                         'import' => __('chatbot.filter.types.import'),
                     ])
-                    ->placeholder(__('chatbot.filter.all_types')),
+                    ->placeholder(__('chatbot.filter.all_types'))
+                    ->searchable(),
             ])
             ->actions([
                 ActionGroup::make([

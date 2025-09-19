@@ -45,6 +45,7 @@ return [
         'reset' => 'Reset',
         'label' => 'Filters',
         'backup_type' => 'Backup Type',
+        'time_period' => 'Time Period',
         'all_types' => 'All backup types',
         'types' => [
             'weekly' => 'Weekly backups',
@@ -88,5 +89,14 @@ return [
         'backup_delete_description' => 'Are you sure you want to delete this backup? This action cannot be undone.',
         'backup_download' => 'Download Backup?',
         'backup_download_description' => 'Are you sure you want to download this backup file?',
+    ],
+
+    // Tabs
+    'tabs' => [
+        'all' => 'All',
+        'today' => 'Today',
+        'this_week' => 'This Week',
+        'this_month' => 'This Month',
+        'this_year' => 'This Year',
     ],
 ];
