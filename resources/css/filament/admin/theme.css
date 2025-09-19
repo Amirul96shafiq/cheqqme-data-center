@@ -52,6 +52,27 @@
         z-index: 30;
     }
 
+    /* Increase width of the global search field */
+    .fi-global-search .fi-input-wrp {
+        width: 10rem !important; /* w-80 - increased from default */
+        min-width: 10rem !important;
+    }
+
+    /* Responsive width adjustments */
+    @media (min-width: 640px) {
+        .fi-global-search .fi-input-wrp {
+            width: 14rem !important; /* w-96 on sm and up */
+            min-width: 14rem !important;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .fi-global-search .fi-input-wrp {
+            width: 18rem !important; /* w-112 on lg and up */
+            min-width: 18rem !important;
+        }
+    }
+
     .fi-global-search-results-ctn {
         z-index: 50 !important;
     }
