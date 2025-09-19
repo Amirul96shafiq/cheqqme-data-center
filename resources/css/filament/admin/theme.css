@@ -8,9 +8,9 @@
         z-index: 9999 !important;
     }
 
-    /* Dark mode primary buttons: ensure readable text */
-    .dark .fi-btn.fi-btn-color-primary,
-    .dark .fi-btn.fi-btn-color-primary * {
+    /* Primary buttons: ensure readable text */
+    .fi-btn.fi-btn-color-primary,
+    .fi-btn.fi-btn-color-primary * {
         color: rgb(78 29 4) !important;
     }
 

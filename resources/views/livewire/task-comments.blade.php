@@ -142,9 +142,8 @@
                                     <div class="flex items-center gap-1">
                                         @if(!$comment->isDeleted())
                                             <!-- Reply button (always visible, separate from group actions) -->
-                                            <button type="button" wire:click="startReply({{ $comment->id }})" class="flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.reply') }}">
+                                            <button type="button" wire:click="startReply({{ $comment->id }})" class="flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.reply') }}">
                                                 <span class="text-[10px] font-light">{{ __('comments.buttons.reply') }}</span>
-                                                @svg('heroicon-o-chat-bubble-left-right', 'w-4 h-4 transition-transform duration-200')
                                             </button>
                                             
                                             <!-- Group actions dropdown (Focus, Edit, Delete) -->
