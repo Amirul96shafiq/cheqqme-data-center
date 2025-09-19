@@ -828,19 +828,19 @@ function updateWeatherFooter(weatherData) {
     try {
         // Parse the ISO timestamp and format it
         const date = new Date(timestamp);
-        const formattedDate = date.toLocaleDateString('en-US', {
-            month: 'numeric',
-            day: 'numeric',
-            year: '2-digit'
-        });
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear().toString().slice(-2);
+        const formattedDate = `${day}/${month}/${year}`;
+        
         const formattedTime = date.toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: '2-digit',
             hour12: true
         });
 
-        weatherElement.textContent = `${lastUpdatedText}: ${formattedDate} ${formattedTime}`;
-        console.log('Updated weather section with timestamp:', `${lastUpdatedText}: ${formattedDate} ${formattedTime}`);
+        weatherElement.textContent = `${lastUpdatedText}: ${formattedDate}, ${formattedTime}`;
+        console.log('Updated weather section with timestamp:', `${lastUpdatedText}: ${formattedDate}, ${formattedTime}`);
     } catch (error) {
         console.error('Error formatting timestamp:', error);
         weatherElement.textContent = `${lastUpdatedText}: Unknown`;
