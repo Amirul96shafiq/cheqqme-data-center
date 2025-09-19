@@ -909,10 +909,17 @@ class Settings extends Page
                     ->schema([
                         Forms\Components\Placeholder::make('timezone_preview')
                             ->label('')
+                            ->live()
                             ->content(function ($get) {
                                 $timezone = $get('timezone');
-                                if (! $timezone) {
-                                    return __('settings.timezone.select_to_preview');
+
+                                if (empty($timezone)) {
+                                    $html = '<div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                                <div class="text-2xl font-bold">null</div>
+                                                <div class="text-sm mt-2">'.__('settings.timezone.no_timezone_data_available').'</div>
+                                            </div>';
+
+                                    return new \Illuminate\Support\HtmlString($html);
                                 }
 
                                 try {
@@ -997,7 +1004,6 @@ class Settings extends Page
                                     return 'Invalid timezone';
                                 }
                             })
-                            ->visible(fn ($get) => ! empty($get('timezone')))
                             ->extraAttributes(['class' => 'text-sm text-gray-600 dark:text-gray-400'])
                             ->columnSpan(12),
                     ]),

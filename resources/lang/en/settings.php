@@ -73,6 +73,7 @@ return [
         'current_time_preview' => 'Time & Timezone Preview',
         'select_to_preview' => 'Select a timezone to preview the current time.',
         'preview_description' => 'Preview the current time in your timezone.',
+        'no_timezone_data_available' => 'No timezone data available. Use the <strong>Timezone Settings</strong> above to preview the current Timezone Preview.',
         'current_time' => 'Current Time',
         'information' => 'Timezone (TZ) Information',
         'identifier_name' => 'Identifier Name',
@@ -100,7 +101,7 @@ return [
         'data_unavailable' => 'Weather data unavailable',
         'error' => 'Unable to fetch weather data',
         'feels_like' => 'Feels like',
-        'no_location_data_available' => 'No location data available',
+        'no_location_data_available' => 'No location data available. Use the <strong>Location Settings</strong> above to preview the current Weather Preview',
     ],
 
     // Notification messages

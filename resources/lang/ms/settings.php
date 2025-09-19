@@ -73,6 +73,7 @@ return [
         'current_time_preview' => 'Pratonton Masa & Zon Masa',
         'select_to_preview' => 'Pilih zon masa untuk melihat pratonton masa semasa.',
         'preview_description' => 'Pratonton masa semasa dalam zon masa anda.',
+        'no_timezone_data_available' => 'Tiada data zon masa tersedia. Tetapkan <strong>Tetapan Zon Masa</strong> di atas untuk melihat pratonton zon masa.',
         'current_time' => 'Masa Semasa',
         'information' => 'Maklumat Zon Masa (TZ)',
         'identifier_name' => 'Nama Pengenalan',
@@ -100,7 +101,7 @@ return [
         'data_unavailable' => 'Data cuaca tidak tersedia',
         'error' => 'Tidak dapat mengambil data cuaca',
         'feels_like' => 'Terasa seperti',
-        'no_location_data_available' => 'Tiada data lokasi tersedia',
+        'no_location_data_available' => 'Tiada data lokasi tersedia. Tetapkan <strong>Tetapan Lokasi</strong> di atas untuk melihat pratonton cuaca.',
     ],
 
     // Notification messages
