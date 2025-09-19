@@ -24,7 +24,6 @@
     {{
         $attributes->class([
             'fi-sidebar-item',
-            // @deprecated `fi-sidebar-item-active` has been replaced by `fi-active`.
             'fi-active fi-sidebar-item-active' => $active,
             'flex flex-col gap-y-1' => $active || $activeChildItems,
         ])
@@ -48,7 +47,7 @@
         @endif
         @class([
             'fi-sidebar-item-button relative flex items-center justify-center gap-x-3 rounded-lg px-2 py-2 outline-none transition duration-75',
-            'hover:bg-gray-100 focus-visible:bg-gray-100 dark:hover:bg-white/5 dark:focus-visible:bg-white/5' => filled($url),
+            'hover:bg-gray-100 focus-visible:bg-gray-100 dark:hover:bg-white/10 dark:focus-visible:bg-white/5' => filled($url),
             'bg-gray-100 dark:bg-white/5' => $active,
         ])
     >
@@ -65,12 +64,11 @@
                 />
                 
                 {{-- Show badge on icon when sidebar is collapsed --}}
-                @if (filled($badge) && $sidebarCollapsible)
+                @if (filled($badge))
                     <span
                         x-show="!$store.sidebar.isOpen"
-                        class="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-primary-500 rounded-full shadow-lg border-2 border-white dark:border-gray-900"
-                        style="z-index: 20; transform: translate(25%, -25%);"
-                        x-text="@js($badge)"
+                        class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-primary-500 rounded-full shadow transform"
+                        style="z-index: 10;"
                     >
                         {{ $badge }}
                     </span>
@@ -123,6 +121,7 @@
             {{ $slot }}
         </span>
 
+        {{-- Show badge next to label when sidebar is open --}}
         @if (filled($badge))
             <span
                 @if ($sidebarCollapsible)
