@@ -92,7 +92,7 @@ class AppServiceProvider extends ServiceProvider
                                 const iconContainer = link.querySelector('.fi-sidebar-item-icon').parentElement;
                                 if(iconContainer){
                                     badge = document.createElement('span');
-                                    badge.className='action-board-badge absolute bottom-2 right-4 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-50 rounded-full shadow-lg z-10';
+                                    badge.className='action-board-badge absolute bottom-2 right-4 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full shadow-lg z-10';
                                     badge.style.minWidth='1.25rem';
                                     badge.style.minHeight='1.25rem';
                                     badge.style.fontSize='0.75rem';

@@ -63,19 +63,31 @@
             </div>
 
             @if (filament()->isSidebarCollapsibleOnDesktop())
-                <x-filament::icon-button
-                    color="gray"
-                    :icon="$isRtl ? 'heroicon-o-chevron-left' : 'heroicon-o-chevron-right'"
-                    {{-- @deprecated Use `panels::sidebar.expand-button.rtl` instead of `panels::sidebar.expand-button` for RTL. --}}
-                    :icon-alias="$isRtl ? ['panels::sidebar.expand-button.rtl', 'panels::sidebar.expand-button'] : 'panels::sidebar.expand-button'"
-                    icon-size="lg"
-                    :label="__('filament-panels::layout.actions.sidebar.expand.label')"
+                <!-- Custom chat image when sidebar is collapsed -->
+                <div 
                     x-cloak
-                    x-data="{}"
-                    x-on:click="$store.sidebar.open()"
                     x-show="! $store.sidebar.isOpen"
-                    class="mx-auto"
-                />
+                    class="flex flex-col items-center justify-center h-full"
+                >
+                    <a href="/admin">
+                        <img 
+                            src="/logos/logo_collapsed.png" 
+                            alt="CheQQme Data Center" 
+                            class="w-8 h-8 object-contain hover:opacity-80 transition-opacity"
+                        />
+                    </a>
+                    <x-filament::icon-button
+                        color="gray"
+                        :icon="$isRtl ? 'heroicon-o-chevron-left' : 'heroicon-o-chevron-right'"
+                        {{-- @deprecated Use `panels::sidebar.expand-button.rtl` instead of `panels::sidebar.expand-button` for RTL. --}}
+                        :icon-alias="$isRtl ? ['panels::sidebar.expand-button.rtl', 'panels::sidebar.expand-button'] : 'panels::sidebar.expand-button'"
+                        icon-size="sm"
+                        :label="__('filament-panels::layout.actions.sidebar.expand.label')"
+                        x-data="{}"
+                        x-on:click="$store.sidebar.open()"
+                        class="mx-auto"
+                    />
+                </div>
             @endif
 
             @if (filament()->isSidebarCollapsibleOnDesktop() || filament()->isSidebarFullyCollapsibleOnDesktop())
