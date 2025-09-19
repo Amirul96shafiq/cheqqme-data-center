@@ -436,7 +436,7 @@
 
     .fi-sidebar-collapse-button:hover .fi-sidebar-collapse-button-icon,
     .fi-sidebar-expand-button:hover .fi-sidebar-expand-button-icon {
-        @apply text-gray-900 dark:text-gray-100;
+        @apply text-primary-900 dark:text-primary-900;
     }
 
     /* Active state for better visual feedback */
