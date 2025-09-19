@@ -80,20 +80,27 @@ class AppServiceProvider extends ServiceProvider
                             return link;
                         }
                         
-                        // Ensure the badge is present
+                        // Ensure the badge is present - works for both collapsed and expanded sidebar
                         function ensureBadge(link){
                             if(!link) return null;
-                            // Look for existing Filament native badge
-                            let badge = link.querySelector('.fi-badge, [class*="fi-badge"]');
+                            
+                            // Look for existing custom badge first
+                            let badge = link.querySelector('.action-board-badge');
+                            
                             if(!badge){
-                                // Create badge if it doesn't exist
-                                const badgeContainer = link.querySelector('[class*="fi-sidebar-item-button"] span:last-child');
-                                if(badgeContainer){
+                                // Create badge positioned relative to the icon container
+                                const iconContainer = link.querySelector('.fi-sidebar-item-icon').parentElement;
+                                if(iconContainer){
                                     badge = document.createElement('span');
-                                    badge.className='fi-badge inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full shadow-sm';
+                                    badge.className='action-board-badge absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full shadow-lg z-10';
                                     badge.style.minWidth='1.25rem';
                                     badge.style.minHeight='1.25rem';
-                                    badgeContainer.appendChild(badge);
+                                    badge.style.fontSize='0.75rem';
+                                    badge.style.lineHeight='1';
+                                    
+                                    // Ensure the icon container is positioned relatively
+                                    iconContainer.style.position = 'relative';
+                                    iconContainer.appendChild(badge);
                                 }
                             }
                             return badge;
@@ -113,11 +120,14 @@ class AppServiceProvider extends ServiceProvider
                                 console.log('Badge updated:', count);
                             }
                             
-                            // Show/hide badge based on count
+                            // Show/hide badge based on count - always visible when count > 0
                             if(count === 0){
                                 badge.style.display = 'none';
                             } else {
-                                badge.style.display = 'flex';
+                                badge.style.display = 'inline-flex';
+                                // Ensure badge is always visible regardless of sidebar state
+                                badge.style.visibility = 'visible';
+                                badge.style.opacity = '1';
                             }
                         }
                         
@@ -185,6 +195,24 @@ class AppServiceProvider extends ServiceProvider
                             });
                         }
                         
+                        // Handle sidebar state changes
+                        function handleSidebarToggle() {
+                            // Re-ensure badge is properly positioned after sidebar toggle
+                            setTimeout(() => {
+                                const link = findLink();
+                                if(link) {
+                                    const badge = link.querySelector('.action-board-badge');
+                                    if(badge) {
+                                        // Force badge repositioning
+                                        const iconContainer = link.querySelector('.fi-sidebar-item-icon').parentElement;
+                                        if(iconContainer && badge.parentElement !== iconContainer) {
+                                            iconContainer.appendChild(badge);
+                                        }
+                                    }
+                                }
+                            }, 100);
+                        }
+                        
                         // Initialize when DOM is ready
                         document.addEventListener('DOMContentLoaded', function() {
                             startPolling();
@@ -194,6 +222,34 @@ class AppServiceProvider extends ServiceProvider
                                 console.log('Manual badge refresh triggered');
                                 pollForUpdates();
                             };
+                            
+                            // Listen for sidebar toggle events
+                            document.addEventListener('click', function(e) {
+                                // Check if sidebar toggle button was clicked
+                                if(e.target.closest('[data-filament-sidebar-toggle]') || 
+                                   e.target.closest('.fi-sidebar-toggle') ||
+                                   e.target.closest('[x-on\\:click*="sidebar.toggle"]')) {
+                                    handleSidebarToggle();
+                                }
+                            });
+                            
+                            // Also listen for Alpine.js store changes
+                            if(window.Alpine && window.Alpine.store) {
+                                try {
+                                    const sidebarStore = window.Alpine.store('sidebar');
+                                    if(sidebarStore) {
+                                        // Override the toggle method to detect changes
+                                        const originalToggle = sidebarStore.toggle;
+                                        sidebarStore.toggle = function() {
+                                            const result = originalToggle.call(this);
+                                            setTimeout(handleSidebarToggle, 50);
+                                            return result;
+                                        };
+                                    }
+                                } catch(e) {
+                                    console.log('Could not hook into sidebar store:', e);
+                                }
+                            }
                         });
                     }
                     </script>
