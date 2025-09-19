@@ -3,6 +3,11 @@
 @config 'tailwind.config.js';
 
 @layer utilities {
+    /* Custom max content width - 90% instead of full width */
+    .fi-main.max-w-full {
+        max-width: 94% !important;
+    }
+
     /* Ensure global loader is above everything */
     #global-loader {
         z-index: 9999 !important;
