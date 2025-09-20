@@ -58,6 +58,10 @@ return [
         'total_documents' => 'Jumlah Dokumen',
         'created_at' => 'Dicipta Pada',
         'updated_at_by' => 'Dikemaskini Pada (oleh)',
+        'tooltip' => [
+            'full_name' => 'Nama Penuh',
+            'company' => 'Syarikat',
+        ],
     ],
 
     'filter' => [

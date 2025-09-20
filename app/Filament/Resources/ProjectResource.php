@@ -284,12 +284,20 @@ class ProjectResource extends Resource
                     ->label(__('project.table.title'))
                     ->searchable()
                     ->sortable()
-                    ->limit(20),
-                TextColumn::make('client.company_name')
+                    ->limit(20)
+                    ->tooltip(function ($record) {
+                        return $record->title;
+                    }),
+                TextColumn::make('client.pic_name')
                     ->label(__('project.table.client'))
                     ->sortable()
                     ->searchable()
-                    ->limit(20),
+                    ->formatStateUsing(function ($state, $record) {
+                        return ClientFormatter::formatClientDisplay($state, $record->client->company_name);
+                    })
+                    ->tooltip(function ($record) {
+                        return __('project.table.tooltip.full_name').": {$record->client->pic_name}".', '.__('project.table.tooltip.company').": {$record->client->company_name}";
+                    }),
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
