@@ -333,8 +333,7 @@ class ProjectResource extends Resource
 
                         return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
-                    ->sortable()
-                    ->limit(30),
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('client_id')

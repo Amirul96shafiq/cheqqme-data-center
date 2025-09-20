@@ -298,8 +298,7 @@ class TrelloBoardResource extends Resource
 
                         return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
                     })
-                    ->sortable()
-                    ->limit(30),
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('show_on_boards')
