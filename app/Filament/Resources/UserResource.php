@@ -277,7 +277,10 @@ class UserResource extends Resource
                     ->label(__('user.table.email'))
                     ->searchable()
                     ->sortable()
-                    ->limit(30),
+                    ->limit(30)
+                    ->tooltip(function ($record) {
+                        return strlen($record->email) > 40 ? substr($record->email, 0, length: 40).'...' : $record->email;
+                    }),
 
                 TextColumn::make('created_at')
                     ->label(__('user.table.created_at'))
@@ -386,12 +389,12 @@ class UserResource extends Resource
                             // Only visible to the logged-in user and only for their own account
                             auth()->id() === $record->id
                         ),
-                        
+
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
                 ])
-                ->dropdownPlacement('top-start'),
+                    ->dropdownPlacement('top-start'),
             ])
             ->bulkActions([
                 //
