@@ -67,7 +67,7 @@
         </div>
     @endif
 
-    {{-- Collapsed sidebar group label with chevron --}}
+    {{-- Collapsed sidebar group label with full text --}}
     @if ($label && $sidebarCollapsible)
         <div
             x-show="! $store.sidebar.isOpen"
@@ -81,36 +81,44 @@
                 x-on:click="$store.sidebar.toggleCollapsedGroup(label)"
             @endif
             @class([
-                'fi-sidebar-group-collapsed flex items-center justify-between gap-x-1 px-1 py-1.5 rounded-lg cursor-pointer w-full max-w-[4rem]',
-                'hover:bg-gray-100 dark:hover:bg-white/10' => $collapsible,
+                'fi-sidebar-group-collapsed flex items-center pb-4 rounded-lg cursor-pointer w-full' => $collapsible,
             ])
+            style="max-width: 3rem; overflow: hidden;"
         >
-            <div class="flex items-center gap-x-1 min-w-0 flex-1 overflow-hidden">
-                @if ($icon)
-                    <x-filament::icon
-                        :icon="$icon"
-                        class="fi-sidebar-group-icon h-4 w-4 text-gray-400 dark:text-gray-500 flex-shrink-0"
-                    />
-                @endif
-                @php
-                    $displayText = \App\Helpers\SidebarAbbreviationHelper::generateAbbreviation($label, 4);
-                @endphp
-                
-                <span 
-                    class="fi-sidebar-group-label-collapsed text-xs font-medium text-gray-500 dark:text-gray-400 truncate min-w-0"
-                    style="max-width: 2rem;"
-                    title="{{ $label }}"
-                >
-                    {{ $displayText }}
-                </span>
-            </div>
-            @if ($collapsible)
+            @if ($icon)
                 <x-filament::icon
-                    icon="heroicon-m-chevron-up"
-                    x-bind:class="{ '-rotate-180': $store.sidebar.groupIsCollapsed(label) }"
-                    class="h-3 w-3 text-gray-400 dark:text-gray-500 transition-transform duration-200 flex-shrink-0"
+                    :icon="$icon"
+                    class="fi-sidebar-group-icon h-4 w-4 text-gray-400 dark:text-gray-500 flex-shrink-0"
                 />
             @endif
+            <div 
+                class="fi-sidebar-group-label-collapsed text-[10px] font-normal text-gray-500 dark:text-gray-400 min-w-0 flex-1 leading-tight text-center"
+                title="{{ $label }}"
+            >
+                @php
+                    $words = explode(' ', $label);
+                    $lines = [];
+                    $currentLine = '';
+                    
+                    foreach ($words as $word) {
+                        if (strlen($currentLine . ' ' . $word) <= 8) {
+                            $currentLine = $currentLine ? $currentLine . ' ' . $word : $word;
+                        } else {
+                            if ($currentLine) {
+                                $lines[] = $currentLine;
+                            }
+                            $currentLine = $word;
+                        }
+                    }
+                    if ($currentLine) {
+                        $lines[] = $currentLine;
+                    }
+                @endphp
+                
+                @foreach ($lines as $line)
+                    <div class="break-words">{{ $line }}</div>
+                @endforeach
+            </div>
         </div>
     @endif
 
