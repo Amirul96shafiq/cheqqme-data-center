@@ -367,7 +367,7 @@ class DocumentResource extends Resource
                     ->searchable()
                     ->limit(20)
                     ->tooltip(function ($record) {
-                        return $record->project?->title ?? '-';
+                        return $record->project?->title ?? '';
                     }),
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))

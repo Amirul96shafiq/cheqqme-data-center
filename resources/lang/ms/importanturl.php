@@ -53,6 +53,10 @@ return [
         'important_url' => 'Link URL',
         'created_at' => 'Dicipta Pada',
         'updated_at_by' => 'Dikemas Kini Pada (oleh)',
+        'tooltip' => [
+            'full_name' => 'Nama Penuh',
+            'company' => 'Syarikat',
+        ],
     ],
 
     'filters' => [

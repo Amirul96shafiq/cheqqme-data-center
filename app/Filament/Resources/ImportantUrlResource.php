@@ -327,8 +327,11 @@ class ImportantUrlResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->limit(15)
-                    ->tooltip(function ($record) {
+                    ->getStateUsing(function ($record) {
                         return $record->project?->title ?? '-';
+                    })
+                    ->tooltip(function ($record) {
+                        return $record->project?->title ?? '';
                     }),
 
                 TextColumn::make('created_at')
