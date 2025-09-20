@@ -100,7 +100,7 @@
                 $resourceCountBadge = $attributes['resource_count'];
             }
             // Remove from the attributes list so they're not rendered twice
-            $filtered = $attributes->except(['assigned_to_username_self', 'assigned_to_username', 'assigned_to_extra_count_self', 'assigned_to_extra_count', 'due_date_red', 'due_date_yellow', 'due_date_gray', 'due_date_green', 'featured_image', 'message_count', 'attachment_count', 'resource_count']);
+            $filtered = $attributes->except(['assigned_to_username_self', 'assigned_to_username', 'assigned_to_full_username', 'all_assigned_usernames', 'assigned_to_extra_count_self', 'assigned_to_extra_count', 'due_date_red', 'due_date_yellow', 'due_date_gray', 'due_date_green', 'featured_image', 'message_count', 'attachment_count', 'resource_count']);
         @endphp
         
         {{-- Special badges layout: assigned, message/attachment/resource counts, and due date --}}
@@ -120,6 +120,7 @@
                                 :badge="$assignedBadge['badge'] ?? null"
                                 :rounded="$assignedBadge['rounded'] ?? 'md'"
                                 :size="$assignedBadge['size'] ?? 'md'"
+                                :tooltip="$attributes['assigned_to_full_username']['value'] ?? null"
                             />
                             @if($extraAssignedBadge)
                                 <x-flowforge::card-badge
@@ -131,6 +132,7 @@
                                     :badge="$extraAssignedBadge['badge'] ?? null"
                                     :rounded="$extraAssignedBadge['rounded'] ?? 'md'"
                                     :size="$extraAssignedBadge['size'] ?? 'md'"
+                                    :tooltip="$attributes['all_assigned_usernames']['value'] ?? null"
                                 />
                             @endif
                         </div>

@@ -6,7 +6,8 @@
     'size' => 'md',
     'type' => null,
     'rounded' => 'md',
-    'badge' => null
+    'badge' => null,
+    'tooltip' => null
 ])
 
 @php
@@ -24,7 +25,7 @@
     ];
 @endphp
 
-<div @class($badgeClasses)>
+<div @class($badgeClasses) @if($tooltip) title="{{ $tooltip }}" @endif>
     @if($icon)
         <x-dynamic-component :component="$icon" @class($iconClasses) />
     @endif

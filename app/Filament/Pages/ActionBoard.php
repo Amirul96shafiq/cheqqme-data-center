@@ -33,6 +33,8 @@ class ActionBoard extends KanbanBoardPage
             ->cardAttributes([
                 'assigned_to_username_self' => '',
                 'assigned_to_username' => '',
+                'assigned_to_full_username' => '',
+                'all_assigned_usernames' => '',
                 'assigned_to_extra_count_self' => '',
                 'assigned_to_extra_count' => '',
                 'due_date_red' => '',

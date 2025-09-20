@@ -123,6 +123,8 @@ class Task extends Model
         'assigned_to_badge',
         'assigned_to_extra_count',
         'assigned_to_extra_count_self',
+        'assigned_to_full_username',
+        'all_assigned_usernames',
         'due_date_red',
         'due_date_yellow',
         'due_date_green',
@@ -382,6 +384,44 @@ class Task extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Get the full username for tooltip display.
+     */
+    public function getAssignedToFullUsernameAttribute(): ?string
+    {
+        $firstUser = $this->first_assigned_user;
+        if (! $firstUser) {
+            return null;
+        }
+
+        return $firstUser->name ?? $firstUser->username ?? 'User #'.$firstUser->id;
+    }
+
+    /**
+     * Get all assigned usernames for extra count tooltip display.
+     * Excludes the first assigned user since they have their own badge.
+     */
+    public function getAllAssignedUsernamesAttribute(): ?string
+    {
+        $users = $this->assignedToUsers();
+        if ($users->isEmpty()) {
+            return null;
+        }
+
+        // Skip the first user since they have their own badge
+        $extraUsers = $users->skip(1);
+
+        if ($extraUsers->isEmpty()) {
+            return null;
+        }
+
+        $usernames = $extraUsers->map(function ($user) {
+            return $user->name ?? $user->username ?? 'User #'.$user->id;
+        })->toArray();
+
+        return implode(', ', $usernames);
     }
 
     /**
