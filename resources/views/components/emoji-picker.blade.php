@@ -369,18 +369,8 @@ function emojiPicker(commentId) {
                     if (data.data.action === 'added') {
                         this.userReactions.push(emoji);
                         this.addToRecentEmojis(emoji);
-                        this.$dispatch('emojiReactionNotification', {
-                            message: '{{ __("comments.emoji_picker.reaction_added_successfully") }}',
-                            type: 'success'
-                        });
-                        this.showCustomNotification('{{ __("comments.emoji_picker.reaction_added_successfully") }}', 'success');
                     } else if (data.data.action === 'removed') {
                         this.userReactions = this.userReactions.filter(e => e !== emoji);
-                        this.$dispatch('emojiReactionNotification', {
-                            message: '{{ __("comments.emoji_picker.reaction_removed_successfully") }}',
-                            type: 'info'
-                        });
-                        this.showCustomNotification('{{ __("comments.emoji_picker.reaction_removed_successfully") }}', 'info');
                     }
                     
                     // Refresh the reactions display
@@ -413,17 +403,9 @@ function emojiPicker(commentId) {
                     // setTimeout(() => { location.reload(); }, 1000);
                 } else {
                     console.error('API Error:', data);
-                    this.$dispatch('emojiReactionNotification', {
-                        message: data.message || '{{ __("comments.emoji_picker.failed_to_add_reaction") }}',
-                        type: 'danger'
-                    });
                 }
             } catch (error) {
                 console.error('Failed to add reaction:', error);
-                this.$dispatch('emojiReactionNotification', {
-                    message: '{{ __("comments.emoji_picker.failed_to_add_reaction") }}',
-                    type: 'danger'
-                });
             } finally {
                 this.loading = false;
             }
@@ -481,18 +463,6 @@ function emojiPicker(commentId) {
             return window.createReactionButton(reaction, this.commentId, this.addReaction.bind(this));
         },
 
-        showCustomNotification(message, type = 'info') {
-            // Use the global notification system
-            if (window.showCustomNotification) {
-                window.showCustomNotification(message, type);
-            } else {
-                // Fallback: dispatch a custom event
-                this.$dispatch('show-notification', {
-                    message: message,
-                    type: type
-                });
-            }
-        }
     }
 }
 

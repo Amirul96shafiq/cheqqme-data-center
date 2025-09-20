@@ -121,9 +121,6 @@ return [
         'clear_search' => 'Clear search',
         'recent' => 'Recent',
         'no_recent_emojis' => 'No recent emojis',
-        'reaction_added_successfully' => 'Reaction added successfully',
-        'reaction_removed_successfully' => 'Reaction removed successfully',
-        'failed_to_add_reaction' => 'Failed to add reaction',
         'others' => 'others',
     ],
 ];

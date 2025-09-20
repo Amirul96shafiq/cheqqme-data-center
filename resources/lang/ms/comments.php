@@ -121,9 +121,6 @@ return [
         'clear_search' => 'Bersihkan pencarian',
         'recent' => 'Baru-baru ini',
         'no_recent_emojis' => 'Tiada emojis baru-baru ini',
-        'reaction_added_successfully' => 'Reaksi berjaya ditambah',
-        'reaction_removed_successfully' => 'Reaksi berjaya dihapus',
-        'failed_to_add_reaction' => 'Gagal menambah reaksi',
         'others' => 'lain-lain',
     ],
 ];
