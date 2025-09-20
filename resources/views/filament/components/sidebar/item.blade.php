@@ -51,7 +51,7 @@
             'bg-gray-100 dark:bg-white/5' => $active,
         ])
     >
-        {{-- Collapsed sidebar item display --}}
+        {{-- Collapsed sidebar item display (icons only) --}}
         @if ($sidebarCollapsible)
             <div
                 x-show="! $store.sidebar.isOpen"
@@ -61,14 +61,27 @@
                 x-transition:leave="lg:transition"
                 x-transition:leave-start="opacity-100"
                 x-transition:leave-end="opacity-0"
-                class="fi-sidebar-item-collapsed flex items-center gap-x-1 px-1 py-1 rounded-lg min-w-0 w-full max-w-[4rem] overflow-hidden"
+                class="fi-sidebar-item-collapsed flex items-center justify-center px-1 py-1 rounded-lg w-full max-w-[3rem]"
             >
                 @if (filled($icon))
-                    <span class="relative inline-block flex-shrink-0">
+                    <span 
+                        class="relative inline-block flex-shrink-0"
+                        x-data="{ tooltip: false }"
+                        x-effect="
+                            tooltip = $store.sidebar.isOpen
+                                ? false
+                                : {
+                                      content: @js($slot->toHtml()),
+                                      placement: document.dir === 'rtl' ? 'left' : 'right',
+                                      theme: $store.theme,
+                                  }
+                        "
+                        x-tooltip.html="tooltip"
+                    >
                         <x-filament::icon
                             :icon="($active && $activeIcon) ? $activeIcon : $icon"
                             @class([
-                                'fi-sidebar-item-icon h-4 w-4',
+                                'fi-sidebar-item-icon h-5 w-5',
                                 'text-gray-400 dark:text-gray-500' => ! $active,
                                 'text-primary-600 dark:text-primary-400' => $active,
                             ])
@@ -85,22 +98,6 @@
                         @endif
                     </span>
                 @endif
-                @php
-                    $itemText = $slot->toHtml();
-                    $displayText = \App\Helpers\SidebarAbbreviationHelper::generateAbbreviation($itemText, 4);
-                @endphp
-                
-                <span
-                    @class([
-                        'fi-sidebar-item-label-collapsed text-xs font-medium truncate min-w-0',
-                        'text-gray-700 dark:text-gray-200' => ! $active,
-                        'text-primary-600 dark:text-primary-400' => $active,
-                    ])
-                    style="max-width: 2rem;"
-                    title="{{ $slot->toHtml() }}"
-                >
-                    {{ $displayText }}
-                </span>
             </div>
         @endif
 
