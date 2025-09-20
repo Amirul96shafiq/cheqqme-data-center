@@ -18,6 +18,18 @@ class SidebarAbbreviationHelper
         'Analytics' => 'A.',
         'Administration' => 'A.',
 
+        // Common Business Abbreviations
+        'Customer Relationship Management' => 'CRM',
+        'Enterprise Resource Planning' => 'ERP',
+        'Human Resources Management System' => 'HRMS',
+        'Financial Accounting and Reporting' => 'FAR',
+        'Project Management and Collaboration' => 'PMC',
+        'Customer Support' => 'CS',
+        'Sales Management' => 'SM',
+        'Inventory Management' => 'IM',
+        'Quality Assurance' => 'QA',
+        'Business Intelligence' => 'BI',
+
         // Resources
         'Clients' => 'C.',
         'Users' => 'U.',
@@ -51,15 +63,21 @@ class SidebarAbbreviationHelper
     private static function autoGenerateAbbreviation(string $label, int $maxLength): string
     {
         // Remove common words that don't add meaning
-        $commonWords = ['the', 'and', 'or', 'of', 'in', 'on', 'at', 'to', 'for', 'with', 'by'];
+        $commonWords = ['the', 'and', 'or', 'of', 'in', 'on', 'at', 'to', 'for', 'with', 'by', 'a', 'an'];
         $words = explode(' ', strtolower($label));
-        $meaningfulWords = array_filter($words, fn ($word) => ! in_array($word, $commonWords));
+        $meaningfulWords = array_filter($words, fn ($word) => ! in_array($word, $commonWords) && strlen($word) > 1);
+
+        // If no meaningful words, fallback to first few characters
+        if (empty($meaningfulWords)) {
+            return strtoupper(substr($label, 0, min($maxLength, strlen($label)))).'.';
+        }
 
         // If only one meaningful word, take first few characters
         if (count($meaningfulWords) === 1) {
             $word = reset($meaningfulWords);
+            $abbrev = strtoupper(substr($word, 0, min($maxLength, strlen($word))));
 
-            return strtoupper(substr($word, 0, min($maxLength, strlen($word)))).'.';
+            return strlen($abbrev) <= 3 ? $abbrev.'.' : $abbrev;
         }
 
         // Multiple words - take first letter of each meaningful word
