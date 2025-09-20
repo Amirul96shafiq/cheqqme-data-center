@@ -71,7 +71,7 @@ class UserResource extends Resource
                                 ->nullable()
                                 ->extraAlpineAttributes(['x-ref' => 'name'])
                                 ->helperText(__('user.form.name_helper'))
-                                ->placeholder(fn(callable $get) => $get('username'))
+                                ->placeholder(fn (callable $get) => $get('username'))
                                 ->maxLength(50),
 
                             TextInput::make('email')
@@ -83,15 +83,15 @@ class UserResource extends Resource
                                     table: 'users',
                                     column: 'email',
                                     ignoreRecord: true,
-                                    modifyRuleUsing: fn(Unique $rule) => $rule->whereNull('deleted_at')
+                                    modifyRuleUsing: fn (Unique $rule) => $rule->whereNull('deleted_at')
                                 ),
 
-                            Hidden::make('Updated_by')->default(fn() => auth()->id())->dehydrated(),
+                            Hidden::make('Updated_by')->default(fn () => auth()->id())->dehydrated(),
                         ]),
                     ]),
 
                 Section::make(heading: __('user.section.password_info'))
-                    ->description(fn(string $context) => $context === 'edit' ? __('user.section.password_info_description') : null)
+                    ->description(fn (string $context) => $context === 'edit' ? __('user.section.password_info_description') : null)
                     ->schema([
 
                         Grid::make(3)->schema([
@@ -100,13 +100,13 @@ class UserResource extends Resource
                                 ->label(__('user.form.change_password'))
                                 ->live()
                                 ->afterStateUpdated(function (bool $state, callable $set) {
-                                    if (!$state) {
+                                    if (! $state) {
                                         $set('old_password', null);
                                         $set('password', null);
                                         $set('password_confirmation', null);
                                     }
                                 })
-                                ->visible(fn(string $context) => $context === 'edit'),
+                                ->visible(fn (string $context) => $context === 'edit'),
 
                             // Generate password feature
                             Forms\Components\Actions::make([
@@ -119,7 +119,7 @@ class UserResource extends Resource
                                         $set('password', $generated);
                                     })
                                     ->visible(
-                                        fn(Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
+                                        fn (Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
                                     ),
                             ]),
                         ]),
@@ -132,12 +132,12 @@ class UserResource extends Resource
                                 ->revealable()
                                 ->dehydrated(false)
                                 ->visible(
-                                    fn(Get $get, string $context) => $context === 'edit' && $get('change_password_toggle') === true
+                                    fn (Get $get, string $context) => $context === 'edit' && $get('change_password_toggle') === true
                                 )
                                 ->rule(function (Get $get) {
                                     return function (string $attribute, $value, $fail) use ($get) {
                                         $record = $get('record');
-                                        if ($record && $value && !Hash::check($value, $record->password)) {
+                                        if ($record && $value && ! Hash::check($value, $record->password)) {
                                             $fail('The old password is incorrect.');
                                         }
                                     };
@@ -145,16 +145,16 @@ class UserResource extends Resource
 
                             // NEW PASSWORD
                             TextInput::make('password')
-                                ->label(fn(string $context) => $context === 'edit' ? __('user.form.new_password') : __('user.form.new_password'))
+                                ->label(fn (string $context) => $context === 'edit' ? __('user.form.new_password') : __('user.form.new_password'))
                                 ->helperText(__('user.form.password_helper'))
                                 ->password()
                                 ->revealable()
                                 ->minLength(5)
-                                ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
-                                ->dehydrated(fn($state) => filled($state))
-                                ->required(fn(string $context) => $context === 'create')
+                                ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
+                                ->dehydrated(fn ($state) => filled($state))
+                                ->required(fn (string $context) => $context === 'create')
                                 ->visible(
-                                    fn(Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
+                                    fn (Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
                                 )
                                 ->same('password_confirmation'),
 
@@ -164,10 +164,10 @@ class UserResource extends Resource
                                 ->password()
                                 ->revealable()
                                 ->required(
-                                    fn(Get $get, string $context) => $context === 'create' || filled($get('password'))
+                                    fn (Get $get, string $context) => $context === 'create' || filled($get('password'))
                                 )
                                 ->visible(
-                                    fn(Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
+                                    fn (Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
                                 ),
                         ]),
                     ]),
@@ -175,7 +175,7 @@ class UserResource extends Resource
                 // Account deletion
                 Section::make(heading: __('user.section.danger_zone'))
                     ->description(__('user.section.danger_zone_description'))
-                    ->visible(fn(string $context) => $context === 'edit') // hide entire section when creating
+                    ->visible(fn (string $context) => $context === 'edit') // hide entire section when creating
                     ->Schema([
                         // Only show "User Deletion?" during editing
                         Toggle::make('user_delete')
@@ -183,9 +183,9 @@ class UserResource extends Resource
                             ->onColor('danger')
                             ->offColor('gray')
                             ->live()
-                            ->visible(fn(string $context) => $context === 'edit')
+                            ->visible(fn (string $context) => $context === 'edit')
                             ->afterStateUpdated(function (bool $state, callable $set) {
-                                if (!$state) {
+                                if (! $state) {
                                     $set('delete_confirmation', null);
                                 }
                             }),
@@ -196,7 +196,7 @@ class UserResource extends Resource
                             ->placeholder(__('user.form.user_confirm_placeholder'))
                             ->helperText(__('user.form.user_confirm_helpertext'))
                             ->visible(
-                                fn(Get $get, string $context) => $context === 'edit' && $get('user_delete') === true
+                                fn (Get $get, string $context) => $context === 'edit' && $get('user_delete') === true
                             )
                             ->live()
                             ->dehydrated(false),
@@ -207,8 +207,8 @@ class UserResource extends Resource
                                 ->icon('heroicon-o-trash')
                                 ->color('danger')
                                 ->requiresConfirmation()
-                                ->visible(fn(Get $get) => $get('user_delete') === true)
-                                ->disabled(fn(Get $get) => $get('delete_confirmation') !== 'CONFIRM DELETE USER')
+                                ->visible(fn (Get $get) => $get('user_delete') === true)
+                                ->disabled(fn (Get $get) => $get('delete_confirmation') !== 'CONFIRM DELETE USER')
                                 ->action(function ($record, $livewire) {
                                     $record->delete();
 
@@ -247,12 +247,12 @@ class UserResource extends Resource
                         $name = str(Filament::getNameForDefaultAvatar($record))
                             ->trim()
                             ->explode(' ')
-                            ->map(fn(string $segment): string => filled($segment) ? mb_substr($segment, 0, 1) : '')
+                            ->map(fn (string $segment): string => filled($segment) ? mb_substr($segment, 0, 1) : '')
                             ->join(' ');
 
-                        $backgroundColor = Rgb::fromString('rgb(' . FilamentColor::getColors()['gray'][950] . ')')->toHex();
+                        $backgroundColor = Rgb::fromString('rgb('.FilamentColor::getColors()['gray'][950].')')->toHex();
 
-                        return 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&color=FFFFFF&background=' . str($backgroundColor)->after('#');
+                        return 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=FFFFFF&background='.str($backgroundColor)->after('#');
                     })
                     ->size(50)
                     ->width(50)
@@ -290,7 +290,7 @@ class UserResource extends Resource
                         // Show '-' if there's no update or updated_by
                         $updatedAt = $record->updated_at;
                         $createdAt = $record->created_at;
-                        if (!$record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
+                        if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
                             return '-';
                         }
 
@@ -301,10 +301,9 @@ class UserResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
-                    ->sortable()
-                    ->limit(30),
+                    ->sortable(),
             ])
             ->recordClasses(function ($record) {
                 $coverImageUrl = $record->getFilamentCoverImageUrl();
@@ -322,7 +321,7 @@ class UserResource extends Resource
             ->filters([
                 Filter::make('has_cover_image')
                     ->label(__('user.filter.has_cover_image'))
-                    ->query(fn(Builder $query) => $query->whereNotNull('cover_image')),
+                    ->query(fn (Builder $query) => $query->whereNotNull('cover_image')),
 
                 SelectFilter::make('timezone')
                     ->label(__('user.filter.timezone'))
@@ -339,7 +338,7 @@ class UserResource extends Resource
                     ->label(__('user.table.personalize'))
                     ->icon('heroicon-o-sparkles')
                     ->url(
-                        fn(User $record) =>
+                        fn (User $record) =>
                         // Only show for logged-in user's own account
                         auth()->id() === $record->id
                         ? filament()->getProfileUrl()
@@ -347,35 +346,52 @@ class UserResource extends Resource
                     )
                     ->openUrlInNewTab(false)
                     ->visible(
-                        fn(User $record) =>
+                        fn (User $record) =>
                         // Only visible to the logged-in user and only for their own account
                         auth()->id() === $record->id
                     ),
 
-                TableAction::make('settings')
-                    ->label(__('user.table.settings'))
-                    ->icon('heroicon-o-cog-6-tooth')
-                    ->url(
-                        fn(User $record) =>
-                        // Only show for logged-in user's own account
-                        auth()->id() === $record->id
-                        ? \App\Filament\Pages\Settings::getUrl()
-                        : '#'
-                    )
-                    ->openUrlInNewTab(false)
-                    ->visible(
-                        fn(User $record) =>
-                        // Only visible to the logged-in user and only for their own account
-                        auth()->id() === $record->id
-                    ),
-
-                Tables\Actions\EditAction::make()->hidden(fn($record) => $record->trashed()),
+                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
+                    TableAction::make('settings')
+                        ->label(__('user.table.settings'))
+                        ->icon('heroicon-o-cog-6-tooth')
+                        ->url(
+                            fn (User $record) =>
+                            // Only show for logged-in user's own account
+                            auth()->id() === $record->id
+                            ? \App\Filament\Pages\Settings::getUrl()
+                            : '#'
+                        )
+                        ->openUrlInNewTab(false)
+                        ->visible(
+                            fn (User $record) =>
+                            // Only visible to the logged-in user and only for their own account
+                            auth()->id() === $record->id
+                        ),
+                    TableAction::make('chatbot-history')
+                        ->label(__('user.table.chatbot-history'))
+                        ->icon('heroicon-o-chat-bubble-left-right')
+                        ->url(
+                            fn (User $record) =>
+                            // Only show for logged-in user's own account
+                            auth()->id() === $record->id
+                            ? \App\Filament\Pages\ChatbotHistory::getUrl()
+                            : '#'
+                        )
+                        ->openUrlInNewTab(false)
+                        ->visible(
+                            fn (User $record) =>
+                            // Only visible to the logged-in user and only for their own account
+                            auth()->id() === $record->id
+                        ),
+                        
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
-                ]),
+                ])
+                ->dropdownPlacement('top-start'),
             ])
             ->bulkActions([
                 //

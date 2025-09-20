@@ -92,6 +92,7 @@ return [
         'updated_at_by' => 'Updated At (by)',
         'personalize' => 'Personalize',
         'settings' => 'Settings',
+        'chatbot-history' => 'Chatbot History',
     ],
 
     // Filters

@@ -92,6 +92,7 @@ return [
         'updated_at_by' => 'Updated At (by)',
         'personalize' => 'Personalisasi',
         'settings' => 'Tetapan',
+        'chatbot-history' => 'Sejarah Chatbot',
     ],
 
     // Filters
