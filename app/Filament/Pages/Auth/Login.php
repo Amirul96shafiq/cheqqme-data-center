@@ -64,7 +64,23 @@ class Login extends BaseLogin
                         ->label(__('login.actions.login'))
                         ->submit('login')
                         ->extraAttributes(['class' => 'w-full py-4']),
+                ])
+                    ->columnSpanFull()
+                    ->columns(1),
 
+                // Separator between login methods
+                Forms\Components\Placeholder::make('separator')
+                    ->label('')
+                    ->content(new \Illuminate\Support\HtmlString(
+                        '<div class="flex items-center justify-center my-4">
+                            <div class="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
+                            <span class="px-4 text-[10px] font-light text-gray-500 dark:text-gray-400">'.__('login.form.or').'</span>
+                            <div class="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
+                        </div>'
+                    ))
+                    ->columnSpanFull(),
+
+                Forms\Components\Actions::make([
                     // Google Sign-in button - opens popup window for OAuth authentication
                     Action::make('google_signin')
                         ->view('components.google-signin-button'),

@@ -11,5 +11,6 @@ return [
         'email' => 'Username / Email',
         'password' => 'Kata Laluan',
         'remember' => 'Ingat Saya',
+        'or' => 'Atau',
     ],
 ];

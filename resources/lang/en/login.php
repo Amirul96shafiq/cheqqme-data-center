@@ -11,5 +11,6 @@ return [
         'email' => 'Username / Email',
         'password' => 'Password',
         'remember' => 'Remember Me',
+        'or' => 'Or',
     ],
 ];
