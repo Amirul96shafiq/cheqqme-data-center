@@ -90,4 +90,12 @@ return [
         'drop_file_to_upload_document_helper' => 'Muat naik secara automatik untuk fail di bawah 5MB. Jika lebih besar daripada 5MB, anda boleh muat naik fail secara manual selepas ke halaman Dokumen.',
         'filament_upload_detected' => 'Petak muat naik Filament dikesan, gunakan drag-drop seperti biasa',
     ],
+
+    'tooltip' => [
+        'external_url' => 'URL Luar: :url',
+        'internal_file' => 'Fail Dalaman: :path',
+        'no_url' => 'Tiada URL luar disediakan',
+        'no_file' => 'Tiada fail dalaman dimuat naik',
+        'unknown_type' => 'Jenis dokumen tidak diketahui',
+    ],
 ];

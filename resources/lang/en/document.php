@@ -89,4 +89,12 @@ return [
         'drop_file_to_upload_document_helper' => 'Automatically upload below 5MB files. If it\'s larger than 5MB, you can upload the file manually after redirecting to the Create Document page.',
         'filament_upload_detected' => 'Filament upload fields detected, using native drag-drop instead',
     ],
+
+    'tooltip' => [
+        'external_url' => 'External URL: :url',
+        'internal_file' => 'Internal file: :path',
+        'no_url' => 'No external URL provided',
+        'no_file' => 'No internal file uploaded',
+        'unknown_type' => 'Unknown document type',
+    ],
 ];

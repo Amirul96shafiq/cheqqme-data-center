@@ -40,7 +40,8 @@ class DocumentsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordUrl(fn ($record) => $record->trashed() ? null : DocumentResource::getUrl('edit', ['record' => $record]))
+            ->recordUrl(null)
+            ->recordAction(null)
             ->columns([
                 TextColumn::make('id')
                     ->label(__('document.table.id'))
@@ -49,7 +50,10 @@ class DocumentsRelationManager extends RelationManager
                     ->label(__('document.table.title'))
                     ->sortable()
                     ->searchable()
-                    ->limit(20),
+                    ->limit(20)
+                    ->tooltip(function ($record) {
+                        return $record->title;
+                    }),
                 TextColumn::make('type')
                     ->label(__('document.table.type'))
                     ->badge()
@@ -84,7 +88,18 @@ class DocumentsRelationManager extends RelationManager
                     })
                     ->openUrlInNewTab()
                     ->copyable()
-                    ->limit(40),
+                    ->limit(40)
+                    ->tooltip(function ($record) {
+                        if ($record->type === 'external') {
+                            return $record->url ? __('document.tooltip.external_url', ['url' => $record->url]) : __('document.tooltip.no_url');
+                        }
+
+                        if ($record->type === 'internal') {
+                            return $record->file_path ? __('document.tooltip.internal_file', ['path' => $record->file_path]) : __('document.tooltip.no_file');
+                        }
+
+                        return __('document.tooltip.unknown_type');
+                    }),
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))
                     ->dateTime('j/n/y, h:i A')->sortable(),

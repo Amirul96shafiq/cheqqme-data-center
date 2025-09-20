@@ -41,8 +41,9 @@ class ImportantUrlsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordUrl(fn($record) => $record->trashed() ? null : ImportantUrlResource::getUrl('edit', ['record' => $record]))
-            ->modifyQueryUsing(fn($query) => $query->with('client'))
+            ->recordUrl(null)
+            ->recordAction(null)
+            ->modifyQueryUsing(fn ($query) => $query->with('client'))
             ->columns([
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
@@ -51,13 +52,19 @@ class ImportantUrlsRelationManager extends RelationManager
                     ->label(__('importanturl.table.title'))
                     ->searchable()
                     ->sortable()
-                    ->limit(20),
+                    ->limit(20)
+                    ->tooltip(function ($record) {
+                        return $record->title;
+                    }),
                 TextColumn::make('client.pic_name')
                     ->label(__('importanturl.table.client'))
                     ->searchable()
                     ->sortable()
                     ->formatStateUsing(function ($state, $record) {
                         return ClientFormatter::formatClientDisplay($state, $record->client?->company_name);
+                    })
+                    ->tooltip(function ($record) {
+                        return __('importanturl.table.tooltip.full_name').": {$record->client->pic_name}".', '.__('importanturl.table.tooltip.company').": {$record->client->company_name}";
                     }),
                 TextColumn::make('important_url')
                     ->label(__('importanturl.table.important_url'))
@@ -65,7 +72,10 @@ class ImportantUrlsRelationManager extends RelationManager
                         return $record->url ?: '-';
                     })
                     ->copyable()
-                    ->limit(30),
+                    ->limit(30)
+                    ->tooltip(function ($record) {
+                        return $record->url ?: '';
+                    }),
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))
                     ->dateTime('j/n/y, h:i A')
@@ -73,14 +83,14 @@ class ImportantUrlsRelationManager extends RelationManager
                 TextColumn::make('updated_at')
                     ->label(__('importanturl.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {
-                        if (!$record->updated_by || $record->updated_at?->eq($record->created_at)) {
+                        if (! $record->updated_by || $record->updated_at?->eq($record->created_at)) {
                             return '-';
                         }
 
                         $user = $record->updatedBy;
                         $formattedName = $user ? $user->short_name : 'Unknown';
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable()
                     ->limit(30),
@@ -104,16 +114,16 @@ class ImportantUrlsRelationManager extends RelationManager
                     ->label('')
                     ->icon('heroicon-o-link')
                     ->color('primary')
-                    ->url(fn($record) => $record->url)
+                    ->url(fn ($record) => $record->url)
                     ->openUrlInNewTab()
                     ->tooltip(function ($record) {
                         $url = $record->url;
 
-                        return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     }),
                 Tables\Actions\EditAction::make()
-                    ->url(fn($record) => ImportantUrlResource::getUrl('edit', ['record' => $record]))
-                    ->hidden(fn($record) => $record->trashed()),
+                    ->url(fn ($record) => ImportantUrlResource::getUrl('edit', ['record' => $record]))
+                    ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),

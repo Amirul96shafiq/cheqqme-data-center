@@ -39,7 +39,8 @@ class ImportantUrlsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordUrl(fn ($record) => $record->trashed() ? null : ImportantUrlResource::getUrl('edit', ['record' => $record]))
+            ->recordUrl(null)
+            ->recordAction(null)
             ->columns([
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
@@ -48,19 +49,31 @@ class ImportantUrlsRelationManager extends RelationManager
                     ->label(__('importanturl.table.title'))
                     ->searchable()
                     ->sortable()
-                    ->limit(30),
+                    ->limit(30)
+                    ->tooltip(function ($record) {
+                        return $record->title;
+                    }),
                 TextColumn::make('project.title')
                     ->label(__('importanturl.table.project'))
                     ->sortable()
                     ->searchable()
-                    ->limit(20),
+                    ->limit(20)
+                    ->getStateUsing(function ($record) {
+                        return $record->project?->title ?? '-';
+                    })
+                    ->tooltip(function ($record) {
+                        return $record->project?->title ?? '';
+                    }),
                 TextColumn::make('important_url')
                     ->label(__('importanturl.table.important_url'))
                     ->state(function ($record) {
                         return $record->url ?: '-';
                     })
                     ->copyable()
-                    ->limit(40),
+                    ->limit(40)
+                    ->tooltip(function ($record) {
+                        return $record->url ?: '';
+                    }),
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))
                     ->dateTime('j/n/y, h:i A')
