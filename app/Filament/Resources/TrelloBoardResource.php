@@ -74,7 +74,7 @@ class TrelloBoardResource extends Resource
                                             // Get the last part of the path (board name)
                                             $boardName = end($pathParts);
 
-                                            if (!empty($boardName)) {
+                                            if (! empty($boardName)) {
                                                 // Convert to title case and replace hyphens/underscores with spaces
                                                 $formattedName = ucwords(str_replace(['-', '_'], ' ', $boardName));
                                                 $set('name', $formattedName);
@@ -82,10 +82,10 @@ class TrelloBoardResource extends Resource
                                         }
                                     })
                                     ->hintAction(
-                                        fn(Get $get) => blank($get('url')) ? null : Action::make('openUrl')
+                                        fn (Get $get) => blank($get('url')) ? null : Action::make('openUrl')
                                             ->icon('heroicon-m-arrow-top-right-on-square')
                                             ->label(__('trelloboard.form.open_url'))
-                                            ->url(fn() => $get('url'), true)
+                                            ->url(fn () => $get('url'), true)
                                             ->tooltip(__('trelloboard.form.board_url_helper'))
                                     )
                                     ->url(),
@@ -114,9 +114,9 @@ class TrelloBoardResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('trelloboard.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title . ' ' . $badge);
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -236,7 +236,7 @@ class TrelloBoardResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('trelloboard.form.title_placeholder_short'))
+                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('trelloboard.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -285,7 +285,7 @@ class TrelloBoardResource extends Resource
                         // Show '-' if there's no update or updated_by
                         $updatedAt = $record->updated_at;
                         $createdAt = $record->created_at;
-                        if (!$record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
+                        if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
                             return '-';
                         }
 
@@ -296,7 +296,7 @@ class TrelloBoardResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable(),
             ])
@@ -320,20 +320,43 @@ class TrelloBoardResource extends Resource
                     ->label('')
                     ->icon('heroicon-o-link')
                     ->color('primary')
-                    ->url(fn($record) => $record->url)
+                    ->url(fn ($record) => $record->url)
                     ->openUrlInNewTab()
                     ->tooltip(function ($record) {
                         $url = $record->url;
 
-                        return strlen($url) > 50 ? substr($url, 0, 47) . '...' : $url;
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     }),
                 Tables\Actions\ViewAction::make()
                     ->label(__('trelloboard.actions.view')),
                 Tables\Actions\EditAction::make()
                     ->label(__('trelloboard.actions.edit'))
-                    ->hidden(fn($record) => $record->trashed()),
+                    ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('toggle_show_on_boards')
+                        ->label(fn ($record) => $record->show_on_boards
+                            ? __('trelloboard.actions.hide_from_boards')
+                            : __('trelloboard.actions.show_on_boards'))
+                        ->icon(fn ($record) => $record->show_on_boards ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
+                        ->color(fn ($record) => $record->show_on_boards ? 'warning' : 'success')
+                        ->action(function ($record) {
+                            $record->update([
+                                'show_on_boards' => ! $record->show_on_boards,
+                                'updated_by' => auth()->id(),
+                            ]);
+
+                            // Show notification about sidebar refresh
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('trelloboard.actions.status_updated'))
+                                ->body(__('trelloboard.actions.refresh_sidebar_notification'))
+                                ->success()
+                                ->send();
+                        })
+                        ->tooltip(fn ($record) => $record->show_on_boards
+                            ? __('trelloboard.actions.hide_from_boards')
+                            : __('trelloboard.actions.show_on_boards'))
+                        ->hidden(fn ($record) => $record->trashed()),
                     ActivityLogTimelineTableAction::make(__('trelloboard.actions.log')),
                     Tables\Actions\DeleteAction::make()
                         ->label(__('trelloboard.actions.delete')),
@@ -345,6 +368,31 @@ class TrelloBoardResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('toggle_show_on_boards')
+                        ->label(__('trelloboard.actions.toggle_show_on_boards'))
+                        ->icon('heroicon-o-eye')
+                        ->action(function ($records) {
+                            foreach ($records as $record) {
+                                if (! $record->trashed()) {
+                                    $record->update([
+                                        'show_on_boards' => ! $record->show_on_boards,
+                                        'updated_by' => auth()->id(),
+                                    ]);
+                                }
+                            }
+
+                            // Show notification about sidebar refresh
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('trelloboard.actions.status_updated'))
+                                ->body(__('trelloboard.actions.refresh_sidebar_notification'))
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion()
+                        ->requiresConfirmation()
+                        ->modalHeading(__('trelloboard.actions.toggle_show_on_boards_modal_heading'))
+                        ->modalDescription(__('trelloboard.actions.toggle_show_on_boards_modal_description'))
+                        ->modalSubmitActionLabel(__('trelloboard.actions.toggle_show_on_boards_modal_confirm')),
                     Tables\Actions\DeleteBulkAction::make()
                         ->label(__('trelloboard.actions.delete')),
                     Tables\Actions\RestoreBulkAction::make()

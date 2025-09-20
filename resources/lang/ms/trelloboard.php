@@ -23,6 +23,14 @@ return [
         'force_delete' => 'Padam Secara Kekal',
         'open_url' => 'Buka URL',
         'log' => 'Log Aktiviti',
+        'show_on_boards' => 'Papar pada Papan',
+        'hide_from_boards' => 'Sorok dari Papan',
+        'toggle_show_on_boards' => 'Tukar Papar pada Papan',
+        'toggle_show_on_boards_modal_heading' => 'Tukar Papar pada Papan',
+        'toggle_show_on_boards_modal_description' => 'Ini akan menukar status "Papar pada Papan" untuk rekod yang dipilih.',
+        'toggle_show_on_boards_modal_confirm' => 'Tukar Status',
+        'status_updated' => 'Status berjaya dikemaskini',
+        'refresh_sidebar_notification' => 'Sila muat semula halaman untuk melihat papan Trello yang dikemaskini di bar sisi.',
     ],
 
     'section' => [

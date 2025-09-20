@@ -23,6 +23,14 @@ return [
         'force_delete' => 'Force Delete',
         'open_url' => 'Open URL',
         'log' => 'Activity Log',
+        'show_on_boards' => 'Show on Boards',
+        'hide_from_boards' => 'Hide from Boards',
+        'toggle_show_on_boards' => 'Toggle Show on Boards',
+        'toggle_show_on_boards_modal_heading' => 'Toggle Show on Boards',
+        'toggle_show_on_boards_modal_description' => 'This will toggle the "Show on Boards" status for the selected records.',
+        'toggle_show_on_boards_modal_confirm' => 'Toggle Status',
+        'status_updated' => 'Status updated successfully',
+        'refresh_sidebar_notification' => 'Please refresh the page to see the updated Trello boards in the sidebar.',
     ],
 
     'section' => [
