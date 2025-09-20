@@ -54,6 +54,10 @@ return [
         'important_url_count' => 'Important URLs',
         'created_at' => 'Created At',
         'updated_at_by' => 'Updated At (by)',
+        'tooltip' => [
+            'full_name' => 'Full Name',
+            'company' => 'Company',
+        ],
     ],
 
     'search' => [

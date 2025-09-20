@@ -54,6 +54,10 @@ return [
         'important_url_count' => 'URL Penting',
         'created_at' => 'Dicipta Pada',
         'updated_at_by' => 'Dikemas Kini pada (oleh)',
+        'tooltip' => [
+            'full_name' => 'Nama Penuh',
+            'company' => 'Syarikat',
+        ],
     ],
 
     'search' => [
