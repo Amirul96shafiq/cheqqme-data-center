@@ -39,8 +39,24 @@ class Login extends BaseLogin
                     ->revealable()
                     ->autocomplete('password'),
 
-                Forms\Components\Checkbox::make('remember')
-                    ->label(__('login.form.remember'))
+                Forms\Components\Grid::make(2)
+                    ->schema([
+                        Forms\Components\Checkbox::make('remember')
+                            ->label(__('login.form.remember'))
+                            ->columnSpan(1),
+
+                        Forms\Components\Placeholder::make('forgot_password')
+                            ->label('')
+                            ->content(new \Illuminate\Support\HtmlString(
+                                '<div class="flex justify-end mt-0">
+                                    <a href="'.route('password.request').'" 
+                                        class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:underline transition-colors duration-200">
+                                        '.__('login.actions.forgotPassword').'
+                                    </a>
+                                </div>'
+                            ))
+                            ->columnSpan(1),
+                    ])
                     ->columnSpanFull(),
 
                 Forms\Components\Actions::make([
@@ -52,9 +68,6 @@ class Login extends BaseLogin
                     // Google Sign-in button - opens popup window for OAuth authentication
                     Action::make('google_signin')
                         ->view('components.google-signin-button'),
-
-                    Action::make('forgotPassword')
-                        ->view('components.forgot-password-link'),
                 ])
                     ->columnSpanFull()
                     ->columns(1),
@@ -72,11 +85,12 @@ class Login extends BaseLogin
             'password' => $data['password'],
         ];
 
-        if (!Auth::attempt($credentials, $data['remember'] ?? false)) {
+        if (! Auth::attempt($credentials, $data['remember'] ?? false)) {
             $this->throwFailureValidationException();
         }
 
-        return new class implements LoginResponse {
+        return new class implements LoginResponse
+        {
             public function toResponse($request)
             {
                 return redirect()->route('filament.admin.pages.dashboard');
