@@ -37,7 +37,7 @@
         {{-- If no featured image, show card title and share button section --}}
         @if(empty($record['attributes']['featured_image']['value']))
             <div class="flex justify-between items-center mb-2">
-                <h4 class="ff-card__title m-0">{{ $record['title'] }}</h4>
+                <h4 class="ff-card__title m-0">{{ Str::limit($record['title'], 60) }}</h4>
                 <span
                     class="ff-card__badge inline-flex items-center px-2 py-[3px] rounded-md bg-white/90 dark:bg-gray-800/90 hover:bg-white  dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 hover:border-gray-300 text-xs cursor-pointer"
                     onclick="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
@@ -48,7 +48,7 @@
             </div>
         @else
             {{-- Card title --}}
-            <h4 class="ff-card__title">{{ $record['title'] }}</h4>
+            <h4 class="ff-card__title">{{ Str::limit($record['title'], 60) }}</h4>
         @endif
 
         {{-- Card description --}}
