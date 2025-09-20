@@ -170,7 +170,7 @@ return false;
 
                                                     if ($count > 0) {
                                                         return new \Illuminate\Support\HtmlString(
-                                                            $label . ' <span class="ml-1 inline-flex items-center rounded-full bg-primary-500/15 px-3 py-0.5 text-xs font-bold text-primary-600 dark:bg-primary-800/5 border border-primary-600 dark:border-primary-700 dark:text-primary-500">' . $count . '</span>'
+                                                            $label.' <span class="ml-1 inline-flex items-center rounded-full bg-primary-500/15 px-3 py-0.5 text-xs font-bold text-primary-600 dark:bg-primary-800/5 border border-primary-600 dark:border-primary-700 dark:text-primary-500">'.$count.'</span>'
                                                         );
                                                     }
 
@@ -184,8 +184,6 @@ return false;
                                                 ->appendFiles()
                                                 ->itemPanelAspectRatio('0.25')
                                                 ->image()
-                                                ->imageResizeMode('cover')
-                                                ->imageCropAspectRatio('4:1')
                                                 ->acceptedFileTypes(['image/*', 'video/*', 'application/pdf'])
                                                 ->maxSize(20480) // 20MB
                                                 ->directory('tasks')
