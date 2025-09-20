@@ -93,19 +93,7 @@
                     />
                 @endif
                 @php
-                    // Define abbreviations for common group names
-                    $abbreviations = [
-                        'Boards' => 'B.',
-                        'Data Management' => 'D.',
-                        'User Management' => 'U.',
-                        'Tools' => 'T.',
-                        'Settings' => 'S.',
-                        'Reports' => 'R.',
-                        'Analytics' => 'A.',
-                        'Administration' => 'A.',
-                    ];
-                    
-                    $displayText = $abbreviations[$label] ?? Str::limit($label, 4);
+                    $displayText = \App\Helpers\SidebarAbbreviationHelper::generateAbbreviation($label, 4);
                 @endphp
                 
                 <span 

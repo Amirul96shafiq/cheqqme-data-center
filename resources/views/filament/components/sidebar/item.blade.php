@@ -86,22 +86,8 @@
                     </span>
                 @endif
                 @php
-                    // Define abbreviations for common resource names
-                    $resourceAbbreviations = [
-                        'Clients' => 'C.',
-                        'Users' => 'U.',
-                        'Projects' => 'P.',
-                        'Documents' => 'D.',
-                        'Important URLs' => 'URLs',
-                        'Phone Numbers' => 'Ph.',
-                        'Trello Boards' => 'T.',
-                        'Activity Logs' => 'A.',
-                        'Action Board' => 'A.',
-                        'Projects Trello Board' => 'P.',
-                    ];
-                    
                     $itemText = $slot->toHtml();
-                    $displayText = $resourceAbbreviations[$itemText] ?? Str::limit($itemText, 4);
+                    $displayText = \App\Helpers\SidebarAbbreviationHelper::generateAbbreviation($itemText, 4);
                 @endphp
                 
                 <span
