@@ -279,7 +279,10 @@ class PhoneNumberResource extends Resource
                     ->label(__('phonenumber.table.title'))
                     ->searchable()
                     ->sortable()
-                    ->limit(20),
+                    ->limit(20)
+                    ->tooltip(function ($record) {
+                        return $record->title;
+                    }),
                 TextColumn::make('country_from_phone')
                     ->label(__('phonenumber.table.country'))
                     ->getStateUsing(function ($record) {
