@@ -67,6 +67,65 @@
         </div>
     @endif
 
+    {{-- Collapsed sidebar group label with chevron --}}
+    @if ($label && $sidebarCollapsible)
+        <div
+            x-show="! $store.sidebar.isOpen"
+            x-transition:enter="lg:transition"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="lg:transition"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @if ($collapsible)
+                x-on:click="$store.sidebar.toggleCollapsedGroup(label)"
+            @endif
+            @class([
+                'fi-sidebar-group-collapsed flex items-center justify-between gap-x-1 px-1 py-1.5 rounded-lg cursor-pointer w-full max-w-[4rem]',
+                'hover:bg-gray-100 dark:hover:bg-white/10' => $collapsible,
+            ])
+        >
+            <div class="flex items-center gap-x-1 min-w-0 flex-1 overflow-hidden">
+                @if ($icon)
+                    <x-filament::icon
+                        :icon="$icon"
+                        class="fi-sidebar-group-icon h-4 w-4 text-gray-400 dark:text-gray-500 flex-shrink-0"
+                    />
+                @endif
+                @php
+                    // Define abbreviations for common group names
+                    $abbreviations = [
+                        'Boards' => 'B.',
+                        'Data Management' => 'D.',
+                        'User Management' => 'U.',
+                        'Tools' => 'T.',
+                        'Settings' => 'S.',
+                        'Reports' => 'R.',
+                        'Analytics' => 'A.',
+                        'Administration' => 'A.',
+                    ];
+                    
+                    $displayText = $abbreviations[$label] ?? Str::limit($label, 4);
+                @endphp
+                
+                <span 
+                    class="fi-sidebar-group-label-collapsed text-xs font-medium text-gray-500 dark:text-gray-400 truncate min-w-0"
+                    style="max-width: 2rem;"
+                    title="{{ $label }}"
+                >
+                    {{ $displayText }}
+                </span>
+            </div>
+            @if ($collapsible)
+                <x-filament::icon
+                    icon="heroicon-m-chevron-up"
+                    x-bind:class="{ '-rotate-180': $store.sidebar.groupIsCollapsed(label) }"
+                    class="h-3 w-3 text-gray-400 dark:text-gray-500 transition-transform duration-200 flex-shrink-0"
+                />
+            @endif
+        </div>
+    @endif
+
     @if ($hasDropdown)
         <x-filament::dropdown
             :placement="(__('filament-panels::layout.direction') === 'rtl') ? 'left-start' : 'right-start'"
@@ -161,7 +220,7 @@
     <ul
         @if (filled($label))
             @if ($sidebarCollapsible)
-                x-show="$store.sidebar.isOpen ? ! $store.sidebar.groupIsCollapsed(label) : ! @js($hasDropdown)"
+                x-show="$store.sidebar.isOpen ? ! $store.sidebar.groupIsCollapsed(label) : ! $store.sidebar.groupIsCollapsed(label)"
             @else
                 x-show="! $store.sidebar.groupIsCollapsed(label)"
             @endif

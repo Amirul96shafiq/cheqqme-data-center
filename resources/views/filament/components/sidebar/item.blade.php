@@ -51,28 +51,92 @@
             'bg-gray-100 dark:bg-white/5' => $active,
         ])
     >
+        {{-- Collapsed sidebar item display --}}
+        @if ($sidebarCollapsible)
+            <div
+                x-show="! $store.sidebar.isOpen"
+                x-transition:enter="lg:transition"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="lg:transition"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fi-sidebar-item-collapsed flex items-center gap-x-1 px-1 py-1 rounded-lg min-w-0 w-full max-w-[4rem] overflow-hidden"
+            >
+                @if (filled($icon))
+                    <span class="relative inline-block flex-shrink-0">
+                        <x-filament::icon
+                            :icon="($active && $activeIcon) ? $activeIcon : $icon"
+                            @class([
+                                'fi-sidebar-item-icon h-4 w-4',
+                                'text-gray-400 dark:text-gray-500' => ! $active,
+                                'text-primary-600 dark:text-primary-400' => $active,
+                            ])
+                        />
+                        
+                        {{-- Show badge on icon when sidebar is collapsed --}}
+                        @if (filled($badge))
+                            <span
+                                class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1 py-0.5 text-xs font-bold leading-none text-white bg-primary-500 rounded-full shadow transform"
+                                style="z-index: 10;"
+                            >
+                                {{ $badge }}
+                            </span>
+                        @endif
+                    </span>
+                @endif
+                @php
+                    // Define abbreviations for common resource names
+                    $resourceAbbreviations = [
+                        'Clients' => 'C.',
+                        'Users' => 'U.',
+                        'Projects' => 'P.',
+                        'Documents' => 'D.',
+                        'Important URLs' => 'URLs',
+                        'Phone Numbers' => 'Ph.',
+                        'Trello Boards' => 'T.',
+                        'Activity Logs' => 'A.',
+                        'Action Board' => 'A.',
+                        'Projects Trello Board' => 'P.',
+                    ];
+                    
+                    $itemText = $slot->toHtml();
+                    $displayText = $resourceAbbreviations[$itemText] ?? Str::limit($itemText, 4);
+                @endphp
+                
+                <span
+                    @class([
+                        'fi-sidebar-item-label-collapsed text-xs font-medium truncate min-w-0',
+                        'text-gray-700 dark:text-gray-200' => ! $active,
+                        'text-primary-600 dark:text-primary-400' => $active,
+                    ])
+                    style="max-width: 2rem;"
+                    title="{{ $slot->toHtml() }}"
+                >
+                    {{ $displayText }}
+                </span>
+            </div>
+        @endif
+
+        {{-- Regular sidebar item display --}}
         @if (filled($icon) && ((! $subGrouped) || $sidebarCollapsible))
-            <span class="relative inline-block">
+            <span 
+                @if ($sidebarCollapsible)
+                    x-show="$store.sidebar.isOpen"
+                    x-transition:enter="lg:transition lg:delay-100"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                @endif
+                class="relative inline-block"
+            >
                 <x-filament::icon
                     :icon="($active && $activeIcon) ? $activeIcon : $icon"
-                    :x-show="($subGrouped && $sidebarCollapsible) ? '! $store.sidebar.isOpen' : false"
                     @class([
                         'fi-sidebar-item-icon h-6 w-6',
                         'text-gray-400 dark:text-gray-500' => ! $active,
                         'text-primary-600 dark:text-primary-400' => $active,
                     ])
                 />
-                
-                {{-- Show badge on icon when sidebar is collapsed --}}
-                @if (filled($badge))
-                    <span
-                        x-show="!$store.sidebar.isOpen"
-                        class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-primary-500 rounded-full shadow transform"
-                        style="z-index: 10;"
-                    >
-                        {{ $badge }}
-                    </span>
-                @endif
             </span>
         @endif
 
@@ -105,6 +169,7 @@
             </div>
         @endif
 
+        {{-- Regular sidebar label display --}}
         <span
             @if ($sidebarCollapsible)
                 x-show="$store.sidebar.isOpen"
