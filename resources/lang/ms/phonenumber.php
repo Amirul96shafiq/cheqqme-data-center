@@ -40,6 +40,7 @@ return [
     'table' => [
         'id' => 'ID',
         'title' => 'Tajuk',
+        'country' => 'Negara',
         'phone_number' => 'Nombor Telefon',
         'created_at' => 'Dicipta Pada',
         'updated_at_by' => 'Dikemaskini Pada (oleh)',

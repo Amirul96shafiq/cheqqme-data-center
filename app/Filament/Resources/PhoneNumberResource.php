@@ -88,10 +88,10 @@ class PhoneNumberResource extends Resource
                                     default => '60',
                                 };
 
-                                if (!str_starts_with($digits, $dialCode)) {
+                                if (! str_starts_with($digits, $dialCode)) {
                                     $digits = ltrim($digits, '0');
-                                    if (!str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode . $digits;
+                                    if (! str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode.$digits;
                                     }
                                 }
 
@@ -113,10 +113,10 @@ class PhoneNumberResource extends Resource
                                     default => '60',
                                 };
 
-                                if (!str_starts_with($digits, $dialCode)) {
+                                if (! str_starts_with($digits, $dialCode)) {
                                     $digits = ltrim($digits, '0');
-                                    if (!str_starts_with($digits, $dialCode)) {
-                                        $digits = $dialCode . $digits;
+                                    if (! str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode.$digits;
                                     }
                                 }
 
@@ -134,9 +134,9 @@ class PhoneNumberResource extends Resource
                         $count += count($extraInfo);
 
                         $title = __('phonenumber.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">(' . $count . ')</span>';
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new HtmlString($title . ' ' . $badge);
+                        return new HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->live()
@@ -256,7 +256,7 @@ class PhoneNumberResource extends Resource
                             ->reorderable()
                             ->collapsible(true)
                             ->collapsed()
-                            ->itemLabel(fn(array $state): string => !empty($state['title']) ? $state['title'] : __('phonenumber.form.title_placeholder_short'))
+                            ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('phonenumber.form.title_placeholder_short'))
                             ->live()
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -280,8 +280,33 @@ class PhoneNumberResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->limit(20),
+                TextColumn::make('country_from_phone')
+                    ->label(__('phonenumber.table.country'))
+                    ->getStateUsing(function ($record) {
+                        $phone = $record->phone ?? '';
+                        $digits = preg_replace('/\D+/', '', $phone);
+
+                        // Extract country code and determine country
+                        if (str_starts_with($digits, '60')) {
+                            return 'MY';
+                        } elseif (str_starts_with($digits, '65')) {
+                            return 'SG';
+                        } elseif (str_starts_with($digits, '62')) {
+                            return 'ID';
+                        } elseif (str_starts_with($digits, '63')) {
+                            return 'PH';
+                        } elseif (str_starts_with($digits, '1')) {
+                            return 'US';
+                        }
+
+                        return 'Unknown';
+                    })
+                    ->searchable()
+                    ->sortable()
+                    ->limit(20),
                 TextColumn::make('phone')
-                    ->label(__('phonenumber.table.phone_number'))->searchable(),
+                    ->label(__('phonenumber.table.phone_number'))
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->label(__('phonenumber.table.created_at'))
                     ->dateTime('j/n/y, h:i A')
@@ -291,7 +316,7 @@ class PhoneNumberResource extends Resource
                     ->formatStateUsing(function ($state, $record) {
                         // Show '-' if there's no update or updated_by
                         if (
-                            !$record->updated_by ||
+                            ! $record->updated_by ||
                             $record->updated_at?->eq($record->created_at)
                         ) {
                             return '-';
@@ -304,7 +329,7 @@ class PhoneNumberResource extends Resource
                             $formattedName = $user->short_name;
                         }
 
-                        return $state?->format('j/n/y, h:i A') . " ({$formattedName})";
+                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                     })
                     ->sortable(),
             ])
@@ -316,7 +341,7 @@ class PhoneNumberResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
-                    ->hidden(fn($record) => $record->trashed()),
+                    ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),

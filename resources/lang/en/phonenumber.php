@@ -40,6 +40,7 @@ return [
     'table' => [
         'id' => 'ID',
         'title' => 'Title',
+        'country' => 'Country',
         'phone_number' => 'Phone Number',
         'created_at' => 'Created At',
         'updated_at_by' => 'Updated At (by)',
