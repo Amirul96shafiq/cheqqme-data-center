@@ -40,7 +40,8 @@ class ProjectsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordUrl(fn ($record) => $record->trashed() ? null : ProjectResource::getUrl('edit', ['record' => $record]))
+            ->recordUrl(null)
+            ->recordAction(null)
             ->columns([
                 TextColumn::make('id')
                     ->label(__('project.table.id'))
@@ -49,7 +50,10 @@ class ProjectsRelationManager extends RelationManager
                     ->label(__('project.table.title'))
                     ->searchable()
                     ->sortable()
-                    ->limit(30),
+                    ->limit(30)
+                    ->tooltip(function ($record) {
+                        return $record->title;
+                    }),
                 TextColumn::make('description')
                     ->label(__('project.table.description'))
                     ->searchable()
