@@ -320,7 +320,18 @@ class ImportantUrlResource extends Resource
                     })
                     ->tooltip(function ($record) {
                         return __('importanturl.table.tooltip.full_name').": {$record->client->pic_name}".', '.__('importanturl.table.tooltip.company').": {$record->client->company_name}";
-                    }),
+                    })
+                    ->url(function ($record) {
+                        if ($record->client_id) {
+                            return ClientResource::getUrl('edit', ['record' => $record->client_id]);
+                        }
+
+                        return null;
+                    })
+                    ->color(function ($record) {
+                        return $record->client_id ? 'primary' : 'default';
+                    })
+                    ->openUrlInNewTab(),
 
                 TextColumn::make('project.title')
                     ->label(__('importanturl.table.project'))
@@ -332,7 +343,18 @@ class ImportantUrlResource extends Resource
                     })
                     ->tooltip(function ($record) {
                         return $record->project?->title ?? '';
-                    }),
+                    })
+                    ->url(function ($record) {
+                        if ($record->project_id) {
+                            return ProjectResource::getUrl('edit', ['record' => $record->project_id]);
+                        }
+
+                        return null;
+                    })
+                    ->color(function ($record) {
+                        return $record->project_id ? 'primary' : 'default';
+                    })
+                    ->openUrlInNewTab(),
 
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))

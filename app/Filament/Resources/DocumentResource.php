@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\DocumentResource\Pages;
 use App\Filament\Resources\DocumentResource\RelationManagers\DocumentActivityLogRelationManager;
+use App\Filament\Resources\ProjectResource;
 use App\Models\Document;
 use Closure;
 use Filament\Forms\Components\Actions\Action;
@@ -368,7 +369,18 @@ class DocumentResource extends Resource
                     ->limit(20)
                     ->tooltip(function ($record) {
                         return $record->project?->title ?? '';
-                    }),
+                    })
+                    ->url(function ($record) {
+                        if ($record->project_id) {
+                            return ProjectResource::getUrl('edit', ['record' => $record->project_id]);
+                        }
+
+                        return null;
+                    })
+                    ->color(function ($record) {
+                        return $record->project_id ? 'primary' : 'default';
+                    })
+                    ->openUrlInNewTab(),
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))
                     ->dateTime('j/n/y, h:i A')->sortable(),
