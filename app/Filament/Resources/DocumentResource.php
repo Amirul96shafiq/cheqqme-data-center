@@ -349,7 +349,10 @@ class DocumentResource extends Resource
                     ->label(__('document.table.title'))
                     ->sortable()
                     ->searchable()
-                    ->limit(20),
+                    ->limit(20)
+                    ->tooltip(function ($record) {
+                        return $record->title;
+                    }),
                 TextColumn::make('type')
                     ->label(__('document.table.type'))
                     ->badge()
@@ -359,7 +362,11 @@ class DocumentResource extends Resource
                         default => ucfirst($state),
                     }),
                 TextColumn::make('project.title')
-                    ->label(__('document.table.project'))->sortable()->searchable()->limit(20),
+                    ->label(__('document.table.project'))
+                    ->sortable()->searchable()->limit(20)
+                    ->tooltip(function ($record) {
+                        return $record->project->title;
+                    }),
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))
                     ->dateTime('j/n/y, h:i A')->sortable(),
