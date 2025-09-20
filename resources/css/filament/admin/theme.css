@@ -470,46 +470,45 @@
 
     /* Reduce grouping text size */
     .fi-sidebar-group-label {
-        font-size: 0.75rem !important; /* text-xs instead of text-sm */
-        line-height: 1rem !important; /* leading-4 instead of leading-6 */
+        font-size: 0.75rem !important;
+        line-height: 1rem !important;
     }
 
     /* Reduce item icon size */
     .fi-sidebar-item-icon {
-        height: 1.25rem !important; /* h-5 instead of h-6 */
-        width: 1.25rem !important; /* w-5 instead of w-6 */
+        height: 1.25rem !important;
+        width: 1.25rem !important;
+    }
+
+    .fi-sidebar-item:not(.fi-active):hover .fi-sidebar-item-icon {
+        @apply text-gray-500 dark:text-gray-200;
     }
 
     /* Reduce group icon size */
     .fi-sidebar-group-icon {
-        height: 1.25rem !important; /* h-5 instead of h-6 */
-        width: 1.25rem !important; /* w-5 instead of w-6 */
+        height: 1.25rem !important;
+        width: 1.25rem !important;
     }
 
     /* Reduce item label text size */
     .fi-sidebar-item-label {
-        font-size: 0.75rem !important; /* text-xs instead of text-sm */
-        line-height: 1rem !important; /* leading-4 instead of default */
+        font-size: 0.75rem !important;
+        line-height: 1rem !important;
     }
 
-    /* Reduce padding for more compact sidebar items */
-    .fi-sidebar-item-button {
-        padding: 0.375rem 0.5rem !important; /* py-1.5 px-2 instead of py-2 px-2 */
+    /* Reduce padding for more compact sidebar items - only when sidebar is collapsed */
+    .fi-sidebar:not(.fi-sidebar-open) .fi-sidebar-item-button {
+        padding: 0.85rem 0.5rem !important;
     }
 
     /* Reduce padding for group buttons */
     .fi-sidebar-group-button {
-        padding: 0.375rem 0.5rem !important; /* py-1.5 px-2 instead of py-2 px-2 */
+        padding: 0.375rem 0.5rem !important;
     }
 
     /* Reduce gap between elements in sidebar items */
     .fi-sidebar-item-button {
-        gap: 0.5rem !important; /* gap-2 instead of gap-3 */
-    }
-
-    /* Reduce gap between elements in group buttons */
-    .fi-sidebar-group-button {
-        gap: 0.5rem !important; /* gap-2 instead of gap-3 */
+        gap: 0.85rem !important;
     }
 
     /* Ensure badges maintain their size - override any inheritance */
@@ -517,8 +516,8 @@
     .fi-sidebar-group-button .fi-badge,
     .fi-sidebar-item-button [class*="badge"],
     .fi-sidebar-group-button [class*="badge"] {
-        font-size: 0.75rem !important; /* text-xs */
-        padding: 0.125rem 0.375rem !important; /* py-0.5 px-1.5 */
+        font-size: 0.75rem !important;
+        padding: 0.125rem 0.375rem !important;
         min-height: 1.25rem !important;
     }
 
@@ -526,8 +525,8 @@
     .fi-sidebar-group-collapse-button svg,
     .fi-sidebar-group-collapse-button [class*="icon"],
     .fi-sidebar-group-collapse-button .fi-icon {
-        height: 1rem !important; /* h-4 */
-        width: 1rem !important; /* w-4 */
+        height: 1rem !important;
+        width: 1rem !important;
     }
 
     /* Action Board: remove vertical scrolling on the page when Flowforge board is present */

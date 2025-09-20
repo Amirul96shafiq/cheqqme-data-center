@@ -81,7 +81,7 @@
                 x-on:click="$store.sidebar.toggleCollapsedGroup(label)"
             @endif
             @class([
-                'fi-sidebar-group-collapsed flex items-center pb-4 rounded-lg cursor-pointer w-full' => $collapsible,
+                'fi-sidebar-group-collapsed flex items-center rounded-lg cursor-pointer w-full' => $collapsible,
             ])
             style="max-width: 3rem; overflow: hidden;"
         >
