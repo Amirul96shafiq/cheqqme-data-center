@@ -135,67 +135,82 @@ class Profile extends EditProfile
                                 Forms\Components\Placeholder::make('background_preview')
                                     ->label(__('user.form.background_preview'))
                                     ->content(function () {
+                                        // Get enabled state
                                         $enabled = $this->form->getState()['web_app_background_enabled'] ?? false;
                                         $enabledText = __('user.form.enabled');
                                         $disabledText = __('user.form.disabled');
+
+                                        // Determine initial theme - default to light, but JavaScript will override immediately
+                                        $initialTheme = 'light';
+                                        $initialSrc = '/images/stylized-bg-'.($enabled ? 'enabled' : 'disabled').'-sample-'.$initialTheme.'.png';
 
                                         return new \Illuminate\Support\HtmlString('
                                             <div 
                                                 x-data="{
                                                     enabled: '.($enabled ? 'true' : 'false').',
-                                                    theme: localStorage.getItem(\'theme\') || \'system\',
-                                                    actualTheme: \'light\',
                                                     enabledText: \''.$enabledText.'\',
                                                     disabledText: \''.$disabledText.'\',
                                                     init() {
-                                                        this.updateActualTheme();
-                                                        this.$watch(\'theme\', () => this.updateActualTheme());
+                                                        // Set up watchers
                                                         this.$watch(\'enabled\', () => this.updatePreview());
-                                                        this.updatePreview();
-                                                        
-                                                        // Listen for theme changes
-                                                        this.$el.addEventListener(\'theme-changed\', (e) => {
-                                                            this.theme = e.detail;
-                                                            this.updateActualTheme();
-                                                        });
                                                         
                                                         // Listen for background preview updates
                                                         this.$el.addEventListener(\'background-preview-updated\', (e) => {
                                                             this.enabled = e.detail.enabled;
                                                             this.updatePreview();
                                                         });
-                                                    },
-                                                    updateActualTheme() {
-                                                        if (this.theme === \'system\') {
-                                                            this.actualTheme = window.matchMedia(\'(prefers-color-scheme: dark)\').matches ? \'dark\' : \'light\';
-                                                        } else {
-                                                            this.actualTheme = this.theme;
-                                                        }
-                                                        this.updatePreview();
+                                                        
+                                                        // Listen for theme changes
+                                                        this.$el.addEventListener(\'theme-changed\', (e) => {
+                                                            this.updatePreview();
+                                                        });
+                                                        
+                                                        // Update preview after a short delay to ensure DOM is ready
+                                                        setTimeout(() => this.updatePreview(), 10);
                                                     },
                                                     updatePreview() {
-                                                        const img = this.$refs.previewImg;
-                                                        if (img) {
-                                                            const basePath = \'images/stylized-bg-\';
+                                                        const imgLight = this.$refs.previewImg;
+                                                        const imgDark = this.$refs.previewImgDark;
+                                                        
+                                                        if (imgLight && imgDark) {
                                                             const enabledSuffix = this.enabled ? \'enabled\' : \'disabled\';
-                                                            const themeSuffix = \'-sample-\' + this.actualTheme + \'.png\';
-                                                            img.src = \'/\' + basePath + enabledSuffix + themeSuffix;
+                                                            const lightSrc = \'/images/stylized-bg-\' + enabledSuffix + \'-sample-light.png\';
+                                                            const darkSrc = \'/images/stylized-bg-\' + enabledSuffix + \'-sample-dark.png\';
+                                                            
+                                                            imgLight.src = lightSrc;
+                                                            imgDark.src = darkSrc;
+                                                            
+                                                            // Force text update by manually updating the span element
+                                                            const textSpan = this.$el.querySelector(\'[x-text]\');
+                                                            if (textSpan) {
+                                                                const newText = this.enabled ? this.enabledText : this.disabledText;
+                                                                textSpan.textContent = newText;
+                                                            }
                                                         }
                                                     }
                                                 }"
-                                                class="mt-4"
                                             >
                                                 <div class="relative">
+                                                    <!-- Light version (default) -->
                                                     <img 
                                                         x-ref="previewImg"
                                                         src="/images/stylized-bg-'.($enabled ? 'enabled' : 'disabled').'-sample-light.png"
                                                         alt="Background Preview"
-                                                        class="w-full rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:opacity-80 transition-opacity duration-200"
+                                                        class="w-full rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:opacity-80 transition-opacity duration-200 dark:hidden"
                                                         style="aspect-ratio: 1919/991; object-fit: contain;"
                                                         @click="window.open($refs.previewImg.src, \'_blank\')"
                                                     />
+                                                    <!-- Dark version -->
+                                                    <img 
+                                                        x-ref="previewImgDark"
+                                                        src="/images/stylized-bg-'.($enabled ? 'enabled' : 'disabled').'-sample-dark.png"
+                                                        alt="Background Preview"
+                                                        class="w-full rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:opacity-80 transition-opacity duration-200 hidden dark:block"
+                                                        style="aspect-ratio: 1919/991; object-fit: contain;"
+                                                        @click="window.open($refs.previewImgDark.src, \'_blank\')"
+                                                    />
                                                     <div class="absolute top-2 left-2 bg-primary-500/90 dark:bg-primary-500/90 px-2 py-1 rounded-full text-xs font-medium">
-                                                        <span x-text="enabled ? disabledText : enabledText" class="text-primary-900"></span>
+                                                        <span x-text="enabled ? enabledText : disabledText" class="text-primary-900"></span>
                                                     </div>
                                                 </div>
                                             </div>
