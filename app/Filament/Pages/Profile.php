@@ -190,8 +190,9 @@ class Profile extends EditProfile
                                                         x-ref="previewImg"
                                                         src="/images/stylized-bg-'.($enabled ? 'enabled' : 'disabled').'-sample-light.png"
                                                         alt="Background Preview"
-                                                        class="w-full rounded-lg border border-gray-200 dark:border-gray-700"
+                                                        class="w-full rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:opacity-80 transition-opacity duration-200"
                                                         style="aspect-ratio: 1919/991; object-fit: contain;"
+                                                        @click="window.open($refs.previewImg.src, \'_blank\')"
                                                     />
                                                     <div class="absolute top-2 left-2 bg-primary-500/90 dark:bg-primary-500/90 px-2 py-1 rounded-full text-xs font-medium">
                                                         <span x-text="enabled ? disabledText : enabledText" class="text-primary-900"></span>
