@@ -121,10 +121,86 @@ class Profile extends EditProfile
                                     ->downloadable(false)
                                     ->deletable(true),
 
+                                // Web app background enabled
                                 Forms\Components\Toggle::make('web_app_background_enabled')
                                     ->label(__('user.form.web_app_background'))
                                     ->helperText(__('user.form.web_app_background_helper'))
-                                    ->default(false),
+                                    ->default(false)
+                                    ->live()
+                                    ->afterStateUpdated(function ($state) {
+                                        $this->dispatch('background-preview-updated', enabled: $state);
+                                    }),
+
+                                // Background preview component
+                                Forms\Components\Placeholder::make('background_preview')
+                                    ->label(__('user.form.background_preview'))
+                                    ->content(function () {
+                                        $enabled = $this->form->getState()['web_app_background_enabled'] ?? false;
+                                        $enabledText = __('user.form.enabled');
+                                        $disabledText = __('user.form.disabled');
+
+                                        return new \Illuminate\Support\HtmlString('
+                                            <div 
+                                                x-data="{
+                                                    enabled: '.($enabled ? 'true' : 'false').',
+                                                    theme: localStorage.getItem(\'theme\') || \'system\',
+                                                    actualTheme: \'light\',
+                                                    enabledText: \''.$enabledText.'\',
+                                                    disabledText: \''.$disabledText.'\',
+                                                    init() {
+                                                        this.updateActualTheme();
+                                                        this.$watch(\'theme\', () => this.updateActualTheme());
+                                                        this.$watch(\'enabled\', () => this.updatePreview());
+                                                        this.updatePreview();
+                                                        
+                                                        // Listen for theme changes
+                                                        this.$el.addEventListener(\'theme-changed\', (e) => {
+                                                            this.theme = e.detail;
+                                                            this.updateActualTheme();
+                                                        });
+                                                        
+                                                        // Listen for background preview updates
+                                                        this.$el.addEventListener(\'background-preview-updated\', (e) => {
+                                                            this.enabled = e.detail.enabled;
+                                                            this.updatePreview();
+                                                        });
+                                                    },
+                                                    updateActualTheme() {
+                                                        if (this.theme === \'system\') {
+                                                            this.actualTheme = window.matchMedia(\'(prefers-color-scheme: dark)\').matches ? \'dark\' : \'light\';
+                                                        } else {
+                                                            this.actualTheme = this.theme;
+                                                        }
+                                                        this.updatePreview();
+                                                    },
+                                                    updatePreview() {
+                                                        const img = this.$refs.previewImg;
+                                                        if (img) {
+                                                            const basePath = \'images/stylized-bg-\';
+                                                            const enabledSuffix = this.enabled ? \'enabled\' : \'disabled\';
+                                                            const themeSuffix = \'-sample-\' + this.actualTheme + \'.png\';
+                                                            img.src = \'/\' + basePath + enabledSuffix + themeSuffix;
+                                                        }
+                                                    }
+                                                }"
+                                                class="mt-4"
+                                            >
+                                                <div class="relative">
+                                                    <img 
+                                                        x-ref="previewImg"
+                                                        src="/images/stylized-bg-'.($enabled ? 'enabled' : 'disabled').'-sample-light.png"
+                                                        alt="Background Preview"
+                                                        class="w-full rounded-lg border border-gray-200 dark:border-gray-700"
+                                                        style="aspect-ratio: 1919/991; object-fit: contain;"
+                                                    />
+                                                    <div class="absolute top-2 left-2 bg-primary-500/90 dark:bg-primary-500/90 px-2 py-1 rounded-full text-xs font-medium">
+                                                        <span x-text="enabled ? disabledText : enabledText" class="text-primary-900"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ');
+                                    })
+                                    ->visible(fn () => true),
                             ])
                             ->columns(1),
                     ])
