@@ -43,6 +43,8 @@ return [
         'avatar' => 'Avatar',
         'cover_image' => 'Gambar Cover',
         'cover_image_helper' => 'Muat naik gambar cover (disyorkan: maksimum 20MB)',
+        'web_app_background' => 'Latar Belakang Bergambar',
+        'web_app_background_helper' => 'Aktifkan gambar latar belakang tersuai untuk CheQQme Data Center',
         'username' => 'Gelaran Pengguna',
         'name' => 'Nama',
         'email' => 'Emel',

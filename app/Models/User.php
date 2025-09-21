@@ -28,6 +28,7 @@ class User extends Authenticatable implements HasAvatar
     protected $fillable = [
         'avatar',
         'cover_image',
+        'web_app_background_enabled',
         'username',
         'name',
         'email',
@@ -61,6 +62,7 @@ class User extends Authenticatable implements HasAvatar
                 'email',
                 'avatar',
                 'cover_image',
+                'web_app_background_enabled',
                 'email_verified_at',
                 'deleted_at',
                 'timezone',
@@ -85,7 +87,7 @@ class User extends Authenticatable implements HasAvatar
         // Don't log updates if no tracked fields actually changed
         if ($eventName === 'updated') {
             $dirtyFields = $this->getDirty();
-            $trackedFields = ['username', 'name', 'email', 'avatar', 'cover_image', 'email_verified_at', 'deleted_at', 'timezone', 'timezone_source', 'api_key_generated_at', 'city', 'country', 'location_updated_at', 'location_source', 'location_manually_set', 'timezone_manually_set'];
+            $trackedFields = ['username', 'name', 'email', 'avatar', 'cover_image', 'web_app_background_enabled', 'email_verified_at', 'deleted_at', 'timezone', 'timezone_source', 'api_key_generated_at', 'city', 'country', 'location_updated_at', 'location_source', 'location_manually_set', 'timezone_manually_set'];
 
             // Check if any tracked fields actually changed
             $trackedFieldsChanged = ! empty(array_intersect(array_keys($dirtyFields), $trackedFields));
@@ -118,6 +120,7 @@ class User extends Authenticatable implements HasAvatar
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'web_app_background_enabled' => 'boolean',
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
             'location_updated_at' => 'datetime',

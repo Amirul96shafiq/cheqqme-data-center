@@ -120,6 +120,11 @@ class Profile extends EditProfile
                                     ->openable(false)
                                     ->downloadable(false)
                                     ->deletable(true),
+
+                                Forms\Components\Toggle::make('web_app_background_enabled')
+                                    ->label(__('user.form.web_app_background'))
+                                    ->helperText(__('user.form.web_app_background_helper'))
+                                    ->default(false),
                             ])
                             ->columns(1),
                     ])
@@ -238,16 +243,16 @@ class Profile extends EditProfile
                                         ->outlined()
                                         ->icon('heroicon-o-link')
                                         ->disabled()
-                                        ->requiresConfirmation(false)
-                                        // ->modalIcon('heroicon-o-link')
-                                        // ->modalHeading(__('user.form.microsoft_coming_soon'))
-                                        // ->modalDescription(__('user.form.microsoft_coming_soon_description'))
-                                        // ->modalSubmitActionLabel(__('user.form.connect_microsoft'))
-                                        // ->modalCancelActionLabel(__('user.form.cancel'))
-                                        // ->modalWidth('md')
-                                        // ->action(function () {
-                                        //     // Coming soon functionality
-                                        // }),
+                                        ->requiresConfirmation(false),
+                                    // ->modalIcon('heroicon-o-link')
+                                    // ->modalHeading(__('user.form.microsoft_coming_soon'))
+                                    // ->modalDescription(__('user.form.microsoft_coming_soon_description'))
+                                    // ->modalSubmitActionLabel(__('user.form.connect_microsoft'))
+                                    // ->modalCancelActionLabel(__('user.form.cancel'))
+                                    // ->modalWidth('md')
+                                    // ->action(function () {
+                                    //     // Coming soon functionality
+                                    // }),
                                 ])
                                     ->columnSpan(1)
                                     ->alignment(Alignment::End),

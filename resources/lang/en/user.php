@@ -43,6 +43,8 @@ return [
         'avatar' => 'Avatar',
         'cover_image' => 'Cover Image',
         'cover_image_helper' => 'Upload a cover image for your profile (recommended: max 20MB)',
+        'web_app_background' => 'Stylized Background',
+        'web_app_background_helper' => 'Enable custom background images for CheQQme Data Center',
         'username' => 'Username',
         'name' => 'Name',
         'email' => 'Email',

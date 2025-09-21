@@ -70,49 +70,56 @@
             }
 
             /* Dynamic Background System */
-            .fi-body {
-                position: relative;
-                background-image: url('{{ asset('images/bg-light.png') }}');
-                background-size: cover;
-                background-position: bottom left;
-                background-repeat: no-repeat;
-                background-attachment: fixed;
-            }
+            @php
+                $currentUser = auth()->user();
+                $backgroundEnabled = $currentUser && $currentUser->web_app_background_enabled;
+            @endphp
 
-            /* Use bottom center for larger screens (lg and above) */
-            @media (min-width: 1024px) {
+            @if($backgroundEnabled)
                 .fi-body {
-                    background-position: bottom;
+                    position: relative;
+                    background-image: url('{{ asset('images/bg-light.png') }}');
+                    background-size: cover;
+                    background-position: bottom left;
+                    background-repeat: no-repeat;
+                    background-attachment: fixed;
                 }
-            }
 
-            /* Use contain for larger screens (3xl and above) */
-            @media (min-width: 1728px) {
-                .fi-body {
-                    background-size: contain;
+                /* Use bottom center for larger screens (lg and above) */
+                @media (min-width: 1024px) {
+                    .fi-body {
+                        background-position: bottom;
+                    }
                 }
-            }
 
-            .fi-body::before {
-                content: '';
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: linear-gradient(180deg, rgb(255, 255, 255) 15%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0.7) 75%, rgba(255, 255, 255, 0.15) 100%);
-                pointer-events: none;
-                z-index: -1;
-            }
+                /* Use contain for larger screens (3xl and above) */
+                @media (min-width: 1728px) {
+                    .fi-body {
+                        background-size: contain;
+                    }
+                }
 
-            /* Dark theme background */
-            .dark .fi-body {
-                background-image: url('{{ asset('images/bg-dark.png') }}');
-            }
+                .fi-body::before {
+                    content: '';
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: linear-gradient(180deg, rgb(255, 255, 255) 15%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0.7) 75%, rgba(255, 255, 255, 0.15) 100%);
+                    pointer-events: none;
+                    z-index: -1;
+                }
 
-            .dark .fi-body::before {
-                background: linear-gradient(180deg, rgb(26, 26, 26) 5%, rgba(19, 19, 19, 0.95) 25%, rgba(19, 19, 19.90) 50%, rgba(19, 19, 19, 0.55) 100%);
-            }
+                /* Dark theme background */
+                .dark .fi-body {
+                    background-image: url('{{ asset('images/bg-dark.png') }}');
+                }
+
+                .dark .fi-body::before {
+                    background: linear-gradient(180deg, rgb(26, 26, 26) 5%, rgba(19, 19, 19, 0.95) 25%, rgba(19, 19, 19.90) 50%, rgba(19, 19, 19, 0.55) 100%);
+                }
+            @endif
         </style>
 
         @stack('styles')
