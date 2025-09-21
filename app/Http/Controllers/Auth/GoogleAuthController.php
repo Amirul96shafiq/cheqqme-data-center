@@ -23,9 +23,28 @@ class GoogleAuthController extends Controller
     }
 
     /**
-     * Handle Google OAuth callback
-     * Processes the OAuth response, authenticates the user, and redirects appropriately
+     * Get localized message based on user preference or session
      */
+    private function getLocalizedMessage(string $key, string $defaultLocale = 'en'): string
+    {
+        // Try to get locale from session first
+        $locale = session('locale', $defaultLocale);
+
+        // Fallback to browser language detection if no session locale
+        if ($locale === $defaultLocale) {
+            $acceptLanguage = request()->header('Accept-Language', '');
+            if (str_contains($acceptLanguage, 'ms') || str_contains($acceptLanguage, 'my')) {
+                $locale = 'ms';
+            }
+        }
+
+        // Set the locale for this request
+        app()->setLocale($locale);
+
+        // Return the translated message
+        return __('login.errors.'.$key);
+    }
+
     public function handleGoogleCallback(Request $request)
     {
         try {
@@ -41,13 +60,13 @@ class GoogleAuthController extends Controller
                 ? route('filament.admin.auth.profile')
                 : route('filament.admin.pages.dashboard');
 
-            if (!$user) {
+            if (! $user) {
                 // Clear the session data even on error to avoid stale state
                 session()->forget('google_oauth_source');
 
                 return response()->json([
                     'success' => false,
-                    'message' => 'Failed to login. The selected Google Account does not exist in the system.',
+                    'message' => $this->getLocalizedMessage('googleAccountNotFound'),
                     'redirect_url' => $redirectUrl,
                 ], 404);
             }
@@ -64,8 +83,8 @@ class GoogleAuthController extends Controller
             Auth::login($user);
 
             $message = $isFromProfile
-                ? 'Google account connected successfully!'
-                : 'Successfully signed in with Google!';
+                ? $this->getLocalizedMessage('googleAccountConnected')
+                : $this->getLocalizedMessage('googleSigninSuccess');
 
             // Clear the session data
             session()->forget('google_oauth_source');
@@ -89,7 +108,7 @@ class GoogleAuthController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to authenticate with Google. Please try again.',
+                'message' => $this->getLocalizedMessage('googleAuthenticationFailed'),
                 'redirect_url' => $redirectUrl,
             ], 500);
         }

@@ -14,4 +14,11 @@ return [
         'remember' => 'Ingat Saya',
         'or' => 'Atau',
     ],
+
+    'errors' => [
+        'googleAccountNotFound' => 'Gagal log masuk. Akaun Google yang dipilih tidak wujud dalam sistem.',
+        'googleAuthenticationFailed' => 'Gagal mengesahkan dengan Google. Sila cuba lagi.',
+        'googleAccountConnected' => 'Akaun Google berjaya disambungkan!',
+        'googleSigninSuccess' => 'Berjaya log masuk dengan Google!',
+    ],
 ];

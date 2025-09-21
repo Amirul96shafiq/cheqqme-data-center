@@ -436,7 +436,7 @@ class UserResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('user.navigation_group'); // Grouping imporant url under Data Management
+        return __('user.navigation_group'); // Grouping imporant url under Resources
     }
 
     public static function getNavigationSort(): ?int

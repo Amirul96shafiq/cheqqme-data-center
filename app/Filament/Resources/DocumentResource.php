@@ -508,7 +508,7 @@ class DocumentResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('document.navigation_group'); // Grouping documents under Data Management
+        return __('document.navigation_group'); // Grouping documents under Resources
     }
 
     public static function getNavigationSort(): ?int

@@ -396,7 +396,7 @@ class PhoneNumberResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('phonenumber.navigation_group'); // Grouping phone numbers under Data Management
+        return __('phonenumber.navigation_group'); // Grouping phone numbers under Resources
     }
 
     public static function getNavigationSort(): ?int

@@ -3,8 +3,8 @@
 return [
     'groups' => [
         'boards' => 'Boards',
-        'data_management' => 'Data Management',
-        'user_management' => 'User Management',
+        'data_management' => 'Resources',
+        'user_management' => 'Users',
         'tools' => 'Tools',
     ],
     'trello_board_suffix' => 'Trello Board',

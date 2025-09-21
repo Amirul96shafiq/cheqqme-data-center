@@ -2,7 +2,7 @@
 
 return [
     // Navigation
-    'navigation_group' => 'Pengurusan Pengguna',
+    'navigation_group' => 'Pengguna',
     'navigation_label' => 'Pengguna',
 
     // Labels

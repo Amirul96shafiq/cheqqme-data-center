@@ -252,7 +252,7 @@ function openGreetingModal(forceOpen = false) {
                             </div>
                         </button>
                         
-                        <!-- Data Management Quick Action -->
+                        <!-- Resources Quick Action -->
                         <button onclick="toggleDataManagementVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
                                 @svg('heroicon-o-table-cells', 'w-5 h-5 text-primary-600 dark:text-primary-400')
@@ -497,7 +497,7 @@ window.scrollToWeatherSection = function() {
     }
 };
 
-// Toggle data management video container
+// Toggle Resources video container
 window.toggleDataManagementVideo = function() {
     const videoContainer = document.getElementById('data-management-video');
     const quickActionsContainer = videoContainer?.parentElement?.querySelector('.space-y-3');

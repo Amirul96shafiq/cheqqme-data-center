@@ -431,7 +431,7 @@ class ProjectResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('project.navigation_group'); // Grouping projects under Data Management
+        return __('project.navigation_group'); // Grouping projects under Resources
     }
 
     public static function getNavigationSort(): ?int

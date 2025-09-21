@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'navigation_group' => 'Data Management',
+    'navigation_group' => 'Resources',
     'navigation_label' => 'Important URLs',
 
     'labels' => [

@@ -465,7 +465,7 @@ class ImportantUrlResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('importanturl.navigation_group'); // Grouping imporant url under Data Management
+        return __('importanturl.navigation_group'); // Grouping imporant url under Resources
     }
 
     public static function getNavigationSort(): ?int

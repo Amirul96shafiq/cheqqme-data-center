@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'navigation_group' => 'Pengurusan Data',
+    'navigation_group' => 'Sumber',
     'navigation_label' => 'Dokumen',
 
     'labels' => [

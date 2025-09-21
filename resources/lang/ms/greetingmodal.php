@@ -18,7 +18,7 @@ return [
   'action-2-description' => 'Selaraskan kunci API, geolokasi dan zon masa anda di sini',
   'action-3-title' => 'Papan Tindakan',
   'action-3-description' => 'Lihat dan urus senarai tindakan produktif anda di sini',
-  'action-4-title' => 'Pengurusan Data',
+  'action-4-title' => 'Sumber',
   'action-4-description' => 'Susun dan jejak semua data kerja anda di sini',
 
   // Footer modal content
@@ -27,6 +27,6 @@ return [
   'no-show-today' => 'Jangan tunjukkan hari ini',
 
   // Video container content
-  'video-title' => 'Tutorial Pengurusan Data',
+  'video-title' => 'Tutorial Sumber',
   'video-not-supported' => 'Pelayar anda tidak menyokong tag video.',
 ];
