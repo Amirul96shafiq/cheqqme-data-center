@@ -66,4 +66,5 @@ build/
 docker/
 emoji-picker-original.css
 null
+mcp-server/
 mcp-server/servers
