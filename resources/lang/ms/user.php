@@ -80,6 +80,9 @@ return [
         'connected' => 'Disambungkan',
         'not_connected' => 'Tidak Disambungkan',
 
+        // Microsoft Connection
+        'connect_microsoft' => 'Akan Datang',
+        'microsoft_coming_soon' => 'Akan Datang',
     ],
 
     // Table Columns

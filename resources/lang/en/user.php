@@ -80,6 +80,9 @@ return [
         'connected' => 'Connected',
         'not_connected' => 'Not Connected',
 
+        // Microsoft Connection
+        'connect_microsoft' => 'Coming Soon',
+        'microsoft_coming_soon' => 'Coming Soon',
     ],
 
     // Table Columns
