@@ -33,6 +33,8 @@ class User extends Authenticatable implements HasAvatar
         'email',
         'google_id',
         'google_avatar_url',
+        'microsoft_id',
+        'microsoft_avatar_url',
         'timezone',
         'timezone_source',
         'password',
@@ -171,6 +173,11 @@ class User extends Authenticatable implements HasAvatar
             return $this->google_avatar_url;
         }
 
+        // Priority 3: Microsoft avatar (CAN be overwritten by custom upload)
+        if ($this->microsoft_avatar_url) {
+            return $this->microsoft_avatar_url;
+        }
+
         // Priority 3: Default Filament avatar (CAN be overwritten by both)
         return null; // Filament handles default avatar generation
     }
@@ -276,6 +283,37 @@ class User extends Authenticatable implements HasAvatar
         $this->update([
             'google_id' => null,
             'google_avatar_url' => null, // Also clear Google avatar
+        ]);
+    }
+
+    /**
+     * Update Microsoft avatar URL (only if no custom avatar exists)
+     */
+    public function updateMicrosoftAvatar(string $microsoftAvatarUrl): void
+    {
+        // Only update Microsoft avatar if no custom avatar exists
+        if (! $this->avatar) {
+            $this->update(['microsoft_avatar_url' => $microsoftAvatarUrl]);
+        }
+        // If custom avatar exists, do nothing (preserve custom avatar)
+    }
+
+    /**
+     * Check if user has Microsoft authentication linked
+     */
+    public function hasMicrosoftAuth(): bool
+    {
+        return ! empty($this->microsoft_id);
+    }
+
+    /**
+     * Disconnect Microsoft account from user
+     */
+    public function disconnectMicrosoft(): void
+    {
+        $this->update([
+            'microsoft_id' => null,
+            'microsoft_avatar_url' => null, // Also clear Microsoft avatar
         ]);
     }
 

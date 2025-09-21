@@ -5,6 +5,7 @@ return [
         'login' => 'Log Masuk',
         'forgotPassword' => 'Lupa Kata Laluan?',
         'googleSignin' => 'Log Masuk dengan Google',
+        'microsoftSignin' => 'Log Masuk dengan Microsoft',
     ],
 
     'form' => [

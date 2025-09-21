@@ -9,8 +9,8 @@ use BezhanSalleh\FilamentLanguageSwitch\Enums\Placement;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Filament\Notifications\Livewire\DatabaseNotifications;
 use Filament\Notifications\Livewire\Notifications;
-use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -29,11 +29,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register custom sidebar collapse/expand icons
-        FilamentIcon::register([
-            'panels::sidebar.collapse-button' => 'heroicon-o-bars-3-bottom-left',
-            'panels::sidebar.expand-button' => 'heroicon-o-bars-2',
-        ]);
+        // Register Microsoft socialite provider
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+            $event->extendSocialite('microsoft', \SocialiteProviders\Microsoft\Provider::class);
+        });
 
         // Register Task observer to ensure activity logging on order/status changes
         Task::observe(TaskObserver::class);
@@ -50,6 +49,8 @@ class AppServiceProvider extends ServiceProvider
         if (class_exists(\Livewire\Livewire::class)) {
             \Livewire\Livewire::component('relaticle.flowforge.kanban-board', \App\Http\Livewire\Relaticle\Flowforge\KanbanBoard::class);
         }
+
+        // Register custom language switch
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
                 ->locales(['en', 'ms'])

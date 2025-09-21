@@ -22,6 +22,7 @@
         "pusher/pusher-php-server": "^7.2",
         "relaticle/flowforge": "^0.2.1",
         "rmsramos/activitylog": "^1.0",
+        "socialiteproviders/microsoft": "^4.7",
         "spatie/eloquent-sortable": "^4.5.2",
         "spatie/laravel-activitylog": "^4.10",
         "ysfkaya/filament-phone-input": "^3.2"

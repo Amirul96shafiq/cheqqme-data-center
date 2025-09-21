@@ -87,6 +87,14 @@ class Login extends BaseLogin
                 ])
                     ->columnSpanFull()
                     ->columns(1),
+
+                Forms\Components\Actions::make([
+                    // Microsoft Sign-in button - opens popup window for OAuth authentication
+                    Action::make('microsoft_signin')
+                        ->view('components.microsoft-signin-button'),
+                ])
+                    ->columnSpanFull()
+                    ->columns(1),
             ]);
     }
 
@@ -145,6 +153,16 @@ class Login extends BaseLogin
                 ->duration(5000)
                 ->send();
         }
+
+        // Check for Microsoft "coming soon" notification
+        $microsoftMessage = session()->pull('microsoft_coming_soon_message');
+        if ($microsoftMessage) {
+            Notification::make()
+                ->title($microsoftMessage)
+                ->info()
+                ->duration(5000)
+                ->send();
+        }
     }
 
     /**
@@ -155,6 +173,18 @@ class Login extends BaseLogin
         Notification::make()
             ->title($message)
             ->danger()
+            ->duration(5000)
+            ->send();
+    }
+
+    /**
+     * Handle Microsoft sign-in "coming soon" notification
+     */
+    public function handleMicrosoftComingSoon(string $message): void
+    {
+        Notification::make()
+            ->title($message)
+            ->info()
             ->duration(5000)
             ->send();
     }

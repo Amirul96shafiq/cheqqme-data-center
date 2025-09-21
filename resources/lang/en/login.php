@@ -5,6 +5,7 @@ return [
         'login' => 'Login',
         'forgotPassword' => 'Forgot Password?',
         'googleSignin' => 'Sign in with Google',
+        'microsoftSignin' => 'Sign in with Microsoft',
     ],
 
     'form' => [

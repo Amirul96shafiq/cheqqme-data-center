@@ -22,4 +22,7 @@
 
     {{-- Google Sign-in JavaScript --}}
     <script src="{{ asset('js/google-signin.js') }}"></script>
+
+    {{-- Microsoft Sign-in JavaScript --}}
+    <script src="{{ asset('js/microsoft-signin.js') }}"></script>
 </x-filament-panels::page.simple>

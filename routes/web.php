@@ -71,6 +71,41 @@ Route::get('/auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::cla
 Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 Route::get('/auth/google/popup-callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'showPopupCallback'])->name('auth.google.popup-callback');
 
+// Microsoft OAuth routes
+// Route::get('/auth/microsoft', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'redirectToMicrosoft'])->name('auth.microsoft');
+// Route::get('/auth/microsoft/callback', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'handleMicrosoftCallback'])->name('auth.microsoft.callback');
+// Route::get('/auth/microsoft/popup-callback', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'showPopupCallback'])->name('auth.microsoft.popup-callback');
+
+// Debug route for Microsoft OAuth testing
+// Route::get('/debug/microsoft', function () {
+//     try {
+//         // Use custom Microsoft provider that uses 'consumers' tenant
+//         $driver = new \App\Http\Controllers\Auth\CustomMicrosoftProvider(
+//             request(),
+//             config('services.microsoft.client_id'),
+//             config('services.microsoft.client_secret'),
+//             config('services.microsoft.redirect')
+//         );
+
+//         $driver->setHttpClient(new \GuzzleHttp\Client([
+//             'verify' => false,
+//         ]));
+
+//         $url = $driver->redirect()->getTargetUrl();
+
+//         return response()->json([
+//             'url' => $url,
+//             'config' => config('services.microsoft'),
+//         ]);
+//     } catch (\Exception $e) {
+//         return response()->json([
+//             'error' => $e->getMessage(),
+//             'trace' => $e->getTraceAsString(),
+//             'config' => config('services.microsoft'),
+//         ], 500);
+//     }
+// });
+
 // Comment routes (controller based)
 Route::middleware('auth')->group(function () {
     Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
@@ -126,3 +161,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/weather/location', [WeatherController::class, 'updateLocation'])->name('weather.location');
     Route::post('/weather/clear-cache', [WeatherController::class, 'clearCache'])->name('weather.clear-cache');
 });
+
+// Microsoft "coming soon" notification route
+Route::get('/microsoft/coming-soon', function (Illuminate\Http\Request $request) {
+    $message = $request->get('message', 'Microsoft Sign-in: This feature is coming soon!');
+
+    session(['microsoft_coming_soon_message' => $message]);
+
+    return redirect()->route('filament.admin.auth.login');
+})->name('microsoft.coming-soon');
