@@ -49,7 +49,7 @@
                         <div class="flex flex-col justify-start space-y-6 max-w-2xl">
                             {{-- Title --}}
                             <div>
-                                <h1 id="heroTitle" class="text-3xl font-bold dark:text-white text-gray-600 mb-2 transition-all duration-500 leading-tight">
+                                <h1 id="heroTitle" class="text-2xl font-bold dark:text-white text-gray-600 -mb-4 transition-all duration-500 leading-tight">
                                     Loading...
                                 </h1>
                             </div>
