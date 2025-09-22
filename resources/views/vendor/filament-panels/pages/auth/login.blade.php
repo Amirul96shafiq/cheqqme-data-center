@@ -91,54 +91,42 @@
 <body class="h-full antialiased font-sans">
     <div class="flex h-screen overflow-hidden">
         {{-- Left Section (70%) - Hero Section --}}
-        <div class="relative w-[70%] hidden lg:flex flex-col justify-between overflow-hidden">
-            {{-- Background Image --}}
-            <div class="absolute inset-0 z-0">
-                <img src="{{ asset('images/login-bg-light.png') }}"
-                     alt="Background"
-                     class="w-full h-full object-cover object-left">
-                {{-- Overlay for better text readability --}}
-                <div class="absolute inset-0 bg-gradient-to-br from-primary-600/10 to-primary-800/10"></div>
-                        </div>
-
+        <div class="relative w-[70%] hidden lg:flex flex-col justify-between overflow-hidden bg-gray-50 dark:bg-gray-900">
             {{-- Content Container --}}
-            <div class="relative z-10 flex flex-col h-full p-10">
-                {{-- Logo --}}
-                <div>
-                    <img src="{{ asset('logos/logo-dark-vertical.png') }}"
-                         alt="{{ config('app.name') }}"
-                         class="h-14 w-auto">
-                </div>
-
+            <div class="relative z-10 flex flex-col h-full">
                 {{-- Hero Slider Container --}}
-                <div class="flex-1 flex items-center justify-center">
-                    <div class="hero-slider w-full max-w-2xl" id="heroSlider">
-                        <div class="text-center space-y-6">
-                            {{-- Hero Image --}}
-                            <div class="mb-8">
-                                <img id="heroImage"
-                                     src="{{ asset('images/hero-image-login-01.png') }}"
-                                     alt="Hero"
-                                     class="w-64 h-64 mx-auto object-contain transition-all duration-500">
-                            </div>
+                <div class="flex-1 flex flex-col">
+                    {{-- Hero Image Container --}}
+                    <div class="flex-1 p-6">
+                        <div class="relative w-full h-full">
+                            <img id="heroImage"
+                                 src="{{ asset('images/hero-images/01.png') }}"
+                                 alt="Hero"
+                                 class="w-full h-full object-cover object-right rounded-2xl border border-gray-900/20 dark:border-gray-50/20 transition-all duration-500">
+                            
+                            {{-- Content Overlay --}}
+                            <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-2xl text-center space-y-6 px-6 py-8 bg-black/20 dark:bg-black/40 backdrop-blur-sm rounded-xl">
+                                {{-- Title --}}
+                                <h1 id="heroTitle" class="text-2xl font-bold text-white mb-2 transition-all duration-500">
+                                    Welcome to CheQQme Data Center
+                                </h1>
 
-                            {{-- Title --}}
-                            <h1 id="heroTitle" class="text-5xl font-bold text-gray-800 mb-4 transition-all duration-500">
-                                Welcome to CheQQme Data Center
-                            </h1>
+                                {{-- Description --}}
+                                <p id="heroDescription" class="text-sm text-gray-200 max-w-xl mx-auto mb-12 transition-all duration-500">
+                                    Streamline your workflow and manage your data<br>
+                                    with our powerful and intuitive platform.<br>
+                                    Built for efficiency and collaboration.
+                                </p>
 
-                            {{-- Description --}}
-                            <p id="heroDescription" class="text-lg text-gray-600 max-w-xl mx-auto mb-8 transition-all duration-500">
-                                Streamline your workflow and manage your data<br>
-                                with our powerful and intuitive platform.<br>
-                                Built for efficiency and collaboration.
-                            </p>
-
-                            {{-- Slider Navigation --}}
-                            <div class="flex items-center justify-center space-x-2" id="sliderNav">
-                                <button data-slide="0" class="w-12 h-1 bg-primary-500 rounded-full transition-all duration-300"></button>
-                                <button data-slide="1" class="w-8 h-1 bg-gray-300 rounded-full transition-all duration-300 hover:bg-gray-400"></button>
-                                <button data-slide="2" class="w-8 h-1 bg-gray-300 rounded-full transition-all duration-300 hover:bg-gray-400"></button>
+                                {{-- Slider Navigation --}}
+                                <div class="flex items-center justify-center space-x-2" id="sliderNav">
+                                    <button data-slide="0" class="w-12 h-1 bg-primary-400 rounded-full transition-all duration-300"></button>
+                                    <button data-slide="1" class="w-4 h-1 bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
+                                    <button data-slide="2" class="w-4 h-1 bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
+                                    <button data-slide="3" class="w-4 h-1 bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
+                                    <button data-slide="4" class="w-4 h-1 bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
+                                    <button data-slide="5" class="w-4 h-1 bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -150,28 +138,21 @@
         <div class="w-full lg:w-[30%] flex flex-col bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 custom-scrollbar overflow-y-auto">
             {{-- Header Section --}}
             <div class="flex-shrink-0 p-6 pb-4">
-                {{-- Mobile Logo (shown only on mobile) --}}
-                <div class="lg:hidden mb-6 text-center">
-                    <img src="{{ asset('logos/logo-dark-vertical.png') }}"
-                         alt="{{ config('app.name') }}"
-                         class="h-12 w-auto mx-auto">
-                </div>
-                
                 {{-- Theme Toggle Buttons --}}
-                <div class="flex justify-center">
+                <div class="flex justify-center">                    
                     <div class="flex flex-row gap-2 p-2 rounded-lg bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50">
                         {{-- Light Theme (Sun) --}}
-                        <button class="theme-toggle-btn" data-theme="light" title="Enable light theme">
+                        <button class="theme-toggle-btn p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-theme="light" title="Enable light theme">
                             <x-heroicon-m-sun class="w-5 h-5" />
                         </button>
 
                         {{-- Dark Theme (Moon) --}}
-                        <button class="theme-toggle-btn" data-theme="dark" title="Enable dark theme">
+                        <button class="theme-toggle-btn p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-theme="dark" title="Enable dark theme">
                             <x-heroicon-m-moon class="w-5 h-5" />
                         </button>
 
                         {{-- System Theme (Desktop) --}}
-                        <button class="theme-toggle-btn" data-theme="system" title="Enable system theme">
+                        <button class="theme-toggle-btn p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" data-theme="system" title="Enable system theme">
                             <x-heroicon-m-computer-desktop class="w-5 h-5" />
                         </button>
                     </div>
@@ -182,8 +163,16 @@
             <div class="flex-1 flex items-center justify-center px-8">
                 <div class="w-full max-w-md login-form-container">
 
-                {{-- Sign In Header --}}
-                <div class="mb-8">
+                {{-- Logo Overlay --}}
+                <div class="flex justify-center mb-8">
+                    <img id="loginLogo"
+                         src="{{ asset('logos/logo-dark.png') }}"
+                         alt="{{ config('app.name') }}"
+                         class="h-32 w-auto transition-all duration-300">
+                </div>
+                
+                    {{-- Sign In Header --}}
+                <div class="mb-6">
                     <h2 class="text-2xl font-bold text-gray-800 dark:text-white text-center">
                         {{ __('login.title')}}
                     </h2>
@@ -252,9 +241,9 @@
 
                     {{-- Separator --}}
                     <div class="flex items-center justify-center my-4">
-                        <div class="flex-1 border-gray-300 dark:border-gray-600"></div>
+                        <div class="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
                         <span class="px-4 text-[10px] font-light text-gray-500 dark:text-gray-400">{{ __('login.form.or') }}</span>
-                        <div class="flex-1 border-gray-300 dark:border-gray-600"></div>
+                        <div class="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
                     </div>
 
                     {{-- Social Sign-in Buttons --}}
@@ -323,17 +312,32 @@
                 {
                     title: "Welcome to CheQQme Data Center",
                     description: "Streamline your workflow and manage your data<br>with our powerful and intuitive platform.<br>Built for efficiency and collaboration.",
-                    image: "{{ asset('images/hero-image-login-01.png') }}"
+                    image: "{{ asset('images/hero-images/01.png') }}"
                 },
                 {
                     title: "Powerful Task Management",
                     description: "Organize, track, and complete tasks efficiently.<br>Stay on top of deadlines and collaborate seamlessly<br>with your team in real-time.",
-                    image: "{{ asset('images/hero-image-login-01.png') }}"
+                    image: "{{ asset('images/hero-images/02.png') }}"
                 },
                 {
                     title: "Comprehensive Reporting",
                     description: "Generate detailed reports and gain valuable insights.<br>Make data-driven decisions with our advanced<br>analytics and visualization tools.",
-                    image: "{{ asset('images/hero-image-login-01.png') }}"
+                    image: "{{ asset('images/hero-images/03.png') }}"
+                },
+                {
+                    title: "Advanced Analytics Dashboard",
+                    description: "Monitor key performance indicators and track progress<br>with real-time data visualization and interactive<br>charts that update automatically.",
+                    image: "{{ asset('images/hero-images/04.png') }}"
+                },
+                {
+                    title: "Seamless Collaboration",
+                    description: "Work together effortlessly with your team using<br>integrated communication tools, shared workspaces,<br>and real-time document collaboration.",
+                    image: "{{ asset('images/hero-images/05.png') }}"
+                },
+                {
+                    title: "Secure Data Management",
+                    description: "Protect your sensitive information with enterprise-grade<br>security features, encrypted storage, and comprehensive<br>access controls and audit trails.",
+                    image: "{{ asset('images/hero-images/06.png') }}"
                 }
             ];
 
@@ -372,21 +376,21 @@
                     // Update button states
                     sliderButtons.forEach((button, index) => {
                         if (index === currentSlide) {
-                            button.classList.remove('w-8', 'bg-gray-300');
-                            button.classList.add('w-12', 'bg-primary-500');
+                            button.classList.remove('w-4', 'bg-white/50');
+                            button.classList.add('w-12', 'bg-primary-400');
                         } else {
-                            button.classList.remove('w-12', 'bg-primary-500');
-                            button.classList.add('w-8', 'bg-gray-300');
+                            button.classList.remove('w-12', 'bg-primary-400');
+                            button.classList.add('w-4', 'bg-white/50');
                         }
                     });
                 }, 300);
             }
 
-            // Auto-advance slides every 5 seconds
+            // Auto-advance slides every 10 seconds
             setInterval(() => {
                 currentSlide = (currentSlide + 1) % slides.length;
                 updateSlider();
-            }, 5000);
+            }, 10000);
         });
     </script>
 
@@ -424,6 +428,18 @@
 
 {{-- Theme Toggle JavaScript --}}
 <script>
+    function updateLogos(isDark) {
+        const loginLogo = document.getElementById('loginLogo');
+        
+        if (loginLogo) {
+            if (isDark) {
+                loginLogo.src = "{{ asset('logos/logo-dark.png') }}";
+            } else {
+                loginLogo.src = "{{ asset('logos/logo-light.png') }}";
+            }
+        }
+    }
+
     function applyTheme(theme) {
         const html = document.documentElement;
         localStorage.setItem('theme', theme);
@@ -431,21 +447,33 @@
         if (theme === 'dark') {
             html.classList.add('dark');
             html.classList.remove('light');
+            updateLogos(true);
         } else if (theme === 'light') {
             html.classList.remove('dark');
             html.classList.add('light');
+            updateLogos(false);
         } else if (theme === 'system') {
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             html.classList.toggle('dark', prefersDark);
             html.classList.remove('light');
+            updateLogos(prefersDark);
+        }
+        
+        // Update debug info
+        const debugTheme = document.getElementById('debugTheme');
+        const debugClasses = document.getElementById('debugClasses');
+        if (debugTheme && debugClasses) {
+            debugTheme.textContent = `Theme: ${theme}`;
+            debugClasses.textContent = `Classes: ${html.className}`;
         }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         const storedTheme = localStorage.getItem('theme');
-        if (storedTheme) {
-            applyTheme(storedTheme);
-        }
+        const currentTheme = storedTheme || 'system';
+        
+        // Apply initial theme
+        applyTheme(currentTheme);
 
         const buttons = document.querySelectorAll('.theme-toggle-btn');
 
@@ -463,7 +491,6 @@
         }
 
         // Set initial active button
-        const currentTheme = localStorage.getItem('theme') || 'system';
         setActiveButton(currentTheme);
 
         // Add click handlers

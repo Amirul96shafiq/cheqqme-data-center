@@ -44,12 +44,16 @@ html {
 }
 
 .theme-toggle-btn {
-    padding: 0px;
+    padding: 0.5rem;
     border-radius: 0.5rem;
-    transition: all 0.075s ease-in-out;
+    transition: all 0.2s ease-in-out;
     display: flex;
     justify-content: center;
+    align-items: center;
     outline: none;
+    border: none;
+    background: transparent;
+    cursor: pointer;
 }
 
 .theme-toggle-btn:hover {
