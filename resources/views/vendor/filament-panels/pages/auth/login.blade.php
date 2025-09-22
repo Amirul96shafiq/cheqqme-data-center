@@ -100,7 +100,7 @@
                     <img id="heroImage"
                          src="{{ asset('images/hero-images/light/01.png') }}"
                          alt="CheQQme Data Center platform showcase"
-                         class="w-full h-full object-cover object-center rounded-tl-3xl border-l-2 border-t-2 border-white/20 dark:border-white/10 transition-all duration-500"
+                         class="w-full h-full object-cover object-center rounded-tl-3xl border-l-8 border-t-8 border-white/50 dark:border-white/10 transition-all duration-500"
                          loading="eager">
                 </div>
             </div>
@@ -112,11 +112,11 @@
             <div class="flex-shrink-0 p-6 pb-4">
                 {{-- Theme Toggle Buttons --}}
                 <div class="flex justify-center">                    
-                    <fieldset class="flex flex-row gap-2 p-2 rounded-lg bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50">
+                    <fieldset class="flex flex-row gap-2 p-2 rounded-lg bg-white/50 dark:bg-gray-800/50 border border-gray-200/50 dark:border-gray-700/50">
                         <legend class="sr-only">Theme selection</legend>
                         {{-- Light Theme (Sun) --}}
                         <button type="button" 
-                                class="theme-toggle-btn p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" 
+                                class="theme-toggle-btn p-2 rounded-lgtransition-colors" 
                                 data-theme="light" 
                                 aria-label="Enable light theme"
                                 title="Enable light theme">
@@ -125,7 +125,7 @@
 
                         {{-- Dark Theme (Moon) --}}
                         <button type="button" 
-                                class="theme-toggle-btn p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" 
+                                class="theme-toggle-btn p-2 rounded-lgtransition-colors" 
                                 data-theme="dark" 
                                 aria-label="Enable dark theme"
                                 title="Enable dark theme">
@@ -134,7 +134,7 @@
 
                         {{-- System Theme (Desktop) --}}
                         <button type="button" 
-                                class="theme-toggle-btn p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" 
+                                class="theme-toggle-btn p-2 rounded-lgtransition-colors" 
                                 data-theme="system" 
                                 aria-label="Enable system theme"
                                 title="Enable system theme">

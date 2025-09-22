@@ -58,11 +58,34 @@ class ThemeToggle {
             const icon = btn.querySelector("svg");
             if (btn.dataset.theme === activeTheme) {
                 btn.classList.add("active");
-                icon?.classList.add("text-primary-500");
+                icon?.classList.add("text-primary-600");
             } else {
                 btn.classList.remove("active");
-                icon?.classList.remove("text-primary-500");
+                icon?.classList.remove("text-primary-600");
             }
+        });
+    }
+
+    /**
+     * Add hover effects to theme buttons
+     */
+    addHoverEffects() {
+        this.elements.themeButtons.forEach((btn) => {
+            const icon = btn.querySelector("svg");
+
+            // Add hover effect
+            btn.addEventListener("mouseenter", () => {
+                if (!btn.classList.contains("active")) {
+                    icon?.classList.add("text-primary-600");
+                }
+            });
+
+            // Remove hover effect
+            btn.addEventListener("mouseleave", () => {
+                if (!btn.classList.contains("active")) {
+                    icon?.classList.remove("text-primary-600");
+                }
+            });
         });
     }
 
@@ -87,6 +110,9 @@ class ThemeToggle {
                 this.setActiveButton(theme);
             });
         });
+
+        // Add hover effects
+        this.addHoverEffects();
 
         // Listen for system theme changes
         window
