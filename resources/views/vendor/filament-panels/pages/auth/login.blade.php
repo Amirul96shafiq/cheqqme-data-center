@@ -131,14 +131,14 @@
                             {{-- Title --}}
                             <div>
                                 <h1 id="heroTitle" class="text-3xl font-bold dark:text-white text-gray-600 mb-2 transition-all duration-500 leading-tight">
-                                    Welcome to CheQQme Data Center
+                                    Loading...
                                 </h1>
                             </div>
 
                             {{-- Description --}}
                             <div>
                                 <p id="heroDescription" class="text-md dark:text-white text-gray-600 transition-all duration-500 leading-relaxed">
-                                    Streamline your workflow and manage your data with our powerful and intuitive platform.
+                                    Loading...
                                 </p>
                             </div>
 
@@ -468,8 +468,14 @@
                 }
             });
 
-            // Initialize with correct theme
+            // Initialize with correct theme and first slide content
             updateSlider();
+            
+            // Set initial content immediately (before any transitions)
+            const initialSlide = slides[0];
+            heroImage.src = initialSlide.image;
+            heroTitle.textContent = initialSlide.title;
+            heroDescription.innerHTML = initialSlide.description;
         });
     </script>
 
