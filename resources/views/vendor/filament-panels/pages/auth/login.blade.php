@@ -117,7 +117,7 @@
                 {{-- Hero Image Container (Bottom Right) --}}
                 <div class="absolute bottom-0 right-0 w-7/8 h-3/4">
                     <img id="heroImage"
-                         src="{{ asset('images/hero-images/01.png') }}"
+                         src="{{ asset('images/hero-images/light/01.png') }}"
                          alt="Hero"
                          class="w-full h-full object-cover object-center rounded-tl-3xl border-l-2 border-t-2 border-white/20 dark:border-white/10 transition-all duration-500">
                 </div>
@@ -334,36 +334,55 @@
     {{-- Hero Slider JavaScript --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Function to get current theme mode
+            function getCurrentTheme() {
+                const html = document.documentElement;
+                if (html.classList.contains('dark')) {
+                    return 'dark';
+                } else if (html.classList.contains('light')) {
+                    return 'light';
+                } else {
+                    // Check system preference if no explicit theme is set
+                    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+            }
+
+            // Function to get theme-specific image path
+            function getThemeImagePath(imageNumber) {
+                const theme = getCurrentTheme();
+                return "{{ asset('images/hero-images') }}" + "/" + theme + "/" + imageNumber.toString().padStart(2, '0') + ".png";
+            }
+
             const slides = [
                 {
                     title: "Welcome to CheQQme Data Center",
                     description: "Streamline your workflow and manage your data with our powerful and intuitive platform.",
-                    image: "{{ asset('images/hero-images/01.png') }}"
+                    image: getThemeImagePath(1)
                 },
                 {
                     title: "Powerful Task Management",
                     description: "Organize, track, and complete tasks efficiently. Stay on top of deadlines and collaborate seamlessly.",
-                    image: "{{ asset('images/hero-images/02.png') }}"
+                    image: getThemeImagePath(2)
                 },
                 {
                     title: "Comprehensive Reporting",
                     description: "Generate detailed reports and gain valuable insights. Make data-driven decisions with our advanced...",
-                    image: "{{ asset('images/hero-images/03.png') }}"
+                    image: getThemeImagePath(3)
                 },
                 {
                     title: "Advanced Analytics Dashboard",
                     description: "Monitor key performance indicators and track progress with real-time data visualization and interactive.",
-                    image: "{{ asset('images/hero-images/04.png') }}"
+                    image: getThemeImagePath(4)
                 },
                 {
                     title: "Seamless Collaboration",
                     description: "Work together effortlessly with your team using integrated communication tools and shared workspaces.",
-                    image: "{{ asset('images/hero-images/05.png') }}"
+                    image: getThemeImagePath(5)
                 },
                 {
                     title: "Secure Data Management",
                     description: "Protect your sensitive information with enterprise-grade security features and encrypted storage.",
-                    image: "{{ asset('images/hero-images/06.png') }}"
+                    image: getThemeImagePath(6)
                 }
             ];
 
@@ -388,8 +407,10 @@
                 heroDescription.style.opacity = '0';
 
                 setTimeout(() => {
-                    // Update content
+                    // Update content with current theme
                     const slide = slides[currentSlide];
+                    // Update image path based on current theme
+                    slide.image = getThemeImagePath(currentSlide + 1);
                     heroImage.src = slide.image;
                     heroTitle.textContent = slide.title;
                     heroDescription.innerHTML = slide.description;
@@ -412,11 +433,43 @@
                 }, 300);
             }
 
+            // Function to update all slide images when theme changes
+            function updateAllSlideImages() {
+                slides.forEach((slide, index) => {
+                    slide.image = getThemeImagePath(index + 1);
+                });
+                // Update current slide with new theme
+                updateSlider();
+            }
+
             // Auto-advance slides every 10 seconds
             setInterval(() => {
                 currentSlide = (currentSlide + 1) % slides.length;
                 updateSlider();
             }, 10000);
+
+            // Listen for theme changes and update images accordingly
+            const themeToggleButtons = document.querySelectorAll('.theme-toggle-btn');
+            themeToggleButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Small delay to allow theme classes to be applied
+                    setTimeout(() => {
+                        updateAllSlideImages();
+                    }, 100);
+                });
+            });
+
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                // Only update if no explicit theme is set
+                const html = document.documentElement;
+                if (!html.classList.contains('dark') && !html.classList.contains('light')) {
+                    updateAllSlideImages();
+                }
+            });
+
+            // Initialize with correct theme
+            updateSlider();
         });
     </script>
 
