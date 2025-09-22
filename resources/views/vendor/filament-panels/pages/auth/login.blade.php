@@ -42,41 +42,10 @@
                     </div>
                 </div>
                 
-                {{-- Navigation Controls (Top Right) --}}
-                <nav class="absolute top-12 right-12 z-20" aria-label="Hero slider navigation">
-                    <div class="flex items-center space-x-3">
-                        {{-- Previous Button --}}
-                        <button id="prevSlide" 
-                                type="button"
-                                aria-label="Previous slide"
-                                class="w-10 h-10 bg-primary-500 dark:bg-primary-500 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
-                            @svg('heroicon-m-chevron-left', 'w-5 h-5 text-primary-900 transition-colors')
-                        </button>
-                        
-                        {{-- Next Button --}}
-                        <button id="nextSlide" 
-                                type="button"
-                                aria-label="Next slide"
-                                class="w-10 h-10 bg-primary-500 dark:bg-primary-500 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
-                            @svg('heroicon-m-chevron-right', 'w-5 h-5 text-primary-900 transition-colors')
-                        </button>
-                    </div>
-                </nav>
-
-                {{-- Hero Image Container (Bottom Right) --}}
-                <div class="absolute bottom-0 right-0 w-7/8 h-3/4">
-                    <img id="heroImage"
-                         src="{{ asset('images/hero-images/light/01.png') }}"
-                         alt="CheQQme Data Center platform showcase"
-                         class="w-full h-full object-cover object-center rounded-tl-3xl border-l-2 border-t-2 border-white/20 dark:border-white/10 transition-all duration-500"
-                         loading="eager">
-                </div>
-                
-                {{-- Content Container (Full Width/Height, avoiding hero image) --}}
-                <div class="relative z-10 flex flex-col w-1/2 h-full">
-                    {{-- Top Content Area (full width, height calculated to avoid hero image) --}}
-                    <div class="flex-1 flex flex-col justify-start p-12">
-                        {{-- Content positioned to avoid bottom hero image overlap --}}
+                {{-- Top Section: Content Container and Navigation Controls --}}
+                <div class="relative z-10 flex flex-col w-full h-1/4">
+                    {{-- Content Container --}}
+                    <div class="flex-1 flex flex-col justify-start p-12 w-3/4">
                         <div class="flex flex-col justify-start space-y-6 max-w-2xl">
                             {{-- Title --}}
                             <div>
@@ -86,7 +55,7 @@
                             </div>
 
                             {{-- Description --}}
-                            <div>
+                            <div class="min-h-14">
                                 <p id="heroDescription" class="text-md dark:text-white text-gray-600 transition-all duration-500 leading-relaxed">
                                     Loading...
                                 </p>
@@ -104,8 +73,35 @@
                         </div>
                     </div>
                     
-                    {{-- Bottom spacer to ensure content doesn't overlap with hero image --}}
-                    <div class="h-1/5"></div>
+                    {{-- Navigation Controls (Bottom Right) --}}
+                    <nav class="absolute bottom-4 right-12 w-1/4 z-20 flex justify-end" aria-label="Hero slider navigation">
+                        <div class="flex items-center space-x-3">
+                            {{-- Previous Button --}}
+                            <button id="prevSlide" 
+                                    type="button"
+                                    aria-label="Previous slide"
+                                    class="w-10 h-10 bg-primary-500 dark:bg-primary-500 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                                @svg('heroicon-m-chevron-left', 'w-5 h-5 text-primary-900 transition-colors')
+                            </button>
+                            
+                            {{-- Next Button --}}
+                            <button id="nextSlide" 
+                                    type="button"
+                                    aria-label="Next slide"
+                                    class="w-10 h-10 bg-primary-500 dark:bg-primary-500 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                                @svg('heroicon-m-chevron-right', 'w-5 h-5 text-primary-900 transition-colors')
+                            </button>
+                        </div>
+                    </nav>
+                </div>
+
+                {{-- Bottom Section: Hero Images --}}
+                <div class="absolute bottom-0 left-0 w-full h-3/4 pl-12">
+                    <img id="heroImage"
+                         src="{{ asset('images/hero-images/light/01.png') }}"
+                         alt="CheQQme Data Center platform showcase"
+                         class="w-full h-full object-cover object-center rounded-tl-3xl border-l-2 border-t-2 border-white/20 dark:border-white/10 transition-all duration-500"
+                         loading="eager">
                 </div>
             </div>
         </div>
