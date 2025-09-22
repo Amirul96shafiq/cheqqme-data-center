@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title' => 'Sign in',
+
     'actions' => [
         'login' => 'Login',
         'forgotPassword' => 'Forgot Password?',

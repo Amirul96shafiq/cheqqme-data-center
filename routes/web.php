@@ -7,6 +7,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // OpenAI logs endpoint (web UI)
@@ -35,10 +36,34 @@ Route::post('reset-password', [ResetPasswordController::class, 'reset'])->name('
 // Set locale route
 Route::post('/set-locale', function (Request $request) {
     $locale = $request->input('locale');
+    $redirect = $request->input('redirect');
+
     session(['locale' => $locale]);
 
-    return back();
-})->name('locale.set');
+    // If it's an AJAX request, return JSON
+    if ($request->ajax() || $request->wantsJson()) {
+        return response()->json(['success' => true, 'locale' => $locale]);
+    }
+
+    // If a specific redirect URL is provided, use it
+    if ($redirect) {
+        return redirect($redirect);
+    }
+
+    // Fallback to referer-based redirect
+    $referer = $request->header('referer');
+    if ($referer && str_contains($referer, '/admin/login')) {
+        return redirect('/admin/login');
+    } elseif ($referer && str_contains($referer, '/login')) {
+        return redirect('/login');
+    } elseif (str_contains($request->header('referer', ''), 'forgot-password')) {
+        return redirect('/forgot-password');
+    } elseif (str_contains($request->header('referer', ''), 'reset-password')) {
+        return redirect()->back();
+    }
+
+    return redirect()->back();
+})->middleware('web')->name('locale.set');
 
 // Home route
 Route::get('/', function () {
@@ -63,8 +88,43 @@ Route::get('/test-mentions', function () {
 
 // Login route
 Route::get('/login', function () {
-    return redirect('/admin/login');
-})->name('login');
+    App::setLocale(session('locale', config('app.locale')));
+
+    return view('vendor.filament-panels.pages.auth.login');
+})->middleware('web')->name('login');
+
+// Admin login route (custom)
+Route::get('/admin/login', function () {
+    App::setLocale(session('locale', config('app.locale')));
+
+    return view('vendor.filament-panels.pages.auth.login');
+})->middleware('web')->name('admin.login');
+
+// Admin login route (custom) - POST
+Route::post('/admin/login', function (Illuminate\Http\Request $request) {
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
+
+    $loginField = filter_var($credentials['email'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+    $attemptCredentials = [
+        $loginField => $credentials['email'],
+        'password' => $credentials['password'],
+    ];
+
+    if (Auth::attempt($attemptCredentials, $request->boolean('remember'))) {
+        $request->session()->regenerate();
+
+        // Redirect to Filament admin dashboard
+        return redirect()->route('filament.admin.pages.dashboard');
+    }
+
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ])->onlyInput('email');
+})->name('admin.login');
 
 // Google OAuth routes
 Route::get('/auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
@@ -168,5 +228,5 @@ Route::get('/microsoft/coming-soon', function (Illuminate\Http\Request $request)
 
     session(['microsoft_coming_soon_message' => $message]);
 
-    return redirect()->route('filament.admin.auth.login');
+    return redirect()->route('admin.login');
 })->name('microsoft.coming-soon');

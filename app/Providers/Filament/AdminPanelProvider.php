@@ -184,7 +184,7 @@ class AdminPanelProvider extends PanelProvider
             ->darkModeBrandLogo($currentDarkLogo)
             ->brandLogoHeight($currentLogoHeight)
             ->font('Roboto')
-            ->login(\App\Filament\Pages\Auth\Login::class)
+            ->login(null)
             ->profile(Profile::class, isSimple: false)
             ->databaseNotifications(true, false)
             ->databaseNotificationsPolling('5s')

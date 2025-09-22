@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'title' => 'Log Masuk',
+
     'actions' => [
         'login' => 'Log Masuk',
         'forgotPassword' => 'Lupa Kata Laluan?',
