@@ -91,45 +91,71 @@
 <body class="h-full antialiased font-sans">
     <div class="flex h-screen overflow-hidden">
         {{-- Left Section (70%) - Hero Section --}}
-        <div class="relative w-[70%] hidden lg:flex flex-col justify-between overflow-hidden bg-gray-50 dark:bg-gray-900">
-            {{-- Content Container --}}
-            <div class="relative z-10 flex flex-col h-full">
-                {{-- Hero Slider Container --}}
-                <div class="flex-1 flex flex-col">
-                    {{-- Hero Image Container --}}
-                    <div class="flex-1 p-6">
-                        <div class="relative w-full h-full">
-                            <img id="heroImage"
-                                 src="{{ asset('images/hero-images/01.png') }}"
-                                 alt="Hero"
-                                 class="w-full h-full object-cover object-right rounded-2xl border border-gray-900/20 dark:border-gray-50/20 transition-all duration-500">
-                            
-                            {{-- Content Overlay --}}
-                            <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-2xl text-center space-y-6 px-6 py-8 bg-black/20 dark:bg-black/40 backdrop-blur-sm rounded-xl">
-                                {{-- Title --}}
-                                <h1 id="heroTitle" class="text-2xl font-bold text-white mb-2 transition-all duration-500">
+        <div class="relative w-[70%] hidden lg:flex flex-col justify-between overflow-hidden bg-gray-50 dark:bg-gray-900 p-6">
+            {{-- Hero Section with Gradient Background --}}
+            <div class="relative w-full h-full rounded-2xl overflow-hidden">
+                {{-- Gradient Mesh Background - Light Mode --}}
+                <div class="light:block dark:hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-100 via-blue-100 to-indigo-100"></div>
+                    <div class="absolute top-0 left-0 w-full h-full opacity-40">
+                        <div class="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-blue-300/30 to-purple-300/30 rounded-full blur-3xl animate-float-1"></div>
+                        <div class="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-l from-indigo-300/30 to-pink-300/30 rounded-full blur-3xl animate-float-2"></div>
+                        <div class="absolute top-1/2 left-1/3 w-80 h-80 bg-gradient-to-br from-cyan-300/25 to-blue-300/25 rounded-full blur-3xl animate-float-3"></div>
+                    </div>
+                </div>
+                
+                {{-- Gradient Mesh Background - Dark Mode --}}
+                <div class="hidden dark:block">
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-800 via-slate-800/30 to-indigo-800/20"></div>
+                    <div class="absolute top-0 left-0 w-full h-full opacity-40">
+                        <div class="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-full blur-3xl animate-float-1"></div>
+                        <div class="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-l from-indigo-500/30 to-pink-500/30 rounded-full blur-3xl animate-float-2"></div>
+                        <div class="absolute top-1/2 left-1/3 w-80 h-80 bg-gradient-to-br from-cyan-500/25 to-blue-500/25 rounded-full blur-3xl animate-float-3"></div>
+                    </div>
+                </div>
+                
+                {{-- Hero Image Container (Bottom Right) --}}
+                <div class="absolute bottom-0 right-0 w-7/8 h-3/4">
+                    <img id="heroImage"
+                         src="{{ asset('images/hero-images/01.png') }}"
+                         alt="Hero"
+                         class="w-full h-full object-cover object-center rounded-tl-3xl border-l-2 border-t-2 border-white/20 dark:border-white/10 transition-all duration-500">
+                </div>
+                
+                {{-- Content Container (Full Width/Height, avoiding hero image) --}}
+                <div class="relative z-10 flex flex-col w-1/2 h-full">
+                    {{-- Top Content Area (full width, height calculated to avoid hero image) --}}
+                    <div class="flex-1 flex flex-col justify-start p-12">
+                        {{-- Content positioned to avoid bottom hero image overlap --}}
+                        <div class="flex flex-col justify-start space-y-6 max-w-2xl">
+                            {{-- Title --}}
+                            <div>
+                                <h1 id="heroTitle" class="text-3xl font-bold dark:text-white text-gray-600 mb-2 transition-all duration-500 leading-tight">
                                     Welcome to CheQQme Data Center
                                 </h1>
+                            </div>
 
-                                {{-- Description --}}
-                                <p id="heroDescription" class="text-sm text-gray-200 max-w-xl mx-auto mb-12 transition-all duration-500">
-                                    Streamline your workflow and manage your data<br>
-                                    with our powerful and intuitive platform.<br>
-                                    Built for efficiency and collaboration.
+                            {{-- Description --}}
+                            <div>
+                                <p id="heroDescription" class="text-md dark:text-white text-gray-600 transition-all duration-500 leading-relaxed">
+                                    Streamline your workflow and manage your data with our powerful and intuitive platform.
                                 </p>
+                            </div>
 
-                                {{-- Slider Navigation --}}
-                                <div class="flex items-center justify-center space-x-2" id="sliderNav">
-                                    <button data-slide="0" class="w-12 h-1 bg-primary-400 rounded-full transition-all duration-300"></button>
-                                    <button data-slide="1" class="w-4 h-1 bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
-                                    <button data-slide="2" class="w-4 h-1 bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
-                                    <button data-slide="3" class="w-4 h-1 bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
-                                    <button data-slide="4" class="w-4 h-1 bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
-                                    <button data-slide="5" class="w-4 h-1 bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
-                                </div>
+                            {{-- Slider Navigation --}}
+                            <div class="flex items-center space-x-3 mt-8" id="sliderNav">
+                                <button data-slide="0" class="w-12 h-1 bg-primary-400 rounded-full transition-all duration-300"></button>
+                                <button data-slide="1" class="w-4 h-1 bg-gray-400 dark:bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
+                                <button data-slide="2" class="w-4 h-1 bg-gray-400 dark:bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
+                                <button data-slide="3" class="w-4 h-1 bg-gray-400 dark:bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
+                                <button data-slide="4" class="w-4 h-1 bg-gray-400 dark:bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
+                                <button data-slide="5" class="w-4 h-1 bg-gray-400 dark:bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
                             </div>
                         </div>
                     </div>
+                    
+                    {{-- Bottom spacer to ensure content doesn't overlap with hero image --}}
+                    <div class="h-1/5"></div>
                 </div>
             </div>
         </div>
@@ -311,32 +337,32 @@
             const slides = [
                 {
                     title: "Welcome to CheQQme Data Center",
-                    description: "Streamline your workflow and manage your data<br>with our powerful and intuitive platform.<br>Built for efficiency and collaboration.",
+                    description: "Streamline your workflow and manage your data with our powerful and intuitive platform.",
                     image: "{{ asset('images/hero-images/01.png') }}"
                 },
                 {
                     title: "Powerful Task Management",
-                    description: "Organize, track, and complete tasks efficiently.<br>Stay on top of deadlines and collaborate seamlessly<br>with your team in real-time.",
+                    description: "Organize, track, and complete tasks efficiently. Stay on top of deadlines and collaborate seamlessly.",
                     image: "{{ asset('images/hero-images/02.png') }}"
                 },
                 {
                     title: "Comprehensive Reporting",
-                    description: "Generate detailed reports and gain valuable insights.<br>Make data-driven decisions with our advanced<br>analytics and visualization tools.",
+                    description: "Generate detailed reports and gain valuable insights. Make data-driven decisions with our advanced...",
                     image: "{{ asset('images/hero-images/03.png') }}"
                 },
                 {
                     title: "Advanced Analytics Dashboard",
-                    description: "Monitor key performance indicators and track progress<br>with real-time data visualization and interactive<br>charts that update automatically.",
+                    description: "Monitor key performance indicators and track progress with real-time data visualization and interactive.",
                     image: "{{ asset('images/hero-images/04.png') }}"
                 },
                 {
                     title: "Seamless Collaboration",
-                    description: "Work together effortlessly with your team using<br>integrated communication tools, shared workspaces,<br>and real-time document collaboration.",
+                    description: "Work together effortlessly with your team using integrated communication tools and shared workspaces.",
                     image: "{{ asset('images/hero-images/05.png') }}"
                 },
                 {
                     title: "Secure Data Management",
-                    description: "Protect your sensitive information with enterprise-grade<br>security features, encrypted storage, and comprehensive<br>access controls and audit trails.",
+                    description: "Protect your sensitive information with enterprise-grade security features and encrypted storage.",
                     image: "{{ asset('images/hero-images/06.png') }}"
                 }
             ];
@@ -376,11 +402,11 @@
                     // Update button states
                     sliderButtons.forEach((button, index) => {
                         if (index === currentSlide) {
-                            button.classList.remove('w-4', 'bg-white/50');
+                            button.classList.remove('w-4', 'bg-gray-400', 'dark:bg-white/50');
                             button.classList.add('w-12', 'bg-primary-400');
                         } else {
                             button.classList.remove('w-12', 'bg-primary-400');
-                            button.classList.add('w-4', 'bg-white/50');
+                            button.classList.add('w-4', 'bg-gray-400', 'dark:bg-white/50');
                         }
                     });
                 }, 300);

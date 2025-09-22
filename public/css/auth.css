@@ -164,3 +164,150 @@ html {
         rgba(19, 19, 19, 0.55) 100%
     );
 }
+
+/* Floating Animation Keyframes */
+@keyframes float-1 {
+    0%,
+    100% {
+        transform: translateY(0px) translateX(0px) scale(1);
+    }
+    25% {
+        transform: translateY(-20px) translateX(15px) scale(1.05);
+    }
+    50% {
+        transform: translateY(-10px) translateX(-10px) scale(0.95);
+    }
+    75% {
+        transform: translateY(-30px) translateX(20px) scale(1.02);
+    }
+}
+
+@keyframes float-2 {
+    0%,
+    100% {
+        transform: translateY(0px) translateX(0px) scale(1);
+    }
+    33% {
+        transform: translateY(-25px) translateX(-15px) scale(1.03);
+    }
+    66% {
+        transform: translateY(-15px) translateX(25px) scale(0.97);
+    }
+}
+
+@keyframes float-3 {
+    0%,
+    100% {
+        transform: translateY(0px) translateX(0px) scale(1);
+    }
+    20% {
+        transform: translateY(-18px) translateX(12px) scale(1.04);
+    }
+    40% {
+        transform: translateY(-8px) translateX(-18px) scale(0.96);
+    }
+    60% {
+        transform: translateY(-28px) translateX(8px) scale(1.01);
+    }
+    80% {
+        transform: translateY(-12px) translateX(-8px) scale(0.99);
+    }
+}
+
+@keyframes float-4 {
+    0%,
+    100% {
+        transform: translateY(0px) translateX(0px) scale(1);
+    }
+    30% {
+        transform: translateY(-22px) translateX(-12px) scale(1.06);
+    }
+    70% {
+        transform: translateY(-16px) translateX(18px) scale(0.94);
+    }
+}
+
+@keyframes float-5 {
+    0%,
+    100% {
+        transform: translateY(0px) translateX(0px) scale(1);
+    }
+    25% {
+        transform: translateY(-14px) translateX(22px) scale(1.02);
+    }
+    50% {
+        transform: translateY(-26px) translateX(-6px) scale(0.98);
+    }
+    75% {
+        transform: translateY(-8px) translateX(14px) scale(1.05);
+    }
+}
+
+@keyframes float-6 {
+    0%,
+    100% {
+        transform: translateY(0px) translateX(0px) scale(1);
+    }
+    40% {
+        transform: translateY(-20px) translateX(-20px) scale(1.03);
+    }
+    80% {
+        transform: translateY(-10px) translateX(16px) scale(0.97);
+    }
+}
+
+@keyframes float-7 {
+    0%,
+    100% {
+        transform: translateY(0px) translateX(0px) scale(1);
+    }
+    50% {
+        transform: translateY(-24px) translateX(10px) scale(1.08);
+    }
+}
+
+@keyframes float-8 {
+    0%,
+    100% {
+        transform: translateY(0px) translateX(0px) scale(1);
+    }
+    35% {
+        transform: translateY(-16px) translateX(-14px) scale(1.04);
+    }
+    70% {
+        transform: translateY(-28px) translateX(8px) scale(0.96);
+    }
+}
+
+/* Animation Classes */
+.animate-float-1 {
+    animation: float-1 8s ease-in-out infinite;
+}
+
+.animate-float-2 {
+    animation: float-2 10s ease-in-out infinite;
+}
+
+.animate-float-3 {
+    animation: float-3 12s ease-in-out infinite;
+}
+
+.animate-float-4 {
+    animation: float-4 9s ease-in-out infinite;
+}
+
+.animate-float-5 {
+    animation: float-5 11s ease-in-out infinite;
+}
+
+.animate-float-6 {
+    animation: float-6 13s ease-in-out infinite;
+}
+
+.animate-float-7 {
+    animation: float-7 7s ease-in-out infinite;
+}
+
+.animate-float-8 {
+    animation: float-8 14s ease-in-out infinite;
+}
