@@ -43,7 +43,7 @@
                 </div>
                 
                 {{-- Top Section: Content Container and Navigation Controls --}}
-                <div class="relative z-10 flex flex-col w-full h-1/4">
+                <div class="relative z-10 flex flex-col w-full h-1/4 justify-end">
                     {{-- Content Container --}}
                     <div class="flex-1 flex flex-col justify-start p-12 w-3/4">
                         <div class="flex flex-col justify-start space-y-6 max-w-2xl">
@@ -74,7 +74,7 @@
                     </div>
                     
                     {{-- Navigation Controls (Bottom Right) --}}
-                    <nav class="absolute bottom-4 right-12 w-1/4 z-20 flex justify-end" aria-label="Hero slider navigation">
+                    <nav class="absolute bottom-12 right-12 w-1/4 z-20 flex justify-end" aria-label="Hero slider navigation">
                         <div class="flex items-center space-x-3">
                             {{-- Previous Button --}}
                             <button id="prevSlide" 
