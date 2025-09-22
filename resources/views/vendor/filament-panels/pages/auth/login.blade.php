@@ -114,6 +114,21 @@
                     </div>
                 </div>
                 
+                {{-- Navigation Controls (Top Right) --}}
+                <div class="absolute top-12 right-12 z-20">
+                    <div class="flex items-center space-x-3">
+                        {{-- Previous Button --}}
+                        <button id="prevSlide" class="w-10 h-10 bg-primary-500 dark:bg-primary-500 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                            @svg('heroicon-m-chevron-left', 'w-5 h-5 text-primary-900 transition-colors')
+                        </button>
+                        
+                        {{-- Next Button --}}
+                        <button id="nextSlide" class="w-10 h-10 bg-primary-500 dark:bg-primary-500 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                            @svg('heroicon-m-chevron-right', 'w-5 h-5 text-primary-900 transition-colors')
+                        </button>
+                    </div>
+                </div>
+
                 {{-- Hero Image Container (Bottom Right) --}}
                 <div class="absolute bottom-0 right-0 w-7/8 h-3/4">
                     <img id="heroImage"
@@ -391,6 +406,8 @@
             const heroTitle = document.getElementById('heroTitle');
             const heroDescription = document.getElementById('heroDescription');
             const sliderButtons = document.querySelectorAll('#sliderNav button');
+            const prevButton = document.getElementById('prevSlide');
+            const nextButton = document.getElementById('nextSlide');
 
             // Handle slider navigation clicks
             sliderButtons.forEach((button) => {
@@ -398,6 +415,18 @@
                     currentSlide = parseInt(button.dataset.slide);
                     updateSlider();
                 });
+            });
+
+            // Handle previous button click
+            prevButton.addEventListener('click', () => {
+                currentSlide = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
+                updateSlider();
+            });
+
+            // Handle next button click
+            nextButton.addEventListener('click', () => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                updateSlider();
             });
 
             function updateSlider() {
