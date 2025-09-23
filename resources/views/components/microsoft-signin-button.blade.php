@@ -4,7 +4,7 @@
     <button
         type="button"
         onclick="preventMicrosoftClick(event)"
-        class="w-full py-3 -mt-4 microsoft-signin-button microsoft-signin-disabled flex items-center justify-center gap-3 px-4 border border-gray-300 rounded-lg bg-gray-200 transition-colors duration-200"
+        class="w-full py-3 -mt-4 microsoft-signin-button microsoft-signin-disabled flex items-center justify-center gap-3 px-4 border border-gray-300 rounded-md bg-gray-200 transition-colors duration-200"
         disabled
         aria-disabled="true"
     >
