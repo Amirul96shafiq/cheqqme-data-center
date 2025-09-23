@@ -1,6 +1,6 @@
 @props(['action'])
 
-<x-tooltip position="top" :text="__('login.tooltips.microsoftComingSoon')">
+<x-tooltip position="top" :text="__('login.tooltips.comingSoon')">
     <button
         type="button"
         onclick="preventMicrosoftClick(event)"

@@ -78,3 +78,32 @@ select {
 .tooltip-container:hover .tooltip-bottom {
     transform: translateX(-50%) translateY(4px);
 }
+
+/* Global: Reusable bounce animation */
+@keyframes bounce-up-down {
+    0%,
+    100% {
+        transform: translateY(0) scaleX(1) scaleY(1);
+        animation-timing-function: cubic-bezier(0.2, 0.6, 0.2, 1);
+    }
+    40% {
+        transform: translateY(8px) scaleX(1.04) scaleY(0.96);
+        animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+    }
+    60% {
+        transform: translateY(-2px) scaleX(0.99) scaleY(1.01);
+        animation-timing-function: cubic-bezier(0.2, 0.6, 0.2, 1);
+    }
+}
+
+.bounce-bounce {
+    animation: bounce-up-down 3s infinite;
+    will-change: transform;
+    transform-origin: center bottom;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bounce-bounce {
+        animation: none;
+    }
+}

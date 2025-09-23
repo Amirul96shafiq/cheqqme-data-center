@@ -1,7 +1,7 @@
 <?php
 
 return [
-    //'title' => 'Sign in',
+    'title' => 'Sign in',
 
     'actions' => [
         'login' => 'Login',
@@ -11,7 +11,7 @@ return [
     ],
 
     'tooltips' => [
-        'microsoftComingSoon' => 'Coming Soon',
+        'comingSoon' => 'Coming Soon',
         'lightTheme' => 'Light Theme',
         'darkTheme' => 'Dark Theme',
         'systemTheme' => 'System Theme',

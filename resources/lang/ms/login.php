@@ -1,7 +1,7 @@
 <?php
 
 return [
-    //'title' => 'Log Masuk',
+    'title' => 'Log Masuk',
 
     'actions' => [
         'login' => 'Log Masuk',
@@ -11,7 +11,7 @@ return [
     ],
 
     'tooltips' => [
-        'microsoftComingSoon' => 'Akan Datang',
+        'comingSoon' => 'Akan Datang',
         'lightTheme' => 'Tema Terang',
         'darkTheme' => 'Tema Gelap',
         'systemTheme' => 'Tema Sistem',

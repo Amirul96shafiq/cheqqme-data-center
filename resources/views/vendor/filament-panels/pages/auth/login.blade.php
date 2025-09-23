@@ -85,6 +85,15 @@
                             </nav>
                         </div>
                     </div>
+
+                    {{-- New Update Button (Top Right) --}}
+                    <nav class="absolute top-0 right-0 z-30 flex justify-end" aria-label="Whats new action button">
+                        <x-tooltip position="bottom" :text="__('login.tooltips.comingSoon')">
+                            <div class="inline-flex items-start cursor-not-allowed" aria-label="What's New (Coming Soon)">
+                                <img src="{{ asset('images/actions/whats-news.png') }}" alt="What's New" class="h-32 w-auto opacity-40 hover:opacity-50 transition-all duration-300 bounce-bounce" loading="eager">
+                            </div>
+                        </x-tooltip>
+                    </nav>
                     
                     {{-- Navigation Controls (Bottom Right) --}}
                     <nav class="absolute bottom-12 right-12 w-1/4 z-20 flex justify-end" aria-label="Hero slider navigation">
