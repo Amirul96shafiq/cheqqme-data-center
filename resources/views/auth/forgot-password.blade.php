@@ -1,236 +1,354 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" class="scroll-smooth">
-
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 <head>
-  <meta charset="UTF-8">
-  <title>Forgot Password - CheQQme Data Center</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" href="/images/favicon.png">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@tabler/icons@latest/iconfont/tabler-icons.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-  <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  <!-- Theme Script -->
-  <script>
-    function applyTheme(theme) {
-      const html = document.documentElement
-      localStorage.setItem('theme', theme)
+    <title>{{ __('auth.forgot_password') }} - {{ config('app.name') }}</title>
 
-      if (theme === 'dark') {
-        html.classList.add('dark')
-        html.classList.remove('light')
-      } else if (theme === 'light') {
-        html.classList.remove('dark')
-        html.classList.add('light')
-      } else if (theme === 'system') {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-        html.classList.toggle('dark', prefersDark)
-        html.classList.remove('light')
-      }
-    }
+    {{-- Favicon --}}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const storedTheme = localStorage.getItem('theme')
-      if (storedTheme) {
-        applyTheme(storedTheme)
-      }
+    @vite(['resources/css/app.css'])
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 
-      const buttons = document.querySelectorAll('.theme-toggle-btn');
-
-      function setActiveButton(activeTheme) {
-        buttons.forEach((btn) => {
-          const icon = btn.querySelector('svg');
-          if (btn.dataset.theme === activeTheme) {
-            btn.classList.add('active');
-            icon?.classList.add('text-primary-500');
-          } else {
-            btn.classList.remove('active');
-            icon?.classList.remove('text-primary-500');
-          }
-        });
-      }
-
-      // Initial highlighting
-      setActiveButton(storedTheme || 'system');
-
-      // Add click event to toggle
-      buttons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const selected = btn.dataset.theme;
-          applyTheme(selected);
-          setActiveButton(selected);
-        });
-      });
-    })
-  </script>
-
-  <!-- Custom Tailwind CSS Configuration -->
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: {
-              50: '#fff8eb',
-              100: '#fde7c3',
-              200: '#fcd39b',
-              300: '#fbbe72',
-              400: '#fab54f',
-              500: '#fbb43e',
-              600: '#e6a135',
-              700: '#c5862c',
-              800: '#a56b23',
-              900: '#844f1a',
-            }
-          }
-        }
-      }
-    }
-  </script>
+    {{-- Alpine.js --}}
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
+<body class="h-full antialiased font-sans">
+    <div class="auth-frame flex h-screen overflow-hidden">
+        {{-- Left Section (70%) - Hero Section --}}
+        <div class="relative w-[70%] hidden lg:flex flex-col justify-between overflow-hidden bg-gray-50 dark:bg-gray-900 p-6">
+            {{-- Hero Section with Gradient Background --}}
+            <div class="relative w-full h-full rounded-2xl overflow-hidden">
+                {{-- Gradient Mesh Background - Light Mode --}}
+                <div class="light:block dark:hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-100 via-blue-100 to-indigo-100"></div>
+                    <div class="absolute top-0 left-0 w-full h-full opacity-40">
+                        <div class="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-blue-300/30 to-purple-300/30 rounded-full blur-3xl animate-float-1"></div>
+                        <div class="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-l from-indigo-300/30 to-pink-300/30 rounded-full blur-3xl animate-float-2"></div>
+                        <div class="absolute top-1/2 left-1/3 w-80 h-80 bg-gradient-to-br from-cyan-300/25 to-blue-300/25 rounded-full blur-3xl animate-float-3"></div>
+                    </div>
+                </div>
+                
+                {{-- Gradient Mesh Background - Dark Mode --}}
+                <div class="hidden dark:block">
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-800 via-slate-800/30 to-indigo-800/20"></div>
+                    <div class="absolute top-0 left-0 w-full h-full opacity-40">
+                        <div class="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-full blur-3xl animate-float-1"></div>
+                        <div class="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-l from-indigo-500/30 to-pink-500/30 rounded-full blur-3xl animate-float-2"></div>
+                        <div class="absolute top-1/2 left-1/3 w-80 h-80 bg-gradient-to-br from-cyan-500/25 to-blue-500/25 rounded-full blur-3xl animate-float-3"></div>
+                    </div>
+                </div>
+                
+                {{-- Top Section: Content Container and Navigation Controls --}}
+                <div class="relative z-10 flex w-full h-1/4 justify-end">
+                    {{-- Left Content Container (65% width) --}}
+                    <div class="flex flex-col justify-start p-12 w-[65%]">
+                        <div class="flex flex-col justify-start space-y-6 max-w-2xl">
+                            {{-- Version Text --}}
+                            <div class="text-xs text-gray-600/20 dark:text-gray-500">{{ $gitVersion ?? 'v0.3_local' }}</div>
+                            {{-- Title --}}
+                            <div>
+                                <h1 id="heroTitle" class="text-2xl font-bold dark:text-white text-gray-600 -mb-4 transition-all duration-500 leading-tight hero-title">
+                                    Loading...
+                                </h1>
+                            </div>
 
-<body class="auth-body min-h-screen flex items-center justify-center">
-  @include('components.global-loader')
-  <div class="max-w-md w-full space-y-8">
+                            {{-- Description --}}
+                            <div class="min-h-14">
+                                <p id="heroDescription" class="text-md dark:text-white text-gray-600 transition-all duration-500 leading-relaxed hero-description">
+                                    Loading...
+                                </p>
+                            </div>
 
-    <!-- Theme Toggle Buttons -->
-    <div class="absolute top-5 left-0 right-0 flex justify-center z-50">
-      <div class="flex flex-row gap-5 p-2 rounded-lg">
+                            {{-- Slider Navigation --}}
+                            <nav class="flex items-center space-x-3 mt-8 slider-navigation" id="sliderNav" aria-label="Slide navigation">
+                                <button type="button" data-slide="0" aria-label="Go to slide 1" class="relative w-12 h-1 dark:bg-gray-200 rounded-full transition-all duration-300 bg-primary-400 hover:bg-primary-400 overflow-hidden">
+                                    <div id="progressBar0" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
+                                </button>
+                                <button type="button" data-slide="1" aria-label="Go to slide 2" class="relative w-4 h-1 dark:bg-gray-200 rounded-full transition-all duration-300 bg-primary-400 hover:bg-primary-400 overflow-hidden">
+                                    <div id="progressBar1" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
+                                </button>
+                                <button type="button" data-slide="2" aria-label="Go to slide 3" class="relative w-4 h-1 dark:bg-gray-200 rounded-full transition-all duration-300 bg-primary-400 hover:bg-primary-400 overflow-hidden">
+                                    <div id="progressBar2" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
+                                </button>
+                                <button type="button" data-slide="3" aria-label="Go to slide 4" class="relative w-4 h-1 dark:bg-gray-200 rounded-full transition-all duration-300 bg-primary-400 hover:bg-primary-400 overflow-hidden">
+                                    <div id="progressBar3" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-white rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
+                                </button>
+                                <button type="button" data-slide="4" aria-label="Go to slide 5" class="relative w-4 h-1 dark:bg-gray-200 rounded-full transition-all duration-300 bg-primary-400 hover:bg-primary-400 overflow-hidden">
+                                    <div id="progressBar4" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-white rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
+                                </button>
+                                <button type="button" data-slide="5" aria-label="Go to slide 6" class="relative w-4 h-1 dark:bg-gray-200 rounded-full transition-all duration-300 bg-primary-400 hover:bg-primary-400 overflow-hidden">
+                                    <div id="progressBar5" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-white rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
 
-        <!-- Light Theme (Sun) -->
-        <button class="theme-toggle-btn" data-theme="light" title="Enable light theme">
-          <x-heroicon-s-sun class="w-5 h-5 text-gray-400 hover:text-gray-500" />
-        </button>
+                    {{-- Right Content Container (35% width) --}}
+                    <div class="relative flex flex-col justify-start w-[35%]">
+                        {{-- New Update Button (Top) --}}
+                        <nav class="flex justify-end" aria-label="Whats new action button">
+                            <x-tooltip position="bottom" :text="__('login.tooltips.comingSoon')">
+                                <div class="inline-flex items-start cursor-not-allowed" aria-label="What's New (Coming Soon)">
+                                    <img src="{{ asset('images/actions/whats-news.png') }}" alt="What's New" class="h-28 w-auto opacity-80 hover:opacity-100 transition-all duration-300 bounce-bounce whats-new-button" loading="eager">
+                                </div>
+                            </x-tooltip>
+                        </nav>
+                        
+                        {{-- Navigation Controls (Bottom) --}}
+                        <nav class="flex justify-end mt-4 px-12" aria-label="Hero slider navigation">
+                            <div class="flex items-center space-x-3">
+                                {{-- Previous Button --}}
+                                <button id="prevSlide" 
+                                        type="button"
+                                        aria-label="Previous slide"
+                                        class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                                    @svg('heroicon-m-arrow-left', 'w-5 h-5 text-primary-900 transition-colors')
+                                </button>
+                                
+                                {{-- Pause/Play Button --}}
+                                <button id="pausePlaySlide" 
+                                        type="button"
+                                        aria-label="Pause auto-slide"
+                                        class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                                    {{-- Play Icon (shown when paused) --}}
+                                    <div id="playIcon">
+                                        @svg('heroicon-o-play', 'w-4 h-4 text-primary-900 transition-colors')
+                                    </div>
+                                    {{-- Pause Icon (shown when playing) --}}
+                                    <div id="pauseIcon" class="hidden">
+                                        @svg('heroicon-o-pause', 'w-4 h-4 text-primary-900 transition-colors')
+                                    </div>
+                                </button>
+                                
+                                {{-- Next Button --}}
+                                <button id="nextSlide" 
+                                        type="button"
+                                        aria-label="Next slide"
+                                        class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                                    @svg('heroicon-m-arrow-right', 'w-5 h-5 text-primary-900 transition-colors')
+                                </button>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
 
-        <!-- Dark Theme (Moon) -->
-        <button class="theme-toggle-btn" data-theme="dark" title="Enable dark theme">
-          <x-heroicon-s-moon class="w-5 h-5 text-gray-400 hover:text-gray-500" />
-        </button>
-
-        <!-- System Theme (Desktop) -->
-        <button class="theme-toggle-btn" data-theme="system" title="Enable system theme">
-          <x-heroicon-s-computer-desktop class="w-5 h-5 text-gray-400 hover:text-gray-500" />
-        </button>
-
-      </div>
-    </div>
-
-    <!-- Card section -->
-    <div
-      class="bg-white dark:bg-[rgb(24_24_27_/_1)] rounded-2xl ring-1 ring-gray-950/5 dark:ring-white/10 sm:rounded-xl px-12 py-16 space-y-6"
-      <!-- Header section -->
-      <div class="text-center">
-        <!-- Logo Light -->
-        <img src="/logos/logo-light.png" alt="CheQQme Data Center Logo"
-        class="h-32 dark:hidden mx-auto">
-        <!-- Logo Dark -->
-        <img src="/logos/logo-dark.png" alt="CheQQme Data Center Logo"
-        class="h-32 hidden dark:block mx-auto">
-        <h2 class="text-2xl font-bold text-black dark:text-white m-3">{{ __('auth.forgot_password') }}</h2>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{{ __('auth.description_forgot_password') }}</p>
-      </div>
-
-      
-      <!-- Form section -->
-      @if (session('status'))
-      <div class="mb-4 text-sm text-primary-500 font-medium text-center">
-      {{ session('status') }}
-      </div>
-    @endif
-
-      @if ($errors->any())
-      <div class="mb-4 text-sm text-red-400">
-      <ul class="list-disc pl-5 space-y-1">
-        @foreach ($errors->all() as $error)
-      <li>{{ $error }}</li>
-      @endforeach
-      </ul>
-      </div>
-    @endif
-
-      <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
-        @csrf
-
-        <!-- Email Address Field -->
-        <div class="mt-6">
-          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            {{ __('auth.email_address') }} <span class="text-red-500">*</span>
-          </label>
-          <input id="email" name="email" type="email" required autofocus
-            class="w-full px-4 py-2 bg-white text-black dark:bg-[rgb(255_255_255_/_0.05)] dark:text-white rounded-lg border border-neutral-300 dark:border-neutral-700 focus:ring-2 focus:ring-primary-600 focus:outline-none text-sm" />
-        </div>
-
-        <!-- Submit button -->
-        <div>
-          <button type="submit"
-            class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-white dark:text-[rgb(78_29_4)] font-semibold text-sm rounded-lg transition focus:ring-2 focus:ring-primary-600 focus:outline-none">
-            {{ __('auth.send_link') }}
-          </button>
-        </div>
-      </form>
-
-      <!-- Footer -->
-      <div class="w-full text-center">
-        <a href="{{ route('login') }}"
-        class="w-full mt-3 p-4 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-400/50 rounded-lg transition-colors duration-200 no-underline hover:no-underline block text-center">
-          {{ __('auth.back_to_login') }}
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Language Switcher URL Link logic -->
-  @php
-    $currentPath = Request::path();
-    $strippedPath = preg_replace('#^(en|ms|id|zh)(/)?#', '', $currentPath);
-  @endphp
-
-  <!-- Language Switcher -->
-  <div class="absolute bottom-4 left-0 right-0 flex justify-center z-10">
-    <div x-data="{ open: false }" class="relative">
-        <!-- Dropdown -->
-        <div x-show="open" @click.away="open = false"
-            class="absolute bottom-full mb-2 w-max rounded-md shadow-lg bg-white dark:bg-neutral-900 ring-1 ring-gray-950/5 dark:ring-white/10 z-10"
-            x-cloak
-            style="left: 50%; transform: translateX(-50%);">
-            <div class="py-2 text-sm text-gray-700 dark:text-gray-100">
-                @if(app()->getLocale() !== 'en')
-                <form method="POST" action="{{ route('locale.set') }}">
-                    @csrf
-                    <input type="hidden" name="locale" value="en">
-                    <button type="submit"
-                      class="block w-full text-center font-semibold px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                    <span class="text-center p-1.5 mr-2 text-primary-500 bg-primary-100/25 dark:bg-primary-100/5 rounded-lg">EN</span>{{ __('auth.english') }}
-                    </button>
-                </form>
-                @endif
-                @if(app()->getLocale() !== 'ms')
-                <form method="POST" action="{{ route('locale.set') }}">
-                    @csrf
-                    <input type="hidden" name="locale" value="ms">
-                    <button type="submit"
-                          class="block w-full text-center font-semibold px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                        <span class="text-center p-1.5 mr-2 text-primary-500 bg-primary-100/25 dark:bg-primary-100/5 rounded-lg">MS</span>{{ __('auth.malay') }}
-                    </button>
-                </form>
-                @endif
+                {{-- Bottom Section: Hero Images --}}
+                <div class="absolute bottom-0 left-0 w-full h-3/4 pl-12 hero-image-container">
+                    <img id="heroImage"
+                         src="{{ asset('images/hero-images/light/01.png') }}"
+                         alt="CheQQme Data Center platform showcase"
+                         class="w-full h-full object-cover object-center rounded-tl-3xl border-l-8 border-t-8 border-white/50 dark:border-white/10 transition-all duration-500"
+                         loading="eager">
+                </div>
             </div>
         </div>
 
-        <!-- Toggle -->
-    <button @click="open = !open"
-      class="flex items-center justify-center w-9 h-9 language-switch-trigger text-primary-600 bg-white dark:bg-zinc-900/65 border border-[rgb(3_7_18_/_0.1)] hover:border-[rgb(3_7_18_/_0.15)] dark:border-[rgb(255_255_255_/_0.2)] dark:hover:border-[rgb(255_255_255_/_0.3)] rounded-lg transition font-semibold">
-      {{ strtoupper(app()->getLocale()) }}
-    </button>
-  </div>
-</div>
+        {{-- Sticky Version Text for Responsive (1024px and below) --}}
+        <div class="version-text-sticky hidden">
+            <div class="text-[11px] text-gray-600/20 dark:text-gray-500 pt-1">
+                {{ $gitVersion ?? 'v0.3_local' }}
+            </div>
+        </div>
 
+        {{-- Sticky What's New Button for Responsive (1024px and below) --}}
+        <div class="whats-new-sticky hidden">
+            <x-tooltip position="bottom" :text="__('login.tooltips.comingSoon')">
+                <div class="inline-flex items-start cursor-not-allowed" aria-label="What's New (Coming Soon)">
+                    <img src="{{ asset('images/actions/whats-news.png') }}" alt="What's New" class="transition-all duration-300 bounce-bounce" loading="eager">
+                </div>
+            </x-tooltip>
+        </div>
 
-</div>
+        {{-- Right Section (30%) - Forgot Password Form --}}
+        <div class="w-full lg:w-[30%] flex flex-col bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 custom-scrollbar overflow-y-auto">
+            {{-- Header Section --}}
+            <div class="flex-shrink-0 p-6 pb-4">
+                {{-- Theme Toggle Buttons --}}
+                <div class="flex justify-center">                    
+                    <fieldset class="flex flex-row gap-2 p-2 rounded-lg bg-white/50 dark:bg-gray-800/50 border border-gray-200/50 dark:border-gray-700/50">
+                        <legend class="sr-only">Theme selection</legend>
+                        {{-- Light Theme (Sun) --}}
+                        <x-tooltip position="bottom" :text="__('login.tooltips.lightTheme')">
+                            <button type="button" 
+                                    class="theme-toggle-btn p-2 rounded-lg transition-colors" 
+                                    data-theme="light" 
+                                    aria-label="Enable light theme"
+                                    title="Enable light theme">
+                                <x-heroicon-m-sun class="w-5 h-5" aria-hidden="true" />
+                            </button>
+                        </x-tooltip>
 
+                        {{-- Dark Theme (Moon) --}}
+                        <x-tooltip position="bottom" :text="__('login.tooltips.darkTheme')">
+                            <button type="button" 
+                                    class="theme-toggle-btn p-2 rounded-lg transition-colors" 
+                                    data-theme="dark" 
+                                    aria-label="Enable dark theme"
+                                    title="Enable dark theme">
+                                <x-heroicon-m-moon class="w-5 h-5" aria-hidden="true" />
+                            </button>
+                        </x-tooltip>
+
+                        {{-- System Theme (Desktop) --}}
+                        <x-tooltip position="bottom" :text="__('login.tooltips.systemTheme')">
+                            <button type="button" 
+                                    class="theme-toggle-btn p-2 rounded-lg transition-colors" 
+                                    data-theme="system" 
+                                    aria-label="Enable system theme"
+                                    title="Enable system theme">
+                                <x-heroicon-m-computer-desktop class="w-5 h-5" aria-hidden="true" />
+                            </button>
+                        </x-tooltip>
+                    </fieldset>
+                </div>
+            </div>
+
+            {{-- Main Content Section --}}
+            <div class="flex-1 flex items-center justify-center px-8">
+                <div class="w-full max-w-md">
+
+                    {{-- Logo Overlay --}}
+                    <div class="flex justify-center mb-20">
+                        <img id="forgotPasswordLogo"
+                            src="{{ asset('logos/logo-dark.png') }}"
+                            alt="{{ config('app.name') }} Logo"
+                            class="h-32 w-auto transition-all duration-300"
+                            loading="eager">
+                    </div>
+                    
+                    {{-- Forgot Password Form --}}
+                    <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
+                        @csrf
+
+                        {{-- Status Messages --}}
+                        @if (session('status'))
+                            <div class="mb-4 text-sm text-primary-500 font-medium text-center">
+                                {{ session('status') }}
+                            </div>
+                        @endif
+
+                        {{-- Error Messages --}}
+                        @if ($errors->any())
+                            <div class="mb-4 text-sm text-red-600 dark:text-red-400">
+                                <ul class="list-disc pl-5 space-y-1">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        {{-- Email Field --}}
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                {{ __('auth.email_address') }}
+                            </label>
+                            <input id="email" type="email" name="email" value="{{ old('email') }}"
+                                required autofocus autocomplete="email"
+                                class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
+                        </div>
+
+                        {{-- Submit Button --}}
+                        <button type="submit" 
+                                class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-primary-900 font-medium rounded-md shadow-sm transition-colors duration-200"
+                                aria-describedby="submit-button-description">
+                            {{ __('auth.send_link') }}
+                            <span id="submit-button-description" class="sr-only">Send password reset link to your email</span>
+                        </button>
+
+                        {{-- Back to Login Link --}}
+                        <div class="text-center">
+                            <a href="{{ route('login') }}"
+                               class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-900 dark:hover:text-primary-400 hover:underline transition-colors duration-200"
+                               aria-label="Back to login">
+                                {{ __('auth.back_to_login') }}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Footer Section --}}
+            <div class="flex-shrink-0 p-6 pt-4">
+                {{-- Language Switcher --}}
+                <div class="flex justify-center">
+                    <div x-data="{ open: false }" class="relative">
+                        <!-- Dropdown -->
+                        <div x-show="open" @click.away="open = false"
+                            role="menu"
+                            aria-orientation="vertical"
+                            class="absolute bottom-full mb-2 w-max rounded-md shadow-lg bg-white dark:bg-neutral-900 ring-1 ring-gray-950/5 dark:ring-white/10 z-10"
+                            x-cloak
+                            style="left: 50%; transform: translateX(-50%);">
+                            <div class="py-2 text-sm text-gray-700 dark:text-gray-100">
+                                @if(app()->getLocale() !== 'en')
+                                <form method="POST" action="{{ route('locale.set') }}" class="inline-block w-full">
+                                    @csrf
+                                    <input type="hidden" name="locale" value="en">
+                                    <input type="hidden" name="redirect" value="{{ request()->fullUrl() }}">
+                                    <button type="submit"
+                                            role="menuitem"
+                                            class="block w-full text-center font-semibold px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
+                                    <span class="text-center p-1.5 mr-2 text-primary-500 bg-primary-100/25 dark:bg-primary-100/5 rounded-lg">EN</span>{{ __('auth.english') }}
+                                    </button>
+                                </form>
+                                @endif
+                                @if(app()->getLocale() !== 'ms')
+                                <form method="POST" action="{{ route('locale.set') }}" class="inline-block w-full">
+                                    @csrf
+                                    <input type="hidden" name="locale" value="ms">
+                                    <input type="hidden" name="redirect" value="{{ request()->fullUrl() }}">
+                                    <button type="submit"
+                                            role="menuitem"
+                                            class="block w-full text-center font-semibold px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
+                                        <span class="text-center p-1.5 mr-2 text-primary-500 bg-primary-100/25 dark:bg-primary-100/5 rounded-lg">MS</span>{{ __('auth.malay') }}
+                                    </button>
+                                </form>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Toggle -->
+                        <button @click="open = !open" 
+                                type="button"
+                                aria-label="Change language"
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                class="flex items-center justify-center w-10 h-10 language-switch-trigger text-primary-600 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 hover:border-gray-300/50 dark:hover:border-gray-600/50 rounded-lg transition font-semibold">
+                          {{ strtoupper(app()->getLocale()) }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Hero Slider Translation Data --}}
+    <script>
+        // Set hero slider language data
+        window.heroSliderLang = {
+            title1: @json(__('heroslider.title1')),
+            description1: @json(__('heroslider.description1')),
+            title2: @json(__('heroslider.title2')),
+            description2: @json(__('heroslider.description2')),
+            title3: @json(__('heroslider.title3')),
+            description3: @json(__('heroslider.description3')),
+            title4: @json(__('heroslider.title4')),
+            description4: @json(__('heroslider.description4')),
+            title5: @json(__('heroslider.title5')),
+            description5: @json(__('heroslider.description5')),
+            title6: @json(__('heroslider.title6')),
+            description6: @json(__('heroslider.description6'))
+        };
+    </script>
+
+    {{-- Optimized JavaScript Files --}}
+    <script src="{{ asset('js/theme-toggle.js') }}"></script>
+    <script src="{{ asset('js/hero-slider.js') }}"></script>
 </body>
-
 </html>

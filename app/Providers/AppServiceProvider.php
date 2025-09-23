@@ -281,7 +281,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Share git version with views
-        View::composer('vendor.filament-panels.pages.auth.login', function ($view) {
+        View::composer([
+            'vendor.filament-panels.pages.auth.login',
+            'auth.forgot-password',
+            'auth.reset-password',
+        ], function ($view) {
             $view->with('gitVersion', GitHelper::getVersionString());
         });
     }
