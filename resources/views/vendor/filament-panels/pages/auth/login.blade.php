@@ -94,7 +94,22 @@
                                     type="button"
                                     aria-label="Previous slide"
                                     class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
-                                @svg('heroicon-m-chevron-left', 'w-5 h-5 text-primary-900 transition-colors')
+                                @svg('heroicon-m-arrow-left', 'w-5 h-5 text-primary-900 transition-colors')
+                            </button>
+                            
+                            {{-- Pause/Play Button --}}
+                            <button id="pausePlaySlide" 
+                                    type="button"
+                                    aria-label="Pause auto-slide"
+                                    class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                                {{-- Play Icon (shown when paused) --}}
+                                <div id="playIcon">
+                                    @svg('heroicon-o-play', 'w-4 h-4 text-primary-900 transition-colors')
+                                </div>
+                                {{-- Pause Icon (shown when playing) --}}
+                                <div id="pauseIcon" class="hidden">
+                                    @svg('heroicon-o-pause', 'w-4 h-4 text-primary-900 transition-colors')
+                                </div>
                             </button>
                             
                             {{-- Next Button --}}
@@ -102,7 +117,7 @@
                                     type="button"
                                     aria-label="Next slide"
                                     class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
-                                @svg('heroicon-m-chevron-right', 'w-5 h-5 text-primary-900 transition-colors')
+                                @svg('heroicon-m-arrow-right', 'w-5 h-5 text-primary-900 transition-colors')
                             </button>
                         </div>
                     </nav>

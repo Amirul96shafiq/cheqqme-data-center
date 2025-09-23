@@ -51,12 +51,16 @@ class HeroSlider {
             sliderButtons: document.querySelectorAll("#sliderNav button"),
             prevButton: document.getElementById("prevSlide"),
             nextButton: document.getElementById("nextSlide"),
+            pausePlayButton: document.getElementById("pausePlaySlide"),
+            playIcon: document.getElementById("playIcon"),
+            pauseIcon: document.getElementById("pauseIcon"),
         };
 
         this.autoAdvanceInterval = null;
         this.progressInterval = null;
         this.autoAdvanceDuration = 10000; // 10 seconds in milliseconds
         this.progressUpdateInterval = 50; // Update progress every 50ms for smooth animation
+        this.isPaused = false; // Track pause state
         this.init();
     }
 
@@ -168,10 +172,12 @@ class HeroSlider {
 
                 // Reset and start progress bar for current slide immediately
                 this.resetProgressBars();
-                this.startProgressBar();
 
-                // Restart auto-advance to maintain synchronization
-                this.startAutoAdvance();
+                // Only start progress bar and auto-advance if not paused
+                if (!this.isPaused) {
+                    this.startProgressBar();
+                    this.startAutoAdvance();
+                }
 
                 // Process any queued animations
                 this.processQueue();
@@ -399,8 +405,8 @@ class HeroSlider {
             return;
         }
 
-        // Stop progress bar when manually navigating
-        this.stopProgressBar();
+        // Pause auto-advance when manually navigating
+        this.pauseAutoAdvance();
 
         this.previousSlideIndex = this.currentSlide;
         this.currentSlide = slideIndex;
@@ -425,8 +431,8 @@ class HeroSlider {
             return;
         }
 
-        // Stop progress bar when manually navigating
-        this.stopProgressBar();
+        // Pause auto-advance when manually navigating
+        this.pauseAutoAdvance();
 
         this.previousSlideIndex = this.currentSlide;
         this.currentSlide =
@@ -454,8 +460,8 @@ class HeroSlider {
             return;
         }
 
-        // Stop progress bar when manually navigating
-        this.stopProgressBar();
+        // Pause auto-advance when manually navigating
+        this.pauseAutoAdvance();
 
         this.previousSlideIndex = this.currentSlide;
         this.currentSlide = (this.currentSlide + 1) % this.slides.length;
@@ -466,17 +472,24 @@ class HeroSlider {
      * Start auto-advance
      */
     startAutoAdvance() {
+        // Don't start if paused
+        if (this.isPaused) {
+            return;
+        }
+
         // Clear any existing interval
         if (this.autoAdvanceInterval) {
             clearInterval(this.autoAdvanceInterval);
         }
 
         this.autoAdvanceInterval = setInterval(() => {
-            // Only auto-advance if not currently animating
-            if (this.canAnimate()) {
+            // Only auto-advance if not currently animating and not paused
+            if (this.canAnimate() && !this.isPaused) {
                 this.nextSlide();
             } else {
-                console.log("Skipping auto-advance, animation in progress");
+                console.log(
+                    "Skipping auto-advance, animation in progress or paused"
+                );
             }
         }, this.autoAdvanceDuration);
     }
@@ -490,6 +503,61 @@ class HeroSlider {
             this.autoAdvanceInterval = null;
         }
         this.stopProgressBar();
+    }
+
+    /**
+     * Toggle pause/play state
+     */
+    togglePausePlay() {
+        if (this.isPaused) {
+            this.resumeAutoAdvance();
+        } else {
+            this.pauseAutoAdvance();
+        }
+    }
+
+    /**
+     * Pause auto-advance
+     */
+    pauseAutoAdvance() {
+        this.isPaused = true;
+        this.stopAutoAdvance();
+        this.updatePausePlayButton();
+        console.log("Auto-advance paused");
+    }
+
+    /**
+     * Resume auto-advance
+     */
+    resumeAutoAdvance() {
+        this.isPaused = false;
+        this.startAutoAdvance();
+        this.startProgressBar();
+        this.updatePausePlayButton();
+        console.log("Auto-advance resumed");
+    }
+
+    /**
+     * Update pause/play button appearance
+     */
+    updatePausePlayButton() {
+        if (this.isPaused) {
+            // Show play icon, hide pause icon
+            this.elements.playIcon.classList.remove("hidden");
+            this.elements.pauseIcon.classList.add("hidden");
+            this.elements.pausePlayButton.setAttribute(
+                "aria-label",
+                "Resume auto-slide"
+            );
+        } else {
+            // Show pause icon, hide play icon
+            this.elements.playIcon.classList.add("hidden");
+            this.elements.pauseIcon.classList.remove("hidden");
+            this.elements.pausePlayButton.setAttribute(
+                "aria-label",
+                "Pause auto-slide"
+            );
+        }
     }
 
     /**
@@ -530,6 +598,10 @@ class HeroSlider {
             this.nextSlide();
         });
 
+        this.elements.pausePlayButton.addEventListener("click", () => {
+            this.togglePausePlay();
+        });
+
         // Listen for theme changes
         const themeToggleButtons =
             document.querySelectorAll(".theme-toggle-btn");
@@ -561,6 +633,9 @@ class HeroSlider {
 
         // Initialize with correct theme and first slide content
         this.updateSlider();
+
+        // Initialize pause/play button state
+        this.updatePausePlayButton();
 
         // Start auto-advance and progress bar after initial animation completes
         setTimeout(() => {
