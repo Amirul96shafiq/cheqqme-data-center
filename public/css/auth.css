@@ -447,3 +447,29 @@ img#heroImage.hero-image-exit-right {
 .animate-float-8 {
     animation: float-8 14s ease-in-out infinite;
 }
+
+/* Hero Slider Progress Bar Styles */
+#sliderNav button {
+    position: relative;
+}
+
+/* Progress bar animation within buttons */
+[id^="progressBar"] {
+    transition: width 100ms ease-linear !important;
+    z-index: 2;
+    opacity: 0.9;
+}
+
+/* Ensure progress bars are visible above button background */
+#sliderNav button:hover [id^="progressBar"] {
+    opacity: 1;
+}
+
+/* Progress bars use consistent colors regardless of button state */
+#sliderNav button [id^="progressBar"] {
+    background-color: rgb(156, 163, 175) !important; /* bg-gray-400 */
+}
+
+.dark #sliderNav button [id^="progressBar"] {
+    background-color: rgb(229, 231, 235) !important; /* bg-gray-200 */
+}

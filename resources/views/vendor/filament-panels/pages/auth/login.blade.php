@@ -64,12 +64,24 @@
 
                             {{-- Slider Navigation --}}
                             <nav class="flex items-center space-x-3 mt-8" id="sliderNav" aria-label="Slide navigation">
-                                <button type="button" data-slide="0" aria-label="Go to slide 1" class="w-12 h-1 bg-primary-400 rounded-full transition-all duration-300"></button>
-                                <button type="button" data-slide="1" aria-label="Go to slide 2" class="w-4 h-1 bg-gray-400 dark:bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
-                                <button type="button" data-slide="2" aria-label="Go to slide 3" class="w-4 h-1 bg-gray-400 dark:bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
-                                <button type="button" data-slide="3" aria-label="Go to slide 4" class="w-4 h-1 bg-gray-400 dark:bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
-                                <button type="button" data-slide="4" aria-label="Go to slide 5" class="w-4 h-1 bg-gray-400 dark:bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
-                                <button type="button" data-slide="5" aria-label="Go to slide 6" class="w-4 h-1 bg-gray-400 dark:bg-white/50 rounded-full transition-all duration-300 hover:bg-primary-400"></button>
+                                <button type="button" data-slide="0" aria-label="Go to slide 1" class="relative w-12 h-1 bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-300 hover:bg-primary-400 overflow-hidden">
+                                    <div id="progressBar0" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
+                                </button>
+                                <button type="button" data-slide="1" aria-label="Go to slide 2" class="relative w-4 h-1 bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-300 hover:bg-primary-400 overflow-hidden">
+                                    <div id="progressBar1" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
+                                </button>
+                                <button type="button" data-slide="2" aria-label="Go to slide 3" class="relative w-4 h-1 bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-300 hover:bg-primary-400 overflow-hidden">
+                                    <div id="progressBar2" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
+                                </button>
+                                <button type="button" data-slide="3" aria-label="Go to slide 4" class="relative w-4 h-1 bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-300 hover:bg-primary-400 overflow-hidden">
+                                    <div id="progressBar3" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-white rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
+                                </button>
+                                <button type="button" data-slide="4" aria-label="Go to slide 5" class="relative w-4 h-1 bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-300 hover:bg-primary-400 overflow-hidden">
+                                    <div id="progressBar4" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-white rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
+                                </button>
+                                <button type="button" data-slide="5" aria-label="Go to slide 6" class="relative w-4 h-1 bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-300 hover:bg-primary-400 overflow-hidden">
+                                    <div id="progressBar5" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-white rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
+                                </button>
                             </nav>
                         </div>
                     </div>

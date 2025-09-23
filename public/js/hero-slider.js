@@ -54,6 +54,9 @@ class HeroSlider {
         };
 
         this.autoAdvanceInterval = null;
+        this.progressInterval = null;
+        this.autoAdvanceDuration = 10000; // 10 seconds in milliseconds
+        this.progressUpdateInterval = 50; // Update progress every 50ms for smooth animation
         this.init();
     }
 
@@ -162,6 +165,14 @@ class HeroSlider {
                 // Reset animation state to allow next animation
                 this.isAnimating = false;
                 console.log("Animation completed, ready for next transition");
+
+                // Reset and start progress bar for current slide immediately
+                this.resetProgressBars();
+                this.startProgressBar();
+
+                // Restart auto-advance to maintain synchronization
+                this.startAutoAdvance();
+
                 // Process any queued animations
                 this.processQueue();
             }, 1200); // Match entrance animation duration
@@ -204,14 +215,62 @@ class HeroSlider {
                 button.classList.remove(
                     "w-4",
                     "bg-gray-400",
-                    "dark:bg-white/50"
+                    "dark:bg-gray-200"
                 );
                 button.classList.add("w-12", "bg-primary-400");
             } else {
                 button.classList.remove("w-12", "bg-primary-400");
-                button.classList.add("w-4", "bg-gray-400", "dark:bg-white/50");
+                button.classList.add("w-4", "bg-gray-400", "dark:bg-gray-200");
             }
         });
+    }
+
+    /**
+     * Reset all progress bars to 0%
+     */
+    resetProgressBars() {
+        for (let i = 0; i < this.slides.length; i++) {
+            const progressBar = document.getElementById(`progressBar${i}`);
+            if (progressBar) {
+                progressBar.style.width = "0%";
+            }
+        }
+    }
+
+    /**
+     * Start progress bar animation for current slide
+     */
+    startProgressBar() {
+        // Clear any existing progress interval
+        this.stopProgressBar();
+
+        const progressBar = document.getElementById(
+            `progressBar${this.currentSlide}`
+        );
+        if (!progressBar) return;
+
+        let progress = 0;
+        const increment =
+            (this.progressUpdateInterval / this.autoAdvanceDuration) * 100;
+
+        this.progressInterval = setInterval(() => {
+            progress += increment;
+            if (progress >= 100) {
+                progress = 100;
+                this.stopProgressBar();
+            }
+            progressBar.style.width = `${progress}%`;
+        }, this.progressUpdateInterval);
+    }
+
+    /**
+     * Stop progress bar animation
+     */
+    stopProgressBar() {
+        if (this.progressInterval) {
+            clearInterval(this.progressInterval);
+            this.progressInterval = null;
+        }
     }
 
     /**
@@ -340,6 +399,9 @@ class HeroSlider {
             return;
         }
 
+        // Stop progress bar when manually navigating
+        this.stopProgressBar();
+
         this.previousSlideIndex = this.currentSlide;
         this.currentSlide = slideIndex;
         this.updateSlider();
@@ -362,6 +424,9 @@ class HeroSlider {
             }
             return;
         }
+
+        // Stop progress bar when manually navigating
+        this.stopProgressBar();
 
         this.previousSlideIndex = this.currentSlide;
         this.currentSlide =
@@ -389,6 +454,9 @@ class HeroSlider {
             return;
         }
 
+        // Stop progress bar when manually navigating
+        this.stopProgressBar();
+
         this.previousSlideIndex = this.currentSlide;
         this.currentSlide = (this.currentSlide + 1) % this.slides.length;
         this.updateSlider("left");
@@ -398,6 +466,11 @@ class HeroSlider {
      * Start auto-advance
      */
     startAutoAdvance() {
+        // Clear any existing interval
+        if (this.autoAdvanceInterval) {
+            clearInterval(this.autoAdvanceInterval);
+        }
+
         this.autoAdvanceInterval = setInterval(() => {
             // Only auto-advance if not currently animating
             if (this.canAnimate()) {
@@ -405,7 +478,7 @@ class HeroSlider {
             } else {
                 console.log("Skipping auto-advance, animation in progress");
             }
-        }, 10000);
+        }, this.autoAdvanceDuration);
     }
 
     /**
@@ -416,6 +489,7 @@ class HeroSlider {
             clearInterval(this.autoAdvanceInterval);
             this.autoAdvanceInterval = null;
         }
+        this.stopProgressBar();
     }
 
     /**
@@ -485,11 +559,14 @@ class HeroSlider {
         // Initialize previousSlideIndex before first update
         this.previousSlideIndex = 0;
 
-        // Start auto-advance
-        this.startAutoAdvance();
-
         // Initialize with correct theme and first slide content
         this.updateSlider();
+
+        // Start auto-advance and progress bar after initial animation completes
+        setTimeout(() => {
+            this.startAutoAdvance();
+            this.startProgressBar();
+        }, 1300); // Wait for initial animation to complete
     }
 }
 
