@@ -80,7 +80,7 @@
                             <button id="prevSlide" 
                                     type="button"
                                     aria-label="Previous slide"
-                                    class="w-10 h-10 bg-primary-500 dark:bg-primary-500 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                                    class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
                                 @svg('heroicon-m-chevron-left', 'w-5 h-5 text-primary-900 transition-colors')
                             </button>
                             
@@ -88,7 +88,7 @@
                             <button id="nextSlide" 
                                     type="button"
                                     aria-label="Next slide"
-                                    class="w-10 h-10 bg-primary-500 dark:bg-primary-500 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                                    class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
                                 @svg('heroicon-m-chevron-right', 'w-5 h-5 text-primary-900 transition-colors')
                             </button>
                         </div>
@@ -307,11 +307,30 @@
         </div>
     </div>
 
+    {{-- Hero Slider Translation Data --}}
+    <script>
+        // Set hero slider language data
+        window.heroSliderLang = {
+            title1: @json(__('heroslider.title1')),
+            description1: @json(__('heroslider.description1')),
+            title2: @json(__('heroslider.title2')),
+            description2: @json(__('heroslider.description2')),
+            title3: @json(__('heroslider.title3')),
+            description3: @json(__('heroslider.description3')),
+            title4: @json(__('heroslider.title4')),
+            description4: @json(__('heroslider.description4')),
+            title5: @json(__('heroslider.title5')),
+            description5: @json(__('heroslider.description5')),
+            title6: @json(__('heroslider.title6')),
+            description6: @json(__('heroslider.description6'))
+        };
+    </script>
+
     {{-- External JavaScript Files --}}
     <script src="{{ asset('js/hero-slider.js') }}"></script>
 
-{{-- Google Sign-in JavaScript --}}
-<script src="{{ asset('js/google-signin.js') }}"></script>
+    {{-- Google Sign-in JavaScript --}}
+    <script src="{{ asset('js/google-signin.js') }}"></script>
 
     <script src="{{ asset('js/remember-me-toggle.js') }}"></script>
 

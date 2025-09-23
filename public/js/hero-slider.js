@@ -6,39 +6,33 @@ class HeroSlider {
     constructor() {
         this.slides = [
             {
-                title: "Welcome to CheQQme Data Center",
-                description:
-                    "Streamline your workflow and manage your data with our powerful and intuitive platform.",
+                title: window.heroSliderLang?.title1,
+                description: window.heroSliderLang?.description1,
                 imageNumber: 1,
             },
             {
-                title: "Powerful Task Management",
-                description:
-                    "Organize, track, and complete tasks efficiently. Stay on top of deadlines and collaborate seamlessly.",
+                title: window.heroSliderLang?.title2,
+                description: window.heroSliderLang?.description2,
                 imageNumber: 2,
             },
             {
-                title: "Comprehensive Reporting",
-                description:
-                    "Generate detailed reports and gain valuable insights. Make data-driven decisions with our advanced...",
+                title: window.heroSliderLang?.title3,
+                description: window.heroSliderLang?.description3,
                 imageNumber: 3,
             },
             {
-                title: "Advanced Analytics Dashboard",
-                description:
-                    "Monitor key performance indicators and track progress with real-time data visualization and interactive.",
+                title: window.heroSliderLang?.title4,
+                description: window.heroSliderLang?.description4,
                 imageNumber: 4,
             },
             {
-                title: "Seamless Collaboration",
-                description:
-                    "Work together effortlessly with your team using integrated communication tools and shared workspaces.",
+                title: window.heroSliderLang?.title5,
+                description: window.heroSliderLang?.description5,
                 imageNumber: 5,
             },
             {
-                title: "Secure Data Management",
-                description:
-                    "Protect your sensitive information with enterprise-grade security features and encrypted storage.",
+                title: window.heroSliderLang?.title6,
+                description: window.heroSliderLang?.description6,
                 imageNumber: 6,
             },
         ];
