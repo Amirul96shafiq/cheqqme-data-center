@@ -187,6 +187,13 @@ input:-webkit-autofill:active {
     color: rgb(156, 163, 175); /* gray-400 */
 }
 
+/* Theme tooltip hover effects */
+.relative:hover .theme-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(4px);
+}
+
 .password-toggle-btn {
     padding: 0.5rem;
     border-radius: 0.5rem;

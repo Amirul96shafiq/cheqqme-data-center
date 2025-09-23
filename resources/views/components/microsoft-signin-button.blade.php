@@ -1,66 +1,34 @@
 @props(['action'])
 
-<button
-    type="button"
-    onclick="showMicrosoftComingSoon()"
-    class="w-full py-3 -mt-4 microsoft-signin-button microsoft-signin flex items-center justify-center gap-3 px-4 border border-gray-200 rounded-lg bg-gray-100 opacity-60 transition-colors duration-200"
->
-    <img src="{{ asset('images/microsoft-icon.svg') }}" alt="Microsoft" class="w-6 h-6 opacity-50" />
-    <span class="text-gray-500 font-medium">{{ __('login.actions.microsoftSignin') }}</span>
+<div class="relative w-full">
+    <button
+        type="button"
+        onclick="preventMicrosoftClick(event)"
+        class="w-full py-3 -mt-4 microsoft-signin-button microsoft-signin-disabled flex items-center justify-center gap-3 px-4 border border-gray-300 rounded-lg bg-gray-200 transition-colors duration-200"
+        disabled
+        aria-disabled="true"
+        title="{{ __('login.tooltips.microsoftComingSoon') }}"
+    >
+        <img src="{{ asset('images/microsoft-icon.svg') }}" alt="Microsoft" class="w-6 h-6 opacity-40" />
+        <span class="text-gray-400 font-medium">{{ __('login.actions.microsoftSignin') }}</span>
+    </button>
+    
+    {{-- Hover Tooltip --}}
+    <div class="microsoft-tooltip absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg opacity-0 invisible transition-all duration-200 pointer-events-none whitespace-nowrap z-50">
+        {{ __('login.tooltips.microsoftComingSoon') }}
+        {{-- Tooltip arrow --}}
+        <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+    </div>
+</div>
 
-    <script>
-    function showMicrosoftComingSoon() {
-        // Get the current language from multiple sources
-        let currentLang = 'en'; // Default to English
-
-        // Try to get language from various sources
-        if (document.documentElement.lang) {
-            currentLang = document.documentElement.lang.split('-')[0]; // Get language code without region
-        } else if (window.navigator.language) {
-            currentLang = window.navigator.language.split('-')[0];
-        } else if (window.navigator.userLanguage) {
-            currentLang = window.navigator.userLanguage.split('-')[0];
-        }
-
-        // Additional check for Filament language switcher or locale
-        if (window.Alpine && window.Alpine.store && window.Alpine.store('languageSwitch')) {
-            const langStore = window.Alpine.store('languageSwitch');
-            if (langStore && langStore.currentLocale) {
-                currentLang = langStore.currentLocale;
-            }
-        }
-
-        // Check for Filament's current locale in data attributes or global variables
-        const htmlElement = document.documentElement;
-        if (htmlElement.dataset.locale) {
-            currentLang = htmlElement.dataset.locale;
-        }
-
-        // Check for any global language variables
-        if (window.CURRENT_LOCALE) {
-            currentLang = window.CURRENT_LOCALE;
-        }
-
-        // Ensure we only use supported languages
-        if (!['en', 'ms'].includes(currentLang)) {
-            currentLang = 'en';
-        }
-
-        // Define messages in both languages
-        const messages = {
-            en: 'Microsoft Sign-in: This feature is coming soon!',
-            ms: 'Log Masuk Microsoft: Ciri ini akan datang tidak lama lagi!'
-        };
-
-        const message = messages[currentLang] || messages.en; // Fallback to English
-
-        // Redirect to the Microsoft coming soon route to show the notification
-        const url = new URL('{{ route("microsoft.coming-soon") }}', window.location.origin);
-        url.searchParams.append('message', message);
-        window.location.href = url.toString();
-    }
-    </script>
-</button>
+<script>
+function preventMicrosoftClick(event) {
+    // Prevent the default button behavior
+    event.preventDefault();
+    event.stopPropagation();
+    return false;
+}
+</script>
 
 <style>
 .microsoft-signin-button {
@@ -74,39 +42,50 @@
     transition: all 0.2s ease-in-out;
 }
 
-/* Hover effects for enabled state */
-/* .microsoft-signin-button:not(.microsoft-signin-disabled):hover {
-    background-color: #eef1f5;
-    border-color: #eef1f5;
-}
-
-.dark .microsoft-signin-button:not(.microsoft-signin-disabled):hover {
-    background-color: #ffffff;
-    border-color: #ffffff;
-}
-
-.microsoft-signin-button:focus {
-    outline: none;
-}
-
-.microsoft-signin-button:active:not(.microsoft-signin-disabled) {
-    background-color: #f1f3f4;
-} */
-
 /* Disabled state styles */
-/* .microsoft-signin-disabled {
-    pointer-events: none;
+.microsoft-signin-disabled {
+    cursor: not-allowed !important;
     user-select: none;
+    opacity: 0.6;
+    background-color: #f5f5f5 !important;
+    border-color: #d1d5db !important;
+    color: #9ca3af !important;
 }
 
 .microsoft-signin-disabled:hover {
-    background-color: #ebedf0 !important;
-    border-color: #ebedf0 !important;
+    background-color: #f5f5f5 !important;
+    border-color: #d1d5db !important;
     cursor: not-allowed !important;
+    opacity: 0.6 !important;
+}
+
+.dark .microsoft-signin-disabled {
+    background-color: #374151 !important;
+    border-color: #4b5563 !important;
+    color: #6b7280 !important;
 }
 
 .dark .microsoft-signin-disabled:hover {
-    background-color: #ebedf0 !important;
-    border-color: #ebedf0 !important;
-} */
+    background-color: #374151 !important;
+    border-color: #4b5563 !important;
+    cursor: not-allowed !important;
+}
+
+/* Focus styles for disabled button */
+.microsoft-signin-disabled:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Ensure disabled state overrides any other styles */
+.microsoft-signin-disabled * {
+    pointer-events: none;
+}
+
+/* Tooltip hover effects */
+.relative:hover .microsoft-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-4px);
+}
 </style>

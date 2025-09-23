@@ -10,6 +10,13 @@ return [
         'microsoftSignin' => 'Log Masuk dengan Microsoft',
     ],
 
+    'tooltips' => [
+        'microsoftComingSoon' => 'Akan Datang',
+        'lightTheme' => 'Tema Terang',
+        'darkTheme' => 'Tema Gelap',
+        'systemTheme' => 'Tema Sistem',
+    ],
+
     'form' => [
         'email' => 'Username / Email',
         'password' => 'Kata Laluan',
@@ -18,7 +25,7 @@ return [
     ],
 
     'errors' => [
-        'googleAccountNotFound' => 'Gagal log masuk. Akaun Google yang dipilih tidak wujud dalam sistem.',
+        'googleAccountNotFound' => 'Gagal log masuk. Akaun Google yang dipilih tidak wujud dalam CheQQme Data Center.',
         'googleAuthenticationFailed' => 'Gagal mengesahkan dengan Google. Sila cuba lagi.',
         'googleAccountConnected' => 'Akaun Google berjaya disambungkan!',
         'googleSigninSuccess' => 'Berjaya log masuk dengan Google!',

@@ -143,31 +143,55 @@
                     <fieldset class="flex flex-row gap-2 p-2 rounded-lg bg-white/50 dark:bg-gray-800/50 border border-gray-200/50 dark:border-gray-700/50">
                         <legend class="sr-only">Theme selection</legend>
                         {{-- Light Theme (Sun) --}}
-                        <button type="button" 
-                                class="theme-toggle-btn p-2 rounded-lgtransition-colors" 
-                                data-theme="light" 
-                                aria-label="Enable light theme"
-                                title="Enable light theme">
-                            <x-heroicon-m-sun class="w-5 h-5" aria-hidden="true" />
-                        </button>
+                        <div class="relative">
+                            <button type="button" 
+                                    class="theme-toggle-btn p-2 rounded-lgtransition-colors" 
+                                    data-theme="light" 
+                                    aria-label="Enable light theme"
+                                    title="Enable light theme">
+                                <x-heroicon-m-sun class="w-5 h-5" aria-hidden="true" />
+                            </button>
+                            {{-- Tooltip --}}
+                            <div class="theme-tooltip absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg opacity-0 invisible transition-all duration-200 pointer-events-none whitespace-nowrap z-50">
+                                {{ __('login.tooltips.lightTheme') }}
+                                {{-- Tooltip arrow --}}
+                                <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-gray-900 dark:border-b-gray-700"></div>
+                            </div>
+                        </div>
 
                         {{-- Dark Theme (Moon) --}}
-                        <button type="button" 
-                                class="theme-toggle-btn p-2 rounded-lgtransition-colors" 
-                                data-theme="dark" 
-                                aria-label="Enable dark theme"
-                                title="Enable dark theme">
-                            <x-heroicon-m-moon class="w-5 h-5" aria-hidden="true" />
-                        </button>
+                        <div class="relative">
+                            <button type="button" 
+                                    class="theme-toggle-btn p-2 rounded-lgtransition-colors" 
+                                    data-theme="dark" 
+                                    aria-label="Enable dark theme"
+                                    title="Enable dark theme">
+                                <x-heroicon-m-moon class="w-5 h-5" aria-hidden="true" />
+                            </button>
+                            {{-- Tooltip --}}
+                            <div class="theme-tooltip absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg opacity-0 invisible transition-all duration-200 pointer-events-none whitespace-nowrap z-50">
+                                {{ __('login.tooltips.darkTheme') }}
+                                {{-- Tooltip arrow --}}
+                                <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-gray-900 dark:border-b-gray-700"></div>
+                            </div>
+                        </div>
 
                         {{-- System Theme (Desktop) --}}
-                        <button type="button" 
-                                class="theme-toggle-btn p-2 rounded-lgtransition-colors" 
-                                data-theme="system" 
-                                aria-label="Enable system theme"
-                                title="Enable system theme">
-                            <x-heroicon-m-computer-desktop class="w-5 h-5" aria-hidden="true" />
-                        </button>
+                        <div class="relative">
+                            <button type="button" 
+                                    class="theme-toggle-btn p-2 rounded-lgtransition-colors" 
+                                    data-theme="system" 
+                                    aria-label="Enable system theme"
+                                    title="Enable system theme">
+                                <x-heroicon-m-computer-desktop class="w-5 h-5" aria-hidden="true" />
+                            </button>
+                            {{-- Tooltip --}}
+                            <div class="theme-tooltip absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg opacity-0 invisible transition-all duration-200 pointer-events-none whitespace-nowrap z-50">
+                                {{ __('login.tooltips.systemTheme') }}
+                                {{-- Tooltip arrow --}}
+                                <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-gray-900 dark:border-b-gray-700"></div>
+                            </div>
+                        </div>
                     </fieldset>
                 </div>
             </div>
@@ -269,7 +293,7 @@
                     </div>
 
                     {{-- Social Sign-in Buttons --}}
-                    <div class="space-y-3">
+                    <div class="space-y-6">
                         {{-- Google Sign-in Button --}}
                         <x-google-signin-button />
 
