@@ -18,6 +18,9 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="h-full antialiased font-sans">
+    {{-- Loading Transition --}}
+    <x-auth-loading />
+    
     <div class="auth-frame flex h-screen overflow-hidden">
         {{-- Left Section (70%) - Hero Section --}}
         <x-auth-hero />

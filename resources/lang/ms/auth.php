@@ -22,4 +22,8 @@ return [
     // Language
     'english' => 'Inggeris',
     'malay' => 'Melayu',
+
+    // Loading transition messages
+    'loading' => 'Memuatkan...',
+    'please_wait' => 'Sila tunggu sementara kami menyediakan pengalaman anda',
 ];

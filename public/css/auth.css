@@ -4,6 +4,118 @@ html {
     font-family: "Roboto";
 }
 
+/* Auth Loading Transition Styles */
+#auth-loading-overlay {
+    z-index: 9999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Loading Animation Keyframes */
+@keyframes auth-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes auth-fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes auth-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Loading Animation Classes */
+.animate-fade-in {
+    animation: auth-fade-in 0.6s ease-out;
+}
+
+.animate-fade-in-up {
+    animation: auth-fade-in-up 0.8s ease-out;
+}
+
+.animate-spin {
+    animation: auth-spin 1s linear infinite;
+}
+
+/* Loading Overlay Background - Light Theme */
+#auth-loading-overlay .absolute.inset-0 {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+}
+
+/* Loading Overlay Background - Dark Theme */
+.dark #auth-loading-overlay .absolute.inset-0 {
+    background: rgba(17, 24, 39, 0.95);
+    backdrop-filter: blur(8px);
+}
+
+/* Loading Spinner Colors - Light Theme */
+#auth-loading-overlay .border-gray-200 {
+    border-color: rgb(229, 231, 235);
+}
+
+#auth-loading-overlay .border-t-primary-500 {
+    border-top-color: rgb(251, 180, 62);
+}
+
+/* Loading Spinner Colors - Dark Theme */
+.dark #auth-loading-overlay .border-gray-700 {
+    border-color: rgb(55, 65, 81);
+}
+
+.dark #auth-loading-overlay .border-t-primary-500 {
+    border-top-color: rgb(251, 191, 36);
+}
+
+/* Loading Text Colors - Light Theme */
+#auth-loading-overlay .text-gray-700 {
+    color: rgb(55, 65, 81);
+}
+
+#auth-loading-overlay .text-gray-500 {
+    color: rgb(107, 114, 128);
+}
+
+/* Loading Text Colors - Dark Theme */
+.dark #auth-loading-overlay .text-gray-300 {
+    color: rgb(209, 213, 219);
+}
+
+.dark #auth-loading-overlay .text-gray-400 {
+    color: rgb(156, 163, 175);
+}
+
+/* Ensure loading overlay is above all other elements */
+#auth-loading-overlay {
+    z-index: 9999 !important;
+}
+
+/* Smooth transitions for theme switching */
+#auth-loading-overlay * {
+    transition: color 0.3s ease, background-color 0.3s ease,
+        border-color 0.3s ease;
+}
+
 /* Login Page Specific Styles */
 .hero-slider {
     animation: slideIn 0.6s ease-out;

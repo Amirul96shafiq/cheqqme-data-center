@@ -22,4 +22,8 @@ return [
     // Language
     'english' => 'English',
     'malay' => 'Malay',
+
+    // Loading transition messages
+    'loading' => 'Loading...',
+    'please_wait' => 'Please wait while we prepare your experience',
 ];

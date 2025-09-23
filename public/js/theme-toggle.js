@@ -6,6 +6,7 @@ class ThemeToggle {
     constructor() {
         this.elements = {
             loginLogo: document.getElementById("loginLogo"),
+            authLoadingLogo: document.getElementById("authLoadingLogo"),
             themeButtons: document.querySelectorAll(".theme-toggle-btn"),
         };
 
@@ -16,12 +17,16 @@ class ThemeToggle {
      * Update logo based on theme
      */
     updateLogos(isDark) {
+        const logoPath = isDark
+            ? `${window.location.origin}/logos/logo-dark.png`
+            : `${window.location.origin}/logos/logo-light.png`;
+
         if (this.elements.loginLogo) {
-            if (isDark) {
-                this.elements.loginLogo.src = `${window.location.origin}/logos/logo-dark.png`;
-            } else {
-                this.elements.loginLogo.src = `${window.location.origin}/logos/logo-light.png`;
-            }
+            this.elements.loginLogo.src = logoPath;
+        }
+
+        if (this.elements.authLoadingLogo) {
+            this.elements.authLoadingLogo.src = logoPath;
         }
     }
 
