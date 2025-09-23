@@ -14,6 +14,7 @@
     @vite(['resources/css/app.css'])
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 
+    {{-- Alpine.js --}}
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="h-full antialiased font-sans">
@@ -326,14 +327,10 @@
         };
     </script>
 
-    {{-- External JavaScript Files --}}
-    <script src="{{ asset('js/hero-slider.js') }}"></script>
-
-    {{-- Google Sign-in JavaScript --}}
-    <script src="{{ asset('js/google-signin.js') }}"></script>
-
-    <script src="{{ asset('js/remember-me-toggle.js') }}"></script>
-
+    {{-- Optimized JavaScript Files --}}
     <script src="{{ asset('js/theme-toggle.js') }}"></script>
+    <script src="{{ asset('js/hero-slider.js') }}"></script>
+    <script src="{{ asset('js/google-signin.js') }}"></script>
+    <script src="{{ asset('js/remember-me-toggle.js') }}"></script>
 </body>
 </html>
