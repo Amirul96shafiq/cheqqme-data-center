@@ -480,3 +480,60 @@ img#heroImage.hero-image-exit-right {
 .dark #sliderNav button [id^="progressBar"] {
     background-color: rgb(229, 231, 235) !important; /* bg-gray-200 */
 }
+
+/* ==========================================================
+   FHD-baseline responsiveness (keeps 1920x1080 unchanged)
+   ========================================================== */
+/* Wider than FHD: constrain to a 1920px frame and center */
+@media (min-width: 1921px) {
+    .auth-frame {
+        max-width: 1920px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* Narrower than FHD: gently tighten spacing; 1920 remains unchanged */
+@media (max-width: 1919px) {
+    .login-form-container {
+        padding-inline: clamp(1rem, 2vw, 2rem);
+    }
+
+    /* Reduce large logo spacing responsively without affecting FHD */
+    .login-form-container .mb-20 {
+        margin-bottom: clamp(1.5rem, 4vw, 5rem);
+    }
+
+    /* Maintain comfortable form rhythm on smaller widths */
+    form.space-y-6 > * + * {
+        margin-top: clamp(1rem, 2.5vw, 1.5rem);
+    }
+}
+
+/* Taller than FHD: prevent overstretching while keeping 1080 unchanged */
+@media (min-height: 1081px) {
+    img#heroImage {
+        object-fit: cover;
+    }
+}
+
+/* Respect reduced motion without changing static layout */
+@media (prefers-reduced-motion: reduce) {
+    .animate-float-1,
+    .animate-float-2,
+    .animate-float-3,
+    .animate-float-4,
+    .animate-float-5,
+    .animate-float-6,
+    .animate-float-7,
+    .animate-float-8,
+    .hero-slider,
+    .login-form-container,
+    img#heroImage.hero-image-slide-left,
+    img#heroImage.hero-image-slide-right,
+    img#heroImage.hero-image-exit-left,
+    img#heroImage.hero-image-exit-right {
+        animation: none !important;
+        transition: none !important;
+    }
+}

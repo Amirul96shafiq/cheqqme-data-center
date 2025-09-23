@@ -18,7 +18,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="h-full antialiased font-sans">
-    <div class="flex h-screen overflow-hidden">
+    <div class="auth-frame flex h-screen overflow-hidden">
         {{-- Left Section (70%) - Hero Section --}}
         <div class="relative w-[70%] hidden lg:flex flex-col justify-between overflow-hidden bg-gray-50 dark:bg-gray-900 p-6">
             {{-- Hero Section with Gradient Background --}}
