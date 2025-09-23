@@ -48,6 +48,8 @@
                     {{-- Content Container --}}
                     <div class="flex-1 flex flex-col justify-start p-12 w-3/4">
                         <div class="flex flex-col justify-start space-y-6 max-w-2xl">
+                            {{-- Version Text --}}
+                            <div class="text-xs text-gray-600/20 dark:text-gray-600">{{ $gitVersion ?? 'v0.3_local' }}</div>
                             {{-- Title --}}
                             <div>
                                 <h1 id="heroTitle" class="text-2xl font-bold dark:text-white text-gray-600 -mb-4 transition-all duration-500 leading-tight">

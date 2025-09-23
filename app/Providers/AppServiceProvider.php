@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Helpers\GitHelper;
 use App\Models\Task;
 use App\Models\User;
 use App\Observers\TaskObserver;
@@ -11,6 +12,7 @@ use Filament\Notifications\Livewire\DatabaseNotifications;
 use Filament\Notifications\Livewire\Notifications;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -276,6 +278,11 @@ class AppServiceProvider extends ServiceProvider
         // Late <style> tag so it loads after any on-request asset
         \Filament\Facades\Filament::registerRenderHook('panels::head.end', function () {
             return '<style>.ff-card__title{font-weight:400!important}</style>';
+        });
+
+        // Share git version with views
+        View::composer('vendor.filament-panels.pages.auth.login', function ($view) {
+            $view->with('gitVersion', GitHelper::getVersionString());
         });
     }
 }
