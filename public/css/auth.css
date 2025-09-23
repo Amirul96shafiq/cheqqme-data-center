@@ -537,3 +537,39 @@ img#heroImage.hero-image-exit-right {
         transition: none !important;
     }
 }
+
+/* Large Laptop responsiveness */
+@media (max-width: 1440px) {
+    h1.hero-title {
+        font-size: 1.2rem !important;
+        margin-top: -1.2rem !important;
+    }
+    
+    p.hero-description {
+        font-size: 1rem !important;
+        margin-top: -1rem !important;
+    }
+
+    .slider-navigation {
+        margin-top: -0.6rem !important;
+    }
+
+    .whats-new-button {
+        height: 92px !important;
+    }
+    
+    .hero-image-container {
+        height: 500px !important;
+    }
+}
+
+/* Medium Laptop responsiveness */
+@media (max-width: 1366px) {
+    p.hero-description {
+        font-size: 0.9rem !important;
+    }
+
+    .hero-image-container {
+        height: 480px !important;
+    }
+}

@@ -44,28 +44,28 @@
                 </div>
                 
                 {{-- Top Section: Content Container and Navigation Controls --}}
-                <div class="relative z-10 flex flex-col w-full h-1/4 justify-end">
-                    {{-- Content Container --}}
-                    <div class="flex-1 flex flex-col justify-start p-12 w-3/4">
+                <div class="relative z-10 flex w-full h-1/4 justify-end">
+                    {{-- Left Content Container (65% width) --}}
+                    <div class="flex flex-col justify-start p-12 w-[65%]">
                         <div class="flex flex-col justify-start space-y-6 max-w-2xl">
                             {{-- Version Text --}}
                             <div class="text-xs text-gray-600/20 dark:text-gray-500">{{ $gitVersion ?? 'v0.3_local' }}</div>
                             {{-- Title --}}
                             <div>
-                                <h1 id="heroTitle" class="text-2xl font-bold dark:text-white text-gray-600 -mb-4 transition-all duration-500 leading-tight">
+                                <h1 id="heroTitle" class="text-2xl font-bold dark:text-white text-gray-600 -mb-4 transition-all duration-500 leading-tight hero-title">
                                     Loading...
                                 </h1>
                             </div>
 
                             {{-- Description --}}
                             <div class="min-h-14">
-                                <p id="heroDescription" class="text-md dark:text-white text-gray-600 transition-all duration-500 leading-relaxed">
+                                <p id="heroDescription" class="text-md dark:text-white text-gray-600 transition-all duration-500 leading-relaxed hero-description">
                                     Loading...
                                 </p>
                             </div>
 
                             {{-- Slider Navigation --}}
-                            <nav class="flex items-center space-x-3 mt-8" id="sliderNav" aria-label="Slide navigation">
+                            <nav class="flex items-center space-x-3 mt-8 slider-navigation" id="sliderNav" aria-label="Slide navigation">
                                 <button type="button" data-slide="0" aria-label="Go to slide 1" class="relative w-12 h-1 dark:bg-gray-200 rounded-full transition-all duration-300 bg-primary-400 hover:bg-primary-400 overflow-hidden">
                                     <div id="progressBar0" class="absolute top-0 left-0 h-full bg-gray-400 dark:bg-gray-200 rounded-full transition-all duration-100 ease-linear" style="width: 0%"></div>
                                 </button>
@@ -88,54 +88,57 @@
                         </div>
                     </div>
 
-                    {{-- New Update Button (Top Right) --}}
-                    <nav class="absolute top-0 right-0 z-30 flex justify-end" aria-label="Whats new action button">
-                        <x-tooltip position="bottom" :text="__('login.tooltips.comingSoon')">
-                            <div class="inline-flex items-start cursor-not-allowed" aria-label="What's New (Coming Soon)">
-                                <img src="{{ asset('images/actions/whats-news.png') }}" alt="What's New" class="h-32 w-auto opacity-40 hover:opacity-50 transition-all duration-300 bounce-bounce" loading="eager">
+                    {{-- Right Content Container (35% width) --}}
+                    <div class="relative flex flex-col justify-start w-[35%]">
+                        {{-- New Update Button (Top) --}}
+                        <nav class="flex justify-end" aria-label="Whats new action button">
+                            <x-tooltip position="bottom" :text="__('login.tooltips.comingSoon')">
+                                <div class="inline-flex items-start cursor-not-allowed" aria-label="What's New (Coming Soon)">
+                                    <img src="{{ asset('images/actions/whats-news.png') }}" alt="What's New" class="h-28 w-auto opacity-80 hover:opacity-100 transition-all duration-300 bounce-bounce whats-new-button" loading="eager">
+                                </div>
+                            </x-tooltip>
+                        </nav>
+                        
+                        {{-- Navigation Controls (Bottom) --}}
+                        <nav class="flex justify-end mt-4 px-12" aria-label="Hero slider navigation">
+                            <div class="flex items-center space-x-3">
+                                {{-- Previous Button --}}
+                                <button id="prevSlide" 
+                                        type="button"
+                                        aria-label="Previous slide"
+                                        class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                                    @svg('heroicon-m-arrow-left', 'w-5 h-5 text-primary-900 transition-colors')
+                                </button>
+                                
+                                {{-- Pause/Play Button --}}
+                                <button id="pausePlaySlide" 
+                                        type="button"
+                                        aria-label="Pause auto-slide"
+                                        class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                                    {{-- Play Icon (shown when paused) --}}
+                                    <div id="playIcon">
+                                        @svg('heroicon-o-play', 'w-4 h-4 text-primary-900 transition-colors')
+                                    </div>
+                                    {{-- Pause Icon (shown when playing) --}}
+                                    <div id="pauseIcon" class="hidden">
+                                        @svg('heroicon-o-pause', 'w-4 h-4 text-primary-900 transition-colors')
+                                    </div>
+                                </button>
+                                
+                                {{-- Next Button --}}
+                                <button id="nextSlide" 
+                                        type="button"
+                                        aria-label="Next slide"
+                                        class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                                    @svg('heroicon-m-arrow-right', 'w-5 h-5 text-primary-900 transition-colors')
+                                </button>
                             </div>
-                        </x-tooltip>
-                    </nav>
-                    
-                    {{-- Navigation Controls (Bottom Right) --}}
-                    <nav class="absolute bottom-12 right-12 w-1/4 z-20 flex justify-end" aria-label="Hero slider navigation">
-                        <div class="flex items-center space-x-3">
-                            {{-- Previous Button --}}
-                            <button id="prevSlide" 
-                                    type="button"
-                                    aria-label="Previous slide"
-                                    class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
-                                @svg('heroicon-m-arrow-left', 'w-5 h-5 text-primary-900 transition-colors')
-                            </button>
-                            
-                            {{-- Pause/Play Button --}}
-                            <button id="pausePlaySlide" 
-                                    type="button"
-                                    aria-label="Pause auto-slide"
-                                    class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
-                                {{-- Play Icon (shown when paused) --}}
-                                <div id="playIcon">
-                                    @svg('heroicon-o-play', 'w-4 h-4 text-primary-900 transition-colors')
-                                </div>
-                                {{-- Pause Icon (shown when playing) --}}
-                                <div id="pauseIcon" class="hidden">
-                                    @svg('heroicon-o-pause', 'w-4 h-4 text-primary-900 transition-colors')
-                                </div>
-                            </button>
-                            
-                            {{-- Next Button --}}
-                            <button id="nextSlide" 
-                                    type="button"
-                                    aria-label="Next slide"
-                                    class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
-                                @svg('heroicon-m-arrow-right', 'w-5 h-5 text-primary-900 transition-colors')
-                            </button>
-                        </div>
-                    </nav>
+                        </nav>
+                    </div>
                 </div>
 
                 {{-- Bottom Section: Hero Images --}}
-                <div class="absolute bottom-0 left-0 w-full h-3/4 pl-12">
+                <div class="absolute bottom-0 left-0 w-full h-3/4 pl-12 hero-image-container">
                     <img id="heroImage"
                          src="{{ asset('images/hero-images/light/01.png') }}"
                          alt="CheQQme Data Center platform showcase"
