@@ -544,7 +544,7 @@ img#heroImage.hero-image-exit-right {
         font-size: 1.2rem !important;
         margin-top: -1.2rem !important;
     }
-    
+
     p.hero-description {
         font-size: 1rem !important;
         margin-top: -1rem !important;
@@ -557,7 +557,7 @@ img#heroImage.hero-image-exit-right {
     .whats-new-button {
         height: 92px !important;
     }
-    
+
     .hero-image-container {
         height: 500px !important;
     }
@@ -571,5 +571,40 @@ img#heroImage.hero-image-exit-right {
 
     .hero-image-container {
         height: 480px !important;
+    }
+}
+
+/* Laptop 1024px responsiveness - Show only login form */
+@media (max-width: 1024px) {
+    /* Hide the hero section completely */
+    .auth-frame > div:first-child {
+        display: none !important;
+    }
+
+    /* Make login form take full width */
+    .auth-frame > div:last-child {
+        width: 100% !important;
+    }
+
+    /* Adjust login form container for better mobile experience */
+    .login-form-container {
+        max-width: 28rem; /* 448px */
+        margin: 0 auto;
+    }
+
+    /* Reduce logo size for better fit */
+    .login-form-container .mb-20 img {
+        height: 6rem !important; /* 96px instead of 128px */
+    }
+
+    /* Adjust form spacing for smaller screens */
+    form.space-y-6 > * + * {
+        margin-top: 1.25rem;
+    }
+
+    /* Ensure proper padding on mobile */
+    .auth-frame > div:last-child {
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 }
