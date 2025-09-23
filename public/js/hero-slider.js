@@ -445,7 +445,7 @@ class HeroSlider {
     /**
      * Go to next slide
      */
-    nextSlide() {
+    nextSlide(isAutoAdvance = false) {
         // Check for rapid clicks
         if (this.isClickTooRapid()) {
             return;
@@ -460,8 +460,10 @@ class HeroSlider {
             return;
         }
 
-        // Pause auto-advance when manually navigating
-        this.pauseAutoAdvance();
+        // Only pause auto-advance when manually navigating (not during auto-advance)
+        if (!isAutoAdvance) {
+            this.pauseAutoAdvance();
+        }
 
         this.previousSlideIndex = this.currentSlide;
         this.currentSlide = (this.currentSlide + 1) % this.slides.length;
@@ -485,7 +487,7 @@ class HeroSlider {
         this.autoAdvanceInterval = setInterval(() => {
             // Only auto-advance if not currently animating and not paused
             if (this.canAnimate() && !this.isPaused) {
-                this.nextSlide();
+                this.nextSlide(true); // Pass true to indicate this is auto-advance
             } else {
                 console.log(
                     "Skipping auto-advance, animation in progress or paused"
