@@ -187,7 +187,7 @@ input:-webkit-autofill:active {
     color: rgb(156, 163, 175); /* gray-400 */
 }
 
-/* Theme tooltip hover effects */
+/* Legacy theme tooltip hover effects (for backward compatibility) */
 .relative:hover .theme-tooltip {
     opacity: 1;
     visibility: visible;

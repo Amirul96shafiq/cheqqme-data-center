@@ -1,25 +1,17 @@
 @props(['action'])
 
-<div class="relative w-full">
+<x-tooltip position="top" :text="__('login.tooltips.microsoftComingSoon')">
     <button
         type="button"
         onclick="preventMicrosoftClick(event)"
         class="w-full py-3 -mt-4 microsoft-signin-button microsoft-signin-disabled flex items-center justify-center gap-3 px-4 border border-gray-300 rounded-lg bg-gray-200 transition-colors duration-200"
         disabled
         aria-disabled="true"
-        title="{{ __('login.tooltips.microsoftComingSoon') }}"
     >
         <img src="{{ asset('images/microsoft-icon.svg') }}" alt="Microsoft" class="w-6 h-6 opacity-40" />
         <span class="text-gray-400 font-medium">{{ __('login.actions.microsoftSignin') }}</span>
     </button>
-    
-    {{-- Hover Tooltip --}}
-    <div class="microsoft-tooltip absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg opacity-0 invisible transition-all duration-200 pointer-events-none whitespace-nowrap z-50">
-        {{ __('login.tooltips.microsoftComingSoon') }}
-        {{-- Tooltip arrow --}}
-        <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
-    </div>
-</div>
+</x-tooltip>
 
 <script>
 function preventMicrosoftClick(event) {

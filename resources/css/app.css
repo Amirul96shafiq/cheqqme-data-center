@@ -62,3 +62,19 @@ select {
     appearance: none;
     background-image: none;
 }
+
+/* Global Tooltip Styles */
+.tooltip-container:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Tooltip top position animation */
+.tooltip-container:hover .tooltip-top {
+    transform: translateX(-50%) translateY(-4px);
+}
+
+/* Tooltip bottom position animation */
+.tooltip-container:hover .tooltip-bottom {
+    transform: translateX(-50%) translateY(4px);
+}
