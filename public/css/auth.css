@@ -607,4 +607,39 @@ img#heroImage.hero-image-exit-right {
         padding-left: 1rem;
         padding-right: 1rem;
     }
+
+    /* Sticky Version Text for responsive design */
+    .version-text-sticky {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 50;
+        display: block !important;
+    }
+
+    /* Sticky What's New button for responsive design */
+    .whats-new-sticky {
+        position: fixed;
+        top: 0.2rem;
+        right: 0rem;
+        z-index: 50;
+        display: block !important;
+    }
+
+    .whats-new-sticky img {
+        height: 4.2rem !important; /* 56px - smaller for mobile */
+        width: auto;
+        opacity: 0.9;
+        transition: all 0.3s ease;
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    }
+
+    /* Dark mode adjustments for sticky button */
+    .dark .whats-new-sticky img {
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+    }
+
+    .dark .whats-new-sticky img:hover {
+        filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.4));
+    }
 }

@@ -148,6 +148,22 @@
             </div>
         </div>
 
+        {{-- Sticky Version Text for Responsive (1024px and below) --}}
+        <div class="version-text-sticky hidden">
+            <div class="text-[11px] text-gray-600/20 dark:text-gray-500 pt-1">
+                {{ $gitVersion ?? 'v0.3_local' }}
+            </div>
+        </div>
+
+        {{-- Sticky What's New Button for Responsive (1024px and below) --}}
+        <div class="whats-new-sticky hidden">
+            <x-tooltip position="bottom" :text="__('login.tooltips.comingSoon')">
+                <div class="inline-flex items-start cursor-not-allowed" aria-label="What's New (Coming Soon)">
+                    <img src="{{ asset('images/actions/whats-news.png') }}" alt="What's New" class="transition-all duration-300 bounce-bounce" loading="eager">
+                </div>
+            </x-tooltip>
+        </div>
+
         {{-- Right Section (30%) - Login Form --}}
         <div class="w-full lg:w-[30%] flex flex-col bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 custom-scrollbar overflow-y-auto">
             {{-- Header Section --}}
