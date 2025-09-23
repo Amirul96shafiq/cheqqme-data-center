@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'title' => 'Log Masuk',
+    //'title' => 'Log Masuk',
 
     'actions' => [
         'login' => 'Log Masuk',
