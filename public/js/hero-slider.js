@@ -38,6 +38,7 @@ class HeroSlider {
         ];
 
         this.currentSlide = 0;
+        this.previousSlideIndex = 0;
         this.elements = {
             heroImage: document.getElementById("heroImage"),
             heroTitle: document.getElementById("heroTitle"),
@@ -81,14 +82,34 @@ class HeroSlider {
     }
 
     /**
-     * Update slider content
+     * Update slider content with coordinated exit and entrance animations
      */
-    updateSlider() {
-        // Fade out effect
-        this.elements.heroImage.style.opacity = "0";
+    updateSlider(direction = null) {
+        // Determine animation direction if not provided
+        if (direction === null) {
+            direction = this.getSlideDirection();
+        }
+
+        // Remove any existing animation classes
+        this.elements.heroImage.classList.remove(
+            "hero-image-slide-left",
+            "hero-image-slide-right",
+            "hero-image-exit-left",
+            "hero-image-exit-right"
+        );
+
+        // Fade out text content
         this.elements.heroTitle.style.opacity = "0";
         this.elements.heroDescription.style.opacity = "0";
 
+        // Play exit animation for current image
+        if (direction === "left") {
+            this.elements.heroImage.classList.add("hero-image-exit-left");
+        } else if (direction === "right") {
+            this.elements.heroImage.classList.add("hero-image-exit-right");
+        }
+
+        // Wait for exit animation to complete, then play entrance animation
         setTimeout(() => {
             // Update content with current theme
             const slide = this.slides[this.currentSlide];
@@ -98,14 +119,61 @@ class HeroSlider {
             this.elements.heroTitle.textContent = slide.title;
             this.elements.heroDescription.innerHTML = slide.description;
 
-            // Fade in effect
-            this.elements.heroImage.style.opacity = "1";
+            // Remove exit animation class
+            this.elements.heroImage.classList.remove(
+                "hero-image-exit-left",
+                "hero-image-exit-right"
+            );
+
+            // Apply entrance animation to new hero image
+            if (direction === "left") {
+                this.elements.heroImage.classList.add("hero-image-slide-left");
+            } else if (direction === "right") {
+                this.elements.heroImage.classList.add("hero-image-slide-right");
+            }
+
+            // Fade in text content
             this.elements.heroTitle.style.opacity = "1";
             this.elements.heroDescription.style.opacity = "1";
 
             // Update button states
             this.updateSliderButtons();
-        }, 300);
+
+            // Restore transition after entrance animation completes
+            setTimeout(() => {
+                this.elements.heroImage.classList.remove(
+                    "hero-image-slide-left",
+                    "hero-image-slide-right"
+                );
+            }, 1200); // Match entrance animation duration
+        }, 800); // Wait for exit animation (0.8s) to complete
+    }
+
+    /**
+     * Determine slide direction based on previous and current slide indices
+     */
+    getSlideDirection() {
+        const totalSlides = this.slides.length;
+        const prev = this.previousSlideIndex;
+        const current = this.currentSlide;
+
+        // Handle wrap-around cases
+        if (prev === totalSlides - 1 && current === 0) {
+            // Going from last slide to first (right to left)
+            return "right";
+        } else if (prev === 0 && current === totalSlides - 1) {
+            // Going from first slide to last (left to right)
+            return "left";
+        } else if (current > prev) {
+            // Moving forward (left to right)
+            return "left";
+        } else if (current < prev) {
+            // Moving backward (right to left)
+            return "right";
+        }
+
+        // Default case (shouldn't happen in normal operation)
+        return "left";
     }
 
     /**
@@ -131,6 +199,7 @@ class HeroSlider {
      * Go to specific slide
      */
     goToSlide(slideIndex) {
+        this.previousSlideIndex = this.currentSlide;
         this.currentSlide = slideIndex;
         this.updateSlider();
     }
@@ -139,19 +208,21 @@ class HeroSlider {
      * Go to previous slide
      */
     previousSlide() {
+        this.previousSlideIndex = this.currentSlide;
         this.currentSlide =
             this.currentSlide === 0
                 ? this.slides.length - 1
                 : this.currentSlide - 1;
-        this.updateSlider();
+        this.updateSlider("right");
     }
 
     /**
      * Go to next slide
      */
     nextSlide() {
+        this.previousSlideIndex = this.currentSlide;
         this.currentSlide = (this.currentSlide + 1) % this.slides.length;
-        this.updateSlider();
+        this.updateSlider("left");
     }
 
     /**
@@ -236,6 +307,9 @@ class HeroSlider {
                     this.updateAllSlideImages();
                 }
             });
+
+        // Initialize previousSlideIndex before first update
+        this.previousSlideIndex = 0;
 
         // Start auto-advance
         this.startAutoAdvance();

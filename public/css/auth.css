@@ -350,6 +350,71 @@ input:-webkit-autofill:active {
     }
 }
 
+/* Hero Slider Directional Animations - High Specificity */
+img#heroImage.hero-image-slide-left {
+    animation: slideLeft 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important;
+    transition: none !important;
+}
+
+img#heroImage.hero-image-slide-right {
+    animation: slideRight 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important;
+    transition: none !important;
+}
+
+img#heroImage.hero-image-exit-left {
+    animation: exitSlideLeft 0.8s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards !important;
+    transition: none !important;
+}
+
+img#heroImage.hero-image-exit-right {
+    animation: exitSlideRight 0.8s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards !important;
+    transition: none !important;
+}
+
+@keyframes slideLeft {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideRight {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes exitSlideLeft {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes exitSlideRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
 /* Animation Classes */
 .animate-float-1 {
     animation: float-1 8s ease-in-out infinite;
