@@ -50,7 +50,7 @@ class ResetPasswordController extends Controller
         );
 
         return redirect()
-            ->route('filament.admin.auth.login')
+            ->route('login')
             ->with('status', 'Password reset successful.');
     }
 }
