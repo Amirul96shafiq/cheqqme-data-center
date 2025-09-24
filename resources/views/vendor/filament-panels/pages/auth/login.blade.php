@@ -35,7 +35,7 @@
 
             {{-- Main Content Section --}}
             <div class="flex-1 flex items-center justify-center px-8">
-                <div class="w-full max-w-md login-form-container">
+                <div id="auth-form-root" class="w-full max-w-md login-form-container">
 
                     {{-- Logo Overlay --}}
                     <div class="flex justify-center mb-20">
@@ -173,5 +173,6 @@
     <script src="{{ asset('js/hero-slider.js') }}"></script>
     <script src="{{ asset('js/google-signin.js') }}"></script>
     <script src="{{ asset('js/remember-me-toggle.js') }}"></script>
+    <script src="{{ asset('js/auth-partial-nav.js') }}"></script>
 </body>
 </html>

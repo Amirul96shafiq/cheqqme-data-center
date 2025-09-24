@@ -147,6 +147,21 @@ html {
     }
 }
 
+/* Smooth form swap transitions */
+#auth-form-root {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.auth-form-fade-out {
+    opacity: 0;
+    transform: translateY(6px);
+}
+
+.auth-form-fade-in {
+    opacity: 0;
+    transform: translateY(6px);
+}
+
 /* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;

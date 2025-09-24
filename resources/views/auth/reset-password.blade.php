@@ -35,7 +35,7 @@
 
             {{-- Main Content Section --}}
             <div class="flex-1 flex items-center justify-center px-8">
-                <div class="w-full max-w-md">
+                <div id="auth-form-root" class="w-full max-w-md">
 
                     {{-- Logo Overlay --}}
                     <div class="flex justify-center mb-20">
@@ -184,5 +184,6 @@
     {{-- Optimized JavaScript Files --}}
     <script src="{{ asset('js/theme-toggle.js') }}"></script>
     <script src="{{ asset('js/hero-slider.js') }}"></script>
+    <script src="{{ asset('js/auth-partial-nav.js') }}"></script>
 </body>
 </html>
