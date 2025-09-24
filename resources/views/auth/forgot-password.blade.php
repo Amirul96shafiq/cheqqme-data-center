@@ -79,12 +79,7 @@
                         </div>
 
                         {{-- Submit Button --}}
-                        <button type="submit" 
-                                class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-primary-900 font-medium rounded-md shadow-sm transition-colors duration-200"
-                                aria-describedby="submit-button-description">
-                            {{ __('auth.send_link') }}
-                            <span id="submit-button-description" class="sr-only">Send password reset link to your email</span>
-                        </button>
+                        <x-loading-submit-button :label="__('auth.send_link')" :sr="__('auth.send_link')" />
 
                         {{-- Back to Login Link --}}
                         <div class="text-center">

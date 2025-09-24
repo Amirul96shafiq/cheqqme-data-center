@@ -111,12 +111,7 @@
                         </div>
 
                         {{-- Submit Button --}}
-                        <button type="submit" 
-                                class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-primary-900 font-medium rounded-md shadow-sm transition-colors duration-200"
-                                aria-describedby="submit-button-description">
-                            {{ __('auth.send_reset_link') }}
-                            <span id="submit-button-description" class="sr-only">Reset your password</span>
-                        </button>
+                        <x-loading-submit-button :label="__('auth.send_reset_link')" :sr="__('auth.send_reset_link')" />
 
                         {{-- Navigation Links --}}
                         <div class="text-center space-y-2">

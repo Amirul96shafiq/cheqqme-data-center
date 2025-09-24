@@ -115,12 +115,7 @@
 
 
                         {{-- Login Button --}}
-                        <button type="submit" 
-                                class="w-full py-4 px-4 bg-primary-600 hover:bg-primary-500 text-primary-900 font-medium rounded-md shadow-sm transition-colors duration-200"
-                                aria-describedby="login-button-description">
-                            {{ __('login.actions.login') }}
-                            <span id="login-button-description" class="sr-only">Sign in to your account</span>
-                        </button>
+                        <x-loading-submit-button :label="__('login.actions.login')" :sr="__('login.actions.login')" />
 
                         {{-- Separator --}}
                         <div class="flex items-center justify-center my-4">
