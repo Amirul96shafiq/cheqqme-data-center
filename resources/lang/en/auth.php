@@ -26,4 +26,7 @@ return [
     // Loading transition messages
     'loading' => 'Loading...',
     'please_wait' => 'Please wait while we prepare your experience',
+
+    // Notifications
+    'password_reset_success' => 'Your password has been reset successfully.',
 ];

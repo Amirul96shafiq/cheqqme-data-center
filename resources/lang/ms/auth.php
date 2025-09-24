@@ -26,4 +26,7 @@ return [
     // Loading transition messages
     'loading' => 'Memuatkan...',
     'please_wait' => 'Sila tunggu sementara kami menyediakan pengalaman anda',
+
+    // Notifications
+    'password_reset_success' => 'Kata laluan anda telah berjaya ditetapkan semula.',
 ];

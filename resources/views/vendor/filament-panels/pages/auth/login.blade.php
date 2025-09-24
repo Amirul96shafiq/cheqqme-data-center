@@ -53,7 +53,21 @@
                         </h1>
                     </header> --}}
 
-                    {{-- Login Form --}}
+					{{-- Success Notification (e.g., after password reset) --}}
+					@if (session('status'))
+						<div x-data="{ show: true }" x-show="show" x-transition
+							class="mb-6 rounded-md border border-primary-200 bg-primary-50 p-4 text-primary-800 dark:border-primary-800 dark:bg-primary-900/30 dark:text-primary-200">
+							<div class="flex items-start justify-between">
+								<p class="text-sm font-medium">{{ session('status') }}</p>
+								<button type="button" @click="show = false" aria-label="Dismiss notification"
+									class="ml-4 text-primary-700 hover:text-primary-900 focus:outline-none dark:text-primary-300 dark:hover:text-white">
+									&times;
+								</button>
+							</div>
+						</div>
+					@endif
+
+					{{-- Login Form --}}
                     <form method="POST" action="{{ route('admin.login') }}" class="space-y-6">
                         @csrf
 

@@ -51,6 +51,6 @@ class ResetPasswordController extends Controller
 
         return redirect()
             ->route('login')
-            ->with('status', 'Password reset successful.');
+            ->with('status', __('auth.password_reset_success'));
     }
 }
