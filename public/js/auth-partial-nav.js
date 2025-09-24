@@ -18,6 +18,49 @@
         };
     }
 
+    // Reinitialize remember me toggle after partial navigation
+    function reinitializeRememberMeToggle() {
+        // Simply re-run the original remember me toggle initialization
+        if (window.RememberMeToggle) {
+            new window.RememberMeToggle();
+        } else {
+            // Fallback: manually initialize if the class isn't available
+            var checkbox = document.getElementById("remember");
+            if (!checkbox) return;
+
+            var toggleTrack = checkbox.nextElementSibling;
+            var toggleThumb = toggleTrack?.nextElementSibling;
+
+            if (!toggleTrack || !toggleThumb) return;
+
+            function updateToggle() {
+                if (checkbox.checked) {
+                    toggleTrack.classList.remove(
+                        "bg-gray-200",
+                        "dark:bg-gray-600"
+                    );
+                    toggleTrack.classList.add("bg-primary-600");
+                    toggleThumb.classList.remove("translate-x-0");
+                    toggleThumb.classList.add("translate-x-5");
+                } else {
+                    toggleTrack.classList.remove("bg-primary-600");
+                    toggleTrack.classList.add(
+                        "bg-gray-200",
+                        "dark:bg-gray-600"
+                    );
+                    toggleThumb.classList.remove("translate-x-5");
+                    toggleThumb.classList.add("translate-x-0");
+                }
+            }
+
+            // Initialize toggle state
+            updateToggle();
+
+            // Add event listener
+            checkbox.addEventListener("change", updateToggle);
+        }
+    }
+
     var AUTH_PATHS_REGEX = /\/(login|forgot\-password|password\/reset)/;
 
     function getAuthFormRoot(doc) {
@@ -94,6 +137,11 @@
                 setTimeout(function () {
                     nextRoot.classList.remove("auth-form-fade-in");
                     nextRoot.classList.remove("pointer-events-none");
+
+                    // Reinitialize remember me toggle if we're on login page
+                    if (href.includes("/login")) {
+                        reinitializeRememberMeToggle();
+                    }
                 }, 10);
             });
 

@@ -71,6 +71,9 @@ class RememberMeToggle {
     }
 }
 
+// Make RememberMeToggle available globally
+window.RememberMeToggle = RememberMeToggle;
+
 // Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", function () {
     new RememberMeToggle();
