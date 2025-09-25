@@ -399,7 +399,7 @@
     <div id="chatbot-interface" class="absolute bottom-16 right-0 w-[380px] h-[680px] bg-white/65 dark:bg-gray-800/65 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden backdrop-blur-sm">
         <div class="flex flex-col h-full w-full">
         <!-- Header -->
-        <div class="bg-primary-600 text-primary-900 px-3 py-1 rounded-t-xl flex items-center justify-between">
+        <div class="bg-primary-600 text-primary-900 px-3 py-1 rounded-t-xl flex items-center justify-between bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('images/chatbot-bg.png') }}');">
             <div class="flex items-center space-x-3">
                 <!-- Arem AI Logo -->
                 <div class="flex-shrink-0">
@@ -408,7 +408,7 @@
                 <!-- Arem AI Text -->
                 <div>
                     <h3 class="font-semibold text-base">Arem AI</h3>
-                    <p class="text-sm text-primary-900/80 typing-text" id="subheading-text">{{ __('chatbot.header.subheading01') }}<span class="typing-cursor"></span></p>
+                    <p class="text-sm/4 text-primary-900/90 typing-text" id="subheading-text">{{ __('chatbot.header.subheading01') }}<span class="typing-cursor"></span></p>
                 </div>
             </div>
             <!-- Close and Clear Buttons -->
@@ -508,7 +508,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 'subheading01',
                 'subheading02',
                 'subheading03',
-                'subheading04'
+                'subheading04',
+                'subheading05'
             ] as $key)
             '{{ __("chatbot.header.{$key}") }}'{{ !$loop->last ? ',' : '' }}
             @endforeach
@@ -522,7 +523,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 'subheading01',
                 'subheading02',
                 'subheading03',
-                'subheading04'
+                'subheading04',
+                'subheading05'
             ] as $key)
             '{{ __("chatbot.header.{$key}") }}'{{ !$loop->last ? ',' : '' }}
             @endforeach

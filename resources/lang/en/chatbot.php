@@ -15,8 +15,9 @@ return [
     'header' => [
         'subheading01' => 'Your brilliant assistant~~',
         'subheading02' => 'You look lonely, I can fix that.',
-        'subheading03' => 'Boy have you done lost your mind, cause I\'ll help you find it!',
+        'subheading03' => 'Boy have you lost your mind, cause I\'ll help you find it!',
         'subheading04' => ' I love you. You love me. We\'re a happy family.',
+        'subheading05' => 'Monkey together strong.',
     ],
 
     // History page

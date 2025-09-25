@@ -17,6 +17,7 @@ return [
         'subheading02' => 'Sorang je ke tu? Meh I teman.',
         'subheading3' => 'Tak jumpa-jumpa ke? Biar saya carikan!',
         'subheading04' => ' Saya suka awak. Awak suka saya. Kami adalah keluarga yang bahagia.',
+        'subheading05' => 'Kita jaga kita.',
     ],
 
     // History page
