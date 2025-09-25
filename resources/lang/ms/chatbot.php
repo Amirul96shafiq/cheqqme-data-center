@@ -11,6 +11,11 @@ return [
     'error_message' => 'Maaf, saya menghadapi ralat. Sila cuba lagi.',
     'clearing_message' => 'Menghapus perbualan...',
 
+    // Header
+    'header' => [
+        'subheading01' => 'Asisten AI terpandai & terbijaksana',
+    ],
+
     // History page
     'history' => [
         'navigation_label' => 'Sejarah Chatbot',

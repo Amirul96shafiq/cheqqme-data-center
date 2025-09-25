@@ -408,7 +408,7 @@
                 <!-- Arem AI Text -->
                 <div>
                     <h3 class="font-semibold text-base">Arem AI</h3>
-                    <p class="text-sm text-primary-900/80">Your brilliant assistant</p>
+                    <p class="text-sm text-primary-900/80">{{ __('chatbot.header.subheading01') }}</p>
                 </div>
             </div>
             <!-- Close and Clear Buttons -->

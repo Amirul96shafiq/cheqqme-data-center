@@ -11,6 +11,11 @@ return [
     'error_message' => 'Sorry, I encountered an error. Please try again.',
     'clearing_message' => 'Clearing conversation...',
 
+    // Header
+    'header' => [
+        'subheading01' => 'Your brilliant assistant',
+    ],
+
     // History page
     'history' => [
         'navigation_label' => 'Chatbot History',
