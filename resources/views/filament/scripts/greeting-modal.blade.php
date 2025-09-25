@@ -184,6 +184,7 @@ function openGreetingModal(forceOpen = false) {
                             :circular="true"
                             size="h-16 w-16"
                             class="border-4 border-white dark:border-gray-800"
+                            draggable="false"
                         />
                     </div>
                     <!-- Greeting Time icon and text -->
