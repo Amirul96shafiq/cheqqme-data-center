@@ -379,7 +379,7 @@
             alt="Chat with Arem"
             onclick="toggleChatbot()"
             title="Chat with Arem"
-            class="w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg opacity-80 hover:opacity-100"
+            class="w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg opacity-80 hover:opacity-100 bounce-bounce"
             draggable="false"
         >
         <!-- Close Icon (shown when chat is open) -->
