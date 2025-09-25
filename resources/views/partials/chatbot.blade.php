@@ -550,6 +550,7 @@ class TypingAnimation {
         this.isTyping = false;
         this.intervalId = null;
         this.isDestroyed = false;
+        this.usedIndices = new Set();
 
         // Initialize
         this.init();
@@ -580,10 +581,37 @@ class TypingAnimation {
             return (this.currentIndex + 1) % this.config.texts.length;
         }
 
-        let randomIndex;
-        do {
-            randomIndex = Math.floor(Math.random() * this.config.texts.length);
-        } while (randomIndex === this.currentIndex);
+        // If we haven't used all texts yet, pick from unused ones
+        if (!this.usedIndices) {
+            this.usedIndices = new Set();
+        }
+
+        // If all texts have been used, reset the used set
+        if (this.usedIndices.size >= this.config.texts.length) {
+            this.usedIndices.clear();
+        }
+
+        // Get available indices (excluding current and already used)
+        const availableIndices = [];
+        for (let i = 0; i < this.config.texts.length; i++) {
+            if (i !== this.currentIndex && !this.usedIndices.has(i)) {
+                availableIndices.push(i);
+            }
+        }
+
+        // If no available indices (shouldn't happen), fallback to random
+        if (availableIndices.length === 0) {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * this.config.texts.length);
+            } while (randomIndex === this.currentIndex);
+            return randomIndex;
+        }
+
+        // Pick a random index from available ones
+        const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+        this.usedIndices.add(randomIndex);
+        
         return randomIndex;
     }
 
@@ -686,6 +714,7 @@ class TypingAnimation {
     setTexts(texts) {
         this.config.texts = texts;
         this.currentIndex = 0;
+        this.usedIndices.clear();
     }
 
     setInterval(interval) {
