@@ -1,0 +1,88 @@
+/**
+ * Typing Animation Styles
+ * 
+ * Global CSS styles for the TypingAnimation JavaScript class.
+ * These styles provide the blinking cursor animation and text container styling.
+ * 
+ * @author CheQQme Data Center
+ * @version 1.0.0
+ */
+
+/* Typing cursor animation */
+.typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background-color: currentColor;
+    margin-left: 1px;
+    animation: typingBlink 1s infinite;
+}
+
+/* Blinking animation keyframes */
+@keyframes typingBlink {
+    0%,
+    50% {
+        opacity: 1;
+    }
+    51%,
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Typing text container */
+.typing-text {
+    display: inline-block;
+    min-height: 1em;
+}
+
+/* Optional: Custom cursor styles for different themes */
+.typing-cursor-primary {
+    background-color: var(--primary-color, #3b82f6);
+}
+
+.typing-cursor-secondary {
+    background-color: var(--secondary-color, #6b7280);
+}
+
+.typing-cursor-accent {
+    background-color: var(--accent-color, #f59e0b);
+}
+
+/* Optional: Different cursor sizes */
+.typing-cursor-sm {
+    width: 1px;
+    height: 0.8em;
+}
+
+.typing-cursor-lg {
+    width: 3px;
+    height: 1.2em;
+}
+
+/* Optional: Different blink speeds */
+.typing-cursor-fast {
+    animation: typingBlink 0.5s infinite;
+}
+
+.typing-cursor-slow {
+    animation: typingBlink 2s infinite;
+}
+
+/* Optional: Smooth cursor animation */
+.typing-cursor-smooth {
+    animation: typingBlinkSmooth 1s infinite;
+}
+
+@keyframes typingBlinkSmooth {
+    0%,
+    50% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+    51%,
+    100% {
+        opacity: 0.3;
+        transform: scaleY(0.8);
+    }
+}

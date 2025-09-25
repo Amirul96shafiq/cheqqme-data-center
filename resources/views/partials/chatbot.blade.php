@@ -366,29 +366,6 @@
         opacity: 0.7 !important;
     }
     
-    /* Typing animation styles */
-    .typing-cursor {
-        display: inline-block;
-        width: 2px;
-        height: 1em;
-        background-color: currentColor;
-        margin-left: 1px;
-        animation: typingBlink 1s infinite;
-    }
-    
-    @keyframes typingBlink {
-        0%, 50% {
-            opacity: 1;
-        }
-        51%, 100% {
-            opacity: 0;
-        }
-    }
-    
-    .typing-text {
-        display: inline-block;
-        min-height: 1em;
-    }
 
 </style>
 <!-- Chatbot Widget -->
@@ -511,6 +488,9 @@
 
 <!-- Emoji Picker Theme CSS -->
 @vite('resources/css/emoji-picker-theme.css')
+
+<!-- Typing Animation Styles -->
+@vite('resources/css/typing-animation.css')
 
 <!-- Typing Animation Script -->
 @vite('resources/js/typing-animation.js')
