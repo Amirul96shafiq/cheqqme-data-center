@@ -11,6 +11,7 @@
         thinking_message: "{{ __('chatbot.thinking_message') }}",
         error_message: "{{ __('chatbot.error_message') }}",
         clearing_message: "{{ __('chatbot.clearing_message') }}",
+        clear_confirmation_message: "{{ __('chatbot.clear_confirmation_message') }}",
     };
 </script>
 <style>
@@ -476,6 +477,7 @@
 <div id="emoji-picker-container" class="fixed hidden z-[11]">
     <emoji-picker id="emoji-picker"></emoji-picker>
 </div>
+
 
 <!-- Marked.js for Markdown rendering -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>

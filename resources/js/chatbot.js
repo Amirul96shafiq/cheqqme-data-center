@@ -731,6 +731,24 @@
 
     // Clear conversation
     async function clearConversation() {
+        // Show global confirmation modal
+        if (typeof window.showGlobalModal === "function") {
+            window.showGlobalModal("clearConversation");
+        } else {
+            // Fallback to browser confirm if global modal system is not available
+            const confirmed = confirm(
+                window.chatbot?.clear_confirmation_message ||
+                    "Are you sure you want to clear the conversation? This action cannot be undone."
+            );
+
+            if (confirmed) {
+                executeClearConversation();
+            }
+        }
+    }
+
+    // Execute actual clear conversation
+    async function executeClearConversation() {
         // Show immediate feedback to user
         const chatMessages = document.getElementById("chat-messages");
         if (chatMessages) {
@@ -1584,6 +1602,7 @@
     window.clearConversation = clearConversation;
     window.toggleEmojiPicker = toggleEmojiPicker;
     window.insertEmoji = insertEmoji;
+    window.executeClearConversation = executeClearConversation;
 
     // Persist open state on page unload to help with navigation
     window.addEventListener("beforeunload", function () {
@@ -1648,9 +1667,12 @@
         const emojiPickerContainer = document.getElementById(
             "emoji-picker-container"
         );
+        const globalModalContainer = document.getElementById(
+            "global-modal-container"
+        );
 
         // Only close if chatbot is currently open and click is outside the chatbot elements
-        // AND not inside the emoji picker
+        // AND not inside the emoji picker or global modals
         if (
             chatbotInterface &&
             chatbotInterface.style.display !== "none" &&
@@ -1658,7 +1680,8 @@
             !event.target.closest("#chatbot-interface") &&
             !event.target.closest("#chat-icon") &&
             !event.target.closest("#close-icon") &&
-            !event.target.closest("#emoji-picker-container")
+            !event.target.closest("#emoji-picker-container") &&
+            !event.target.closest("#global-modal-container")
         ) {
             toggleChatbot();
         }

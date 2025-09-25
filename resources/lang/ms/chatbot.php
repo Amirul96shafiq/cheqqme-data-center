@@ -10,6 +10,7 @@ return [
     'thinking_message' => 'Arem sedang berfikir...',
     'error_message' => 'Maaf, saya menghadapi ralat. Sila cuba lagi.',
     'clearing_message' => 'Menghapus perbualan...',
+    'clear_confirmation_message' => 'Adakah anda pasti ingin menghapus perbualan? Semua perbualan akan diset semula. (Anda masih boleh pulihkan melalui backup dari Sejarah Chatbot)',
 
     // Header
     'header' => [

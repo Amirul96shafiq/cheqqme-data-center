@@ -521,6 +521,71 @@
             </div>
         </div>
     </div>
+
+    <!-- Clear Conversation Modal -->
+    <div x-show="modals.clearConversation.show"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
+
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75"
+             @click="closeModal('clearConversation')"
+             aria-hidden="true"></div>
+
+        <!-- Modal -->
+        <div role="dialog"
+             aria-modal="true"
+             aria-labelledby="clear-conversation-heading"
+             @click.stop
+             class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
+
+            <!-- Close Button -->
+            <button type="button"
+                    @click="closeModal('clearConversation')"
+                    class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                    aria-label="Close">
+                <x-heroicon-o-x-mark class="w-6 h-6" />
+            </button>
+
+            <!-- Content -->
+            <div class="flex flex-col items-center text-center">
+                <div class="mb-5 flex items-center justify-center">
+                    <div class="p-3 rounded-full bg-danger-100 text-danger-600 dark:bg-danger-500/20 dark:text-danger-400">
+                        <x-heroicon-o-trash class="h-6 w-6" />
+                    </div>
+                </div>
+
+                <h2 id="clear-conversation-heading" class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ __('Clear Conversation') }}
+                </h2>
+
+                <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                    {{ __('chatbot.clear_confirmation_message') }}
+                </p>
+
+                <!-- Actions -->
+                <div class="mt-6 flex w-full items-stretch gap-3">
+                    <button type="button"
+                            @click="closeModal('clearConversation')"
+                            class="fi-btn flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-sm font-medium tracking-tight border border-gray-300 bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:border-gray-500 dark:focus:ring-primary-500/40 dark:focus:ring-offset-gray-900">
+                        {{ __('Cancel') }}
+                    </button>
+
+                    <button type="button"
+                            @click="confirmClearConversation()"
+                            class="fi-btn flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg px-5 h-10 text-sm font-medium tracking-tight bg-danger-600 text-white hover:bg-danger-500 focus:outline-none focus:ring-2 focus:ring-danger-500/40 focus:ring-offset-2 focus:ring-offset-white dark:bg-danger-600 dark:hover:bg-danger-500 dark:focus:ring-offset-gray-900">
+                        <x-heroicon-o-trash class="w-4 h-4" />
+                        {{ __('Clear') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script data-navigate-once>
@@ -533,7 +598,8 @@
         createBackup: { show: false },
         restoreBackup: { show: false, backupId: null },
         deleteBackup: { show: false, backupId: null },
-        downloadBackup: { show: false, backupId: null }
+        downloadBackup: { show: false, backupId: null },
+        clearConversation: { show: false }
     };
     
     // Show modal function
@@ -769,6 +835,14 @@
                     }
                 }
                 this.closeModal('downloadBackup');
+            },
+
+            confirmClearConversation() {
+                // Call the executeClearConversation function from chatbot.js
+                if (typeof window.executeClearConversation === 'function') {
+                    window.executeClearConversation();
+                }
+                this.closeModal('clearConversation');
             }
         }
     };
