@@ -73,7 +73,7 @@
                 <nav class="flex justify-end" aria-label="Whats new action button">
                     <x-tooltip position="bottom" :text="__('login.tooltips.comingSoon')">
                         <div class="inline-flex items-start cursor-not-allowed" aria-label="What's New (Coming Soon)">
-                            <img src="{{ asset('images/actions/whats-news.png') }}" alt="What's New" class="h-28 w-auto opacity-80 hover:opacity-100 transition-all duration-300 bounce-bounce whats-new-button" loading="eager">
+                            <img src="{{ asset('images/actions/whats-news.png') }}" alt="What's New" class="h-28 w-auto opacity-80 hover:opacity-100 transition-all duration-300 bounce-bounce whats-new-button" loading="eager" draggable="false">
                         </div>
                     </x-tooltip>
                 </nav>
@@ -122,7 +122,8 @@
                  src="{{ asset('images/hero-images/light/01.png') }}"
                  alt="CheQQme Data Center platform showcase"
                  class="w-full h-full object-cover object-center rounded-tl-3xl border-l-8 border-t-8 border-white/50 dark:border-white/10 transition-all duration-500"
-                 loading="eager">
+                 loading="eager"
+                 draggable="false">
         </div>
     </div>
 </div>
