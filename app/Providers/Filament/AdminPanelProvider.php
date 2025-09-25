@@ -37,8 +37,6 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Kenepa\ResourceLock\ResourceLockPlugin;
 // Resource Lock by Kenepa
 use Rmsramos\Activitylog\ActivitylogPlugin;
-// Banner bu Kenepa
-use Kenepa\Banner\BannerPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -361,8 +359,6 @@ class AdminPanelProvider extends PanelProvider
                     ->navigationSort(11),
 
                 ResourceLockPlugin::make(),
-                BannerPlugin::make()
-                    ->persistsBannersInDatabase()
             ]);
     }
 }
