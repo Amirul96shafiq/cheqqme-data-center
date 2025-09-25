@@ -22,8 +22,8 @@ return [
     'section' => [
         'profile_settings' => 'Profile Settings',
         'profile_settings_description' => 'Configure and customize your profile settings here',
-        'google_connection_settings' => 'Connection Settings',
-        'google_connection_settings_description' => 'Manage your account connections and integrations',
+        'connection_settings' => 'Connection Settings',
+        'connection_settings_description' => 'Manage your account connections and integrations',
         'password_settings' => 'Password Settings',
         'user_info' => 'User Information',
         'password_info' => 'Password Information',

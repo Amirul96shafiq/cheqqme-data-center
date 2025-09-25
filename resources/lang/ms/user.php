@@ -22,8 +22,8 @@ return [
     'section' => [
         'profile_settings' => 'Pengaturan Profil',
         'profile_settings_description' => 'Konfigurasikan dan personalisasi pengaturan profil anda di sini',
-        'google_connection_settings' => 'Pengaturan Sambungan',
-        'google_connection_settings_description' => 'Urus sambungan akaun dan integrasi anda',
+        'connection_settings' => 'Pengaturan Sambungan',
+        'connection_settings_description' => 'Urus sambungan akaun dan integrasi anda',
         'password_settings' => 'Pengaturan Kata Laluan',
         'user_info' => 'Maklumat Pengguna',
         'password_info' => 'Maklumat Kata Laluan',

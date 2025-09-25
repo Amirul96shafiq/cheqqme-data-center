@@ -224,8 +224,8 @@ class Profile extends EditProfile
                     ->collapsed()
                     ->columns(1),
 
-                Forms\Components\Section::make(__('user.section.google_connection_settings'))
-                    ->description(__('user.section.google_connection_settings_description'))
+                Forms\Components\Section::make(__('user.section.connection_settings'))
+                    ->description(__('user.section.connection_settings_description'))
                     ->schema([
                         // Google connection fieldset
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
