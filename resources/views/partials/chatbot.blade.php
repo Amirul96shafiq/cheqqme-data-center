@@ -403,7 +403,7 @@
             <div class="flex items-center space-x-3">
                 <!-- Arem AI Logo -->
                 <div class="flex-shrink-0">
-                    <img src="{{ asset('images/arem01.png') }}" alt="Arem AI" class="w-20 h-20">
+                    <img src="{{ asset('images/arem01.png') }}" alt="Arem AI" class="w-20 h-20" draggable="false">
                 </div>
                 <!-- Arem AI Text -->
                 <div>
