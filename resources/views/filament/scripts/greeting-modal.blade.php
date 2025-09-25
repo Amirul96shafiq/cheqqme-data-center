@@ -175,8 +175,20 @@ function openGreetingModal(forceOpen = false) {
                         </button>
                     </div>
                     
+                    <!-- Greeting Content -->
+                    <!-- Avatar -->
+                    <div class="flex justify-center items-center mb-4 mt-6 lg:mt-12">
+                        <x-filament::avatar
+                            :src="filament()->getUserAvatarUrl(auth()->user())"
+                            :alt="__('filament-panels::layout.avatar.alt', ['name' => filament()->getUserName(auth()->user())])"
+                            :circular="true"
+                            size="h-16 w-16"
+                            class="border-4 border-white dark:border-gray-800"
+                        />
+                    </div>
+                    <!-- Greeting Time icon and text -->
                     <div class="text-center mb-8">
-                        <div class="flex items-center justify-center space-x-2 mt-28 lg:mt-0">
+                        <div class="flex items-center justify-center space-x-2">
                             <svg class="w-4 h-4 ${iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 ${icon === 'sun' ? 
                                     `@svg('heroicon-o-sun', 'w-4 h-4')` :
@@ -187,9 +199,11 @@ function openGreetingModal(forceOpen = false) {
                                 ${greeting}
                             </p>
                         </div>
+                        <!-- Greeting Title (Name and "ready to get started?") -->
                         <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                             <span class="font-bold text-primary-600 dark:text-primary-400">{{ \App\Helpers\ClientFormatter::formatClientName(auth()->user()?->name) }}</span>{{ __('greetingmodal.content-title') }}
                         </h4>
+                        <!-- Greeting description -->
                         <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
                             {{ __('greetingmodal.content-message') }}
                         </p>
