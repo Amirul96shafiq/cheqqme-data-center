@@ -21,6 +21,11 @@ class User extends Authenticatable implements HasAvatar
     use HasApiTokens, HasFactory, HasLocks, LogsActivity, Notifiable, SoftDeletes;
 
     /**
+     * Store original updated_by value when preventing timestamp updates
+     */
+    protected static $originalUpdatedBy;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -138,6 +143,29 @@ class User extends Authenticatable implements HasAvatar
             }
         });
 
+        static::updating(function ($user) {
+            // If only online_status is being updated, prevent updated_at and updated_by from changing
+            $dirtyFields = $user->getDirty();
+            if (count($dirtyFields) === 1 && isset($dirtyFields['online_status'])) {
+                $user->timestamps = false;
+                // Store the original updated_by value in a static property
+                static::$originalUpdatedBy = $user->getOriginal('updated_by');
+            }
+        });
+
+        static::updated(function ($user) {
+            // Re-enable timestamps after the update
+            $user->timestamps = true;
+
+            // If we prevented timestamps, restore the original updated_by value
+            if (isset(static::$originalUpdatedBy)) {
+                // Use raw query to avoid triggering events
+                \DB::table('users')
+                    ->where('id', $user->id)
+                    ->update(['updated_by' => static::$originalUpdatedBy]);
+                static::$originalUpdatedBy = null;
+            }
+        });
     }
 
     public function getNameAttribute($value): string
