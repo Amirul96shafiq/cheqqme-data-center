@@ -117,6 +117,11 @@
                                 </div>
                             @endif
                         @endif
+                        
+                        <!-- Online Status Indicator -->
+                        <div class="relative bottom-3 -right-6 z-20">
+                            <x-online-status-indicator :user="$comment->user" size="sm" />
+                        </div>
                         <!-- Vertical connecting line that extends from avatar -->
                         <div class="absolute left-1/2 top-10 w-[0.5px] {{ auth()->id() === $comment->user_id ? 'bg-primary-500/80' : 'bg-gray-300/80 dark:bg-gray-600/80' }} {{ $comment->isDeleted() ? 'opacity-25' : '' }} transform -translate-x-1/2 z-0" style="height: calc(100% + 1.5rem);"></div>
                         </div>

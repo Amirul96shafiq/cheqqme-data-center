@@ -12,9 +12,14 @@
         @forelse($comments as $comment)
             <div class="flex space-x-2" data-comment-id="{{ $comment->id }}">
                 <!-- User Avatar -->
-                <div class="flex-shrink-0">
+                <div class="flex-shrink-0 relative">
                     <div class="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center text-white text-xs font-medium">
                         {{ substr($comment->user->username ?? 'U', 0, 1) }}
+                    </div>
+                    
+                    <!-- Online Status Indicator -->
+                    <div class="absolute -bottom-0.5 -right-0.5">
+                        <x-online-status-indicator :user="$comment->user" size="xs" />
                     </div>
                 </div>
                 
