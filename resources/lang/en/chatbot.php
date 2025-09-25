@@ -11,6 +11,7 @@ return [
     'error_message' => 'Sorry, I encountered an error. Please try again.',
     'clearing_message' => 'Clearing conversation...',
     'clear_confirmation_message' => 'Are you sure you want to clear the conversation? All conversation will be resetted. (You can still restore it via backup from Chatbot History)',
+    'clear_success_message' => 'Conversation cleared successfully!',
 
     // Header
     'header' => [

@@ -12,6 +12,7 @@
         error_message: "{{ __('chatbot.error_message') }}",
         clearing_message: "{{ __('chatbot.clearing_message') }}",
         clear_confirmation_message: "{{ __('chatbot.clear_confirmation_message') }}",
+        clear_success_message: "{{ __('chatbot.clear_success_message') }}",
     };
 </script>
 <style>
@@ -496,6 +497,9 @@
 
 <!-- Typing Animation Script -->
 @vite('resources/js/typing-animation.js')
+
+<!-- Custom Notification System -->
+@vite('resources/js/custom-notifications.js')
 
 <!-- Chatbot JavaScript -->
 @vite('resources/js/chatbot.js')

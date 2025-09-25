@@ -856,6 +856,17 @@
         // Reset conversation state (but keep loaded flags as they're set above)
         conversation = [];
 
+        // Show success notification using the custom notification system
+        if (typeof window.showSuccessNotification === "function") {
+            window.showSuccessNotification(
+                window.chatbot?.clear_success_message ||
+                    "Conversation cleared successfully!"
+            );
+        } else {
+            // Fallback if notification system is not loaded
+            console.log("Notification system not available");
+        }
+
         console.log(
             "Conversation cleared successfully. New ID:",
             conversationId
