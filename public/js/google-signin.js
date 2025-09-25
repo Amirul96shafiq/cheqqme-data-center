@@ -8,10 +8,10 @@ function openGoogleSignIn() {
     const popup = window.open(
         "/auth/google",
         "googleSignIn",
-        "width=460,height=800,scrollbars=yes,resizable=yes,top=" + 
-        Math.max(0, (screen.height - 800) / 2) + 
-        ",left=" + 
-        Math.max(0, (screen.width - 460) / 2)
+        "width=460,height=800,scrollbars=yes,resizable=yes,top=" +
+            Math.max(0, (screen.height - 800) / 2) +
+            ",left=" +
+            Math.max(0, (screen.width - 460) / 2)
     );
 
     if (!popup) {
@@ -58,14 +58,30 @@ function openGoogleSignIn() {
 }
 
 function showGoogleSignInError(message) {
-    showNotification(message, "error");
+    // Use custom notification system if available, fallback to basic notification
+    if (typeof showErrorNotification === "function") {
+        showErrorNotification(message);
+    } else if (typeof showNotification === "function") {
+        showNotification("error", message);
+    } else {
+        // Fallback to basic notification
+        showBasicNotification(message, "error");
+    }
 }
 
 function showGoogleSignInSuccess(message) {
-    showNotification(message, "success");
+    // Use custom notification system if available, fallback to basic notification
+    if (typeof showSuccessNotification === "function") {
+        showSuccessNotification(message);
+    } else if (typeof showNotification === "function") {
+        showNotification("success", message);
+    } else {
+        // Fallback to basic notification
+        showBasicNotification(message, "success");
+    }
 }
 
-function showNotification(message, type) {
+function showBasicNotification(message, type) {
     const notification = document.createElement("div");
     const bgColor = type === "error" ? "bg-red-500" : "bg-green-500";
     const duration = type === "error" ? 5000 : 3000;

@@ -223,6 +223,7 @@
         @filamentScripts(withCore: true)
 
         <!-- Custom Notification System -->
+        @vite('resources/js/custom-notifications.js')
         <script data-navigate-once>
             // Initialize global notification system
             window.customNotifications = [];

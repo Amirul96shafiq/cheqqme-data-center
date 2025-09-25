@@ -181,6 +181,7 @@
     {{-- Optimized JavaScript Files --}}
     <script src="{{ asset('js/theme-toggle.js') }}"></script>
     <script src="{{ asset('js/hero-slider.js') }}"></script>
+    @vite('resources/js/custom-notifications.js')
     <script src="{{ asset('js/google-signin.js') }}"></script>
     <script src="{{ asset('js/remember-me-toggle.js') }}"></script>
     <script src="{{ asset('js/auth-partial-nav.js') }}"></script>

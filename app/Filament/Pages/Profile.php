@@ -514,15 +514,27 @@ class Profile extends EditProfile
                 if (event.data.success) {
                     popup.close();
                     window.removeEventListener("message", messageListener);
+                    // Show success notification using custom notification system
+                    if (typeof showSuccessNotification === "function") {
+                        showSuccessNotification(event.data.message || "Google account connected successfully!");
+                    } else if (typeof showNotification === "function") {
+                        showNotification("success", event.data.message || "Google account connected successfully!");
+                    }
                     // Store success in session storage and redirect
                     sessionStorage.setItem("google_connection_success", "true");
                     window.location.href = "'.route('filament.admin.auth.profile').'";
                 } else if (event.data.success === false) {
                     popup.close();
                     window.removeEventListener("message", messageListener);
-                    // Show error notification instead of alert
-                    $wire.call("showGoogleConnectionError", event.data.message || "Failed to connect Google account");
-                }
+                    // Show error notification using custom notification system
+                    if (typeof showErrorNotification === "function") {
+                        showErrorNotification(event.data.message || "Failed to connect Google account");
+                    } else if (typeof showNotification === "function") {
+                        showNotification("error", event.data.message || "Failed to connect Google account");
+                    } else {
+                        // Fallback to Livewire notification
+                        $wire.call("showGoogleConnectionError", event.data.message || "Failed to connect Google account");
+                    }
             };
             
             window.addEventListener("message", messageListener);
