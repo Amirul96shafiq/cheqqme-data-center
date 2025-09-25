@@ -14,6 +14,13 @@ return [
     // Header
     'header' => [
         'subheading01' => 'Your brilliant assistant',
+        'subheading02' => 'Always ready to help',
+        'subheading03' => 'Your AI companion',
+        'subheading04' => 'Smart & efficient',
+        'subheading05' => 'Here for you 24/7',
+        'subheading06' => 'Your digital partner',
+        'subheading07' => 'Making work easier',
+        'subheading08' => 'Your productivity boost',
     ],
 
     // History page

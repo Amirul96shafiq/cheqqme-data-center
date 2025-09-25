@@ -366,6 +366,29 @@
         opacity: 0.7 !important;
     }
     
+    /* Typing animation styles */
+    .typing-cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1em;
+        background-color: currentColor;
+        margin-left: 1px;
+        animation: typingBlink 1s infinite;
+    }
+    
+    @keyframes typingBlink {
+        0%, 50% {
+            opacity: 1;
+        }
+        51%, 100% {
+            opacity: 0;
+        }
+    }
+    
+    .typing-text {
+        display: inline-block;
+        min-height: 1em;
+    }
 
 </style>
 <!-- Chatbot Widget -->
@@ -408,7 +431,7 @@
                 <!-- Arem AI Text -->
                 <div>
                     <h3 class="font-semibold text-base">Arem AI</h3>
-                    <p class="text-sm text-primary-900/80">{{ __('chatbot.header.subheading01') }}</p>
+                    <p class="text-sm text-primary-900/80 typing-text" id="subheading-text">{{ __('chatbot.header.subheading01') }}<span class="typing-cursor"></span></p>
                 </div>
             </div>
             <!-- Close and Clear Buttons -->
@@ -491,3 +514,150 @@
 
 <!-- Chatbot JavaScript -->
 @vite('resources/js/chatbot.js')
+
+<!-- Typing Animation Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Available subheadings in both languages
+    const subheadings = {
+        en: [
+            'Your brilliant assistant',
+            'Always ready to help',
+            'Your AI companion',
+            'Smart & efficient',
+            'Here for you 24/7',
+            'Your digital partner',
+            'Making work easier',
+            'Your productivity boost'
+        ],
+        ms: [
+            'Asisten AI terpandai & terbijaksana',
+            'Sentiasa sedia membantu',
+            'Rakan AI anda',
+            'Pintar & cekap',
+            'Di sini untuk anda 24/7',
+            'Rakan digital anda',
+            'Memudahkan kerja',
+            'Pendorong produktiviti anda'
+        ]
+    };
+
+    // Detect current language (you can modify this logic based on your app's language detection)
+    const currentLang = document.documentElement.lang || 'en';
+    const availableSubheadings = subheadings[currentLang] || subheadings.en;
+    
+    const subheadingElement = document.getElementById('subheading-text');
+    if (!subheadingElement) return;
+
+    let currentIndex = 0;
+    let isTyping = false;
+    let typingTimeout;
+
+    // Function to get a random subheading different from current
+    function getRandomSubheading() {
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * availableSubheadings.length);
+        } while (randomIndex === currentIndex && availableSubheadings.length > 1);
+        return randomIndex;
+    }
+
+    // Function to type text character by character
+    function typeText(text, callback) {
+        if (isTyping) return;
+        
+        isTyping = true;
+        let currentText = '';
+        let index = 0;
+        
+        // Remove cursor during typing
+        const cursor = subheadingElement.querySelector('.typing-cursor');
+        if (cursor) cursor.style.display = 'none';
+
+        function typeNextChar() {
+            if (index < text.length) {
+                currentText += text[index];
+                subheadingElement.innerHTML = currentText + '<span class="typing-cursor"></span>';
+                index++;
+                setTimeout(typeNextChar, 40 + Math.random() * 20); // Random typing speed
+            } else {
+                // Add cursor back after typing is complete
+                subheadingElement.innerHTML = currentText + '<span class="typing-cursor"></span>';
+                isTyping = false;
+                if (callback) callback();
+            }
+        }
+
+        typeNextChar();
+    }
+
+    // Function to erase text character by character
+    function eraseText(callback) {
+        if (isTyping) return;
+        
+        isTyping = true;
+        let currentText = subheadingElement.textContent;
+        
+        // Remove cursor during erasing
+        const cursor = subheadingElement.querySelector('.typing-cursor');
+        if (cursor) cursor.style.display = 'none';
+
+        function eraseNextChar() {
+            if (currentText.length > 0) {
+                currentText = currentText.slice(0, -1);
+                subheadingElement.innerHTML = currentText + '<span class="typing-cursor"></span>';
+                setTimeout(eraseNextChar, 20 + Math.random() * 10); // Faster erasing
+            } else {
+                // Add cursor back after erasing is complete
+                subheadingElement.innerHTML = '<span class="typing-cursor"></span>';
+                isTyping = false;
+                if (callback) callback();
+            }
+        }
+
+        eraseNextChar();
+    }
+
+    // Function to change to next subheading
+    function changeSubheading() {
+        if (isTyping) return;
+
+        const nextIndex = getRandomSubheading();
+        const nextText = availableSubheadings[nextIndex];
+        
+        // Get current text without cursor
+        const currentText = subheadingElement.textContent.trim();
+        
+        // Only change if the text is different
+        if (nextText !== currentText) {
+            eraseText(() => {
+                setTimeout(() => {
+                    typeText(nextText, () => {
+                        currentIndex = nextIndex;
+                    });
+                }, 200); // Small delay between erase and type
+            });
+        }
+    }
+
+    // Start the animation cycle
+    function startTypingAnimation() {
+        // Change subheading every 10 seconds
+        typingTimeout = setInterval(changeSubheading, 10000);
+    }
+
+    // Stop the animation (useful for cleanup)
+    function stopTypingAnimation() {
+        if (typingTimeout) {
+            clearInterval(typingTimeout);
+            typingTimeout = null;
+        }
+    }
+
+    // Initialize the animation
+    startTypingAnimation();
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', stopTypingAnimation);
+});
+</script>

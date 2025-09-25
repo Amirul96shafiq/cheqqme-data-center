@@ -14,6 +14,13 @@ return [
     // Header
     'header' => [
         'subheading01' => 'Asisten AI terpandai & terbijaksana',
+        'subheading02' => 'Sentiasa sedia membantu',
+        'subheading03' => 'Rakan AI anda',
+        'subheading04' => 'Pintar & cekap',
+        'subheading05' => 'Di sini untuk anda 24/7',
+        'subheading06' => 'Rakan digital anda',
+        'subheading07' => 'Memudahkan kerja',
+        'subheading08' => 'Pendorong produktiviti anda',
     ],
 
     // History page
