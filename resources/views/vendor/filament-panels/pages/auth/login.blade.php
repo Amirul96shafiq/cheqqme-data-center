@@ -43,7 +43,8 @@
                             src="{{ asset('logos/logo-dark.png') }}"
                             alt="{{ config('app.name') }} Logo"
                             class="h-32 w-auto transition-all duration-300"
-                            loading="eager">
+                            loading="eager"
+                            draggable="false">
                     </div>
                     
                     {{-- Sign In Header --}}

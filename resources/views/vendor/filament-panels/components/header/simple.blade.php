@@ -6,7 +6,7 @@
 
 <header class="fi-simple-header flex flex-col items-center">
     @if ($logo)
-        <x-filament-panels::logo class="mb-4" />
+        <x-filament-panels::logo class="mb-4" draggable="false" />
     @endif
 
     @if (filled($heading))

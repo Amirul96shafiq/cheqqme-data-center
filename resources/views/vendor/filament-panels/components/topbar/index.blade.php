@@ -50,10 +50,10 @@
             <div class="me-6 hidden lg:flex">
                 @if ($homeUrl = filament()->getHomeUrl())
                     <a {{ \Filament\Support\generate_href_html($homeUrl) }}>
-                        <x-filament-panels::logo />
+                        <x-filament-panels::logo draggable="false" />
                     </a>
                 @else
-                    <x-filament-panels::logo />
+                    <x-filament-panels::logo draggable="false" />
                 @endif
             </div>
 
