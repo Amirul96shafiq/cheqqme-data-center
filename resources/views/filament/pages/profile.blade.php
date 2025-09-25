@@ -25,14 +25,19 @@
         <div class="absolute inset-0 flex items-center justify-center">
             <div class="text-center text-white">
                 {{-- Avatar --}}
-                <div class="mb-4">
-                    <x-filament::avatar
-                        :src="$user ? filament()->getUserAvatarUrl($user) : null"
-                        alt="Avatar"
-                        size="w-32 h-32"
-                        class="mx-auto border-[6px] border-white/80"
-                    />
-                </div>
+        <div class="mb-4 relative inline-block">
+            <x-filament::avatar
+                :src="$user ? filament()->getUserAvatarUrl($user) : null"
+                alt="Avatar"
+                size="w-32 h-32"
+                class="mx-auto border-[6px] border-white/80"
+            />
+            
+            <!-- Online Status Indicator -->
+            <div class="absolute -bottom-1 right-2">
+                <x-online-status-indicator :user="$user" size="xl" />
+            </div>
+        </div>
 
                 {{-- User information --}}
                 <div class="space-y-1">

@@ -29,6 +29,7 @@ class User extends Authenticatable implements HasAvatar
         'avatar',
         'cover_image',
         'web_app_background_enabled',
+        'online_status',
         'username',
         'name',
         'email',
@@ -63,6 +64,7 @@ class User extends Authenticatable implements HasAvatar
                 'avatar',
                 'cover_image',
                 'web_app_background_enabled',
+                'online_status',
                 'email_verified_at',
                 'deleted_at',
                 'timezone',
@@ -87,7 +89,7 @@ class User extends Authenticatable implements HasAvatar
         // Don't log updates if no tracked fields actually changed
         if ($eventName === 'updated') {
             $dirtyFields = $this->getDirty();
-            $trackedFields = ['username', 'name', 'email', 'avatar', 'cover_image', 'web_app_background_enabled', 'email_verified_at', 'deleted_at', 'timezone', 'timezone_source', 'api_key_generated_at', 'city', 'country', 'location_updated_at', 'location_source', 'location_manually_set', 'timezone_manually_set'];
+            $trackedFields = ['username', 'name', 'email', 'avatar', 'cover_image', 'web_app_background_enabled', 'online_status', 'email_verified_at', 'deleted_at', 'timezone', 'timezone_source', 'api_key_generated_at', 'city', 'country', 'location_updated_at', 'location_source', 'location_manually_set', 'timezone_manually_set'];
 
             // Check if any tracked fields actually changed
             $trackedFieldsChanged = ! empty(array_intersect(array_keys($dirtyFields), $trackedFields));
@@ -334,5 +336,40 @@ class User extends Authenticatable implements HasAvatar
     public function chatbotBackups(): HasMany
     {
         return $this->hasMany(ChatbotBackup::class);
+    }
+
+    /**
+     * Get available online status options
+     */
+    public static function getOnlineStatusOptions(): array
+    {
+        return [
+            'online' => 'Online',
+            'away' => 'Away',
+            'dnd' => 'Do Not Disturb',
+            'invisible' => 'Invisible',
+        ];
+    }
+
+    /**
+     * Get the color for the online status indicator
+     */
+    public function getOnlineStatusColor(): string
+    {
+        return match ($this->online_status) {
+            'online' => 'success', // Teal/Green
+            'away' => 'primary', // Primary color
+            'dnd' => 'danger', // Red
+            'invisible' => 'gray', // Gray
+            default => 'gray',
+        };
+    }
+
+    /**
+     * Get the display name for the online status
+     */
+    public function getOnlineStatusDisplayName(): string
+    {
+        return self::getOnlineStatusOptions()[$this->online_status] ?? 'Unknown';
     }
 }

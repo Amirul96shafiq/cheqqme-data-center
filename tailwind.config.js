@@ -28,6 +28,10 @@ export default {
         "bg-red-600",
         "hover:bg-red-500",
         "text-red-600",
+        // Online status indicator colors
+        "bg-teal-500",
+        "bg-blue-500",
+        "bg-gray-400",
         // Badge dynamic classes
         "bg-primary-500",
         "bg-gray-400",

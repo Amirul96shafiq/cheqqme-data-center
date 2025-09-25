@@ -51,6 +51,8 @@ return [
         'username' => 'Username',
         'name' => 'Name',
         'email' => 'Email',
+        'online_status' => 'Online Status',
+        'online_status_helper' => 'Choose your online status that will be visible to other users',
         'change_password' => 'Change Password',
         'generate_password' => 'Generate Strong Password',
         'old_password' => 'Old Password',

@@ -65,6 +65,13 @@ class Profile extends EditProfile
 
                         $this->getEmailFormComponent()->label(__('user.form.email')),
 
+                        Forms\Components\Select::make('online_status')
+                            ->label(__('user.form.online_status'))
+                            ->options(\App\Models\User::getOnlineStatusOptions())
+                            ->default('online')
+                            ->helperText(__('user.form.online_status_helper'))
+                            ->searchable(),
+
                         Forms\Components\Fieldset::make(__('user.form.personalize'))
                             ->schema([
                                 Forms\Components\FileUpload::make('avatar')

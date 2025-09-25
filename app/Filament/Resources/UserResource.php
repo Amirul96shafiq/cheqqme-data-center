@@ -6,7 +6,6 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers\UserActivityLogRelationManager;
 use App\Helpers\TimezoneHelper;
 use App\Models\User;
-use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action;
@@ -19,11 +18,10 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
-use Filament\Support\Facades\FilamentColor;
 use Filament\Tables;
 use Filament\Tables\Actions\Action as TableAction;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -32,7 +30,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Unique;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
-use Spatie\Color\Rgb;
 
 class UserResource extends Resource
 {
@@ -240,31 +237,9 @@ class UserResource extends Resource
                         return [];
                     }),
 
-                ImageColumn::make('avatar')
+                ViewColumn::make('avatar')
                     ->label(__('user.table.avatar'))
-                    ->circular()
-                    ->defaultImageUrl(function ($record) {
-                        $name = str(Filament::getNameForDefaultAvatar($record))
-                            ->trim()
-                            ->explode(' ')
-                            ->map(fn (string $segment): string => filled($segment) ? mb_substr($segment, 0, 1) : '')
-                            ->join(' ');
-
-                        $backgroundColor = Rgb::fromString('rgb('.FilamentColor::getColors()['gray'][950].')')->toHex();
-
-                        return 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=FFFFFF&background='.str($backgroundColor)->after('#');
-                    })
-                    ->size(50)
-                    ->width(50)
-                    ->height(50)
-                    ->extraImgAttributes(function ($record) {
-                        $coverImageUrl = $record->getFilamentCoverImageUrl();
-                        if ($coverImageUrl) {
-                            return ['class' => 'border-4 border-white/50'];
-                        }
-
-                        return ['class' => 'border-0'];
-                    })
+                    ->view('filament.resources.user-resource.avatar-column')
                     ->alignCenter(),
 
                 TextColumn::make('username')
