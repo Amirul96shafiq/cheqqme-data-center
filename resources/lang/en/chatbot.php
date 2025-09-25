@@ -13,14 +13,10 @@ return [
 
     // Header
     'header' => [
-        'subheading01' => 'Your brilliant assistant',
-        'subheading02' => 'Always ready to help',
-        'subheading03' => 'Your AI companion',
-        'subheading04' => 'Smart & efficient',
-        'subheading05' => 'Here for you 24/7',
-        'subheading06' => 'Your digital partner',
-        'subheading07' => 'Making work easier',
-        'subheading08' => 'Your productivity boost',
+        'subheading01' => 'Your brilliant assistant~~',
+        'subheading02' => 'You look lonely, I can fix that.',
+        'subheading03' => 'Boy have you done lost your mind, cause I\'ll help you find it!',
+        'subheading04' => ' I love you. You love me. We\'re a happy family.',
     ],
 
     // History page
