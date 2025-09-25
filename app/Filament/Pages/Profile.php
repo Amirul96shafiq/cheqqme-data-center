@@ -499,7 +499,10 @@ class Profile extends EditProfile
             const popup = window.open(
                 "'.route('auth.google', ['source' => 'profile']).'",
                 "googleSignIn",
-                "width=460,height=800,scrollbars=yes,resizable=yes,top=100,left=100"
+                "width=460,height=800,scrollbars=yes,resizable=yes,top=" +
+                    Math.max(0, (screen.height - 800) / 2) +
+                    ",left=" +
+                    Math.max(0, (screen.width - 460) / 2)
             );
             
             if (!popup) {
@@ -511,7 +514,7 @@ class Profile extends EditProfile
             const messageListener = (event) => {
                 if (event.origin !== window.location.origin) return;
                 
-                if (event.data.success) {
+                if (event.data.success === true) {
                     popup.close();
                     window.removeEventListener("message", messageListener);
                     // Show success notification using custom notification system
@@ -535,9 +538,18 @@ class Profile extends EditProfile
                         // Fallback to Livewire notification
                         $wire.call("showGoogleConnectionError", event.data.message || "Failed to connect Google account");
                     }
+                }
             };
             
             window.addEventListener("message", messageListener);
+            
+            // Check if popup was closed manually
+            const checkClosed = setInterval(function () {
+                if (popup.closed) {
+                    clearInterval(checkClosed);
+                    window.removeEventListener("message", messageListener);
+                }
+            }, 1000);
         ');
     }
 }
