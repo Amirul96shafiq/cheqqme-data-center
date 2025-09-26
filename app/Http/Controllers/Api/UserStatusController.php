@@ -205,4 +205,45 @@ class UserStatusController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get multiple users' statuses
+     */
+    public function getMultipleUserStatuses(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        try {
+            $request->validate([
+                'user_ids' => 'required|array',
+                'user_ids.*' => 'integer|exists:users,id',
+            ]);
+
+            $userIds = $request->input('user_ids');
+            $statuses = [];
+
+            foreach ($userIds as $userId) {
+                $targetUser = \App\Models\User::find($userId);
+                if ($targetUser) {
+                    $statuses[$userId] = $targetUser->online_status ?? 'online';
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'statuses' => $statuses,
+                'count' => count($statuses),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get user statuses',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

@@ -54,6 +54,7 @@ class OnlineStatusIndicator extends Component
     public function getStatusClasses(): string
     {
         $status = $this->user->online_status ?? \App\Services\OnlineStatus\StatusManager::getDefaultStatus();
+
         return \App\Services\OnlineStatus\StatusDisplay::getStatusClasses($status, $this->size);
     }
 
@@ -63,6 +64,7 @@ class OnlineStatusIndicator extends Component
     public function getStatusDisplayName(): string
     {
         $status = $this->user->online_status ?? \App\Services\OnlineStatus\StatusManager::getDefaultStatus();
+
         return \App\Services\OnlineStatus\StatusDisplay::getDisplayName($status);
     }
 }

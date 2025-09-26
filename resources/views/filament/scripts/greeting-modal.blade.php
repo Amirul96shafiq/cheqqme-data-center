@@ -1172,29 +1172,108 @@ window.updateAllStatusIndicators = function(newStatus) {
          }
      });
      
-     // Update all static online status indicators
+     // Update only the current user's status indicator
      document.querySelectorAll('.online-status-indicator').forEach(indicator => {
-         const currentStatus = indicator.getAttribute('data-current-status');
-         if (currentStatus !== newStatus) {
-             // Update the data attribute
-             indicator.setAttribute('data-current-status', newStatus);
+         const isCurrentUser = indicator.getAttribute('data-is-current-user') === 'true';
+         
+         // Only update the current user's indicator
+         if (isCurrentUser) {
+             const currentStatus = indicator.getAttribute('data-current-status');
              
-             // Get status configuration from backend
-             const statusConfig = @json(\App\Services\OnlineStatus\StatusDisplay::getJavaScriptConfig());
-             
-             // Update the CSS classes using the same logic as the component
-             const sizeClasses = indicator.className.match(/w-\d+ h-\d+/);
-             const baseClasses = sizeClasses ? sizeClasses[0] : 'w-4 h-4';
-             const borderClasses = 'border-2 border-white dark:border-gray-900';
-             const roundedClasses = 'rounded-full';
-             
-             // Remove old status classes and add new ones
-             indicator.className = indicator.className.replace(/bg-\w+-\d+/g, '');
-             if (statusConfig[newStatus]) {
-                 indicator.className = `${baseClasses} ${borderClasses} ${roundedClasses} ${statusConfig[newStatus].color} online-status-indicator`;
+             if (currentStatus !== newStatus) {
+                 // Update the data attribute
+                 indicator.setAttribute('data-current-status', newStatus);
+                 
+                 // Get status configuration from backend
+                 const statusConfig = @json(\App\Services\OnlineStatus\StatusDisplay::getJavaScriptConfig());
+                 
+                 // Update the CSS classes using the same logic as the component
+                 const sizeClasses = indicator.className.match(/w-\d+ h-\d+/);
+                 const baseClasses = sizeClasses ? sizeClasses[0] : 'w-4 h-4';
+                 const borderClasses = 'border-2 border-white dark:border-gray-900';
+                 const roundedClasses = 'rounded-full';
+                 
+                 // Remove old status classes and add new ones
+                 indicator.className = indicator.className.replace(/bg-\w+-\d+/g, '');
+                 if (statusConfig[newStatus]) {
+                     indicator.className = `${baseClasses} ${borderClasses} ${roundedClasses} ${statusConfig[newStatus].color} online-status-indicator`;
+                 }
              }
          }
      });
+};
+
+// Function to sync all users' statuses from database
+window.syncAllUserStatuses = function() {
+    console.log('🔄 Syncing all user statuses from database...');
+    
+    // Get all user IDs from the page
+    const userIds = Array.from(document.querySelectorAll('.online-status-indicator'))
+        .map(indicator => indicator.getAttribute('data-user-id'))
+        .filter(id => id);
+    
+    if (userIds.length === 0) {
+        console.log('No user indicators found on page');
+        return;
+    }
+    
+    // Fetch current statuses from API
+    fetch('/api/user/statuses', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Authorization': 'Bearer ' + (window.chatbotApiToken || ''),
+        },
+        body: JSON.stringify({
+            user_ids: userIds
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.statuses) {
+            console.log('✅ Received status data:', data.statuses);
+            
+            // Update each indicator with its actual status
+            document.querySelectorAll('.online-status-indicator').forEach(indicator => {
+                const userId = indicator.getAttribute('data-user-id');
+                const isCurrentUser = indicator.getAttribute('data-is-current-user') === 'true';
+                const actualStatus = data.statuses[userId];
+                
+                if (actualStatus) {
+                    const currentStatus = indicator.getAttribute('data-current-status');
+                    
+                    if (currentStatus !== actualStatus) {
+                        console.log(`Updating user ${userId} status: ${currentStatus} -> ${actualStatus}`);
+                        
+                        // Update the data attribute
+                        indicator.setAttribute('data-current-status', actualStatus);
+                        
+                        // Get status configuration from backend
+                        const statusConfig = @json(\App\Services\OnlineStatus\StatusDisplay::getJavaScriptConfig());
+                        
+                        // Update the CSS classes using the same logic as the component
+                        const sizeClasses = indicator.className.match(/w-\d+ h-\d+/);
+                        const baseClasses = sizeClasses ? sizeClasses[0] : 'w-4 h-4';
+                        const borderClasses = 'border-2 border-white dark:border-gray-900';
+                        const roundedClasses = 'rounded-full';
+                        
+                         // Remove old status classes and add new ones
+                         indicator.className = indicator.className.replace(/bg-\w+-\d+/g, '');
+                         if (statusConfig[actualStatus]) {
+                             indicator.className = `${baseClasses} ${borderClasses} ${roundedClasses} ${statusConfig[actualStatus].color} online-status-indicator`;
+                         }
+                    }
+                }
+            });
+        } else {
+            console.log('❌ Failed to sync user statuses:', data.message);
+        }
+    })
+    .catch(error => {
+        console.log('❌ Error syncing user statuses:', error);
+    });
 };
 
 // User Activity Tracking for Online Status
@@ -1552,11 +1631,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Legacy activity tracking (will be replaced by presence channels)
     window.trackUserActivity();
     
-    // Check if user should be restored from auto-status on page load
-    checkAndRestoreFromAutoStatus();
-    
-    // Start auto-away timer on page load
-    window.startAutoAwayTimer();
+            // Check if user should be restored from auto-status on page load
+            checkAndRestoreFromAutoStatus();
+
+            // Start auto-away timer on page load
+            window.startAutoAwayTimer();
+            
+            // Sync all user statuses from database on page load
+            setTimeout(() => {
+                if (window.syncAllUserStatuses) {
+                    window.syncAllUserStatuses();
+                }
+            }, 1000); // 1 second delay to ensure page is fully loaded
 });
 
 // Make functions globally available

@@ -44,10 +44,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/user/status', [UserStatusController::class, 'updateStatus'])->name('api.user.status.update');
     Route::get('/user/online-users', [UserStatusController::class, 'getOnlineUsers'])->name('api.user.online-users');
 
-    // Auto-status endpoints
-    Route::post('/user/auto-away', [UserStatusController::class, 'setAwayDueToInactivity'])->name('api.user.auto-away');
-    Route::post('/user/auto-invisible', [UserStatusController::class, 'setInvisibleDueToTabBlur'])->name('api.user.auto-invisible');
-    Route::post('/user/restore-auto-status', [UserStatusController::class, 'restoreFromAutoStatus'])->name('api.user.restore-auto-status');
+            // Auto-status endpoints
+            Route::post('/user/auto-away', [UserStatusController::class, 'setAwayDueToInactivity'])->name('api.user.auto-away');
+            Route::post('/user/auto-invisible', [UserStatusController::class, 'setInvisibleDueToTabBlur'])->name('api.user.auto-invisible');
+            Route::post('/user/restore-auto-status', [UserStatusController::class, 'restoreFromAutoStatus'])->name('api.user.restore-auto-status');
+            
+            // Multiple user statuses endpoint
+            Route::post('/user/statuses', [UserStatusController::class, 'getMultipleUserStatuses'])->name('api.user.statuses');
 
     // Playwright MCP integration endpoints
     Route::prefix('playwright')->group(function () {
