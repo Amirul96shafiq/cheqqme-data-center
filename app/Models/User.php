@@ -371,12 +371,7 @@ class User extends Authenticatable implements HasAvatar
      */
     public static function getOnlineStatusOptions(): array
     {
-        return [
-            'online' => __('user.indicator.online_status_online'),
-            'away' => __('user.indicator.online_status_away'),
-            'dnd' => __('user.indicator.online_status_dnd'),
-            'invisible' => __('user.indicator.online_status_invisible'),
-        ];
+        return \App\Services\OnlineStatusManager::getStatusLabels();
     }
 
     /**
@@ -384,12 +379,7 @@ class User extends Authenticatable implements HasAvatar
      */
     public static function getOnlineStatusOptionsWithIcons(): array
     {
-        return [
-            'online' => '<div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-teal-500 border-2 border-white dark:border-gray-900"></div><span>'.__('user.indicator.online_status_online').'</span></div>',
-            'away' => '<div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-primary-500 border-2 border-white dark:border-gray-900"></div><span>'.__('user.indicator.online_status_away').'</span></div>',
-            'dnd' => '<div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-red-500 border-2 border-white dark:border-gray-900"></div><span>'.__('user.indicator.online_status_dnd').'</span></div>',
-            'invisible' => '<div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-gray-400 border-2 border-white dark:border-gray-900"></div><span>'.__('user.indicator.online_status_invisible').'</span></div>',
-        ];
+        return \App\Services\OnlineStatusManager::getStatusOptionsWithIcons();
     }
 
     /**
@@ -397,13 +387,7 @@ class User extends Authenticatable implements HasAvatar
      */
     public function getOnlineStatusColor(): string
     {
-        return match ($this->online_status) {
-            'online' => 'success', // Teal/Green
-            'away' => 'primary', // Primary color
-            'dnd' => 'danger', // Red
-            'invisible' => 'gray', // Gray
-            default => 'gray',
-        };
+        return \App\Services\OnlineStatusManager::getFilamentColor($this->online_status);
     }
 
     /**
@@ -411,6 +395,6 @@ class User extends Authenticatable implements HasAvatar
      */
     public function getOnlineStatusDisplayName(): string
     {
-        return self::getOnlineStatusOptions()[$this->online_status] ?? 'Unknown';
+        return \App\Services\OnlineStatusManager::getStatusLabel($this->online_status);
     }
 }

@@ -71,20 +71,20 @@ Route::get('/', function () {
 });
 
 // Test route for mentions
-Route::get('/test-mentions', function () {
-    $user = \App\Models\User::first();
-    $task = \App\Models\Task::first();
+// Route::get('/test-mentions', function () {
+//     $user = \App\Models\User::first();
+//     $task = \App\Models\Task::first();
 
-    if (! $user || ! $task) {
-        return response()->json([
-            'error' => 'No user or task found. Please ensure you have test data.',
-            'users_count' => \App\Models\User::count(),
-            'tasks_count' => \App\Models\Task::count(),
-        ]);
-    }
+//     if (! $user || ! $task) {
+//         return response()->json([
+//             'error' => 'No user or task found. Please ensure you have test data.',
+//             'users_count' => \App\Models\User::count(),
+//             'tasks_count' => \App\Models\Task::count(),
+//         ]);
+//     }
 
-    return view('test-mentions', compact('user', 'task'));
-});
+//     return view('test-mentions', compact('user', 'task'));
+// });
 
 // Login route
 Route::get('/login', function () {
@@ -214,7 +214,7 @@ Route::middleware('auth')->group(function () {
     // Online status update route
     Route::post('/admin/profile/update-online-status', function (Request $request) {
         $request->validate([
-            'online_status' => 'required|in:online,away,dnd,invisible',
+            'online_status' => \App\Services\OnlineStatusManager::getValidationRules(),
         ]);
 
         $user = auth()->user();

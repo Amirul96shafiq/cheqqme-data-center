@@ -54,14 +54,10 @@ class InteractiveOnlineStatusIndicator extends Component
     public function getStatusClasses(): string
     {
         $baseClasses = 'rounded-full border-2 border-white dark:border-gray-900';
+        $status = $this->user->online_status ?? \App\Services\OnlineStatusManager::getDefaultStatus();
+        $color = \App\Services\OnlineStatusManager::getStatusColor($status);
 
-        return match ($this->user->online_status ?? 'online') {
-            'online' => $baseClasses.' bg-teal-500', // Teal/Green
-            'away' => $baseClasses.' bg-primary-500', // Primary color
-            'dnd' => $baseClasses.' bg-red-500', // Danger/Red
-            'invisible' => $baseClasses.' bg-gray-400', // Gray
-            default => $baseClasses.' bg-gray-400',
-        };
+        return $baseClasses.' '.$color;
     }
 
     /**
@@ -69,13 +65,9 @@ class InteractiveOnlineStatusIndicator extends Component
      */
     public function getStatusDisplayName(): string
     {
-        return match ($this->user->online_status ?? 'online') {
-            'online' => 'Online',
-            'away' => 'Away',
-            'dnd' => 'Do Not Disturb',
-            'invisible' => 'Invisible',
-            default => 'Unknown',
-        };
+        $status = $this->user->online_status ?? \App\Services\OnlineStatusManager::getDefaultStatus();
+
+        return \App\Services\OnlineStatusManager::getStatusLabel($status);
     }
 
     /**
@@ -83,27 +75,6 @@ class InteractiveOnlineStatusIndicator extends Component
      */
     public function getStatusOptions(): array
     {
-        return [
-            'online' => [
-                'label' => __('user.indicator.online_status_online'),
-                'color' => 'bg-teal-500',
-                'icon' => 'heroicon-o-check-circle',
-            ],
-            'away' => [
-                'label' => __('user.indicator.online_status_away'),
-                'color' => 'bg-primary-500',
-                'icon' => 'heroicon-o-clock',
-            ],
-            'dnd' => [
-                'label' => __('user.indicator.online_status_dnd'),
-                'color' => 'bg-red-500',
-                'icon' => 'heroicon-o-x-circle',
-            ],
-            'invisible' => [
-                'label' => __('user.indicator.online_status_invisible'),
-                'color' => 'bg-gray-400',
-                'icon' => 'heroicon-o-eye-slash',
-            ],
-        ];
+        return \App\Services\OnlineStatusManager::getStatusConfig();
     }
 }

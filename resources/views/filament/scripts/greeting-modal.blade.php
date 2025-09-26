@@ -1116,35 +1116,26 @@ window.updateOnlineStatus = function(status) {
 
 // Function to update all status indicators on the page
 window.updateAllStatusIndicators = function(newStatus) {
-    // Update all status indicator buttons
-    document.querySelectorAll('[data-status-indicator]').forEach(indicator => {
-        // Remove old status classes
-        indicator.classList.remove('bg-teal-500', 'bg-primary-500', 'bg-red-500', 'bg-gray-400');
-        
-        // Add new status class
-        const statusClasses = {
-            'online': 'bg-teal-500',
-            'away': 'bg-primary-500',
-            'dnd': 'bg-red-500',
-            'invisible': 'bg-gray-400'
-        };
-        
-        if (statusClasses[newStatus]) {
-            indicator.classList.add(statusClasses[newStatus]);
-        }
-    });
-    
+     // Get status configuration from backend
+     const statusConfig = @json(\App\Services\OnlineStatusManager::getJavaScriptConfig());
+     
+     // Update all status indicator buttons
+     document.querySelectorAll('[data-status-indicator]').forEach(indicator => {
+         // Remove all possible status classes
+         Object.values(statusConfig).forEach(config => {
+             indicator.classList.remove(config.color);
+         });
+         
+         // Add new status class
+         if (statusConfig[newStatus]) {
+             indicator.classList.add(statusConfig[newStatus].color);
+         }
+     });
+     
      // Update all tooltip texts
      document.querySelectorAll('[data-tooltip-text]').forEach(tooltip => {
-         const statusLabels = {
-             'online': '{{ __("user.indicator.online_status_online") }}',
-             'away': '{{ __("user.indicator.online_status_away") }}',
-             'dnd': '{{ __("user.indicator.online_status_dnd") }}',
-             'invisible': '{{ __("user.indicator.online_status_invisible") }}'
-         };
-         
-         if (statusLabels[newStatus]) {
-             tooltip.setAttribute('data-tooltip-text', statusLabels[newStatus]);
+         if (statusConfig[newStatus]) {
+             tooltip.setAttribute('data-tooltip-text', statusConfig[newStatus].label);
          }
      });
 };

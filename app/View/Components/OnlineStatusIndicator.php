@@ -54,14 +54,10 @@ class OnlineStatusIndicator extends Component
     public function getStatusClasses(): string
     {
         $baseClasses = 'rounded-full border-2 border-white dark:border-gray-900';
+        $status = $this->user->online_status ?? \App\Services\OnlineStatusManager::getDefaultStatus();
+        $color = \App\Services\OnlineStatusManager::getStatusColor($status);
 
-        return match ($this->user->online_status ?? 'online') {
-            'online' => $baseClasses.' bg-teal-500', // Teal/Green
-            'away' => $baseClasses.' bg-primary-500', // Primary color
-            'dnd' => $baseClasses.' bg-red-500', // Danger/Red
-            'invisible' => $baseClasses.' bg-gray-400', // Gray
-            default => $baseClasses.' bg-gray-400',
-        };
+        return $baseClasses.' '.$color;
     }
 
     /**
@@ -69,12 +65,8 @@ class OnlineStatusIndicator extends Component
      */
     public function getStatusDisplayName(): string
     {
-        return match ($this->user->online_status ?? 'online') {
-            'online' => 'Online',
-            'away' => 'Away',
-            'dnd' => 'Do Not Disturb',
-            'invisible' => 'Invisible',
-            default => 'Away',
-        };
+        $status = $this->user->online_status ?? \App\Services\OnlineStatusManager::getDefaultStatus();
+
+        return \App\Services\OnlineStatusManager::getStatusLabel($status);
     }
 }

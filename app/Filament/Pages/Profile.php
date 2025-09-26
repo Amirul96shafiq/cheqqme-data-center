@@ -68,7 +68,7 @@ class Profile extends EditProfile
                         Forms\Components\Select::make('online_status')
                             ->label(__('user.form.online_status'))
                             ->options(\App\Models\User::getOnlineStatusOptionsWithIcons())
-                            ->default('online')
+                            ->default(\App\Services\OnlineStatusManager::getDefaultStatus())
                             ->helperText(__('user.form.online_status_helper'))
                             ->searchable()
                             ->allowHtml(),
