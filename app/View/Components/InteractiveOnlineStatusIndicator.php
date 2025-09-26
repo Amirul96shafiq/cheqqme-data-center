@@ -85,22 +85,22 @@ class InteractiveOnlineStatusIndicator extends Component
     {
         return [
             'online' => [
-                'label' => 'Online',
+                'label' => __('user.indicator.online_status_online'),
                 'color' => 'bg-teal-500',
                 'icon' => 'heroicon-o-check-circle',
             ],
             'away' => [
-                'label' => 'Away',
+                'label' => __('user.indicator.online_status_away'),
                 'color' => 'bg-primary-500',
                 'icon' => 'heroicon-o-clock',
             ],
             'dnd' => [
-                'label' => 'Do Not Disturb',
+                'label' => __('user.indicator.online_status_dnd'),
                 'color' => 'bg-red-500',
                 'icon' => 'heroicon-o-x-circle',
             ],
             'invisible' => [
-                'label' => 'Invisible',
+                'label' => __('user.indicator.online_status_invisible'),
                 'color' => 'bg-gray-400',
                 'icon' => 'heroicon-o-eye-slash',
             ],

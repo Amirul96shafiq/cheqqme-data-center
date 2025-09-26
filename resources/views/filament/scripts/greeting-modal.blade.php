@@ -1083,26 +1083,26 @@ window.updateOnlineStatus = function(status) {
             // Update all online status indicators on the page
             updateAllStatusIndicators(status);
             
-            // Show success notification
-            if (window.showNotification) {
-                window.showNotification('success', 'Status updated successfully');
-            }
+             // Show success notification
+             if (window.showNotification) {
+                 window.showNotification('success', '{{ __("user.indicator.online_status_updated") }}');
+             }
             
             // Auto-refresh page after notification appears
             setTimeout(() => {
                 window.location.reload();
             }, 1500); // 1.5 seconds delay to allow user to see the notification
-        } else {
-            // Show error notification
-            if (window.showNotification) {
-                window.showNotification('error', data.message || 'Failed to update status');
-            }
-        }
+         } else {
+             // Show error notification
+             if (window.showNotification) {
+                 window.showNotification('error', data.message || '{{ __("user.indicator.online_status_update_failed") }}');
+             }
+         }
     })
     .catch(error => {
         console.error('Error updating status:', error);
         if (window.showNotification) {
-            window.showNotification('error', 'Failed to update status');
+            window.showNotification('error', '{{ __("user.indicator.online_status_update_failed") }}');
         }
     })
     .finally(() => {
@@ -1134,19 +1134,19 @@ window.updateAllStatusIndicators = function(newStatus) {
         }
     });
     
-    // Update all tooltip texts
-    document.querySelectorAll('[data-tooltip-text]').forEach(tooltip => {
-        const statusLabels = {
-            'online': 'Online',
-            'away': 'Away',
-            'dnd': 'Do Not Disturb',
-            'invisible': 'Invisible'
-        };
-        
-        if (statusLabels[newStatus]) {
-            tooltip.setAttribute('data-tooltip-text', statusLabels[newStatus]);
-        }
-    });
+     // Update all tooltip texts
+     document.querySelectorAll('[data-tooltip-text]').forEach(tooltip => {
+         const statusLabels = {
+             'online': '{{ __("user.indicator.online_status_online") }}',
+             'away': '{{ __("user.indicator.online_status_away") }}',
+             'dnd': '{{ __("user.indicator.online_status_dnd") }}',
+             'invisible': '{{ __("user.indicator.online_status_invisible") }}'
+         };
+         
+         if (statusLabels[newStatus]) {
+             tooltip.setAttribute('data-tooltip-text', statusLabels[newStatus]);
+         }
+     });
 };
 
 // Make functions globally available

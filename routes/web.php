@@ -223,7 +223,7 @@ Route::middleware('auth')->group(function () {
 
         return response()->json([
             'success' => true,
-            'message' => 'Status updated successfully',
+            'message' => __('user.indicator.online_status_updated'),
             'status' => $user->online_status,
         ]);
     })->name('profile.update-online-status');

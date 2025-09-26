@@ -92,6 +92,19 @@ return [
         'microsoft_coming_soon' => 'Coming Soon',
     ],
 
+    // Online Status Indicator
+    'indicator' => [
+        // Online Status Options
+        'online_status_online' => 'Online',
+        'online_status_away' => 'Away',
+        'online_status_dnd' => 'Do Not Disturb',
+        'online_status_invisible' => 'Invisible',
+        
+        // Online Status Messages
+        'online_status_updated' => 'Status updated successfully. Refreshing the page...',
+        'online_status_update_failed' => 'Failed to update status',
+    ],
+
     // Table Columns
     'table' => [
         'id' => 'ID',

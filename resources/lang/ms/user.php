@@ -51,6 +51,8 @@ return [
         'username' => 'Gelaran Pengguna',
         'name' => 'Nama',
         'email' => 'Emel',
+        'online_status' => 'Status Dalam Talian',
+        'online_status_helper' => 'Pilih status dalam talian anda yang akan kelihatan kepada pengguna lain',
         'change_password' => 'Tukar Kata Laluan',
         'generate_password' => 'Hasilkan Kata Laluan Kuat',
         'old_password' => 'Kata Laluan Lama',
@@ -88,6 +90,19 @@ return [
         // Microsoft Connection
         'connect_microsoft' => 'Akan Datang',
         'microsoft_coming_soon' => 'Akan Datang',
+    ],
+
+    // Online Status Indicator
+    'indicator' => [
+        // Online Status Options
+        'online_status_online' => 'Dalam Talian',
+        'online_status_away' => 'Jauh',
+        'online_status_dnd' => 'Jangan Ganggu',
+        'online_status_invisible' => 'Tidak Kelihatan',
+        
+        // Online Status Messages
+        'online_status_updated' => 'Status berjaya dikemaskini. Memuat semula halaman...',
+        'online_status_update_failed' => 'Gagal mengemaskini status',
     ],
 
     // Table Columns
