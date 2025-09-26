@@ -230,10 +230,10 @@ Route::middleware('auth')->group(function () {
     // User activity tracking route
     Route::post('/admin/profile/track-activity', function (Request $request) {
         $user = auth()->user();
-        
+
         // Handle page refresh - set auto-away users back to online
         \App\Services\OnlineStatus\StatusController::handlePageRefresh($user);
-        
+
         // Update user activity and check status
         \App\Services\OnlineStatus\StatusController::checkAndUpdateStatus($user);
 
@@ -246,11 +246,11 @@ Route::middleware('auth')->group(function () {
     // Check auto-away status without recording activity
     Route::post('/admin/profile/check-auto-away', function (Request $request) {
         $user = auth()->user();
-        
+
         // Check if user should be away without recording activity
         $shouldBeAway = \App\Services\OnlineStatus\ActivityTracker::shouldBeAway($user);
         $isAutoManaged = \App\Services\OnlineStatus\StatusManager::isAutoManaged($user->online_status);
-        
+
         // Only auto-change if status is auto-managed and user should be away
         if ($shouldBeAway && $isAutoManaged && $user->online_status !== 'away') {
             $user->update(['online_status' => 'away']);
@@ -263,6 +263,22 @@ Route::middleware('auth')->group(function () {
             'status' => $user->fresh()->online_status,
         ]);
     })->name('profile.check-auto-away');
+
+    // Set user to invisible when browser tab is closed
+    Route::post('/admin/profile/set-invisible-on-close', function (Request $request) {
+        $user = auth()->user();
+
+        // Only set to invisible if user is currently online or away (auto-managed statuses)
+        if (in_array($user->online_status, ['online', 'away'])) {
+            \App\Services\OnlineStatus\StatusController::setInvisible($user);
+            \Illuminate\Support\Facades\Log::info("User {$user->id} set to invisible status on browser tab close");
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User status set to invisible',
+        ]);
+    })->name('profile.set-invisible-on-close');
 });
 
 // Weather API routes

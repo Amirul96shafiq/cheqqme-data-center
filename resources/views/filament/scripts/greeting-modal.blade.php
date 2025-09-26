@@ -1235,6 +1235,61 @@ document.addEventListener('DOMContentLoaded', function() {
     // Track activity when window gains focus
     window.addEventListener('focus', window.trackUserActivity);
     
+    // Handle browser tab close - set user to invisible
+    // Use a timeout-based approach to distinguish tab close from tab switch
+    let tabCloseTimeout = null;
+    let isTabClosing = false;
+    let hasSetInvisible = false;
+    let lastVisibilityChange = Date.now();
+    
+    // Track when tab becomes hidden
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            // Tab became hidden, start a timer
+            lastVisibilityChange = Date.now();
+            isTabClosing = true;
+            
+            // Clear any existing timeout
+            if (tabCloseTimeout) {
+                clearTimeout(tabCloseTimeout);
+            }
+            
+            // Set a timeout to check if tab is still hidden after a delay
+            // This helps distinguish between tab switch (quick) and tab close (permanent)
+            tabCloseTimeout = setTimeout(function() {
+                // If we're still here after 2 seconds, the tab is likely closed
+                if (document.hidden && !hasSetInvisible) {
+                    hasSetInvisible = true;
+                    
+                    // Use sendBeacon for reliable delivery during page unload
+                    if (navigator.sendBeacon) {
+                        const formData = new FormData();
+                        formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
+                        
+                        navigator.sendBeacon('/admin/profile/set-invisible-on-close', formData);
+                    } else {
+                        // Fallback for browsers that don't support sendBeacon
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('POST', '/admin/profile/set-invisible-on-close', false);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
+                        xhr.send('_token=' + encodeURIComponent(document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''));
+                    }
+                }
+            }, 2000); // 2 second delay
+        } else {
+            // Tab became visible again, cancel the timeout
+            if (tabCloseTimeout) {
+                clearTimeout(tabCloseTimeout);
+                tabCloseTimeout = null;
+            }
+            isTabClosing = false;
+            
+            // Track activity when tab becomes visible
+            window.trackUserActivity();
+        }
+    });
+    
     // Initial activity tracking
     window.trackUserActivity();
     
