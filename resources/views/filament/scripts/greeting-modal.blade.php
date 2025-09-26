@@ -1368,35 +1368,11 @@ document.addEventListener('DOMContentLoaded', function() {
             return; // Don't set to invisible on page refresh
         }
         
-        // Default behavior: set to invisible unless we're certain it's a refresh
-        if (!hasSetInvisible && !isPageRefreshing) {
-            persistentLog('Setting user to invisible status on beforeunload...');
-            hasSetInvisible = true;
-            
-            // Use sendBeacon for reliable delivery during page unload
-            if (navigator.sendBeacon) {
-                persistentLog('Using sendBeacon to set invisible status');
-                const formData = new FormData();
-                formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
-                
-                const success = navigator.sendBeacon('/admin/profile/set-invisible-on-close', formData);
-                persistentLog('sendBeacon result', { success: success });
-            } else {
-                persistentLog('Using XMLHttpRequest fallback to set invisible status');
-                // Fallback for browsers that don't support sendBeacon
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', '/admin/profile/set-invisible-on-close', false);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
-                xhr.send('_token=' + encodeURIComponent(document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''));
-                persistentLog('XMLHttpRequest completed', { status: xhr.status });
-            }
-        } else {
-            persistentLog('Not setting to invisible', {
-                hasSetInvisible: hasSetInvisible,
-                isPageRefreshing: isPageRefreshing
-            });
-        }
+        // Do not change status when navigating to another page
+        persistentLog('NOT setting to invisible on navigation - status preserved', {
+            hasSetInvisible: hasSetInvisible,
+            isPageRefreshing: isPageRefreshing
+        });
     });
     
     // Handle tab visibility changes for activity tracking
