@@ -270,8 +270,13 @@ Route::middleware('auth')->group(function () {
 
         // Only set to invisible if user is currently online or away (auto-managed statuses)
         if (in_array($user->online_status, ['online', 'away'])) {
-            \App\Services\OnlineStatus\StatusController::setInvisible($user);
-            \Illuminate\Support\Facades\Log::info("User {$user->id} set to invisible status on browser tab close");
+            // Set to invisible and clear last_status_change to mark as auto-invisible
+            $user->update([
+                'online_status' => 'invisible',
+                'last_status_change' => null,
+            ]);
+            \App\Services\OnlineStatus\ActivityTracker::clearActivity($user);
+            \Illuminate\Support\Facades\Log::info("User {$user->id} set to invisible status on browser tab close (auto-invisible)");
         }
 
         return response()->json([
@@ -279,6 +284,65 @@ Route::middleware('auth')->group(function () {
             'message' => 'User status set to invisible',
         ]);
     })->name('profile.set-invisible-on-close');
+
+    // Set user back to online when returning to tab
+    Route::post('/admin/profile/set-online-on-return', function (Request $request) {
+        $user = auth()->user();
+
+        // Only set to online if user is currently invisible AND it was set automatically (not manually)
+        if ($user->online_status === 'invisible') {
+            // Check if the user was set to invisible automatically (via tab close)
+            // We determine this by checking if there's a manual status change timestamp
+            $lastStatusChange = $user->last_status_change;
+
+            // If there's no manual status change, it was likely set by tab close (auto-invisible)
+            $wasAutoInvisible = ! $lastStatusChange;
+
+            if ($wasAutoInvisible) {
+                \App\Services\OnlineStatus\StatusController::setOnline($user);
+                \Illuminate\Support\Facades\Log::info("User {$user->id} set back to online status on tab return (was auto-invisible)");
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'User set back to online (was auto-invisible)',
+                    'status' => $user->fresh()->online_status,
+                    'wasAutoInvisible' => true,
+                ]);
+            } else {
+                \Illuminate\Support\Facades\Log::info("User {$user->id} status unchanged on tab return (was manually set to invisible)");
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'User status unchanged (was manually set to invisible)',
+                    'status' => $user->online_status,
+                    'wasAutoInvisible' => false,
+                    'reason' => 'manually_set_to_invisible',
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User status checked',
+            'status' => $user->online_status,
+            'wasAutoInvisible' => false,
+            'reason' => 'not_invisible',
+        ]);
+    })->name('profile.set-online-on-return');
+
+    // Debug endpoint to view tab close logs
+    Route::get('/admin/profile/debug-tab-logs', function () {
+        return response()->json([
+            'success' => true,
+            'message' => 'Check browser console for localStorage.getItem("tabCloseLogs") to view persistent logs',
+            'instructions' => [
+                '1. Open browser console (F12)',
+                '2. Run: localStorage.getItem("tabCloseLogs")',
+                '3. Copy the JSON and format it for readability',
+                '4. Look for beforeunload events and their data',
+            ],
+        ]);
+    })->name('profile.debug-tab-logs');
 });
 
 // Weather API routes

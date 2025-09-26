@@ -1236,62 +1236,213 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('focus', window.trackUserActivity);
     
     // Handle browser tab close - set user to invisible
-    // Use a timeout-based approach to distinguish tab close from tab switch
-    let tabCloseTimeout = null;
-    let isTabClosing = false;
+    // Use beforeunload event with immediate sendBeacon for reliable delivery
     let hasSetInvisible = false;
-    let lastVisibilityChange = Date.now();
+    let tabSwitchTimeout = null;
+    let isPageRefreshing = false;
+    let refreshKeyPressed = false;
     
-    // Track when tab becomes hidden
+    // Persistent logging function
+    function persistentLog(message, data = null) {
+        const timestamp = new Date().toISOString();
+        const logEntry = {
+            timestamp: timestamp,
+            message: message,
+            data: data
+        };
+        
+        // Store in localStorage for persistence
+        const logs = JSON.parse(localStorage.getItem('tabCloseLogs') || '[]');
+        logs.push(logEntry);
+        
+        // Keep only last 50 entries
+        if (logs.length > 50) {
+            logs.splice(0, logs.length - 50);
+        }
+        
+        localStorage.setItem('tabCloseLogs', JSON.stringify(logs));
+        
+        // Also log to console
+        console.log(`[${timestamp}] ${message}`, data || '');
+    }
+    
+    // Detect refresh key combinations
+    document.addEventListener('keydown', function(event) {
+        // Detect Ctrl+R, F5, Ctrl+F5, Ctrl+Shift+R
+        if ((event.ctrlKey && event.key === 'r') || 
+            event.key === 'F5' || 
+            (event.ctrlKey && event.key === 'F5') ||
+            (event.ctrlKey && event.shiftKey && event.key === 'R')) {
+            persistentLog('Refresh key combination detected', {
+                key: event.key,
+                ctrlKey: event.ctrlKey,
+                shiftKey: event.shiftKey
+            });
+            refreshKeyPressed = true;
+        }
+    });
+    
+    // Detect page refresh using performance API
+    // This is more reliable than keyboard detection
+    let isPageRefresh = false;
+    
+    // Check if this is a page refresh on page load
+    if (performance.navigation && performance.navigation.type === 1) {
+        isPageRefresh = true;
+        persistentLog('Page refresh detected on page load', {
+            navigationType: performance.navigation.type
+        });
+    }
+    
+    // Also check navigation entries
+    if (performance.getEntriesByType('navigation').length > 0) {
+        const navEntry = performance.getEntriesByType('navigation')[0];
+        if (navEntry.type === 'reload') {
+            isPageRefresh = true;
+            persistentLog('Page reload detected via navigation entry', {
+                type: navEntry.type
+            });
+        }
+    }
+    
+    // Detect page refresh vs tab close
+    window.addEventListener('beforeunload', function(event) {
+        persistentLog('beforeunload event fired', {
+            hasSetInvisible: hasSetInvisible,
+            isPageRefreshing: isPageRefreshing,
+            refreshKeyPressed: refreshKeyPressed
+        });
+        
+        // Check if this is a page refresh by looking at navigation type
+        const navigationType = performance.navigation?.type || performance.getEntriesByType('navigation')[0]?.type;
+        
+        // More detailed navigation type logging
+        const navigationData = {
+            navigationType: navigationType,
+            performanceNavigationType: performance.navigation?.type,
+            navigationEntryType: performance.getEntriesByType('navigation')[0]?.type
+        };
+        
+        persistentLog('Navigation data', navigationData);
+        
+        // Skip if we're certain it's a refresh
+        if (refreshKeyPressed || isPageRefresh) {
+            persistentLog('Page refresh detected - NOT setting to invisible', {
+                refreshKeyPressed: refreshKeyPressed,
+                isPageRefresh: isPageRefresh
+            });
+            isPageRefreshing = true;
+            return; // Don't set to invisible on page refresh
+        }
+        
+        // Default behavior: set to invisible unless we're certain it's a refresh
+        if (!hasSetInvisible && !isPageRefreshing) {
+            persistentLog('Setting user to invisible status on beforeunload...');
+            hasSetInvisible = true;
+            
+            // Use sendBeacon for reliable delivery during page unload
+            if (navigator.sendBeacon) {
+                persistentLog('Using sendBeacon to set invisible status');
+                const formData = new FormData();
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
+                
+                const success = navigator.sendBeacon('/admin/profile/set-invisible-on-close', formData);
+                persistentLog('sendBeacon result', { success: success });
+            } else {
+                persistentLog('Using XMLHttpRequest fallback to set invisible status');
+                // Fallback for browsers that don't support sendBeacon
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/admin/profile/set-invisible-on-close', false);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
+                xhr.send('_token=' + encodeURIComponent(document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''));
+                persistentLog('XMLHttpRequest completed', { status: xhr.status });
+            }
+        } else {
+            persistentLog('Not setting to invisible', {
+                hasSetInvisible: hasSetInvisible,
+                isPageRefreshing: isPageRefreshing
+            });
+        }
+    });
+    
+    // Handle tab visibility changes for activity tracking
     document.addEventListener('visibilitychange', function() {
+        persistentLog('Visibility changed', { hidden: document.hidden });
+        
         if (document.hidden) {
-            // Tab became hidden, start a timer
-            lastVisibilityChange = Date.now();
-            isTabClosing = true;
+            // Tab became hidden, start a short timer to detect tab switches
+            persistentLog('Tab became hidden, starting tab switch detection...');
             
             // Clear any existing timeout
-            if (tabCloseTimeout) {
-                clearTimeout(tabCloseTimeout);
+            if (tabSwitchTimeout) {
+                clearTimeout(tabSwitchTimeout);
             }
             
-            // Set a timeout to check if tab is still hidden after a delay
-            // This helps distinguish between tab switch (quick) and tab close (permanent)
-            tabCloseTimeout = setTimeout(function() {
-                // If we're still here after 2 seconds, the tab is likely closed
-                if (document.hidden && !hasSetInvisible) {
-                    hasSetInvisible = true;
-                    
-                    // Use sendBeacon for reliable delivery during page unload
-                    if (navigator.sendBeacon) {
-                        const formData = new FormData();
-                        formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
-                        
-                        navigator.sendBeacon('/admin/profile/set-invisible-on-close', formData);
-                    } else {
-                        // Fallback for browsers that don't support sendBeacon
-                        const xhr = new XMLHttpRequest();
-                        xhr.open('POST', '/admin/profile/set-invisible-on-close', false);
-                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                        xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
-                        xhr.send('_token=' + encodeURIComponent(document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''));
-                    }
-                }
-            }, 2000); // 2 second delay
+            // Set a short timeout to detect if this is just a tab switch
+            tabSwitchTimeout = setTimeout(function() {
+                persistentLog('Tab switch timeout fired - this was likely a tab switch, not close');
+                // Reset the flag so beforeunload can work on actual close
+                hasSetInvisible = false;
+            }, 500); // 500ms delay to detect tab switches
         } else {
             // Tab became visible again, cancel the timeout
-            if (tabCloseTimeout) {
-                clearTimeout(tabCloseTimeout);
-                tabCloseTimeout = null;
+            persistentLog('Tab became visible, cancelling tab switch timeout...');
+            if (tabSwitchTimeout) {
+                clearTimeout(tabSwitchTimeout);
+                tabSwitchTimeout = null;
             }
-            isTabClosing = false;
+            
+            // Reset the flag when tab becomes visible again
+            hasSetInvisible = false;
+            
+            // Check if user should be set back to online (if they were invisible due to tab close)
+            checkAndSetOnlineOnReturn();
             
             // Track activity when tab becomes visible
             window.trackUserActivity();
         }
     });
     
+    // Function to check and set user back to online when returning to tab
+    function checkAndSetOnlineOnReturn() {
+        persistentLog('Checking if user should be set back to online on tab return...');
+        
+        // Check if user should be set back to online (only if they were invisible due to tab close, not manual)
+        fetch('/admin/profile/set-online-on-return', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success && data.status) {
+                persistentLog('User set back to online status on tab return', { 
+                    status: data.status,
+                    wasAutoInvisible: data.wasAutoInvisible 
+                });
+                // Update status indicators if status changed
+                if (window.updateAllStatusIndicators) {
+                    window.updateAllStatusIndicators(data.status);
+                }
+            } else {
+                persistentLog('User status unchanged on tab return', { 
+                    status: data.status,
+                    reason: data.reason 
+                });
+            }
+        }).catch(error => {
+            persistentLog('Failed to set user back to online on tab return', { error: error.message });
+        });
+    }
+    
     // Initial activity tracking
     window.trackUserActivity();
+    
+    // Check if user should be set back to online on page load
+    checkAndSetOnlineOnReturn();
     
     // Start auto-away timer on page load
     window.startAutoAwayTimer();
