@@ -14,7 +14,7 @@ use Spatie\Activitylog\Models\Activity;
 class ActivityTracker
 {
     // Configuration constants
-    public const AWAY_TIMEOUT_MINUTES = 0.5;
+    public const AWAY_TIMEOUT_MINUTES = 5; // 5 minutes for production
 
     public const ACTIVITY_CACHE_PREFIX = 'user_activity_';
 

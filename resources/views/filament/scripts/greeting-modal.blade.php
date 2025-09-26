@@ -1188,7 +1188,7 @@ window.startAutoAwayTimer = function() {
         clearTimeout(window.autoAwayTimeout);
     }
     
-    // Set timer for 30 seconds (0.5 minutes) to match backend
+    // Set timer for 5 minutes to match backend
     window.autoAwayTimeout = setTimeout(() => {
         // Check if user should go away (no recent activity)
         fetch('/admin/profile/check-auto-away', {
@@ -1215,7 +1215,7 @@ window.startAutoAwayTimer = function() {
             // Restart timer on error
             window.startAutoAwayTimer();
         });
-    }, 30000); // 30 seconds = 0.5 minutes
+    }, 300000); // 5 minutes = 300 seconds
 };
 
 // Track user activity on various events
