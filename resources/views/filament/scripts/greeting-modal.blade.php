@@ -1055,8 +1055,9 @@ function setupGreetingBackgroundImage() {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateBackgroundImage);
 }
 
-// Global function to update online status via AJAX
+// Global function to update online status via AJAX with presence channels
 window.updateOnlineStatus = function(status) {
+    console.log('updateOnlineStatus called with status:', status);
     // Show loading state
     const button = event.target.closest('button');
     if (button) {
@@ -1065,53 +1066,85 @@ window.updateOnlineStatus = function(status) {
         button.disabled = true;
     }
     
-    // Make AJAX request
-    fetch('/admin/profile/update-online-status', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify({
-            online_status: status
+    // Use presence status manager if available, otherwise fallback to AJAX
+    if (window.presenceStatusManager && window.presenceStatusManager.isInitialized) {
+        // Use presence channel for real-time updates
+        window.presenceStatusManager.updateUserStatus(status)
+            .then(() => {
+                // Update all online status indicators on the page
+                updateAllStatusIndicators(status);
+                
+                // Show success notification
+                if (window.showNotification) {
+                    window.showNotification('success', '{{ __("user.indicator.online_status_updated") }}');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating status via presence channel:', error);
+                if (window.showNotification) {
+                    window.showNotification('error', '{{ __("user.indicator.online_status_update_failed") }}');
+                }
+            })
+            .finally(() => {
+                // Restore button state
+                if (button) {
+                    button.disabled = false;
+                }
+            });
+    } else {
+        // Fallback to AJAX request
+        console.log('Making AJAX request to update status:', status);
+        fetch('/admin/profile/update-online-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                online_status: status
+            })
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update all online status indicators on the page
-            updateAllStatusIndicators(status);
-            
-             // Show success notification
-             if (window.showNotification) {
-                 window.showNotification('success', '{{ __("user.indicator.online_status_updated") }}');
+        .then(response => {
+            console.log('AJAX response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('AJAX response data:', data);
+            if (data.success) {
+                // Update all online status indicators on the page
+                updateAllStatusIndicators(status);
+                
+                 // Show success notification
+                 if (window.showNotification) {
+                     window.showNotification('success', '{{ __("user.indicator.online_status_updated") }}');
+                 }
+                
+                // Auto-refresh page after notification appears
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500); // 1.5 seconds delay to allow user to see the notification
+             } else {
+                 // Show error notification
+                 if (window.showNotification) {
+                     window.showNotification('error', data.message || '{{ __("user.indicator.online_status_update_failed") }}');
+                 }
              }
-            
-            // Auto-refresh page after notification appears
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500); // 1.5 seconds delay to allow user to see the notification
-         } else {
-             // Show error notification
-             if (window.showNotification) {
-                 window.showNotification('error', data.message || '{{ __("user.indicator.online_status_update_failed") }}');
-             }
-         }
-    })
-    .catch(error => {
-        console.error('Error updating status:', error);
-        if (window.showNotification) {
-            window.showNotification('error', '{{ __("user.indicator.online_status_update_failed") }}');
-        }
-    })
-    .finally(() => {
-        // Restore button state
-        if (button) {
-            button.disabled = false;
-            // The status indicator will be updated by updateAllStatusIndicators
-        }
-    });
+        })
+        .catch(error => {
+            console.error('Error updating status:', error);
+            if (window.showNotification) {
+                window.showNotification('error', '{{ __("user.indicator.online_status_update_failed") }}');
+            }
+        })
+        .finally(() => {
+            // Restore button state
+            if (button) {
+                button.disabled = false;
+                // The status indicator will be updated by updateAllStatusIndicators
+            }
+        });
+    }
 };
 
 // Function to update all status indicators on the page
@@ -1438,13 +1471,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Initial activity tracking
+    // Initialize presence status manager for real-time online status
+    if (window.presenceStatusManager) {
+        window.presenceStatusManager.init();
+    }
+    
+    // Legacy activity tracking (will be replaced by presence channels)
     window.trackUserActivity();
     
     // Check if user should be set back to online on page load
     checkAndSetOnlineOnReturn();
     
-    // Start auto-away timer on page load
+    // Start auto-away timer on page load (will be replaced by presence channels)
     window.startAutoAwayTimer();
 });
 

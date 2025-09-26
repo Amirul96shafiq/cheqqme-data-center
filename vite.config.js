@@ -14,6 +14,7 @@ export default defineConfig({
                 "resources/js/document-upload-handler.js",
                 "resources/css/emoji-picker-theme.css",
                 "resources/css/task-comments.css",
+                "resources/js/presence-status.js",
             ],
             refresh: true,
         }),

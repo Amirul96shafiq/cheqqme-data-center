@@ -27,7 +27,12 @@
                   @foreach($getStatusOptions() as $status => $option)
                       <button 
                           @click="
-                              updateOnlineStatus('{{ $status }}');
+                              console.log('Dropdown clicked for status:', '{{ $status }}');
+                              if (typeof window.updateOnlineStatus === 'function') {
+                                  window.updateOnlineStatus('{{ $status }}');
+                              } else {
+                                  console.error('updateOnlineStatus function not found');
+                              }
                               open = false;
                           "
                           class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 {{ $user->online_status === $status ? 'bg-primary-50 dark:bg-primary-900/10' : '' }}"
@@ -77,7 +82,12 @@
                 @foreach($getStatusOptions() as $status => $option)
                     <button 
                         @click="
-                            updateOnlineStatus('{{ $status }}');
+                            console.log('Dropdown clicked for status:', '{{ $status }}');
+                            if (typeof window.updateOnlineStatus === 'function') {
+                                window.updateOnlineStatus('{{ $status }}');
+                            } else {
+                                console.error('updateOnlineStatus function not found');
+                            }
                             open = false;
                         "
                         class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 {{ $user->online_status === $status ? 'bg-primary-50 dark:bg-primary-900/10' : '' }}"

@@ -427,8 +427,17 @@ class Profile extends EditProfile
 
     public function afterSave(): void
     {
+        // Check if online status was changed and trigger presence update
+        $formData = $this->form->getState();
+        $user = auth()->user();
+
+        if (isset($formData['online_status']) && $user->online_status !== $formData['online_status']) {
+            // Use presence status manager to handle the status change
+            \App\Services\OnlineStatus\PresenceStatusManager::handleManualChange($user, $formData['online_status']);
+        }
+
         // If user changed the password, log them out
-        if (filled($this->form->getState()['password'] ?? null)) {
+        if (filled($formData['password'] ?? null)) {
             Notification::make()
                 ->title(__('user.form.saved_password'))
                 ->body(__('user.form.saved_password_body'))

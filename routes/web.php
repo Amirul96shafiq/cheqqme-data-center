@@ -211,14 +211,14 @@ Route::middleware('auth')->group(function () {
         return response()->json(['count' => $count]);
     })->name('action-board.assigned-active-count');
 
-    // Online status update route
+    // Online status update route (now uses presence channels)
     Route::post('/admin/profile/update-online-status', function (Request $request) {
         $request->validate([
             'online_status' => \App\Services\OnlineStatus\StatusManager::getValidationRules(),
         ]);
 
         $user = auth()->user();
-        \App\Services\OnlineStatus\StatusController::handleManualChange($user, $request->online_status);
+        \App\Services\OnlineStatus\PresenceStatusManager::handleManualChange($user, $request->online_status);
 
         return response()->json([
             'success' => true,
@@ -227,15 +227,21 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('profile.update-online-status');
 
-    // User activity tracking route
+    // User activity tracking route (now uses presence channels)
     Route::post('/admin/profile/track-activity', function (Request $request) {
         $user = auth()->user();
 
-        // Handle page refresh - set auto-away users back to online
-        \App\Services\OnlineStatus\StatusController::handlePageRefresh($user);
-
-        // Update user activity and check status
-        \App\Services\OnlineStatus\StatusController::checkAndUpdateStatus($user);
+        // With presence channels, we don't need complex activity tracking
+        // The presence channel automatically handles join/leave events
+        // We only need to ensure the user is marked as online when they're active
+        if ($user->online_status !== 'invisible') {
+            // Only set to online if user is currently away (auto-away)
+            // Don't override manual status changes (dnd, away, etc.)
+            if ($user->online_status === 'away' && ! $user->last_status_change) {
+                // This is an auto-away user, set them back to online
+                \App\Services\OnlineStatus\PresenceStatusManager::setOnline($user);
+            }
+        }
 
         return response()->json([
             'success' => true,
@@ -299,7 +305,7 @@ Route::middleware('auth')->group(function () {
             $wasAutoInvisible = ! $lastStatusChange;
 
             if ($wasAutoInvisible) {
-                \App\Services\OnlineStatus\StatusController::setOnline($user);
+                \App\Services\OnlineStatus\PresenceStatusManager::setOnline($user);
                 \Illuminate\Support\Facades\Log::info("User {$user->id} set back to online status on tab return (was auto-invisible)");
 
                 return response()->json([

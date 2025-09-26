@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\PlaywrightMcpController;
 use App\Http\Controllers\Api\UserController as ApiUserController;
+use App\Http\Controllers\Api\UserStatusController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommentReactionController;
@@ -37,6 +38,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/trello-boards', [TrelloBoardController::class, 'index'])->name('api.trello-boards');
     Route::get('/openai-logs', [OpenaiLogController::class, 'apiIndex'])->name('api.openai.logs');
+
+    // User status endpoints
+    Route::get('/user/status', [UserStatusController::class, 'getStatus'])->name('api.user.status');
+    Route::post('/user/status', [UserStatusController::class, 'updateStatus'])->name('api.user.status.update');
+    Route::get('/user/online-users', [UserStatusController::class, 'getOnlineUsers'])->name('api.user.online-users');
 
     // Playwright MCP integration endpoints
     Route::prefix('playwright')->group(function () {
