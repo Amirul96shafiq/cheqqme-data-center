@@ -1171,6 +1171,30 @@ window.updateAllStatusIndicators = function(newStatus) {
              tooltip.setAttribute('data-tooltip-text', statusConfig[newStatus].label);
          }
      });
+     
+     // Update all static online status indicators
+     document.querySelectorAll('.online-status-indicator').forEach(indicator => {
+         const currentStatus = indicator.getAttribute('data-current-status');
+         if (currentStatus !== newStatus) {
+             // Update the data attribute
+             indicator.setAttribute('data-current-status', newStatus);
+             
+             // Get status configuration from backend
+             const statusConfig = @json(\App\Services\OnlineStatus\StatusDisplay::getJavaScriptConfig());
+             
+             // Update the CSS classes using the same logic as the component
+             const sizeClasses = indicator.className.match(/w-\d+ h-\d+/);
+             const baseClasses = sizeClasses ? sizeClasses[0] : 'w-4 h-4';
+             const borderClasses = 'border-2 border-white dark:border-gray-900';
+             const roundedClasses = 'rounded-full';
+             
+             // Remove old status classes and add new ones
+             indicator.className = indicator.className.replace(/bg-\w+-\d+/g, '');
+             if (statusConfig[newStatus]) {
+                 indicator.className = `${baseClasses} ${borderClasses} ${roundedClasses} ${statusConfig[newStatus].color} online-status-indicator`;
+             }
+         }
+     });
 };
 
 // User Activity Tracking for Online Status
