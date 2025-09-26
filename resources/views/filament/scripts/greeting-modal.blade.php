@@ -188,7 +188,7 @@ function openGreetingModal(forceOpen = false) {
                         />
                         <!-- Online Status Indicator -->
                         <div class="relative -bottom-4 right-4">
-                            <x-online-status-indicator :user="auth()->user()" size="md" />
+                            <x-interactive-online-status-indicator :user="auth()->user()" size="md" />
                         </div>
                     </div>
                     <!-- Greeting Time icon and text -->
@@ -1054,6 +1054,100 @@ function setupGreetingBackgroundImage() {
     // Listen for system theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateBackgroundImage);
 }
+
+// Global function to update online status via AJAX
+window.updateOnlineStatus = function(status) {
+    // Show loading state
+    const button = event.target.closest('button');
+    if (button) {
+        const originalContent = button.innerHTML;
+        button.innerHTML = '<div class="w-4 h-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>';
+        button.disabled = true;
+    }
+    
+    // Make AJAX request
+    fetch('/admin/profile/update-online-status', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+            online_status: status
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update all online status indicators on the page
+            updateAllStatusIndicators(status);
+            
+            // Show success notification
+            if (window.showNotification) {
+                window.showNotification('success', 'Status updated successfully');
+            }
+            
+            // Auto-refresh page after notification appears
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500); // 1.5 seconds delay to allow user to see the notification
+        } else {
+            // Show error notification
+            if (window.showNotification) {
+                window.showNotification('error', data.message || 'Failed to update status');
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error updating status:', error);
+        if (window.showNotification) {
+            window.showNotification('error', 'Failed to update status');
+        }
+    })
+    .finally(() => {
+        // Restore button state
+        if (button) {
+            button.disabled = false;
+            // The status indicator will be updated by updateAllStatusIndicators
+        }
+    });
+};
+
+// Function to update all status indicators on the page
+window.updateAllStatusIndicators = function(newStatus) {
+    // Update all status indicator buttons
+    document.querySelectorAll('[data-status-indicator]').forEach(indicator => {
+        // Remove old status classes
+        indicator.classList.remove('bg-teal-500', 'bg-primary-500', 'bg-red-500', 'bg-gray-400');
+        
+        // Add new status class
+        const statusClasses = {
+            'online': 'bg-teal-500',
+            'away': 'bg-primary-500',
+            'dnd': 'bg-red-500',
+            'invisible': 'bg-gray-400'
+        };
+        
+        if (statusClasses[newStatus]) {
+            indicator.classList.add(statusClasses[newStatus]);
+        }
+    });
+    
+    // Update all tooltip texts
+    document.querySelectorAll('[data-tooltip-text]').forEach(tooltip => {
+        const statusLabels = {
+            'online': 'Online',
+            'away': 'Away',
+            'dnd': 'Do Not Disturb',
+            'invisible': 'Invisible'
+        };
+        
+        if (statusLabels[newStatus]) {
+            tooltip.setAttribute('data-tooltip-text', statusLabels[newStatus]);
+        }
+    });
+};
 
 // Make functions globally available
 window.openGreetingModal = openGreetingModal;

@@ -210,6 +210,23 @@ Route::middleware('auth')->group(function () {
 
         return response()->json(['count' => $count]);
     })->name('action-board.assigned-active-count');
+
+    // Online status update route
+    Route::post('/admin/profile/update-online-status', function (Request $request) {
+        $request->validate([
+            'online_status' => 'required|in:online,away,dnd,invisible',
+        ]);
+
+        $user = auth()->user();
+        $user->online_status = $request->online_status;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status updated successfully',
+            'status' => $user->online_status,
+        ]);
+    })->name('profile.update-online-status');
 });
 
 // Weather API routes
