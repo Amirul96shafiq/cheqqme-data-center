@@ -4,7 +4,7 @@ return [
     'title' => 'Sign in',
 
     'actions' => [
-        'login' => 'Login',
+        'login' => 'Sign In',
         'forgotPassword' => 'Forgot Password?',
         'googleSignin' => 'Sign in with Google',
         'microsoftSignin' => 'Sign in with Microsoft',

@@ -38,7 +38,7 @@
                 <div id="auth-form-root" class="w-full max-w-md">
 
                     {{-- Logo Overlay --}}
-                    <div class="flex justify-center mb-20">
+                    <div class="flex justify-center mb-6">
                         <img id="forgotPasswordLogo"
                             src="{{ asset('logos/logo-dark.png') }}"
                             alt="{{ config('app.name') }} Logo"
@@ -46,6 +46,13 @@
                             loading="eager"
                             draggable="false">
                     </div>
+
+                    {{-- Forgot Password Header --}}
+                    <header class="mb-20">
+                        <h1 class="text-2xl font-bold text-gray-800 dark:text-white text-center">
+                            {{ __('auth.forgot_password')}}
+                        </h1>
+                    </header>
                     
                     {{-- Forgot Password Form --}}
                     <form method="POST" action="{{ route('password.email') }}" class="space-y-6">

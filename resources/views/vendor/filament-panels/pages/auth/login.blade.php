@@ -38,7 +38,7 @@
                 <div id="auth-form-root" class="w-full max-w-md login-form-container">
 
                     {{-- Logo Overlay --}}
-                    <div class="flex justify-center mb-20">
+                    <div class="flex justify-center mb-6">
                         <img id="loginLogo"
                             src="{{ asset('logos/logo-dark.png') }}"
                             alt="{{ config('app.name') }} Logo"
@@ -48,11 +48,11 @@
                     </div>
                     
                     {{-- Sign In Header --}}
-                    {{-- <header class="mb-6">
+                    <header class="mb-20">
                         <h1 class="text-2xl font-bold text-gray-800 dark:text-white text-center">
                             {{ __('login.title')}}
                         </h1>
-                    </header> --}}
+                    </header>
 
 					{{-- Success Notification (e.g., after password reset) --}}
 					@if (session('status'))
