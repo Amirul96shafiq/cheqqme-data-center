@@ -14,9 +14,12 @@ use Spatie\Activitylog\Models\Activity;
 class ActivityTracker
 {
     // Configuration constants
-    public const AWAY_TIMEOUT_MINUTES = 5;
+    public const AWAY_TIMEOUT_MINUTES = 0.5;
+
     public const ACTIVITY_CACHE_PREFIX = 'user_activity_';
+
     public const ACTIVITY_LOG_NAME = 'user_activity';
+
     public const CACHE_TTL_HOURS = 1;
 
     /**
@@ -25,7 +28,7 @@ class ActivityTracker
     public static function recordActivity(User $user): void
     {
         // Update cache for fast access
-        $cacheKey = self::ACTIVITY_CACHE_PREFIX . $user->id;
+        $cacheKey = self::ACTIVITY_CACHE_PREFIX.$user->id;
         Cache::put($cacheKey, now(), now()->addHours(self::CACHE_TTL_HOURS));
 
         // Log activity for persistence and audit trail
@@ -45,7 +48,7 @@ class ActivityTracker
      */
     public static function clearActivity(User $user): void
     {
-        $cacheKey = self::ACTIVITY_CACHE_PREFIX . $user->id;
+        $cacheKey = self::ACTIVITY_CACHE_PREFIX.$user->id;
         Cache::forget($cacheKey);
     }
 
@@ -55,7 +58,7 @@ class ActivityTracker
     public static function getLastActivity(User $user): ?Carbon
     {
         // First try cache for fast access
-        $cacheKey = self::ACTIVITY_CACHE_PREFIX . $user->id;
+        $cacheKey = self::ACTIVITY_CACHE_PREFIX.$user->id;
         $cachedActivity = Cache::get($cacheKey);
 
         if ($cachedActivity) {
@@ -73,6 +76,7 @@ class ActivityTracker
             $activityTime = $lastActivity->created_at;
             // Update cache for future requests
             Cache::put($cacheKey, $activityTime, now()->addHours(self::CACHE_TTL_HOURS));
+
             return $activityTime;
         }
 
@@ -86,11 +90,12 @@ class ActivityTracker
     {
         $lastActivity = self::getLastActivity($user);
 
-        if (!$lastActivity) {
+        if (! $lastActivity) {
             return false;
         }
 
         $minutesSinceActivity = floor((now()->timestamp - $lastActivity->timestamp) / 60);
+
         return $minutesSinceActivity < self::AWAY_TIMEOUT_MINUTES;
     }
 
@@ -101,7 +106,7 @@ class ActivityTracker
     {
         $lastActivity = self::getLastActivity($user);
 
-        if (!$lastActivity) {
+        if (! $lastActivity) {
             return null;
         }
 
@@ -114,7 +119,7 @@ class ActivityTracker
     public static function shouldBeAway(User $user): bool
     {
         $minutesSinceActivity = self::getMinutesSinceActivity($user);
-        
+
         if ($minutesSinceActivity === null) {
             return true; // No activity recorded
         }

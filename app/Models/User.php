@@ -36,6 +36,7 @@ class User extends Authenticatable implements HasAvatar
         'cover_image',
         'web_app_background_enabled',
         'online_status',
+        'last_status_change',
         'username',
         'name',
         'email',

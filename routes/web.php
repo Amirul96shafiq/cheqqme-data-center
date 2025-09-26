@@ -230,10 +230,39 @@ Route::middleware('auth')->group(function () {
     // User activity tracking route
     Route::post('/admin/profile/track-activity', function (Request $request) {
         $user = auth()->user();
+        
+        // Handle page refresh - set auto-away users back to online
+        \App\Services\OnlineStatus\StatusController::handlePageRefresh($user);
+        
+        // Update user activity and check status
         \App\Services\OnlineStatus\StatusController::checkAndUpdateStatus($user);
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'status' => $user->fresh()->online_status,
+        ]);
     })->name('profile.track-activity');
+
+    // Check auto-away status without recording activity
+    Route::post('/admin/profile/check-auto-away', function (Request $request) {
+        $user = auth()->user();
+        
+        // Check if user should be away without recording activity
+        $shouldBeAway = \App\Services\OnlineStatus\ActivityTracker::shouldBeAway($user);
+        $isAutoManaged = \App\Services\OnlineStatus\StatusManager::isAutoManaged($user->online_status);
+        
+        // Only auto-change if status is auto-managed and user should be away
+        if ($shouldBeAway && $isAutoManaged && $user->online_status !== 'away') {
+            $user->update(['online_status' => 'away']);
+            \Illuminate\Support\Facades\Log::info("User {$user->id} auto-set to away status via frontend timer");
+        }
+
+        return response()->json([
+            'success' => true,
+            'shouldBeAway' => $shouldBeAway,
+            'status' => $user->fresh()->online_status,
+        ]);
+    })->name('profile.check-auto-away');
 });
 
 // Weather API routes

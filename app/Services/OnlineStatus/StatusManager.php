@@ -195,4 +195,5 @@ class StatusManager
     {
         return 'required|in:' . implode(',', self::getAllStatuses());
     }
+
 }

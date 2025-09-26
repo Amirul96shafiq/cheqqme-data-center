@@ -1141,9 +1141,16 @@ window.updateAllStatusIndicators = function(newStatus) {
 };
 
 // User Activity Tracking for Online Status
+// Following Microsoft Teams behavior: any interaction resets auto-away to online
 window.trackUserActivity = function() {
     if (window.userActivityTimeout) {
         clearTimeout(window.userActivityTimeout);
+    }
+    
+    // Clear any pending auto-away timeout
+    if (window.autoAwayTimeout) {
+        clearTimeout(window.autoAwayTimeout);
+        window.autoAwayTimeout = null;
     }
     
     // Debounce activity tracking to avoid excessive requests
@@ -1155,10 +1162,60 @@ window.trackUserActivity = function() {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 'X-Requested-With': 'XMLHttpRequest'
             }
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update status indicators if status changed
+                if (data.status && window.updateAllStatusIndicators) {
+                    window.updateAllStatusIndicators(data.status);
+                }
+                
+                // Start auto-away timer if user is online
+                if (data.status === 'online') {
+                    window.startAutoAwayTimer();
+                }
+            }
         }).catch(error => {
             console.log('Activity tracking failed:', error);
         });
-    }, 1000); // 1 second debounce
+    }, 500); // Reduced debounce for more responsive behavior
+};
+
+// Auto-Away Timer - Real-time detection without user interaction
+window.startAutoAwayTimer = function() {
+    // Clear existing timer
+    if (window.autoAwayTimeout) {
+        clearTimeout(window.autoAwayTimeout);
+    }
+    
+    // Set timer for 30 seconds (0.5 minutes) to match backend
+    window.autoAwayTimeout = setTimeout(() => {
+        // Check if user should go away (no recent activity)
+        fetch('/admin/profile/check-auto-away', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success && data.shouldBeAway) {
+                // User should be away, update status
+                if (window.updateAllStatusIndicators) {
+                    window.updateAllStatusIndicators('away');
+                }
+                console.log('User auto-set to away due to inactivity');
+            } else if (data.success && !data.shouldBeAway) {
+                // User is still active, restart timer
+                window.startAutoAwayTimer();
+            }
+        }).catch(error => {
+            console.log('Auto-away check failed:', error);
+            // Restart timer on error
+            window.startAutoAwayTimer();
+        });
+    }, 30000); // 30 seconds = 0.5 minutes
 };
 
 // Track user activity on various events
@@ -1180,6 +1237,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initial activity tracking
     window.trackUserActivity();
+    
+    // Start auto-away timer on page load
+    window.startAutoAwayTimer();
 });
 
 // Make functions globally available

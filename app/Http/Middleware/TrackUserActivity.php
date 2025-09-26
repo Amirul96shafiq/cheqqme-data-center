@@ -24,10 +24,32 @@ class TrackUserActivity
             // Handle page refresh - set auto-away users back to online
             StatusController::handlePageRefresh($user);
             
-            // Update user activity and check status
-            StatusController::checkAndUpdateStatus($user);
+            // Only record activity for real user interactions, not background requests
+            if ($this->isRealUserInteraction($request)) {
+                StatusController::checkAndUpdateStatus($user);
+            }
         }
 
         return $next($request);
+    }
+
+    /**
+     * Check if this is a real user interaction (not background/AJAX request)
+     */
+    private function isRealUserInteraction(Request $request): bool
+    {
+        // Don't record activity for AJAX requests unless they're user interactions
+        if ($request->ajax()) {
+            // Only record activity for specific user interaction routes
+            $userInteractionRoutes = [
+                'profile.update-online-status',
+                'profile.track-activity',
+            ];
+            
+            return in_array($request->route()?->getName(), $userInteractionRoutes);
+        }
+
+        // Record activity for regular page requests
+        return true;
     }
 }
