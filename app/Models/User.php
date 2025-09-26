@@ -379,6 +379,16 @@ class User extends Authenticatable implements HasAvatar
         ];
     }
 
+    public static function getOnlineStatusOptionsWithIcons(): array
+    {
+        return [
+            'online' => '<div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-teal-500 border-2 border-white dark:border-gray-900"></div><span>Online</span></div>',
+            'away' => '<div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-primary-500 border-2 border-white dark:border-gray-900"></div><span>Away</span></div>',
+            'dnd' => '<div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-red-500 border-2 border-white dark:border-gray-900"></div><span>Do Not Disturb</span></div>',
+            'invisible' => '<div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-gray-400 border-2 border-white dark:border-gray-900"></div><span>Invisible</span></div>',
+        ];
+    }
+
     /**
      * Get the color for the online status indicator
      */
