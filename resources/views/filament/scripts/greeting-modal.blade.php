@@ -1414,33 +1414,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Set a short timeout to detect if this is just a tab switch
             tabSwitchTimeout = setTimeout(function() {
-                persistentLog('Tab switch timeout fired - setting user to invisible due to tab blur');
+                persistentLog('Tab switch timeout fired - NOT changing status on tab blur');
                 
-                // Call API to set user as invisible due to tab blur
-                fetch('/api/user/auto-invisible', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Authorization': 'Bearer ' + (window.chatbotApiToken || ''),
-                    }
-                }).then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        persistentLog('User auto-set to invisible due to tab blur');
-                        // Update status indicators
-                        if (window.updateAllStatusIndicators) {
-                            window.updateAllStatusIndicators('invisible');
-                        }
-                    } else {
-                        persistentLog('Auto-invisible failed:', data.message);
-                    }
-                }).catch(error => {
-                    persistentLog('Auto-invisible API call failed:', error);
-                });
-                
-                // Reset the flag so beforeunload can work on actual close
+                // Do not change status when tab loses focus
+                // Only reset the flag so beforeunload can work on actual close
                 hasSetInvisible = false;
             }, 500); // 500ms delay to detect tab switches
         } else {
