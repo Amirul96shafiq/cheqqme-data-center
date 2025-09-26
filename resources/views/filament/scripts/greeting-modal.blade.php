@@ -1203,7 +1203,10 @@ window.trackUserActivity = function() {
                     window.updateAllStatusIndicators(data.status);
                 }
                 
-                // Auto-away is now handled by presence channels
+                // Start auto-away timer if user is online
+                if (data.status === 'online') {
+                    window.startAutoAwayTimer();
+                }
             }
         }).catch(error => {
             console.log('Activity tracking failed:', error);
@@ -1211,8 +1214,42 @@ window.trackUserActivity = function() {
     }, 500); // Reduced debounce for more responsive behavior
 };
 
-// Auto-away functionality is now handled by presence channels
-// No manual timer needed
+// Auto-Away Timer - Set to 10 seconds for testing
+window.startAutoAwayTimer = function() {
+    // Clear existing timer
+    if (window.autoAwayTimeout) {
+        clearTimeout(window.autoAwayTimeout);
+    }
+    
+    // Set timer for 10 seconds for testing (normally would be 5 minutes = 300000ms)
+    window.autoAwayTimeout = setTimeout(() => {
+        console.log('Auto-away timer triggered - setting user to away');
+        
+        // Call API to set user as away due to inactivity
+        fetch('/api/user/auto-away', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Authorization': 'Bearer ' + (window.chatbotApiToken || ''),
+            }
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('User auto-set to away due to inactivity');
+                // Update status indicators
+                if (window.updateAllStatusIndicators) {
+                    window.updateAllStatusIndicators('away');
+                }
+            } else {
+                console.log('Auto-away failed:', data.message);
+            }
+        }).catch(error => {
+            console.log('Auto-away API call failed:', error);
+        });
+    }, 10000); // 10 seconds for testing
+};
 
 // Track user activity on various events
 document.addEventListener('DOMContentLoaded', function() {
@@ -1377,7 +1414,32 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Set a short timeout to detect if this is just a tab switch
             tabSwitchTimeout = setTimeout(function() {
-                persistentLog('Tab switch timeout fired - this was likely a tab switch, not close');
+                persistentLog('Tab switch timeout fired - setting user to invisible due to tab blur');
+                
+                // Call API to set user as invisible due to tab blur
+                fetch('/api/user/auto-invisible', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Authorization': 'Bearer ' + (window.chatbotApiToken || ''),
+                    }
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        persistentLog('User auto-set to invisible due to tab blur');
+                        // Update status indicators
+                        if (window.updateAllStatusIndicators) {
+                            window.updateAllStatusIndicators('invisible');
+                        }
+                    } else {
+                        persistentLog('Auto-invisible failed:', data.message);
+                    }
+                }).catch(error => {
+                    persistentLog('Auto-invisible API call failed:', error);
+                });
+                
                 // Reset the flag so beforeunload can work on actual close
                 hasSetInvisible = false;
             }, 500); // 500ms delay to detect tab switches
@@ -1392,14 +1454,46 @@ document.addEventListener('DOMContentLoaded', function() {
             // Reset the flag when tab becomes visible again
             hasSetInvisible = false;
             
-            // Tab visibility changes are now handled by presence channels
+            // Check if user should be restored from auto-status
+            checkAndRestoreFromAutoStatus();
             
             // Track activity when tab becomes visible
             window.trackUserActivity();
         }
     });
     
-    // Tab return functionality is now handled by presence channels
+    // Function to check and restore user from auto-status when returning to tab
+    function checkAndRestoreFromAutoStatus() {
+        console.log('Checking if user should be restored from auto-status...');
+        
+        // Call API to restore from auto-status if applicable
+        fetch('/api/user/restore-auto-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Authorization': 'Bearer ' + (window.chatbotApiToken || ''),
+            }
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success && data.data && data.data.previous_status !== data.data.status) {
+                console.log('User restored from auto-status:', data.data.previous_status, '->', data.data.status);
+                // Update status indicators
+                if (window.updateAllStatusIndicators) {
+                    window.updateAllStatusIndicators(data.data.status);
+                }
+                // Restart auto-away timer
+                if (data.data.status === 'online') {
+                    window.startAutoAwayTimer();
+                }
+            } else {
+                console.log('User status unchanged on tab return:', data.data?.status || 'unknown');
+            }
+        }).catch(error => {
+            console.log('Failed to restore from auto-status:', error);
+        });
+    }
     
     // Initialize presence status manager for real-time online status
     if (window.presenceStatusManager) {
@@ -1409,7 +1503,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Legacy activity tracking (will be replaced by presence channels)
     window.trackUserActivity();
     
-    // Page load status handling is now done by presence channels
+    // Check if user should be restored from auto-status on page load
+    checkAndRestoreFromAutoStatus();
+    
+    // Start auto-away timer on page load
+    window.startAutoAwayTimer();
 });
 
 // Make functions globally available

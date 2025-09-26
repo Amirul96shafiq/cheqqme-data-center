@@ -398,4 +398,21 @@ class User extends Authenticatable implements HasAvatar
     {
         return \App\Services\OnlineStatus\StatusManager::getStatusLabel($this->online_status);
     }
+
+    /**
+     * Get or create a Sanctum token for auto-away API
+     */
+    public function getAutoAwayToken(): string
+    {
+        $existingToken = $this->tokens()->where('name', 'auto-away-api')->first();
+
+        if ($existingToken && $existingToken->plainTextToken) {
+            return $existingToken->plainTextToken;
+        }
+
+        // If no existing token or plainTextToken is null, create a new one
+        $newToken = $this->createToken('auto-away-api');
+
+        return $newToken->plainTextToken;
+    }
 }

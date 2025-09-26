@@ -104,4 +104,105 @@ class UserStatusController extends Controller
             'count' => count($onlineUsers),
         ]);
     }
+
+    /**
+     * Set user as away due to inactivity
+     */
+    public function setAwayDueToInactivity(): JsonResponse
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        try {
+            PresenceStatusManager::setAwayDueToInactivity($user);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User set to away due to inactivity.',
+                'data' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'status' => $user->fresh()->online_status,
+                    'updated_at' => now()->toISOString(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to set away status',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Set user as invisible due to tab blur
+     */
+    public function setInvisibleDueToTabBlur(): JsonResponse
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        try {
+            PresenceStatusManager::setInvisibleDueToTabBlur($user);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User set to invisible due to tab blur.',
+                'data' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'status' => $user->fresh()->online_status,
+                    'updated_at' => now()->toISOString(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to set invisible status',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Restore user from auto-status (away/invisible) to online
+     */
+    public function restoreFromAutoStatus(): JsonResponse
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        try {
+            $previousStatus = $user->online_status;
+            PresenceStatusManager::restoreFromAutoStatus($user);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User restored from auto-status to online.',
+                'data' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'status' => $user->fresh()->online_status,
+                    'previous_status' => $previousStatus,
+                    'updated_at' => now()->toISOString(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to restore from auto-status',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

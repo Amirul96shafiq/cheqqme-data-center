@@ -2,6 +2,7 @@
 <script>
     window.chatbotUserName = "{{ $userName ?? 'You' }}";
     window.chatbotUserId = "{{ Auth::id() ?? 'anonymous' }}";
+    window.chatbotApiToken = "{{ Auth::user()?->getAutoAwayToken() ?? '' }}";
     window.chatbot = {
         welcome_message: "{{ __('chatbot.welcome_message') }}",
         ai_name: "{{ __('chatbot.ai_name') }}",

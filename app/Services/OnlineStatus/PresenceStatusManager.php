@@ -128,4 +128,67 @@ class PresenceStatusManager
         // The presence channel automatically handles join/leave events
         return $user->online_status === StatusManager::ONLINE;
     }
+
+    /**
+     * Set user as away due to inactivity (auto-away)
+     */
+    public static function setAwayDueToInactivity(User $user): void
+    {
+        $previousStatus = $user->online_status;
+
+        // Only set to away if user is currently online and hasn't manually set a status
+        if ($user->online_status === StatusManager::ONLINE && ! $user->last_status_change) {
+            $user->update([
+                'online_status' => StatusManager::AWAY,
+                'last_status_change' => null, // Keep null to indicate this is auto-away
+            ]);
+
+            // Broadcast the status change to all users
+            broadcast(new UserOnlineStatusChanged($user, StatusManager::AWAY, $previousStatus));
+
+            Log::info("User {$user->id} auto-set to away status due to inactivity");
+        }
+    }
+
+    /**
+     * Set user as invisible when tab loses focus (auto-invisible)
+     */
+    public static function setInvisibleDueToTabBlur(User $user): void
+    {
+        $previousStatus = $user->online_status;
+
+        // Only set to invisible if user is currently online and hasn't manually set a status
+        if ($user->online_status === StatusManager::ONLINE && ! $user->last_status_change) {
+            $user->update([
+                'online_status' => StatusManager::INVISIBLE,
+                'last_status_change' => null, // Keep null to indicate this is auto-invisible
+            ]);
+
+            // Broadcast the status change to all users
+            broadcast(new UserOnlineStatusChanged($user, StatusManager::INVISIBLE, $previousStatus));
+
+            Log::info("User {$user->id} auto-set to invisible status due to tab blur");
+        }
+    }
+
+    /**
+     * Restore user to online when they return (from auto-away or auto-invisible)
+     */
+    public static function restoreFromAutoStatus(User $user): void
+    {
+        $previousStatus = $user->online_status;
+
+        // Only restore if user was in an auto-managed status (away or invisible with no manual change)
+        if (in_array($user->online_status, [StatusManager::AWAY, StatusManager::INVISIBLE]) && ! $user->last_status_change) {
+            $user->update([
+                'online_status' => StatusManager::ONLINE,
+                'last_status_change' => null,
+            ]);
+
+            // Broadcast the status change to all users
+            broadcast(new UserOnlineStatusChanged($user, StatusManager::ONLINE, $previousStatus));
+
+            Log::info("User {$user->id} restored to online status from auto-status: {$previousStatus}");
+        }
+    }
 }
