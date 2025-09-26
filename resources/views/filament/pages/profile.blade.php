@@ -33,9 +33,9 @@
                 class="mx-auto border-[6px] border-white/80"
             />
             
-            <!-- Online Status Indicator -->
+            <!-- Interactive Online Status Indicator -->
             <div class="absolute -bottom-1 right-2">
-                <x-online-status-indicator :user="$user" size="xl" />
+                <x-interactive-online-status-indicator :user="$user" size="xl" />
             </div>
         </div>
 
