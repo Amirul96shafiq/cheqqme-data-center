@@ -256,20 +256,19 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/profile/set-invisible-on-close', function (Request $request) {
         $user = auth()->user();
 
-        // Only set to invisible if user is currently online or away (auto-managed statuses)
-        if (in_array($user->online_status, ['online', 'away'])) {
-            // Set to invisible and clear last_status_change to mark as auto-invisible
-            $user->update([
-                'online_status' => 'invisible',
-                'last_status_change' => null,
-            ]);
-            // Activity tracking is now handled by presence channels
-            \Illuminate\Support\Facades\Log::info("User {$user->id} set to invisible status on browser tab close (auto-invisible)");
-        }
+        // Always set to invisible regardless of current status
+        $previousStatus = $user->online_status;
+        $user->update([
+            'online_status' => 'invisible',
+            'last_status_change' => null, // Clear to mark as auto-invisible
+        ]);
+
+        \Illuminate\Support\Facades\Log::info("User {$user->id} set to invisible status on browser tab close (auto-invisible) from status: {$previousStatus}");
 
         return response()->json([
             'success' => true,
             'message' => 'User status set to invisible',
+            'previous_status' => $previousStatus,
         ]);
     })->name('profile.set-invisible-on-close');
 

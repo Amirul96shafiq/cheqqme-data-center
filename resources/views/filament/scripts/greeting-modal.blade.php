@@ -1338,41 +1338,113 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Detect page refresh vs tab close
+    // Better approach: Use multiple events to detect browser/tab close
+    let isPageClosing = false;
+    let closeDetectionTimeout = null;
+    
+    // Function to set user to invisible
+    function setUserToInvisible(reason) {
+        if (hasSetInvisible) return;
+        
+        console.log('✅ Setting user to invisible status:', reason);
+        persistentLog('Setting user to invisible status', { reason: reason });
+        
+        hasSetInvisible = true;
+        
+        // Use sendBeacon for reliable delivery during page unload
+        if (navigator.sendBeacon) {
+            console.log('📡 Using sendBeacon to set invisible status');
+            const formData = new FormData();
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
+            
+            const success = navigator.sendBeacon('/admin/profile/set-invisible-on-close', formData);
+            console.log('📡 sendBeacon result:', { success: success });
+        } else {
+            console.log('📡 Using XMLHttpRequest fallback to set invisible status');
+            // Fallback for browsers that don't support sendBeacon
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/admin/profile/set-invisible-on-close', false);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
+            xhr.send('_token=' + encodeURIComponent(document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''));
+            console.log('📡 XMLHttpRequest completed:', { status: xhr.status });
+        }
+    }
+    
+    // Method 1: Use pagehide event (more reliable than beforeunload)
+    window.addEventListener('pagehide', function(event) {
+        console.log('🔍 pagehide event fired');
+        persistentLog('pagehide event fired', { 
+            persisted: event.persisted,
+            hasSetInvisible: hasSetInvisible,
+            isPageRefreshing: isPageRefreshing,
+            refreshKeyPressed: refreshKeyPressed
+        });
+        
+        // If page is being persisted (cached), it's not a close
+        if (event.persisted) {
+            console.log('📄 Page is being persisted (cached) - not a close');
+            return;
+        }
+        
+        // Skip if it's a refresh
+        if (refreshKeyPressed || isPageRefresh) {
+            console.log('🔄 Page refresh detected - NOT setting to invisible');
+            return;
+        }
+        
+        // Set a short timeout to detect if this is just a navigation
+        closeDetectionTimeout = setTimeout(() => {
+            console.log('⏰ Close detection timeout fired - setting to invisible');
+            setUserToInvisible('pagehide timeout');
+        }, 100); // 100ms delay
+    });
+    
+    // Method 2: Use unload event as backup
+    window.addEventListener('unload', function(event) {
+        console.log('🔍 unload event fired');
+        persistentLog('unload event fired', { 
+            hasSetInvisible: hasSetInvisible,
+            isPageRefreshing: isPageRefreshing,
+            refreshKeyPressed: refreshKeyPressed
+        });
+        
+        // Skip if it's a refresh
+        if (refreshKeyPressed || isPageRefresh) {
+            console.log('🔄 Page refresh detected - NOT setting to invisible');
+            return;
+        }
+        
+        // Clear any existing timeout
+        if (closeDetectionTimeout) {
+            clearTimeout(closeDetectionTimeout);
+        }
+        
+        // Set to invisible immediately
+        setUserToInvisible('unload event');
+    });
+    
+    // Method 3: Use beforeunload as final fallback (simplified)
     window.addEventListener('beforeunload', function(event) {
+        console.log('🔍 beforeunload event fired - simplified detection');
         persistentLog('beforeunload event fired', {
             hasSetInvisible: hasSetInvisible,
             isPageRefreshing: isPageRefreshing,
             refreshKeyPressed: refreshKeyPressed
         });
         
-        // Check if this is a page refresh by looking at navigation type
-        const navigationType = performance.navigation?.type || performance.getEntriesByType('navigation')[0]?.type;
-        
-        // More detailed navigation type logging
-        const navigationData = {
-            navigationType: navigationType,
-            performanceNavigationType: performance.navigation?.type,
-            navigationEntryType: performance.getEntriesByType('navigation')[0]?.type
-        };
-        
-        persistentLog('Navigation data', navigationData);
-        
-        // Skip if we're certain it's a refresh
+        // Skip if it's a refresh
         if (refreshKeyPressed || isPageRefresh) {
-            persistentLog('Page refresh detected - NOT setting to invisible', {
-                refreshKeyPressed: refreshKeyPressed,
-                isPageRefresh: isPageRefresh
-            });
-            isPageRefreshing = true;
-            return; // Don't set to invisible on page refresh
+            console.log('🔄 Page refresh detected - NOT setting to invisible');
+            return;
         }
         
-        // Do not change status when navigating to another page
-        persistentLog('NOT setting to invisible on navigation - status preserved', {
-            hasSetInvisible: hasSetInvisible,
-            isPageRefreshing: isPageRefreshing
-        });
+        // Only set to invisible if user has been on page for a reasonable time
+        const timeOnPage = performance.now();
+        if (timeOnPage > 5000 && !hasSetInvisible) {
+            console.log('⏰ User spent sufficient time on page - setting to invisible');
+            setUserToInvisible('beforeunload fallback');
+        }
     });
     
     // Handle tab visibility changes for activity tracking
