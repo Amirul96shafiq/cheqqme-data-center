@@ -379,6 +379,9 @@ class User extends Authenticatable implements HasAvatar
         ];
     }
 
+    /**
+     * Get the online status options with icons
+     */
     public static function getOnlineStatusOptionsWithIcons(): array
     {
         return [
