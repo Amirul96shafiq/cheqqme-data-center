@@ -249,26 +249,8 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('profile.track-activity');
 
-    // Check auto-away status without recording activity
-    Route::post('/admin/profile/check-auto-away', function (Request $request) {
-        $user = auth()->user();
-
-        // Check if user should be away without recording activity
-        $shouldBeAway = \App\Services\OnlineStatus\ActivityTracker::shouldBeAway($user);
-        $isAutoManaged = \App\Services\OnlineStatus\StatusManager::isAutoManaged($user->online_status);
-
-        // Only auto-change if status is auto-managed and user should be away
-        if ($shouldBeAway && $isAutoManaged && $user->online_status !== 'away') {
-            $user->update(['online_status' => 'away']);
-            \Illuminate\Support\Facades\Log::info("User {$user->id} auto-set to away status via frontend timer");
-        }
-
-        return response()->json([
-            'success' => true,
-            'shouldBeAway' => $shouldBeAway,
-            'status' => $user->fresh()->online_status,
-        ]);
-    })->name('profile.check-auto-away');
+    // Auto-away functionality is now handled by presence channels
+    // No manual polling needed
 
     // Set user to invisible when browser tab is closed
     Route::post('/admin/profile/set-invisible-on-close', function (Request $request) {
@@ -281,7 +263,7 @@ Route::middleware('auth')->group(function () {
                 'online_status' => 'invisible',
                 'last_status_change' => null,
             ]);
-            \App\Services\OnlineStatus\ActivityTracker::clearActivity($user);
+            // Activity tracking is now handled by presence channels
             \Illuminate\Support\Facades\Log::info("User {$user->id} set to invisible status on browser tab close (auto-invisible)");
         }
 

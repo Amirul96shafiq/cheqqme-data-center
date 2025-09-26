@@ -1203,10 +1203,7 @@ window.trackUserActivity = function() {
                     window.updateAllStatusIndicators(data.status);
                 }
                 
-                // Start auto-away timer if user is online
-                if (data.status === 'online') {
-                    window.startAutoAwayTimer();
-                }
+                // Auto-away is now handled by presence channels
             }
         }).catch(error => {
             console.log('Activity tracking failed:', error);
@@ -1214,42 +1211,8 @@ window.trackUserActivity = function() {
     }, 500); // Reduced debounce for more responsive behavior
 };
 
-// Auto-Away Timer - Real-time detection without user interaction
-window.startAutoAwayTimer = function() {
-    // Clear existing timer
-    if (window.autoAwayTimeout) {
-        clearTimeout(window.autoAwayTimeout);
-    }
-    
-    // Set timer for 5 minutes to match backend
-    window.autoAwayTimeout = setTimeout(() => {
-        // Check if user should go away (no recent activity)
-        fetch('/admin/profile/check-auto-away', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        }).then(response => response.json())
-        .then(data => {
-            if (data.success && data.shouldBeAway) {
-                // User should be away, update status
-                if (window.updateAllStatusIndicators) {
-                    window.updateAllStatusIndicators('away');
-                }
-                console.log('User auto-set to away due to inactivity');
-            } else if (data.success && !data.shouldBeAway) {
-                // User is still active, restart timer
-                window.startAutoAwayTimer();
-            }
-        }).catch(error => {
-            console.log('Auto-away check failed:', error);
-            // Restart timer on error
-            window.startAutoAwayTimer();
-        });
-    }, 300000); // 5 minutes = 300 seconds
-};
+// Auto-away functionality is now handled by presence channels
+// No manual timer needed
 
 // Track user activity on various events
 document.addEventListener('DOMContentLoaded', function() {
@@ -1429,47 +1392,14 @@ document.addEventListener('DOMContentLoaded', function() {
             // Reset the flag when tab becomes visible again
             hasSetInvisible = false;
             
-            // Check if user should be set back to online (if they were invisible due to tab close)
-            checkAndSetOnlineOnReturn();
+            // Tab visibility changes are now handled by presence channels
             
             // Track activity when tab becomes visible
             window.trackUserActivity();
         }
     });
     
-    // Function to check and set user back to online when returning to tab
-    function checkAndSetOnlineOnReturn() {
-        persistentLog('Checking if user should be set back to online on tab return...');
-        
-        // Check if user should be set back to online (only if they were invisible due to tab close, not manual)
-        fetch('/admin/profile/set-online-on-return', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        }).then(response => response.json())
-        .then(data => {
-            if (data.success && data.status) {
-                persistentLog('User set back to online status on tab return', { 
-                    status: data.status,
-                    wasAutoInvisible: data.wasAutoInvisible 
-                });
-                // Update status indicators if status changed
-                if (window.updateAllStatusIndicators) {
-                    window.updateAllStatusIndicators(data.status);
-                }
-            } else {
-                persistentLog('User status unchanged on tab return', { 
-                    status: data.status,
-                    reason: data.reason 
-                });
-            }
-        }).catch(error => {
-            persistentLog('Failed to set user back to online on tab return', { error: error.message });
-        });
-    }
+    // Tab return functionality is now handled by presence channels
     
     // Initialize presence status manager for real-time online status
     if (window.presenceStatusManager) {
@@ -1479,11 +1409,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Legacy activity tracking (will be replaced by presence channels)
     window.trackUserActivity();
     
-    // Check if user should be set back to online on page load
-    checkAndSetOnlineOnReturn();
-    
-    // Start auto-away timer on page load (will be replaced by presence channels)
-    window.startAutoAwayTimer();
+    // Page load status handling is now done by presence channels
 });
 
 // Make functions globally available

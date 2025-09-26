@@ -16,7 +16,6 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use App\Services\OnlineStatusTracker;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -44,11 +43,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Register online status event listeners
         Event::listen(Login::class, function (Login $event) {
-            OnlineStatusTracker::setUserOnline($event->user);
+            \App\Services\OnlineStatus\PresenceStatusManager::setOnline($event->user);
         });
 
         Event::listen(Logout::class, function (Logout $event) {
-            OnlineStatusTracker::setUserInvisible($event->user);
+            \App\Services\OnlineStatus\PresenceStatusManager::setInvisible($event->user);
         });
 
         // Customize password reset URLs to include email parameter
