@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\OnlineStatusTracker;
+use App\Services\OnlineStatus\StatusController;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,11 +21,11 @@ class TrackUserActivity
         if (Auth::check()) {
             $user = Auth::user();
             
-            // Update user activity
-            OnlineStatusTracker::updateUserActivity($user);
+            // Handle page refresh - set auto-away users back to online
+            StatusController::handlePageRefresh($user);
             
-            // Check and update user status if needed
-            OnlineStatusTracker::checkAndUpdateUserStatus($user);
+            // Update user activity and check status
+            StatusController::checkAndUpdateStatus($user);
         }
 
         return $next($request);

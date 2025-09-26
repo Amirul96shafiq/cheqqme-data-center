@@ -53,11 +53,8 @@ class InteractiveOnlineStatusIndicator extends Component
      */
     public function getStatusClasses(): string
     {
-        $baseClasses = 'rounded-full border-2 border-white dark:border-gray-900';
-        $status = $this->user->online_status ?? \App\Services\OnlineStatusManager::getDefaultStatus();
-        $color = \App\Services\OnlineStatusManager::getStatusColor($status);
-
-        return $baseClasses.' '.$color;
+        $status = $this->user->online_status ?? \App\Services\OnlineStatus\StatusManager::getDefaultStatus();
+        return \App\Services\OnlineStatus\StatusDisplay::getStatusClasses($status, $this->size);
     }
 
     /**
@@ -65,9 +62,8 @@ class InteractiveOnlineStatusIndicator extends Component
      */
     public function getStatusDisplayName(): string
     {
-        $status = $this->user->online_status ?? \App\Services\OnlineStatusManager::getDefaultStatus();
-
-        return \App\Services\OnlineStatusManager::getStatusLabel($status);
+        $status = $this->user->online_status ?? \App\Services\OnlineStatus\StatusManager::getDefaultStatus();
+        return \App\Services\OnlineStatus\StatusDisplay::getDisplayName($status);
     }
 
     /**
@@ -75,6 +71,6 @@ class InteractiveOnlineStatusIndicator extends Component
      */
     public function getStatusOptions(): array
     {
-        return \App\Services\OnlineStatusManager::getStatusConfig();
+        return \App\Services\OnlineStatus\StatusManager::getStatusConfig();
     }
 }

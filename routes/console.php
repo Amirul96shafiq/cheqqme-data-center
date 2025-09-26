@@ -28,3 +28,9 @@ Schedule::command('chatbot:weekly-cleanup')
     ->withoutOverlapping()
     ->runInBackground()
     ->appendOutputTo(storage_path('logs/chatbot-weekly-cleanup.log'));
+
+// Schedule user online status updates every minute
+Schedule::job(new \App\Jobs\UpdateUserOnlineStatuses)
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/user-online-status-updates.log'));

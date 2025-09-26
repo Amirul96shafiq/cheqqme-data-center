@@ -214,11 +214,11 @@ Route::middleware('auth')->group(function () {
     // Online status update route
     Route::post('/admin/profile/update-online-status', function (Request $request) {
         $request->validate([
-            'online_status' => \App\Services\OnlineStatusManager::getValidationRules(),
+            'online_status' => \App\Services\OnlineStatus\StatusManager::getValidationRules(),
         ]);
 
         $user = auth()->user();
-        \App\Services\OnlineStatusTracker::handleManualStatusChange($user, $request->online_status);
+        \App\Services\OnlineStatus\StatusController::handleManualChange($user, $request->online_status);
 
         return response()->json([
             'success' => true,
@@ -230,7 +230,7 @@ Route::middleware('auth')->group(function () {
     // User activity tracking route
     Route::post('/admin/profile/track-activity', function (Request $request) {
         $user = auth()->user();
-        \App\Services\OnlineStatusTracker::updateUserActivity($user);
+        \App\Services\OnlineStatus\StatusController::checkAndUpdateStatus($user);
 
         return response()->json(['success' => true]);
     })->name('profile.track-activity');

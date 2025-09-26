@@ -80,10 +80,11 @@ class OnlineStatusTracker
      */
     public static function checkAndUpdateUserStatus(User $user): void
     {
-        // Don't auto-update if user manually set to invisible or do not disturb
+        // Don't auto-update if user manually set to invisible, do not disturb, or away
         if (in_array($user->online_status, [
             OnlineStatusManager::STATUS_INVISIBLE,
             OnlineStatusManager::STATUS_DND,
+            OnlineStatusManager::STATUS_AWAY,
         ])) {
             return;
         }
@@ -92,20 +93,20 @@ class OnlineStatusTracker
 
         if (! $lastActivity) {
             // No activity recorded, set to away
-            if ($user->online_status !== OnlineStatusManager::STATUS_AWAY) {
-                $user->update(['online_status' => OnlineStatusManager::STATUS_AWAY]);
+            if ($user->online_status !== OnlineStatusManager::STATUS_AWAY_AUTO) {
+                $user->update(['online_status' => OnlineStatusManager::STATUS_AWAY_AUTO]);
                 Log::info("User {$user->id} auto-set to away status (no activity)");
             }
 
             return;
         }
 
-        $minutesSinceActivity = now()->diffInMinutes($lastActivity);
+        $minutesSinceActivity = floor((now()->timestamp - $lastActivity->timestamp) / 60);
 
         if ($minutesSinceActivity >= self::AWAY_TIMEOUT_MINUTES) {
             // User has been inactive for more than 5 minutes
-            if ($user->online_status !== OnlineStatusManager::STATUS_AWAY) {
-                $user->update(['online_status' => OnlineStatusManager::STATUS_AWAY]);
+            if ($user->online_status !== OnlineStatusManager::STATUS_AWAY_AUTO) {
+                $user->update(['online_status' => OnlineStatusManager::STATUS_AWAY_AUTO]);
                 Log::info("User {$user->id} auto-set to away status (inactive for {$minutesSinceActivity} minutes)");
             }
         } else {
@@ -159,7 +160,7 @@ class OnlineStatusTracker
             return false;
         }
 
-        return now()->diffInMinutes($lastActivity) < self::AWAY_TIMEOUT_MINUTES;
+        return floor((now()->timestamp - $lastActivity->timestamp) / 60) < self::AWAY_TIMEOUT_MINUTES;
     }
 
     /**
@@ -187,7 +188,7 @@ class OnlineStatusTracker
     {
         return User::whereIn('online_status', [
             OnlineStatusManager::STATUS_ONLINE,
-            OnlineStatusManager::STATUS_AWAY,
+            OnlineStatusManager::STATUS_AWAY_AUTO,
         ])->get();
     }
 
@@ -203,6 +204,18 @@ class OnlineStatusTracker
         }
 
         Log::info("Processed status updates for {$users->count()} users");
+    }
+
+    /**
+     * Handle page refresh - set auto-away users back to online
+     */
+    public static function handlePageRefresh(User $user): void
+    {
+        if ($user->online_status === OnlineStatusManager::STATUS_AWAY_AUTO) {
+            $user->update(['online_status' => OnlineStatusManager::STATUS_ONLINE]);
+            self::updateUserActivity($user);
+            Log::info("User {$user->id} set to online status on page refresh (was auto-away)");
+        }
     }
 
     /**

@@ -11,6 +11,8 @@ class OnlineStatusManager
 
     public const STATUS_AWAY = 'away';
 
+    public const STATUS_AWAY_AUTO = 'away_auto';
+
     public const STATUS_DND = 'dnd';
 
     public const STATUS_INVISIBLE = 'invisible';
@@ -23,6 +25,7 @@ class OnlineStatusManager
         return [
             self::STATUS_ONLINE,
             self::STATUS_AWAY,
+            self::STATUS_AWAY_AUTO,
             self::STATUS_DND,
             self::STATUS_INVISIBLE,
         ];
@@ -47,6 +50,13 @@ class OnlineStatusManager
                 'filament_color' => 'primary',
                 'icon' => 'heroicon-o-clock',
                 'description' => 'User is away but may respond',
+            ],
+            self::STATUS_AWAY_AUTO => [
+                'label' => __('user.indicator.online_status_away'),
+                'color' => 'bg-primary-500',
+                'filament_color' => 'primary',
+                'icon' => 'heroicon-o-clock',
+                'description' => 'User is away but may respond (auto)',
             ],
             self::STATUS_DND => [
                 'label' => __('user.indicator.online_status_dnd'),
@@ -76,7 +86,20 @@ class OnlineStatusManager
     }
 
     /**
-     * Get status options with icons for Filament forms
+     * Get user-selectable status options (excludes auto-away)
+     */
+    public static function getUserSelectableStatuses(): array
+    {
+        return [
+            self::STATUS_ONLINE,
+            self::STATUS_AWAY,
+            self::STATUS_DND,
+            self::STATUS_INVISIBLE,
+        ];
+    }
+
+    /**
+     * Get status options with icons for Filament forms (user-selectable only)
      */
     public static function getStatusOptionsWithIcons(): array
     {
@@ -84,6 +107,11 @@ class OnlineStatusManager
         $options = [];
 
         foreach ($config as $status => $data) {
+            // Skip auto-away status from user selection
+            if ($status === self::STATUS_AWAY_AUTO) {
+                continue;
+            }
+
             $options[$status] = sprintf(
                 '<div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full %s border-2 border-white dark:border-gray-900"></div><span>%s</span></div>',
                 $data['color'],
@@ -161,7 +189,7 @@ class OnlineStatusManager
     }
 
     /**
-     * Get JavaScript configuration for frontend
+     * Get JavaScript configuration for frontend (user-selectable only)
      */
     public static function getJavaScriptConfig(): array
     {
@@ -169,6 +197,11 @@ class OnlineStatusManager
         $jsConfig = [];
 
         foreach ($config as $status => $data) {
+            // Skip auto-away status from user selection
+            if ($status === self::STATUS_AWAY_AUTO) {
+                continue;
+            }
+
             $jsConfig[$status] = [
                 'label' => $data['label'],
                 'color' => $data['color'],

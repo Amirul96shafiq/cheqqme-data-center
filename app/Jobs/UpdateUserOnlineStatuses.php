@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Services\OnlineStatusTracker;
+use App\Services\OnlineStatus\StatusController;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -25,7 +25,7 @@ class UpdateUserOnlineStatuses implements ShouldQueue
     public function handle(): void
     {
         try {
-            OnlineStatusTracker::processAllUserStatusUpdates();
+            StatusController::processAllStatusUpdates();
         } catch (\Exception $e) {
             Log::error('Failed to update user online statuses: ' . $e->getMessage());
             throw $e;

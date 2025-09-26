@@ -372,7 +372,7 @@ class User extends Authenticatable implements HasAvatar
      */
     public static function getOnlineStatusOptions(): array
     {
-        return \App\Services\OnlineStatusManager::getStatusLabels();
+        return \App\Services\OnlineStatus\StatusDisplay::getFormOptions();
     }
 
     /**
@@ -380,7 +380,7 @@ class User extends Authenticatable implements HasAvatar
      */
     public static function getOnlineStatusOptionsWithIcons(): array
     {
-        return \App\Services\OnlineStatusManager::getStatusOptionsWithIcons();
+        return \App\Services\OnlineStatus\StatusDisplay::getFormOptions();
     }
 
     /**
@@ -388,7 +388,7 @@ class User extends Authenticatable implements HasAvatar
      */
     public function getOnlineStatusColor(): string
     {
-        return \App\Services\OnlineStatusManager::getFilamentColor($this->online_status);
+        return \App\Services\OnlineStatus\StatusManager::getFilamentColor($this->online_status);
     }
 
     /**
@@ -396,6 +396,6 @@ class User extends Authenticatable implements HasAvatar
      */
     public function getOnlineStatusDisplayName(): string
     {
-        return \App\Services\OnlineStatusManager::getStatusLabel($this->online_status);
+        return \App\Services\OnlineStatus\StatusManager::getStatusLabel($this->online_status);
     }
 }

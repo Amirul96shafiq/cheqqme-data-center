@@ -1117,7 +1117,7 @@ window.updateOnlineStatus = function(status) {
 // Function to update all status indicators on the page
 window.updateAllStatusIndicators = function(newStatus) {
      // Get status configuration from backend
-     const statusConfig = @json(\App\Services\OnlineStatusManager::getJavaScriptConfig());
+        const statusConfig = @json(\App\Services\OnlineStatus\StatusDisplay::getJavaScriptConfig());
      
      // Update all status indicator buttons
      document.querySelectorAll('[data-status-indicator]').forEach(indicator => {
