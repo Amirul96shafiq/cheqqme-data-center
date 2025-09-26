@@ -49,6 +49,7 @@ class Kernel extends HttpKernel
                 \App\Http\Middleware\SetLocale::class,
                 ValidateCsrfToken::class,
                 SubstituteBindings::class,
+                \App\Http\Middleware\TrackUserActivity::class,
             ],
 
             // API routes middleware stack

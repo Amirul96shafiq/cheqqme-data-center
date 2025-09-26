@@ -10,10 +10,13 @@ use BezhanSalleh\FilamentLanguageSwitch\Enums\Placement;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
 use Filament\Notifications\Livewire\DatabaseNotifications;
 use Filament\Notifications\Livewire\Notifications;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Services\OnlineStatusTracker;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,6 +41,15 @@ class AppServiceProvider extends ServiceProvider
 
         // Register Task observer to ensure activity logging on order/status changes
         Task::observe(TaskObserver::class);
+
+        // Register online status event listeners
+        Event::listen(Login::class, function (Login $event) {
+            OnlineStatusTracker::setUserOnline($event->user);
+        });
+
+        Event::listen(Logout::class, function (Logout $event) {
+            OnlineStatusTracker::setUserInvisible($event->user);
+        });
 
         // Customize password reset URLs to include email parameter
         ResetPassword::createUrlUsing(function (User $user, string $token) {

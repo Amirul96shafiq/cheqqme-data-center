@@ -218,15 +218,22 @@ Route::middleware('auth')->group(function () {
         ]);
 
         $user = auth()->user();
-        $user->online_status = $request->online_status;
-        $user->save();
+        \App\Services\OnlineStatusTracker::handleManualStatusChange($user, $request->online_status);
 
         return response()->json([
             'success' => true,
             'message' => __('user.indicator.online_status_updated'),
-            'status' => $user->online_status,
+            'status' => $user->fresh()->online_status,
         ]);
     })->name('profile.update-online-status');
+
+    // User activity tracking route
+    Route::post('/admin/profile/track-activity', function (Request $request) {
+        $user = auth()->user();
+        \App\Services\OnlineStatusTracker::updateUserActivity($user);
+
+        return response()->json(['success' => true]);
+    })->name('profile.track-activity');
 });
 
 // Weather API routes

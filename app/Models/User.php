@@ -14,6 +14,7 @@ use Kenepa\ResourceLock\Models\Concerns\HasLocks;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use App\Services\OnlineStatusTracker;
 
 class User extends Authenticatable implements HasAvatar
 {

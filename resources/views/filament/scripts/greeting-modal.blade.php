@@ -1140,6 +1140,48 @@ window.updateAllStatusIndicators = function(newStatus) {
      });
 };
 
+// User Activity Tracking for Online Status
+window.trackUserActivity = function() {
+    if (window.userActivityTimeout) {
+        clearTimeout(window.userActivityTimeout);
+    }
+    
+    // Debounce activity tracking to avoid excessive requests
+    window.userActivityTimeout = setTimeout(() => {
+        fetch('/admin/profile/track-activity', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).catch(error => {
+            console.log('Activity tracking failed:', error);
+        });
+    }, 1000); // 1 second debounce
+};
+
+// Track user activity on various events
+document.addEventListener('DOMContentLoaded', function() {
+    // Track activity on user interactions
+    ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'].forEach(event => {
+        document.addEventListener(event, window.trackUserActivity, true);
+    });
+    
+    // Track activity when page becomes visible
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            window.trackUserActivity();
+        }
+    });
+    
+    // Track activity when window gains focus
+    window.addEventListener('focus', window.trackUserActivity);
+    
+    // Initial activity tracking
+    window.trackUserActivity();
+});
+
 // Make functions globally available
 window.openGreetingModal = openGreetingModal;
 window.closeGreetingModal = closeGreetingModal;
