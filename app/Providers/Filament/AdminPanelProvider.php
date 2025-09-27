@@ -333,8 +333,17 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 'panels::scripts.after',
                 function () {
+                    // Expose Reverb configuration to frontend
+                    $reverbConfig = [
+                        'key' => config('broadcasting.connections.reverb.key'),
+                        'host' => config('broadcasting.connections.reverb.options.host'),
+                        'port' => config('broadcasting.connections.reverb.options.port'),
+                        'scheme' => config('broadcasting.connections.reverb.options.scheme'),
+                    ];
+
                     return view('filament.scripts.greeting-modal').
-                        view('components.drag-drop-lang');
+                        view('components.drag-drop-lang').
+                        '<script>window.reverbConfig = '.json_encode($reverbConfig).';</script>';
                 },
             )
             ->renderHook(
