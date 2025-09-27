@@ -14,9 +14,19 @@ const getReverbConfig = () => {
         return window.reverbConfig;
     }
 
+    // Try to get from environment variables
+    if (import.meta.env.VITE_REVERB_APP_KEY) {
+        return {
+            key: import.meta.env.VITE_REVERB_APP_KEY,
+            host: import.meta.env.VITE_REVERB_HOST || "localhost",
+            port: import.meta.env.VITE_REVERB_PORT || 8080,
+            scheme: import.meta.env.VITE_REVERB_SCHEME || "http",
+        };
+    }
+
     // Fallback configuration
     return {
-        key: "cheqqme-key",
+        key: "yv9fc1p3gektc95okepj",
         host: "localhost",
         port: 8080,
         scheme: "http",
@@ -59,4 +69,4 @@ if (!reverbConfig.key) {
  * allow your team to quickly build robust real-time web applications.
  */
 
-import './echo';
+import "./echo";

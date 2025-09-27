@@ -25,7 +25,7 @@ class PresenceStatusManager {
     async init() {
         if (this.isInitialized) {
             console.log("Presence Status Manager already initialized");
-            return;
+            return true;
         }
 
         try {
@@ -48,6 +48,9 @@ class PresenceStatusManager {
                 );
                 return false;
             }
+
+            // Wait a bit for Echo to be fully ready
+            await new Promise((resolve) => setTimeout(resolve, 100));
 
             // Join the presence channel
             this.presenceChannel = this.echo
@@ -72,6 +75,12 @@ class PresenceStatusManager {
                     console.error("Presence channel error:", error);
                     this.handleChannelError(error);
                 });
+
+            // Set up heartbeat to maintain connection
+            this.setupHeartbeat();
+
+            // Set up visibility change handler for auto-status updates
+            this.setupVisibilityHandlers();
 
             this.isInitialized = true;
             console.log("Presence Status Manager initialized successfully");
@@ -520,6 +529,97 @@ class PresenceStatusManager {
     }
 
     /**
+     * Set up heartbeat to maintain connection
+     */
+    setupHeartbeat() {
+        // Send heartbeat every 30 seconds
+        this.heartbeatInterval = setInterval(() => {
+            if (this.presenceChannel && this.isInitialized) {
+                // Echo handles heartbeat automatically, but we can add custom logic here
+                this.sendActivity();
+            }
+        }, 30000);
+    }
+
+    /**
+     * Set up visibility change handlers for auto-status updates
+     */
+    setupVisibilityHandlers() {
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                // Tab is hidden, could set to away
+                this.handleTabHidden();
+            } else {
+                // Tab is visible again, set back to online
+                this.handleTabVisible();
+            }
+        });
+
+        // Handle page unload
+        window.addEventListener("beforeunload", () => {
+            this.handlePageUnload();
+        });
+    }
+
+    /**
+     * Send activity signal to maintain online status
+     */
+    sendActivity() {
+        // This could trigger a backend endpoint to update last_activity
+        if (this.currentUser) {
+            fetch("/api/user/activity", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": this.getCsrfToken(),
+                },
+                body: JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                }),
+            }).catch((error) => {
+                console.warn("Failed to send activity signal:", error);
+            });
+        }
+    }
+
+    /**
+     * Handle tab becoming hidden
+     */
+    handleTabHidden() {
+        console.log("Tab hidden - could set status to away");
+        // Optionally set status to away when tab is hidden
+        // this.updateUserStatus('away').catch(console.error);
+    }
+
+    /**
+     * Handle tab becoming visible
+     */
+    handleTabVisible() {
+        console.log("Tab visible - setting status to online");
+        // Set status back to online when tab becomes visible
+        if (
+            this.currentUser &&
+            this.getUserStatus(this.currentUser.id) === "away"
+        ) {
+            this.updateUserStatus("online").catch(console.error);
+        }
+    }
+
+    /**
+     * Handle page unload
+     */
+    handlePageUnload() {
+        console.log("Page unloading - disconnecting from presence channel");
+        // Clean up heartbeat
+        if (this.heartbeatInterval) {
+            clearInterval(this.heartbeatInterval);
+        }
+
+        // Disconnect from presence channel
+        this.disconnect();
+    }
+
+    /**
      * Disconnect from presence channel
      */
     disconnect() {
@@ -527,6 +627,13 @@ class PresenceStatusManager {
             this.echo.leave("online-users");
             this.presenceChannel = null;
         }
+
+        // Clean up heartbeat
+        if (this.heartbeatInterval) {
+            clearInterval(this.heartbeatInterval);
+            this.heartbeatInterval = null;
+        }
+
         this.isInitialized = false;
         console.log("Presence Status Manager disconnected");
     }
