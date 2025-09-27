@@ -1719,11 +1719,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Set a short timeout to detect if this is just a navigation
-        closeDetectionTimeout = setTimeout(() => {
-            console.log('⏰ Close detection timeout fired - setting to invisible');
-            setUserToInvisible('pagehide timeout');
-        }, 100); // 100ms delay
+        // Skip for navigation - only set invisible for actual tab/browser close
+        // Navigation will trigger pagehide but we should not change status
+        console.log('🧭 Page navigation detected - NOT setting to invisible');
+        return;
     });
     
     // Method 2: Use unload event as backup
@@ -1741,13 +1740,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Clear any existing timeout
-        if (closeDetectionTimeout) {
-            clearTimeout(closeDetectionTimeout);
-        }
-        
-        // Set to invisible immediately
-        setUserToInvisible('unload event');
+        // Skip for navigation - only set invisible for actual tab/browser close
+        // Navigation will trigger unload but we should not change status
+        console.log('🧭 Page navigation detected - NOT setting to invisible');
+        return;
     });
     
     // Method 3: Use beforeunload as final fallback (simplified)
@@ -1765,12 +1761,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Only set to invisible if user has been on page for a reasonable time
-        const timeOnPage = performance.now();
-        if (timeOnPage > 5000 && !hasSetInvisible) {
-            console.log('⏰ User spent sufficient time on page - setting to invisible');
-            setUserToInvisible('beforeunload fallback');
-        }
+        // Skip for navigation - only set invisible for actual tab/browser close
+        // Navigation will trigger beforeunload but we should not change status
+        console.log('🧭 Page navigation detected - NOT setting to invisible');
+        return;
     });
     
     // Handle tab visibility changes for activity tracking
