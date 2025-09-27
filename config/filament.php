@@ -18,15 +18,15 @@ return [
 
         'echo' => [
             'broadcaster' => 'pusher',
-            'key' => env('PUSHER_APP_KEY'),
-            'cluster' => env('PUSHER_APP_CLUSTER'),
-            'wsHost' => env('PUSHER_HOST') ?: 'api-'.env('PUSHER_APP_CLUSTER', 'mt1').'.pusherapp.com',
-            'wsPort' => env('PUSHER_PORT', 443),
-            'wssPort' => env('PUSHER_PORT', 443),
+            'key' => env('REVERB_APP_KEY', 'yv9fc1p3gektc95okepj'),
+            'cluster' => env('REVERB_APP_CLUSTER', 'mt1'),
+            'wsHost' => env('REVERB_HOST', 'localhost'),
+            'wsPort' => env('REVERB_PORT', 8080),
+            'wssPort' => env('REVERB_PORT', 8080),
             'authEndpoint' => '/broadcasting/auth',
             'disableStats' => true,
-            'encrypted' => true,
-            'forceTLS' => env('PUSHER_SCHEME', 'https') === 'https',
+            'encrypted' => false,
+            'forceTLS' => false,
         ],
 
     ],

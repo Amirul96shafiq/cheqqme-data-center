@@ -60,6 +60,12 @@
 
         {{ filament()->getTheme()->getHtml() }}
         {{ filament()->getFontHtml() }}
+        
+        {{-- Include Reverb configuration for presence channels --}}
+        <x-reverb-config />
+        
+        {{-- Include main app bundle with Echo initialization --}}
+        @vite('resources/js/app.js')
 
         <style>
             :root {

@@ -1595,11 +1595,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Handle browser tab close - set user to invisible
-    // Use beforeunload event with immediate sendBeacon for reliable delivery
+    // Use visibilitychange event for more reliable tab close detection
     let hasSetInvisible = false;
     let tabSwitchTimeout = null;
     let isPageRefreshing = false;
     let refreshKeyPressed = false;
+    let isNavigating = false;
+    let navigationStartTime = 0;
     
     // Persistent logging function
     function persistentLog(message, data = null) {
@@ -1664,6 +1666,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Reset navigation flag on page load
+    isNavigating = false;
+    
+    // Detect navigation within the application
+    document.addEventListener('click', function(event) {
+        const target = event.target.closest('a');
+        if (target && target.href) {
+            // Check if it's an internal link (same domain)
+            try {
+                const url = new URL(target.href);
+                const currentUrl = new URL(window.location.href);
+                
+                if (url.origin === currentUrl.origin && url.pathname !== currentUrl.pathname) {
+                    isNavigating = true;
+                    navigationStartTime = Date.now();
+                    persistentLog('Navigation detected to internal page', {
+                        from: currentUrl.pathname,
+                        to: url.pathname
+                    });
+                }
+            } catch (e) {
+                // Invalid URL, ignore
+            }
+        }
+    });
+    
     // Better approach: Use multiple events to detect browser/tab close
     let isPageClosing = false;
     let closeDetectionTimeout = null;
@@ -1704,7 +1732,8 @@ document.addEventListener('DOMContentLoaded', function() {
             persisted: event.persisted,
             hasSetInvisible: hasSetInvisible,
             isPageRefreshing: isPageRefreshing,
-            refreshKeyPressed: refreshKeyPressed
+            refreshKeyPressed: refreshKeyPressed,
+            isNavigating: isNavigating
         });
         
         // If page is being persisted (cached), it's not a close
@@ -1719,10 +1748,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Skip for navigation - only set invisible for actual tab/browser close
-        // Navigation will trigger pagehide but we should not change status
-        console.log('🧭 Page navigation detected - NOT setting to invisible');
-        return;
+        // Skip if it's navigation within the application
+        if (isNavigating) {
+            console.log('🧭 Page navigation detected - NOT setting to invisible');
+            return;
+        }
+        
+        // Set invisible status for tab/browser close
+        console.log('🚪 Tab/browser close detected - setting to invisible');
+        setUserToInvisible('tab_close');
     });
     
     // Method 2: Use unload event as backup
@@ -1731,7 +1765,8 @@ document.addEventListener('DOMContentLoaded', function() {
         persistentLog('unload event fired', { 
             hasSetInvisible: hasSetInvisible,
             isPageRefreshing: isPageRefreshing,
-            refreshKeyPressed: refreshKeyPressed
+            refreshKeyPressed: refreshKeyPressed,
+            isNavigating: isNavigating
         });
         
         // Skip if it's a refresh
@@ -1740,10 +1775,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Skip for navigation - only set invisible for actual tab/browser close
-        // Navigation will trigger unload but we should not change status
-        console.log('🧭 Page navigation detected - NOT setting to invisible');
-        return;
+        // Skip if it's navigation within the application
+        if (isNavigating) {
+            console.log('🧭 Page navigation detected - NOT setting to invisible');
+            return;
+        }
+        
+        // Set invisible status for tab/browser close
+        console.log('🚪 Tab/browser close detected - setting to invisible');
+        setUserToInvisible('tab_close');
     });
     
     // Method 3: Use beforeunload as final fallback (simplified)
@@ -1752,7 +1792,8 @@ document.addEventListener('DOMContentLoaded', function() {
         persistentLog('beforeunload event fired', {
             hasSetInvisible: hasSetInvisible,
             isPageRefreshing: isPageRefreshing,
-            refreshKeyPressed: refreshKeyPressed
+            refreshKeyPressed: refreshKeyPressed,
+            isNavigating: isNavigating
         });
         
         // Skip if it's a refresh
@@ -1761,10 +1802,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Skip for navigation - only set invisible for actual tab/browser close
-        // Navigation will trigger beforeunload but we should not change status
-        console.log('🧭 Page navigation detected - NOT setting to invisible');
-        return;
+        // Skip if it's navigation within the application
+        if (isNavigating) {
+            console.log('🧭 Page navigation detected - NOT setting to invisible');
+            return;
+        }
+        
+        // Set invisible status for tab/browser close
+        console.log('🚪 Tab/browser close detected - setting to invisible');
+        setUserToInvisible('tab_close');
     });
     
     // Handle tab visibility changes for activity tracking
@@ -1804,6 +1850,35 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Track activity when tab becomes visible
             window.trackUserActivity();
+        }
+    });
+    
+    // Additional fallback: Use a longer timeout to detect actual tab closure
+    // This helps distinguish between tab switches and actual tab closure
+    let tabCloseDetectionTimeout = null;
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            // Tab became hidden - start a longer timeout for tab closure detection
+            if (tabCloseDetectionTimeout) {
+                clearTimeout(tabCloseDetectionTimeout);
+            }
+            
+            // Set a longer timeout (5 seconds) to detect actual tab closure
+            // If the tab is still hidden after 5 seconds, it's likely closed
+            tabCloseDetectionTimeout = setTimeout(function() {
+                // Only set to invisible if we're not navigating and not refreshing
+                if (!isNavigating && !isPageRefresh && !refreshKeyPressed && !hasSetInvisible) {
+                    persistentLog('Tab appears to be closed (hidden for 5+ seconds)');
+                    setUserToInvisible('tab_close_timeout');
+                }
+            }, 5000);
+        } else {
+            // Tab became visible - cancel the timeout
+            if (tabCloseDetectionTimeout) {
+                clearTimeout(tabCloseDetectionTimeout);
+                tabCloseDetectionTimeout = null;
+            }
         }
     });
     

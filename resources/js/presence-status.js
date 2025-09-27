@@ -639,8 +639,8 @@ class PresenceStatusManager {
     }
 }
 
-// Initialize the presence status manager when the page loads
-document.addEventListener("DOMContentLoaded", function () {
+// Initialize the presence status manager when Echo is ready
+function initializePresenceStatusManager() {
     if (!window.presenceStatusManager) {
         window.presenceStatusManager = new PresenceStatusManager();
         window.presenceStatusManager.init().catch((error) => {
@@ -650,7 +650,23 @@ document.addEventListener("DOMContentLoaded", function () {
             );
         });
     }
-});
+}
+
+// Wait for Echo to be loaded
+if (window.Echo) {
+    // Echo is already available
+    initializePresenceStatusManager();
+} else {
+    // Wait for Echo to be loaded
+    window.addEventListener("EchoLoaded", initializePresenceStatusManager);
+
+    // Fallback: try to initialize after a delay
+    setTimeout(() => {
+        if (!window.presenceStatusManager && window.Echo) {
+            initializePresenceStatusManager();
+        }
+    }, 1000);
+}
 
 // Export for use in other modules
 if (typeof module !== "undefined" && module.exports) {

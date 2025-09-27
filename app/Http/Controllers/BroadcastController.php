@@ -12,15 +12,34 @@ class BroadcastController extends Controller
      */
     public function authenticate(Request $request)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
         $channelName = $request->input('channel_name');
         $userId = Auth::id();
+        $user = Auth::user();
 
-        // Only allow users to subscribe to their own private channel
-        if ($channelName === 'private-user.' . $userId) {
+        // Handle presence channels
+        if (str_starts_with($channelName, 'presence-')) {
+            return response()->json([
+                'auth' => 'authorized',
+                'channel_data' => [
+                    'user_id' => $user->id,
+                    'user_info' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'avatar' => $user->avatar_url ?? null,
+                        'status' => $user->online_status ?? 'online',
+                        'last_seen' => now()->toISOString(),
+                    ],
+                ],
+            ]);
+        }
+
+        // Handle private channels - only allow users to subscribe to their own private channel
+        if ($channelName === 'private-user.'.$userId) {
             return response()->json([
                 'auth' => 'authorized',
                 'channel_data' => [

@@ -216,6 +216,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/broadcasting/auth', [\App\Http\Controllers\BroadcastController::class, 'authenticate'])
         ->name('broadcasting.auth');
 
+    // User status API endpoints (moved from API routes for web interface)
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/api/user/status', [\App\Http\Controllers\Api\UserStatusController::class, 'getStatus'])->name('api.user.status');
+        Route::post('/api/user/status', [\App\Http\Controllers\Api\UserStatusController::class, 'updateStatus'])->name('api.user.status.update');
+        Route::post('/api/user/activity', [\App\Http\Controllers\Api\UserStatusController::class, 'updateActivity'])->name('api.user.activity');
+        Route::get('/api/user/statuses', [\App\Http\Controllers\Api\UserStatusController::class, 'getAllStatuses'])->name('api.user.statuses');
+        Route::post('/api/user/auto-away', [\App\Http\Controllers\Api\UserStatusController::class, 'setAwayDueToInactivity'])->name('api.user.auto-away');
+        Route::post('/api/user/auto-invisible', [\App\Http\Controllers\Api\UserStatusController::class, 'setInvisibleDueToTabBlur'])->name('api.user.auto-invisible');
+        Route::post('/api/user/restore-auto-status', [\App\Http\Controllers\Api\UserStatusController::class, 'restoreFromAutoStatus'])->name('api.user.restore-auto-status');
+    });
+
     // Fallback polling endpoint (kept for compatibility, will be removed after WebSocket migration)
     Route::get('/action-board/assigned-active-count', function () {
         if (! auth()->check()) {
