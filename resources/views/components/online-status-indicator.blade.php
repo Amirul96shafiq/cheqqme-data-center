@@ -5,6 +5,7 @@
             data-user-id="{{ $user->id }}"
             data-current-status="{{ $user->online_status }}"
             data-is-current-user="{{ auth()->check() && auth()->id() === $user->id ? 'true' : 'false' }}"
+            data-tooltip-text="{{ $getStatusDisplayName() }}"
         ></div>
     </x-tooltip>
 @else
@@ -14,6 +15,7 @@
             data-user-id="{{ $user->id }}"
             data-current-status="{{ $user->online_status }}"
             data-is-current-user="{{ auth()->check() && auth()->id() === $user->id ? 'true' : 'false' }}"
+            data-tooltip-text="{{ $getStatusDisplayName() }}"
         ></div>
     </div>
 @endif

@@ -8,6 +8,10 @@
                 :class="{ 'ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-gray-800': open }"
                 title="Click to change status"
                 data-status-indicator="true"
+                data-tooltip-text="{{ $getStatusDisplayName() }}"
+                data-user-id="{{ $user->id }}"
+                data-current-status="{{ $user->online_status }}"
+                data-is-current-user="{{ auth()->check() && auth()->id() === $user->id ? 'true' : 'false' }}"
             ></button>
         </x-tooltip>
             
@@ -64,6 +68,10 @@
             :class="{ 'ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-gray-800': open }"
             title="Click to change status"
             data-status-indicator="true"
+            data-tooltip-text="{{ $getStatusDisplayName() }}"
+            data-user-id="{{ $user->id }}"
+            data-current-status="{{ $user->online_status }}"
+            data-is-current-user="{{ auth()->check() && auth()->id() === $user->id ? 'true' : 'false' }}"
         ></button>
         
         <!-- Dropdown Menu -->

@@ -1148,12 +1148,22 @@ window.updateOnlineStatus = function(status) {
 };
 
 // Function to update all status indicators on the page
-window.updateAllStatusIndicators = function(newStatus) {
+window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) {
+     console.log('🔄 updateAllStatusIndicators called with status:', newStatus, 'currentUserOnly:', currentUserOnly);
      // Get status configuration from backend
         const statusConfig = @json(\App\Services\OnlineStatus\StatusDisplay::getJavaScriptConfig());
+        console.log('📋 Status config:', statusConfig);
      
      // Update all status indicator buttons
      document.querySelectorAll('[data-status-indicator]').forEach(indicator => {
+         // Skip non-current user indicators if currentUserOnly is true
+         if (currentUserOnly) {
+             const isCurrentUser = indicator.getAttribute('data-is-current-user') === 'true';
+             if (!isCurrentUser) {
+                 return; // Skip this indicator
+             }
+         }
+         
          // Remove all possible status classes
          Object.values(statusConfig).forEach(config => {
              indicator.classList.remove(config.color);
@@ -1166,9 +1176,74 @@ window.updateAllStatusIndicators = function(newStatus) {
      });
      
      // Update all tooltip texts
-     document.querySelectorAll('[data-tooltip-text]').forEach(tooltip => {
+     const tooltips = document.querySelectorAll('.tooltip[data-tooltip-text]');
+     console.log('🔍 Found tooltips to update:', tooltips.length);
+     tooltips.forEach(tooltip => {
+         // Skip non-current user tooltips if currentUserOnly is true
+         if (currentUserOnly) {
+             const tooltipContainer = tooltip.closest('.tooltip-container');
+             if (tooltipContainer) {
+                 const indicator = tooltipContainer.querySelector('.online-status-indicator, [data-status-indicator]');
+                 if (indicator) {
+                     const isCurrentUser = indicator.getAttribute('data-is-current-user') === 'true';
+                     if (!isCurrentUser) {
+                         return; // Skip this tooltip
+                     }
+                 }
+             }
+         }
+         
          if (statusConfig[newStatus]) {
+             console.log('💬 Updating tooltip to:', statusConfig[newStatus].label);
              tooltip.setAttribute('data-tooltip-text', statusConfig[newStatus].label);
+             tooltip.textContent = statusConfig[newStatus].label;
+         }
+     });
+     
+     // Update interactive dropdown selection states
+     const alpineComponents = document.querySelectorAll('[x-data]');
+     console.log('🏔️ Found Alpine.js components:', alpineComponents.length);
+     alpineComponents.forEach(component => {
+         // Look for status dropdown buttons specifically
+         const statusButtons = component.querySelectorAll('button[class*="space-x-3"][class*="text-left"]');
+         console.log('📋 Found status buttons in component:', statusButtons.length);
+         if (statusButtons.length > 0) {
+             // Remove current selection styling from all buttons
+             statusButtons.forEach(button => {
+                 button.classList.remove('bg-primary-50', 'dark:bg-primary-900/10');
+                 const currentIndicator = button.querySelector('.w-2.h-2.rounded-full.bg-primary-500');
+                 if (currentIndicator) {
+                     currentIndicator.remove();
+                 }
+             });
+             
+             // Add selection styling to the new status button
+             statusButtons.forEach(button => {
+                 const statusText = button.textContent.trim();
+                 const statusKey = Object.keys(statusConfig).find(key => 
+                     statusConfig[key].label === statusText
+                 );
+                 
+                 if (statusKey === newStatus) {
+                     button.classList.add('bg-primary-50', 'dark:bg-primary-900/10');
+                     
+                     // Add current status indicator dot
+                     const indicator = document.createElement('div');
+                     indicator.className = 'w-2 h-2 rounded-full bg-primary-500 flex-shrink-0';
+                     button.appendChild(indicator);
+                 }
+             });
+         }
+     });
+     
+     // Update tooltip text in interactive components
+     document.querySelectorAll('[x-data]').forEach(component => {
+         const tooltip = component.querySelector('.tooltip[data-tooltip-text]');
+         if (tooltip && statusConfig[newStatus]) {
+             console.log('💬 Updating interactive tooltip to:', statusConfig[newStatus].label);
+             tooltip.setAttribute('data-tooltip-text', statusConfig[newStatus].label);
+             tooltip.textContent = statusConfig[newStatus].label;
+             tooltip.setAttribute('title', statusConfig[newStatus].label);
          }
      });
      
@@ -1208,12 +1283,17 @@ window.syncAllUserStatuses = function() {
     console.log('🔄 Syncing all user statuses from database...');
     
     // Get all user IDs from the page
-    const userIds = Array.from(document.querySelectorAll('.online-status-indicator'))
+    const indicators = document.querySelectorAll('.online-status-indicator');
+    console.log('🔍 Found status indicators:', indicators.length);
+    
+    const userIds = Array.from(indicators)
         .map(indicator => indicator.getAttribute('data-user-id'))
         .filter(id => id);
     
+    console.log('👥 User IDs found:', userIds);
+    
     if (userIds.length === 0) {
-        console.log('No user indicators found on page');
+        console.log('❌ No user indicators found on page');
         return;
     }
     
@@ -1230,8 +1310,12 @@ window.syncAllUserStatuses = function() {
             user_ids: userIds
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('📡 API Response status:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('📊 API Response data:', data);
         if (data.success && data.statuses) {
             console.log('✅ Received status data:', data.statuses);
             
@@ -1264,6 +1348,24 @@ window.syncAllUserStatuses = function() {
                          if (statusConfig[actualStatus]) {
                              indicator.className = `${baseClasses} ${borderClasses} ${roundedClasses} ${statusConfig[actualStatus].color} online-status-indicator`;
                          }
+                         
+                         // Update tooltip text for this indicator
+                         const tooltipContainer = indicator.closest('.tooltip-container');
+                         console.log(`🔍 Looking for tooltip container for user ${userId}:`, tooltipContainer);
+                         if (tooltipContainer) {
+                             const tooltip = tooltipContainer.querySelector('.tooltip[data-tooltip-text]');
+                             console.log(`🔍 Found tooltip element for user ${userId}:`, tooltip);
+                             if (tooltip && statusConfig[actualStatus]) {
+                                 console.log(`💬 Updating tooltip for user ${userId} from "${tooltip.textContent}" to:`, statusConfig[actualStatus].label);
+                                 tooltip.setAttribute('data-tooltip-text', statusConfig[actualStatus].label);
+                                 tooltip.textContent = statusConfig[actualStatus].label;
+                                 console.log(`✅ Tooltip updated for user ${userId}:`, tooltip.textContent);
+                             } else {
+                                 console.log(`❌ Could not update tooltip for user ${userId} - tooltip:`, tooltip, 'statusConfig:', statusConfig[actualStatus]);
+                             }
+                         } else {
+                             console.log(`❌ No tooltip container found for user ${userId}`);
+                         }
                     }
                 }
             });
@@ -1273,6 +1375,46 @@ window.syncAllUserStatuses = function() {
     })
     .catch(error => {
         console.log('❌ Error syncing user statuses:', error);
+    });
+};
+
+// Test function to manually test status updates (can be called from browser console)
+window.testStatusUpdate = function(status) {
+    console.log('🧪 Testing status update for:', status);
+    if (window.updateAllStatusIndicators) {
+        window.updateAllStatusIndicators(status);
+    } else {
+        console.error('updateAllStatusIndicators function not found');
+    }
+};
+
+// Test function to manually sync user statuses (can be called from browser console)
+window.testSyncUserStatuses = function() {
+    console.log('🧪 Manually syncing user statuses from database...');
+    if (window.syncAllUserStatuses) {
+        window.syncAllUserStatuses();
+    } else {
+        console.error('syncAllUserStatuses function not found');
+    }
+};
+
+// Test function to debug tooltip structure (can be called from browser console)
+window.debugTooltipStructure = function() {
+    console.log('🔍 Debugging tooltip structure...');
+    
+    const indicators = document.querySelectorAll('.online-status-indicator');
+    console.log('📊 Found indicators:', indicators.length);
+    
+    indicators.forEach((indicator, index) => {
+        const userId = indicator.getAttribute('data-user-id');
+        const currentStatus = indicator.getAttribute('data-current-status');
+        const tooltipContainer = indicator.closest('.tooltip-container');
+        
+        console.log(`👤 User ${userId} (${index + 1}):`, {
+            currentStatus: currentStatus,
+            tooltipContainer: tooltipContainer,
+            hasTooltip: tooltipContainer ? tooltipContainer.querySelector('.tooltip[data-tooltip-text]') : null
+        });
     });
 };
 
@@ -1301,9 +1443,9 @@ window.trackUserActivity = function() {
         }).then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Update status indicators if status changed
+                // Update status indicators if status changed (only for current user)
                 if (data.status && window.updateAllStatusIndicators) {
-                    window.updateAllStatusIndicators(data.status);
+                    window.updateAllStatusIndicators(data.status, true); // true = current user only
                 }
                 
                 // Start auto-away timer if user is online
@@ -1341,9 +1483,9 @@ window.startAutoAwayTimer = function() {
         .then(data => {
             if (data.success) {
                 console.log('User auto-set to away due to inactivity');
-                // Update status indicators
+                // Update status indicators (current user only)
                 if (window.updateAllStatusIndicators) {
-                    window.updateAllStatusIndicators('away');
+                    window.updateAllStatusIndicators('away', true);
                 }
             } else {
                 console.log('Auto-away failed:', data.message);
@@ -1607,9 +1749,9 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success && data.data && data.data.previous_status !== data.data.status) {
                 console.log('User restored from auto-status:', data.data.previous_status, '->', data.data.status);
-                // Update status indicators
+                // Update status indicators (current user only)
                 if (window.updateAllStatusIndicators) {
-                    window.updateAllStatusIndicators(data.data.status);
+                    window.updateAllStatusIndicators(data.data.status, true);
                 }
                 // Restart auto-away timer
                 if (data.data.status === 'online') {
