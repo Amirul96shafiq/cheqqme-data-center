@@ -1317,14 +1317,14 @@ window.trackUserActivity = function() {
     }, 500); // Reduced debounce for more responsive behavior
 };
 
-// Auto-Away Timer - Set to 10 seconds for testing
+// Auto-Away Timer - Set to 5 minutes
 window.startAutoAwayTimer = function() {
     // Clear existing timer
     if (window.autoAwayTimeout) {
         clearTimeout(window.autoAwayTimeout);
     }
     
-    // Set timer for 10 seconds for testing (normally would be 5 minutes = 300000ms)
+    // Set timer for 5 minutes (300000ms)
     window.autoAwayTimeout = setTimeout(() => {
         console.log('Auto-away timer triggered - setting user to away');
         
@@ -1351,7 +1351,7 @@ window.startAutoAwayTimer = function() {
         }).catch(error => {
             console.log('Auto-away API call failed:', error);
         });
-    }, 10000); // 10 seconds for testing
+    }, 300000); // 5 minutes (300000ms)
 };
 
 // Track user activity on various events
