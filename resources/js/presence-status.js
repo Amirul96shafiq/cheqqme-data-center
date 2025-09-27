@@ -24,6 +24,7 @@ class PresenceStatusManager {
      */
     async init() {
         if (this.isInitialized) {
+            console.log("Presence Status Manager already initialized");
             return;
         }
 
@@ -33,22 +34,19 @@ class PresenceStatusManager {
                 console.warn(
                     "Laravel Echo not found. Please include Echo in your application."
                 );
-                return;
+                return false;
             }
 
             this.echo = window.Echo;
 
             // Get current user from available sources
-            this.currentUser = window.currentUser || {
-                id: window.chatbotUserId || null,
-                name: window.chatbotUserName || "User",
-            };
+            this.currentUser = this.getCurrentUser();
 
             if (!this.currentUser || !this.currentUser.id) {
                 console.warn(
                     "Current user not found. Cannot initialize presence status."
                 );
-                return;
+                return false;
             }
 
             // Join the presence channel
@@ -72,16 +70,48 @@ class PresenceStatusManager {
                 })
                 .error((error) => {
                     console.error("Presence channel error:", error);
+                    this.handleChannelError(error);
                 });
 
             this.isInitialized = true;
             console.log("Presence Status Manager initialized successfully");
+            return true;
         } catch (error) {
             console.error(
                 "Failed to initialize Presence Status Manager:",
                 error
             );
+            this.handleInitializationError(error);
+            return false;
         }
+    }
+
+    /**
+     * Get current user from available sources
+     */
+    getCurrentUser() {
+        return (
+            window.currentUser || {
+                id: window.chatbotUserId || null,
+                name: window.chatbotUserName || "User",
+            }
+        );
+    }
+
+    /**
+     * Handle channel errors
+     */
+    handleChannelError(error) {
+        console.error("Presence channel error:", error);
+        // Could implement reconnection logic here
+    }
+
+    /**
+     * Handle initialization errors
+     */
+    handleInitializationError(error) {
+        console.error("Initialization error:", error);
+        // Could implement fallback logic here
     }
 
     /**
@@ -126,11 +156,48 @@ class PresenceStatusManager {
         // Update UI
         this.updateUI();
 
-        // Show notification for status changes
-        if (previousStatus && previousStatus !== user.status) {
+        // Update all status indicators for this specific user
+        this.updateUserStatusIndicators(user.id, user.status);
+
+        // Show notification for status changes (only for other users, not current user)
+        if (
+            previousStatus &&
+            previousStatus !== user.status &&
+            user.id !== this.currentUser?.id
+        ) {
             const statusText = this.getStatusText(user.status);
             this.showNotification(`${user.name} is now ${statusText}`, "info");
         }
+    }
+
+    /**
+     * Update status indicators for a specific user
+     */
+    updateUserStatusIndicators(userId, status) {
+        // Find all indicators for this user
+        document
+            .querySelectorAll(`[data-user-id="${userId}"]`)
+            .forEach((element) => {
+                // Update the status indicator element
+                this.updateStatusIndicatorElement(element, status);
+
+                // Update tooltip if present
+                const tooltipElement =
+                    element.querySelector("[data-tooltip-text]") || element;
+                if (tooltipElement) {
+                    const statusConfig = this.getStatusConfig();
+                    if (statusConfig[status]) {
+                        tooltipElement.setAttribute(
+                            "data-tooltip-text",
+                            statusConfig[status].label
+                        );
+                        tooltipElement.setAttribute(
+                            "title",
+                            statusConfig[status].label
+                        );
+                    }
+                }
+            });
     }
 
     /**
@@ -138,38 +205,83 @@ class PresenceStatusManager {
      */
     async updateUserStatus(newStatus) {
         if (!this.currentUser) {
-            console.error("Current user not found");
-            return;
+            const error = new Error("Current user not found");
+            console.error(error.message);
+            return Promise.reject(error);
+        }
+
+        if (!this.isValidStatus(newStatus)) {
+            const error = new Error(`Invalid status: ${newStatus}`);
+            console.error(error.message);
+            return Promise.reject(error);
         }
 
         try {
-            const response = await fetch("/api/user/status", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document
-                        .querySelector('meta[name="csrf-token"]')
-                        .getAttribute("content"),
-                },
-                body: JSON.stringify({
-                    status: newStatus,
-                }),
-            });
+            const response = await this.makeStatusUpdateRequest(newStatus);
 
             if (!response.ok) {
-                throw new Error("Failed to update status");
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(
+                    errorData.message ||
+                        `HTTP ${response.status}: Failed to update status`
+                );
             }
 
             const result = await response.json();
             console.log("Status updated successfully:", result);
 
-            // Return a promise for compatibility with the existing dropdown
+            // Update current user's status in the map
+            this.onlineUsers.set(this.currentUser.id, {
+                ...this.currentUser,
+                status: newStatus,
+            });
+
+            // Update all status indicators for current user
+            this.updateUserStatusIndicators(this.currentUser.id, newStatus);
+
             return Promise.resolve(result);
         } catch (error) {
             console.error("Failed to update user status:", error);
             this.showNotification("Failed to update status", "error");
             return Promise.reject(error);
         }
+    }
+
+    /**
+     * Make the status update request
+     */
+    async makeStatusUpdateRequest(newStatus) {
+        const csrfToken = this.getCsrfToken();
+
+        return fetch("/api/user/status", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            body: JSON.stringify({
+                status: newStatus,
+            }),
+        });
+    }
+
+    /**
+     * Get CSRF token
+     */
+    getCsrfToken() {
+        const tokenElement = document.querySelector('meta[name="csrf-token"]');
+        if (!tokenElement) {
+            throw new Error("CSRF token not found");
+        }
+        return tokenElement.getAttribute("content");
+    }
+
+    /**
+     * Validate status
+     */
+    isValidStatus(status) {
+        const validStatuses = ["online", "away", "dnd", "invisible"];
+        return validStatuses.includes(status);
     }
 
     /**
@@ -233,21 +345,101 @@ class PresenceStatusManager {
      * Update status indicators throughout the UI
      */
     updateStatusIndicators() {
-        // Update user status indicators
-        document.querySelectorAll("[data-user-id]").forEach((element) => {
+        // Update all online status indicators on the page
+        document
+            .querySelectorAll(
+                ".online-status-indicator, [data-status-indicator]"
+            )
+            .forEach((element) => {
+                const userId = element.getAttribute("data-user-id");
+                const user = this.onlineUsers.get(parseInt(userId));
+
+                if (user) {
+                    // Update the status indicator with new classes
+                    this.updateStatusIndicatorElement(element, user.status);
+                }
+            });
+
+        // Update tooltip texts
+        this.updateStatusTooltips();
+    }
+
+    /**
+     * Update a single status indicator element
+     */
+    updateStatusIndicatorElement(element, status) {
+        // Get status configuration
+        const statusConfig = this.getStatusConfig();
+
+        if (statusConfig[status]) {
+            // Remove old status classes
+            Object.values(statusConfig).forEach((config) => {
+                element.classList.remove(config.color);
+            });
+
+            // Add new status class
+            element.classList.add(statusConfig[status].color);
+
+            // Update data attribute
+            element.setAttribute("data-current-status", status);
+        }
+    }
+
+    /**
+     * Update tooltip texts for status indicators
+     */
+    updateStatusTooltips() {
+        const statusConfig = this.getStatusConfig();
+
+        document.querySelectorAll("[data-tooltip-text]").forEach((element) => {
             const userId = element.getAttribute("data-user-id");
             const user = this.onlineUsers.get(parseInt(userId));
 
-            if (user) {
-                const statusIndicator =
-                    element.querySelector(".status-indicator");
-                if (statusIndicator) {
-                    statusIndicator.className = `status-indicator w-2 h-2 ${this.getStatusColor(
-                        user.status
-                    )} rounded-full`;
+            if (user && statusConfig[user.status]) {
+                const newTooltipText = statusConfig[user.status].label;
+                element.setAttribute("data-tooltip-text", newTooltipText);
+                element.setAttribute("title", newTooltipText);
+
+                // Update text content if it's a text element
+                if (element.textContent) {
+                    element.textContent = newTooltipText;
                 }
             }
         });
+    }
+
+    /**
+     * Get status configuration from backend
+     */
+    getStatusConfig() {
+        // Try to get from global window object first (set by backend)
+        if (window.statusConfig) {
+            return window.statusConfig;
+        }
+
+        // Fallback configuration
+        return {
+            online: {
+                label: "Online",
+                color: "bg-teal-500",
+                icon: "heroicon-o-check-circle",
+            },
+            away: {
+                label: "Away",
+                color: "bg-primary-500",
+                icon: "heroicon-o-clock",
+            },
+            dnd: {
+                label: "Do Not Disturb",
+                color: "bg-red-500",
+                icon: "heroicon-o-x-circle",
+            },
+            invisible: {
+                label: "Invisible",
+                color: "bg-gray-400",
+                icon: "heroicon-o-eye-slash",
+            },
+        };
     }
 
     /**
@@ -290,12 +482,18 @@ class PresenceStatusManager {
      * Show notification
      */
     showNotification(message, type = "info") {
-        // You can integrate with your existing notification system
         console.log(`[${type.toUpperCase()}] ${message}`);
 
-        // Example: Show toast notification
-        if (window.showToast) {
+        // Try different notification systems
+        if (window.showNotification) {
+            window.showNotification(type, message);
+        } else if (window.showToast) {
             window.showToast(message, type);
+        } else if (window.$wire && window.$wire.$dispatch) {
+            window.$wire.$dispatch("notify", {
+                type: type,
+                message: message,
+            });
         }
     }
 
@@ -336,8 +534,15 @@ class PresenceStatusManager {
 
 // Initialize the presence status manager when the page loads
 document.addEventListener("DOMContentLoaded", function () {
-    window.presenceStatusManager = new PresenceStatusManager();
-    window.presenceStatusManager.init();
+    if (!window.presenceStatusManager) {
+        window.presenceStatusManager = new PresenceStatusManager();
+        window.presenceStatusManager.init().catch((error) => {
+            console.error(
+                "Failed to initialize presence status manager:",
+                error
+            );
+        });
+    }
 });
 
 // Export for use in other modules

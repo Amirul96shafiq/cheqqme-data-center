@@ -1055,6 +1055,20 @@ function setupGreetingBackgroundImage() {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateBackgroundImage);
 }
 
+// Global notification function
+window.showNotification = function(type, message) {
+    // Use Filament's notification system if available
+    if (window.$wire && window.$wire.$dispatch) {
+        window.$wire.$dispatch('notify', {
+            type: type,
+            message: message
+        });
+    } else {
+        // Fallback to console log
+        console.log(`[${type.toUpperCase()}] ${message}`);
+    }
+};
+
 // Global function to update online status via AJAX with presence channels
 window.updateOnlineStatus = function(status) {
     console.log('updateOnlineStatus called with status:', status);
@@ -1071,8 +1085,8 @@ window.updateOnlineStatus = function(status) {
         // Use presence channel for real-time updates
         window.presenceStatusManager.updateUserStatus(status)
             .then(() => {
-                // Update all online status indicators on the page
-                updateAllStatusIndicators(status);
+                // Update only the current user's status indicators
+                updateAllStatusIndicators(status, true);
                 
                 // Show success notification
                 if (window.showNotification) {
@@ -1112,18 +1126,15 @@ window.updateOnlineStatus = function(status) {
         .then(data => {
             console.log('AJAX response data:', data);
             if (data.success) {
-                // Update all online status indicators on the page
-                updateAllStatusIndicators(status);
+                // Update only the current user's status indicators
+                updateAllStatusIndicators(status, true);
                 
                  // Show success notification
                  if (window.showNotification) {
                      window.showNotification('success', '{{ __("user.indicator.online_status_updated") }}');
                  }
                 
-                // Auto-refresh page after notification appears
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500); // 1.5 seconds delay to allow user to see the notification
+                // No need to refresh page - real-time updates handle this
              } else {
                  // Show error notification
                  if (window.showNotification) {
@@ -1151,8 +1162,11 @@ window.updateOnlineStatus = function(status) {
 window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) {
      console.log('🔄 updateAllStatusIndicators called with status:', newStatus, 'currentUserOnly:', currentUserOnly);
      // Get status configuration from backend
-        const statusConfig = @json(\App\Services\OnlineStatus\StatusDisplay::getJavaScriptConfig());
+        const statusConfig = @json(\App\Services\OnlineStatus\StatusConfig::getJavaScriptConfig());
         console.log('📋 Status config:', statusConfig);
+        
+        // Make status config available globally
+        window.statusConfig = statusConfig;
      
      // Update all status indicator buttons
      document.querySelectorAll('[data-status-indicator]').forEach(indicator => {
@@ -1181,15 +1195,18 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
      tooltips.forEach(tooltip => {
          // Skip non-current user tooltips if currentUserOnly is true
          if (currentUserOnly) {
-             const tooltipContainer = tooltip.closest('.tooltip-container');
-             if (tooltipContainer) {
-                 const indicator = tooltipContainer.querySelector('.online-status-indicator, [data-status-indicator]');
-                 if (indicator) {
-                     const isCurrentUser = indicator.getAttribute('data-is-current-user') === 'true';
-                     if (!isCurrentUser) {
-                         return; // Skip this tooltip
-                     }
+             // Find the associated status indicator
+             const indicator = tooltip.closest('.tooltip-container')?.querySelector('.online-status-indicator, [data-status-indicator]') ||
+                              tooltip.parentElement?.querySelector('.online-status-indicator, [data-status-indicator]') ||
+                              document.querySelector(`[data-tooltip-text="${tooltip.getAttribute('data-tooltip-text')}"]`);
+             
+             if (indicator) {
+                 const isCurrentUser = indicator.getAttribute('data-is-current-user') === 'true';
+                 if (!isCurrentUser) {
+                     return; // Skip this tooltip
                  }
+             } else {
+                 return; // Skip if no associated indicator found
              }
          }
          
@@ -1240,6 +1257,19 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
      document.querySelectorAll('[x-data]').forEach(component => {
          const tooltip = component.querySelector('.tooltip[data-tooltip-text]');
          if (tooltip && statusConfig[newStatus]) {
+             // Skip non-current user tooltips if currentUserOnly is true
+             if (currentUserOnly) {
+                 const indicator = component.querySelector('.online-status-indicator, [data-status-indicator]');
+                 if (indicator) {
+                     const isCurrentUser = indicator.getAttribute('data-is-current-user') === 'true';
+                     if (!isCurrentUser) {
+                         return; // Skip this tooltip
+                     }
+                 } else {
+                     return; // Skip if no associated indicator found
+                 }
+             }
+             
              console.log('💬 Updating interactive tooltip to:', statusConfig[newStatus].label);
              tooltip.setAttribute('data-tooltip-text', statusConfig[newStatus].label);
              tooltip.textContent = statusConfig[newStatus].label;
@@ -1259,8 +1289,8 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
                  // Update the data attribute
                  indicator.setAttribute('data-current-status', newStatus);
                  
-                 // Get status configuration from backend
-                 const statusConfig = @json(\App\Services\OnlineStatus\StatusDisplay::getJavaScriptConfig());
+                // Get status configuration from backend
+                const statusConfig = @json(\App\Services\OnlineStatus\StatusConfig::getJavaScriptConfig());
                  
                  // Update the CSS classes using the same logic as the component
                  const sizeClasses = indicator.className.match(/w-\d+ h-\d+/);
@@ -1334,8 +1364,8 @@ window.syncAllUserStatuses = function() {
                         // Update the data attribute
                         indicator.setAttribute('data-current-status', actualStatus);
                         
-                        // Get status configuration from backend
-                        const statusConfig = @json(\App\Services\OnlineStatus\StatusDisplay::getJavaScriptConfig());
+                // Get status configuration from backend
+                const statusConfig = @json(\App\Services\OnlineStatus\StatusConfig::getJavaScriptConfig());
                         
                         // Update the CSS classes using the same logic as the component
                         const sizeClasses = indicator.className.match(/w-\d+ h-\d+/);
@@ -1382,7 +1412,7 @@ window.syncAllUserStatuses = function() {
 window.testStatusUpdate = function(status) {
     console.log('🧪 Testing status update for:', status);
     if (window.updateAllStatusIndicators) {
-        window.updateAllStatusIndicators(status);
+        window.updateAllStatusIndicators(status, true); // true = current user only
     } else {
         console.error('updateAllStatusIndicators function not found');
     }
@@ -1496,6 +1526,34 @@ window.startAutoAwayTimer = function() {
     }, 300000); // 5 minutes (300000ms)
 };
 
+// Polling fallback for status updates when real-time is not available
+window.startStatusPolling = function() {
+    console.log('🔄 Starting status polling fallback...');
+    
+    // Clear any existing polling interval
+    if (window.statusPollingInterval) {
+        clearInterval(window.statusPollingInterval);
+    }
+    
+    // Poll every 10 seconds
+    window.statusPollingInterval = setInterval(() => {
+        console.log('🔄 Polling for status updates...');
+        window.syncAllUserStatuses();
+    }, 10000); // 10 seconds
+    
+    // Initial sync
+    window.syncAllUserStatuses();
+};
+
+// Stop polling when real-time becomes available
+window.stopStatusPolling = function() {
+    if (window.statusPollingInterval) {
+        console.log('🔄 Stopping status polling fallback...');
+        clearInterval(window.statusPollingInterval);
+        window.statusPollingInterval = null;
+    }
+};
+
 // Track user activity on various events
 document.addEventListener('DOMContentLoaded', function() {
     // Track activity on user interactions
@@ -1512,6 +1570,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Track activity when window gains focus
     window.addEventListener('focus', window.trackUserActivity);
+    
+    // Fallback polling for status updates when real-time is not available
+    // Check if presence status manager is available and working
+    if (typeof window.presenceStatusManager === 'undefined' || !window.presenceStatusManager.isInitialized) {
+        console.log('🔄 Real-time updates not available, starting polling fallback...');
+        window.startStatusPolling();
+    }
     
     // Handle browser tab close - set user to invisible
     // Use beforeunload event with immediate sendBeacon for reliable delivery

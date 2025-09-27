@@ -23,6 +23,8 @@
     "dependencies": {
         "bcrypt": "^6.0.0",
         "dotenv": "^17.2.1",
-        "emoji-picker-element": "^1.26.3"
+        "emoji-picker-element": "^1.26.3",
+        "laravel-echo": "^2.2.4",
+        "pusher-js": "^8.4.0"
     }
 }

@@ -12,7 +12,7 @@ class StatusDisplay
      */
     public static function getFormOptions(): array
     {
-        $config = StatusManager::getStatusConfig();
+        $config = StatusConfig::getStatusConfig();
         $options = [];
 
         foreach ($config as $status => $data) {
@@ -31,38 +31,15 @@ class StatusDisplay
      */
     public static function getJavaScriptConfig(): array
     {
-        $config = StatusManager::getStatusConfig();
-        $jsConfig = [];
-
-        foreach ($config as $status => $data) {
-            $jsConfig[$status] = [
-                'label' => $data['label'],
-                'color' => $data['color'],
-                'icon' => $data['icon'],
-            ];
-        }
-
-        return $jsConfig;
+        return StatusConfig::getJavaScriptConfig();
     }
 
     /**
      * Get status classes for display
      */
-    public static function getStatusClasses(string $status, string $size = 'sm'): string
+    public static function getStatusClasses(string $status, ?string $size = null): string
     {
-        $baseClasses = 'rounded-full border-2 border-white dark:border-gray-900';
-        $color = StatusManager::getStatusColor($status);
-        
-        $sizeClasses = match ($size) {
-            'xs' => 'w-2 h-2',
-            'sm' => 'w-3 h-3',
-            'md' => 'w-4 h-4',
-            'lg' => 'w-5 h-5',
-            'xl' => 'w-6 h-6',
-            default => 'w-4 h-4',
-        };
-        
-        return $baseClasses . ' ' . $color . ' ' . $sizeClasses;
+        return StatusConfig::getStatusClasses($status, $size);
     }
 
     /**
@@ -70,7 +47,7 @@ class StatusDisplay
      */
     public static function getDisplayName(string $status): string
     {
-        return StatusManager::getStatusLabel($status);
+        return StatusConfig::getStatusLabel($status);
     }
 
     /**
@@ -78,6 +55,6 @@ class StatusDisplay
      */
     public static function getTooltipText(string $status): string
     {
-        return StatusManager::getStatusDescription($status);
+        return StatusConfig::getStatusDescription($status);
     }
 }

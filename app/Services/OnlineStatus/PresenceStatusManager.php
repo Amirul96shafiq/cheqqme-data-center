@@ -22,12 +22,12 @@ class PresenceStatusManager
 
         // Clear last_status_change when setting to online (allows auto-away to work)
         $user->update([
-            'online_status' => StatusManager::ONLINE,
+            'online_status' => StatusConfig::ONLINE,
             'last_status_change' => null,
         ]);
 
         // Broadcast the status change to all users
-        broadcast(new UserOnlineStatusChanged($user, StatusManager::ONLINE, $previousStatus));
+        broadcast(new UserOnlineStatusChanged($user, StatusConfig::ONLINE, $previousStatus));
 
         Log::info("User {$user->id} set to online status via presence channel");
     }
@@ -39,10 +39,10 @@ class PresenceStatusManager
     {
         $previousStatus = $user->online_status;
 
-        $user->update(['online_status' => StatusManager::INVISIBLE]);
+        $user->update(['online_status' => StatusConfig::INVISIBLE]);
 
         // Broadcast the status change to all users
-        broadcast(new UserOnlineStatusChanged($user, StatusManager::INVISIBLE, $previousStatus));
+        broadcast(new UserOnlineStatusChanged($user, StatusConfig::INVISIBLE, $previousStatus));
 
         Log::info("User {$user->id} set to invisible status via presence channel");
     }
@@ -52,7 +52,7 @@ class PresenceStatusManager
      */
     public static function handleManualChange(User $user, string $newStatus): void
     {
-        if (! StatusManager::isValidStatus($newStatus)) {
+        if (! StatusConfig::isValidStatus($newStatus)) {
             throw new \InvalidArgumentException("Invalid status: {$newStatus}");
         }
 
@@ -60,7 +60,7 @@ class PresenceStatusManager
 
         // For manual changes, set timestamp to mark as manual
         // Only clear timestamp for online status (to allow auto-away)
-        if ($newStatus === StatusManager::ONLINE) {
+        if ($newStatus === StatusConfig::ONLINE) {
             $user->update([
                 'online_status' => $newStatus,
                 'last_status_change' => null,
@@ -85,10 +85,10 @@ class PresenceStatusManager
     {
         $previousStatus = $user->online_status;
 
-        $user->update(['online_status' => StatusManager::AWAY]);
+        $user->update(['online_status' => StatusConfig::AWAY]);
 
         // Broadcast the status change to all users
-        broadcast(new UserOnlineStatusChanged($user, StatusManager::AWAY, $previousStatus));
+        broadcast(new UserOnlineStatusChanged($user, StatusConfig::AWAY, $previousStatus));
 
         Log::info("User {$user->id} set to away status via presence channel");
     }
@@ -100,10 +100,10 @@ class PresenceStatusManager
     {
         $previousStatus = $user->online_status;
 
-        $user->update(['online_status' => StatusManager::DO_NOT_DISTURB]);
+        $user->update(['online_status' => StatusConfig::DO_NOT_DISTURB]);
 
         // Broadcast the status change to all users
-        broadcast(new UserOnlineStatusChanged($user, StatusManager::DO_NOT_DISTURB, $previousStatus));
+        broadcast(new UserOnlineStatusChanged($user, StatusConfig::DO_NOT_DISTURB, $previousStatus));
 
         Log::info("User {$user->id} set to do not disturb status via presence channel");
     }
@@ -126,7 +126,7 @@ class PresenceStatusManager
     {
         // With presence channels, we don't need to check activity timestamps
         // The presence channel automatically handles join/leave events
-        return $user->online_status === StatusManager::ONLINE;
+        return $user->online_status === StatusConfig::ONLINE;
     }
 
     /**
@@ -137,14 +137,14 @@ class PresenceStatusManager
         $previousStatus = $user->online_status;
 
         // Only set to away if user is currently online and hasn't manually set a status
-        if ($user->online_status === StatusManager::ONLINE && ! $user->last_status_change) {
+        if ($user->online_status === StatusConfig::ONLINE && ! $user->last_status_change) {
             $user->update([
-                'online_status' => StatusManager::AWAY,
+                'online_status' => StatusConfig::AWAY,
                 'last_status_change' => null, // Keep null to indicate this is auto-away
             ]);
 
             // Broadcast the status change to all users
-            broadcast(new UserOnlineStatusChanged($user, StatusManager::AWAY, $previousStatus));
+            broadcast(new UserOnlineStatusChanged($user, StatusConfig::AWAY, $previousStatus));
 
             Log::info("User {$user->id} auto-set to away status due to inactivity");
         }
@@ -158,14 +158,14 @@ class PresenceStatusManager
         $previousStatus = $user->online_status;
 
         // Only set to invisible if user is currently online and hasn't manually set a status
-        if ($user->online_status === StatusManager::ONLINE && ! $user->last_status_change) {
+        if ($user->online_status === StatusConfig::ONLINE && ! $user->last_status_change) {
             $user->update([
-                'online_status' => StatusManager::INVISIBLE,
+                'online_status' => StatusConfig::INVISIBLE,
                 'last_status_change' => null, // Keep null to indicate this is auto-invisible
             ]);
 
             // Broadcast the status change to all users
-            broadcast(new UserOnlineStatusChanged($user, StatusManager::INVISIBLE, $previousStatus));
+            broadcast(new UserOnlineStatusChanged($user, StatusConfig::INVISIBLE, $previousStatus));
 
             Log::info("User {$user->id} auto-set to invisible status due to tab blur");
         }
@@ -179,14 +179,14 @@ class PresenceStatusManager
         $previousStatus = $user->online_status;
 
         // Only restore if user was in an auto-managed status (away or invisible with no manual change)
-        if (in_array($user->online_status, [StatusManager::AWAY, StatusManager::INVISIBLE]) && ! $user->last_status_change) {
+        if (in_array($user->online_status, [StatusConfig::AWAY, StatusConfig::INVISIBLE]) && ! $user->last_status_change) {
             $user->update([
-                'online_status' => StatusManager::ONLINE,
+                'online_status' => StatusConfig::ONLINE,
                 'last_status_change' => null,
             ]);
 
             // Broadcast the status change to all users
-            broadcast(new UserOnlineStatusChanged($user, StatusManager::ONLINE, $previousStatus));
+            broadcast(new UserOnlineStatusChanged($user, StatusConfig::ONLINE, $previousStatus));
 
             Log::info("User {$user->id} restored to online status from auto-status: {$previousStatus}");
         }
