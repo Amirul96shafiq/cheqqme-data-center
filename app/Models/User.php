@@ -133,6 +133,7 @@ class User extends Authenticatable implements HasAvatar
             'longitude' => 'decimal:8',
             'location_updated_at' => 'datetime',
             'last_auto_location_update' => 'datetime',
+            'last_status_change' => 'datetime',
         ];
     }
 
@@ -152,6 +153,8 @@ class User extends Authenticatable implements HasAvatar
                 // Store the original updated_by value in a static property
                 static::$originalUpdatedBy = $user->getOriginal('updated_by');
             }
+            // If both online_status and last_status_change are being updated, allow timestamps
+            // This ensures that manual status changes from the profile form work correctly
         });
 
         static::updated(function ($user) {

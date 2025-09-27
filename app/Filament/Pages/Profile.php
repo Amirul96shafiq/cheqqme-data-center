@@ -425,16 +425,31 @@ class Profile extends EditProfile
             ]);
     }
 
+    public function save(): void
+    {
+        $user = auth()->user();
+        $formData = $this->form->getState();
+
+        // Store the original status before saving
+        $originalStatus = $user->online_status;
+        $newStatus = $formData['online_status'] ?? null;
+
+        // Call parent save method
+        parent::save();
+
+        // Check if online status was changed and trigger presence update
+        if (isset($newStatus) && $originalStatus !== $newStatus) {
+            // Use presence status manager to handle the status change
+            \App\Services\OnlineStatus\PresenceStatusManager::handleManualChange($user, $newStatus);
+        }
+
+        // Call afterSave for other logic
+        $this->afterSave();
+    }
+
     public function afterSave(): void
     {
-        // Check if online status was changed and trigger presence update
         $formData = $this->form->getState();
-        $user = auth()->user();
-
-        if (isset($formData['online_status']) && $user->online_status !== $formData['online_status']) {
-            // Use presence status manager to handle the status change
-            \App\Services\OnlineStatus\PresenceStatusManager::handleManualChange($user, $formData['online_status']);
-        }
 
         // If user changed the password, log them out
         if (filled($formData['password'] ?? null)) {
