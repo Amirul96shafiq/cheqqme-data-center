@@ -101,7 +101,7 @@ return [
         'online_status_invisible' => 'Invisible',
         
         // Online Status Messages
-        'online_status_updated' => 'Status updated successfully. Refreshing the page...',
+        'online_status_updated' => 'Status updated successfully.',
         'online_status_update_failed' => 'Failed to update status',
     ],
 

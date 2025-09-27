@@ -101,7 +101,7 @@ return [
         'online_status_invisible' => 'Tidak Kelihatan',
         
         // Online Status Messages
-        'online_status_updated' => 'Status berjaya dikemaskini. Memuat semula halaman...',
+        'online_status_updated' => 'Status berjaya dikemaskini.',
         'online_status_update_failed' => 'Gagal mengemaskini status',
     ],
 
