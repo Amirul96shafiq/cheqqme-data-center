@@ -15,6 +15,7 @@
         "guzzlehttp/guzzle": "^7.9",
         "kenepa/resource-lock": "^3.0",
         "laravel/framework": "^12.26.0",
+        "laravel/reverb": "^1.6",
         "laravel/sanctum": "^4.2",
         "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
