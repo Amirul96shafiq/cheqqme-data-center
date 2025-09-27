@@ -1074,8 +1074,9 @@ window.updateOnlineStatus = function(status) {
     console.log('updateOnlineStatus called with status:', status);
     // Show loading state
     const button = event.target.closest('button');
+    let originalContent = null;
     if (button) {
-        const originalContent = button.innerHTML;
+        originalContent = button.innerHTML;
         button.innerHTML = '<div class="w-4 h-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>';
         button.disabled = true;
     }
@@ -1092,6 +1093,12 @@ window.updateOnlineStatus = function(status) {
                 if (window.showNotification) {
                     window.showNotification('success', '{{ __("user.indicator.online_status_updated") }}');
                 }
+                
+                // Restore button content immediately after status update
+                if (button && originalContent) {
+                    button.innerHTML = originalContent;
+                    button.disabled = false;
+                }
             })
             .catch(error => {
                 console.error('Error updating status via presence channel:', error);
@@ -1100,8 +1107,10 @@ window.updateOnlineStatus = function(status) {
                 }
             })
             .finally(() => {
-                // Restore button state
-                if (button) {
+                // Button state is restored in the success handler
+                // Only restore here if there was an error
+                if (button && originalContent && button.innerHTML.includes('animate-spin')) {
+                    button.innerHTML = originalContent;
                     button.disabled = false;
                 }
             });
@@ -1134,6 +1143,12 @@ window.updateOnlineStatus = function(status) {
                      window.showNotification('success', '{{ __("user.indicator.online_status_updated") }}');
                  }
                 
+                // Restore button content immediately after status update
+                if (button && originalContent) {
+                    button.innerHTML = originalContent;
+                    button.disabled = false;
+                }
+                
                 // No need to refresh page - real-time updates handle this
              } else {
                  // Show error notification
@@ -1149,10 +1164,11 @@ window.updateOnlineStatus = function(status) {
             }
         })
         .finally(() => {
-            // Restore button state
-            if (button) {
+            // Button state is restored in the success handler
+            // Only restore here if there was an error
+            if (button && originalContent && button.innerHTML.includes('animate-spin')) {
+                button.innerHTML = originalContent;
                 button.disabled = false;
-                // The status indicator will be updated by updateAllStatusIndicators
             }
         });
     }
