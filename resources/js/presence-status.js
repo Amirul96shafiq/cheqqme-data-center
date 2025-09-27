@@ -140,7 +140,7 @@ class PresenceStatusManager {
     handleUserJoined(user) {
         this.onlineUsers.set(user.id, user);
         this.updateUI();
-        this.showNotification(`${user.name} is now online`, "success");
+        // Notification removed - no longer showing when users come online
     }
 
     /**
@@ -149,7 +149,7 @@ class PresenceStatusManager {
     handleUserLeft(user) {
         this.onlineUsers.delete(user.id);
         this.updateUI();
-        this.showNotification(`${user.name} is now offline`, "info");
+        // Notification removed - no longer showing when users go offline
     }
 
     /**
@@ -168,15 +168,7 @@ class PresenceStatusManager {
         // Update all status indicators for this specific user
         this.updateUserStatusIndicators(user.id, user.status);
 
-        // Show notification for status changes (only for other users, not current user)
-        if (
-            previousStatus &&
-            previousStatus !== user.status &&
-            user.id !== this.currentUser?.id
-        ) {
-            const statusText = this.getStatusText(user.status);
-            this.showNotification(`${user.name} is now ${statusText}`, "info");
-        }
+        // Notification removed - no longer showing when users change status
     }
 
     /**
@@ -251,7 +243,7 @@ class PresenceStatusManager {
             return Promise.resolve(result);
         } catch (error) {
             console.error("Failed to update user status:", error);
-            this.showNotification("Failed to update status", "error");
+            // Error notification removed - errors are still logged to console
             return Promise.reject(error);
         }
     }
