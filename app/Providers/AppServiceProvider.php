@@ -26,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
     {
         // Trigger the database notifications trigger
         DatabaseNotifications::trigger('filament.notifications.database-notifications-trigger');
+
+        // Use Laravel's default BroadcastController
     }
 
     /**

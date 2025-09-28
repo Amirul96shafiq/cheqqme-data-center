@@ -26,3 +26,13 @@ Broadcast::channel('online-users', function (User $user) {
         'last_seen' => now()->toISOString(),
     ];
 });
+
+// Private channel for user notifications (Filament)
+Broadcast::channel('App.Models.User.{id}', function (User $user, $id) {
+    return (int) $user->id === (int) $id;
+});
+
+// Private channel for user-specific data
+Broadcast::channel('user.{id}', function (User $user, $id) {
+    return (int) $user->id === (int) $id;
+});

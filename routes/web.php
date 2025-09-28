@@ -212,10 +212,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/chatbot/backup/{backup}/download', [ChatbotController::class, 'downloadBackup'])->name('chatbot.backup.download');
     Route::post('/chatbot/backup/create', [ChatbotController::class, 'createManualBackup'])->name('chatbot.backup.create');
 
-    // WebSocket broadcast authentication
-    Route::post('/broadcasting/auth', [\App\Http\Controllers\BroadcastController::class, 'authenticate'])
-        ->name('broadcasting.auth');
-
     // User status API endpoints (moved from API routes for web interface)
     Route::middleware(['auth'])->group(function () {
         Route::get('/api/user/status', [\App\Http\Controllers\Api\UserStatusController::class, 'getStatus'])->name('api.user.status');

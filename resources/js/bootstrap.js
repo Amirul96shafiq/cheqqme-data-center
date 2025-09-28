@@ -35,6 +35,12 @@ const getReverbConfig = () => {
 
 const reverbConfig = getReverbConfig();
 
+// Get CSRF token for debugging
+const csrfToken = document
+    .querySelector('meta[name="csrf-token"]')
+    ?.getAttribute("content");
+console.log("CSRF Token found:", csrfToken ? "Yes" : "No", csrfToken);
+
 // Validate configuration before initializing Echo
 if (!reverbConfig.key) {
     console.error(
@@ -50,6 +56,11 @@ if (!reverbConfig.key) {
             wssPort: reverbConfig.port,
             forceTLS: reverbConfig.scheme === "https",
             enabledTransports: ["ws", "wss"],
+            auth: {
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken || "",
+                },
+            },
         });
 
         console.log("Echo initialized successfully with Reverb:", {
