@@ -100,7 +100,7 @@ class Profile extends EditProfile
                                     ->directory('covers')
                                     ->moveFiles()
                                     ->preserveFilenames()
-                                    ->itemPanelAspectRatio('0.25')
+                                    //->itemPanelAspectRatio('0.25')
                                     ->imageResizeMode('cover')
                                     ->imageCropAspectRatio('4:1')
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
