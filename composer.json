@@ -13,6 +13,7 @@
         "charrafimed/global-search-modal": "^3.7",
         "filament/filament": "^3.0",
         "guzzlehttp/guzzle": "^7.9",
+        "intervention/image": "^3.11",
         "kenepa/resource-lock": "^3.0",
         "laravel/framework": "^12.26.0",
         "laravel/reverb": "^1.6",

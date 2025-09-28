@@ -501,6 +501,7 @@ class Task extends Model
 
     /**
      * Returns the first image from attachments as the featured image for kanban cards.
+     * Uses optimized thumbnail for better performance.
      */
     public function getFeaturedImageAttribute(): ?string
     {
@@ -519,8 +520,10 @@ class Task extends Model
             $extension = strtolower(pathinfo($attachment, PATHINFO_EXTENSION));
 
             if (in_array($extension, $imageExtensions)) {
-                // Return the full URL to the attachment
-                return asset('storage/'.$attachment);
+                // Use ImageOptimizationService to get optimized thumbnail
+                $optimizationService = app(\App\Services\ImageOptimizationService::class);
+
+                return $optimizationService->getOptimizedImageUrl($attachment, 'kanban');
             }
         }
 

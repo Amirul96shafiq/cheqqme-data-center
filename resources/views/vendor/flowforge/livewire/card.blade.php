@@ -29,7 +29,9 @@
                      onclick="window.location.href = '{{ \App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $record['id']]) }}'">
                     <img src="{{ $record['attributes']['featured_image']['value'] }}"
                          alt="Featured image"
-                         class="w-full h-32 object-cover rounded-t-lg border-l border-r border-t border-gray-200 dark:border-gray-700 hover:opacity-90 transition-opacity">
+                         class="w-full h-24 object-cover rounded-t-lg border-l border-r border-t border-gray-200 dark:border-gray-700 hover:opacity-90 transition-opacity"
+                         loading="lazy"
+                         decoding="async">
                 </div>
             </div>
         @endif

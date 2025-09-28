@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Task;
 use App\Models\User;
+use App\Services\ImageOptimizationService;
 use App\Services\TaskCountService;
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
@@ -11,7 +12,8 @@ use Filament\Notifications\Notification;
 class TaskObserver
 {
     public function __construct(
-        private TaskCountService $taskCountService
+        private TaskCountService $taskCountService,
+        private ImageOptimizationService $imageOptimizationService
     ) {}
 
     /**
@@ -105,6 +107,20 @@ class TaskObserver
                 $this->taskCountService->broadcastTaskCountUpdate((int) $oldAssignedUserId);
             }
         }
+
+        // Clean up thumbnails for removed attachments
+        if ($task->isDirty('attachments')) {
+            $oldAttachments = $task->getOriginal('attachments');
+            $newAttachments = $task->attachments;
+
+            if (is_array($oldAttachments)) {
+                foreach ($oldAttachments as $oldAttachment) {
+                    if (! in_array($oldAttachment, $newAttachments ?? [])) {
+                        $this->imageOptimizationService->cleanupThumbnails($oldAttachment);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -114,5 +130,12 @@ class TaskObserver
     {
         // Broadcast task count updates for assigned users
         $this->taskCountService->broadcastTaskCountUpdatesForTask($task);
+
+        // Clean up all thumbnails when task is deleted
+        if ($task->attachments && is_array($task->attachments)) {
+            foreach ($task->attachments as $attachment) {
+                $this->imageOptimizationService->cleanupThumbnails($attachment);
+            }
+        }
     }
 }

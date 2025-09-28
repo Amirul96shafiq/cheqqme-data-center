@@ -250,6 +250,8 @@ class ActionBoard extends KanbanBoardPage
                                                 ->panelLayout('grid')
                                                 ->reorderable()
                                                 ->appendFiles()
+                                                ->itemPanelAspectRatio('0.25')
+                                                ->image()
                                                 ->acceptedFileTypes(['image/*', 'video/*', 'application/pdf'])
                                                 ->maxSize(20480) // 20MB
                                                 ->directory('tasks')
