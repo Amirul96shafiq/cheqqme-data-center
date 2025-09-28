@@ -36,10 +36,6 @@ return [
 
     // Form Fields
     'form' => [
-        'saved' => 'Saved.',
-        'saved_body' => 'Please re-login or refresh the page.',
-        'saved_password' => 'Saved.',
-        'saved_password_body' => 'Please re-login or refresh the page.',
         'avatar' => 'Avatar',
         'cover_image' => 'Cover Image',
         'cover_image_helper' => 'Upload a cover image for your profile (recommended: max 20MB)',
@@ -99,7 +95,7 @@ return [
         'online_status_away' => 'Away',
         'online_status_dnd' => 'Do Not Disturb',
         'online_status_invisible' => 'Invisible',
-        
+
         // Online Status Messages
         'online_status_updated' => 'Status updated successfully.',
         'online_status_update_failed' => 'Failed to update status',
@@ -123,5 +119,15 @@ return [
         'has_cover_image' => 'Has Cover Image',
         'timezone' => 'Timezone',
         'trashed' => 'Trashed',
+    ],
+
+    // Notifications
+    'notifications' => [
+        'saved' => 'Saved',
+        'saved_body' => 'Refresh the page to view the changes.',
+        'saved_password' => 'Saved',
+        'saved_password_body' => 'Refresh the page to view the changes.',
+        'validation_error' => 'Validation Error',
+        'old_password_incorrect' => 'The old password is incorrect.',
     ],
 ];

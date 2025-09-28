@@ -36,10 +36,6 @@ return [
 
     // Form Fields
     'form' => [
-        'saved' => 'Disimpan.',
-        'saved_body' => 'Sila log masuk semula atau muat semula halaman.',
-        'saved_password' => 'Disimpan.',
-        'saved_password_body' => 'Sila log masuk semula atau muat semula halaman.',
         'avatar' => 'Avatar',
         'cover_image' => 'Gambar Cover',
         'cover_image_helper' => 'Muat naik gambar cover (disyorkan: maksimum 20MB)',
@@ -123,5 +119,15 @@ return [
         'has_cover_image' => 'Ada Gambar Cover',
         'timezone' => 'Zon Waktu',
         'trashed' => 'Dihapus',
+    ],
+
+    // Notifications
+    'notifications' => [
+        'saved' => 'Disimpan',
+        'saved_body' => 'Muat semula halaman untuk melihat perubahan.',
+        'saved_password' => 'Disimpan',
+        'saved_password_body' => 'Muat semula halaman untuk melihat perubahan.',
+        'validation_error' => 'Kesilapan Pengesahan',
+        'old_password_incorrect' => 'Kata laluan lama tidak betul.',
     ],
 ];

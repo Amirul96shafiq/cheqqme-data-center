@@ -425,8 +425,8 @@ class Profile extends EditProfile
         if (filled($formData['password'] ?? null) && filled($formData['old_password'] ?? null)) {
             if (! Hash::check($formData['old_password'], $user->password)) {
                 Notification::make()
-                    ->title('Validation Error')
-                    ->body('The old password is incorrect.')
+                    ->title(__('user.notifications.validation_error'))
+                    ->body(__('user.notifications.old_password_incorrect'))
                     ->danger()
                     ->send();
 
@@ -495,14 +495,14 @@ class Profile extends EditProfile
         // If user changed the password, log them out
         if (filled($formData['password'] ?? null)) {
             Notification::make()
-                ->title(__('user.form.saved_password'))
-                ->body(__('user.form.saved_password_body'))
+                ->title(__('user.notifications.saved_password'))
+                ->body(__('user.notifications.saved_password_body'))
                 ->success()
                 ->send();
         } else {
             Notification::make()
-                ->title(__('user.form.saved'))
-                ->body(__('user.form.saved_body'))
+                ->title(__('user.notifications.saved'))
+                ->body(__('user.notifications.saved_body'))
                 ->success()
                 ->send();
         }
