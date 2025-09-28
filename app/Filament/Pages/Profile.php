@@ -140,8 +140,8 @@ class Profile extends EditProfile
                                 Forms\Components\Placeholder::make('background_preview')
                                     ->label(__('user.form.background_preview'))
                                     ->content(function () {
-                                        // Get enabled state
-                                        $enabled = $this->form->getState()['web_app_background_enabled'] ?? false;
+                                        // Get enabled state without triggering validation
+                                        $enabled = $this->data['web_app_background_enabled'] ?? false;
                                         $enabledText = __('user.form.enabled');
                                         $disabledText = __('user.form.disabled');
 
