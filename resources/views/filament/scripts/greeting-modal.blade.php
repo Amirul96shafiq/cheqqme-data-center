@@ -29,7 +29,7 @@ function openGreetingModal(forceOpen = false) {
     
     modal.innerHTML = `
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] transform transition-all duration-300 scale-95 opacity-0 border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col">
-            <div class="flex flex-col lg:flex-row flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+            <div class="flex flex-col lg:flex-row flex-1 overflow-y-auto">
                 
                 <!-- Weather Information Section (40% width on desktop, 100% on mobile) - Order 2 on small devices, Order 1 on large devices -->
                 <div class="p-6 border-r-0 lg:border-r border-gray-200 dark:border-gray-700 border-b lg:border-b-0 weather-section w-full lg:w-2/5 order-2 lg:order-1">
@@ -1195,8 +1195,7 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
          }
          
          // Remove all possible status classes
-         // Only remove specific status color classes to avoid affecting other bg-*-* classes
-         const statusColors = ['bg-teal-500', 'bg-primary-500', 'bg-red-500', 'bg-gray-400'];
+         const statusColors = @json(\App\Services\OnlineStatus\StatusConfig::getStatusColors());
          statusColors.forEach(colorClass => {
              indicator.classList.remove(colorClass);
          });
@@ -1317,8 +1316,7 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
                  const roundedClasses = 'rounded-full';
                  
                  // Remove old status classes and add new ones
-                 // Only remove specific status color classes, not all bg-*-* classes
-                 const statusColors = ['bg-teal-500', 'bg-primary-500', 'bg-red-500', 'bg-gray-400'];
+                 const statusColors = @json(\App\Services\OnlineStatus\StatusConfig::getStatusColors());
                  statusColors.forEach(colorClass => {
                      indicator.classList.remove(colorClass);
                  });
@@ -1396,8 +1394,7 @@ window.syncAllUserStatuses = function() {
                         const roundedClasses = 'rounded-full';
                         
                          // Remove old status classes and add new ones
-                         // Only remove specific status color classes, not all bg-*-* classes
-                         const statusColors = ['bg-teal-500', 'bg-primary-500', 'bg-red-500', 'bg-gray-400'];
+                         const statusColors = @json(\App\Services\OnlineStatus\StatusConfig::getStatusColors());
                          statusColors.forEach(colorClass => {
                              indicator.classList.remove(colorClass);
                          });

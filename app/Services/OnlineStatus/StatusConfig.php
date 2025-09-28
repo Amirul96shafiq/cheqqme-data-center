@@ -161,6 +161,16 @@ class StatusConfig
     }
 
     /**
+     * Get all status colors as an array
+     */
+    public static function getStatusColors(): array
+    {
+        $config = self::getStatusConfig();
+
+        return array_column($config, 'color');
+    }
+
+    /**
      * Get status label
      */
     public static function getStatusLabel(string $status): string
