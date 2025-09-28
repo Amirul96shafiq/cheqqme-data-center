@@ -327,7 +327,10 @@ class Profile extends EditProfile
                                         }),
                                 ])
                                     ->columnSpan(1)
-                                    ->alignment(Alignment::End),
+                                    ->alignment(Alignment::End)
+                                    ->extraAttributes([
+                                        'class' => '-mt-14 lg:-mt-0',
+                                    ]),
                             ])
                             ->columns(columns: 3)
                             ->columnSpanFull(),
@@ -374,7 +377,10 @@ class Profile extends EditProfile
                                     // }),
                                 ])
                                     ->columnSpan(1)
-                                    ->alignment(Alignment::End),
+                                    ->alignment(Alignment::End)
+                                    ->extraAttributes([
+                                        'class' => '-mt-14 lg:-mt-0',
+                                    ]),
                             ])
                             ->columns(columns: 3)
                             ->columnSpanFull(),
