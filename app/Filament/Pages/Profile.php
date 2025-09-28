@@ -375,15 +375,9 @@ class Profile extends EditProfile
                                     ->label(__('user.form.password'))
                                     ->password()
                                     ->revealable()
-                                    ->dehydrated(false)
+                                    ->dehydrated(true)
                                     ->requiredWith(['password', 'password_confirmation'])
-                                    ->rule(function () {
-                                        return function (string $attribute, $value, $fail) {
-                                            if ($value && ! Hash::check($value, auth()->user()->password)) {
-                                                $fail('The old password is incorrect.');
-                                            }
-                                        };
-                                    })
+                                    ->rules(['required_with:password,password_confirmation'])
                                     ->columnSpanFull(),
                             ]),
                         // NEW password
@@ -426,6 +420,19 @@ class Profile extends EditProfile
     {
         $user = auth()->user();
         $formData = $this->form->getState();
+
+        // Validate old password if password is being changed
+        if (filled($formData['password'] ?? null) && filled($formData['old_password'] ?? null)) {
+            if (! Hash::check($formData['old_password'], $user->password)) {
+                Notification::make()
+                    ->title('Validation Error')
+                    ->body('The old password is incorrect.')
+                    ->danger()
+                    ->send();
+
+                return;
+            }
+        }
 
         // Store the original status before saving
         $originalStatus = $user->online_status;
