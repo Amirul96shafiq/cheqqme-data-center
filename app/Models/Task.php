@@ -529,9 +529,21 @@ class Task extends Model
 
     /**
      * Returns the total count of comments/messages for this task.
+     * Uses eager-loaded count when available for better performance.
      */
     public function getMessageCountAttribute(): ?int
     {
+        // Use eager-loaded count if available (withCount)
+        if (isset($this->attributes['comments_count'])) {
+            return $this->attributes['comments_count'];
+        }
+
+        // Use loaded relationship count if comments are loaded
+        if ($this->relationLoaded('comments')) {
+            return $this->comments->count();
+        }
+
+        // Fallback to database query
         return $this->comments()->count();
     }
 

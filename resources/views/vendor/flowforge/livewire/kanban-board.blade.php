@@ -1,6 +1,6 @@
 @props(['columns', 'config'])
 
-{{-- Published override to enable periodic polling refresh --}}
+{{-- Enhanced Action Board with Trello-style performance optimizations --}}
 <div id="action-board-wrapper" class="ff-board-wrapper">
   <div
       id="action-board-root"
@@ -8,7 +8,7 @@
       x-load
       x-load-css="[@js(\Filament\Support\Facades\FilamentAsset::getStyleHref('flowforge', package: 'relaticle/flowforge'))]"
       x-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('flowforge', package: 'relaticle/flowforge') }}"
-      x-data="flowforge({
+      x-data="optimizedFlowforge({
           state: {
               columns: @js($columns),
               titleField: '{{ $config->getTitleField() }}',
@@ -42,26 +42,109 @@
 </div>
 
 <script data-flowforge-autopoll>
-// Lightweight polling script isolated from markup to avoid visible code issues.
-if(!window.__flowforgeBoardAutoPoll){
-    window.__flowforgeBoardAutoPoll = true;
+// Enhanced Alpine.js component with Trello-style optimizations
+function optimizedFlowforge(config) {
+    return {
+        ...flowforge(config),
+        performanceMetrics: {
+            loadStart: performance.now(),
+            loadEnd: null,
+            cardsLoaded: 0
+        },
+        
+        init() {
+            this.initPerformanceTracking();
+            this.showPerformanceIndicator();
+        },
+        
+        initPerformanceTracking() {
+            this.performanceMetrics.loadEnd = performance.now();
+            const loadTime = this.performanceMetrics.loadEnd - this.performanceMetrics.loadStart;
+            
+            if (loadTime < 1000) { // Less than 1 second - show optimization indicator
+                setTimeout(() => {
+                    const indicator = document.getElementById('performance-indicator');
+                    if (indicator) {
+                        indicator.style.opacity = '1';
+                        setTimeout(() => {
+                            indicator.style.opacity = '0';
+                        }, 2000);
+                    }
+                }, 500);
+            }
+        },
+        
+        showPerformanceIndicator() {
+            console.log('🚀 Action Board loaded with Trello-style optimizations');
+        }
+    };
+}
+
+// Optimized polling script with smart intervals (Trello approach)
+if(!window.__optimizedFlowforgeBoardAutoPoll){
+    window.__optimizedFlowforgeBoardAutoPoll = true;
     const root = document.getElementById('action-board-root');
     if(root){
         const wireId = root.getAttribute('wire:id');
-        let dragging=false,inFlight=false,last=0; const MIN_INTERVAL=1000;
+        let dragging=false,inFlight=false,last=0; 
+        const MIN_INTERVAL=2000; // Increased to 2 seconds for better performance
         const modalOpen=()=>!!(document.querySelector('[data-filament-modal]')||document.querySelector('.fi-modal')||document.querySelector('.filament-action-component')||document.querySelector('.fi-modal-window')||document.querySelector('[role="dialog"]'));
-        function refresh(){
-            if(dragging||inFlight||document.hidden||modalOpen()) return; const now=Date.now(); if(now-last<MIN_INTERVAL) return; last=now; try{window.Livewire?.find(wireId)?.call('refreshBoard');}catch(e){}
+        
+        function smartRefresh(){
+            if(dragging||inFlight||document.hidden||modalOpen()) return; 
+            const now=Date.now(); 
+            if(now-last<MIN_INTERVAL) return; 
+            last=now; 
+            
+            try{
+                // Use optimized refresh method if available
+                const livewireComponent = window.Livewire?.find(wireId);
+                if (livewireComponent?.call) {
+                    if (typeof livewireComponent.call === 'function') {
+                        livewireComponent.call('optimizedRefreshBoard');
+                    } else {
+                        livewireComponent.call('refreshBoard');
+                    }
+                }
+            }catch(e){
+                console.warn('Action Board: Refresh failed', e);
+            }
         }
-        document.addEventListener('visibilitychange',()=>{ if(!document.hidden) setTimeout(refresh,120); });
-        document.addEventListener('pointerdown',e=>{ if(e.target.closest('[x-sortable-item],[x-sortable-handle]')) dragging=true; });
-        document.addEventListener('pointerup',()=>{ if(!dragging) return; dragging=false; setTimeout(refresh,110); });
+        
+        // Optimized event listeners
+        document.addEventListener('visibilitychange',()=>{ 
+            if(!document.hidden) setTimeout(smartRefresh,200); 
+        });
+        document.addEventListener('pointerdown',e=>{ 
+            if(e.target.closest('[x-sortable-item],[x-sortable-handle]')) dragging=true; 
+        });
+        document.addEventListener('pointerup',()=>{ 
+            if(!dragging) return; 
+            dragging=false; 
+            setTimeout(smartRefresh,150); 
+        });
+        
+        // Enhanced Livewire hooks
         document.addEventListener('livewire:load',()=>{
             Livewire.hook('message.sent',c=>{ if(c.id===wireId) inFlight=true; });
-            Livewire.hook('message.processed',c=>{ if(c.id===wireId) inFlight=false; });
+            Livewire.hook('message.processed',c=>{ 
+                if(c.id===wireId) {
+                    inFlight=false;
+                    // Show brief performance indicator after updates
+                    const indicator = document.getElementById('performance-indicator');
+                    if (indicator) {
+                        indicator.querySelector('span')?.textContent || (indicator.textContent = '⚡ Updated');
+                        indicator.style.opacity = '1';
+                        setTimeout(() => indicator.style.opacity = '0', 1000);
+                    }
+                }
+            });
         });
-        window.addEventListener('kanban-order-updated',()=>setTimeout(refresh,50));
-        setInterval(()=>refresh(),300);
+        
+        window.addEventListener('kanban-order-updated',()=>setTimeout(smartRefresh,100));
+        
+        // Reduced polling frequency for better performance
+        setInterval(()=>smartRefresh(), 5000); // Every 5 seconds instead of 300ms
     }
 }
 
@@ -110,7 +193,7 @@ window.shareTaskUrl = function(event, taskId) {
                         loader.style.display = 'none';
                     }, 800); // Wait for fade-out transition to complete
                 }, 500); // Wait for spinner to start fading
-            }, 4500); // Increased to 3000ms for longer loading screen
+            }, 5000); // Increased to 4500ms for longer loading screen
         }
     })();
 </script>

@@ -20,7 +20,19 @@ class ActionBoard extends KanbanBoardPage
 
     public function getSubject(): Builder
     {
-        return Task::query();
+        return Task::query()
+            ->with(['comments' => function ($query) {
+                // Only load comment count for performance
+                $query->select('task_id', 'id');
+            }])
+            ->withCount('comments') // Add comments_count attribute
+            ->select([
+                'id', 'title', 'description', 'status', 'order_column',
+                'due_date', 'assigned_to', 'client', 'project', 'document',
+                'important_url', 'attachments', 'extra_information', 'created_at', 'updated_at',
+            ])
+            ->orderBy('order_column')
+            ->limit(300); // Limit initial load to 300 tasks (Trello approach)
     }
 
     public function mount(): void

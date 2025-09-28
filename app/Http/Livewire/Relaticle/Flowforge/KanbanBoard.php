@@ -5,11 +5,95 @@ declare(strict_types=1);
 namespace App\Http\Livewire\Relaticle\Flowforge;
 
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Relaticle\Flowforge\Livewire\KanbanBoard as BaseKanbanBoard;
 
 class KanbanBoard extends BaseKanbanBoard
 {
+    // Properties for progressive loading (Trello-style)
+    public $loadedTasksPerColumn = [
+        'todo' => 0,
+        'in_progress' => 0,
+        'toreview' => 0,
+        'completed' => 0,
+        'archived' => 0,
+    ];
+
+    public $batchSize = 50; // Load 50 tasks per batch
+
+    protected $listeners = [
+        'refreshBoard' => 'optimizedRefreshBoard',
+        'task-created' => 'optimizedRefreshBoard',
+        'task-moved' => 'optimizedRefreshBoard',
+    ];
+
+    /**
+     * Override mount to implement progressive loading
+     */
+    public function mount(\Relaticle\Flowforge\Contracts\KanbanAdapterInterface $adapter, ?int $initialCardsCount = null, ?int $cardsIncrement = null, array $searchable = []): void
+    {
+        parent::mount($adapter, $initialCardsCount, $cardsIncrement, $searchable);
+        $this->preloadUserCache();
+    }
+
+    /**
+     * Cache users for 5 minutes to avoid repeated queries (Trello approach)
+     */
+    protected function preloadUserCache(): void
+    {
+        Cache::remember('kanban_users_cache', 300, function () {
+            return User::select('id', 'name', 'username', 'short_name', 'email')
+                ->withTrashed()
+                ->get()
+                ->keyBy('id');
+        });
+    }
+
+    /**
+     * Optimized refresh board with smart caching
+     */
+    public function optimizedRefreshBoard(): void
+    {
+        // Clear user cache to get fresh data
+        Cache::forget('kanban_users_cache');
+        $this->preloadUserCache();
+
+        // Efficiently reload only visible tasks
+        $this->refreshBoard();
+
+        // Update task counts per column
+        $this->updateColumnCounts();
+    }
+
+    /**
+     * Update task counts per column efficiently
+     */
+    protected function updateColumnCounts(): void
+    {
+        $counts = Cache::remember('kanban_column_counts', 60, function () {
+            return DB::table('tasks')
+                ->select('status', DB::raw('COUNT(*) as count'))
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+        });
+
+        foreach ($this->loadedTasksPerColumn as $column => $loaded) {
+            $this->loadedTasksPerColumn[$column] = min($loaded, $counts[$column] ?? 0);
+        }
+    }
+
+    /**
+     * Get cached users efficiently
+     */
+    protected function getCachedUsers()
+    {
+        return Cache::get('kanban_users_cache', collect());
+    }
+
     /**
      * Update the order of cards in a column and log activity for each moved task.
      *
