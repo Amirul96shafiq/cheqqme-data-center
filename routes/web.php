@@ -33,23 +33,23 @@ Route::get('reset-password/{token}', [ResetPasswordController::class, 'showReset
 // Reset password route (post)
 Route::post('reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
-// Online status test page
-Route::get('/online-status-test', function () {
-    return view('online-status-test');
-})->name('online-status-test')->middleware('auth');
+// // Online status test page
+// Route::get('/online-status-test', function () {
+//     return view('online-status-test');
+// })->name('online-status-test')->middleware('auth');
 
-// Temporary login route for testing (remove in production)
-Route::get('/test-login', function () {
-    // Auto-login the first user for testing
-    $user = \App\Models\User::first();
-    if ($user) {
-        auth()->login($user);
+// // Temporary login route for testing (remove in production)
+// Route::get('/test-login', function () {
+//     // Auto-login the first user for testing
+//     $user = \App\Models\User::first();
+//     if ($user) {
+//         auth()->login($user);
 
-        return redirect('/online-status-test');
-    }
+//         return redirect('/online-status-test');
+//     }
 
-    return 'No users found. Please create a user first.';
-})->name('test-login');
+//     return 'No users found. Please create a user first.';
+// })->name('test-login');
 
 // Set locale route
 Route::post('/set-locale', function (Request $request) {
