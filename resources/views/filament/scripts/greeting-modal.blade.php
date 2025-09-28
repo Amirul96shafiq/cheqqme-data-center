@@ -1238,7 +1238,7 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
      const alpineComponents = document.querySelectorAll('[x-data]');
      console.log('🏔️ Found Alpine.js components:', alpineComponents.length);
      alpineComponents.forEach(component => {
-         // Look for status dropdown buttons specifically
+         // Look for status dropdown buttons in the new component structure
          const statusButtons = component.querySelectorAll('button[class*="space-x-3"][class*="text-left"]');
          console.log('📋 Found status buttons in component:', statusButtons.length);
          if (statusButtons.length > 0) {
