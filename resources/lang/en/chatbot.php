@@ -20,6 +20,7 @@ return [
         'subheading03' => 'Boy have you lost your mind, cause I\'ll help you find it!',
         'subheading04' => ' I love you. You love me. We\'re a happy family.',
         'subheading05' => 'Monkey together strong.',
+        'subheading06' => 'Bananas goes binted!~',
     ],
 
     // History page

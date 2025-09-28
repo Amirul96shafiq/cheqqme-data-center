@@ -516,7 +516,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 'subheading02',
                 'subheading03',
                 'subheading04',
-                'subheading05'
+                'subheading05',
+                'subheading06'
+
             ] as $key)
             '{{ __("chatbot.header.{$key}") }}'{{ !$loop->last ? ',' : '' }}
             @endforeach
@@ -531,7 +533,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 'subheading02',
                 'subheading03',
                 'subheading04',
-                'subheading05'
+                'subheading05',
+                'subheading06'
             ] as $key)
             '{{ __("chatbot.header.{$key}") }}'{{ !$loop->last ? ',' : '' }}
             @endforeach
