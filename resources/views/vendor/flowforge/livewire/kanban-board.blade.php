@@ -42,22 +42,12 @@
 </div>
 
 <script data-flowforge-autopoll>
-// Debug: Script loading check
-console.log('📜 Action Board script loading...');
-
 // Enhanced Alpine.js component with Trello-style optimizations
 function optimizedFlowforge(config) {
-    console.log('🚀 Action Board loading with Trello-style optimizations...');
-    
     // Create a robust base implementation that doesn't depend on external flowforge
     const baseImplementation = {
-        // Basic properties that Alpine.js expects
         state: config.state || {},
-        
-        // Essential methods for kanban functionality
-        init() {
-            console.log('🚀 Base kanban initialization');
-        }
+        init() {}
     };
     
     // Try to load original flowforge if available
@@ -66,12 +56,9 @@ function optimizedFlowforge(config) {
         try {
             const originalFlowforge = flowforge(config);
             baseFlowforge = { ...baseImplementation, ...originalFlowforge };
-            console.log('✅ Original flowforge loaded and merged successfully');
         } catch (error) {
-            console.warn('⚠️ Original flowforge failed to load, using base implementation:', error);
+            // Silent fallback
         }
-    } else {
-        console.warn('⚠️ Original flowforge function not found, using base implementation');
     }
     
     return {
@@ -83,7 +70,6 @@ function optimizedFlowforge(config) {
         },
         
         init() {
-            console.log('🚀 Action Board initialized with Trello-style optimizations');
             this.initPerformanceTracking();
             this.showPerformanceIndicator();
             
@@ -91,9 +77,8 @@ function optimizedFlowforge(config) {
             if (baseFlowforge.init && baseFlowforge.init !== baseImplementation.init) {
                 try {
                     baseFlowforge.init.call(this);
-                    console.log('✅ Original flowforge init called');
                 } catch (error) {
-                    console.warn('⚠️ Original flowforge init failed:', error);
+                    // Silent fallback
                 }
             }
         },
@@ -109,12 +94,9 @@ function optimizedFlowforge(config) {
                     const indicator = document.getElementById('performance-indicator');
                     if (indicator) {
                         indicator.style.opacity = '1';
-                        console.log('✨ Performance indicator shown');
                         setTimeout(() => {
                             indicator.style.opacity = '0';
                         }, 2000);
-                    } else {
-                        console.warn('⚠️ Performance indicator element not found');
                     }
                 }, 500);
             }
@@ -154,7 +136,7 @@ if(!window.__optimizedFlowforgeBoardAutoPoll){
                     }
                 }
             }catch(e){
-                console.warn('Action Board: Refresh failed', e);
+                // Silent fallback
             }
         }
         
@@ -177,13 +159,6 @@ if(!window.__optimizedFlowforgeBoardAutoPoll){
             Livewire.hook('message.processed',c=>{ 
                 if(c.id===wireId) {
                     inFlight=false;
-                    // Show brief performance indicator after updates
-                    const indicator = document.getElementById('performance-indicator');
-                    if (indicator) {
-                        indicator.querySelector('span')?.textContent || (indicator.textContent = '⚡ Updated');
-                        indicator.style.opacity = '1';
-                        setTimeout(() => indicator.style.opacity = '0', 1000);
-                    }
                 }
             });
         });
@@ -240,196 +215,59 @@ window.shareTaskUrl = function(event, taskId) {
                         loader.style.display = 'none';
                     }, 800); // Wait for fade-out transition to complete
                 }, 500); // Wait for spinner to start fading
-            }, 500); // Reduced loading time due to optimizations
+            }, 1800); // Reduced loading time due to optimizations
         }
     })();
 
-// Direct test to ensure script loads
-console.log('✅ Action Board script loaded completely');
-
-// Monitor all function calls to optimizedFlowforge (set up early)
-console.log('🔧 Setting up function monitoring...');
-const originalOptimizedFlowforge = optimizedFlowforge;
-window.optimizedFlowforge = function(config) {
-    console.log('📞 optimizedFlowforge called by Alpine.js with config:', config);
-    const result = originalOptimizedFlowforge(config);
-    console.log('📞 optimizedFlowforge returning:', result);
-    return result;
-};
-
-// Override the original flowforge function to see if it gets called
+// Create placeholder flowforge function if needed
 if (typeof flowforge === 'undefined') {
-    console.log('🔧 Creating placeholder flowforge function...');
     window.flowforge = function(config) {
-        console.log('📞 Original flowforge placeholder called with:', config);
         return {
-            init() {
-                console.log('📞 Original flowforge init called');
-            }
+            init() {}
         };
     };
 }
 
-// Test Alpine.js availability
+// Fix Alpine.js _x_ignore issue that prevents component initialization
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📋 DOM Content Loaded - checking Alpine.js...');
-    
-    // Check if Alpine is available
-    if (window.Alpine) {
-        console.log('✅ Alpine.js is available');
-    } else {
-        console.log('⚠️ Alpine.js not found, waiting...');
-        
-        // Wait for Alpine to load
-        document.addEventListener('alpine:init', function() {
-            console.log('✅ Alpine.js initialized');
-        });
-    }
-    
-    // Check if our function is defined
-    if (typeof optimizedFlowforge === 'function') {
-        console.log('✅ optimizedFlowforge function is defined');
-        
-        // Test the function directly
-        console.log('🧪 Testing optimizedFlowforge function...');
-        try {
-            const testResult = optimizedFlowforge({ state: { test: true } });
-            console.log('✅ optimizedFlowforge function works!', testResult);
-        } catch (error) {
-            console.error('❌ optimizedFlowforge function failed:', error);
-        }
-    } else {
-        console.log('❌ optimizedFlowforge function not found');
-    }
-    
-    // Check if action board root exists
-    const root = document.getElementById('action-board-root');
-    if (root) {
-        console.log('✅ action-board-root element found');
-        
-        // Check x-data attribute
-        const xData = root.getAttribute('x-data');
-        console.log('📋 x-data attribute:', xData);
-        
-        // Watch for Alpine.js to process the element
-        setTimeout(() => {
-            console.log('🔍 Checking if Alpine has processed the element...');
-            if (root._x_dataStack) {
-                console.log('✅ Alpine.js has processed the element');
-                console.log('📊 Data stack:', root._x_dataStack);
-            } else {
-                console.log('⚠️ Alpine.js has not processed the element yet');
-            }
-            
-            // Check if Alpine.js has any data on the element
-            console.log('🔍 Checking Alpine.js component data...');
+    setTimeout(() => {
+        const root = document.getElementById('action-board-root');
+        if (root) {
             const alpineProps = Object.getOwnPropertyNames(root).filter(prop => prop.startsWith('_x'));
-            console.log('📋 Element properties:', alpineProps);
             
-            // Check if element is being ignored
+            // Fix Alpine.js ignore issue
             if (alpineProps.includes('_x_ignore')) {
-                console.log('🚨 FOUND THE ISSUE! Element has _x_ignore attribute');
-                console.log('🔧 This means Alpine.js is intentionally ignoring this element');
-                console.log('💡 Solution: Remove _x_ignore and force Alpine.js to process the element');
-                
-                // Remove the ignore attribute and try to process the element
                 delete root._x_ignore;
                 root.removeAttribute('x-ignore');
                 
                 if (window.Alpine && window.Alpine.initTree) {
-                    console.log('🔧 Attempting to manually initialize Alpine.js after removing ignore...');
                     try {
                         window.Alpine.initTree(root);
-                        console.log('✅ Manual Alpine.js initialization after ignore removal');
                     } catch (error) {
-                        console.error('❌ Manual Alpine.js initialization failed:', error);
-                    }
-                }
-            } else {
-                // Try to manually trigger Alpine.js on this element
-                if (window.Alpine && window.Alpine.initTree) {
-                    console.log('🔧 Attempting to manually initialize Alpine.js on element...');
-                    try {
-                        window.Alpine.initTree(root);
-                        console.log('✅ Manual Alpine.js initialization attempted');
-                    } catch (error) {
-                        console.error('❌ Manual Alpine.js initialization failed:', error);
+                        // Silent fallback
                     }
                 }
             }
-        }, 2000);
-    } else {
-        console.log('❌ action-board-root element not found');
-    }
+        }
+    }, 2000);
 });
 
-// Also listen for Alpine events
-document.addEventListener('alpine:init', function() {
-    console.log('🎉 Alpine.js init event fired');
-});
-
+// Alpine.js initialization fix for Livewire compatibility
 document.addEventListener('alpine:initialized', function() {
-    console.log('🎉 Alpine.js initialized event fired');
-    
-    // Check our component immediately after Alpine.js is initialized
     setTimeout(() => {
         const root = document.getElementById('action-board-root');
         if (root) {
-            console.log('🔍 Post-initialization check...');
             const alpineProps = Object.getOwnPropertyNames(root).filter(prop => prop.startsWith('_x'));
-            console.log('📋 Alpine properties on element:', alpineProps);
             
-            // Check if there's any Alpine.js component data
-            if (root.__x) {
-                console.log('✅ Alpine.js component found on element:', root.__x);
-            } else {
-                console.log('❌ No Alpine.js component found on element');
+            if (!root.__x && alpineProps.includes('_x_ignore')) {
+                delete root._x_ignore;
+                root.removeAttribute('x-ignore');
                 
-                // If element is being ignored, fix it immediately
-                if (alpineProps.includes('_x_ignore')) {
-                    console.log('🚨 Element is being ignored! Fixing immediately...');
-                    delete root._x_ignore;
-                    root.removeAttribute('x-ignore');
-                    
-                    // Force Alpine.js to process this element
-                    if (window.Alpine && window.Alpine.initTree) {
-                        try {
-                            window.Alpine.initTree(root);
-                            console.log('✅ Forced Alpine.js initialization successful');
-                        } catch (error) {
-                            console.error('❌ Forced Alpine.js initialization failed:', error);
-                        }
-                    }
-                }
-            }
-        }
-    }, 100);
-});
-
-// Also listen for Livewire events that might affect Alpine.js
-document.addEventListener('livewire:init', function() {
-    console.log('🔄 Livewire init event fired');
-});
-
-document.addEventListener('livewire:navigated', function() {
-    console.log('🔄 Livewire navigated event fired');
-    
-    // Re-check our component after Livewire navigation
-    setTimeout(() => {
-        const root = document.getElementById('action-board-root');
-        if (root) {
-            console.log('🔄 Checking component after Livewire navigation...');
-            const hasComponent = !!root.__x;
-            console.log(hasComponent ? '✅ Component still active after navigation' : '❌ Component lost after navigation');
-            
-            if (!hasComponent) {
-                console.log('🔧 Re-initializing component after navigation...');
                 if (window.Alpine && window.Alpine.initTree) {
                     try {
                         window.Alpine.initTree(root);
-                        console.log('✅ Component re-initialized after navigation');
                     } catch (error) {
-                        console.error('❌ Component re-initialization failed:', error);
+                        // Silent fallback
                     }
                 }
             }
@@ -437,11 +275,18 @@ document.addEventListener('livewire:navigated', function() {
     }, 100);
 });
 
-// Listen for any Alpine.js errors
-window.addEventListener('error', function(event) {
-    if (event.message && event.message.includes('Alpine')) {
-        console.error('🚨 Alpine.js Error:', event.error);
-    }
+// Re-initialize after Livewire navigation
+document.addEventListener('livewire:navigated', function() {
+    setTimeout(() => {
+        const root = document.getElementById('action-board-root');
+        if (root && !root.__x && window.Alpine && window.Alpine.initTree) {
+            try {
+                window.Alpine.initTree(root);
+            } catch (error) {
+                // Silent fallback
+            }
+        }
+    }, 100);
 });
 
 </script>
