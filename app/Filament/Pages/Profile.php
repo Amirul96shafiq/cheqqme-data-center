@@ -418,6 +418,7 @@ class Profile extends EditProfile
                                         ->label(__('user.form.generate_password'))
                                         ->icon('heroicon-o-code-bracket-square')
                                         ->color('gray')
+                                        ->extraAttributes(['class' => 'w-full sm:!w-fit'])
                                         ->action(function ($set) {
                                             $generated = str()->random(16);
                                             $set('password', $generated);
