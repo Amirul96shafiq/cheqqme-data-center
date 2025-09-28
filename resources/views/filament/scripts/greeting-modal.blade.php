@@ -1195,8 +1195,10 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
          }
          
          // Remove all possible status classes
-         Object.values(statusConfig).forEach(config => {
-             indicator.classList.remove(config.color);
+         // Only remove specific status color classes to avoid affecting other bg-*-* classes
+         const statusColors = ['bg-teal-500', 'bg-primary-500', 'bg-red-500', 'bg-gray-400'];
+         statusColors.forEach(colorClass => {
+             indicator.classList.remove(colorClass);
          });
          
          // Add new status class
@@ -1315,7 +1317,11 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
                  const roundedClasses = 'rounded-full';
                  
                  // Remove old status classes and add new ones
-                 indicator.className = indicator.className.replace(/bg-\w+-\d+/g, '');
+                 // Only remove specific status color classes, not all bg-*-* classes
+                 const statusColors = ['bg-teal-500', 'bg-primary-500', 'bg-red-500', 'bg-gray-400'];
+                 statusColors.forEach(colorClass => {
+                     indicator.classList.remove(colorClass);
+                 });
                  if (statusConfig[newStatus]) {
                      indicator.className = `${baseClasses} ${borderClasses} ${roundedClasses} ${statusConfig[newStatus].color} online-status-indicator`;
                  }
@@ -1390,7 +1396,11 @@ window.syncAllUserStatuses = function() {
                         const roundedClasses = 'rounded-full';
                         
                          // Remove old status classes and add new ones
-                         indicator.className = indicator.className.replace(/bg-\w+-\d+/g, '');
+                         // Only remove specific status color classes, not all bg-*-* classes
+                         const statusColors = ['bg-teal-500', 'bg-primary-500', 'bg-red-500', 'bg-gray-400'];
+                         statusColors.forEach(colorClass => {
+                             indicator.classList.remove(colorClass);
+                         });
                          if (statusConfig[actualStatus]) {
                              indicator.className = `${baseClasses} ${borderClasses} ${roundedClasses} ${statusConfig[actualStatus].color} online-status-indicator`;
                          }
