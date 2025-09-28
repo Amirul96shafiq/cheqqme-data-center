@@ -65,13 +65,10 @@ class Profile extends EditProfile
 
                         $this->getEmailFormComponent()->label(__('user.form.email')),
 
-                        Forms\Components\Select::make('online_status')
+                        \App\Forms\Components\OnlineStatusSelect::make('online_status')
                             ->label(__('user.form.online_status'))
-                            ->options(\App\Models\User::getOnlineStatusOptionsWithIcons())
                             ->default(\App\Services\OnlineStatus\StatusManager::getDefaultStatus())
-                            ->helperText(__('user.form.online_status_helper'))
-                            ->searchable()
-                            ->allowHtml(),
+                            ->helperText(__('user.form.online_status_helper')),
 
                         Forms\Components\Fieldset::make(__('user.form.personalize'))
                             ->schema([
