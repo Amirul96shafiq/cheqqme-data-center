@@ -10,7 +10,7 @@
     <div 
         x-data="{ 
             open: false, 
-            selectedStatus: '{{ $currentStatus }}',
+            selectedStatus: @entangle($getStatePath()).live,
             statusConfig: @js($statusConfig),
             updateStatus(status) {
                 this.selectedStatus = status;

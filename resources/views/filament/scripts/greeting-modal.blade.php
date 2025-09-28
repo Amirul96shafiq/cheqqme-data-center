@@ -1099,6 +1099,11 @@ window.updateOnlineStatus = function(status) {
                     button.innerHTML = originalContent;
                     button.disabled = false;
                 }
+                
+                // Dispatch Livewire event to update form fields
+                if (window.Livewire) {
+                    window.Livewire.dispatch('online-status-updated');
+                }
             })
             .catch(error => {
                 console.error('Error updating status via presence channel:', error);
@@ -1147,6 +1152,11 @@ window.updateOnlineStatus = function(status) {
                 if (button && originalContent) {
                     button.innerHTML = originalContent;
                     button.disabled = false;
+                }
+                
+                // Dispatch Livewire event to update form fields
+                if (window.Livewire) {
+                    window.Livewire.dispatch('online-status-updated');
                 }
                 
                 // No need to refresh page - real-time updates handle this

@@ -32,6 +32,28 @@ class Profile extends EditProfile
         ');
     }
 
+    protected function getListeners(): array
+    {
+        return [
+            'online-status-updated' => 'updateOnlineStatusField',
+        ];
+    }
+
+    public function updateOnlineStatusField(): void
+    {
+        // Refresh the user data to get the latest online status
+        $user = auth()->user()->fresh();
+
+        // Update the Livewire property directly
+        $this->data['online_status'] = $user->online_status;
+
+        // Debug log to check if this method is being called
+        logger('Profile: updateOnlineStatusField called with status: '.$user->online_status);
+
+        // Force a re-render of the component
+        $this->dispatch('$refresh');
+    }
+
     public function form(Form $form): Form
     {
         return $form
@@ -100,7 +122,7 @@ class Profile extends EditProfile
                                     ->directory('covers')
                                     ->moveFiles()
                                     ->preserveFilenames()
-                                    //->itemPanelAspectRatio('0.25')
+                                    // ->itemPanelAspectRatio('0.25')
                                     ->imageResizeMode('cover')
                                     ->imageCropAspectRatio('4:1')
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
