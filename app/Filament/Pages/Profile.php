@@ -431,8 +431,45 @@ class Profile extends EditProfile
         $originalStatus = $user->online_status;
         $newStatus = $formData['online_status'] ?? null;
 
-        // Call parent save method
-        parent::save();
+        try {
+            $this->beginDatabaseTransaction();
+
+            $this->callHook('beforeValidate');
+
+            $data = $this->form->getState();
+
+            $this->callHook('afterValidate');
+
+            $data = $this->mutateFormDataBeforeSave($data);
+
+            $this->callHook('beforeSave');
+
+            $this->handleRecordUpdate($this->getUser(), $data);
+
+            // Skip parent afterSave hook to prevent duplicate notifications
+            // $this->callHook('afterSave');
+        } catch (\Filament\Support\Exceptions\Halt $exception) {
+            $exception->shouldRollbackDatabaseTransaction() ?
+                $this->rollBackDatabaseTransaction() :
+                $this->commitDatabaseTransaction();
+
+            return;
+        } catch (\Throwable $exception) {
+            $this->rollBackDatabaseTransaction();
+
+            throw $exception;
+        }
+
+        $this->commitDatabaseTransaction();
+
+        if (request()->hasSession() && array_key_exists('password', $data)) {
+            request()->session()->put([
+                'password_hash_'.\Filament\Facades\Filament::getAuthGuard() => $data['password'],
+            ]);
+        }
+
+        $this->data['password'] = null;
+        $this->data['passwordConfirmation'] = null;
 
         // Check if online status was changed and trigger presence update
         if (isset($newStatus) && $originalStatus !== $newStatus) {
@@ -440,7 +477,7 @@ class Profile extends EditProfile
             \App\Services\OnlineStatus\PresenceStatusManager::handleManualChange($user, $newStatus);
         }
 
-        // Call afterSave for other logic
+        // Call afterSave for other logic (this will send our custom notification)
         $this->afterSave();
     }
 

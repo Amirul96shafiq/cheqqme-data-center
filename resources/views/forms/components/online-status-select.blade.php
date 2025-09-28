@@ -30,7 +30,7 @@
             type="button"
             @click="open = !open"
             @click.outside="open = false"
-            class="relative w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg pl-3 pr-10 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+            class="relative w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg pl-3 pr-10 py-2 text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
             :class="{ 'ring-2 ring-primary-500 border-primary-500': open }"
         >
             <div class="flex items-center space-x-3">
