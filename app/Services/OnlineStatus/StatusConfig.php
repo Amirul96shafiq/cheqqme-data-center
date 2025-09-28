@@ -82,28 +82,28 @@ class StatusConfig
     {
         return [
             self::ONLINE => [
-                'label' => Lang::get('user.indicator.online_status_online', [], 'en'),
+                'label' => Lang::get('user.indicator.online_status_online'),
                 'color' => 'bg-teal-500',
                 'filament_color' => 'success',
                 'icon' => 'heroicon-o-check-circle',
                 'description' => 'User is actively online and available',
             ],
             self::AWAY => [
-                'label' => Lang::get('user.indicator.online_status_away', [], 'en'),
+                'label' => Lang::get('user.indicator.online_status_away'),
                 'color' => 'bg-primary-500',
                 'filament_color' => 'primary',
                 'icon' => 'heroicon-o-clock',
                 'description' => 'User is away but may respond',
             ],
             self::DO_NOT_DISTURB => [
-                'label' => Lang::get('user.indicator.online_status_dnd', [], 'en'),
+                'label' => Lang::get('user.indicator.online_status_dnd'),
                 'color' => 'bg-red-500',
                 'filament_color' => 'danger',
                 'icon' => 'heroicon-o-x-circle',
                 'description' => 'User does not want to be disturbed',
             ],
             self::INVISIBLE => [
-                'label' => Lang::get('user.indicator.online_status_invisible', [], 'en'),
+                'label' => Lang::get('user.indicator.online_status_invisible'),
                 'color' => 'bg-gray-400',
                 'filament_color' => 'gray',
                 'icon' => 'heroicon-o-eye-slash',
