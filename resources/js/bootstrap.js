@@ -35,11 +35,10 @@ const getReverbConfig = () => {
 
 const reverbConfig = getReverbConfig();
 
-// Get CSRF token for debugging
+// Get CSRF token for Echo authentication
 const csrfToken = document
     .querySelector('meta[name="csrf-token"]')
     ?.getAttribute("content");
-console.log("CSRF Token found:", csrfToken ? "Yes" : "No", csrfToken);
 
 // Validate configuration before initializing Echo
 if (!reverbConfig.key) {
