@@ -18,14 +18,12 @@
       x-init="
           // Mark CSS as loaded immediately since it's inline
           $el.classList.add('css-loaded');
-          console.log('🎨 Flowforge CSS loaded inline');
           
           // Load JS asynchronously for enhanced features
           loadJS('{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('flowforge', package: 'relaticle/flowforge') }}').then(() => {
               $el.classList.add('js-loaded');
-              console.log('⚡ Flowforge JS loaded');
           }).catch(error => {
-              console.warn('⚠️ JS failed to load:', error);
+              console.warn('Flowforge JS failed to load:', error);
           });
       "
     >
@@ -77,7 +75,7 @@
             position: relative;
         }
 
-        .ff-board.js-loaded::after {
+        /* .ff-board.js-loaded::after {
             content: '';
             position: absolute;
             top: 0;
@@ -88,7 +86,7 @@
             border-radius: 50%;
             opacity: 0.7;
             animation: pulse 2s infinite;
-        }
+        } */
 
         @keyframes pulse {
             0%, 100% { opacity: 0.7; }
@@ -128,15 +126,13 @@
                     link.rel = 'stylesheet';
                     link.href = href;
                     
-                    // Use both onload and onreadystatechange for better compatibility
-                    link.onload = () => {
-                        console.log('✅ CSS loaded:', href);
-                        resolve();
-                    };
-                    link.onerror = () => {
-                        console.error('❌ CSS failed to load:', href);
-                        reject(new Error('CSS load failed'));
-                    };
+                     // Use both onload and onreadystatechange for better compatibility
+                     link.onload = () => {
+                         resolve();
+                     };
+                     link.onerror = () => {
+                         reject(new Error('CSS load failed'));
+                     };
                     
                     // For older browsers
                     if (link.readyState) {
@@ -166,16 +162,13 @@
                     script.async = true;
                     script.type = 'module'; // Handle ES modules
                     
-                    script.onload = () => {
-                        console.log('✅ JS loaded:', src);
-                        resolve();
-                    };
-                    script.onerror = () => {
-                        console.error('❌ JS failed to load:', src);
-                        // Try loading as regular script if module fails
-                        console.log('🔄 Retrying as regular script...');
-                        loadJSRegular(src).then(resolve).catch(reject);
-                    };
+                     script.onload = () => {
+                         resolve();
+                     };
+                     script.onerror = () => {
+                         // Try loading as regular script if module fails
+                         loadJSRegular(src).then(resolve).catch(reject);
+                     };
                     
                     document.head.appendChild(script);
                 });
@@ -188,14 +181,12 @@
                     script.async = true;
                     // No type="module" for regular script
                     
-                    script.onload = () => {
-                        console.log('✅ JS loaded (regular):', src);
-                        resolve();
-                    };
-                    script.onerror = () => {
-                        console.error('❌ JS failed to load (regular):', src);
-                        reject(new Error('JS load failed'));
-                    };
+                     script.onload = () => {
+                         resolve();
+                     };
+                     script.onerror = () => {
+                         reject(new Error('JS load failed'));
+                     };
                     
                     document.head.appendChild(script);
                 });
@@ -304,29 +295,26 @@
                         }
                     },
                     
-                    initPerformanceTracking() {
-                        this.performanceMetrics.loadEnd = performance.now();
-                        const loadTime = this.performanceMetrics.loadEnd - this.performanceMetrics.loadStart;
-                        
-                        console.log(`⏱️ Action Board load time: ${loadTime.toFixed(2)}ms`);
-                        
-                        if (loadTime < 1000) { // Less than 1 second - show optimization indicator
-                            setTimeout(() => {
-                                const indicator = document.getElementById('performance-indicator');
-                                if (indicator) {
-                                    indicator.style.opacity = '1';
-                                    setTimeout(() => {
-                                        indicator.style.opacity = '0';
-                                    }, 2000);
-                                }
-                            }, 500);
-                        }
-                    },
-                    
-                    showPerformanceIndicator() {
-                        console.log('🚀 Action Board loaded with Trello-style optimizations');
-                        console.log('📊 Features active: Database indexes, Smart caching, Lazy loading, Progressive updates');
-                    }
+                     initPerformanceTracking() {
+                         this.performanceMetrics.loadEnd = performance.now();
+                         const loadTime = this.performanceMetrics.loadEnd - this.performanceMetrics.loadStart;
+                         
+                         if (loadTime < 1000) { // Less than 1 second - show optimization indicator
+                             setTimeout(() => {
+                                 const indicator = document.getElementById('performance-indicator');
+                                 if (indicator) {
+                                     indicator.style.opacity = '1';
+                                     setTimeout(() => {
+                                         indicator.style.opacity = '0';
+                                     }, 2000);
+                                 }
+                             }, 500);
+                         }
+                     },
+                     
+                     showPerformanceIndicator() {
+                         // Performance optimizations active
+                     }
                 };
             }
 
@@ -420,10 +408,8 @@
                     // Board is ready immediately, no need for loader
                     loader.style.display = 'none';
                     
-                    // Add immediate board ready class
-                    root.classList.add('board-ready', 'immediate-render');
-                    
-                    console.log('⚡ Action Board rendered immediately (no asset delay)');
+                     // Add immediate board ready class
+                     root.classList.add('board-ready', 'immediate-render');
                 }
             })();
 
