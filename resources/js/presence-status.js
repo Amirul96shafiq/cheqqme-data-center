@@ -578,17 +578,21 @@ class PresenceStatusManager {
      * Handle tab becoming hidden
      */
     handleTabHidden() {
-        console.log("Tab hidden - could set status to away");
-        // Optionally set status to away when tab is hidden
-        // this.updateUserStatus('away').catch(console.error);
+        console.log(
+            "Tab hidden - maintaining online status for proper away time counting"
+        );
+        // Do NOT change status when tab is hidden - let the 5-minute away timer handle it
+        // This allows proper away time counting instead of immediately going invisible
     }
 
     /**
      * Handle tab becoming visible
      */
     handleTabVisible() {
-        console.log("Tab visible - setting status to online");
-        // Set status back to online when tab becomes visible
+        console.log(
+            "Tab visible - checking if user should be restored from auto-status"
+        );
+        // Set status back to online when tab becomes visible (only if user was auto-away)
         if (
             this.currentUser &&
             this.getUserStatus(this.currentUser.id) === "away"

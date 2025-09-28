@@ -1817,25 +1817,20 @@ document.addEventListener('DOMContentLoaded', function() {
         persistentLog('Visibility changed', { hidden: document.hidden });
         
         if (document.hidden) {
-            // Tab became hidden, start a short timer to detect tab switches
-            persistentLog('Tab became hidden, starting tab switch detection...');
+            // Tab became hidden - maintain online status for proper away time counting
+            persistentLog('Tab became hidden - maintaining online status (not setting to invisible)');
             
             // Clear any existing timeout
             if (tabSwitchTimeout) {
                 clearTimeout(tabSwitchTimeout);
             }
             
-            // Set a short timeout to detect if this is just a tab switch
-            tabSwitchTimeout = setTimeout(function() {
-                persistentLog('Tab switch timeout fired - NOT changing status on tab blur');
-                
-                // Do not change status when tab loses focus
-                // Only reset the flag so beforeunload can work on actual close
-                hasSetInvisible = false;
-            }, 500); // 500ms delay to detect tab switches
+            // Do not change status when tab loses focus - let the 5-minute away timer handle it
+            // This allows proper away time counting instead of immediately going invisible
+            persistentLog('Tab switch detected - status remains online for away time counting');
         } else {
-            // Tab became visible again, cancel the timeout
-            persistentLog('Tab became visible, cancelling tab switch timeout...');
+            // Tab became visible again, cancel any timeouts
+            persistentLog('Tab became visible, cancelling any timeouts...');
             if (tabSwitchTimeout) {
                 clearTimeout(tabSwitchTimeout);
                 tabSwitchTimeout = null;
@@ -1852,28 +1847,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Additional fallback: Use a longer timeout to detect actual tab closure
-    // This helps distinguish between tab switches and actual tab closure
+    // Tab switching detection - do NOT set to invisible on tab switch
+    // Only set to invisible on actual tab/browser close
     let tabCloseDetectionTimeout = null;
     
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            // Tab became hidden - start a longer timeout for tab closure detection
+            // Tab became hidden - this could be a tab switch or tab close
+            // We will NOT set to invisible here to allow proper away time counting
+            persistentLog('Tab became hidden - maintaining online status for away time counting');
+            
+            // Clear any existing timeout
             if (tabCloseDetectionTimeout) {
                 clearTimeout(tabCloseDetectionTimeout);
             }
             
-            // Set a longer timeout (5 seconds) to detect actual tab closure
-            // If the tab is still hidden after 5 seconds, it's likely closed
-            tabCloseDetectionTimeout = setTimeout(function() {
-                // Only set to invisible if we're not navigating and not refreshing
-                if (!isNavigating && !isPageRefresh && !refreshKeyPressed && !hasSetInvisible) {
-                    persistentLog('Tab appears to be closed (hidden for 5+ seconds)');
-                    setUserToInvisible('tab_close_timeout');
-                }
-            }, 5000);
+            // Note: Removed the 5-second timeout that was incorrectly setting status to invisible
+            // Tab switches should not change status - only actual tab/browser close should
         } else {
-            // Tab became visible - cancel the timeout
+            // Tab became visible - cancel any timeouts
             if (tabCloseDetectionTimeout) {
                 clearTimeout(tabCloseDetectionTimeout);
                 tabCloseDetectionTimeout = null;
