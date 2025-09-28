@@ -25,24 +25,24 @@
         <div class="absolute inset-0 flex items-center justify-center">
             <div class="text-center text-white">
                 {{-- Avatar --}}
-        <div class="mb-4 relative inline-block">
-            <x-filament::avatar
-                :src="$user ? filament()->getUserAvatarUrl($user) : null"
-                alt="Avatar"
-                size="w-32 h-32"
-                class="mx-auto border-[6px] border-white/80"
-            />
-            
-            <!-- Interactive Online Status Indicator -->
-            <div class="absolute -bottom-1 right-2">
-                <x-interactive-online-status-indicator :user="$user" size="xl" />
-            </div>
-        </div>
+                <div class="mb-4 mt-8 md:mt-0 relative inline-block">
+                    <x-filament::avatar
+                        :src="$user ? filament()->getUserAvatarUrl($user) : null"
+                        alt="Avatar"
+                        size="w-20 h-20 md:w-24 md:h-24 lg:w-32 lg:h-32"
+                        class="mx-auto border-[6px] border-white/80"
+                    />
+                    
+                    <!-- Interactive Online Status Indicator -->
+                    <div class="absolute -bottom-1 right-2">
+                        <x-interactive-online-status-indicator :user="$user" size="xl" />
+                    </div>
+                </div>
 
                 {{-- User information --}}
                 <div class="space-y-1">
                     {{-- Username --}}
-                    <h1 class="text-3xl md:text-4xl font-bold drop-shadow-lg">
+                    <h1 class="text-lg md:text-2xl lg:text-3xl font-bold drop-shadow-lg">
                         {{ $user->username ?? 'Username' }}
                     </h1>
                 </div>
