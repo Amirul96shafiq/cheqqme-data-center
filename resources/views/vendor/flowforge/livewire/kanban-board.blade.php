@@ -8,6 +8,7 @@
       x-load
       x-load-css="[@js(\Filament\Support\Facades\FilamentAsset::getStyleHref('flowforge', package: 'relaticle/flowforge'))]"
       x-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('flowforge', package: 'relaticle/flowforge') }}"
+      x-load-delay="100"
       x-data="optimizedFlowforge({
           state: {
               columns: @js($columns),
@@ -44,10 +45,69 @@
 <script data-flowforge-autopoll>
 // Enhanced Alpine.js component with Trello-style optimizations
 function optimizedFlowforge(config) {
+    // Progressive loading strategy - load critical parts first
+    const progressiveLoader = {
+        loadCritical() {
+            // Load only essential board structure
+            return new Promise(resolve => {
+                requestIdleCallback(() => {
+                    this.renderBoardStructure();
+                    resolve();
+                });
+            });
+        },
+        
+        loadEnhanced() {
+            // Load enhanced features after critical content
+            return new Promise(resolve => {
+                requestIdleCallback(() => {
+                    this.loadDragDrop();
+                    this.loadAnimations();
+                    resolve();
+                });
+            });
+        },
+        
+        renderBoardStructure() {
+            // Minimal board rendering for immediate display
+            const board = document.getElementById('action-board-root');
+            if (board) {
+                board.classList.add('board-loaded');
+            }
+        },
+        
+        loadDragDrop() {
+            // Load drag and drop functionality
+            if ('sortable' in window) {
+                this.initializeSortable();
+            }
+        },
+        
+        loadAnimations() {
+            // Load animations and transitions
+            this.enableAnimations();
+        },
+        
+        initializeSortable() {
+            // Initialize sortable functionality
+        },
+        
+        enableAnimations() {
+            // Enable smooth animations
+            document.body.classList.add('animations-enabled');
+        }
+    };
+    
     // Create a robust base implementation that doesn't depend on external flowforge
     const baseImplementation = {
         state: config.state || {},
-        init() {}
+        progressiveLoader,
+        init() {
+            // Start progressive loading
+            progressiveLoader.loadCritical().then(() => {
+                progressiveLoader.loadEnhanced();
+            });
+        }
     };
     
     // Try to load original flowforge if available

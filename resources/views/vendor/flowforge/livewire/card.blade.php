@@ -31,7 +31,9 @@
                          alt="Featured image"
                          class="w-full h-24 object-cover rounded-t-lg border-l border-r border-t border-gray-200 dark:border-gray-700 hover:opacity-90 transition-opacity"
                          loading="lazy"
-                         decoding="async">
+                         decoding="async"
+                         fetchpriority="low"
+                         sizes="(max-width: 768px) 100vw, 280px">
                 </div>
             </div>
         @endif
