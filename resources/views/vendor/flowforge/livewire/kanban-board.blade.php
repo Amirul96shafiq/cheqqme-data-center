@@ -110,7 +110,7 @@ window.shareTaskUrl = function(event, taskId) {
                         loader.style.display = 'none';
                     }, 800); // Wait for fade-out transition to complete
                 }, 500); // Wait for spinner to start fading
-            }, 1500); // Reduced from 2000ms to 1500ms for faster UX
+            }, 4500); // Increased to 3000ms for longer loading screen
         }
     })();
 </script>
