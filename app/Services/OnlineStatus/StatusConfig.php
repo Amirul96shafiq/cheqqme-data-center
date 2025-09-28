@@ -119,24 +119,24 @@ class StatusConfig
     {
         return [
             self::SIZE_XS => [
-                'classes' => 'w-3 h-3',
-                'border_classes' => 'w-2 h-2',
+                'classes' => 'w-2 h-2 md:w-3 md:h-3',
+                'border_classes' => 'w-1 h-1 md:w-2 md:h-2',
             ],
             self::SIZE_SM => [
-                'classes' => 'w-4 h-4',
-                'border_classes' => 'w-3 h-3',
+                'classes' => 'w-3 h-3 md:w-4 md:h-4',
+                'border_classes' => 'w-2 h-2 md:w-3 md:h-3',
             ],
             self::SIZE_MD => [
-                'classes' => 'w-5 h-5',
-                'border_classes' => 'w-4 h-4',
+                'classes' => 'w-4 h-4 md:w-5 md:h-5',
+                'border_classes' => 'w-3 h-3 md:w-4 md:h-4',
             ],
             self::SIZE_LG => [
-                'classes' => 'w-6 h-6',
-                'border_classes' => 'w-5 h-5',
+                'classes' => 'w-5 h-5 md:w-6 md:h-6',
+                'border_classes' => 'w-4 h-4 md:w-5 md:h-5',
             ],
             self::SIZE_XL => [
-                'classes' => 'w-8 h-8',
-                'border_classes' => 'w-6 h-6',
+                'classes' => 'w-6 h-6 md:w-8 md:h-8',
+                'border_classes' => 'w-4 h-4 md:w-6 md:h-6',
             ],
         ];
     }
