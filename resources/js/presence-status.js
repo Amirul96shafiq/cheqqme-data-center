@@ -557,21 +557,11 @@ class PresenceStatusManager {
      * Send activity signal to maintain online status
      */
     sendActivity() {
-        // This could trigger a backend endpoint to update last_activity
-        if (this.currentUser) {
-            fetch("/api/user/activity", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": this.getCsrfToken(),
-                },
-                body: JSON.stringify({
-                    timestamp: new Date().toISOString(),
-                }),
-            }).catch((error) => {
-                console.warn("Failed to send activity signal:", error);
-            });
-        }
+        // With presence channels, activity is automatically tracked
+        // No need to send manual activity signals to the backend
+        console.log(
+            "Activity signal - presence channels handle this automatically"
+        );
     }
 
     /**
