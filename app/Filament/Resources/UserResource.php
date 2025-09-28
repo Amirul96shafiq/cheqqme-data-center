@@ -257,31 +257,38 @@ class UserResource extends Resource
                         return strlen($record->email) > 40 ? substr($record->email, 0, length: 40).'...' : $record->email;
                     }),
 
+                TextColumn::make('timezone')
+                    ->label(__('user.table.timezone'))
+                    ->getStateUsing(function ($record) {
+                        return $record->timezone ?? '-';
+                    })
+                    ->sortable(),
+
                 TextColumn::make('created_at')
                     ->label(__('user.table.created_at'))
                     ->dateTime('j/n/y, h:i A')
                     ->sortable(),
 
-                TextColumn::make('updated_at')
-                    ->label(__('user.table.updated_at_by'))
-                    ->formatStateUsing(function ($state, $record) {
-                        // Show '-' if there's no update or updated_by
-                        $updatedAt = $record->updated_at;
-                        $createdAt = $record->created_at;
-                        if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
-                            return '-';
-                        }
+                // TextColumn::make('updated_at')
+                //     ->label(__('user.table.updated_at_by'))
+                //     ->formatStateUsing(function ($state, $record) {
+                //         // Show '-' if there's no update or updated_by
+                //         $updatedAt = $record->updated_at;
+                //         $createdAt = $record->created_at;
+                //         if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
+                //             return '-';
+                //         }
 
-                        $user = $record->updatedBy;
-                        $formattedName = 'Unknown';
+                //         $user = $record->updatedBy;
+                //         $formattedName = 'Unknown';
 
-                        if ($user) {
-                            $formattedName = $user->short_name;
-                        }
+                //         if ($user) {
+                //             $formattedName = $user->short_name;
+                //         }
 
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
-                    })
-                    ->sortable(),
+                //         return $state?->format('j/n/y, h:i A')." ({$formattedName})";
+                //     })
+                //     ->sortable(),
             ])
             ->recordClasses(function ($record) {
                 $coverImageUrl = $record->getFilamentCoverImageUrl();
@@ -374,7 +381,7 @@ class UserResource extends Resource
             ->bulkActions([
                 //
             ])
-            ->defaultSort('updated_at', 'desc')
+            //->defaultSort('updated_at', 'desc')
             ->defaultPaginationPageOption(5);
     }
 
