@@ -524,8 +524,19 @@
                         card.style.display = match ? '' : 'none';
                         if (match) visible++;
                     });
+                    
+                    // Hide empty column elements when searching
                     const empty = col.querySelector('.ff-empty-column');
-                    if (empty) empty.style.display = visible === 0 ? '' : 'none';
+                    if (empty) {
+                        if (term) {
+                            // When searching, hide empty column elements
+                            empty.style.display = 'none';
+                        } else {
+                            // When not searching, show empty column elements only if no cards are visible
+                            empty.style.display = visible === 0 ? '' : 'none';
+                        }
+                    }
+                    
                     const count = col.querySelector('.ff-column__count');
                     if (count) count.textContent = visible.toString();
                 });
