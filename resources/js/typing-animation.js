@@ -66,7 +66,7 @@ class TypingAnimation {
                 ? document.querySelector(element)
                 : element;
         if (!this.element) {
-            console.warn("TypingAnimation: Element not found");
+            // console.warn("TypingAnimation: Element not found");
             return;
         }
 
@@ -103,7 +103,7 @@ class TypingAnimation {
      */
     init() {
         if (this.config.texts.length === 0) {
-            console.warn("TypingAnimation: No texts provided");
+            // console.warn("TypingAnimation: No texts provided");
             return;
         }
 

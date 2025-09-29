@@ -16,12 +16,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!draggedFile) return;
 
     const fileData = JSON.parse(draggedFile);
-    console.log("Processing dragged file:", fileData.name);
+    // console.log("Processing dragged file:", fileData.name);
     sessionStorage.removeItem("draggedFile");
 
     // Check if this is a large file
     if (fileData.isLargeFile) {
-        console.log("Large file detected, setting title and document type");
+        // console.log("Large file detected, setting title and document type");
         initializeLargeFileAutoFill(fileData);
 
         // Retry after Livewire loads
@@ -94,10 +94,10 @@ function setTitleField(fileName) {
 
     // Set title field value
     if (titleField) {
-        console.log("Setting document title:", fileName);
+        // console.log("Setting document title:", fileName);
         setFieldValue(titleField, fileName);
     } else {
-        console.log("Title field not found, retrying...");
+        // console.log("Title field not found, retrying...");
         setTimeout(() => setTitleField(fileName), 500);
         setTimeout(() => setTitleField(fileName), 1500);
     }
@@ -215,7 +215,7 @@ function showLargeFileMessage(fileData) {
         }, 10000);
     }
 
-    console.log("Large file message:", message);
+    // console.log("Large file message:", message);
 }
 
 // Set file upload
@@ -224,10 +224,10 @@ function setFileUpload(fileData) {
     const fileInput = findFileInput();
 
     if (fileInput) {
-        console.log("Starting file upload:", fileData.name);
+        // console.log("Starting file upload:", fileData.name);
         setFileInputValue(fileInput, file);
     } else {
-        console.log("File input not found");
+        // console.log("File input not found");
     }
 }
 
@@ -304,9 +304,9 @@ function setFileInputValue(fileInput, file) {
     // Verify file was set
     setTimeout(() => {
         if (fileInput.files.length > 0) {
-            console.log("File uploaded successfully:", fileInput.files[0].name);
+            // console.log("File uploaded successfully:", fileInput.files[0].name);
         } else {
-            console.log("File upload failed");
+            // console.log("File upload failed");
         }
     }, 100);
 }

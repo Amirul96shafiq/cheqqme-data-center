@@ -4,7 +4,7 @@
  */
 
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("Drag-drop-upload script loaded");
+    // console.log("Drag-drop-upload script loaded");
 
     const DragDropUpload = {
         overlay: null,
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const message =
                     window.dragDropLang?.actionBoardDetected ||
                     "Action Board page detected, disabling global drag-drop to allow card drag-drop";
-                console.log(message);
+                // console.log(message);
                 return;
             }
 
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const message =
                     window.dragDropLang?.filamentUploadDetected ||
                     "Filament upload fields detected, using native drag-drop instead";
-                console.log(message);
+                // console.log(message);
                 return;
             }
 
@@ -70,9 +70,9 @@ document.addEventListener("DOMContentLoaded", function () {
             for (const selector of uploadSelectors) {
                 const elements = document.querySelectorAll(selector);
                 if (elements.length > 0) {
-                    console.log(
-                        `Found ${elements.length} Filament upload field(s) with selector: ${selector}`
-                    );
+                    // console.log(
+                    //     `Found ${elements.length} Filament upload field(s) with selector: ${selector}`
+                    // );
                     return true;
                 }
             }
@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (files.length === 0) return;
 
             const file = files[0];
-            console.log("File dropped:", file.name, file.type);
+            // console.log("File dropped:", file.name, file.type);
 
             if (!this.validateFile(file)) return;
             this.processFile(file);
@@ -229,7 +229,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Simple size-based logic
             if (file.size <= 5 * 1024 * 1024) {
                 // 5MB or less
-                console.log("Small file detected, using auto-upload approach");
+                // console.log("Small file detected, using auto-upload approach");
                 // For small files, use base64 approach
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -238,9 +238,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 };
                 reader.readAsDataURL(file);
             } else {
-                console.log(
-                    "Large file detected, using metadata-only approach"
-                );
+                // console.log(
+                //     "Large file detected, using metadata-only approach"
+                // );
                 this.handleLargeFile(fileData);
             }
         },
@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
         handleLargeFile(fileData) {
             // For large files, we'll redirect without storing the file content
             // The user will need to manually upload the file on the create page
-            console.log("Redirecting for large file upload:", fileData.name);
+            // console.log("Redirecting for large file upload:", fileData.name);
 
             // Store only metadata, not the file content
             const metadata = {
@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             try {
                 sessionStorage.setItem("draggedFile", JSON.stringify(metadata));
-                console.log("Large file metadata stored, redirecting...");
+                // console.log("Large file metadata stored, redirecting...");
                 window.location.href = "/admin/documents/create";
             } catch (error) {
                 console.error("Error storing large file metadata:", error);
@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function () {
         storeAndRedirect(fileData) {
             try {
                 sessionStorage.setItem("draggedFile", JSON.stringify(fileData));
-                console.log("File stored in sessionStorage, redirecting...");
+                // console.log("File stored in sessionStorage, redirecting...");
                 window.location.href = "/admin/documents/create";
             } catch (error) {
                 console.error("Error storing file:", error);

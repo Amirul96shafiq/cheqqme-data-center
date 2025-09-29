@@ -1414,36 +1414,36 @@ window.syncAllUserStatuses = function() {
                          
                          // Update tooltip text for this indicator
                          const tooltipContainer = indicator.closest('.tooltip-container');
-                         console.log(`🔍 Looking for tooltip container for user ${userId}:`, tooltipContainer);
+                         // console.log(`🔍 Looking for tooltip container for user ${userId}:`, tooltipContainer);
                          if (tooltipContainer) {
                              const tooltip = tooltipContainer.querySelector('.tooltip[data-tooltip-text]');
-                             console.log(`🔍 Found tooltip element for user ${userId}:`, tooltip);
+                             // console.log(`🔍 Found tooltip element for user ${userId}:`, tooltip);
                              if (tooltip && statusConfig[actualStatus]) {
-                                 console.log(`💬 Updating tooltip for user ${userId} from "${tooltip.textContent}" to:`, statusConfig[actualStatus].label);
+                                 // console.log(`💬 Updating tooltip for user ${userId} from "${tooltip.textContent}" to:`, statusConfig[actualStatus].label);
                                  tooltip.setAttribute('data-tooltip-text', statusConfig[actualStatus].label);
                                  tooltip.textContent = statusConfig[actualStatus].label;
-                                 console.log(`✅ Tooltip updated for user ${userId}:`, tooltip.textContent);
+                                 // console.log(`✅ Tooltip updated for user ${userId}:`, tooltip.textContent);
                              } else {
-                                 console.log(`❌ Could not update tooltip for user ${userId} - tooltip:`, tooltip, 'statusConfig:', statusConfig[actualStatus]);
+                                 // console.log(`❌ Could not update tooltip for user ${userId} - tooltip:`, tooltip, 'statusConfig:', statusConfig[actualStatus]);
                              }
                          } else {
-                             console.log(`❌ No tooltip container found for user ${userId}`);
+                             // console.log(`❌ No tooltip container found for user ${userId}`);
                          }
                     }
                 }
             });
         } else {
-            console.log('❌ Failed to sync user statuses:', data.message);
+            // console.log('❌ Failed to sync user statuses:', data.message);
         }
     })
     .catch(error => {
-        console.log('❌ Error syncing user statuses:', error);
+        // console.log('❌ Error syncing user statuses:', error);
     });
 };
 
 // Test function to manually test status updates (can be called from browser console)
 window.testStatusUpdate = function(status) {
-    console.log('🧪 Testing status update for:', status);
+    // console.log('🧪 Testing status update for:', status);
     if (window.updateAllStatusIndicators) {
         window.updateAllStatusIndicators(status, true); // true = current user only
     } else {
@@ -1453,7 +1453,7 @@ window.testStatusUpdate = function(status) {
 
 // Test function to manually sync user statuses (can be called from browser console)
 window.testSyncUserStatuses = function() {
-    console.log('🧪 Manually syncing user statuses from database...');
+    // console.log('🧪 Manually syncing user statuses from database...');
     if (window.syncAllUserStatuses) {
         window.syncAllUserStatuses();
     } else {
@@ -1463,17 +1463,17 @@ window.testSyncUserStatuses = function() {
 
 // Test function to debug tooltip structure (can be called from browser console)
 window.debugTooltipStructure = function() {
-    console.log('🔍 Debugging tooltip structure...');
+    // console.log('🔍 Debugging tooltip structure...');
     
     const indicators = document.querySelectorAll('.online-status-indicator');
-    console.log('📊 Found indicators:', indicators.length);
+    // console.log('📊 Found indicators:', indicators.length);
     
     indicators.forEach((indicator, index) => {
         const userId = indicator.getAttribute('data-user-id');
         const currentStatus = indicator.getAttribute('data-current-status');
         const tooltipContainer = indicator.closest('.tooltip-container');
         
-        console.log(`👤 User ${userId} (${index + 1}):`, {
+        // console.log(`👤 User ${userId} (${index + 1}):`, {
             currentStatus: currentStatus,
             tooltipContainer: tooltipContainer,
             hasTooltip: tooltipContainer ? tooltipContainer.querySelector('.tooltip[data-tooltip-text]') : null

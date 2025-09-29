@@ -24,7 +24,7 @@ class PresenceStatusManager {
      */
     async init() {
         if (this.isInitialized) {
-            console.log("Presence Status Manager already initialized");
+            // console.log("Presence Status Manager already initialized");
             return true;
         }
 
@@ -56,19 +56,19 @@ class PresenceStatusManager {
             this.presenceChannel = this.echo
                 .join("online-users")
                 .here((users) => {
-                    console.log("Users currently online:", users);
+                    // console.log("Users currently online:", users);
                     this.handleUsersHere(users);
                 })
                 .joining((user) => {
-                    console.log("User joined:", user);
+                    // console.log("User joined:", user);
                     this.handleUserJoined(user);
                 })
                 .leaving((user) => {
-                    console.log("User left:", user);
+                    // console.log("User left:", user);
                     this.handleUserLeft(user);
                 })
                 .listen("user.status.changed", (e) => {
-                    console.log("User status changed:", e);
+                    // console.log("User status changed:", e);
                     this.handleStatusChanged(e);
                 })
                 .error((error) => {
@@ -83,7 +83,7 @@ class PresenceStatusManager {
             this.setupVisibilityHandlers();
 
             this.isInitialized = true;
-            console.log("Presence Status Manager initialized successfully");
+            // console.log("Presence Status Manager initialized successfully");
             return true;
         } catch (error) {
             console.error(
@@ -229,7 +229,7 @@ class PresenceStatusManager {
             }
 
             const result = await response.json();
-            console.log("Status updated successfully:", result);
+            // console.log("Status updated successfully:", result);
 
             // Update current user's status in the map
             this.onlineUsers.set(this.currentUser.id, {
@@ -483,7 +483,7 @@ class PresenceStatusManager {
      * Show notification
      */
     showNotification(message, type = "info") {
-        console.log(`[${type.toUpperCase()}] ${message}`);
+        // console.log(`[${type.toUpperCase()}] ${message}`);
 
         // Try different notification systems
         if (window.showNotification) {
@@ -559,18 +559,18 @@ class PresenceStatusManager {
     sendActivity() {
         // With presence channels, activity is automatically tracked
         // No need to send manual activity signals to the backend
-        console.log(
-            "Activity signal - presence channels handle this automatically"
-        );
+        // console.log(
+        //     "Activity signal - presence channels handle this automatically"
+        // );
     }
 
     /**
      * Handle tab becoming hidden
      */
     handleTabHidden() {
-        console.log(
-            "Tab hidden - maintaining online status for proper away time counting"
-        );
+        // console.log(
+        //     "Tab hidden - maintaining online status for proper away time counting"
+        // );
         // Do NOT change status when tab is hidden - let the 5-minute away timer handle it
         // This allows proper away time counting instead of immediately going invisible
     }
@@ -579,9 +579,9 @@ class PresenceStatusManager {
      * Handle tab becoming visible
      */
     handleTabVisible() {
-        console.log(
-            "Tab visible - checking if user should be restored from auto-status"
-        );
+        // console.log(
+        //     "Tab visible - checking if user should be restored from auto-status"
+        // );
         // Set status back to online when tab becomes visible (only if user was auto-away)
         if (
             this.currentUser &&
@@ -595,7 +595,7 @@ class PresenceStatusManager {
      * Handle page unload
      */
     handlePageUnload() {
-        console.log("Page unloading - disconnecting from presence channel");
+        // console.log("Page unloading - disconnecting from presence channel");
         // Clean up heartbeat
         if (this.heartbeatInterval) {
             clearInterval(this.heartbeatInterval);
@@ -621,7 +621,7 @@ class PresenceStatusManager {
         }
 
         this.isInitialized = false;
-        console.log("Presence Status Manager disconnected");
+        // console.log("Presence Status Manager disconnected");
     }
 }
 

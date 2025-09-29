@@ -560,9 +560,9 @@ document.addEventListener('DOMContentLoaded', function() {
         pauseBetween: 200,
         randomize: true,
         autoStart: true,
-        onTextChange: (text, index) => {
-            console.log(`Chatbot subheading changed to: "${text}" (index: ${index})`);
-        }
+        // onTextChange: (text, index) => {
+        //     console.log(`Chatbot subheading changed to: "${text}" (index: ${index})`);
+        // }
     });
 
     // Cleanup on page unload

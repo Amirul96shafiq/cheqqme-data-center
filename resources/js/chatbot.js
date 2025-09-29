@@ -26,9 +26,9 @@
         const currentUserId = window.chatbotUserId || "anonymous";
         const lastUserId = localStorage.getItem("chatbot_last_user_id");
 
-        console.log(
-            `handleUserChange: currentUserId=${currentUserId}, lastUserId=${lastUserId}`
-        );
+        // console.log(
+        //     `handleUserChange: currentUserId=${currentUserId}, lastUserId=${lastUserId}`
+        // );
 
         if (lastUserId && lastUserId !== currentUserId) {
             // User has changed (logout/login), reset conversation loading state
@@ -38,9 +38,9 @@
             conversation = [];
             addingInitialMessages = false;
 
-            console.log(`User changed from ${lastUserId} to ${currentUserId}`);
+            // console.log(`User changed from ${lastUserId} to ${currentUserId}`);
         } else {
-            console.log(`Same user or first load: ${currentUserId}`);
+            // console.log(`Same user or first load: ${currentUserId}`);
         }
 
         // Update the last user ID
@@ -73,12 +73,12 @@
                 // Store the conversation ID with user-specific key
                 localStorage.setItem(getUserConversationKey(), conversationId);
 
-                console.log(
-                    "Chatbot session initialized with conversation ID:",
-                    conversationId,
-                    "for user:",
-                    window.chatbotUserId
-                );
+                // console.log(
+                //     "Chatbot session initialized with conversation ID:",
+                //     conversationId,
+                //     "for user:",
+                //     window.chatbotUserId
+                // );
 
                 // Load the history automatically after getting session info
                 // Add a small delay to ensure the conversation ID is properly set
@@ -110,9 +110,9 @@
         const chatState = localStorage.getItem(getUserChatStateKey());
         const shouldBeOpen = chatState === "true";
 
-        console.log(
-            `Initializing chatbot state - chatState: ${chatState}, shouldBeOpen: ${shouldBeOpen}`
-        );
+        // console.log(
+        //     `Initializing chatbot state - chatState: ${chatState}, shouldBeOpen: ${shouldBeOpen}`
+        // );
 
         // Use the centralized visibility setter for consistency
         setChatVisibility(shouldBeOpen);
@@ -186,9 +186,9 @@
         const chatState = localStorage.getItem(getUserChatStateKey());
         const shouldBeOpen = chatState === "true";
 
-        console.log(
-            `Applying chatbot state - chatState: ${chatState}, shouldBeOpen: ${shouldBeOpen}`
-        );
+        // console.log(
+        //     `Applying chatbot state - chatState: ${chatState}, shouldBeOpen: ${shouldBeOpen}`
+        // );
 
         setChatVisibility(shouldBeOpen);
 
@@ -287,26 +287,26 @@
 
     // Load conversation history from the backend
     async function loadConversationHistory() {
-        console.log("Loading conversation history:", {
-            conversationId,
-            conversationLength: conversation.length,
-            conversationLoaded,
-            isLoadingConversation,
-            userId: window.chatbotUserId,
-        });
+        // console.log("Loading conversation history:", {
+        //     conversationId,
+        //     conversationLength: conversation.length,
+        //     conversationLoaded,
+        //     isLoadingConversation,
+        //     userId: window.chatbotUserId,
+        // });
 
         if (!conversationId || isLoadingConversation) {
-            console.log(
-                "Skipping load - no conversation ID or loading in progress"
-            );
+            // console.log(
+            //     "Skipping load - no conversation ID or loading in progress"
+            // );
             return;
         }
 
         // Check if conversation is already loaded or initial messages are being added
         if (conversationLoaded || addingInitialMessages) {
-            console.log(
-                "Conversation already loaded or initial messages being added"
-            );
+            // console.log(
+            //     "Conversation already loaded or initial messages being added"
+            // );
             return;
         }
 
@@ -331,11 +331,11 @@
                 }
             );
 
-            console.log("Conversation history response:", response.status);
+            // console.log("Conversation history response:", response.status);
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Conversation data:", data);
+                // console.log("Conversation data:", data);
 
                 if (data.conversation && data.conversation.length > 0) {
                     // Load conversation messages
@@ -354,11 +354,11 @@
                     });
 
                     conversationLoaded = true;
-                    console.log(
-                        "Loaded",
-                        data.conversation.length,
-                        "messages from conversation"
-                    );
+                    // console.log(
+                    //     "Loaded",
+                    //     data.conversation.length,
+                    //     "messages from conversation"
+                    // );
 
                     // Scroll to bottom after loading conversation history
                     setTimeout(() => {
@@ -395,9 +395,9 @@
                             scrollToBottom();
                         }, 100);
                     }, 1000); // Delay to show after welcome message
-                    console.log(
-                        "No conversation messages found in database - empty conversation; greeting posted"
-                    );
+                    // console.log(
+                    //     "No conversation messages found in database - empty conversation; greeting posted"
+                    // );
                 }
             } else {
                 console.error(
@@ -785,7 +785,7 @@
             if (response.ok) {
                 const data = await response.json();
                 conversationId = data.conversation_id; // Set the new ID from the server
-                console.log("New conversation ID:", conversationId);
+                // console.log("New conversation ID:", conversationId);
 
                 // Update localStorage with new conversation ID
                 localStorage.setItem(getUserConversationKey(), conversationId);
@@ -867,10 +867,10 @@
             console.log("Notification system not available");
         }
 
-        console.log(
-            "Conversation cleared successfully. New ID:",
-            conversationId
-        );
+        // console.log(
+        //     "Conversation cleared successfully. New ID:",
+        //     conversationId
+        // );
     }
 
     // Emoji picker functionality
@@ -1204,7 +1204,7 @@
             // Access Shadow DOM root
             const shadowRoot = emojiPicker.shadowRoot;
             if (!shadowRoot) {
-                console.log("Shadow DOM not accessible, trying direct access");
+                // console.log("Shadow DOM not accessible, trying direct access");
                 // Fallback: try direct access
                 applyFavoritesPadding(emojiPicker);
                 return;
@@ -1593,9 +1593,9 @@
     // Listen for backup restored event to refresh conversation list
     document.addEventListener("livewire:init", () => {
         Livewire.on("backup-restored", () => {
-            console.log(
-                "Backup restored event received, refreshing conversation list..."
-            );
+            // console.log(
+            //     "Backup restored event received, refreshing conversation list..."
+            // );
             // Reset conversation loaded flag to force reload
             conversationLoaded = false;
             // Reload conversation history if chatbot is open
@@ -1650,7 +1650,7 @@
     document.addEventListener("visibilitychange", function () {
         if (!document.hidden && conversationId && !isLoadingConversation) {
             // Page became visible, ensure conversation is loaded
-            console.log("Page became visible, checking conversation loading");
+            // console.log("Page became visible, checking conversation loading");
             setTimeout(() => {
                 if (!conversationLoaded) {
                     loadConversationHistory();

@@ -62,12 +62,12 @@ if (!reverbConfig.key) {
             },
         });
 
-        console.log("Echo initialized successfully with Reverb:", {
-            key: reverbConfig.key,
-            host: reverbConfig.host,
-            port: reverbConfig.port,
-            scheme: reverbConfig.scheme,
-        });
+        // console.log("Echo initialized successfully with Reverb:", {
+        //     key: reverbConfig.key,
+        //     host: reverbConfig.host,
+        //     port: reverbConfig.port,
+        //     scheme: reverbConfig.scheme,
+        // });
     } catch (error) {
         console.error("Failed to initialize Echo:", error);
     }

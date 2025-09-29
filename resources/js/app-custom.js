@@ -360,9 +360,9 @@ document.addEventListener("livewire:init", function () {
             );
 
             if (rowsWithoutBackground.length > 0) {
-                console.log(
-                    `Found ${rowsWithoutBackground.length} rows without cover images, applying...`
-                );
+                // console.log(
+                //     `Found ${rowsWithoutBackground.length} rows without cover images, applying...`
+                // );
                 applyCoverImages(); // Apply immediately without delay
             }
         }, 200); // Check every 200ms for faster response
@@ -381,25 +381,25 @@ document.addEventListener("livewire:init", function () {
 
     // Apply on all relevant Livewire events
     document.addEventListener("livewire:updated", (event) => {
-        console.log("Livewire updated event triggered", event);
+        // console.log("Livewire updated event triggered", event);
         applyCoverImages();
     });
 
     document.addEventListener("livewire:navigated", (event) => {
-        console.log("Livewire navigated event triggered", event);
+        // console.log("Livewire navigated event triggered", event);
         applyCoverImages();
     });
 
     // Listen for theme changes (Filament light-switch plugin)
     document.addEventListener("theme-changed", (event) => {
-        console.log("Theme changed event triggered", event.detail);
+        // console.log("Theme changed event triggered", event.detail);
         // Reapply cover images immediately when theme changes
         applyCoverImages();
     });
 
     // Additional Livewire events that might trigger DOM updates
     document.addEventListener("livewire:loading", () => {
-        console.log("Livewire loading event triggered");
+        // console.log("Livewire loading event triggered");
     });
 
     // Listen for input changes that might trigger search
@@ -410,9 +410,9 @@ document.addEventListener("livewire:init", function () {
             event.target.closest("[wire\\:model*='search']") ||
             event.target.closest("[wire\\:model*='tableSearch']")
         ) {
-            console.log(
-                "Search input detected, applying cover images immediately"
-            );
+            // console.log(
+            //     "Search input detected, applying cover images immediately"
+            // );
             // Apply immediately without delay
             applyCoverImages();
         }
@@ -464,7 +464,7 @@ document.addEventListener("livewire:init", function () {
         });
 
         if (shouldApply) {
-            console.log("MutationObserver detected relevant DOM changes");
+            // console.log("MutationObserver detected relevant DOM changes");
             applyCoverImages();
         }
     });
@@ -490,7 +490,7 @@ document.addEventListener("livewire:init", function () {
         });
 
         if (themeChanged) {
-            console.log("HTML class changed, checking for theme change");
+            // console.log("HTML class changed, checking for theme change");
             // Check if dark mode status changed and reapply if needed
             applyCoverImages();
         }
