@@ -86,7 +86,7 @@ function openGreetingModal(forceOpen = false) {
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
-                                        @svg('heroicon-o-cloud', 'w-6 h-6 text-gray-500 dark:text-gray-400')
+                                        <x-icons.custom-icon name="humidity" />
                                     </div>
                                     <div class="flex-1">
                                         <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{{ __('weather.humidity') }}</div>
@@ -99,7 +99,7 @@ function openGreetingModal(forceOpen = false) {
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
-                                        @svg('heroicon-o-arrow-down-circle', 'w-6 h-6 text-gray-500 dark:text-gray-400')
+                                        <x-icons.custom-icon name="wind" />
                                     </div>
                                     <div class="flex-1">
                                         <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{{ __('weather.wind') }}</div>
@@ -112,7 +112,7 @@ function openGreetingModal(forceOpen = false) {
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
-                                        @svg('heroicon-o-bolt', 'w-6 h-6 text-gray-500 dark:text-gray-400')
+                                        <x-icons.custom-icon name="uv-index" />
                                     </div>
                                     <div class="flex-1">
                                         <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{{ __('weather.uv_index') }}</div>
@@ -125,7 +125,7 @@ function openGreetingModal(forceOpen = false) {
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
-                                        @svg('heroicon-o-clock', 'w-6 h-6 text-gray-500 dark:text-gray-400')
+                                        <x-icons.custom-icon name="sunset" />
                                     </div>
                                     <div class="flex-1">
                                         <div class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{{ __('weather.sunset') }}</div>
