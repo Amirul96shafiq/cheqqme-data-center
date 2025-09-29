@@ -445,7 +445,7 @@
                                     const emptyColumn = columnContent.querySelector('.ff-empty-column');
                                     if (emptyColumn) {
                                         const hideTimestamp = new Date().toISOString().substr(11, 12);
-                                        console.log(`[${hideTimestamp}] Hiding empty column via mutation observer`);
+                                        // console.log(`[${hideTimestamp}] Hiding empty column via mutation observer`);
                                         emptyColumn.style.display = 'none';
                                     }
                                 }
@@ -461,11 +461,11 @@
                                 const emptyColumn = target.querySelector('.ff-empty-column');
                                 
                                 const removeTimestamp = new Date().toISOString().substr(11, 12);
-                                console.log(`[${removeTimestamp}] Card removed - checking column: ${cards.length} cards, empty column exists: ${!!emptyColumn}, display: ${emptyColumn?.style.display || 'default'}`);
+                                // console.log(`[${removeTimestamp}] Card removed - checking column: ${cards.length} cards, empty column exists: ${!!emptyColumn}, display: ${emptyColumn?.style.display || 'default'}`);
                                 
                                 if (cards.length === 0 && emptyColumn && emptyColumn.style.display === 'none') {
                                     const showTimestamp = new Date().toISOString().substr(11, 12);
-                                    console.log(`[${showTimestamp}] Showing empty column - card was removed`);
+                                    // console.log(`[${showTimestamp}] Showing empty column - card was removed`);
                                     emptyColumn.style.display = '';
                                 }
                             }
@@ -484,12 +484,12 @@
                 // Listen for kanban events to show empty columns immediately
                 window.addEventListener('kanban-order-updated', function() {
                     const timestamp = new Date().toISOString().substr(11, 12);
-                    console.log(`[${timestamp}] Kanban order updated - checking for empty columns`);
+                    // console.log(`[${timestamp}] Kanban order updated - checking for empty columns`);
                     
                     // Use setTimeout to wait for Livewire to finish re-rendering
                     setTimeout(() => {
                         const checkTimestamp = new Date().toISOString().substr(11, 12);
-                        console.log(`[${checkTimestamp}] Checking columns after Livewire re-render`);
+                        // console.log(`[${checkTimestamp}] Checking columns after Livewire re-render`);
                         
                         // Check all columns for empty state
                         const allColumns = document.querySelectorAll('.ff-column__content');
@@ -497,18 +497,18 @@
                             const cards = column.querySelectorAll('.ff-card:not(.sortable-ghost):not(.sortable-chosen)');
                             const emptyColumn = column.querySelector('.ff-empty-column');
                             
-                            console.log(`[${checkTimestamp}] Column ${index}: ${cards.length} cards, empty column exists: ${!!emptyColumn}, display: ${emptyColumn?.style.display || 'default'}`);
+                            // console.log(`[${checkTimestamp}] Column ${index}: ${cards.length} cards, empty column exists: ${!!emptyColumn}, display: ${emptyColumn?.style.display || 'default'}`);
                             
                             if (cards.length === 0 && emptyColumn && emptyColumn.style.display === 'none') {
                                 const showTimestamp = new Date().toISOString().substr(11, 12);
-                                console.log(`[${showTimestamp}] Showing empty column after kanban update`);
+                                // console.log(`[${showTimestamp}] Showing empty column after kanban update`);
                                 emptyColumn.style.display = '';
                             }
                         });
-                    }, 100); // Wait 100ms for Livewire to re-render
+                    }, 25); // Wait 50ms for Livewire to re-render
                 });
                 
-                console.log('Added CSS and mutation observer for drag behavior');
+                // console.log('Added CSS and mutation observer for drag behavior');
             });
         </script>
 
