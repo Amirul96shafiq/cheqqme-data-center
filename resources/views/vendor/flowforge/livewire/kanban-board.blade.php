@@ -540,6 +540,13 @@
                     
                     const count = col.querySelector('.ff-column__count');
                     if (count) count.textContent = visible.toString();
+                    
+                    // Hide entire column when searching and no cards are visible
+                    if (term) {
+                        col.style.display = visible > 0 ? '' : 'none';
+                    } else {
+                        col.style.display = '';
+                    }
                 });
                 
                 // Disable/enable card dragging based on search state
