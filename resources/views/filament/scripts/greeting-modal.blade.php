@@ -1389,7 +1389,7 @@ window.syncAllUserStatuses = function() {
                     const currentStatus = indicator.getAttribute('data-current-status');
                     
                     if (currentStatus !== actualStatus) {
-                        console.log(`Updating user ${userId} status: ${currentStatus} -> ${actualStatus}`);
+                        // console.log(`Updating user ${userId} status: ${currentStatus} -> ${actualStatus}`);
                         
                         // Update the data attribute
                         indicator.setAttribute('data-current-status', actualStatus);
@@ -1530,7 +1530,7 @@ window.startAutoAwayTimer = function() {
     }
     
     window.autoAwayTimeout = setTimeout(() => {
-        console.log('Auto-away timer triggered - setting user to away');
+        // console.log('Auto-away timer triggered - setting user to away');
         
         // Call API to set user as away due to inactivity
         fetch('/api/user/auto-away', {
@@ -1544,7 +1544,7 @@ window.startAutoAwayTimer = function() {
         }).then(response => response.json())
         .then(data => {
             if (data.success) {
-                console.log('User auto-set to away due to inactivity');
+                // console.log('User auto-set to away due to inactivity');
                 // Update status indicators (current user only)
                 if (window.updateAllStatusIndicators) {
                     window.updateAllStatusIndicators('away', true);
