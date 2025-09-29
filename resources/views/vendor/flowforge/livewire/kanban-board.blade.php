@@ -432,31 +432,80 @@
                 `;
                 document.head.appendChild(style);
                 
-                // Use mutation observer to detect when sortable classes are added
+                // Use mutation observer to detect when sortable classes are added/removed
                 const observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
                         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
                             const target = mutation.target;
+                            
+                            // Hide empty column when dragging starts
                             if (target.classList.contains('sortable-ghost') || target.classList.contains('sortable-chosen')) {
-                                // Find the column content and hide empty column
                                 const columnContent = target.closest('.ff-column__content');
                                 if (columnContent) {
                                     const emptyColumn = columnContent.querySelector('.ff-empty-column');
                                     if (emptyColumn) {
-                                        console.log('Hiding empty column via mutation observer');
+                                        const hideTimestamp = new Date().toISOString().substr(11, 12);
+                                        console.log(`[${hideTimestamp}] Hiding empty column via mutation observer`);
                                         emptyColumn.style.display = 'none';
                                     }
+                                }
+                            }
+                        }
+                        
+                        // Check for child removals (when cards are moved out)
+                        if (mutation.type === 'childList' && mutation.removedNodes.length > 0) {
+                            const target = mutation.target;
+                            if (target.classList.contains('ff-column__content')) {
+                                // Check if column is now empty
+                                const cards = target.querySelectorAll('.ff-card:not(.sortable-ghost):not(.sortable-chosen)');
+                                const emptyColumn = target.querySelector('.ff-empty-column');
+                                
+                                const removeTimestamp = new Date().toISOString().substr(11, 12);
+                                console.log(`[${removeTimestamp}] Card removed - checking column: ${cards.length} cards, empty column exists: ${!!emptyColumn}, display: ${emptyColumn?.style.display || 'default'}`);
+                                
+                                if (cards.length === 0 && emptyColumn && emptyColumn.style.display === 'none') {
+                                    const showTimestamp = new Date().toISOString().substr(11, 12);
+                                    console.log(`[${showTimestamp}] Showing empty column - card was removed`);
+                                    emptyColumn.style.display = '';
                                 }
                             }
                         }
                     });
                 });
                 
-                // Observe all elements for class changes
+                // Observe all elements for class changes and child list changes
                 observer.observe(document.body, {
                     attributes: true,
                     attributeFilter: ['class'],
+                    childList: true,
                     subtree: true
+                });
+                
+                // Listen for kanban events to show empty columns immediately
+                window.addEventListener('kanban-order-updated', function() {
+                    const timestamp = new Date().toISOString().substr(11, 12);
+                    console.log(`[${timestamp}] Kanban order updated - checking for empty columns`);
+                    
+                    // Use setTimeout to wait for Livewire to finish re-rendering
+                    setTimeout(() => {
+                        const checkTimestamp = new Date().toISOString().substr(11, 12);
+                        console.log(`[${checkTimestamp}] Checking columns after Livewire re-render`);
+                        
+                        // Check all columns for empty state
+                        const allColumns = document.querySelectorAll('.ff-column__content');
+                        allColumns.forEach((column, index) => {
+                            const cards = column.querySelectorAll('.ff-card:not(.sortable-ghost):not(.sortable-chosen)');
+                            const emptyColumn = column.querySelector('.ff-empty-column');
+                            
+                            console.log(`[${checkTimestamp}] Column ${index}: ${cards.length} cards, empty column exists: ${!!emptyColumn}, display: ${emptyColumn?.style.display || 'default'}`);
+                            
+                            if (cards.length === 0 && emptyColumn && emptyColumn.style.display === 'none') {
+                                const showTimestamp = new Date().toISOString().substr(11, 12);
+                                console.log(`[${showTimestamp}] Showing empty column after kanban update`);
+                                emptyColumn.style.display = '';
+                            }
+                        });
+                    }, 100); // Wait 100ms for Livewire to re-render
                 });
                 
                 console.log('Added CSS and mutation observer for drag behavior');
