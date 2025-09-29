@@ -149,6 +149,11 @@ function emojiPicker(commentId) {
             this.initializeEmojis();
             this.loadUserReactions();
             this.loadRecentEmojis();
+            
+            // Listen for Livewire updates to refresh component state
+            this.$watch('commentId', () => {
+                this.loadUserReactions();
+            });
         },
 
 

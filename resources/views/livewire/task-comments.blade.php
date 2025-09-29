@@ -815,19 +815,69 @@
         // Wait for Livewire to be available
         document.addEventListener('DOMContentLoaded', function() {
             waitForLivewire();
-            // Re-initialize after Livewire updates
-            document.addEventListener('livewire:update', function() {
-                setTimeout(initializeMentions, 500);
+        // Re-initialize after Livewire updates
+        document.addEventListener('livewire:update', function() {
+            setTimeout(initializeMentions, 500);
                 
-                // Also check for any edit form editors that might have appeared
-                setTimeout(function() {
-                    const editFormEditors = document.querySelectorAll('.edit-form[data-edit-form="true"] trix-editor, .fi-form:not([data-composer]) trix-editor, .edit-form[data-edit-form="true"] .ProseMirror, .fi-form:not([data-composer]) .ProseMirror');
-                    editFormEditors.forEach(function(editor) {
-                        if (!editor.dataset.mentionsInitialized) {
-                            initializeEditor(editor);
+            // Also check for any edit form editors that might have appeared
+            setTimeout(function() {
+                const editFormEditors = document.querySelectorAll('.edit-form[data-edit-form="true"] trix-editor, .fi-form:not([data-composer]) trix-editor, .edit-form[data-edit-form="true"] .ProseMirror, .fi-form:not([data-composer]) .ProseMirror');
+                editFormEditors.forEach(function(editor) {
+                    if (!editor.dataset.mentionsInitialized) {
+                        initializeEditor(editor);
+                    }
+                });
+            }, 1000);
+            
+            // Re-initialize emoji picker components for newly added comments
+            setTimeout(function() {
+                // Force Alpine.js to re-evaluate all x-data components
+                document.querySelectorAll('*').forEach(function(element) {
+                    if (element._x_dataStack) {
+                        const dataStack = element._x_dataStack;
+                        const componentsCount = dataStack.length;
+                        
+                        // Re-initialize Alpine data stack
+                        for (let i = 0; i < componentsCount; i++) {
+                            const component = dataStack[i];
+                            if (component && component.$refs) {
+                                // Update refs for new DOM elements
+                                Object.keys(component.$refs).forEach(function(refName) {
+                                    const newRef = element.querySelector(`[x-ref="${refName}"]`);
+                                    if (newRef) {
+                                        component.$refs[refName] = newRef;
+                                    }
+                                });
+                            }
                         }
+                    }
+                });
+            }, 600);
+            });
+            
+            // Handle refreshTaskComments event specifically
+            document.addEventListener('refreshTaskComments', function() {
+                // Force a small delay to ensure DOM is updated
+                setTimeout(function() {
+                    // Re-scan for new emoji picker components and ensure they're working
+                    document.querySelectorAll('.comment-reactions').forEach(function(reactionsContainer) {
+                        const emojiPickers = reactionsContainer.querySelectorAll('[x-data*="emojiPicker"]');
+                        emojiPickers.forEach(function(picker) {
+                            // Ensure the picker is properly bound to Alpine
+                            if (picker._x_dataStack && picker._x_dataStack.length > 0) {
+                                const component = picker._x_dataStack[0];
+                                if (component && typeof component.init === 'function') {
+                                    // Re-run init if available
+                                    try {
+                                        component.init();
+                                    } catch (e) {
+                                        //console.log('Picker already initialized:', e.message);
+                                    }
+                                }
+                            }
+                        });
                     });
-                }, 1000);
+                }, 600);
             });
             // Re-initialize after Livewire navigated
             document.addEventListener('livewire:navigated', function() {
