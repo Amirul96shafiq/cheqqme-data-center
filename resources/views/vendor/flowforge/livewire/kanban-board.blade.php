@@ -398,18 +398,18 @@
 
             // Task sharing functionality (no notifications)
             window.shareTaskUrl = function(event, taskId) {
-  event.preventDefault();
-  event.stopPropagation();
+                event.preventDefault();
+                event.stopPropagation();
 
-  // Use Filament's proper URL generation instead of hardcoded path
-  // This matches the same URL structure used by the share task button in EditTask.php
-  const editUrl = @js(\App\Filament\Resources\TaskResource::getUrl('edit', ['record' => 'PLACEHOLDER']));
-  const fullUrl = editUrl.replace('PLACEHOLDER', taskId);
+                // Use Filament's proper URL generation instead of hardcoded path
+                // This matches the same URL structure used by the share task button in EditTask.php
+                const editUrl = @js(\App\Filament\Resources\TaskResource::getUrl('edit', ['record' => 'PLACEHOLDER']));
+                const fullUrl = editUrl.replace('PLACEHOLDER', taskId);
 
-  navigator.clipboard.writeText(fullUrl).catch(function(err) {
-      // No notification; ignore errors
-  });
-};
+                navigator.clipboard.writeText(fullUrl).catch(function(err) {
+                    // No notification; ignore errors
+                });
+            };
 
             // Hide empty columns when cards are dragged over them
             document.addEventListener('DOMContentLoaded', function() {
@@ -510,6 +510,7 @@
                 
                 // console.log('Added CSS and mutation observer for drag behavior');
             });
+
             // Client-side filtering fallback for instant UX
             document.addEventListener('action-board-search', function(e){
                 var term = (e?.detail?.search || '').toLowerCase();
@@ -539,6 +540,48 @@
                     
                     const count = col.querySelector('.ff-column__count');
                     if (count) count.textContent = visible.toString();
+                });
+                
+                // Disable/enable card dragging based on search state
+                const columnContents = document.querySelectorAll('.ff-column__content');
+                const cards = document.querySelectorAll('.ff-card');
+                
+                columnContents.forEach(function(columnContent){
+                    if (term) {
+                        // When searching, disable dragging by removing sortable attributes
+                        columnContent.removeAttribute('x-sortable');
+                        columnContent.removeAttribute('x-sortable-group');
+                        columnContent.removeAttribute('x-sortable-ghost-class');
+                        columnContent.removeAttribute('x-sortable-chosen-class');
+                        columnContent.removeAttribute('x-sortable-drag-class');
+                        columnContent.removeAttribute('data-column-id');
+                        columnContent.removeAttribute('@end.stop');
+                    } else {
+                        // When not searching, re-enable dragging by restoring sortable attributes
+                        columnContent.setAttribute('x-sortable', '');
+                        columnContent.setAttribute('x-sortable-group', 'cards');
+                        columnContent.setAttribute('x-sortable-ghost-class', 'sortable-ghost');
+                        columnContent.setAttribute('x-sortable-chosen-class', 'sortable-chosen');
+                        columnContent.setAttribute('x-sortable-drag-class', 'sortable-drag');
+                        columnContent.setAttribute('data-column-id', columnContent.closest('.ff-column').getAttribute('data-column-id') || '');
+                        columnContent.setAttribute('@end.stop', '$wire.updateRecordsOrderAndColumn($event.to.getAttribute(\'data-column-id\'), $event.to.sortable.toArray())');
+                    }
+                });
+                
+                // Also disable/enable individual card sortable handles
+                cards.forEach(function(card){
+                    if (term) {
+                        // When searching, disable card dragging
+                        card.removeAttribute('x-sortable-handle');
+                        card.removeAttribute('x-sortable-item');
+                    } else {
+                        // When not searching, re-enable card dragging
+                        const cardId = card.getAttribute('data-card-id') || card.querySelector('[wire\\:key]')?.getAttribute('wire:key')?.replace('card-', '') || '';
+                        if (cardId) {
+                            card.setAttribute('x-sortable-handle', '');
+                            card.setAttribute('x-sortable-item', cardId);
+                        }
+                    }
                 });
             });
         </script>
