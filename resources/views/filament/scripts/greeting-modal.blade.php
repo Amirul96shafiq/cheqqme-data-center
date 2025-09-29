@@ -21,8 +21,8 @@ function openGreetingModal(forceOpen = false) {
     // Get current time for personalized greeting
     const hour = new Date().getHours();
     const greeting = hour >= 7 && hour <= 11 ? '{{ __("greetingmodal.good_morning") }}' : 
-                    hour >= 12 && hour <= 19 ? '{{ __("greetingmodal.good_afternoon") }}' : 
-                    hour >= 20 && hour <= 23 ? '{{ __("greetingmodal.good_evening") }}' : '{{ __("greetingmodal.good_night") }}';
+                    hour >= 12 && hour <= 17 ? '{{ __("greetingmodal.good_afternoon") }}' : 
+                    hour >= 18 && hour <= 23 ? '{{ __("greetingmodal.good_evening") }}' : '{{ __("greetingmodal.good_night") }}';
     
     const icon = hour >= 7 && hour <= 19 ? 'sun' : 'moon';
     const iconColor = hour >= 7 && hour <= 19 ? 'text-yellow-500' : 'text-blue-400';
@@ -35,12 +35,17 @@ function openGreetingModal(forceOpen = false) {
                 <div class="p-6 border-r-0 lg:border-r border-gray-200 dark:border-gray-700 border-b lg:border-b-0 weather-section w-full lg:w-2/5 order-2 lg:order-1">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-3">
+
+                            <!-- Refresh Weather Button -->
                             <button onclick="refreshWeatherData()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="{{ __('weather.refresh_weather') }}">
                                 @svg('heroicon-o-arrow-path', 'w-5 h-5')
                             </button>
+
+                            <!-- Last Updated Text -->
                             <div class="text-xs text-gray-500 dark:text-gray-400" id="weather-last-updated" data-last-updated-text="{{ __('weather.last_weather_updated') }}">
                                 {{ __('greetingmodal.footer-text') }}
                             </div>
+
                         </div>
                     </div>
                     
@@ -49,24 +54,35 @@ function openGreetingModal(forceOpen = false) {
                         <!-- Current Weather -->
                         <div class="bg-gradient-to-r from-white to-teal-100/50 dark:from-transparent dark:to-teal-700/50 rounded-lg p-4">
                             <div class="flex items-center justify-between">
+
+                                <!-- Weather Icon and Condition -->
                                 <div class="flex items-center space-x-3">
+
+                                    <!-- Weather Icon -->
                                     <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center weather-icon-container">
                                         @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
                                     </div>
+
+                                    <!-- Weather Condition -->
                                     <div>
                                         <h4 class="text-lg font-semibold text-teal-700 dark:text-teal-100 weather-condition">{{ __('weather.loading') }}</h4>
                                         <p class="text-sm text-gray-600 dark:text-gray-400 weather-location">{{ __('weather.loading') }}</p>
                                     </div>
                                 </div>
+
+                                <!-- Temperature and Feels Like -->
                                 <div class="text-right">
                                     <div class="text-2xl font-bold text-teal-700 dark:text-teal-100 current-temp">{{ __('weather.loading') }}</div>
                                     <div class="text-sm text-gray-600 dark:text-gray-400 feels-like">{{ __('weather.feels_like') }} {{ __('weather.loading') }}</div>
                                 </div>
+
                             </div>
                         </div>
                         
                         <!-- Weather Details -->
                         <div class="grid grid-cols-2 gap-3">
+
+                            <!-- Humidity -->
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
@@ -78,6 +94,8 @@ function openGreetingModal(forceOpen = false) {
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Wind -->
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
@@ -89,6 +107,8 @@ function openGreetingModal(forceOpen = false) {
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- UV Index -->
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
@@ -100,6 +120,8 @@ function openGreetingModal(forceOpen = false) {
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Sunset -->
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
@@ -111,6 +133,7 @@ function openGreetingModal(forceOpen = false) {
                                     </div>
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                     
@@ -120,7 +143,11 @@ function openGreetingModal(forceOpen = false) {
                             <h5 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('weather.forecast') }}</h5>
                             <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('weather.forecast_high_low') }}</span>
                         </div>
+
+                        <!-- Forecast Container -->
                         <div class="space-y-2" id="forecast-container">
+
+                            <!-- Today -->
                             <div class="flex items-center justify-between py-4 px-3 rounded-lg bg-gray-100 dark:bg-gray-700">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">{{ __('weather.today') }}</span>
@@ -128,6 +155,8 @@ function openGreetingModal(forceOpen = false) {
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
+
+                            <!-- Tomorrow -->
                             <div class="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tomorrow</span>
@@ -135,6 +164,8 @@ function openGreetingModal(forceOpen = false) {
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
+
+                            <!-- Day 3 -->
                             <div class="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 3</span>
@@ -142,6 +173,8 @@ function openGreetingModal(forceOpen = false) {
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
+
+                            <!-- Day 4 -->
                             <div class="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 4</span>
@@ -149,6 +182,8 @@ function openGreetingModal(forceOpen = false) {
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">{{ __('weather.loading') }} / {{ __('weather.loading') }}</div>
                             </div>
+
+                            <!-- Day 5 -->
                             <div class="flex items-center justify-between p-3">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 5</span>
@@ -156,7 +191,9 @@ function openGreetingModal(forceOpen = false) {
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
+
                         </div>
+                        
                     </div>
                 </div>
                 
