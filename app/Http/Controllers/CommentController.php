@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CommentApiResource;
 use App\Models\Comment;
-use App\Models\CommentEmojiReaction;
+use App\Models\CommentReaction;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 
@@ -248,7 +248,7 @@ class CommentController extends Controller
             ]);
 
             // Check if user already has an emoji reaction for this comment
-            $existingReaction = CommentEmojiReaction::where('comment_id', $comment->id)
+            $existingReaction = CommentReaction::where('comment_id', $comment->id)
                 ->where('user_id', $request->user()->id)
                 ->first();
 
@@ -258,7 +258,7 @@ class CommentController extends Controller
                 $reaction = $existingReaction;
             } else {
                 // Create new reaction
-                $reaction = CommentEmojiReaction::create([
+                $reaction = CommentReaction::create([
                     'comment_id' => $comment->id,
                     'user_id' => $request->user()->id,
                     'emoji' => $validated['emoji'],
@@ -287,12 +287,13 @@ class CommentController extends Controller
     public function removeEmojiReaction(Comment $comment, Request $request)
     {
         try {
-            $reaction = CommentEmojiReaction::where('comment_id', $comment->id)
+            $reaction = CommentReaction::where('comment_id', $comment->id)
                 ->where('user_id', $request->user()->id)
                 ->first();
 
             if ($reaction) {
                 $reaction->delete();
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Emoji reaction removed successfully',
@@ -318,7 +319,7 @@ class CommentController extends Controller
     public function getEmojiReactions(Comment $comment, Request $request)
     {
         try {
-            $reaction = CommentEmojiReaction::where('comment_id', $comment->id)
+            $reaction = CommentReaction::where('comment_id', $comment->id)
                 ->where('user_id', $request->user()->id)
                 ->first();
 
@@ -352,7 +353,7 @@ class CommentController extends Controller
                 ]);
             }
 
-            $reactions = CommentEmojiReaction::whereIn('comment_id', $commentIds)
+            $reactions = CommentReaction::whereIn('comment_id', $commentIds)
                 ->where('user_id', $request->user()->id)
                 ->with('user')
                 ->get()
