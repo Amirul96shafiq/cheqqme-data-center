@@ -18,9 +18,11 @@ class ActionBoard extends KanbanBoardPage
 {
     protected static ?string $navigationIcon = 'heroicon-o-rocket-launch';
 
+    public ?string $search = null;
+
     public function getSubject(): Builder
     {
-        return Task::query()
+        $query = Task::query()
             ->with(['comments' => function ($query) {
                 // Only load comment count for performance
                 $query->select('task_id', 'id');
@@ -33,6 +35,10 @@ class ActionBoard extends KanbanBoardPage
             ])
             ->orderBy('order_column')
             ->limit(300); // Limit initial load to 300 tasks (Trello approach)
+
+        // Search filtering is handled in the Livewire Kanban component to avoid remount issues
+
+        return $query;
     }
 
     public function mount(): void
@@ -655,6 +661,15 @@ class ActionBoard extends KanbanBoardPage
         return \App\Http\Livewire\Relaticle\Flowforge\KanbanBoard::class;
     }
 
+    /**
+     * Override getAdapter to pass search term
+     */
+    public function getAdapter(): \Relaticle\Flowforge\Contracts\KanbanAdapterInterface
+    {
+        // Always create a fresh adapter with current search state
+        return new \Relaticle\Flowforge\Adapters\DefaultKanbanAdapter($this->getSubject(), $this->config);
+    }
+
     public static function getNavigationGroup(): ?string
     {
         return __('action.navigation.group');
@@ -674,5 +689,17 @@ class ActionBoard extends KanbanBoardPage
     public function getTitle(): string
     {
         return __('action.title');
+    }
+
+    public function updatedSearch(): void
+    {
+        // Broadcast client-side filter event for instant UX
+        $this->dispatch('action-board-search', search: $this->search);
+    }
+
+    public function clearSearch(): void
+    {
+        $this->search = null;
+        $this->dispatch('action-board-search', search: $this->search);
     }
 }

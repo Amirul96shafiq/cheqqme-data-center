@@ -510,6 +510,26 @@
                 
                 // console.log('Added CSS and mutation observer for drag behavior');
             });
+            // Client-side filtering fallback for instant UX
+            document.addEventListener('action-board-search', function(e){
+                var term = (e?.detail?.search || '').toLowerCase();
+                const columns = document.querySelectorAll('.ff-column');
+                columns.forEach(function(col){
+                    const cards = col.querySelectorAll('.ff-card');
+                    let visible = 0;
+                    cards.forEach(function(card){
+                        const titleEl = card.querySelector('.ff-card__title');
+                        const title = (titleEl?.textContent || '').toLowerCase();
+                        const match = !term || title.includes(term);
+                        card.style.display = match ? '' : 'none';
+                        if (match) visible++;
+                    });
+                    const empty = col.querySelector('.ff-empty-column');
+                    if (empty) empty.style.display = visible === 0 ? '' : 'none';
+                    const count = col.querySelector('.ff-column__count');
+                    if (count) count.textContent = visible.toString();
+                });
+            });
         </script>
 
         <!-- Optimized loader - hide immediately since board renders instantly -->
