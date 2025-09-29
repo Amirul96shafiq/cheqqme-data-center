@@ -492,8 +492,9 @@
 
     /* Reduce item label text size */
     .fi-sidebar-item-label {
-        font-size: 0.75rem !important;
-        line-height: 1rem !important;
+        /* font-size: 0.75rem !important;
+        line-height: 1rem !important; */
+        font-weight: 400 !important; /* Override to normal weight */
     }
 
     /* Reduce padding for more compact sidebar items - only when sidebar is collapsed */
