@@ -110,7 +110,7 @@
 
     <nav
         class="fi-sidebar-nav flex-grow flex flex-col gap-y-7 overflow-y-auto overflow-x-hidden px-6 py-8"
-        style="scrollbar-gutter: stable; margin-right: -7px;"
+        style="scrollbar-gutter: stable; margin-right: -18px;"
     >
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::SIDEBAR_NAV_START) }}
 
