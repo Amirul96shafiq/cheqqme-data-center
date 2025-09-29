@@ -23,10 +23,10 @@
         };
     @endauth
 
-    console.log('Reverb configuration loaded:', window.reverbConfig);
-    console.log('Status configuration loaded:', window.statusConfig);
+    // console.log('Reverb configuration loaded:', window.reverbConfig);
+    // console.log('Status configuration loaded:', window.statusConfig);
     @auth
-        console.log('Current user loaded:', window.currentUser);
+        // console.log('Current user loaded:', window.currentUser);
     @endauth
 </script>
 @endpush

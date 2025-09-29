@@ -31,7 +31,7 @@
         @foreach($statusOptions as $status => $option)
             <button 
                 @click="
-                    console.log('Dropdown clicked for status:', '{{ $status }}');
+                    {{-- console.log('Dropdown clicked for status:', '{{ $status }}'); --}}
                     if (typeof window.updateOnlineStatus === 'function') {
                         window.updateOnlineStatus('{{ $status }}');
                     } else {

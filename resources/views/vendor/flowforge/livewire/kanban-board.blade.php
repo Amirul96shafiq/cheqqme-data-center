@@ -199,21 +199,38 @@
                     loadCritical() {
                         // Load only essential board structure
                         return new Promise(resolve => {
-                            requestIdleCallback(() => {
-                                this.renderBoardStructure();
-                                resolve();
-                            });
+                            if (window.requestIdleCallback) {
+                                requestIdleCallback(() => {
+                                    this.renderBoardStructure();
+                                    resolve();
+                                });
+                            } else {
+                                // Fallback for browsers that don't support requestIdleCallback
+                                setTimeout(() => {
+                                    this.renderBoardStructure();
+                                    resolve();
+                                }, 0);
+                            }
                         });
                     },
                     
                     loadEnhanced() {
                         // Load enhanced features after critical content
                         return new Promise(resolve => {
-                            requestIdleCallback(() => {
-                                this.loadDragDrop();
-                                this.loadAnimations();
-                                resolve();
-                            });
+                            if (window.requestIdleCallback) {
+                                requestIdleCallback(() => {
+                                    this.loadDragDrop();
+                                    this.loadAnimations();
+                                    resolve();
+                                });
+                            } else {
+                                // Fallback for browsers that don't support requestIdleCallback
+                                setTimeout(() => {
+                                    this.loadDragDrop();
+                                    this.loadAnimations();
+                                    resolve();
+                                }, 100);
+                            }
                         });
                     },
                     

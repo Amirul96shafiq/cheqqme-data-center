@@ -859,7 +859,7 @@ function updateWeatherFooter(weatherData) {
         });
 
         weatherElement.textContent = `${lastUpdatedText}: ${formattedDate}, ${formattedTime}`;
-        console.log('Updated weather section with timestamp:', `${lastUpdatedText}: ${formattedDate}, ${formattedTime}`);
+        // console.log('Updated weather section with timestamp:', `${lastUpdatedText}: ${formattedDate}, ${formattedTime}`);
     } catch (error) {
         console.error('Error formatting timestamp:', error);
         weatherElement.textContent = `${lastUpdatedText}: Unknown`;
@@ -1071,7 +1071,7 @@ window.showNotification = function(type, message) {
 
 // Global function to update online status via AJAX with presence channels
 window.updateOnlineStatus = function(status) {
-    console.log('updateOnlineStatus called with status:', status);
+    // console.log('updateOnlineStatus called with status:', status);
     // Show loading state
     const button = event.target.closest('button');
     let originalContent = null;
@@ -1186,10 +1186,10 @@ window.updateOnlineStatus = function(status) {
 
 // Function to update all status indicators on the page
 window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) {
-     console.log('🔄 updateAllStatusIndicators called with status:', newStatus, 'currentUserOnly:', currentUserOnly);
+     // console.log('🔄 updateAllStatusIndicators called with status:', newStatus, 'currentUserOnly:', currentUserOnly);
      // Get status configuration from backend
         const statusConfig = @json(\App\Services\OnlineStatus\StatusConfig::getJavaScriptConfig());
-        console.log('📋 Status config:', statusConfig);
+        // console.log('📋 Status config:', statusConfig);
         
         // Make status config available globally
         window.statusConfig = statusConfig;
@@ -1218,7 +1218,7 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
      
      // Update all tooltip texts
      const tooltips = document.querySelectorAll('.tooltip[data-tooltip-text]');
-     console.log('🔍 Found tooltips to update:', tooltips.length);
+     // console.log('🔍 Found tooltips to update:', tooltips.length);
      tooltips.forEach(tooltip => {
          // Skip non-current user tooltips if currentUserOnly is true
          if (currentUserOnly) {
@@ -1238,7 +1238,7 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
          }
          
          if (statusConfig[newStatus]) {
-             console.log('💬 Updating tooltip to:', statusConfig[newStatus].label);
+             // console.log('💬 Updating tooltip to:', statusConfig[newStatus].label);
              tooltip.setAttribute('data-tooltip-text', statusConfig[newStatus].label);
              tooltip.textContent = statusConfig[newStatus].label;
          }
@@ -1246,11 +1246,11 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
      
      // Update interactive dropdown selection states
      const alpineComponents = document.querySelectorAll('[x-data]');
-     console.log('🏔️ Found Alpine.js components:', alpineComponents.length);
+     // console.log('🏔️ Found Alpine.js components:', alpineComponents.length);
      alpineComponents.forEach(component => {
          // Look for status dropdown buttons in the new component structure
          const statusButtons = component.querySelectorAll('button[class*="space-x-3"][class*="text-left"]');
-         console.log('📋 Found status buttons in component:', statusButtons.length);
+         // console.log('📋 Found status buttons in component:', statusButtons.length);
          if (statusButtons.length > 0) {
              // Remove current selection styling from all buttons
              statusButtons.forEach(button => {
@@ -1297,7 +1297,7 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
                  }
              }
              
-             console.log('💬 Updating interactive tooltip to:', statusConfig[newStatus].label);
+             // console.log('💬 Updating interactive tooltip to:', statusConfig[newStatus].label);
              tooltip.setAttribute('data-tooltip-text', statusConfig[newStatus].label);
              tooltip.textContent = statusConfig[newStatus].label;
              tooltip.setAttribute('title', statusConfig[newStatus].label);
@@ -1340,17 +1340,17 @@ window.updateAllStatusIndicators = function(newStatus, currentUserOnly = false) 
 
 // Function to sync all users' statuses from database
 window.syncAllUserStatuses = function() {
-    console.log('🔄 Syncing all user statuses from database...');
+    // console.log('🔄 Syncing all user statuses from database...');
     
     // Get all user IDs from the page
     const indicators = document.querySelectorAll('.online-status-indicator');
-    console.log('🔍 Found status indicators:', indicators.length);
+    // console.log('🔍 Found status indicators:', indicators.length);
     
     const userIds = Array.from(indicators)
         .map(indicator => indicator.getAttribute('data-user-id'))
         .filter(id => id);
     
-    console.log('👥 User IDs found:', userIds);
+    // console.log('👥 User IDs found:', userIds);
     
     if (userIds.length === 0) {
         console.log('❌ No user indicators found on page');
@@ -1371,13 +1371,13 @@ window.syncAllUserStatuses = function() {
         })
     })
     .then(response => {
-        console.log('📡 API Response status:', response.status);
+        // console.log('📡 API Response status:', response.status);
         return response.json();
     })
     .then(data => {
-        console.log('📊 API Response data:', data);
+        // console.log('📊 API Response data:', data);
         if (data.success && data.statuses) {
-            console.log('✅ Received status data:', data.statuses);
+            // console.log('✅ Received status data:', data.statuses);
             
             // Update each indicator with its actual status
             document.querySelectorAll('.online-status-indicator').forEach(indicator => {
@@ -1474,10 +1474,10 @@ window.debugTooltipStructure = function() {
         const tooltipContainer = indicator.closest('.tooltip-container');
         
         // console.log(`👤 User ${userId} (${index + 1}):`, {
-            currentStatus: currentStatus,
-            tooltipContainer: tooltipContainer,
-            hasTooltip: tooltipContainer ? tooltipContainer.querySelector('.tooltip[data-tooltip-text]') : null
-        });
+        //     currentStatus: currentStatus,
+        //     tooltipContainer: tooltipContainer,
+        //     hasTooltip: tooltipContainer ? tooltipContainer.querySelector('.tooltip[data-tooltip-text]') : null
+        // });
     });
 };
 
@@ -1560,7 +1560,7 @@ window.startAutoAwayTimer = function() {
 
 // Polling fallback for status updates when real-time is not available
 window.startStatusPolling = function() {
-    console.log('🔄 Starting status polling fallback...');
+    // console.log('🔄 Starting status polling fallback...');
     
     // Clear any existing polling interval
     if (window.statusPollingInterval) {
@@ -1569,7 +1569,7 @@ window.startStatusPolling = function() {
     
     // Poll every 10 seconds
     window.statusPollingInterval = setInterval(() => {
-        console.log('🔄 Polling for status updates...');
+        // console.log('🔄 Polling for status updates...');
         window.syncAllUserStatuses();
     }, 10000); // 10 seconds
     
@@ -1580,7 +1580,7 @@ window.startStatusPolling = function() {
 // Stop polling when real-time becomes available
 window.stopStatusPolling = function() {
     if (window.statusPollingInterval) {
-        console.log('🔄 Stopping status polling fallback...');
+        // console.log('🔄 Stopping status polling fallback...');
         clearInterval(window.statusPollingInterval);
         window.statusPollingInterval = null;
     }
@@ -1606,7 +1606,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fallback polling for status updates when real-time is not available
     // Check if presence status manager is available and working
     if (typeof window.presenceStatusManager === 'undefined' || !window.presenceStatusManager.isInitialized) {
-        console.log('🔄 Real-time updates not available, starting polling fallback...');
+        // console.log('🔄 Real-time updates not available, starting polling fallback...');
         window.startStatusPolling();
     }
     
@@ -1666,9 +1666,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check if this is a page refresh on page load
     if (performance.navigation && performance.navigation.type === 1) {
         isPageRefresh = true;
-        persistentLog('Page refresh detected on page load', {
-            navigationType: performance.navigation.type
-        });
+        // persistentLog('Page refresh detected on page load', {
+        //    navigationType: performance.navigation.type
+        // });
     }
     
     // Also check navigation entries
@@ -1676,9 +1676,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const navEntry = performance.getEntriesByType('navigation')[0];
         if (navEntry.type === 'reload') {
             isPageRefresh = true;
-            persistentLog('Page reload detected via navigation entry', {
-                type: navEntry.type
-            });
+            // persistentLog('Page reload detected via navigation entry', {
+            //    type: navEntry.type
+            // });
         }
     }
     
@@ -1694,14 +1694,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const url = new URL(target.href);
                 const currentUrl = new URL(window.location.href);
                 
-                if (url.origin === currentUrl.origin && url.pathname !== currentUrl.pathname) {
-                    isNavigating = true;
-                    navigationStartTime = Date.now();
-                    persistentLog('Navigation detected to internal page', {
-                        from: currentUrl.pathname,
-                        to: url.pathname
-                    });
-                }
+                // if (url.origin === currentUrl.origin && url.pathname !== currentUrl.pathname) {
+                //     isNavigating = true;
+                //     navigationStartTime = Date.now();
+                //     persistentLog('Navigation detected to internal page', {
+                //         from: currentUrl.pathname,
+                //         to: url.pathname
+                //     });
+                // }
             } catch (e) {
                 // Invalid URL, ignore
             }
@@ -1716,126 +1716,126 @@ document.addEventListener('DOMContentLoaded', function() {
     function setUserToInvisible(reason) {
         if (hasSetInvisible) return;
         
-        console.log('✅ Setting user to invisible status:', reason);
-        persistentLog('Setting user to invisible status', { reason: reason });
+        // console.log('✅ Setting user to invisible status:', reason);
+        // persistentLog('Setting user to invisible status', { reason: reason });
         
         hasSetInvisible = true;
         
         // Use sendBeacon for reliable delivery during page unload
         if (navigator.sendBeacon) {
-            console.log('📡 Using sendBeacon to set invisible status');
+            // console.log('📡 Using sendBeacon to set invisible status');
             const formData = new FormData();
             formData.append('_token', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
             
             const success = navigator.sendBeacon('/admin/profile/set-invisible-on-close', formData);
-            console.log('📡 sendBeacon result:', { success: success });
+            // console.log('📡 sendBeacon result:', { success: success });
         } else {
-            console.log('📡 Using XMLHttpRequest fallback to set invisible status');
+            // console.log('📡 Using XMLHttpRequest fallback to set invisible status');
             // Fallback for browsers that don't support sendBeacon
             const xhr = new XMLHttpRequest();
             xhr.open('POST', '/admin/profile/set-invisible-on-close', false);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '');
             xhr.send('_token=' + encodeURIComponent(document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''));
-            console.log('📡 XMLHttpRequest completed:', { status: xhr.status });
+            // console.log('📡 XMLHttpRequest completed:', { status: xhr.status });
         }
     }
     
     // Method 1: Use pagehide event (more reliable than beforeunload)
     window.addEventListener('pagehide', function(event) {
-        console.log('🔍 pagehide event fired');
-        persistentLog('pagehide event fired', { 
-            persisted: event.persisted,
-            hasSetInvisible: hasSetInvisible,
-            isPageRefreshing: isPageRefreshing,
-            refreshKeyPressed: refreshKeyPressed,
-            isNavigating: isNavigating
-        });
+        // console.log('🔍 pagehide event fired');
+        // persistentLog('pagehide event fired', { 
+        //     persisted: event.persisted,
+        //     hasSetInvisible: hasSetInvisible,
+        //     isPageRefreshing: isPageRefreshing,
+        //     refreshKeyPressed: refreshKeyPressed,
+        //     isNavigating: isNavigating
+        // });
         
         // If page is being persisted (cached), it's not a close
         if (event.persisted) {
-            console.log('📄 Page is being persisted (cached) - not a close');
+            // console.log('📄 Page is being persisted (cached) - not a close');
             return;
         }
         
         // Skip if it's a refresh
         if (refreshKeyPressed || isPageRefresh) {
-            console.log('🔄 Page refresh detected - NOT setting to invisible');
+            // console.log('🔄 Page refresh detected - NOT setting to invisible');
             return;
         }
         
         // Skip if it's navigation within the application
         if (isNavigating) {
-            console.log('🧭 Page navigation detected - NOT setting to invisible');
+            // console.log('🧭 Page navigation detected - NOT setting to invisible');
             return;
         }
         
         // Set invisible status for tab/browser close
-        console.log('🚪 Tab/browser close detected - setting to invisible');
+        // console.log('🚪 Tab/browser close detected - setting to invisible');
         setUserToInvisible('tab_close');
     });
     
     // Method 2: Use unload event as backup
     window.addEventListener('unload', function(event) {
-        console.log('🔍 unload event fired');
-        persistentLog('unload event fired', { 
-            hasSetInvisible: hasSetInvisible,
-            isPageRefreshing: isPageRefreshing,
-            refreshKeyPressed: refreshKeyPressed,
-            isNavigating: isNavigating
-        });
+        // console.log('🔍 unload event fired');
+        // persistentLog('unload event fired', { 
+        //     hasSetInvisible: hasSetInvisible,
+        //     isPageRefreshing: isPageRefreshing,
+        //     refreshKeyPressed: refreshKeyPressed,
+        //     isNavigating: isNavigating
+        // });
         
         // Skip if it's a refresh
         if (refreshKeyPressed || isPageRefresh) {
-            console.log('🔄 Page refresh detected - NOT setting to invisible');
+            // console.log('🔄 Page refresh detected - NOT setting to invisible');
             return;
         }
         
         // Skip if it's navigation within the application
         if (isNavigating) {
-            console.log('🧭 Page navigation detected - NOT setting to invisible');
+            // console.log('🧭 Page navigation detected - NOT setting to invisible');
             return;
         }
         
         // Set invisible status for tab/browser close
-        console.log('🚪 Tab/browser close detected - setting to invisible');
+        // console.log('🚪 Tab/browser close detected - setting to invisible');
         setUserToInvisible('tab_close');
     });
     
     // Method 3: Use beforeunload as final fallback (simplified)
     window.addEventListener('beforeunload', function(event) {
-        console.log('🔍 beforeunload event fired - simplified detection');
-        persistentLog('beforeunload event fired', {
-            hasSetInvisible: hasSetInvisible,
-            isPageRefreshing: isPageRefreshing,
-            refreshKeyPressed: refreshKeyPressed,
-            isNavigating: isNavigating
-        });
+        // console.log('🔍 beforeunload event fired - simplified detection');
+        // persistentLog('beforeunload event fired', {
+        //     hasSetInvisible: hasSetInvisible,
+        //     isPageRefreshing: isPageRefreshing,
+        //     refreshKeyPressed: refreshKeyPressed,
+        //     isNavigating: isNavigating
+        // });
         
         // Skip if it's a refresh
         if (refreshKeyPressed || isPageRefresh) {
-            console.log('🔄 Page refresh detected - NOT setting to invisible');
+            // console.log('🔄 Page refresh detected - NOT setting to invisible');
             return;
         }
         
         // Skip if it's navigation within the application
         if (isNavigating) {
-            console.log('🧭 Page navigation detected - NOT setting to invisible');
+            // console.log('🧭 Page navigation detected - NOT setting to invisible');
             return;
         }
         
         // Set invisible status for tab/browser close
-        console.log('🚪 Tab/browser close detected - setting to invisible');
+        // console.log('🚪 Tab/browser close detected - setting to invisible');
         setUserToInvisible('tab_close');
     });
     
     // Handle tab visibility changes for activity tracking
     document.addEventListener('visibilitychange', function() {
-        persistentLog('Visibility changed', { hidden: document.hidden });
+        // persistentLog('Visibility changed', { hidden: document.hidden });
         
         if (document.hidden) {
             // Tab became hidden - maintain online status for proper away time counting
-            persistentLog('Tab became hidden - maintaining online status (not setting to invisible)');
+            // persistentLog('Tab became hidden - maintaining online status (not setting to invisible)');
             
             // Clear any existing timeout
             if (tabSwitchTimeout) {
@@ -1844,10 +1844,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Do not change status when tab loses focus - let the 5-minute away timer handle it
             // This allows proper away time counting instead of immediately going invisible
-            persistentLog('Tab switch detected - status remains online for away time counting');
+            // persistentLog('Tab switch detected - status remains online for away time counting');
         } else {
             // Tab became visible again, cancel any timeouts
-            persistentLog('Tab became visible, cancelling any timeouts...');
+            // persistentLog('Tab became visible, cancelling any timeouts...');
             if (tabSwitchTimeout) {
                 clearTimeout(tabSwitchTimeout);
                 tabSwitchTimeout = null;
@@ -1872,7 +1872,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (document.hidden) {
             // Tab became hidden - this could be a tab switch or tab close
             // We will NOT set to invisible here to allow proper away time counting
-            persistentLog('Tab became hidden - maintaining online status for away time counting');
+            // persistentLog('Tab became hidden - maintaining online status for away time counting');
             
             // Clear any existing timeout
             if (tabCloseDetectionTimeout) {
@@ -1892,7 +1892,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to check and restore user from auto-status when returning to tab
     function checkAndRestoreFromAutoStatus() {
-        console.log('Checking if user should be restored from auto-status...');
+        // console.log('Checking if user should be restored from auto-status...');
         
         // Call API to restore from auto-status if applicable
         fetch('/api/user/restore-auto-status', {
@@ -1906,7 +1906,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }).then(response => response.json())
         .then(data => {
             if (data.success && data.data && data.data.previous_status !== data.data.status) {
-                console.log('User restored from auto-status:', data.data.previous_status, '->', data.data.status);
+                // console.log('User restored from auto-status:', data.data.previous_status, '->', data.data.status);
                 // Update status indicators (current user only)
                 if (window.updateAllStatusIndicators) {
                     window.updateAllStatusIndicators(data.data.status, true);
@@ -1916,7 +1916,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.startAutoAwayTimer();
                 }
             } else {
-                console.log('User status unchanged on tab return:', data.data?.status || 'unknown');
+                // console.log('User status unchanged on tab return:', data.data?.status || 'unknown');
             }
         }).catch(error => {
             console.log('Failed to restore from auto-status:', error);

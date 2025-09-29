@@ -132,7 +132,7 @@ class AppServiceProvider extends ServiceProvider
                                 badge.textContent = next;
                                 badge.classList.add('animate-pulse');
                                 setTimeout(()=>badge.classList.remove('animate-pulse'), 600);
-                                console.log('Badge updated:', count);
+                                // console.log('Badge updated:', count);
                             }
                             
                             // Show/hide badge based on count - always visible when count > 0
@@ -172,7 +172,7 @@ class AppServiceProvider extends ServiceProvider
                         
                         // Start polling
                         function startPolling(){
-                            console.log('Starting badge polling...');
+                            // console.log('Starting badge polling...');
                             
                             // Clear any existing interval
                             if(pollingInterval) {
