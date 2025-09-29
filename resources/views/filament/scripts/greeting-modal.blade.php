@@ -1517,7 +1517,7 @@ window.trackUserActivity = function() {
                 }
             }
         }).catch(error => {
-            console.log('Activity tracking failed:', error);
+            // console.log('Activity tracking failed:', error);
         });
     }, 500); // Reduced debounce for more responsive behavior
 };
@@ -1650,12 +1650,12 @@ document.addEventListener('DOMContentLoaded', function() {
             event.key === 'F5' || 
             (event.ctrlKey && event.key === 'F5') ||
             (event.ctrlKey && event.shiftKey && event.key === 'R')) {
-            persistentLog('Refresh key combination detected', {
-                key: event.key,
-                ctrlKey: event.ctrlKey,
-                shiftKey: event.shiftKey
-            });
-            refreshKeyPressed = true;
+            // persistentLog('Refresh key combination detected', {
+            //     key: event.key,
+            //     ctrlKey: event.ctrlKey,
+            //     shiftKey: event.shiftKey
+            // });
+            // refreshKeyPressed = true;
         }
     });
     

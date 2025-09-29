@@ -236,13 +236,13 @@ class ChatbotHistory extends Page implements HasTable
         $escapedFilename = addslashes($fileName);
 
         $this->js("
-            console.log('Direct JS execution for download');
+            // console.log('Direct JS execution for download');
             try {
                 const backupData = {$jsonData};
                 const filename = '{$escapedFilename}';
 
-                console.log('Backup data:', backupData);
-                console.log('Filename:', filename);
+                // console.log('Backup data:', backupData);
+                // console.log('Filename:', filename);
 
                 const jsonString = JSON.stringify(backupData, null, 2);
                 const blob = new Blob([jsonString], { type: 'application/json' });
@@ -255,7 +255,7 @@ class ChatbotHistory extends Page implements HasTable
                 document.body.removeChild(link);
 
                 URL.revokeObjectURL(link.href);
-                console.log('Download completed successfully');
+                // console.log('Download completed successfully');
             } catch (error) {
                 console.error('Download failed:', error);
             }
