@@ -411,45 +411,36 @@
   });
 };
 
-            // Optimize empty column hiding during drag operations
+            // Hide empty columns when cards are dragged over them
             document.addEventListener('DOMContentLoaded', function() {
-                // Listen for sortable events to optimize empty column hiding
-                document.addEventListener('sortable:start', function(e) {
-                    const fromColumn = e.detail.from;
-                    const fromColumnId = fromColumn.getAttribute('data-column-id');
-                    
-                    // If dragging from an empty column, hide it immediately
-                    if (fromColumn.children.length === 1) {
-                        const emptyColumn = fromColumn.querySelector('.ff-empty-column');
-                        if (emptyColumn) {
-                            emptyColumn.style.opacity = '0';
-                            emptyColumn.style.transform = 'scale(0.95)';
+                // Use mutation observer to detect when sortable classes are added
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            const target = mutation.target;
+                            if (target.classList.contains('sortable-ghost') || target.classList.contains('sortable-chosen')) {
+                                // Find the column content and hide empty column
+                                const columnContent = target.closest('.ff-column__content');
+                                if (columnContent) {
+                                    const emptyColumn = columnContent.querySelector('.ff-empty-column');
+                                    if (emptyColumn) {
+                                        console.log('Hiding empty column via mutation observer');
+                                        emptyColumn.style.display = 'none';
+                                    }
+                                }
+                            }
                         }
-                    }
-                });
-                
-                document.addEventListener('sortable:move', function(e) {
-                    const toColumn = e.detail.to;
-                    const toColumnId = toColumn.getAttribute('data-column-id');
-                    
-                    // If moving into an empty column, hide it immediately
-                    if (toColumn.children.length === 1) {
-                        const emptyColumn = toColumn.querySelector('.ff-empty-column');
-                        if (emptyColumn) {
-                            emptyColumn.style.opacity = '0';
-                            emptyColumn.style.transform = 'scale(0.95)';
-                        }
-                    }
-                });
-                
-                document.addEventListener('sortable:end', function(e) {
-                    // Reset any hidden empty columns
-                    const allEmptyColumns = document.querySelectorAll('.ff-empty-column');
-                    allEmptyColumns.forEach(column => {
-                        column.style.opacity = '1';
-                        column.style.transform = 'scale(1)';
                     });
                 });
+                
+                // Observe all elements for class changes
+                observer.observe(document.body, {
+                    attributes: true,
+                    attributeFilter: ['class'],
+                    subtree: true
+                });
+                
+                console.log('Added mutation observer to hide empty columns during drag');
             });
         </script>
 

@@ -24,20 +24,6 @@
         x-sortable-group="cards"
         data-column-id="{{ $columnId }}"
         @end.stop="$wire.updateRecordsOrderAndColumn($event.to.getAttribute('data-column-id'), $event.to.sortable.toArray())"
-        @sortable:start="
-            $event.detail.from.getAttribute('data-column-id') === '{{ $columnId }}' && 
-            $event.detail.from.children.length === 1 && 
-            ($event.detail.from.style.opacity = '0.3', $event.detail.from.style.transition = 'opacity 0.2s ease-out')
-        "
-        @sortable:end="
-            $event.detail.from.getAttribute('data-column-id') === '{{ $columnId }}' && 
-            ($event.detail.from.style.opacity = '1')
-        "
-        @sortable:move="
-            $event.detail.to.getAttribute('data-column-id') === '{{ $columnId }}' && 
-            $event.detail.to.children.length === 1 && 
-            ($event.detail.to.style.opacity = '0.3', $event.detail.to.style.transition = 'opacity 0.2s ease-out')
-        "
         class="ff-column__content overflow-y-auto"
         style="max-height: calc(100vh - 13rem); min-height: 60px;"
     >
