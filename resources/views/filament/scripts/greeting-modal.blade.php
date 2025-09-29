@@ -60,7 +60,7 @@ function openGreetingModal(forceOpen = false) {
 
                                     <!-- Weather Icon -->
                                     <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center weather-icon-container">
-                                        @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
+                                        <x-icons.custom-icon name="refresh" class="w-6 h-6 text-primary-600 dark:text-primary-400"/>
                                     </div>
 
                                     <!-- Weather Condition -->
@@ -150,8 +150,8 @@ function openGreetingModal(forceOpen = false) {
                             <!-- Today -->
                             <div class="flex items-center justify-between py-4 px-3 rounded-lg bg-gray-100 dark:bg-gray-700">
                                 <div class="flex items-center space-x-3">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">{{ __('weather.today') }}</span>
-                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-24">{{ __('weather.today') }}</span>
+                                    <x-icons.custom-icon name="refresh" class="w-6 h-6 text-primary-600 dark:text-primary-400"/>
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
@@ -159,8 +159,8 @@ function openGreetingModal(forceOpen = false) {
                             <!-- Tomorrow -->
                             <div class="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Tomorrow</span>
-                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-24">Tomorrow</span>
+                                    <x-icons.custom-icon name="refresh" class="w-6 h-6 text-primary-600 dark:text-primary-400"/>
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
@@ -168,8 +168,8 @@ function openGreetingModal(forceOpen = false) {
                             <!-- Day 3 -->
                             <div class="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 3</span>
-                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-24">Day 3</span>
+                                    <x-icons.custom-icon name="refresh" class="w-6 h-6 text-primary-600 dark:text-primary-400"/>
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
@@ -177,8 +177,8 @@ function openGreetingModal(forceOpen = false) {
                             <!-- Day 4 -->
                             <div class="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-3">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 4</span>
-                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-24">Day 4</span>
+                                    <x-icons.custom-icon name="refresh" class="w-6 h-6 text-primary-600 dark:text-primary-400"/>
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">{{ __('weather.loading') }} / {{ __('weather.loading') }}</div>
                             </div>
@@ -186,8 +186,8 @@ function openGreetingModal(forceOpen = false) {
                             <!-- Day 5 -->
                             <div class="flex items-center justify-between p-3">
                                 <div class="flex items-center space-x-3">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">Day 5</span>
-                                    @svg('heroicon-o-arrow-path', 'w-6 h-6 text-primary-600 dark:text-primary-400 animate-spin')
+                                    <span class="text-sm text-gray-600 dark:text-gray-400 w-24">Day 5</span>
+                                    <x-icons.custom-icon name="refresh" class="w-6 h-6 text-primary-600 dark:text-primary-400"/>
                                 </div>
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">- / -</div>
                             </div>
@@ -207,7 +207,7 @@ function openGreetingModal(forceOpen = false) {
                     <div class="lg:hidden mb-4 flex justify-end">
                         <button onclick="scrollToWeatherSection()" 
                                 class="flex items-center space-x-2 px-4 py-2 bg-primary-500 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg border border-white dark:border-gray-500 transition-all duration-200">
-                            @svg('heroicon-o-cloud', 'w-4 h-4')
+                            <x-icons.custom-icon name="cloud" class="w-4 h-4" />
                             <span class="text-sm font-medium">{{ __('weather.view_weather') }}</span>
                         </button>
                     </div>
@@ -648,12 +648,12 @@ function getWeatherIcon(condition) {
 // Custom heroicon SVG
 function getHeroiconSVG(iconName) {
     const svgPaths = {
-        'heroicon-o-sun': '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />',
-        'heroicon-o-cloud': '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" />',
-        'heroicon-o-cloud-rain': '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" /><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 19.5L12 15.75l3.75 3.75" />',
-        'heroicon-o-bolt': '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />',
-        'heroicon-o-snowflake': '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />',
-        'heroicon-o-eye-slash': '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 11-4.243-4.243m4.242 4.242L9.88 9.88" />'
+        'heroicon-o-sun': '<path fill="currentColor" d="M16 12.005a4 4 0 1 1-4 4a4.005 4.005 0 0 1 4-4m0-2a6 6 0 1 0 6 6a6 6 0 0 0-6-6ZM5.394 6.813L6.81 5.399l3.505 3.506L8.9 10.319zM2 15.005h5v2H2zm3.394 10.193L8.9 21.692l1.414 1.414l-3.505 3.506zM15 25.005h2v5h-2zm6.687-1.9l1.414-1.414l3.506 3.506l-1.414 1.414zm3.313-8.1h5v2h-5zm-3.313-6.101l3.506-3.506l1.414 1.414l-3.506 3.506zM15 2.005h2v5h-2z"/>',
+        'heroicon-o-cloud': '<path fill="currentColor" d="M30 15.5a6.532 6.532 0 0 0-5.199-6.363a8.994 8.994 0 0 0-17.6 0A6.532 6.532 0 0 0 2 15.5a6.454 6.454 0 0 0 1.688 4.35A5.983 5.983 0 0 0 8 30h11a5.976 5.976 0 0 0 5.61-8.102A6.505 6.505 0 0 0 30 15.501ZM19 28H8a3.993 3.993 0 0 1-.673-7.93l.663-.112l.146-.656a5.496 5.496 0 0 1 10.73 0l.145.656l.663.113A3.993 3.993 0 0 1 19 28Zm4.5-8h-.055a5.956 5.956 0 0 0-2.796-1.756a7.495 7.495 0 0 0-14.299 0a5.988 5.988 0 0 0-1.031.407A4.445 4.445 0 0 1 4 15.5a4.517 4.517 0 0 1 4.144-4.481l.816-.064l.099-.812a6.994 6.994 0 0 1 13.883 0l.099.812l.815.064A4.497 4.497 0 0 1 23.5 20Z"/>',
+        'heroicon-o-cloud-rain': '<path fill="currentColor" d="M23.5 22h-15A6.5 6.5 0 0 1 7.2 9.14a9 9 0 0 1 17.6 0A6.5 6.5 0 0 1 23.5 22zM16 4a7 7 0 0 0-6.94 6.14L9 11h-.86a4.5 4.5 0 0 0 .36 9h15a4.5 4.5 0 0 0 .36-9H23l-.1-.82A7 7 0 0 0 16 4zm-2 26a.93.93 0 0 1-.45-.11a1 1 0 0 1-.44-1.34l2-4a1 1 0 1 1 1.78.9l-2 4A1 1 0 0 1 14 30zm6 0a.93.93 0 0 1-.45-.11a1 1 0 0 1-.44-1.34l2-4a1 1 0 1 1 1.78.9l-2 4A1 1 0 0 1 20 30zM8 30a.93.93 0 0 1-.45-.11a1 1 0 0 1-.44-1.34l2-4a1 1 0 1 1 1.78.9l-2 4A1 1 0 0 1 8 30z"/>',
+        'heroicon-o-bolt': '<path fill="currentColor" d="M21 30a1 1 0 0 1-.894-1.447l2-4a1 1 0 1 1 1.788.894l-2 4A.998.998 0 0 1 21 30zM9 32a1 1 0 0 1-.894-1.447l2-4a1 1 0 1 1 1.788.894l-2 4A.998.998 0 0 1 9 32zm6.901-1.504l-1.736-.992L17.31 24h-6l4.855-8.496l1.736.992L14.756 22h6.001l-4.856 8.496z"/><path fill="currentColor" d="M24.8 9.136a8.994 8.994 0 0 0-17.6 0a6.493 6.493 0 0 0 .23 12.768l-1.324 2.649a1 1 0 1 0 1.788.894l2-4a1 1 0 0 0-.446-1.341A.979.979 0 0 0 9 20.01V20h-.5a4.497 4.497 0 0 1-.356-8.981l.816-.064l.099-.812a6.994 6.994 0 0 1 13.883 0l.099.812l.815.064A4.497 4.497 0 0 1 23.5 20H23v2h.5a6.497 6.497 0 0 0 1.3-12.864Z"/>',
+        'heroicon-o-snowflake': '<path fill="currentColor" d="M23.5 22h-15A6.5 6.5 0 0 1 7.2 9.14a9 9 0 0 1 17.6 0A6.5 6.5 0 0 1 23.5 22zM16 4a7 7 0 0 0-6.94 6.14L9 11h-.86a4.5 4.5 0 0 0 .36 9h15a4.5 4.5 0 0 0 .36-9H23l-.1-.82A7 7 0 0 0 16 4zm-4 21.05L10.95 24L9.5 25.45L8.05 24L7 25.05l1.45 1.45L7 27.95L8.05 29l1.45-1.45L10.95 29L12 27.95l-1.45-1.45L12 25.05zm14 0L24.95 24l-1.45 1.45L22.05 24L21 25.05l1.45 1.45L21 27.95L22.05 29l1.45-1.45L24.95 29L26 27.95l-1.45-1.45L26 25.05zm-7 2L17.95 26l-1.45 1.45L15.05 26L14 27.05l1.45 1.45L14 29.95L15.05 31l1.45-1.45L17.95 31L19 29.95l-1.45-1.45L19 27.05z"/>',
+        'heroicon-o-eye-slash': '<path fill="currentColor" d="M24.8 11.138a8.994 8.994 0 0 0-17.6 0A6.533 6.533 0 0 0 2 17.5V19a1 1 0 0 0 1 1h12a1 1 0 0 0 0-2H4v-.497a4.518 4.518 0 0 1 4.144-4.482l.816-.064l.099-.812a6.994 6.994 0 0 1 13.883 0l.099.813l.815.063A4.496 4.496 0 0 1 23.5 22H7a1 1 0 0 0 0 2h16.5a6.496 6.496 0 0 0 1.3-12.862Z"/><rect width="18" height="2" x="2" y="26" fill="currentColor" rx="1"/>'
     };
     
     return svgPaths[iconName] || svgPaths['heroicon-o-sun'];
@@ -759,7 +759,7 @@ function updateWeatherIcon(iconCode, condition) {
     
     // Update icon with heroicon SVG
     iconContainer.innerHTML = `
-        <svg class="w-8 h-8 ${weatherIcon.color}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-8 h-8 ${weatherIcon.color}" fill="currentColor" viewBox="0 0 32 32">
             ${getHeroiconSVG(weatherIcon.icon)}
         </svg>
     `;
@@ -830,9 +830,9 @@ function updateForecastData(weatherData) {
         forecastHTML += `
             <div class="flex items-center justify-between p-3 ${todayClasses} ${borderClass}">
                 <div class="flex items-center space-x-3">
-                    <span class="text-sm text-gray-600 dark:text-gray-400 w-16">${dayLabel}</span>
+                    <span class="text-sm text-gray-600 dark:text-gray-400 w-24">${dayLabel}</span>
                     <div class="w-6 h-6 ${weatherIcon.color}">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 32 32">
                             ${getHeroiconSVG(weatherIcon.icon)}
                         </svg>
                     </div>
@@ -945,7 +945,7 @@ async function refreshWeatherData() {
         const refreshButton = document.querySelector('button[onclick="refreshWeatherData()"]');
         if (refreshButton) {
             refreshButton.disabled = true;
-            refreshButton.innerHTML = `@svg('heroicon-o-arrow-path', 'w-5 h-5 animate-spin')`;
+            refreshButton.innerHTML = `<x-icons.custom-icon name="refresh" class="w-5 h-5"/>`;
         }
         
         // Clear cache first
@@ -965,7 +965,7 @@ async function refreshWeatherData() {
         const refreshButton = document.querySelector('button[onclick="refreshWeatherData()"]');
         if (refreshButton) {
             refreshButton.disabled = false;
-            refreshButton.innerHTML = `@svg('heroicon-o-arrow-path', 'w-5 h-5')`;
+            refreshButton.innerHTML = `<x-icons.custom-icon name="refresh" class="w-5 h-5" />`;
         }
     }
 }
