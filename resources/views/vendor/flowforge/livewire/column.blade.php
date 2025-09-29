@@ -22,6 +22,9 @@
     <div
         x-sortable
         x-sortable-group="cards"
+        x-sortable-ghost-class="sortable-ghost"
+        x-sortable-chosen-class="sortable-chosen"
+        x-sortable-drag-class="sortable-drag"
         data-column-id="{{ $columnId }}"
         @end.stop="$wire.updateRecordsOrderAndColumn($event.to.getAttribute('data-column-id'), $event.to.sortable.toArray())"
         class="ff-column__content overflow-y-auto"

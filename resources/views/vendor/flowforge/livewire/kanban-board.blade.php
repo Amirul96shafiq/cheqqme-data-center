@@ -413,6 +413,25 @@
 
             // Hide empty columns when cards are dragged over them
             document.addEventListener('DOMContentLoaded', function() {
+                // Add CSS for sortable drag behavior
+                const style = document.createElement('style');
+                style.textContent = `
+                    .sortable-ghost {
+                        opacity: 0.3 !important;
+                        background: rgba(0, 0, 0, 0.1) !important;
+                        border: 2px dashed #ccc !important;
+                    }
+                    .sortable-chosen {
+                        opacity: 0.8 !important;
+                        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
+                    }
+                    .sortable-drag {
+                        opacity: 0.9 !important;
+                        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+                    }
+                `;
+                document.head.appendChild(style);
+                
                 // Use mutation observer to detect when sortable classes are added
                 const observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
@@ -440,7 +459,7 @@
                     subtree: true
                 });
                 
-                console.log('Added mutation observer to hide empty columns during drag');
+                console.log('Added CSS and mutation observer for drag behavior');
             });
         </script>
 
