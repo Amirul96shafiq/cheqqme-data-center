@@ -410,6 +410,47 @@
       // No notification; ignore errors
   });
 };
+
+            // Optimize empty column hiding during drag operations
+            document.addEventListener('DOMContentLoaded', function() {
+                // Listen for sortable events to optimize empty column hiding
+                document.addEventListener('sortable:start', function(e) {
+                    const fromColumn = e.detail.from;
+                    const fromColumnId = fromColumn.getAttribute('data-column-id');
+                    
+                    // If dragging from an empty column, hide it immediately
+                    if (fromColumn.children.length === 1) {
+                        const emptyColumn = fromColumn.querySelector('.ff-empty-column');
+                        if (emptyColumn) {
+                            emptyColumn.style.opacity = '0';
+                            emptyColumn.style.transform = 'scale(0.95)';
+                        }
+                    }
+                });
+                
+                document.addEventListener('sortable:move', function(e) {
+                    const toColumn = e.detail.to;
+                    const toColumnId = toColumn.getAttribute('data-column-id');
+                    
+                    // If moving into an empty column, hide it immediately
+                    if (toColumn.children.length === 1) {
+                        const emptyColumn = toColumn.querySelector('.ff-empty-column');
+                        if (emptyColumn) {
+                            emptyColumn.style.opacity = '0';
+                            emptyColumn.style.transform = 'scale(0.95)';
+                        }
+                    }
+                });
+                
+                document.addEventListener('sortable:end', function(e) {
+                    // Reset any hidden empty columns
+                    const allEmptyColumns = document.querySelectorAll('.ff-empty-column');
+                    allEmptyColumns.forEach(column => {
+                        column.style.opacity = '1';
+                        column.style.transform = 'scale(1)';
+                    });
+                });
+            });
         </script>
 
         <!-- Optimized loader - hide immediately since board renders instantly -->
