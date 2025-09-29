@@ -14,7 +14,13 @@
         </div>
 
         @if ($this->createAction() && ($this->createAction)(['column' => $columnId])->isVisible())
-            {{ ($this->createAction)(['column' => $columnId]) }}
+            <div class="create-button-container" x-data="{ searchActive: false }" x-init="
+                window.addEventListener('action-board-search', (e) => {
+                    searchActive = (e.detail.search || '').length > 0;
+                });
+            " x-show="!searchActive">
+                {{ ($this->createAction)(['column' => $columnId]) }}
+            </div>
         @endif
     </div>
 

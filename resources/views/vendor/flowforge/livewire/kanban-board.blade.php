@@ -514,6 +514,10 @@
             // Client-side filtering fallback for instant UX
             document.addEventListener('action-board-search', function(e){
                 var term = (e?.detail?.search || '').toLowerCase();
+                
+                // Set global search state for Alpine.js
+                window.searchActive = term.length > 0;
+                
                 const columns = document.querySelectorAll('.ff-column');
                 columns.forEach(function(col){
                     const cards = col.querySelectorAll('.ff-card');
