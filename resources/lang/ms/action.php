@@ -76,6 +76,8 @@ return [
         'due_this_month' => 'Tarikh akhir bulan ini',
         'due_this_year' => 'Tarikh akhir tahun ini',
         'select_date_range' => 'Atau pilih julat tarikh tersuai',
+        'select_due_date' => 'Pilih penapis tarikh akhir',
+        'selected_due_date' => 'Tarikh Akhir Terpilih',
     ],
 
     'no_results' => [

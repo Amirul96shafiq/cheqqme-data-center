@@ -12,6 +12,7 @@ window.globalKanbanFilter = function () {
         // Filter state
         filterOpen: false,
         assignedDropdownOpen: false,
+        dueDateDropdownOpen: false,
         assignedToFilter: [],
         users: {},
         // Due date filter state
@@ -86,6 +87,24 @@ window.globalKanbanFilter = function () {
             this.dispatchFilterEvent();
         },
 
+        toggleDueDatePreset(value) {
+            // If clicking the same preset again, deselect it
+            if (this.dueDatePreset === value) {
+                this.dueDatePreset = null;
+            } else {
+                this.dueDatePreset = value;
+                // Clear custom range when selecting a preset
+                this.dueDateFrom = null;
+                this.dueDateTo = null;
+            }
+            window.currentDueDateFilter = {
+                preset: this.dueDatePreset,
+                from: this.dueDateFrom,
+                to: this.dueDateTo,
+            };
+            this.dispatchFilterEvent();
+        },
+
         handleDueDateRangeChange() {
             // Clear preset when range selected
             if (this.dueDateFrom || this.dueDateTo) {
@@ -135,6 +154,32 @@ window.globalKanbanFilter = function () {
 
         getUserById(userId) {
             return this.users[userId] || "Unknown User";
+        },
+
+        getDateRangeText() {
+            if (this.dueDateFrom && this.dueDateTo) {
+                return `${this.dueDateFrom} - ${this.dueDateTo}`;
+            } else if (this.dueDateFrom) {
+                return `From ${this.dueDateFrom}`;
+            } else if (this.dueDateTo) {
+                return `Until ${this.dueDateTo}`;
+            }
+            return "";
+        },
+
+        getDueDateDisplayText() {
+            if (this.dueDatePreset === "today") {
+                return "Due today";
+            } else if (this.dueDatePreset === "week") {
+                return "Due this week";
+            } else if (this.dueDatePreset === "month") {
+                return "Due this month";
+            } else if (this.dueDatePreset === "year") {
+                return "Due this year";
+            } else if (this.dueDateFrom || this.dueDateTo) {
+                return this.getDateRangeText();
+            }
+            return "";
         },
 
         // Unified filter dispatch

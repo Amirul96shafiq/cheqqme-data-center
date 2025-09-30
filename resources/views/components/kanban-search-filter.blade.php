@@ -99,9 +99,9 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                             </label>
                             
                             <!-- Custom Dropdown -->
-                            <div class="relative" x-data="{ open: false }" @click.outside="open = false">
-                                            <button
-                                                @click="assignedDropdownOpen = !assignedDropdownOpen"
+                            <div class="relative" @click.outside="assignedDropdownOpen = false">
+                                <button
+                                    @click="assignedDropdownOpen = !assignedDropdownOpen"
                                                 type="button"
                                                 class="relative w-full cursor-default rounded-lg bg-white dark:bg-gray-800 py-2 pl-3 pr-10 text-left ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm"
                                             >
@@ -173,88 +173,142 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                 {{ __('action.filter.due_date') }}
                             </label>
-
-                            <!-- Quick presets -->
-                            <div class="space-y-2">
-                                <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer rounded-md">
-                                    <input 
-                                        type="radio" 
-                                        name="dueDatePreset" 
-                                        value="today"
-                                        x-model="dueDatePreset"
-                                        @change="handleDueDatePresetChange()"
-                                        class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
-                                    >
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
-                                        {{ __('action.filter.due_today') }}
+                            
+                            <!-- Custom Dropdown -->
+                            <div class="relative" @click.outside="dueDateDropdownOpen = false">
+                                <button
+                                    @click="dueDateDropdownOpen = !dueDateDropdownOpen"
+                                    type="button"
+                                    class="relative w-full cursor-default rounded-lg bg-white dark:bg-gray-800 py-2 pl-3 pr-10 text-left ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm"
+                                >
+                                    <span class="block truncate text-gray-900 dark:text-white">
+                                        <span x-show="!dueDatePreset && !dueDateFrom && !dueDateTo" class="text-gray-500 dark:text-gray-400">{{ __('action.filter.select_due_date') }}</span>
+                                        <span x-show="dueDatePreset === 'today'" x-text="'{{ __('action.filter.due_today') }}'"></span>
+                                        <span x-show="dueDatePreset === 'week'" x-text="'{{ __('action.filter.due_this_week') }}'"></span>
+                                        <span x-show="dueDatePreset === 'month'" x-text="'{{ __('action.filter.due_this_month') }}'"></span>
+                                        <span x-show="dueDatePreset === 'year'" x-text="'{{ __('action.filter.due_this_year') }}'"></span>
+                                        <span x-show="!dueDatePreset && (dueDateFrom || dueDateTo)" x-text="getDateRangeText()"></span>
                                     </span>
-                                </label>
-
-                                <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer rounded-md">
-                                    <input 
-                                        type="radio" 
-                                        name="dueDatePreset" 
-                                        value="week"
-                                        x-model="dueDatePreset"
-                                        @change="handleDueDatePresetChange()"
-                                        class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
-                                    >
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
-                                        {{ __('action.filter.due_this_week') }}
+                                    <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                                        <x-heroicon-m-chevron-down class="h-5 w-5 text-gray-400" />
                                     </span>
-                                </label>
-
-                                <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer rounded-md">
-                                    <input 
-                                        type="radio" 
-                                        name="dueDatePreset" 
-                                        value="month"
-                                        x-model="dueDatePreset"
-                                        @change="handleDueDatePresetChange()"
-                                        class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
-                                    >
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
-                                        {{ __('action.filter.due_this_month') }}
-                                    </span>
-                                </label>
-
-                                <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer rounded-md">
-                                    <input 
-                                        type="radio" 
-                                        name="dueDatePreset" 
-                                        value="year"
-                                        x-model="dueDatePreset"
-                                        @change="handleDueDatePresetChange()"
-                                        class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
-                                    >
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
-                                        {{ __('action.filter.due_this_year') }}
-                                    </span>
-                                </label>
+                                </button>
+                                
+                                <!-- Dropdown Panel -->
+                                <div 
+                                    x-show="dueDateDropdownOpen"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg bg-white dark:bg-gray-800 py-2 text-base shadow-lg border border-gray-200 dark:border-gray-700 focus:outline-none sm:text-sm"
+                                    style="display: none;"
+                                >
+                                    <!-- Preset options -->
+                                    <div class="relative cursor-pointer select-none">
+                                        <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer" @click.prevent="toggleDueDatePreset('today')">
+                                            <input 
+                                                type="radio" 
+                                                name="dueDatePreset" 
+                                                value="today"
+                                                x-model="dueDatePreset"
+                                                class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
+                                            >
+                                            <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
+                                                {{ __('action.filter.due_today') }}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="relative cursor-pointer select-none">
+                                        <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer" @click.prevent="toggleDueDatePreset('week')">
+                                            <input 
+                                                type="radio" 
+                                                name="dueDatePreset" 
+                                                value="week"
+                                                x-model="dueDatePreset"
+                                                class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
+                                            >
+                                            <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
+                                                {{ __('action.filter.due_this_week') }}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="relative cursor-pointer select-none">
+                                        <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer" @click.prevent="toggleDueDatePreset('month')">
+                                            <input 
+                                                type="radio" 
+                                                name="dueDatePreset" 
+                                                value="month"
+                                                x-model="dueDatePreset"
+                                                class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
+                                            >
+                                            <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
+                                                {{ __('action.filter.due_this_month') }}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="relative cursor-pointer select-none">
+                                        <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer" @click.prevent="toggleDueDatePreset('year')">
+                                            <input 
+                                                type="radio" 
+                                                name="dueDatePreset" 
+                                                value="year"
+                                                x-model="dueDatePreset"
+                                                class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
+                                            >
+                                            <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
+                                                {{ __('action.filter.due_this_year') }}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    
+                                    <!-- Divider -->
+                                    <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                                    
+                                    <!-- Custom date range -->
+                                    <div class="px-4 py-2">
+                                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ __('action.filter.select_date_range') }}</div>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <input 
+                                                    type="date"
+                                                    x-model="dueDateFrom"
+                                                    @change="handleDueDateRangeChange()"
+                                                    class="w-full rounded-lg bg-white dark:bg-gray-800 px-2 py-1 text-xs ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                                    placeholder="From"
+                                                />
+                                            </div>
+                                            <div>
+                                                <input 
+                                                    type="date"
+                                                    x-model="dueDateTo"
+                                                    @change="handleDueDateRangeChange()"
+                                                    class="w-full rounded-lg bg-white dark:bg-gray-800 px-2 py-1 text-xs ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                                    placeholder="To"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-
-                            <!-- Date range -->
-                            <div class="mt-4">
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ __('action.filter.select_date_range') }}</div>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div>
-                                        <input 
-                                            type="date"
-                                            x-model="dueDateFrom"
-                                            @change="handleDueDateRangeChange()"
-                                            class="w-full rounded-lg bg-white dark:bg-gray-800 px-3 py-2 text-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                            placeholder="YYYY-MM-DD"
-                                        />
-                                    </div>
-                                    <div>
-                                        <input 
-                                            type="date"
-                                            x-model="dueDateTo"
-                                            @change="handleDueDateRangeChange()"
-                                            class="w-full rounded-lg bg-white dark:bg-gray-800 px-3 py-2 text-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                                            placeholder="YYYY-MM-DD"
-                                        />
-                                    </div>
+                            
+                            <!-- Selected Due Date Display -->
+                            <div x-show="dueDatePreset || dueDateFrom || dueDateTo" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ __('action.filter.selected_due_date') }}</div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 rounded-md">
+                                        <span x-text="getDueDateDisplayText()"></span>
+                                        <button @click="clearDueDateFilter()" class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </span>
                                 </div>
                             </div>
                         </div>

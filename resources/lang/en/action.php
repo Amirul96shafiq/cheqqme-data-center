@@ -76,6 +76,8 @@ return [
         'due_this_month' => 'Due this month',
         'due_this_year' => 'Due this year',
         'select_date_range' => 'Or select a custom date range',
+        'select_due_date' => 'Select due date filter',
+        'selected_due_date' => 'Selected Due Date',
     ],
 
     'no_results' => [
