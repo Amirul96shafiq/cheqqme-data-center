@@ -70,24 +70,82 @@
                     x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-95"
-                    class="absolute top-full mt-2 left-0 z-50 min-w-[420px]"
+                    class="absolute top-full mt-2 left-0 z-50 w-80"
                     style="display: none;"
                 >
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
 
                         <!-- Filter Header -->
-                        <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('action.filter_by') }}</h3>
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('action.filters') }}</h3>
+                            <button
+                                @click="clearFilter()"
+                                class="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
+                            >
+                                {{ __('action.reset') }}
+                            </button>
                         </div>
                         
                         <!-- Assigned To Filter -->
-                        <div class="px-4 py-3">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <div class="p-6">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                 {{ __('action.filter.assigned_to') }}
                             </label>
                             
+                            <!-- Custom Dropdown -->
+                            <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                                <button
+                                    @click="open = !open"
+                                    type="button"
+                                    class="relative w-full cursor-default rounded-lg bg-white dark:bg-gray-800 py-2 pl-3 pr-10 text-left ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm"
+                                >
+                                    <span class="block truncate text-gray-900 dark:text-white">
+                                        <span x-show="assignedToFilter.length === 0" class="text-gray-500 dark:text-gray-400">{{ __('action.filter.select_users') }}</span>
+                                        <span x-show="assignedToFilter.length === 1" x-text="getUserById(assignedToFilter[0])"></span>
+                                        <span x-show="assignedToFilter.length > 1" x-text="assignedToFilter.length + ' {{ __('action.filter.users_selected') }}'"></span>
+                                    </span>
+                                    <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                                        <x-heroicon-m-chevron-down class="h-5 w-5 text-gray-400" />
+                                    </span>
+                                </button>
+                                
+                                <!-- Dropdown Panel -->
+                                <div 
+                                    x-show="open"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg bg-white dark:bg-gray-800 py-2 text-base shadow-lg border border-gray-200 dark:border-gray-700 focus:outline-none sm:text-sm"
+                                    style="display: none;"
+                                >
+                                    @foreach(\App\Models\User::withTrashed()->orderBy('name')->get() as $user)
+                                        <div class="relative cursor-pointer select-none">
+                                            <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer">
+                                                <input 
+                                                    type="checkbox" 
+                                                    value="{{ $user->id }}"
+                                                    x-model="assignedToFilter"
+                                                    @change="applyFilter()"
+                                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
+                                                >
+                                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
+                                                    {{ $user->name ?: 'User #'.$user->id }}
+                                                    @if($user->deleted_at)
+                                                        <span class="text-gray-500 dark:text-gray-400">(deleted)</span>
+                                                    @endif
+                                                </span>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            
                             <!-- Selected Users Display -->
-                            <div x-show="assignedToFilter.length > 0" class="mb-2">
+                            <div x-show="assignedToFilter.length > 0" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ __('action.filter.selected_users') }}</div>
                                 <div class="flex flex-wrap gap-1">
                                     <template x-for="userId in assignedToFilter" :key="userId">
                                         <span class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 rounded-md">
@@ -101,44 +159,12 @@
                                     </template>
                                 </div>
                             </div>
-                            
-                            <!-- User Selection -->
-                            <div class="space-y-2 max-h-32 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700">
-                                @foreach(\App\Models\User::withTrashed()->orderBy('username')->get() as $user)
-                                    <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 rounded px-2 py-1">
-                                        <input 
-                                            type="checkbox" 
-                                            value="{{ $user->id }}"
-                                            x-model="assignedToFilter"
-                                            @change="applyFilter()"
-                                            class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
-                                        >
-                                        <span class="text-sm text-gray-900 dark:text-white">
-                                            {{ $user->name ?: 'User #'.$user->id }}{{ $user->deleted_at ? ' (deleted)' : '' }}
-                                        </span>
-                                    </label>
-                                @endforeach
-                            </div>
-                        </div>
-                        
-                        <!-- Filter Actions -->
-                        <div class="px-4 py-2 border-t border-gray-200 dark:border-gray-700 flex gap-2">
-                            <button
-                                @click="clearFilter()"
-                                class="flex-1 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors"
-                            >
-                                {{ __('action.clear_filter') }}
-                            </button>
-                            <button
-                                @click="open = false"
-                                class="flex-1 px-3 py-1.5 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/10 rounded transition-colors"
-                            >
-                                {{ __('action.close') }}
-                            </button>
+
                         </div>
 
                     </div>
                 </div>
+
             </div>
         @endif
     </div>
