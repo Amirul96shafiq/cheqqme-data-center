@@ -15,6 +15,8 @@ export default defineConfig({
                 "resources/css/emoji-picker-theme.css",
                 "resources/css/task-comments.css",
                 "resources/js/presence-status.js",
+                "resources/js/kanban-alpine.js",
+                "resources/css/kanban-drag-drop.css",
             ],
             refresh: true,
         }),

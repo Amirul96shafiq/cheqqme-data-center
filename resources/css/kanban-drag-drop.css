@@ -1,0 +1,41 @@
+/**
+ * Kanban Board Drag & Drop Styles
+ * Consolidated styles for drag and drop functionality
+ */
+
+/* Drag and drop feedback styles */
+.drag-success {
+    background-color: rgba(34, 197, 94, 0.1) !important;
+    border: 2px solid rgba(34, 197, 94, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+.drag-error {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    border: 2px solid rgba(239, 68, 68, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+.drag-pending {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border: 2px solid rgba(59, 130, 246, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Disable drag and drop when filtering is active */
+.drag-disabled {
+    opacity: 0.7 !important;
+}
+
+.drag-disabled .ff-card {
+    cursor: pointer !important;
+}
+
+/* Disable drag cursor and prevent drag start events */
+.drag-disabled [x-sortable-handle] {
+    cursor: pointer !important;
+}
+
+.drag-disabled [x-sortable-handle]:hover {
+    cursor: pointer !important;
+}

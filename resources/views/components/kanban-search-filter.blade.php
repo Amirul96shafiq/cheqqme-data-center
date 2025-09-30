@@ -166,83 +166,19 @@
 $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, username) ASC')->get()->mapWithKeys(fn($user) => [$user->id => ($user->name ?: 'User #'.$user->id).($user->deleted_at ? ' (deleted)' : '')])->toArray();
 @endphp
 <script>
-function globalKanbanFilter() {
-    return {
-        // Search state
-        globalSearch: '{{ $search }}',
-        
-        // Filter state
-        filterOpen: false,
-        assignedDropdownOpen: false,
-        assignedToFilter: @json($assignedToFilter),
-        users: @json($usersForFilter),
-        
-        init() {
-            // Initialize global search state
-            this.globalSearch = '{{ $search }}';
-            
-            // Initialize global assigned filter state
-            window.currentAssignedTo = this.assignedToFilter;
-            
-            // Set up global search state
-            window.globalSearch = this.globalSearch;
-        },
-        
-        // Search methods
-        handleSearchInput() {
-            // Update global search state
-            window.globalSearch = this.globalSearch;
-            
-            // Trigger instant client-side filtering
-            this.dispatchFilterEvent();
-        },
-        
-        clearSearch() {
-            this.globalSearch = '';
-            window.globalSearch = '';
-            this.dispatchFilterEvent();
-        },
-        
-        // Filter methods
-        handleAssignedFilterChange() {
-            // Update global assigned filter state
-            window.currentAssignedTo = this.assignedToFilter;
-            
-            // Trigger instant filtering
-            this.dispatchFilterEvent();
-        },
-        
-        clearAssignedFilter() {
-            this.assignedToFilter = [];
-            window.currentAssignedTo = [];
-            this.dispatchFilterEvent();
-        },
-        
-        removeAssignedUser(userId) {
-            // Update Alpine.js state
-            this.assignedToFilter = this.assignedToFilter.filter(id => id != userId);
-            // Update global state
-            window.currentAssignedTo = this.assignedToFilter;
-            // Trigger instant filtering
-            this.dispatchFilterEvent();
-        },
-        
-        getUserById(userId) {
-            return this.users[userId] || 'Unknown User';
-        },
-        
-        // Unified filter dispatch
-        dispatchFilterEvent() {
-            const event = new CustomEvent('action-board-unified-filter', {
-                detail: {
-                    search: this.globalSearch,
-                    assignedTo: this.assignedToFilter
-                }
-            });
-            window.dispatchEvent(event);
-            document.dispatchEvent(event);
+// Initialize the global filter component with data
+document.addEventListener('DOMContentLoaded', function() {
+    const filterComponent = document.querySelector('[x-data*="globalKanbanFilter"]');
+    if (filterComponent) {
+        // Set initial data
+        const alpineData = Alpine.$data(filterComponent);
+        if (alpineData) {
+            alpineData.globalSearch = '{{ $search }}';
+            alpineData.assignedToFilter = @json($assignedToFilter);
+            alpineData.users = @json($usersForFilter);
+            alpineData.init();
         }
     }
-}
+});
 </script>
 @endif
