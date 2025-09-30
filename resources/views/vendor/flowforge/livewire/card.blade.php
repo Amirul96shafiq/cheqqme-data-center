@@ -115,10 +115,10 @@
                     {{-- Assigned badge --}}
                     @if($assignedBadge)
                         @php
-                            // Try to get assigned user IDs from multiple sources
+                            // Get assigned user IDs for filtering
                             $assignedUserIds = [];
                             
-                            // First, try to get from raw record data if available
+                            // Try to get from raw record data first
                             if (isset($record['assigned_to']) && !empty($record['assigned_to'])) {
                                 $rawAssignedTo = $record['assigned_to'];
                                 if (is_string($rawAssignedTo)) {
@@ -129,12 +129,9 @@
                                 }
                             }
                             
-                            // If no raw data, fall back to usernames from attributes
+                            // Fall back to usernames from attributes if no raw data
                             if (empty($assignedUserIds)) {
-                                // Collect usernames from multiple attributes
                                 $allUsernames = [];
-                                
-                                // Check all assigned user attributes
                                 $assignedAttributes = [
                                     'assigned_to_username_self',
                                     'assigned_to_username', 
@@ -146,39 +143,24 @@
                                     $value = $attributes[$attr]['value'] ?? '';
                                     if (!empty($value)) {
                                         if (strpos($value, ', ') !== false) {
-                                            // Multiple usernames separated by comma
                                             $allUsernames = array_merge($allUsernames, explode(', ', $value));
                                         } else {
-                                            // Single username
                                             $allUsernames[] = $value;
                                         }
                                     }
                                 }
                                 
-                                // Remove duplicates and empty values
                                 $allUsernames = array_unique(array_filter(array_map('trim', $allUsernames)));
                                 
                                 if (!empty($allUsernames)) {
-                                    // Match against the 'name' field since that's what's stored in the attributes
-                                    $users = \App\Models\User::withTrashed()
+                                    $assignedUserIds = \App\Models\User::withTrashed()
                                         ->whereIn('name', $allUsernames)
                                         ->pluck('id')->toArray();
-                                    $assignedUserIds = $users;
                                 }
                             }
-                            
-                            $assignedToIds = implode(',', $assignedUserIds);
                         @endphp
                         <div class="w-fit flex gap-1 items-center" 
-                             data-assigned-user-ids="{{ $assignedToIds }}"
-                             data-debug-assigned-to="{{ json_encode($assignedUserIds) }}"
-                             data-debug-all-assigned="{{ $attributes['all_assigned_usernames']['value'] ?? '' }}"
-                             data-debug-assigned-self="{{ $attributes['assigned_to_username_self']['value'] ?? '' }}"
-                             data-debug-assigned-username="{{ $attributes['assigned_to_username']['value'] ?? '' }}"
-                             data-debug-assigned-full="{{ $attributes['assigned_to_full_username']['value'] ?? '' }}"
-                             data-debug-record-keys="{{ json_encode(array_keys($record)) }}"
-                             data-debug-task-id="{{ $record['id'] ?? 'unknown' }}"
-                             data-debug-raw-assigned="{{ json_encode($record['assigned_to'] ?? 'not_found') }}">
+                             data-assigned-user-ids="{{ implode(',', $assignedUserIds) }}">
                             <x-flowforge::card-badge
                                 :label="$assignedBadge['label']"
                                 :value="$assignedBadge['value']"

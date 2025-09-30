@@ -112,7 +112,7 @@
                                             class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
                                         >
                                         <span class="text-sm text-gray-900 dark:text-white">
-                                            {{ $user->username ?: 'User #'.$user->id }}{{ $user->deleted_at ? ' (deleted)' : '' }}
+                                            {{ $user->name ?: 'User #'.$user->id }}{{ $user->deleted_at ? ' (deleted)' : '' }}
                                         </span>
                                     </label>
                                 @endforeach
@@ -146,7 +146,7 @@
 
 @if($showFilter)
 @php
-$usersForFilter = \App\Models\User::withTrashed()->orderBy('username')->get()->mapWithKeys(fn($user) => [$user->id => ($user->username ?: 'User #'.$user->id).($user->deleted_at ? ' (deleted)' : '')])->toArray();
+$usersForFilter = \App\Models\User::withTrashed()->orderBy('name')->get()->mapWithKeys(fn($user) => [$user->id => ($user->name ?: 'User #'.$user->id).($user->deleted_at ? ' (deleted)' : '')])->toArray();
 @endphp
 <script>
 function filterData() {
@@ -155,14 +155,12 @@ function filterData() {
         assignedToFilter: [],
         users: @json($usersForFilter),
         applyFilter() {
-            console.log('Alpine.js applyFilter called with:', this.assignedToFilter);
-            // Dispatch filter event similar to search
+            // Dispatch filter event to update kanban board
             const event = new CustomEvent('action-board-filter', {
                 detail: {
                     assignedTo: this.assignedToFilter
                 }
             });
-            console.log('🚀 Dispatching event:', event);
             window.dispatchEvent(event);
             document.dispatchEvent(event);
         },
