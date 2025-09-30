@@ -508,8 +508,8 @@
                     }, 25); // Wait 50ms for Livewire to re-render
                 });
                 
-                // console.log('Added CSS and mutation observer for drag behavior');
-            });
+            // console.log('Added CSS and mutation observer for drag behavior');
+        });
 
             // Client-side filtering fallback for instant UX
             document.addEventListener('action-board-search', function(e){
@@ -519,6 +519,10 @@
                 window.searchActive = term.length > 0;
                 
                 const columns = document.querySelectorAll('.ff-column');
+                let totalVisibleCards = 0;
+                
+                // console.log('Found columns:', columns.length);
+                
                 columns.forEach(function(col){
                     const cards = col.querySelectorAll('.ff-card');
                     let visible = 0;
@@ -551,7 +555,32 @@
                     } else {
                         col.style.display = '';
                     }
+                    
+                    totalVisibleCards += visible;
                 });
+                
+                // console.log('Total visible cards:', totalVisibleCards);
+                
+                // Show/hide no-results component
+                const noResultsComponent = document.getElementById('no-results-component');
+                const kanbanBoardContainer = document.getElementById('kanban-board-container');
+                
+                // console.log('DOM elements found:', { 
+                //     noResultsComponent: !!noResultsComponent, 
+                //     kanbanBoardContainer: !!kanbanBoardContainer 
+                // });
+                
+                if (term && totalVisibleCards === 0) {
+                    // Show no-results component when searching but no cards match
+                    // console.log('Showing no-results component');
+                    if (noResultsComponent) noResultsComponent.classList.remove('hidden');
+                    if (kanbanBoardContainer) kanbanBoardContainer.classList.add('hidden');
+                } else {
+                    // Show kanban board when there are results or no search
+                    // console.log('Showing kanban board');
+                    if (noResultsComponent) noResultsComponent.classList.add('hidden');
+                    if (kanbanBoardContainer) kanbanBoardContainer.classList.remove('hidden');
+                }
                 
                 // Disable/enable card dragging based on search state
                 const columnContents = document.querySelectorAll('.ff-column__content');

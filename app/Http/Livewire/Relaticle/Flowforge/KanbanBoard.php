@@ -90,42 +90,6 @@ class KanbanBoard extends BaseKanbanBoard
     }
 
     /**
-     * Override loadColumnsData to apply search filter
-     */
-    protected function loadColumnsData(): void
-    {
-        foreach ($this->columns as $columnId => $column) {
-            $limit = $this->columnCardLimits[$columnId] ?? 10;
-
-            $items = $this->adapter->getItemsForColumn($columnId, $limit);
-
-            // Apply search filter if search term is provided
-            if ($this->search) {
-                $items = $items->filter(function ($item) {
-                    // Handle both array and object formats
-                    if (is_array($item)) {
-                        $title = $item['title'] ?? '';
-                    } else {
-                        $title = $item->title ?? '';
-                    }
-
-                    return stripos($title, $this->search) !== false;
-                });
-            }
-
-            // Important: the adapter returns already-formatted card arrays.
-            // Do not call formatItems() here, just map to array if needed.
-            $this->columnCards[$columnId] = $items->toArray();
-
-            // Ensure that items and total keys exist in columns data
-            $this->columns[$columnId]['items'] = $this->columnCards[$columnId];
-
-            // Get the total count (filtered by search if applicable)
-            $this->columns[$columnId]['total'] = count($this->columnCards[$columnId]);
-        }
-    }
-
-    /**
      * Get cached users efficiently
      */
     protected function getCachedUsers()

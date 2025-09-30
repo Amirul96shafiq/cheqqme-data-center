@@ -58,6 +58,11 @@ return [
         'extra_information_warning' => 'Nilai tidak boleh melebihi 500 aksara yang boleh dibaca.',
     ],
 
-    'search_placeholder' => 'Cari tugasan mengikut tajuk',
-    'clear_search' => 'Kosongkan',
+    'search_placeholder' => 'Cari tugasan',
+
+    'no_results' => [
+        'title' => 'Tiada tugasan dijumpai',
+        'description' => 'Cuba sesuaikan istilah carian anda atau kosongkan carian untuk melihat semua tugasan.',
+        'clear_button' => 'Kosongkan carian',
+    ],
 ];
