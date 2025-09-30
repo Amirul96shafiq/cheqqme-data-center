@@ -16,6 +16,16 @@ window.globalKanbanFilter = function () {
         users: {},
 
         init() {
+            // Get initial data from data attributes
+            const element = this.$el;
+            if (element) {
+                this.globalSearch = element.dataset.initialSearch || "";
+                this.assignedToFilter = JSON.parse(
+                    element.dataset.initialAssignedTo || "[]"
+                );
+                this.users = JSON.parse(element.dataset.initialUsers || "{}");
+            }
+
             // Initialize global search state
             window.globalSearch = this.globalSearch;
 
@@ -226,8 +236,8 @@ window.columnDragDrop = function (columnId) {
     };
 };
 
-// Global Kanban Filter Event Listener (for main board page)
-window.initKanbanFiltering = function () {
+// Global Kanban Filter Event Listener (auto-initialized)
+document.addEventListener("DOMContentLoaded", function () {
     // Global event listener for unified filter events (search + assigned to filter)
     document.addEventListener("action-board-unified-filter", function (e) {
         var search = e?.detail?.search || "";
@@ -357,7 +367,7 @@ window.initKanbanFiltering = function () {
             }
         }, 100);
     });
-};
+});
 
 // Helper function to show no results component
 window.showNoResults = function () {

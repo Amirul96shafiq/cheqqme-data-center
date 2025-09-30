@@ -34,11 +34,6 @@
     <script>
         // Initialize Kanban functionality when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize the global filtering system
-            if (window.initKanbanFiltering) {
-                window.initKanbanFiltering();
-            }
-            
             // Function to clear kanban search (used by no-results component)
             window.clearKanbanSearch = function() {
                 // Find the search input and clear it

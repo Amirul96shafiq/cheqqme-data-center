@@ -8,7 +8,16 @@
     'assignedToFilter' => []
 ])
 
-<div class="-mb-4" x-data="globalKanbanFilter()" x-init="init()">
+@php
+$usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, username) ASC')->get()->mapWithKeys(fn($user) => [$user->id => ($user->name ?: 'User #'.$user->id).($user->deleted_at ? ' (deleted)' : '')])->toArray();
+@endphp
+
+<div class="-mb-4" 
+     x-data="globalKanbanFilter()" 
+     x-init="init()"
+     data-initial-search="{{ $search }}"
+     data-initial-assigned-to="{{ json_encode($assignedToFilter) }}"
+     data-initial-users="{{ json_encode($usersForFilter) }}">
     <div class="flex items-center gap-4">
         <div class="relative">
 
@@ -160,25 +169,3 @@
         @endif
     </div>
 </div>
-
-@if($showFilter)
-@php
-$usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, username) ASC')->get()->mapWithKeys(fn($user) => [$user->id => ($user->name ?: 'User #'.$user->id).($user->deleted_at ? ' (deleted)' : '')])->toArray();
-@endphp
-<script>
-// Initialize the global filter component with data
-document.addEventListener('DOMContentLoaded', function() {
-    const filterComponent = document.querySelector('[x-data*="globalKanbanFilter"]');
-    if (filterComponent) {
-        // Set initial data
-        const alpineData = Alpine.$data(filterComponent);
-        if (alpineData) {
-            alpineData.globalSearch = '{{ $search }}';
-            alpineData.assignedToFilter = @json($assignedToFilter);
-            alpineData.users = @json($usersForFilter);
-            alpineData.init();
-        }
-    }
-});
-</script>
-@endif
