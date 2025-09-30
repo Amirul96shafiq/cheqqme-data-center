@@ -70,6 +70,12 @@ return [
         'select_users' => 'Pilih pengguna untuk menapis',
         'selected_users' => 'Pengguna Terpilih',
         'users_selected' => 'pengguna dipilih',
+        'due_date' => 'Tarikh Akhir',
+        'due_today' => 'Tarikh akhir hari ini',
+        'due_this_week' => 'Tarikh akhir minggu ini',
+        'due_this_month' => 'Tarikh akhir bulan ini',
+        'due_this_year' => 'Tarikh akhir tahun ini',
+        'select_date_range' => 'Atau pilih julat tarikh tersuai',
     ],
 
     'no_results' => [

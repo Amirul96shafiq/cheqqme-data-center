@@ -5,7 +5,10 @@
     'wireModel' => 'search',
     'wireClear' => 'clearSearch',
     'showFilter' => false,
-    'assignedToFilter' => []
+    'assignedToFilter' => [],
+    'dueDatePreset' => null,
+    'dueDateFrom' => null,
+    'dueDateTo' => null,
 ])
 
 @php
@@ -17,7 +20,10 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
      x-init="init()"
      data-initial-search="{{ $search }}"
      data-initial-assigned-to="{{ json_encode($assignedToFilter) }}"
-     data-initial-users="{{ json_encode($usersForFilter) }}">
+     data-initial-users="{{ json_encode($usersForFilter) }}"
+     data-initial-due-date-preset="{{ $dueDatePreset }}"
+     data-initial-due-date-from="{{ $dueDateFrom }}"
+     data-initial-due-date-to="{{ $dueDateTo }}">
     <div class="flex items-center gap-4">
         <div class="relative">
 
@@ -79,7 +85,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                         <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
                             <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('action.filters') }}</h3>
                                         <button
-                                            @click="clearAssignedFilter()"
+                                            @click="clearFilters()"
                                             class="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
                                         >
                                             {{ __('action.reset') }}
@@ -160,6 +166,97 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                 </div>
                             </div>
 
+                        </div>
+
+                        <!-- Due Date Filter -->
+                        <div class="p-6 border-t border-gray-200 dark:border-gray-700">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                {{ __('action.filter.due_date') }}
+                            </label>
+
+                            <!-- Quick presets -->
+                            <div class="space-y-2">
+                                <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer rounded-md">
+                                    <input 
+                                        type="radio" 
+                                        name="dueDatePreset" 
+                                        value="today"
+                                        x-model="dueDatePreset"
+                                        @change="handleDueDatePresetChange()"
+                                        class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
+                                    >
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
+                                        {{ __('action.filter.due_today') }}
+                                    </span>
+                                </label>
+
+                                <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer rounded-md">
+                                    <input 
+                                        type="radio" 
+                                        name="dueDatePreset" 
+                                        value="week"
+                                        x-model="dueDatePreset"
+                                        @change="handleDueDatePresetChange()"
+                                        class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
+                                    >
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
+                                        {{ __('action.filter.due_this_week') }}
+                                    </span>
+                                </label>
+
+                                <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer rounded-md">
+                                    <input 
+                                        type="radio" 
+                                        name="dueDatePreset" 
+                                        value="month"
+                                        x-model="dueDatePreset"
+                                        @change="handleDueDatePresetChange()"
+                                        class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
+                                    >
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
+                                        {{ __('action.filter.due_this_month') }}
+                                    </span>
+                                </label>
+
+                                <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer rounded-md">
+                                    <input 
+                                        type="radio" 
+                                        name="dueDatePreset" 
+                                        value="year"
+                                        x-model="dueDatePreset"
+                                        @change="handleDueDatePresetChange()"
+                                        class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
+                                    >
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
+                                        {{ __('action.filter.due_this_year') }}
+                                    </span>
+                                </label>
+                            </div>
+
+                            <!-- Date range -->
+                            <div class="mt-4">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ __('action.filter.select_date_range') }}</div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <input 
+                                            type="date"
+                                            x-model="dueDateFrom"
+                                            @change="handleDueDateRangeChange()"
+                                            class="w-full rounded-lg bg-white dark:bg-gray-800 px-3 py-2 text-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                            placeholder="YYYY-MM-DD"
+                                        />
+                                    </div>
+                                    <div>
+                                        <input 
+                                            type="date"
+                                            x-model="dueDateTo"
+                                            @change="handleDueDateRangeChange()"
+                                            class="w-full rounded-lg bg-white dark:bg-gray-800 px-3 py-2 text-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                            placeholder="YYYY-MM-DD"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                     </div>

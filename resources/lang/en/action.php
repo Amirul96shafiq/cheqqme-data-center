@@ -70,6 +70,12 @@ return [
         'select_users' => 'Select users to filter by',
         'selected_users' => 'Selected Users',
         'users_selected' => 'users selected',
+        'due_date' => 'Due Date',
+        'due_today' => 'Due today',
+        'due_this_week' => 'Due this week',
+        'due_this_month' => 'Due this month',
+        'due_this_year' => 'Due this year',
+        'select_date_range' => 'Or select a custom date range',
     ],
 
     'no_results' => [

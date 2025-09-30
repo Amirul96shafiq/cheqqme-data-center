@@ -14,6 +14,10 @@ window.globalKanbanFilter = function () {
         assignedDropdownOpen: false,
         assignedToFilter: [],
         users: {},
+        // Due date filter state
+        dueDatePreset: null, // 'today' | 'week' | 'month' | 'year' | null
+        dueDateFrom: null, // 'YYYY-MM-DD' | null
+        dueDateTo: null, // 'YYYY-MM-DD' | null
 
         init() {
             // Get initial data from data attributes
@@ -24,6 +28,10 @@ window.globalKanbanFilter = function () {
                     element.dataset.initialAssignedTo || "[]"
                 );
                 this.users = JSON.parse(element.dataset.initialUsers || "{}");
+                this.dueDatePreset =
+                    element.dataset.initialDueDatePreset || null;
+                this.dueDateFrom = element.dataset.initialDueDateFrom || null;
+                this.dueDateTo = element.dataset.initialDueDateTo || null;
             }
 
             // Initialize global search state
@@ -31,6 +39,13 @@ window.globalKanbanFilter = function () {
 
             // Initialize global assigned filter state
             window.currentAssignedTo = this.assignedToFilter;
+
+            // Initialize global due date filter state
+            window.currentDueDateFilter = {
+                preset: this.dueDatePreset,
+                from: this.dueDateFrom,
+                to: this.dueDateTo,
+            };
         },
 
         // Search methods
@@ -57,10 +72,54 @@ window.globalKanbanFilter = function () {
             this.dispatchFilterEvent();
         },
 
+        handleDueDatePresetChange() {
+            // Clear range when preset chosen
+            if (this.dueDatePreset) {
+                this.dueDateFrom = null;
+                this.dueDateTo = null;
+            }
+            window.currentDueDateFilter = {
+                preset: this.dueDatePreset,
+                from: this.dueDateFrom,
+                to: this.dueDateTo,
+            };
+            this.dispatchFilterEvent();
+        },
+
+        handleDueDateRangeChange() {
+            // Clear preset when range selected
+            if (this.dueDateFrom || this.dueDateTo) {
+                this.dueDatePreset = null;
+            }
+            window.currentDueDateFilter = {
+                preset: this.dueDatePreset,
+                from: this.dueDateFrom,
+                to: this.dueDateTo,
+            };
+            this.dispatchFilterEvent();
+        },
+
         clearAssignedFilter() {
             this.assignedToFilter = [];
             window.currentAssignedTo = [];
             this.dispatchFilterEvent();
+        },
+
+        clearDueDateFilter() {
+            this.dueDatePreset = null;
+            this.dueDateFrom = null;
+            this.dueDateTo = null;
+            window.currentDueDateFilter = {
+                preset: null,
+                from: null,
+                to: null,
+            };
+            this.dispatchFilterEvent();
+        },
+
+        clearFilters() {
+            this.clearAssignedFilter();
+            this.clearDueDateFilter();
         },
 
         removeAssignedUser(userId) {
@@ -84,6 +143,11 @@ window.globalKanbanFilter = function () {
                 detail: {
                     search: this.globalSearch,
                     assignedTo: this.assignedToFilter,
+                    dueDate: {
+                        preset: this.dueDatePreset,
+                        from: this.dueDateFrom,
+                        to: this.dueDateTo,
+                    },
                 },
             });
             window.dispatchEvent(event);
@@ -305,10 +369,19 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("action-board-unified-filter", function (e) {
         var search = e?.detail?.search || "";
         var assignedTo = e?.detail?.assignedTo || [];
+        var dueDate = e?.detail?.dueDate || {
+            preset: null,
+            from: null,
+            to: null,
+        };
 
         // Set global states for Alpine.js
         window.searchActive = search.length > 0;
-        window.filterActive = assignedTo.length > 0;
+        window.filterActive =
+            assignedTo.length > 0 ||
+            !!dueDate.preset ||
+            !!dueDate.from ||
+            !!dueDate.to;
 
         // Wait a bit for DOM to update, then filter cards
         setTimeout(function () {
@@ -322,6 +395,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 cards.forEach(function (card) {
                     let matchesSearch = true;
                     let matchesAssignedFilter = true;
+                    let matchesDueDate = true;
 
                     // Check search filter
                     if (search.length > 0) {
@@ -370,9 +444,123 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
 
+                    // Check due date filter
+                    const dueAttr = card.getAttribute("data-due-date");
+                    if (
+                        dueDate &&
+                        (dueDate.preset || dueDate.from || dueDate.to)
+                    ) {
+                        // No due date on card => does not match any due-date filter
+                        if (!dueAttr || !dueAttr.trim()) {
+                            matchesDueDate = false;
+                        } else {
+                            // Parse as YYYY-MM-DD for comparison
+                            const cardDate = new Date(dueAttr + "T00:00:00");
+                            if (isNaN(cardDate.getTime())) {
+                                matchesDueDate = false;
+                            } else {
+                                const today = new Date();
+                                const startOfDay = new Date(
+                                    today.getFullYear(),
+                                    today.getMonth(),
+                                    today.getDate()
+                                );
+
+                                function endOfWeek(d) {
+                                    const day = d.getDay();
+                                    const diff = 6 - day; // end on Saturday (6) to align with typical business week? Use Sunday->Saturday
+                                    const e = new Date(d);
+                                    e.setDate(d.getDate() + diff);
+                                    e.setHours(23, 59, 59, 999);
+
+                                    return e;
+                                }
+
+                                function endOfMonth(d) {
+                                    const e = new Date(
+                                        d.getFullYear(),
+                                        d.getMonth() + 1,
+                                        0
+                                    );
+                                    e.setHours(23, 59, 59, 999);
+
+                                    return e;
+                                }
+
+                                function endOfYear(d) {
+                                    const e = new Date(d.getFullYear(), 11, 31);
+                                    e.setHours(23, 59, 59, 999);
+
+                                    return e;
+                                }
+
+                                let rangeStart = null;
+                                let rangeEnd = null;
+
+                                if (dueDate.preset === "today") {
+                                    rangeStart = new Date(startOfDay);
+                                    rangeEnd = new Date(startOfDay);
+                                    rangeEnd.setHours(23, 59, 59, 999);
+                                } else if (dueDate.preset === "week") {
+                                    rangeStart = new Date(startOfDay);
+                                    rangeEnd = endOfWeek(startOfDay);
+                                } else if (dueDate.preset === "month") {
+                                    rangeStart = new Date(
+                                        startOfDay.getFullYear(),
+                                        startOfDay.getMonth(),
+                                        1
+                                    );
+                                    rangeEnd = endOfMonth(startOfDay);
+                                } else if (dueDate.preset === "year") {
+                                    rangeStart = new Date(
+                                        startOfDay.getFullYear(),
+                                        0,
+                                        1
+                                    );
+                                    rangeEnd = endOfYear(startOfDay);
+                                }
+
+                                // If manual from/to specified, override preset
+                                if (dueDate.from) {
+                                    const fromDate = new Date(
+                                        dueDate.from + "T00:00:00"
+                                    );
+                                    if (!isNaN(fromDate.getTime())) {
+                                        rangeStart = fromDate;
+                                    }
+                                }
+                                if (dueDate.to) {
+                                    const toDate = new Date(
+                                        dueDate.to + "T23:59:59"
+                                    );
+                                    if (!isNaN(toDate.getTime())) {
+                                        rangeEnd = toDate;
+                                    }
+                                }
+
+                                // Validate range
+                                if (!rangeStart && !rangeEnd) {
+                                    // If neither specified (shouldn't happen), consider as no filter
+                                    matchesDueDate = true;
+                                } else {
+                                    // Compare
+                                    const afterStart = rangeStart
+                                        ? cardDate >= rangeStart
+                                        : true;
+                                    const beforeEnd = rangeEnd
+                                        ? cardDate <= rangeEnd
+                                        : true;
+                                    matchesDueDate = afterStart && beforeEnd;
+                                }
+                            }
+                        }
+                    }
+
                     // Card must match BOTH search AND assigned filter (if either is active)
                     const matchesAllFilters =
-                        matchesSearch && matchesAssignedFilter;
+                        matchesSearch &&
+                        matchesAssignedFilter &&
+                        matchesDueDate;
 
                     card.style.display = matchesAllFilters ? "" : "none";
                     if (matchesAllFilters) visible++;
@@ -385,7 +573,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Hide/show the entire column and create button based on whether it has visible cards
                 const hasActiveFilters =
-                    search.length > 0 || assignedTo.length > 0;
+                    search.length > 0 ||
+                    assignedTo.length > 0 ||
+                    !!dueDate.preset ||
+                    !!dueDate.from ||
+                    !!dueDate.to;
                 if (hasActiveFilters && visible === 0) {
                     col.style.display = "none";
                     // Hide create button when column is hidden

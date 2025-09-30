@@ -1,4 +1,30 @@
 @props(['config', 'columnId', 'record'])
+@php
+    // Normalize due date for client-side filtering
+    $normalizedDueDate = null;
+    try {
+        if (!empty($record['due_date'])) {
+            $normalizedDueDate = \Carbon\Carbon::parse($record['due_date'])->format('Y-m-d');
+        } else {
+            // Fallback: parse from formatted badge values if raw due_date is not present
+            $attr = $record['attributes'] ?? [];
+            foreach (['due_date_red', 'due_date_yellow', 'due_date_gray', 'due_date_green'] as $key) {
+                $val = $attr[$key]['value'] ?? null;
+                if (!empty($val)) {
+                    try {
+                        // Badges use j/n/y (e.g., 5/10/25)
+                        $normalizedDueDate = \Carbon\Carbon::createFromFormat('j/n/y', $val)->format('Y-m-d');
+                        break;
+                    } catch (\Throwable $e) {
+                        // Ignore parse errors and continue
+                    }
+                }
+            }
+        }
+    } catch (\Throwable $e) {
+        $normalizedDueDate = null;
+    }
+@endphp
 {{-- Card container with interactive/non-interactive classes and sortable attributes --}}
 <div
     @class([
@@ -12,7 +38,8 @@
         window.addEventListener('action-board-unified-filter', (e) => {
             const search = e?.detail?.search || '';
             const assignedTo = e?.detail?.assignedTo || [];
-            filterActive = search.length > 0 || assignedTo.length > 0;
+            const dueDate = e?.detail?.dueDate || { preset: null, from: null, to: null };
+            filterActive = search.length > 0 || assignedTo.length > 0 || !!dueDate.preset || !!dueDate.from || !!dueDate.to;
         });
     "
     x-sortable-handle
@@ -25,6 +52,7 @@
     x-on:dragleave="filterActive && $event.preventDefault()"
     x-on:dragend="filterActive && $event.preventDefault()"
     x-on:drop="filterActive && $event.preventDefault()"
+    @if(!empty($normalizedDueDate)) data-due-date="{{ $normalizedDueDate }}" @endif
     @if($this->editAction() &&  ($this->editAction)(['record' => $record['id']])->isVisible())
         wire:click="mountAction('edit', {record: '{{ $record['id'] }}'})"
     @endif
