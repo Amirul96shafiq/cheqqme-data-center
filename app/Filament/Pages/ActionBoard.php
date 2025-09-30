@@ -22,6 +22,12 @@ class ActionBoard extends KanbanBoardPage
 
     public array $assignedToFilter = [];
 
+    public ?string $dueDatePreset = null;
+
+    public ?string $dueDateFrom = null;
+
+    public ?string $dueDateTo = null;
+
     public function getSubject(): Builder
     {
         $query = Task::query()
@@ -711,9 +717,27 @@ class ActionBoard extends KanbanBoardPage
         $this->dispatchUnifiedFilter();
     }
 
+    public function updatedDueDatePreset(): void
+    {
+        $this->dispatchUnifiedFilter();
+    }
+
+    public function updatedDueDateFrom(): void
+    {
+        $this->dispatchUnifiedFilter();
+    }
+
+    public function updatedDueDateTo(): void
+    {
+        $this->dispatchUnifiedFilter();
+    }
+
     public function clearFilter(): void
     {
         $this->assignedToFilter = [];
+        $this->dueDatePreset = null;
+        $this->dueDateFrom = null;
+        $this->dueDateTo = null;
         $this->dispatchUnifiedFilter();
     }
 
@@ -724,15 +748,25 @@ class ActionBoard extends KanbanBoardPage
 
     private function dispatchUnifiedFilter(): void
     {
-        // Dispatch unified filter event that includes both search and assigned to filter
+        // Dispatch unified filter event that includes search, assigned to, and due date filters
         // \Log::info('Dispatching unified filter', [
         //     'search' => $this->search,
         //     'assignedTo' => $this->assignedToFilter,
+        //     'dueDate' => [
+        //         'preset' => $this->dueDatePreset,
+        //         'from' => $this->dueDateFrom,
+        //         'to' => $this->dueDateTo,
+        //     ],
         // ]);
 
         $this->dispatch('action-board-unified-filter',
             search: $this->search,
-            assignedTo: $this->assignedToFilter
+            assignedTo: $this->assignedToFilter,
+            dueDate: [
+                'preset' => $this->dueDatePreset,
+                'from' => $this->dueDateFrom,
+                'to' => $this->dueDateTo,
+            ]
         );
     }
 }

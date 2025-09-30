@@ -9,6 +9,9 @@
         wire-clear="clearSearch"
         :show-filter="true"
         :assigned-to-filter="$assignedToFilter"
+        :due-date-preset="$dueDatePreset"
+        :due-date-from="$dueDateFrom"
+        :due-date-to="$dueDateTo"
     />
     
     <div class="h-[calc(100vh-16rem)]">
@@ -17,6 +20,8 @@
             <x-no-results-found 
                 :searchTerm="$this->search"
                 icon="heroicon-o-magnifying-glass"
+                :heading="__('action.no_results.title')"
+                :description="__('action.no_results.description')"
             />
         </div>
         
