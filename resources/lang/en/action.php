@@ -78,6 +78,10 @@ return [
         'select_date_range' => 'Or select a custom date range',
         'select_due_date' => 'Select due date filter',
         'selected_due_date' => 'Selected Due Date',
+        'quick_filters' => 'Quick Filters',
+        'custom_range' => 'Custom Range',
+        'from_date' => 'From Date',
+        'to_date' => 'To Date',
     ],
 
     'no_results' => [

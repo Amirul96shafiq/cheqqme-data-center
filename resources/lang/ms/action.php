@@ -78,6 +78,10 @@ return [
         'select_date_range' => 'Atau pilih julat tarikh tersuai',
         'select_due_date' => 'Pilih penapis tarikh akhir',
         'selected_due_date' => 'Tarikh Akhir Terpilih',
+        'quick_filters' => 'Penapis Pantas',
+        'custom_range' => 'Julat Tersuai',
+        'from_date' => 'Dari Tarikh',
+        'to_date' => 'Hingga Tarikh',
     ],
 
     'no_results' => [
