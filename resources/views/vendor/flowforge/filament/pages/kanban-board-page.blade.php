@@ -64,6 +64,113 @@
             }
         };
 
+        // Global event listener for filter events
+        document.addEventListener('action-board-filter', function(e) {
+            console.log('🎯 GLOBAL EVENT LISTENER TRIGGERED!', e.detail);
+            
+            var assignedTo = e?.detail?.assignedTo || [];
+            
+            // Set global filter state for Alpine.js
+            window.filterActive = assignedTo.length > 0;
+            
+            // Wait a bit for DOM to update, then check
+            setTimeout(function() {
+                const columns = document.querySelectorAll('.ff-column');
+                let totalVisibleCards = 0;
+                
+                console.log('📊 Found columns:', columns.length);
+                
+                columns.forEach(function(col, index) {
+                    const cards = col.querySelectorAll('.ff-card');
+                    let visible = 0;
+                    cards.forEach(function(card) {
+                        // Check if card matches assigned_to filter
+                        let matchesFilter = true;
+                        if (assignedTo.length > 0) {
+                            matchesFilter = false;
+                            // Check if any of the assigned users match the filter
+                            const assignedElements = card.querySelectorAll('[data-assigned-user-ids]');
+                            console.log('Card assigned elements:', assignedElements.length, 'Filter:', assignedTo);
+                            
+                            if (assignedElements.length === 0) {
+                                // Card has no assigned users - hide it when filtering
+                                console.log('Card has no assigned users - hiding');
+                                matchesFilter = false;
+                            } else {
+                                    assignedElements.forEach(function(el) {
+                                        const userIds = el.getAttribute('data-assigned-user-ids');
+                                        const debugAssignedTo = el.getAttribute('data-debug-assigned-to');
+                                        const debugAllAssigned = el.getAttribute('data-debug-all-assigned');
+                                        const debugRecordKeys = el.getAttribute('data-debug-record-keys');
+                                        const debugTaskId = el.getAttribute('data-debug-task-id');
+                                        const debugRawAssigned = el.getAttribute('data-debug-raw-assigned');
+                                        const debugAssignedSelf = el.getAttribute('data-debug-assigned-self');
+                                        const debugAssignedUsername = el.getAttribute('data-debug-assigned-username');
+                                        const debugAssignedFull = el.getAttribute('data-debug-assigned-full');
+                                        console.log('Task ID:', debugTaskId, 'Card userIds:', userIds, 'Debug assigned_to:', debugAssignedTo, 'Debug raw assigned:', debugRawAssigned, 'Debug all_assigned:', debugAllAssigned, 'Debug assigned_self:', debugAssignedSelf, 'Debug assigned_username:', debugAssignedUsername, 'Debug assigned_full:', debugAssignedFull, 'Filter:', assignedTo);
+                                    if (userIds && userIds.trim() !== '') {
+                                        const cardUserIds = userIds.split(',');
+                                        // Check if any of the card's assigned users are in the filter
+                                        const hasMatch = cardUserIds.some(function(cardUserId) {
+                                            const cardUserIdStr = cardUserId.trim();
+                                            const cardUserIdNum = parseInt(cardUserIdStr);
+                                            const match = assignedTo.includes(cardUserIdStr) || assignedTo.includes(cardUserIdNum.toString());
+                                            console.log('Checking cardUserId:', cardUserIdStr, 'as string and number:', cardUserIdNum, 'in filter:', assignedTo, 'match:', match);
+                                            return match;
+                                        });
+                                        if (hasMatch) {
+                                            matchesFilter = true;
+                                        }
+                                    } else {
+                                        // Card has assigned elements but no user IDs - hide it when filtering
+                                        console.log('Card has assigned elements but no user IDs - hiding');
+                                        matchesFilter = false;
+                                    }
+                                });
+                            }
+                        }
+                        
+                        card.style.display = matchesFilter ? '' : 'none';
+                        if (matchesFilter) visible++;
+                    });
+                    
+                    console.log(`Column ${index}: ${visible} visible cards`);
+                    totalVisibleCards += visible;
+                });
+                
+                console.log('🎯 Total visible cards:', totalVisibleCards);
+                console.log('🔍 Filter assignedTo:', assignedTo);
+                
+                // Show/hide no-results component
+                const noResultsComponent = document.getElementById('no-results-component');
+                const kanbanBoardContainer = document.getElementById('kanban-board-container');
+                
+                if (assignedTo.length > 0 && totalVisibleCards === 0) {
+                    // Show no-results component when filtering but no cards match
+                    console.log('✅ SHOWING NO-RESULTS COMPONENT');
+                    if (noResultsComponent) {
+                        noResultsComponent.classList.remove('hidden');
+                        console.log('🎉 No results component shown');
+                    }
+                    if (kanbanBoardContainer) {
+                        kanbanBoardContainer.classList.add('hidden');
+                        console.log('🙈 Kanban board hidden');
+                    }
+                } else {
+                    // Show kanban board when there are results or no filter
+                    console.log('✅ SHOWING KANBAN BOARD');
+                    if (noResultsComponent) {
+                        noResultsComponent.classList.add('hidden');
+                        console.log('🙈 No results component hidden');
+                    }
+                    if (kanbanBoardContainer) {
+                        kanbanBoardContainer.classList.remove('hidden');
+                        console.log('🎉 Kanban board shown');
+                    }
+                }
+            }, 100); // Small delay to ensure DOM is updated
+        });
+
         // Enhanced search event listener for no-results functionality
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 DOM loaded, setting up no-results functionality');
@@ -77,100 +184,6 @@
             //     noResultsVisible: noResultsComponent ? !noResultsComponent.classList.contains('hidden') : 'not found'
             // });
             
-            // Listen for action-board-filter events
-            document.addEventListener('action-board-filter', function(e) {
-                // console.log('🔍 Filter event triggered!', { 
-                //     detail: e?.detail, 
-                //     assignedTo: e?.detail?.assignedTo,
-                //     timestamp: new Date().toISOString()
-                // });
-                
-                var assignedTo = e?.detail?.assignedTo || [];
-                
-                // Set global filter state for Alpine.js
-                window.filterActive = assignedTo.length > 0;
-                
-                // Wait a bit for DOM to update, then check
-                setTimeout(function() {
-                    const columns = document.querySelectorAll('.ff-column');
-                    let totalVisibleCards = 0;
-                    
-                    // console.log('📊 Found columns:', columns.length);
-                    
-                    columns.forEach(function(col, index) {
-                        const cards = col.querySelectorAll('.ff-card');
-                        let visible = 0;
-                        cards.forEach(function(card) {
-                            // Check if card matches assigned_to filter
-                            let matchesFilter = true;
-                            if (assignedTo.length > 0) {
-                                matchesFilter = false;
-                                // Check if any of the assigned users match the filter
-                                const assignedElements = card.querySelectorAll('[data-assigned-user-ids]');
-                                
-                                if (assignedElements.length === 0) {
-                                    // Card has no assigned users - hide it when filtering
-                                    matchesFilter = false;
-                                } else {
-                                    assignedElements.forEach(function(el) {
-                                        const userIds = el.getAttribute('data-assigned-user-ids');
-                                        if (userIds && userIds.trim() !== '') {
-                                            const cardUserIds = userIds.split(',');
-                                            // Check if any of the card's assigned users are in the filter
-                                            const hasMatch = cardUserIds.some(function(cardUserId) {
-                                                return assignedTo.includes(cardUserId.trim());
-                                            });
-                                            if (hasMatch) {
-                                                matchesFilter = true;
-                                            }
-                                        } else {
-                                            // Card has assigned elements but no user IDs - hide it when filtering
-                                            matchesFilter = false;
-                                        }
-                                    });
-                                }
-                            }
-                            
-                            card.style.display = matchesFilter ? '' : 'none';
-                            if (matchesFilter) visible++;
-                        });
-                        
-                        // console.log(`Column ${index}: ${visible} visible cards`);
-                        totalVisibleCards += visible;
-                    });
-                    
-                    // console.log('🎯 Total visible cards:', totalVisibleCards);
-                    // console.log('🔍 Filter assignedTo:', assignedTo);
-                    
-                    // Show/hide no-results component
-                    const noResultsComponent = document.getElementById('no-results-component');
-                    const kanbanBoardContainer = document.getElementById('kanban-board-container');
-                    
-                    if (assignedTo.length > 0 && totalVisibleCards === 0) {
-                        // Show no-results component when filtering but no cards match
-                        // console.log('✅ SHOWING NO-RESULTS COMPONENT');
-                        if (noResultsComponent) {
-                            noResultsComponent.classList.remove('hidden');
-                            // console.log('🎉 No results component shown');
-                        }
-                        if (kanbanBoardContainer) {
-                            kanbanBoardContainer.classList.add('hidden');
-                            // console.log('🙈 Kanban board hidden');
-                        }
-                    } else {
-                        // Show kanban board when there are results or no filter
-                        console.log('✅ SHOWING KANBAN BOARD');
-                        if (noResultsComponent) {
-                            noResultsComponent.classList.add('hidden');
-                            // console.log('🙈 No results component hidden');
-                        }
-                        if (kanbanBoardContainer) {
-                            kanbanBoardContainer.classList.remove('hidden');
-                            // console.log('🎉 Kanban board shown');
-                        }
-                    }
-                }, 100); // Small delay to ensure DOM is updated
-            });
             
             // Listen for action-board-search events
             document.addEventListener('action-board-search', function(e) {

@@ -155,12 +155,16 @@ function filterData() {
         assignedToFilter: [],
         users: @json($usersForFilter),
         applyFilter() {
+            console.log('Alpine.js applyFilter called with:', this.assignedToFilter);
             // Dispatch filter event similar to search
-            window.dispatchEvent(new CustomEvent('action-board-filter', {
+            const event = new CustomEvent('action-board-filter', {
                 detail: {
                     assignedTo: this.assignedToFilter
                 }
-            }));
+            });
+            console.log('🚀 Dispatching event:', event);
+            window.dispatchEvent(event);
+            document.dispatchEvent(event);
         },
         clearFilter() {
             this.assignedToFilter = [];
