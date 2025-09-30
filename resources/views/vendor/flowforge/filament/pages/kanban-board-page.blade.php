@@ -42,6 +42,24 @@
             // Set global empty column text for JavaScript
             window.emptyColumnText = '{{ $this->getEmptyColumnText() }}';
             
+            // Set global translations for JavaScript
+            window.kanbanTranslations = {
+                noResults: {
+                    search: {
+                        title: '{{ __("action.no_results.search.title") }}',
+                        description: '{{ __("action.no_results.search.description") }}'
+                    },
+                    assignedTo: {
+                        title: '{{ __("action.no_results.assigned_to.title") }}',
+                        description: '{{ __("action.no_results.assigned_to.description") }}'
+                    },
+                    dueDate: {
+                        title: '{{ __("action.no_results.due_date.title") }}',
+                        description: '{{ __("action.no_results.due_date.description") }}'
+                    }
+                }
+            };
+            
             // Function to clear kanban search (used by no-results component)
             window.clearKanbanSearch = function() {
                 // Find the search input and clear it

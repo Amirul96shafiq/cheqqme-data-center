@@ -669,11 +669,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 const iconEl = noResultsComponent?.querySelector(".w-14.h-14");
 
                 if (headingEl && descriptionEl && iconEl) {
+                    const translations =
+                        window.kanbanTranslations?.noResults || {};
+
                     if (!!dueDate.preset || !!dueDate.from || !!dueDate.to) {
                         // Due date filter is active
                         headingEl.textContent =
+                            translations.dueDate?.title ||
                             "No tasks found for selected date range";
                         descriptionEl.textContent =
+                            translations.dueDate?.description ||
                             "Try adjusting your date filter or clear the filter to see all tasks.";
                         iconEl.setAttribute(
                             "class",
@@ -684,8 +689,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     } else if (assignedTo.length > 0) {
                         // Assigned to filter is active
                         headingEl.textContent =
+                            translations.assignedTo?.title ||
                             "No tasks found for selected users";
                         descriptionEl.textContent =
+                            translations.assignedTo?.description ||
                             "Try adjusting your user filter or clear the filter to see all tasks.";
                         iconEl.setAttribute(
                             "class",
@@ -695,8 +702,10 @@ document.addEventListener("DOMContentLoaded", function () {
                             '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path></svg>';
                     } else {
                         // Search filter is active
-                        headingEl.textContent = "No tasks found";
+                        headingEl.textContent =
+                            translations.search?.title || "No tasks found";
                         descriptionEl.textContent =
+                            translations.search?.description ||
                             "Try adjusting your search terms or clear the search to see all tasks.";
                         iconEl.setAttribute(
                             "class",

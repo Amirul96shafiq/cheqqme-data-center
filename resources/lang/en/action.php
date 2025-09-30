@@ -88,5 +88,17 @@ return [
         'title' => 'No tasks found',
         'description' => 'Try adjusting your search terms or clear the search to see all tasks.',
         'clear_button' => 'Clear search',
+        'search' => [
+            'title' => 'No tasks found',
+            'description' => 'Try adjusting your search terms or clear the search to see all tasks.',
+        ],
+        'assigned_to' => [
+            'title' => 'No tasks found for selected users',
+            'description' => 'Try adjusting your user filter or clear the filter to see all tasks.',
+        ],
+        'due_date' => [
+            'title' => 'No tasks found for selected date range',
+            'description' => 'Try adjusting your date filter or clear the filter to see all tasks.',
+        ],
     ],
 ];

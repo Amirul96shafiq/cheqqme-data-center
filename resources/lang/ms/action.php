@@ -88,5 +88,17 @@ return [
         'title' => 'Tiada tugasan dijumpai',
         'description' => 'Cuba sesuaikan istilah carian anda atau kosongkan carian untuk melihat semua tugasan.',
         'clear_button' => 'Kosongkan carian',
+        'search' => [
+            'title' => 'Tiada tugasan dijumpai',
+            'description' => 'Cuba sesuaikan istilah carian anda atau kosongkan carian untuk melihat semua tugasan.',
+        ],
+        'assigned_to' => [
+            'title' => 'Tiada tugasan dijumpai untuk pengguna terpilih',
+            'description' => 'Cuba sesuaikan penapis pengguna anda atau kosongkan penapis untuk melihat semua tugasan.',
+        ],
+        'due_date' => [
+            'title' => 'Tiada tugasan dijumpai untuk julat tarikh terpilih',
+            'description' => 'Cuba sesuaikan penapis tarikh anda atau kosongkan penapis untuk melihat semua tugasan.',
+        ],
     ],
 ];
