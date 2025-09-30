@@ -7,6 +7,7 @@
         wire-model="search"
         wire-clear="clearSearch"
         :show-filter="true"
+        :assigned-to-filter="$assignedToFilter"
     />
     
     <div class="h-[calc(100vh-16rem)]">
@@ -64,11 +65,15 @@
             }
         };
 
-            // Global event listener for filter events
-            document.addEventListener('action-board-filter', function(e) {
+            // Global event listener for unified filter events (search + assigned to filter)
+            document.addEventListener('action-board-unified-filter', function(e) {
+                console.log('🎯 UNIFIED FILTER EVENT RECEIVED:', e?.detail);
+                var search = e?.detail?.search || '';
                 var assignedTo = e?.detail?.assignedTo || [];
+                console.log('📊 Filter data:', { search, assignedTo });
                 
-                // Set global filter state for Alpine.js
+                // Set global states for Alpine.js
+                window.searchActive = search.length > 0;
                 window.filterActive = assignedTo.length > 0;
                 
                 // Wait a bit for DOM to update, then filter cards
@@ -81,10 +86,19 @@
                         let visible = 0;
                         
                         cards.forEach(function(card) {
-                            let matchesFilter = true;
+                            let matchesSearch = true;
+                            let matchesAssignedFilter = true;
                             
+                            // Check search filter
+                            if (search.length > 0) {
+                                const titleEl = card.querySelector('.ff-card__title');
+                                const title = (titleEl?.textContent || '').toLowerCase();
+                                matchesSearch = title.includes(search.toLowerCase());
+                            }
+                            
+                            // Check assigned to filter
                             if (assignedTo.length > 0) {
-                                matchesFilter = false;
+                                matchesAssignedFilter = false;
                                 const assignedElements = card.querySelectorAll('[data-assigned-user-ids]');
                                 
                                 if (assignedElements.length > 0) {
@@ -99,22 +113,26 @@
                                                 return assignedTo.includes(cardUserIdStr) || assignedTo.includes(cardUserIdNum.toString());
                                             });
                                             if (hasMatch) {
-                                                matchesFilter = true;
+                                                matchesAssignedFilter = true;
                                             }
                                         }
                                     });
                                 }
                             }
                             
-                            card.style.display = matchesFilter ? '' : 'none';
-                            if (matchesFilter) visible++;
+                            // Card must match BOTH search AND assigned filter (if either is active)
+                            const matchesAllFilters = matchesSearch && matchesAssignedFilter;
+                            
+                            card.style.display = matchesAllFilters ? '' : 'none';
+                            if (matchesAllFilters) visible++;
                         });
                         
                         // Find create task button in this column
                         const createButton = col.querySelector('.ff-create-button, [data-create-button], .create-task-button, button[title*="create"], button[title*="Create"], .add-task-btn, .create-button');
                         
                         // Hide/show the entire column and create button based on whether it has visible cards
-                        if (assignedTo.length > 0 && visible === 0) {
+                        const hasActiveFilters = search.length > 0 || assignedTo.length > 0;
+                        if (hasActiveFilters && visible === 0) {
                             col.style.display = 'none';
                             // Hide create button when column is hidden
                             if (createButton) {
@@ -125,7 +143,7 @@
                             
                             // Hide/show create task button based on filter state
                             if (createButton) {
-                                if (assignedTo.length > 0) {
+                                if (hasActiveFilters) {
                                     createButton.style.display = 'none';
                                 } else {
                                     createButton.style.display = '';
@@ -140,7 +158,8 @@
                     const noResultsComponent = document.getElementById('no-results-component');
                     const kanbanBoardContainer = document.getElementById('kanban-board-container');
                     
-                    if (assignedTo.length > 0 && totalVisibleCards === 0) {
+                    const hasActiveFilters = search.length > 0 || assignedTo.length > 0;
+                    if (hasActiveFilters && totalVisibleCards === 0) {
                         if (noResultsComponent) noResultsComponent.classList.remove('hidden');
                         if (kanbanBoardContainer) kanbanBoardContainer.classList.add('hidden');
                     } else {
@@ -164,89 +183,8 @@
             // });
             
             
-            // Listen for action-board-search events
-            document.addEventListener('action-board-search', function(e) {
-                // console.log('🔍 Search event triggered!', { 
-                //     detail: e?.detail, 
-                //     search: e?.detail?.search,
-                //     timestamp: new Date().toISOString()
-                // });
-                
-                var term = (e?.detail?.search || '').toLowerCase();
-                
-                // Set global search state for Alpine.js
-                window.searchActive = term.length > 0;
-                
-                // Wait a bit for DOM to update, then check
-                setTimeout(function() {
-                    const columns = document.querySelectorAll('.ff-column');
-                    let totalVisibleCards = 0;
-                    
-                    // console.log('📊 Found columns:', columns.length);
-                    
-                    columns.forEach(function(col, index) {
-                        const cards = col.querySelectorAll('.ff-card');
-                        let visible = 0;
-                        cards.forEach(function(card) {
-                            const titleEl = card.querySelector('.ff-card__title');
-                            const title = (titleEl?.textContent || '').toLowerCase();
-                            const match = !term || title.includes(term);
-                            card.style.display = match ? '' : 'none';
-                            if (match) visible++;
-                        });
-                        
-                        // console.log(`Column ${index}: ${visible} visible cards`);
-                        totalVisibleCards += visible;
-                    });
-                    
-                    // console.log('🎯 Total visible cards:', totalVisibleCards);
-                    // console.log('🔍 Search term:', term);
-                    // console.log('📏 Term length:', term.length);
-                    
-                    // Show/hide no-results component
-                    const noResultsComponent = document.getElementById('no-results-component');
-                    const kanbanBoardContainer = document.getElementById('kanban-board-container');
-                    
-                    // console.log('🎭 DOM elements found:', { 
-                    //     noResultsComponent: !!noResultsComponent, 
-                    //     kanbanBoardContainer: !!kanbanBoardContainer 
-                    // });
-                    
-                    if (term && totalVisibleCards === 0) {
-                        // Show no-results component when searching but no cards match
-                        // console.log('✅ SHOWING NO-RESULTS COMPONENT');
-                        if (noResultsComponent) {
-                            noResultsComponent.classList.remove('hidden');
-                            // console.log('🎉 No results component shown');
-                        }
-                        if (kanbanBoardContainer) {
-                            kanbanBoardContainer.classList.add('hidden');
-                            // console.log('🙈 Kanban board hidden');
-                        }
-                    } else {
-                        // Show kanban board when there are results or no search
-                        console.log('✅ SHOWING KANBAN BOARD');
-                        if (noResultsComponent) {
-                            noResultsComponent.classList.add('hidden');
-                            // console.log('🙈 No results component hidden');
-                        }
-                        if (kanbanBoardContainer) {
-                            kanbanBoardContainer.classList.remove('hidden');
-                            // console.log('🎉 Kanban board shown');
-                        }
-                    }
-                }, 100); // Small delay to ensure DOM is updated
-            });
-            
-            // Also listen for Livewire events
-            if (window.Livewire) {
-                // console.log('🔗 Livewire detected, setting up additional listeners');
-                
-                // Listen for Livewire search updates
-                window.Livewire.on('action-board-search', function(data) {
-                    // console.log('🔗 Livewire search event:', data);
-                });
-            }
+            // Unified filtering system handles both search and assigned to filter
+            // The 'action-board-unified-filter' event listener above handles all filtering logic
         });
     </script>
 </x-filament::page>

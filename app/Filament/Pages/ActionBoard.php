@@ -695,25 +695,39 @@ class ActionBoard extends KanbanBoardPage
 
     public function updatedSearch(): void
     {
-        // Broadcast client-side filter event for instant UX
-        $this->dispatch('action-board-search', search: $this->search);
+        // Dispatch unified filter event that includes both search and assigned to filter
+        $this->dispatchUnifiedFilter();
     }
 
     public function clearSearch(): void
     {
         $this->search = null;
-        $this->dispatch('action-board-search', search: $this->search);
+        $this->dispatchUnifiedFilter();
     }
 
     public function updatedAssignedToFilter(): void
     {
-        // Broadcast client-side filter event for instant UX
-        $this->dispatch('action-board-filter', assignedTo: $this->assignedToFilter);
+        // Dispatch unified filter event that includes both search and assigned to filter
+        $this->dispatchUnifiedFilter();
     }
 
     public function clearFilter(): void
     {
         $this->assignedToFilter = [];
-        $this->dispatch('action-board-filter', assignedTo: $this->assignedToFilter);
+        $this->dispatchUnifiedFilter();
+    }
+
+    private function dispatchUnifiedFilter(): void
+    {
+        // Dispatch unified filter event that includes both search and assigned to filter
+        \Log::info('Dispatching unified filter', [
+            'search' => $this->search,
+            'assignedTo' => $this->assignedToFilter,
+        ]);
+
+        $this->dispatch('action-board-unified-filter',
+            search: $this->search,
+            assignedTo: $this->assignedToFilter
+        );
     }
 }

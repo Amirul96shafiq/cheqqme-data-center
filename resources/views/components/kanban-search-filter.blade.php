@@ -4,7 +4,8 @@
     'clearLabel' => null,
     'wireModel' => 'search',
     'wireClear' => 'clearSearch',
-    'showFilter' => false
+    'showFilter' => false,
+    'assignedToFilter' => []
 ])
 
 <div class="-mb-8 px-4">
@@ -51,7 +52,7 @@
         @if($showFilter)
 
             <!-- Filter Button -->
-            <div class="relative" x-data="filterData()" @click.outside="open = false">
+            <div class="relative" x-data="filterData()" x-init="init()" @click.outside="open = false">
                 <button
                     @click="open = !open"
                     class="flex items-center justify-center w-12 h-12 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 focus:ring-1 focus:ring-primary-500"
@@ -129,6 +130,7 @@
                                                     value="{{ $user->id }}"
                                                     x-model="assignedToFilter"
                                                     @change="applyFilter()"
+                                                    wire:model.live="assignedToFilter"
                                                     class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
                                                 >
                                                 <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
@@ -178,21 +180,22 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
 function filterData() {
     return {
         open: false,
-        assignedToFilter: [],
+        assignedToFilter: @json($assignedToFilter),
         users: @json($usersForFilter),
-        applyFilter() {
-            // Dispatch filter event to update kanban board
-            const event = new CustomEvent('action-board-filter', {
-                detail: {
-                    assignedTo: this.assignedToFilter
-                }
+        init() {
+            // Listen for Livewire updates to sync Alpine.js state
+            this.$watch('$wire.assignedToFilter', (value) => {
+                this.assignedToFilter = value || [];
             });
-            window.dispatchEvent(event);
-            document.dispatchEvent(event);
+        },
+        applyFilter() {
+            // Dispatch unified filter event to update kanban board
+            // This will be handled by the Livewire component which will dispatch the unified event
+            // No direct event dispatch needed here since Livewire handles the state changes
         },
         clearFilter() {
-            this.assignedToFilter = [];
-            this.applyFilter();
+            // Call the Livewire clearFilter method
+            this.$wire.clearFilter();
         },
         getUserById(userId) {
             return this.users[userId] || 'Unknown User';
