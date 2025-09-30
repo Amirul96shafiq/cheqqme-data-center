@@ -110,6 +110,29 @@
                             if (matchesFilter) visible++;
                         });
                         
+                        // Find create task button in this column
+                        const createButton = col.querySelector('.ff-create-button, [data-create-button], .create-task-button, button[title*="create"], button[title*="Create"], .add-task-btn, .create-button');
+                        
+                        // Hide/show the entire column and create button based on whether it has visible cards
+                        if (assignedTo.length > 0 && visible === 0) {
+                            col.style.display = 'none';
+                            // Hide create button when column is hidden
+                            if (createButton) {
+                                createButton.style.display = 'none';
+                            }
+                        } else {
+                            col.style.display = '';
+                            
+                            // Hide/show create task button based on filter state
+                            if (createButton) {
+                                if (assignedTo.length > 0) {
+                                    createButton.style.display = 'none';
+                                } else {
+                                    createButton.style.display = '';
+                                }
+                            }
+                        }
+                        
                         totalVisibleCards += visible;
                     });
                     
