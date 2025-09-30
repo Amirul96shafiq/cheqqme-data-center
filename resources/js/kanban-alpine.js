@@ -119,8 +119,8 @@ window.columnDragDrop = function (columnId) {
                 status: "pending",
             });
 
-            // Show visual feedback
-            this.showDragFeedback(targetColumn, "success");
+            // Show visual feedback - DISABLED
+            // this.showDragFeedback(targetColumn, "success");
 
             // Background server sync (non-blocking)
             this.syncWithServer(targetColumn, cardIds, originalState);
@@ -158,14 +158,16 @@ window.columnDragDrop = function (columnId) {
                             ...this.dragOperations.get(columnId),
                             status: "completed",
                         });
-                        this.showDragFeedback(columnId, "completed");
+                        // Show drag feedback - DISABLED
+                        // this.showDragFeedback(columnId, "completed");
                     } else {
                         throw new Error(data.message || "Server update failed");
                     }
                 })
                 .catch((error) => {
                     console.error("Drag and drop sync failed:", error);
-                    this.showDragFeedback(columnId, "error");
+                    // Show drag feedback - DISABLED
+                    // this.showDragFeedback(columnId, "error");
                     // Optional: Rollback UI changes
                     // this.rollbackDragOperation(originalState);
                 })
@@ -177,6 +179,8 @@ window.columnDragDrop = function (columnId) {
                 });
         },
 
+        // Drag feedback function - DISABLED
+        /*
         showDragFeedback(columnId, type) {
             const column = document.querySelector(
                 `[data-column-id="${columnId}"]`
@@ -213,6 +217,7 @@ window.columnDragDrop = function (columnId) {
                 );
             }, 1500);
         },
+        */
 
         rollbackDragOperation(originalState) {
             // Implement rollback logic if needed
