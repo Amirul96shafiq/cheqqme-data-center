@@ -124,28 +124,31 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                     x-transition:leave="transition ease-in duration-150"
                                     x-transition:leave-start="opacity-100 scale-100"
                                     x-transition:leave-end="opacity-0 scale-95"
-                                    class="absolute z-10 mt-1 max-h-60 w-64 overflow-auto rounded-lg bg-white dark:bg-gray-800 py-2 text-base shadow-lg border border-gray-200 dark:border-gray-700 focus:outline-none sm:text-sm"
+                                    class="absolute z-10 mt-1 w-64 overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 focus:outline-none"
                                     style="display: none;"
                                 >
-                                    @foreach(\App\Models\User::withTrashed()->orderByRaw('COALESCE(name, username) ASC')->get() as $user)
-                                        <div class="relative cursor-pointer select-none">
-                                            <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer">
-                                                <input 
-                                                    type="checkbox" 
-                                                    value="{{ $user->id }}"
-                                                    x-model="assignedToFilter"
-                                                    @change="handleAssignedFilterChange()"
-                                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600"
-                                                >
-                                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">
-                                                    {{ $user->name ?: 'User #'.$user->id }}
-                                                    @if($user->deleted_at)
-                                                        <span class="text-gray-500 dark:text-gray-400">(deleted)</span>
-                                                    @endif
-                                                </span>
-                                            </label>
+                                    <!-- Users List Section -->
+                                    <div class="p-4">
+                                        <div class="max-h-48 overflow-y-auto space-y-1">
+                                            @foreach(\App\Models\User::withTrashed()->orderByRaw('COALESCE(name, username) ASC')->get() as $user)
+                                                <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        value="{{ $user->id }}"
+                                                        x-model="assignedToFilter"
+                                                        @change="handleAssignedFilterChange()"
+                                                        class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
+                                                    >
+                                                    <span class="text-gray-700 dark:text-gray-300 flex-1">
+                                                        {{ $user->name ?: 'User #'.$user->id }}
+                                                        @if($user->deleted_at)
+                                                            <span class="text-gray-500 dark:text-gray-400">(deleted)</span>
+                                                        @endif
+                                                    </span>
+                                                </label>
+                                            @endforeach
                                         </div>
-                                    @endforeach
+                                    </div>
                                 </div>
                             </div>
                             
