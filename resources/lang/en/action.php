@@ -58,6 +58,6 @@ return [
         'extra_information_warning' => 'Value must not exceed 500 visible characters.',
     ],
 
-    'search_placeholder' => 'Search tasks by title...',
+    'search_placeholder' => 'Search tasks by title',
     'clear_search' => 'Clear',
 ];

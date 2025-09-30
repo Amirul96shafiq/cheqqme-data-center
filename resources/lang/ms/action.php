@@ -58,6 +58,6 @@ return [
         'extra_information_warning' => 'Nilai tidak boleh melebihi 500 aksara yang boleh dibaca.',
     ],
 
-    'search_placeholder' => 'Cari tugasan mengikut tajuk...',
+    'search_placeholder' => 'Cari tugasan mengikut tajuk',
     'clear_search' => 'Kosongkan',
 ];
