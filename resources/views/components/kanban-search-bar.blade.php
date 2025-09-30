@@ -6,9 +6,10 @@
     'wireClear' => 'clearSearch'
 ])
 
-<div class="-mb-10 px-4">
+<div class="-mb-8 px-4">
     <div class="flex items-center gap-2">
         <div class="relative">
+
            <!-- Search icon (prefix) -->
            <div class="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                <x-heroicon-o-magnifying-glass class="w-4 h-4 text-gray-400 dark:text-gray-500" />
@@ -19,10 +20,12 @@
                type="text"
                wire:model.live.debounce.300ms="{{ $wireModel }}"
                placeholder="{{ $placeholder }}"
-               class="w-56 py-3 pl-10 pr-12 text-sm bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-gray-300/50 dark:focus:border-gray-600/50 transition-all duration-200 hover:bg-white/40 dark:hover:bg-gray-800/40 focus:bg-white/40 dark:focus:bg-gray-800/40"
+                class="w-56 py-3 pl-10 pr-12 text-sm bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-gray-600 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 hover:bg-white/40 dark:hover:bg-gray-800/40 focus:bg-white/40 dark:focus:bg-gray-800/40 focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
                autocomplete="off"
            />
           @if($search)
+
+              <!-- Clear button -->
               <button
                   wire:click="{{ $wireClear }}"
                   class="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-200 focus:outline-none hover:bg-white/20 dark:hover:bg-gray-700/30 disabled:opacity-50 disabled:cursor-not-allowed"
