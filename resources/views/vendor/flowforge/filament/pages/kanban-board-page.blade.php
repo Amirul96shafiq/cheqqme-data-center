@@ -34,6 +34,9 @@
     <script>
         // Initialize Kanban functionality when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
+            // Set global empty column text for JavaScript
+            window.emptyColumnText = '{{ $this->getEmptyColumnText() }}';
+            
             // Function to clear kanban search (used by no-results component)
             window.clearKanbanSearch = function() {
                 // Find the search input and clear it

@@ -717,6 +717,11 @@ class ActionBoard extends KanbanBoardPage
         $this->dispatchUnifiedFilter();
     }
 
+    public function getEmptyColumnText(): string
+    {
+        return __('flowforge.empty_column', ['cardLabel' => strtolower($this->config->getPluralCardLabel())]);
+    }
+
     private function dispatchUnifiedFilter(): void
     {
         // Dispatch unified filter event that includes both search and assigned to filter
