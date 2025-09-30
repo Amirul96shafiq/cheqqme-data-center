@@ -132,6 +132,11 @@ window.columnDragDrop = function (columnId) {
             // Show visual feedback - DISABLED
             // this.showDragFeedback(targetColumn, "success");
 
+            // Check for empty columns immediately after drag
+            setTimeout(() => {
+                this.checkAndShowEmptyColumns();
+            }, 50);
+
             // Background server sync (non-blocking)
             this.syncWithServer(targetColumn, cardIds, originalState);
         },
@@ -170,6 +175,16 @@ window.columnDragDrop = function (columnId) {
                         });
                         // Show drag feedback - DISABLED
                         // this.showDragFeedback(columnId, "completed");
+
+                        // Refresh Livewire component to show empty columns
+                        if (window.Livewire) {
+                            window.Livewire.dispatch("refresh-kanban-board");
+                        }
+
+                        // Also manually check and show empty columns
+                        setTimeout(() => {
+                            this.checkAndShowEmptyColumns();
+                        }, 100);
                     } else {
                         throw new Error(data.message || "Server update failed");
                     }
@@ -232,6 +247,50 @@ window.columnDragDrop = function (columnId) {
         rollbackDragOperation(originalState) {
             // Implement rollback logic if needed
             console.log("Rolling back drag operation:", originalState);
+        },
+
+        checkAndShowEmptyColumns() {
+            // Check all columns and show empty column component if no cards
+            const columns = document.querySelectorAll(".ff-column");
+            columns.forEach((column) => {
+                const columnContent = column.querySelector(
+                    ".ff-column__content"
+                );
+                const cards = columnContent.querySelectorAll(".ff-card");
+                const emptyColumn =
+                    columnContent.querySelector(".ff-empty-column");
+
+                if (cards.length === 0 && !emptyColumn) {
+                    // Column is empty but no empty column component - add it
+                    this.addEmptyColumnComponent(columnContent, column);
+                } else if (cards.length > 0 && emptyColumn) {
+                    // Column has cards but still has empty column component - remove it
+                    emptyColumn.remove();
+                }
+            });
+        },
+
+        addEmptyColumnComponent(columnContent, column) {
+            // Get the column ID and config from the column element
+            const columnId = column.getAttribute("data-column-id") || "unknown";
+
+            // Create empty column component
+            const emptyColumnDiv = document.createElement("div");
+            emptyColumnDiv.className = "ff-empty-column";
+            emptyColumnDiv.style.cssText =
+                "transition: opacity 0.2s ease-out, transform 0.2s ease-out;";
+
+            emptyColumnDiv.innerHTML = `
+                <svg class="ff-empty-column__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                <p class="ff-empty-column__text">
+                    No tasks in this column
+                </p>
+            `;
+
+            // Add to column content
+            columnContent.appendChild(emptyColumnDiv);
         },
     };
 };
