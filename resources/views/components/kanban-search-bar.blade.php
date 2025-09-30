@@ -49,15 +49,16 @@
         </div>
 
         @if($showFilter)
+
             <!-- Filter Button -->
             <div class="relative" x-data="filterData()" @click.outside="open = false">
                 <button
                     @click="open = !open"
-                    class="flex items-center justify-center w-12 h-12 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-gray-600 dark:text-gray-100 hover:bg-white/40 dark:hover:bg-gray-800/40 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 focus:ring-1 focus:ring-primary-500"
+                    class="flex items-center justify-center w-12 h-12 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 focus:ring-1 focus:ring-primary-500"
                     :class="{ 'ring-1 ring-primary-500 dark:ring-offset-gray-800': open }"
                     title="{{ __('action.filter_tasks') }}"
                 >
-                    <x-heroicon-o-funnel class="w-5 h-5" />
+                    <x-heroicon-m-funnel class="w-4 h-4" />
                 </button>
                 
                 <!-- Filter Dropdown -->
@@ -73,6 +74,7 @@
                     style="display: none;"
                 >
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
+
                         <!-- Filter Header -->
                         <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                             <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('action.filter_by') }}</h3>
@@ -134,10 +136,8 @@
                                 {{ __('action.close') }}
                             </button>
                         </div>
+
                     </div>
-                    
-                    <!-- Dropdown Arrow -->
-                    <div class="absolute bottom-full right-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-white dark:border-b-gray-800"></div>
                 </div>
             </div>
         @endif
