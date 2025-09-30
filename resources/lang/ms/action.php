@@ -59,6 +59,8 @@ return [
     ],
 
     'search_placeholder' => 'Cari tugasan',
+    'clear_search' => 'Kosongkan carian',
+    'filter_tasks' => 'Tapis tugasan',
     'filters' => 'Tapisan',
     'reset' => 'Tetapkan Semula Tapisan',
 

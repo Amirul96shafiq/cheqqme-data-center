@@ -53,14 +53,15 @@
 
             <!-- Filter Button -->
             <div class="relative" x-data="filterData()" x-init="init()" @click.outside="open = false">
-                <button
-                    @click="open = !open"
-                    class="flex items-center justify-center w-12 h-12 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 focus:ring-1 focus:ring-primary-500"
-                    :class="{ 'ring-1 ring-primary-500 dark:ring-offset-gray-800': open }"
-                    title="{{ __('action.filter_tasks') }}"
-                >
-                    <x-heroicon-m-funnel class="w-4 h-4" />
-                </button>
+                <x-tooltip :text="__('action.filter_tasks')" position="top" align="center">
+                    <button
+                        @click="open = !open"
+                        class="flex items-center justify-center w-12 h-12 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 focus:ring-1 focus:ring-primary-500"
+                        :class="{ 'ring-1 ring-primary-500 dark:ring-offset-gray-800': open }"
+                    >
+                        <x-heroicon-m-funnel class="w-4 h-4" />
+                    </button>
+                </x-tooltip>
                 
                 <!-- Filter Dropdown -->
                 <div 
