@@ -9,14 +9,19 @@
 <div class="-mb-10 px-4">
     <div class="flex items-center gap-2">
         <div class="relative">
-          <!-- Search input -->
-          <input
-              type="text"
-              wire:model.live.debounce.300ms="{{ $wireModel }}"
-              placeholder="{{ $placeholder }}"
-              class="w-48 py-3 pr-12 text-sm bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-gray-300/50 dark:focus:border-gray-600/50 transition-all duration-200 hover:bg-white/40 dark:hover:bg-gray-800/40 focus:bg-white/40 dark:focus:bg-gray-800/40"
-              autocomplete="off"
-          />
+           <!-- Search icon (prefix) -->
+           <div class="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+               <x-heroicon-o-magnifying-glass class="w-4 h-4 text-gray-400 dark:text-gray-500" />
+           </div>
+           
+           <!-- Search input -->
+           <input
+               type="text"
+               wire:model.live.debounce.300ms="{{ $wireModel }}"
+               placeholder="{{ $placeholder }}"
+               class="w-56 py-3 pl-10 pr-12 text-sm bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-gray-300/50 dark:focus:border-gray-600/50 transition-all duration-200 hover:bg-white/40 dark:hover:bg-gray-800/40 focus:bg-white/40 dark:focus:bg-gray-800/40"
+               autocomplete="off"
+           />
           @if($search)
               <button
                   wire:click="{{ $wireClear }}"
