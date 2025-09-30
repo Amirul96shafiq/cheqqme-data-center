@@ -121,7 +121,7 @@
                                     class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg bg-white dark:bg-gray-800 py-2 text-base shadow-lg border border-gray-200 dark:border-gray-700 focus:outline-none sm:text-sm"
                                     style="display: none;"
                                 >
-                                    @foreach(\App\Models\User::withTrashed()->orderBy('name')->get() as $user)
+                                    @foreach(\App\Models\User::withTrashed()->orderByRaw('COALESCE(name, username) ASC')->get() as $user)
                                         <div class="relative cursor-pointer select-none">
                                             <label class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 cursor-pointer">
                                                 <input 
@@ -172,7 +172,7 @@
 
 @if($showFilter)
 @php
-$usersForFilter = \App\Models\User::withTrashed()->orderBy('name')->get()->mapWithKeys(fn($user) => [$user->id => ($user->name ?: 'User #'.$user->id).($user->deleted_at ? ' (deleted)' : '')])->toArray();
+$usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, username) ASC')->get()->mapWithKeys(fn($user) => [$user->id => ($user->name ?: 'User #'.$user->id).($user->deleted_at ? ' (deleted)' : '')])->toArray();
 @endphp
 <script>
 function filterData() {
