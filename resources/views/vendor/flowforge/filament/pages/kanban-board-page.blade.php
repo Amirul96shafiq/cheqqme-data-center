@@ -1,4 +1,20 @@
 <x-filament::page>
+    <style>
+        /* Disable drag and drop when filtering is active */      
+        .drag-disabled .ff-card {
+            cursor: pointer !important;
+        }
+        
+        /* Disable drag cursor and prevent drag start events */
+        .drag-disabled [x-sortable-handle] {
+            cursor: pointer !important;
+        }
+        
+        .drag-disabled [x-sortable-handle]:hover {
+            cursor: pointer !important;
+        }
+    </style>
+    
     {{-- Custom Kanban Search Bar --}}
     <x-kanban-search-filter
         :search="$search"

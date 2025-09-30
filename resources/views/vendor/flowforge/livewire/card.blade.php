@@ -6,8 +6,25 @@
         'ff-card--interactive' => $this->editAction() &&  ($this->editAction)(['record' => $record['id']])->isVisible(),
         'ff-card--non-interactive' => !$this->editAction()
     ])
+    x-data="{ filterActive: false }"
+    x-init="
+        // Listen for filter events to disable drag and drop
+        window.addEventListener('action-board-unified-filter', (e) => {
+            const search = e?.detail?.search || '';
+            const assignedTo = e?.detail?.assignedTo || [];
+            filterActive = search.length > 0 || assignedTo.length > 0;
+        });
+    "
     x-sortable-handle
     x-sortable-item="{{ $record['id'] }}"
+    x-bind:class="filterActive ? 'drag-disabled' : ''"
+    x-on:dragstart="filterActive && $event.preventDefault()"
+    x-on:drag="filterActive && $event.preventDefault()"
+    x-on:dragenter="filterActive && $event.preventDefault()"
+    x-on:dragover="filterActive && $event.preventDefault()"
+    x-on:dragleave="filterActive && $event.preventDefault()"
+    x-on:dragend="filterActive && $event.preventDefault()"
+    x-on:drop="filterActive && $event.preventDefault()"
     @if($this->editAction() &&  ($this->editAction)(['record' => $record['id']])->isVisible())
         wire:click="mountAction('edit', {record: '{{ $record['id'] }}'})"
     @endif

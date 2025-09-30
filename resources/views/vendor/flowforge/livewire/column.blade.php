@@ -26,6 +26,15 @@
 
     <!-- Column Content -->
     <div
+        x-data="{ filterActive: false }"
+        x-init="
+            // Listen for filter events to disable drag and drop
+            window.addEventListener('action-board-unified-filter', (e) => {
+                const search = e?.detail?.search || '';
+                const assignedTo = e?.detail?.assignedTo || [];
+                filterActive = search.length > 0 || assignedTo.length > 0;
+            });
+        "
         x-sortable
         x-sortable-group="cards"
         x-sortable-ghost-class="sortable-ghost"
@@ -33,6 +42,14 @@
         x-sortable-drag-class="sortable-drag"
         data-column-id="{{ $columnId }}"
         @end.stop="$wire.updateRecordsOrderAndColumn($event.to.getAttribute('data-column-id'), $event.to.sortable.toArray())"
+        x-bind:class="filterActive ? 'drag-disabled' : ''"
+        x-on:dragstart="filterActive && $event.preventDefault()"
+        x-on:drag="filterActive && $event.preventDefault()"
+        x-on:dragenter="filterActive && $event.preventDefault()"
+        x-on:dragover="filterActive && $event.preventDefault()"
+        x-on:dragleave="filterActive && $event.preventDefault()"
+        x-on:dragend="filterActive && $event.preventDefault()"
+        x-on:drop="filterActive && $event.preventDefault()"
         class="ff-column__content overflow-y-auto"
         style="max-height: calc(100vh - 13rem); min-height: 60px;"
     >
