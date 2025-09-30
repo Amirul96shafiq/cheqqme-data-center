@@ -51,19 +51,8 @@ class TaskObserver
     {
         if ($task->isDirty('order_column') || $task->isDirty('status')) {
             // Temporarily disable activity logging for this update
+            // Activity logging is now handled by KanbanController
             $task->disableLogging();
-
-            activity('Tasks')
-                ->performedOn($task)
-                ->causedBy(auth()->user())
-                ->event('Task Moved')
-                ->withProperties([
-                    'old_status' => $task->getOriginal('status'),
-                    'new_status' => $task->status,
-                    'old_order_column' => $task->getOriginal('order_column'),
-                    'new_order_column' => $task->order_column,
-                ])
-                ->log('Task Moved');
         }
 
         // Handle assignment notifications

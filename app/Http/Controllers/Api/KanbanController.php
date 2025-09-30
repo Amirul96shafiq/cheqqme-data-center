@@ -68,10 +68,11 @@ class KanbanController extends Controller
                     $newStatus = $updatedTasks[$id]->status;
 
                     if ($originalOrder != $newOrder || $originalStatus != $newStatus) {
-                        // Log activity for task movement
+                        // Log activity for task movement with translation support
                         activity()
                             ->performedOn($updatedTasks[$id])
                             ->causedBy(Auth::user())
+                            ->event(__('task.activity_log.activity_task_moved'))
                             ->withProperties([
                                 'old_status' => $originalStatus,
                                 'new_status' => $newStatus,
@@ -79,7 +80,7 @@ class KanbanController extends Controller
                                 'new_order' => $newOrder,
                                 'via' => 'kanban_drag_drop',
                             ])
-                            ->log('Task moved in kanban board');
+                            ->log(__('task.activity_log.activity_task_moved').' from '.$originalStatus.' to '.$newStatus);
                     }
                 }
             }
