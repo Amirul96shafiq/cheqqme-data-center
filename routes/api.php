@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\KanbanController;
 use App\Http\Controllers\Api\PlaywrightMcpController;
 use App\Http\Controllers\Api\UserController as ApiUserController;
 use App\Http\Controllers\Api\UserStatusController;
@@ -65,6 +66,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/test-report', [PlaywrightMcpController::class, 'generateTestReport'])->name('api.playwright.test-report');
         Route::post('/test-boost-integration', [PlaywrightMcpController::class, 'testBoostIntegration'])->name('api.playwright.test-boost-integration');
     });
+});
+
+// Kanban drag and drop endpoints (session-based auth for browser context)
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::post('/kanban/update-order', [KanbanController::class, 'updateOrder'])->name('api.kanban.update-order');
 });
 
 // Public API documentation endpoint with pretty JSON
