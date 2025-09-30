@@ -720,10 +720,10 @@ class ActionBoard extends KanbanBoardPage
     private function dispatchUnifiedFilter(): void
     {
         // Dispatch unified filter event that includes both search and assigned to filter
-        \Log::info('Dispatching unified filter', [
-            'search' => $this->search,
-            'assignedTo' => $this->assignedToFilter,
-        ]);
+        // \Log::info('Dispatching unified filter', [
+        //     'search' => $this->search,
+        //     'assignedTo' => $this->assignedToFilter,
+        // ]);
 
         $this->dispatch('action-board-unified-filter',
             search: $this->search,

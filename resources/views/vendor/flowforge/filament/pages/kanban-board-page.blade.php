@@ -67,10 +67,10 @@
 
             // Global event listener for unified filter events (search + assigned to filter)
             document.addEventListener('action-board-unified-filter', function(e) {
-                console.log('🎯 UNIFIED FILTER EVENT RECEIVED:', e?.detail);
+                // console.log('🎯 UNIFIED FILTER EVENT RECEIVED:', e?.detail);
                 var search = e?.detail?.search || '';
                 var assignedTo = e?.detail?.assignedTo || [];
-                console.log('📊 Filter data:', { search, assignedTo });
+                // console.log('📊 Filter data:', { search, assignedTo });
                 
                 // Set global states for Alpine.js
                 window.searchActive = search.length > 0;

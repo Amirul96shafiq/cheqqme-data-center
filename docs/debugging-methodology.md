@@ -23,14 +23,23 @@ console.log("Debug: MutationObserver detected changes"); // Uncomment for testin
 
 When user says **"all good can clean up or refactor"**, include **disabling console logs** (commenting them out) as part of the cleanup process:
 
+**IMPORTANT**: Always **comment out** console logs instead of deleting them to preserve debugging capability for future use.
+
 ```javascript
-// Comment out debug logs after testing
+// Comment out debug logs after testing - DO NOT DELETE
 // console.log("Debug: User presence status changed:", user);
 // console.log("Debug: Conversation loading:", conversationId);
 // console.log("Debug: File upload processing:", fileData);
 // console.log("Debug: Livewire event triggered:", event);
 // console.log("Debug: MutationObserver detected changes");
 ```
+
+**Why comment instead of delete?**
+
+-   Preserves debugging infrastructure for future troubleshooting
+-   Easy to re-enable by uncommenting when needed
+-   Maintains context of what was being debugged
+-   No need to recreate debugging code from scratch
 
 ### Log Categories to Enable During Debugging
 
@@ -192,7 +201,8 @@ echo 'Rendered: ' . \$rendered . PHP_EOL;
 3. **Test incrementally** - Fix one issue at a time
 4. **Verify end-to-end** - Test the complete user journey
 5. **Document findings** - Keep track of what was tested and what worked
-6. **Clean up after** - Comment out debug logs when user confirms fixes work
+6. **Clean up after** - **Comment out** debug logs when user confirms fixes work (never delete them)
+7. **Preserve debugging infrastructure** - Keep commented logs for future troubleshooting needs
 
 ## Example: The Mention Highlighting Fix
 
@@ -236,9 +246,10 @@ The issue wasn't in the rendering or merging logic - it was in the initial data 
 ### When User Says "All Good":
 
 1. **Include log cleanup** as part of refactoring tasks
-2. **Comment out debug logs** that were temporarily enabled
+2. **Comment out debug logs** that were temporarily enabled (never delete them)
 3. **Ensure critical error logs remain** untouched
 4. **Verify no debug noise** remains in console
+5. **Preserve debugging infrastructure** for future troubleshooting needs
 
 ## Remember
 
