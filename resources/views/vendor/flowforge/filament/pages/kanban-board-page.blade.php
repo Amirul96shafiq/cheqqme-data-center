@@ -1,6 +1,6 @@
 <x-filament::page>
     {{-- Custom Kanban Search Bar --}}
-    <x-kanban-search-bar
+    <x-kanban-search-filter
         :search="$search"
         :placeholder="__('action.search_placeholder')"
         :clear-label="__('action.clear_search')"
