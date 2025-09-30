@@ -201,8 +201,10 @@ function filterData() {
             return this.users[userId] || 'Unknown User';
         },
         removeUser(userId) {
+            // Update Alpine.js state
             this.assignedToFilter = this.assignedToFilter.filter(id => id != userId);
-            this.applyFilter();
+            // Sync with Livewire
+            this.$wire.set('assignedToFilter', this.assignedToFilter);
         }
     }
 }
