@@ -20,6 +20,8 @@ class ActionBoard extends KanbanBoardPage
 
     public ?string $search = null;
 
+    public array $assignedToFilter = [];
+
     public function getSubject(): Builder
     {
         $query = Task::query()
@@ -701,5 +703,17 @@ class ActionBoard extends KanbanBoardPage
     {
         $this->search = null;
         $this->dispatch('action-board-search', search: $this->search);
+    }
+
+    public function updatedAssignedToFilter(): void
+    {
+        // Broadcast client-side filter event for instant UX
+        $this->dispatch('action-board-filter', assignedTo: $this->assignedToFilter);
+    }
+
+    public function clearFilter(): void
+    {
+        $this->assignedToFilter = [];
+        $this->dispatch('action-board-filter', assignedTo: $this->assignedToFilter);
     }
 }

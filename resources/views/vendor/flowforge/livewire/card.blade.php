@@ -114,7 +114,8 @@
                 <div class="flex flex-col gap-1">
                     {{-- Assigned badge --}}
                     @if($assignedBadge)
-                        <div class="w-fit flex gap-1 items-center">
+                        <div class="w-fit flex gap-1 items-center" 
+                             data-assigned-user-ids="{{ implode(',', $record['assigned_to'] ?? []) }}">
                             <x-flowforge::card-badge
                                 :label="$assignedBadge['label']"
                                 :value="$assignedBadge['value']"

@@ -59,6 +59,17 @@ return [
     ],
 
     'search_placeholder' => 'Cari tugasan',
+    'clear_search' => 'Kosongkan carian',
+    'filter_tasks' => 'Tapis tugasan',
+    'filter_by' => 'Tapis mengikut',
+    'clear_filter' => 'Kosongkan penapis',
+    'close' => 'Tutup',
+
+    'filter' => [
+        'assigned_to' => 'Ditugaskan Kepada',
+        'all_users' => 'Semua Pengguna',
+        'select_users' => 'Pilih pengguna untuk menapis',
+    ],
 
     'no_results' => [
         'title' => 'Tiada tugasan dijumpai',

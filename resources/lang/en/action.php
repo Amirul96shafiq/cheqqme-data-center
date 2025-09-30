@@ -59,6 +59,17 @@ return [
     ],
 
     'search_placeholder' => 'Search tasks',
+    'clear_search' => 'Clear search',
+    'filter_tasks' => 'Filter tasks',
+    'filter_by' => 'Filter by',
+    'clear_filter' => 'Clear filter',
+    'close' => 'Close',
+
+    'filter' => [
+        'assigned_to' => 'Assigned To',
+        'all_users' => 'All Users',
+        'select_users' => 'Select users to filter by',
+    ],
 
     'no_results' => [
         'title' => 'No tasks found',
