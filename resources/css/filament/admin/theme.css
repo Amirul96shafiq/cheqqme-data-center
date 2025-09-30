@@ -178,7 +178,7 @@
         overflow-y: hidden !important;
         display: flex !important;
         gap: 1rem !important;
-        padding: 1rem !important;
+        padding: 0rem !important;
         scrollbar-width: thin !important;
         scrollbar-color: rgb(161 161 170) transparent !important; /* zinc-400 - synced with global */
     }
