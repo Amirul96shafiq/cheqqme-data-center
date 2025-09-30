@@ -67,6 +67,20 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                     </button>
                 </x-tooltip>
                 
+                <!-- Mobile Backdrop -->
+                <div 
+                    x-show="filterOpen"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    @click="filterOpen = false"
+                    class="fixed inset-0 bg-black bg-opacity-80 z-40 sm:hidden"
+                    style="display: none;"
+                ></div>
+
                 <!-- Filter Dropdown -->
                 <div 
                     x-show="filterOpen"
@@ -76,7 +90,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                     x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-95"
-                    class="absolute top-full mt-2 left-0 z-50 w-80"
+                    class="fixed sm:absolute top-1/2 sm:top-full left-1/2 sm:left-0 -translate-x-1/2 sm:translate-x-0 -translate-y-1/2 sm:translate-y-0 mt-0 sm:mt-2 z-50 w-80"
                     style="display: none;"
                 >
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
@@ -124,7 +138,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                     x-transition:leave="transition ease-in duration-150"
                                     x-transition:leave-start="opacity-100 scale-100"
                                     x-transition:leave-end="opacity-0 scale-95"
-                                    class="absolute z-10 mt-1 w-64 overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 focus:outline-none"
+                                    class="absolute z-10 bottom-full sm:top-full mb-1 sm:mt-1 w-64 overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 focus:outline-none"
                                     style="display: none;"
                                 >
                                     <!-- Users List Section -->
@@ -206,7 +220,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                     x-transition:leave="transition ease-in duration-150"
                                     x-transition:leave-start="opacity-100 scale-100"
                                     x-transition:leave-end="opacity-0 scale-95"
-                                    class="absolute z-10 mt-1 w-64 overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 focus:outline-none"
+                                    class="absolute z-10 bottom-full sm:top-full mb-1 sm:mt-1 w-64 overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 focus:outline-none"
                                     style="display: none;"
                                 >
                                     <!-- Quick Filters Section -->
