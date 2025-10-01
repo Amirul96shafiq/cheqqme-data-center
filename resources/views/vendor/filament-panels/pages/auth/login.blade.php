@@ -69,7 +69,7 @@
 					@endif
 
 					{{-- Login Form --}}
-                    <form method="POST" action="{{ route('admin.login') }}" class="space-y-6">
+                    <form method="POST" action="{{ route('admin.login') }}" class="space-y-6" x-data="{ showPassword: false }">
                         @csrf
 
                         {{-- Username / Email Field --}}
@@ -80,6 +80,7 @@
                             <input id="email" type="text" name="email" value="{{ old('email') }}"
                                 required autofocus autocomplete="username"
                                 placeholder="Enter username or email"
+                                @keydown.enter="$el.form.submit()"
                                 class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
                             @error('email')
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -91,12 +92,14 @@
                             <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 {{ __('login.form.password') }}
                             </label>
-                            <div class="relative" x-data="{ showPassword: false }">
+                            <div class="relative">
                                 <input id="password" 
+                                    x-ref="password"
                                     :type="showPassword ? 'text' : 'password'" 
                                     name="password" 
                                     required
                                     autocomplete="current-password"
+                                    @keydown.enter="$el.form.submit()"
                                     class="w-full p-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
                                 <div class="absolute inset-y-0 right-0 flex items-center">
                                     <div class="h-full w-px bg-gray-300 dark:bg-gray-700"></div>
