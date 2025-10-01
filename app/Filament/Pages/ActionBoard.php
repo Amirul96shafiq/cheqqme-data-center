@@ -202,7 +202,7 @@ class ActionBoard extends KanbanBoardPage
                                                 ->required()
                                                 ->placeholder(__('task.form.title_placeholder'))
                                                 ->columnSpanFull(),
-                                            Forms\Components\Grid::make(2)
+                                            Forms\Components\Grid::make(3)
                                                 ->schema([
                                                     Forms\Components\DatePicker::make('due_date')
                                                         ->label(__('task.form.due_date'))
@@ -227,7 +227,8 @@ class ActionBoard extends KanbanBoardPage
                                                             'medium' => __('task.priority.medium'),
                                                             'high' => __('task.priority.high'),
                                                         ])
-                                                        ->default('medium'),
+                                                        ->default('medium')
+                                                        ->searchable(),
                                                 ]),
                                             Forms\Components\RichEditor::make('description')
                                                 ->label(__('task.form.description'))

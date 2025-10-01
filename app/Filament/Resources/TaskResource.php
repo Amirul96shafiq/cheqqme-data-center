@@ -137,7 +137,8 @@ return false;
                                                             'medium' => __('task.priority.medium'),
                                                             'high' => __('task.priority.high'),
                                                         ])
-                                                        ->default('medium'),
+                                                        ->default('medium')
+                                                        ->searchable(),
                                                 ]),
                                             Forms\Components\RichEditor::make('description')
                                                 ->label(__('task.form.description'))
