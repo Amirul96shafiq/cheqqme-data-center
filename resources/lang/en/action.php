@@ -81,6 +81,13 @@ return [
         'select_date_range' => 'Or select a custom date range',
         'select_due_date' => 'Select due date filter',
         'selected_due_date' => 'Selected Due Date',
+        'priority' => 'Priority',
+        'select_priority' => 'Select priority filter',
+        'priorities_selected' => 'priorities selected',
+        'selected_priority' => 'Selected Priority',
+        'priority_high' => 'High Priority',
+        'priority_medium' => 'Medium Priority',
+        'priority_low' => 'Low Priority',
         'quick_filters' => 'Quick Filters',
         'custom_range' => 'Custom Range',
         'from_date' => 'From Date',
@@ -102,6 +109,10 @@ return [
         'due_date' => [
             'title' => 'No tasks found for selected date range',
             'description' => 'Try adjusting your date filter or clear the filter to see all tasks.',
+        ],
+        'priority' => [
+            'title' => 'No tasks found for selected priority',
+            'description' => 'Try adjusting your priority filter or clear the filter to see all tasks.',
         ],
     ],
 ];

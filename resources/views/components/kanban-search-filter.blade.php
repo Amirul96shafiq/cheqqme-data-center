@@ -9,6 +9,7 @@
     'dueDatePreset' => null,
     'dueDateFrom' => null,
     'dueDateTo' => null,
+    'priorityFilter' => [],
 ])
 
 @php
@@ -23,7 +24,8 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
      data-initial-users="{{ json_encode($usersForFilter) }}"
      data-initial-due-date-preset="{{ $dueDatePreset }}"
      data-initial-due-date-from="{{ $dueDateFrom }}"
-     data-initial-due-date-to="{{ $dueDateTo }}">
+     data-initial-due-date-to="{{ $dueDateTo }}"
+     data-initial-priority-filter="{{ json_encode($priorityFilter) }}">
     <div class="flex items-center gap-4">
         <div class="relative">
 
@@ -49,7 +51,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                   title="{{ $clearLabel ?: __('action.clear_search') }}"
                   x-show="globalSearch && globalSearch.length > 0"
               >
-                  <x-heroicon-o-x-mark class="w-4 h-4" />
+                      <x-heroicon-o-x-mark class="w-4 h-4" />
               </button>
         </div>
 
@@ -58,13 +60,13 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
             <!-- Filter Button -->
             <div class="relative" @click.outside="filterOpen = false">
                 <x-tooltip :text="__('action.filter_tasks')" position="top" align="center">
-                    <button
+                <button
                         @click="filterOpen = !filterOpen"
-                        class="flex items-center justify-center w-12 h-12 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 focus:ring-1 focus:ring-primary-500"
+                    class="flex items-center justify-center w-12 h-12 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 focus:ring-1 focus:ring-primary-500"
                         :class="{ 'ring-1 ring-primary-500 dark:ring-offset-gray-800': filterOpen }"
-                    >
-                        <x-heroicon-m-funnel class="w-4 h-4" />
-                    </button>
+                >
+                    <x-heroicon-m-funnel class="w-4 h-4" />
+                </button>
                 </x-tooltip>
                 
                 <!-- Mobile Backdrop -->
@@ -80,7 +82,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                     class="fixed inset-0 bg-black bg-opacity-80 z-40 sm:hidden"
                     style="display: none;"
                 ></div>
-
+                
                 <!-- Filter Dropdown -->
                 <div 
                     x-show="filterOpen"
@@ -98,12 +100,12 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                         <!-- Filter Header -->
                         <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
                             <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('action.filters') }}</h3>
-                                        <button
+                            <button
                                             @click="clearFilters()"
-                                            class="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
-                                        >
-                                            {{ __('action.reset') }}
-                                        </button>
+                                class="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
+                            >
+                                {{ __('action.reset') }}
+                            </button>
                         </div>
                         
                         <!-- Assigned To Filter -->
@@ -136,33 +138,33 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                     <!-- Users List Section -->
                                     <div class="p-4">
                                         <div class="max-h-48 overflow-y-auto space-y-1">
-                                            @foreach(\App\Models\User::withTrashed()->orderByRaw('COALESCE(name, username) ASC')->get() as $user)
+                                    @foreach(\App\Models\User::withTrashed()->orderByRaw('COALESCE(name, username) ASC')->get() as $user)
                                                 <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                    <input 
-                                                        type="checkbox" 
-                                                        value="{{ $user->id }}"
-                                                        x-model="assignedToFilter"
+                                                <input 
+                                                    type="checkbox" 
+                                                    value="{{ $user->id }}"
+                                                    x-model="assignedToFilter"
                                                         @change="handleAssignedFilterChange()"
                                                         class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
-                                                    >
+                                                >
                                                     <span class="text-gray-700 dark:text-gray-300 flex-1">
-                                                        {{ $user->name ?: 'User #'.$user->id }}
-                                                        @if($user->deleted_at)
-                                                            <span class="text-gray-500 dark:text-gray-400">(deleted)</span>
-                                                        @endif
-                                                    </span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    </div>
+                                                    {{ $user->name ?: 'User #'.$user->id }}
+                                                    @if($user->deleted_at)
+                                                        <span class="text-gray-500 dark:text-gray-400">(deleted)</span>
+                                                    @endif
+                                                </span>
+                                            </label>
+                                    @endforeach
+                                </div>
+                            </div>
                                 </x-dropdown-panel>
                             </div>
                             
                             <!-- Selected Users Display -->
                             <div x-show="assignedToFilter.length > 0" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700" x-data="{ showAllUsers: false }">
                                 <div class="flex items-center justify-between mb-2">
-
-                                    <!-- Selected Users Display -->
+                            
+                            <!-- Selected Users Display -->
                                     <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('action.filter.selected_users') }}</div>
 
                                     <!-- Show All/Less Button -->
@@ -373,6 +375,109 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                     </span>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Priority Filter -->
+                        <div class="p-6 border-t border-gray-200 dark:border-gray-700">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                {{ __('action.filter.priority') }}
+                            </label>
+                            
+                            <!-- Custom Dropdown -->
+                            <div class="relative" @click.outside="priorityDropdownOpen = false">
+                                <button
+                                    @click="priorityDropdownOpen = !priorityDropdownOpen"
+                                    type="button"
+                                    class="relative w-full cursor-default rounded-lg bg-white dark:bg-gray-800 py-2 pl-3 pr-10 text-left ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm"
+                                >
+                                    <span class="block truncate text-gray-900 dark:text-white">
+                                        <span x-show="priorityFilter.length === 0" class="text-gray-500 dark:text-gray-400">{{ __('action.filter.select_priority') }}</span>
+                                        <span x-show="priorityFilter.length === 1" x-text="priorityFilter[0]"></span>
+                                        <span x-show="priorityFilter.length > 1" x-text="priorityFilter.length + ' {{ __('action.filter.priorities_selected') }}'"></span>
+                                    </span>
+                                    <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                                        <x-heroicon-m-chevron-down 
+                                            class="h-5 w-5 text-gray-400 transition-transform duration-200" 
+                                            ::class="{ 'rotate-180': priorityDropdownOpen }"
+                                        />
+                                    </span>
+                                </button>
+                                
+                                <x-dropdown-panel is-open="priorityDropdownOpen">
+                                    <!-- Priority List Section -->
+                                    <div class="p-4">
+                                        <div class="max-h-48 overflow-y-auto space-y-1">
+                                            
+                                            <!-- High Priority -->
+                                            <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input 
+                                                    type="checkbox" 
+                                                    value="high"
+                                                    x-model="priorityFilter"
+                                                    @change="handlePriorityFilterChange()"
+                                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
+                                                >
+                                                <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
+                                                    <span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                                    {{ __('action.filter.priority_high') }}
+                                                </span>
+                                            </label>
+                                            
+                                            <!-- Medium Priority -->
+                                            <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input 
+                                                    type="checkbox" 
+                                                    value="medium"
+                                                    x-model="priorityFilter"
+                                                    @change="handlePriorityFilterChange()"
+                                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
+                                                >
+                                                <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
+                                                    <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                                                    {{ __('action.filter.priority_medium') }}
+                                                </span>
+                                            </label>
+                                            
+                                            <!-- Low Priority -->
+                                            <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input 
+                                                    type="checkbox" 
+                                                    value="low"
+                                                    x-model="priorityFilter"
+                                                    @change="handlePriorityFilterChange()"
+                                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
+                                                >
+                                                <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
+                                                    <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                                    {{ __('action.filter.priority_low') }}
+                                                </span>
+                                            </label>
+                                            
+                                        </div>
+                                    </div>
+                                </x-dropdown-panel>
+                            </div>
+                            
+                            <!-- Selected Priority Display -->
+                            <div x-show="priorityFilter.length > 0" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ __('action.filter.selected_priority') }}</div>
+                                <div class="flex flex-wrap gap-1">
+                                    <template x-for="priority in priorityFilter" :key="priority">
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 rounded-md">
+                                            <span x-show="priority === 'high'" class="w-2 h-2 bg-red-500 rounded-full"></span>
+                                            <span x-show="priority === 'medium'" class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                                            <span x-show="priority === 'low'" class="w-2 h-2 bg-green-500 rounded-full"></span>
+                                            <span x-text="getPriorityLabel(priority)"></span>
+                                            <button @click="removePriority(priority)" class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    </template>
+                                </div>
+                            </div>
+
                         </div>
 
                     </div>

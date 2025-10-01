@@ -12,6 +12,7 @@
         :due-date-preset="$dueDatePreset"
         :due-date-from="$dueDateFrom"
         :due-date-to="$dueDateTo"
+        :priority-filter="$priorityFilter"
     />
     
     <div class="h-[calc(100vh-16rem)]">

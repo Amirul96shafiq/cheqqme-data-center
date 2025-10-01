@@ -81,6 +81,13 @@ return [
         'select_date_range' => 'Atau pilih julat tarikh tersuai',
         'select_due_date' => 'Pilih penapis tarikh akhir',
         'selected_due_date' => 'Tarikh Akhir Terpilih',
+        'priority' => 'Keutamaan',
+        'select_priority' => 'Pilih penapis keutamaan',
+        'priorities_selected' => 'keutamaan dipilih',
+        'selected_priority' => 'Keutamaan Terpilih',
+        'priority_high' => 'Keutamaan Tinggi',
+        'priority_medium' => 'Keutamaan Sederhana',
+        'priority_low' => 'Keutamaan Rendah',
         'quick_filters' => 'Penapis Pantas',
         'custom_range' => 'Julat Tersuai',
         'from_date' => 'Dari Tarikh',
@@ -102,6 +109,10 @@ return [
         'due_date' => [
             'title' => 'Tiada tugasan dijumpai untuk julat tarikh terpilih',
             'description' => 'Cuba sesuaikan penapis tarikh anda atau kosongkan penapis untuk melihat semua tugasan.',
+        ],
+        'priority' => [
+            'title' => 'Tiada tugasan dijumpai untuk keutamaan terpilih',
+            'description' => 'Cuba sesuaikan penapis keutamaan anda atau kosongkan penapis untuk melihat semua tugasan.',
         ],
     ],
 ];

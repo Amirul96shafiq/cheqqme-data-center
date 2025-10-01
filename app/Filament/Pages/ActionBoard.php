@@ -28,6 +28,8 @@ class ActionBoard extends KanbanBoardPage
 
     public ?string $dueDateTo = null;
 
+    public array $priorityFilter = [];
+
     public function getSubject(): Builder
     {
         $query = Task::query()
@@ -746,12 +748,18 @@ class ActionBoard extends KanbanBoardPage
         $this->dispatchUnifiedFilter();
     }
 
+    public function updatedPriorityFilter(): void
+    {
+        $this->dispatchUnifiedFilter();
+    }
+
     public function clearFilter(): void
     {
         $this->assignedToFilter = [];
         $this->dueDatePreset = null;
         $this->dueDateFrom = null;
         $this->dueDateTo = null;
+        $this->priorityFilter = [];
         $this->dispatchUnifiedFilter();
     }
 
@@ -780,7 +788,8 @@ class ActionBoard extends KanbanBoardPage
                 'preset' => $this->dueDatePreset,
                 'from' => $this->dueDateFrom,
                 'to' => $this->dueDateTo,
-            ]
+            ],
+            priority: $this->priorityFilter
         );
     }
 }

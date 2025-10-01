@@ -13,12 +13,15 @@ window.globalKanbanFilter = function () {
         filterOpen: false,
         assignedDropdownOpen: false,
         dueDateDropdownOpen: false,
+        priorityDropdownOpen: false,
         assignedToFilter: [],
         users: {},
         // Due date filter state
         dueDatePreset: null, // 'today' | 'week' | 'month' | 'year' | null
         dueDateFrom: null, // 'YYYY-MM-DD' | null
         dueDateTo: null, // 'YYYY-MM-DD' | null
+        // Priority filter state
+        priorityFilter: [], // ['high', 'medium', 'low']
 
         init() {
             // Get initial data from data attributes
@@ -33,6 +36,9 @@ window.globalKanbanFilter = function () {
                     element.dataset.initialDueDatePreset || null;
                 this.dueDateFrom = element.dataset.initialDueDateFrom || null;
                 this.dueDateTo = element.dataset.initialDueDateTo || null;
+                this.priorityFilter = JSON.parse(
+                    element.dataset.initialPriorityFilter || "[]"
+                );
             }
 
             // Initialize global search state
@@ -47,6 +53,9 @@ window.globalKanbanFilter = function () {
                 from: this.dueDateFrom,
                 to: this.dueDateTo,
             };
+
+            // Initialize global priority filter state
+            window.currentPriorityFilter = this.priorityFilter;
         },
 
         // Search methods
@@ -136,9 +145,39 @@ window.globalKanbanFilter = function () {
             this.dispatchFilterEvent();
         },
 
+        // Priority filter methods
+        handlePriorityFilterChange() {
+            window.currentPriorityFilter = this.priorityFilter;
+            this.dispatchFilterEvent();
+        },
+
+        clearPriorityFilter() {
+            this.priorityFilter = [];
+            window.currentPriorityFilter = [];
+            this.dispatchFilterEvent();
+        },
+
+        removePriority(priority) {
+            this.priorityFilter = this.priorityFilter.filter(
+                (p) => p !== priority
+            );
+            window.currentPriorityFilter = this.priorityFilter;
+            this.dispatchFilterEvent();
+        },
+
+        getPriorityLabel(priority) {
+            const labels = {
+                high: "High",
+                medium: "Medium",
+                low: "Low",
+            };
+            return labels[priority] || priority;
+        },
+
         clearFilters() {
             this.clearAssignedFilter();
             this.clearDueDateFilter();
+            this.clearPriorityFilter();
         },
 
         removeAssignedUser(userId) {
@@ -192,6 +231,7 @@ window.globalKanbanFilter = function () {
                     from: this.dueDateFrom,
                     to: this.dueDateTo,
                 },
+                priority: this.priorityFilter,
             };
 
             const event = new CustomEvent("action-board-unified-filter", {
@@ -214,7 +254,15 @@ window.columnDragDrop = function (columnId) {
             window.addEventListener("action-board-unified-filter", (e) => {
                 const search = e?.detail?.search || "";
                 const assignedTo = e?.detail?.assignedTo || [];
-                this.filterActive = search.length > 0 || assignedTo.length > 0;
+                const dueDate = e?.detail?.dueDate || {};
+                const priority = e?.detail?.priority || [];
+                this.filterActive =
+                    search.length > 0 ||
+                    assignedTo.length > 0 ||
+                    dueDate.preset ||
+                    dueDate.from ||
+                    dueDate.to ||
+                    priority.length > 0;
             });
         },
 
@@ -424,11 +472,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Set global states for Alpine.js
         window.searchActive = search.length > 0;
+        var priority = e?.detail?.priority || [];
         window.filterActive =
             assignedTo.length > 0 ||
             !!dueDate.preset ||
             !!dueDate.from ||
-            !!dueDate.to;
+            !!dueDate.to ||
+            priority.length > 0;
 
         // Wait a bit for DOM to update, then filter cards
         setTimeout(function () {
@@ -603,11 +653,46 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
 
-                    // Card must match BOTH search AND assigned filter (if either is active)
+                    // Check priority filter
+                    let matchesPriority = true;
+                    const priority = e?.detail?.priority || [];
+                    if (priority.length > 0) {
+                        matchesPriority = false;
+
+                        // Look for priority badges on the card
+                        const priorityBadges =
+                            card.querySelectorAll(".ff-badge");
+                        priorityBadges.forEach(function (badge) {
+                            const badgeText = badge.textContent
+                                .toLowerCase()
+                                .trim();
+
+                            // Check if badge contains priority indicators
+                            if (
+                                badgeText.includes("high") &&
+                                priority.includes("high")
+                            ) {
+                                matchesPriority = true;
+                            } else if (
+                                badgeText.includes("medium") &&
+                                priority.includes("medium")
+                            ) {
+                                matchesPriority = true;
+                            } else if (
+                                badgeText.includes("low") &&
+                                priority.includes("low")
+                            ) {
+                                matchesPriority = true;
+                            }
+                        });
+                    }
+
+                    // Card must match ALL active filters
                     const matchesAllFilters =
                         matchesSearch &&
                         matchesAssignedFilter &&
-                        matchesDueDate;
+                        matchesDueDate &&
+                        matchesPriority;
 
                     card.style.display = matchesAllFilters ? "" : "none";
                     if (matchesAllFilters) visible++;
@@ -624,7 +709,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     assignedTo.length > 0 ||
                     !!dueDate.preset ||
                     !!dueDate.from ||
-                    !!dueDate.to;
+                    !!dueDate.to ||
+                    priority.length > 0;
                 if (hasActiveFilters && visible === 0) {
                     col.style.display = "none";
                     // Hide create button when column is hidden
@@ -660,7 +746,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 assignedTo.length > 0 ||
                 !!dueDate.preset ||
                 !!dueDate.from ||
-                !!dueDate.to;
+                !!dueDate.to ||
+                priority.length > 0;
 
             if (hasActiveFilters && totalVisibleCards === 0) {
                 // Update no-results component content based on active filter
@@ -700,6 +787,20 @@ document.addEventListener("DOMContentLoaded", function () {
                         );
                         iconEl.innerHTML =
                             '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path></svg>';
+                    } else if (priority.length > 0) {
+                        // Priority filter is active
+                        headingEl.textContent =
+                            translations.priority?.title ||
+                            "No tasks found for selected priority";
+                        descriptionEl.textContent =
+                            translations.priority?.description ||
+                            "Try adjusting your priority filter or clear the filter to see all tasks.";
+                        iconEl.setAttribute(
+                            "class",
+                            "w-14 h-14 mx-auto text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-500/20 rounded-full p-4"
+                        );
+                        iconEl.innerHTML =
+                            '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
                     } else {
                         // Search filter is active
                         headingEl.textContent =
