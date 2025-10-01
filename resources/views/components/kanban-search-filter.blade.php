@@ -243,12 +243,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                                 
                                                 <div 
                                                     x-show="activeAccordion === 'quick'"
-                                                    x-transition:enter="transition ease-out duration-200"
-                                                    x-transition:enter-start="opacity-0 -translate-y-1"
-                                                    x-transition:enter-end="opacity-100 translate-y-0"
-                                                    x-transition:leave="transition ease-in duration-150"
-                                                    x-transition:leave-start="opacity-100 translate-y-0"
-                                                    x-transition:leave-end="opacity-0 -translate-y-1"
+                                                    x-collapse
                                                     class="p-1 space-y-1"
                                                 >
 
@@ -318,12 +313,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                                 
                                                 <div 
                                                     x-show="activeAccordion === 'custom'"
-                                                    x-transition:enter="transition ease-out duration-200"
-                                                    x-transition:enter-start="opacity-0 -translate-y-1"
-                                                    x-transition:enter-end="opacity-100 translate-y-0"
-                                                    x-transition:leave="transition ease-in duration-150"
-                                                    x-transition:leave-start="opacity-100 translate-y-0"
-                                                    x-transition:leave-end="opacity-0 -translate-y-1"
+                                                    x-collapse
                                                     class="p-1 space-y-3"
                                                 >
                                                     <div>
