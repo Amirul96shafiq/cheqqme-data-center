@@ -63,6 +63,9 @@ return [
     'filter_tasks' => 'Tapis tugasan',
     'filters' => 'Tapisan',
     'reset' => 'Tetapkan Semula Tapisan',
+    'show_all' => 'Papar Semua',
+    'show_less' => 'Papar Sedikit',
+    'more' => 'lagi',
 
     'filter' => [
         'assigned_to' => 'Ditugaskan Kepada',

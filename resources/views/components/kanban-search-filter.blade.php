@@ -167,20 +167,48 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                             </div>
                             
                             <!-- Selected Users Display -->
-                            <div x-show="assignedToFilter.length > 0" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ __('action.filter.selected_users') }}</div>
-                                <div class="flex flex-wrap gap-1">
-                                    <template x-for="userId in assignedToFilter" :key="userId">
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 rounded-md">
+                            <div x-show="assignedToFilter.length > 0" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700" x-data="{ showAllUsers: false }">
+                                <div class="flex items-center justify-between mb-2">
+
+                                    <!-- Selected Users Display -->
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('action.filter.selected_users') }}</div>
+
+                                    <!-- Show All/Less Button -->
+                                    <button 
+                                        x-show="assignedToFilter.length > 4"
+                                        @click="showAllUsers = !showAllUsers"
+                                        type="button"
+                                        class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium"
+                                        x-text="showAllUsers ? '{{ __('action.show_less') }}' : '{{ __('action.show_all') }}'"
+                                    ></button>
+
+                                </div>
+
+                                <!-- Selected Users List -->
+                                <div class="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
+                                    <template x-for="(userId, index) in assignedToFilter" :key="userId">
+                                        <span 
+                                            x-show="showAllUsers || index < 4"
+                                            class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 rounded-md"
+                                        >
                                             <span x-text="getUserById(userId)"></span>
-                                                <button @click="removeAssignedUser(userId)" class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200">
+                                            <button @click="removeAssignedUser(userId)" class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200">
                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                                 </svg>
                                             </button>
                                         </span>
                                     </template>
+
+                                    <!-- More Button -->
+                                    <span 
+                                        x-show="!showAllUsers && assignedToFilter.length > 4"
+                                        class="inline-flex items-center px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md font-medium"
+                                        x-text="'+' + (assignedToFilter.length - 4) + ' {{ __('action.more') }}'"
+                                    ></span>
+                                    
                                 </div>
+
                             </div>
 
                         </div>

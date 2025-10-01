@@ -63,6 +63,9 @@ return [
     'filter_tasks' => 'Filter tasks',
     'filters' => 'Filters',
     'reset' => 'Reset',
+    'show_all' => 'Show all',
+    'show_less' => 'Show less',
+    'more' => 'more',
 
     'filter' => [
         'assigned_to' => 'Assigned To',
