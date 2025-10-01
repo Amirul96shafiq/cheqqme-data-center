@@ -125,7 +125,10 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                                     <span x-show="assignedToFilter.length > 1" x-text="assignedToFilter.length + ' {{ __('action.filter.users_selected') }}'"></span>
                                                 </span>
                                                 <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                                                    <x-heroicon-m-chevron-down class="h-5 w-5 text-gray-400" />
+                                                    <x-heroicon-m-chevron-down 
+                                                        class="h-5 w-5 text-gray-400 transition-transform duration-200" 
+                                                        ::class="{ 'rotate-180': assignedDropdownOpen }"
+                                                    />
                                                 </span>
                                             </button>
                                 
@@ -235,7 +238,10 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                         <span x-show="!dueDatePreset && (dueDateFrom || dueDateTo)" x-text="getDateRangeText()"></span>
                                     </span>
                                     <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                                        <x-heroicon-m-chevron-down class="h-5 w-5 text-gray-400" />
+                                        <x-heroicon-m-chevron-down 
+                                            class="h-5 w-5 text-gray-400 transition-transform duration-200" 
+                                            ::class="{ 'rotate-180': dueDateDropdownOpen }"
+                                        />
                                     </span>
                                 </button>
                                 
