@@ -116,34 +116,23 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                             <div class="relative" @click.outside="assignedDropdownOpen = false">
                                 <button
                                     @click="assignedDropdownOpen = !assignedDropdownOpen"
-                                                type="button"
-                                                class="relative w-full cursor-default rounded-lg bg-white dark:bg-gray-800 py-2 pl-3 pr-10 text-left ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm"
-                                            >
-                                                <span class="block truncate text-gray-900 dark:text-white">
-                                                    <span x-show="assignedToFilter.length === 0" class="text-gray-500 dark:text-gray-400">{{ __('action.filter.select_users') }}</span>
-                                                    <span x-show="assignedToFilter.length === 1" x-text="getUserById(assignedToFilter[0])"></span>
-                                                    <span x-show="assignedToFilter.length > 1" x-text="assignedToFilter.length + ' {{ __('action.filter.users_selected') }}'"></span>
-                                                </span>
-                                                <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                                                    <x-heroicon-m-chevron-down 
-                                                        class="h-5 w-5 text-gray-400 transition-transform duration-200" 
-                                                        ::class="{ 'rotate-180': assignedDropdownOpen }"
-                                                    />
-                                                </span>
-                                            </button>
-                                
-                                <!-- Dropdown Panel -->
-                                <div 
-                                    x-show="assignedDropdownOpen"
-                                    x-transition:enter="transition ease-out duration-200"
-                                    x-transition:enter-start="opacity-0 scale-95"
-                                    x-transition:enter-end="opacity-100 scale-100"
-                                    x-transition:leave="transition ease-in duration-150"
-                                    x-transition:leave-start="opacity-100 scale-100"
-                                    x-transition:leave-end="opacity-0 scale-95"
-                                    class="absolute z-[60] top-full mt-1 w-64 overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 focus:outline-none"
-                                    style="display: none;"
+                                    type="button"
+                                    class="relative w-full cursor-default rounded-lg bg-white dark:bg-gray-800 py-2 pl-3 pr-10 text-left ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm"
                                 >
+                                    <span class="block truncate text-gray-900 dark:text-white">
+                                        <span x-show="assignedToFilter.length === 0" class="text-gray-500 dark:text-gray-400">{{ __('action.filter.select_users') }}</span>
+                                        <span x-show="assignedToFilter.length === 1" x-text="getUserById(assignedToFilter[0])"></span>
+                                        <span x-show="assignedToFilter.length > 1" x-text="assignedToFilter.length + ' {{ __('action.filter.users_selected') }}'"></span>
+                                    </span>
+                                    <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                                        <x-heroicon-m-chevron-down 
+                                            class="h-5 w-5 text-gray-400 transition-transform duration-200" 
+                                            ::class="{ 'rotate-180': assignedDropdownOpen }"
+                                        />
+                                    </span>
+                                </button>
+                                
+                                <x-dropdown-panel is-open="assignedDropdownOpen">
                                     <!-- Users List Section -->
                                     <div class="p-4">
                                         <div class="max-h-48 overflow-y-auto space-y-1">
@@ -166,7 +155,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                             @endforeach
                                         </div>
                                     </div>
-                                </div>
+                                </x-dropdown-panel>
                             </div>
                             
                             <!-- Selected Users Display -->
@@ -245,18 +234,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                     </span>
                                 </button>
                                 
-                                <!-- Dropdown Panel -->
-                                <div 
-                                    x-show="dueDateDropdownOpen"
-                                    x-transition:enter="transition ease-out duration-200"
-                                    x-transition:enter-start="opacity-0 scale-95"
-                                    x-transition:enter-end="opacity-100 scale-100"
-                                    x-transition:leave="transition ease-in duration-150"
-                                    x-transition:leave-start="opacity-100 scale-100"
-                                    x-transition:leave-end="opacity-0 scale-95"
-                                    class="absolute z-[60] top-full mt-1 w-64 overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 focus:outline-none"
-                                    style="display: none;"
-                                >
+                                <x-dropdown-panel is-open="dueDateDropdownOpen">
                                     <!-- Due Date Filter Section -->
                                     <div class="p-4" x-data="{ activeAccordion: null }">
                                         <div class="max-h-48 overflow-y-auto space-y-4">
@@ -378,8 +356,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
 
                                         </div>
                                     </div>
-
-                                </div>
+                                </x-dropdown-panel>
                             </div>
                             
                             <!-- Selected Due Date Display -->
