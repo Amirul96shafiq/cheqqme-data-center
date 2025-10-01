@@ -371,51 +371,63 @@
     
 
 </style>
+
 <!-- Chatbot Widget -->
 <div class="fixed bottom-4 right-4 z-[10]">
-        <!-- Floating Chat Button -->
+
+    <!-- Floating Chat Button -->
     <div class="relative">
+
         <!-- Chat Icon (shown when chat is closed) -->
-        <img
-            id="chat-icon"
-            src="{{ asset('images/chat.png') }}"
-            alt="Chat with Arem"
-            onclick="toggleChatbot()"
-            title="Chat with Arem"
-            class="w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg opacity-80 hover:opacity-100 bounce-bounce"
-            draggable="false"
-        >
+        <x-tooltip position="left" text="Chat with Arem">
+            <img
+                id="chat-icon"
+                src="{{ asset('images/chat.png') }}"
+                alt="Chat with Arem"
+                onclick="toggleChatbot()"
+                class="w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg opacity-80 hover:opacity-100 bounce-bounce"
+                draggable="false"
+            >
+        </x-tooltip>
+
         <!-- Close Icon (shown when chat is open) -->
-        <div
-            id="close-icon"
-            onclick="toggleChatbot()"
-            title="Close chat"
-            class="w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg bg-primary-600 hover:bg-primary-500 text-primary-900 hidden"
-        >
-            <div class="flex items-center justify-center w-full h-full">
-                @svg('heroicon-o-x-mark', 'w-8 h-8')
+        <x-tooltip position="left" text="Close chat">
+            <div
+                id="close-icon"
+                onclick="toggleChatbot()"
+                class="w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg bg-primary-600 hover:bg-primary-500 text-primary-900 hidden"
+            >
+                <div class="flex items-center justify-center w-full h-full">
+                    @svg('heroicon-o-x-mark', 'w-8 h-8')
+                </div>
             </div>
-        </div>
+        </x-tooltip>
+
     </div>
 
     <!-- Chat Interface -->
     <div id="chatbot-interface" class="absolute bottom-16 right-0 w-[380px] h-[680px] bg-white/65 dark:bg-gray-800/65 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden backdrop-blur-sm">
         <div class="flex flex-col h-full w-full">
+
         <!-- Header -->
         <div class="bg-primary-600 text-primary-900 px-3 py-1 rounded-t-xl flex items-center justify-between bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('images/chatbot-bg.png') }}');">
             <div class="flex items-center space-x-3">
+                
                 <!-- Arem AI Logo -->
                 <div class="flex-shrink-0">
                     <img src="{{ asset('images/arem01.png') }}" alt="Arem AI" class="w-20 h-20" draggable="false">
                 </div>
+
                 <!-- Arem AI Text -->
                 <div>
                     <h3 class="font-semibold text-base">Arem AI</h3>
                     <p class="text-sm/4 text-primary-900/90 typing-text" id="subheading-text">{{ __('chatbot.header.subheading01') }}<span class="typing-cursor"></span></p>
                 </div>
             </div>
+
             <!-- Close and Clear Buttons -->
             <div class="flex items-center space-x-1">
+
                 <!-- Clear Conversation Button -->
                 <button
                     onclick="clearConversation()"
@@ -424,6 +436,7 @@
                 >
                     @svg('heroicon-o-trash', 'w-4 h-4')
                 </button>
+
                 <!-- Close Chat Button -->
                 <button
                     onclick="toggleChatbot()"
@@ -432,15 +445,20 @@
                 >
                     @svg('heroicon-o-chevron-down', 'w-4 h-4')
                 </button>
+
             </div>
+
         </div>
+
         <!-- Chat Messages -->
         <div class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-6 space-y-4 bg-gray-50/50 dark:bg-gray-900/50" id="chat-messages" style="min-height: 180px; overflow-y: scroll; overflow-x: hidden;">
-            <!-- Messages will be dynamically loaded here -->
+        <!-- Messages will be dynamically loaded here -->
         </div>
+
         <!-- Input Area -->
         <div class="border-t border-gray-200 dark:border-gray-700 p-5 bg-white dark:bg-gray-800 rounded-b-xl">
             <form onsubmit="sendMessage(event)" class="flex space-x-3" autocomplete="off">
+
                 <!-- Chat Input with Emoji Button Inside -->
                 <div class="flex-1 relative">
                     <input
@@ -452,6 +470,7 @@
                         placeholder="Chat here."
                         class="fi-input w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-white dark:placeholder-gray-400 transition-colors text-sm"
                     >
+
                     <!-- Emoji Button Inside Input -->
                     <button
                         type="button"
@@ -462,7 +481,9 @@
                     >
                         @svg('heroicon-o-face-smile', 'w-5 h-5')
                     </button>
+
                 </div>
+
                 <!-- Send Message Button -->
                 <button
                     type="submit"
@@ -470,9 +491,12 @@
                 >
                     @svg('heroicon-m-paper-airplane', 'w-4 h-4')
                 </button>
+
             </form>
         </div>
+
     </div>
+    
 </div>
 
 <!-- Floating Emoji Picker Container -->
