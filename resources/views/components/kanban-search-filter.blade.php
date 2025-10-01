@@ -223,94 +223,103 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                     class="absolute z-[60] top-full mt-1 w-64 overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 focus:outline-none"
                                     style="display: none;"
                                 >
-                                    <!-- Quick Filters Section -->
+                                    <!-- Due Date Filter Section -->
                                     <div class="p-4">
-                                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
-                                            {{ __('action.filter.quick_filters') }}
-                                        </div>
-                                        
-                                        <div class="space-y-1">
-                                            <!-- Today -->
-                                            <button 
-                                                @click.prevent="toggleDueDatePreset('today')"
-                                                class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150"
-                                                :class="dueDatePreset === 'today' 
-                                                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' 
-                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
-                                            >
-                                                {{ __('action.filter.due_today') }}
-                                            </button>
-                                            
-                                            <!-- This Week -->
-                                            <button 
-                                                @click.prevent="toggleDueDatePreset('week')"
-                                                class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150"
-                                                :class="dueDatePreset === 'week' 
-                                                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' 
-                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
-                                            >
-                                                {{ __('action.filter.due_this_week') }}
-                                            </button>
-                                            
-                                            <!-- This Month -->
-                                            <button 
-                                                @click.prevent="toggleDueDatePreset('month')"
-                                                class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150"
-                                                :class="dueDatePreset === 'month' 
-                                                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' 
-                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
-                                            >
-                                                {{ __('action.filter.due_this_month') }}
-                                            </button>
-                                            
-                                            <!-- This Year -->
-                                            <button 
-                                                @click.prevent="toggleDueDatePreset('year')"
-                                                class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150"
-                                                :class="dueDatePreset === 'year' 
-                                                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' 
-                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
-                                            >
-                                                {{ __('action.filter.due_this_year') }}
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Divider -->
-                                    <div class="border-t border-gray-200 dark:border-gray-700"></div>
-                                    
-                                    <!-- Custom Date Range Section -->
-                                    <div class="p-4">
-                                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
-                                            {{ __('action.filter.custom_range') }}
-                                        </div>
-                                        
-                                        <div class="space-y-3">
+                                        <div class="max-h-48 overflow-y-auto space-y-4">
+
+                                            <!-- Quick Filters -->
                                             <div>
-                                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                                    {{ __('action.filter.from_date') }}
-                                                </label>
-                                                <input 
-                                                    type="date"
-                                                    x-model="dueDateFrom"
-                                                    @change="handleDueDateRangeChange()"
-                                                    class="w-full rounded-lg bg-white dark:bg-gray-800 border-1 border-gray-200 dark:border-gray-700 px-3 py-2 text-sm ring-0 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                                                />
+                                                <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                                                    {{ __('action.filter.quick_filters') }}
+                                                </div>
+                                                <div class="p-1 space-y-1">
+
+                                                    <!-- Today -->
+                                                    <button 
+                                                        @click.prevent="toggleDueDatePreset('today')"
+                                                        class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150"
+                                                        :class="dueDatePreset === 'today' 
+                                                            ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' 
+                                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+                                                    >
+                                                        {{ __('action.filter.due_today') }}
+                                                    </button>
+                                                    
+                                                    <!-- This Week -->
+                                                    <button 
+                                                        @click.prevent="toggleDueDatePreset('week')"
+                                                        class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150"
+                                                        :class="dueDatePreset === 'week' 
+                                                            ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' 
+                                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+                                                    >
+                                                        {{ __('action.filter.due_this_week') }}
+                                                    </button>
+                                                    
+                                                    <!-- This Month -->
+                                                    <button 
+                                                        @click.prevent="toggleDueDatePreset('month')"
+                                                        class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150"
+                                                        :class="dueDatePreset === 'month' 
+                                                            ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' 
+                                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+                                                    >
+                                                        {{ __('action.filter.due_this_month') }}
+                                                    </button>
+                                                    
+                                                    <!-- This Year -->
+                                                    <button 
+                                                        @click.prevent="toggleDueDatePreset('year')"
+                                                        class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150"
+                                                        :class="dueDatePreset === 'year' 
+                                                            ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' 
+                                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+                                                    >
+                                                        {{ __('action.filter.due_this_year') }}
+                                                    </button>
+                                                    
+                                                </div>
                                             </div>
                                             
+                                            <!-- Divider -->
+                                            <div class="border-t border-gray-200 dark:border-gray-700"></div>
+                                            
+                                            <!-- Custom Date Range -->
                                             <div>
-                                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                                    {{ __('action.filter.to_date') }}
-                                                </label>
-                                                <input 
-                                                    type="date"
-                                                    x-model="dueDateTo"
-                                                    @change="handleDueDateRangeChange()"
-                                                    class="w-full rounded-lg bg-white dark:bg-gray-800 border-1 border-gray-200 dark:border-gray-700 px-3 py-2 text-sm ring-0 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                                                />
+                                                <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+                                                    {{ __('action.filter.custom_range') }}
+                                                </div>
+                                                
+                                                <div class="p-1 space-y-3">
+                                                    <div>
+                                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                            {{ __('action.filter.from_date') }}
+                                                        </label>
+                                                        <input 
+                                                            type="date"
+                                                            x-model="dueDateFrom"
+                                                            @change="handleDueDateRangeChange()"
+                                                            class="w-full rounded-lg bg-white dark:bg-gray-800 border-1 border-gray-200 dark:border-gray-700 px-3 py-2 text-sm ring-0 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+                                                        />
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                            {{ __('action.filter.to_date') }}
+                                                        </label>
+                                                        <input 
+                                                            type="date"
+                                                            x-model="dueDateTo"
+                                                            @change="handleDueDateRangeChange()"
+                                                            class="w-full rounded-lg bg-white dark:bg-gray-800 border-1 border-gray-200 dark:border-gray-700 px-3 py-2 text-sm ring-0 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
+
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                             
