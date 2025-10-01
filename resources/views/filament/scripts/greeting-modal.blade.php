@@ -37,9 +37,11 @@ function openGreetingModal(forceOpen = false) {
                         <div class="flex items-center space-x-3">
 
                             <!-- Refresh Weather Button -->
-                            <button onclick="refreshWeatherData()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="{{ __('weather.refresh_weather') }}">
-                                @svg('heroicon-o-arrow-path', 'w-5 h-5')
-                            </button>
+                            <x-tooltip position="right" :text="__('weather.refresh_weather')">
+                                <button onclick="refreshWeatherData()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    @svg('heroicon-o-arrow-path', 'w-5 h-5')
+                                </button>
+                            </x-tooltip>
 
                             <!-- Last Updated Text -->
                             <div class="text-xs text-gray-500 dark:text-gray-400" id="weather-last-updated" data-last-updated-text="{{ __('weather.last_weather_updated') }}">
