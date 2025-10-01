@@ -90,9 +90,24 @@
                             <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 {{ __('login.form.password') }}
                             </label>
-                            <input id="password" type="password" name="password" required
-                                autocomplete="password"
-                                class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
+                            <div class="relative" x-data="{ showPassword: false }">
+                                <input id="password" 
+                                    :type="showPassword ? 'text' : 'password'" 
+                                    name="password" 
+                                    required
+                                    autocomplete="current-password"
+                                    class="w-full p-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
+                                <div class="absolute inset-y-0 right-0 flex items-center">
+                                    <div class="h-full w-px bg-gray-300 dark:bg-gray-700"></div>
+                                    <button type="button" 
+                                        @click="showPassword = !showPassword"
+                                        class="flex items-center px-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none"
+                                        :aria-label="showPassword ? 'Hide password' : 'Show password'">
+                                        <x-heroicon-o-eye x-show="!showPassword" class="h-5 w-5" />
+                                        <x-heroicon-o-eye-slash x-show="showPassword" class="h-5 w-5" />
+                                    </button>
+                                </div>
+                            </div>
                             @error('password')
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
