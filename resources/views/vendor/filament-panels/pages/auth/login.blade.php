@@ -72,13 +72,14 @@
                     <form method="POST" action="{{ route('admin.login') }}" class="space-y-6">
                         @csrf
 
-                        {{-- Email Field --}}
+                        {{-- Username / Email Field --}}
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 {{ __('login.form.email') }}
                             </label>
-                            <input id="email" type="email" name="email" value="{{ old('email') }}"
-                                required autofocus autocomplete="email"
+                            <input id="email" type="text" name="email" value="{{ old('email') }}"
+                                required autofocus autocomplete="username"
+                                placeholder="Enter username or email"
                                 class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
                             @error('email')
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>

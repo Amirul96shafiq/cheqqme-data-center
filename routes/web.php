@@ -121,7 +121,7 @@ Route::get('/admin/login', function () {
 // Admin login route (custom) - POST
 Route::post('/admin/login', function (Illuminate\Http\Request $request) {
     $credentials = $request->validate([
-        'email' => ['required', 'email'],
+        'email' => ['required', 'string'],
         'password' => ['required'],
     ]);
 
