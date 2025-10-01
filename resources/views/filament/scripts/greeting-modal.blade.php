@@ -941,11 +941,16 @@ async function fetchWeatherData(retryCount = 0) {
 
 // Refresh weather data
 async function refreshWeatherData() {
+    const refreshButton = document.querySelector('button[onclick="refreshWeatherData()"]');
+    const originalIcon = refreshButton ? refreshButton.innerHTML : '';
+    
     try {
-        const refreshButton = document.querySelector('button[onclick="refreshWeatherData()"]');
         if (refreshButton) {
             refreshButton.disabled = true;
-            refreshButton.innerHTML = `<x-icons.custom-icon name="refresh" class="w-5 h-5"/>`;
+            // Show loading state with spinning icon
+            refreshButton.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>`;
         }
         
         // Clear cache first
@@ -960,12 +965,13 @@ async function refreshWeatherData() {
         // Fetch fresh data
         await fetchWeatherData();
     } catch (error) {
+        console.error('Error refreshing weather data:', error);
         showWeatherError();
     } finally {
-        const refreshButton = document.querySelector('button[onclick="refreshWeatherData()"]');
         if (refreshButton) {
             refreshButton.disabled = false;
-            refreshButton.innerHTML = `<x-icons.custom-icon name="refresh" class="w-5 h-5" />`;
+            // Restore original icon
+            refreshButton.innerHTML = originalIcon;
         }
     }
 }
