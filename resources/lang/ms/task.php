@@ -8,6 +8,7 @@ return [
         'assign_to' => 'Ditugaskan Kepada',
         'due_date' => 'Tarikh Habis',
         'status' => 'Status',
+        'priority' => 'Keutamaan',
         'description' => 'Peterangan',
         'task_resources' => 'Sumber Tugasan',
         'client' => 'Pelanggan',
@@ -56,6 +57,11 @@ return [
         'toreview' => 'Untuk Semakan',
         'completed' => 'Selesai',
         'archived' => 'Dihapus',
+    ],
+    'priority' => [
+        'low' => 'Rendah',
+        'medium' => 'Sederhana',
+        'high' => 'Tinggi',
     ],
     'edit' => [
         'description_helper' => 'Baki aksara: :count',

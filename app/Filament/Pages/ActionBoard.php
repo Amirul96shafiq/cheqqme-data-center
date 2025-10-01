@@ -223,9 +223,9 @@ class ActionBoard extends KanbanBoardPage
                                                     Forms\Components\Select::make('priority')
                                                         ->label(__('task.form.priority'))
                                                         ->options([
-                                                            'low' => 'Low',
-                                                            'medium' => 'Medium',
-                                                            'high' => 'High',
+                                                            'low' => __('task.priority.low'),
+                                                            'medium' => __('task.priority.medium'),
+                                                            'high' => __('task.priority.high'),
                                                         ])
                                                         ->default('medium'),
                                                 ]),

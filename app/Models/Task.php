@@ -509,17 +509,17 @@ class Task extends Model
      */
     public function getPriorityLowAttribute(): ?string
     {
-        return $this->priority === 'low' ? 'Low' : null;
+        return $this->priority === 'low' ? __('task.priority.low') : null;
     }
 
     public function getPriorityMediumAttribute(): ?string
     {
-        return $this->priority === 'medium' ? 'Medium' : null;
+        return $this->priority === 'medium' ? __('task.priority.medium') : null;
     }
 
     public function getPriorityHighAttribute(): ?string
     {
-        return $this->priority === 'high' ? 'High' : null;
+        return $this->priority === 'high' ? __('task.priority.high') : null;
     }
 
     /**

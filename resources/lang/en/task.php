@@ -8,6 +8,7 @@ return [
         'assign_to' => 'Assign To',
         'due_date' => 'Due Date',
         'status' => 'Status',
+        'priority' => 'Priority',
         'description' => 'Description',
         'task_resources' => 'Task Resources',
         'client' => 'Client',
@@ -56,6 +57,11 @@ return [
         'toreview' => 'To Review',
         'completed' => 'Completed',
         'archived' => 'Archived',
+    ],
+    'priority' => [
+        'low' => 'Low',
+        'medium' => 'Medium',
+        'high' => 'High',
     ],
     'edit' => [
         'description_helper' => 'You have :count characters remaining',
