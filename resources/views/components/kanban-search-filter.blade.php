@@ -224,15 +224,33 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                     style="display: none;"
                                 >
                                     <!-- Due Date Filter Section -->
-                                    <div class="p-4">
+                                    <div class="p-4" x-data="{ activeAccordion: null }">
                                         <div class="max-h-48 overflow-y-auto space-y-4">
-
+ 
                                             <!-- Quick Filters -->
                                             <div>
-                                                <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
-                                                    {{ __('action.filter.quick_filters') }}
-                                                </div>
-                                                <div class="p-1 space-y-1">
+                                                <button 
+                                                    @click="activeAccordion = activeAccordion === 'quick' ? null : 'quick'"
+                                                    type="button"
+                                                    class="w-full flex items-center justify-between text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-150"
+                                                >
+                                                    <span>{{ __('action.filter.quick_filters') }}</span>
+                                                    <x-heroicon-m-chevron-down 
+                                                        class="w-4 h-4 transition-transform duration-200"
+                                                        ::class="{ 'rotate-180': activeAccordion === 'quick' }"
+                                                    />
+                                                </button>
+                                                
+                                                <div 
+                                                    x-show="activeAccordion === 'quick'"
+                                                    x-transition:enter="transition ease-out duration-200"
+                                                    x-transition:enter-start="opacity-0 -translate-y-1"
+                                                    x-transition:enter-end="opacity-100 translate-y-0"
+                                                    x-transition:leave="transition ease-in duration-150"
+                                                    x-transition:leave-start="opacity-100 translate-y-0"
+                                                    x-transition:leave-end="opacity-0 -translate-y-1"
+                                                    class="p-1 space-y-1"
+                                                >
 
                                                     <!-- Today -->
                                                     <button 
@@ -286,11 +304,28 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                             
                                             <!-- Custom Date Range -->
                                             <div>
-                                                <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
-                                                    {{ __('action.filter.custom_range') }}
-                                                </div>
+                                                <button 
+                                                    @click="activeAccordion = activeAccordion === 'custom' ? null : 'custom'"
+                                                    type="button"
+                                                    class="w-full flex items-center justify-between text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-150"
+                                                >
+                                                    <span>{{ __('action.filter.custom_range') }}</span>
+                                                    <x-heroicon-m-chevron-down 
+                                                        class="w-4 h-4 transition-transform duration-200"
+                                                        ::class="{ 'rotate-180': activeAccordion === 'custom' }"
+                                                    />
+                                                </button>
                                                 
-                                                <div class="p-1 space-y-3">
+                                                <div 
+                                                    x-show="activeAccordion === 'custom'"
+                                                    x-transition:enter="transition ease-out duration-200"
+                                                    x-transition:enter-start="opacity-0 -translate-y-1"
+                                                    x-transition:enter-end="opacity-100 translate-y-0"
+                                                    x-transition:leave="transition ease-in duration-150"
+                                                    x-transition:leave-start="opacity-100 translate-y-0"
+                                                    x-transition:leave-end="opacity-0 -translate-y-1"
+                                                    class="p-1 space-y-3"
+                                                >
                                                     <div>
                                                         <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
                                                             {{ __('action.filter.from_date') }}
