@@ -37,7 +37,7 @@ class ActionBoard extends KanbanBoardPage
             }])
             ->withCount('comments') // Add comments_count attribute
             ->select([
-                'id', 'title', 'description', 'status', 'order_column',
+                'id', 'title', 'description', 'status', 'priority', 'order_column',
                 'due_date', 'assigned_to', 'client', 'project', 'document',
                 'important_url', 'attachments', 'extra_information', 'created_at', 'updated_at',
             ])
@@ -68,6 +68,9 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_gray' => '',
                 'due_date_green' => '',
                 'featured_image' => '',
+                'priority_low' => '',
+                'priority_medium' => '',
+                'priority_high' => '',
                 'message_count' => '',
                 'attachment_count' => '',
                 'resource_count' => '',
@@ -81,6 +84,9 @@ class ActionBoard extends KanbanBoardPage
                 'due_date_yellow' => 'yellow',
                 'due_date_gray' => 'gray',
                 'due_date_green' => 'green',
+                'priority_low' => 'blue',
+                'priority_medium' => 'yellow',
+                'priority_high' => 'red',
                 'message_count' => 'gray',
                 'attachment_count' => 'gray',
                 'resource_count' => 'gray',
@@ -212,6 +218,14 @@ class ActionBoard extends KanbanBoardPage
                                                         ])
                                                         ->searchable()
                                                         ->default($defaultStatus),
+                                                    Forms\Components\Select::make('priority')
+                                                        ->label(__('task.form.priority'))
+                                                        ->options([
+                                                            'low' => 'Low',
+                                                            'medium' => 'Medium',
+                                                            'high' => 'High',
+                                                        ])
+                                                        ->default('medium'),
                                                 ]),
                                             Forms\Components\RichEditor::make('description')
                                                 ->label(__('task.form.description'))

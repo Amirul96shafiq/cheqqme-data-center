@@ -25,6 +25,7 @@ class Task extends Model
         'important_url',
         'assigned_to',
         'status',
+        'priority',
         'order_column',
         'due_date',
         'updated_by',
@@ -129,6 +130,9 @@ class Task extends Model
         'due_date_yellow',
         'due_date_green',
         'due_date_gray',
+        'priority_low',
+        'priority_medium',
+        'priority_high',
         'featured_image',
         'message_count',
         'attachment_count',
@@ -497,6 +501,25 @@ class Task extends Model
         } catch (\Throwable $e) {
             return (string) $this->due_date;
         }
+    }
+
+    /**
+     * Priority accessors - only one will return a value based on the task's priority.
+     * This allows static color mapping per attribute in the Kanban config.
+     */
+    public function getPriorityLowAttribute(): ?string
+    {
+        return $this->priority === 'low' ? 'Low' : null;
+    }
+
+    public function getPriorityMediumAttribute(): ?string
+    {
+        return $this->priority === 'medium' ? 'Medium' : null;
+    }
+
+    public function getPriorityHighAttribute(): ?string
+    {
+        return $this->priority === 'high' ? 'High' : null;
     }
 
     /**

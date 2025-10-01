@@ -166,13 +166,23 @@
                 $resourceCountBadge = $attributes['resource_count'];
             }
 
+            // Handle priority badge - only one will have a value based on task priority
+            $priorityBadge = null;
+            if (!empty($attributes['priority_low']['value'])) {
+                $priorityBadge = $attributes['priority_low'];
+            } elseif (!empty($attributes['priority_medium']['value'])) {
+                $priorityBadge = $attributes['priority_medium'];
+            } elseif (!empty($attributes['priority_high']['value'])) {
+                $priorityBadge = $attributes['priority_high'];
+            }
+
             // Remove from the attributes list so they're not rendered twice
-            $filtered = $attributes->except(['assigned_to_username_self', 'assigned_to_username', 'assigned_to_full_username', 'all_assigned_usernames', 'assigned_to_extra_count_self', 'assigned_to_extra_count', 'due_date_red', 'due_date_yellow', 'due_date_gray', 'due_date_green', 'featured_image', 'message_count', 'attachment_count', 'resource_count']);
+            $filtered = $attributes->except(['assigned_to_username_self', 'assigned_to_username', 'assigned_to_full_username', 'all_assigned_usernames', 'assigned_to_extra_count_self', 'assigned_to_extra_count', 'due_date_red', 'due_date_yellow', 'due_date_gray', 'due_date_green', 'featured_image', 'message_count', 'attachment_count', 'resource_count', 'priority_low', 'priority_medium', 'priority_high']);
 
         @endphp
         
-        {{-- Special badges layout: assigned, message/attachment/resource counts, and due date --}}
-        @if($assignedBadge || $extraAssignedBadge || $dueDateBadge || $messageCountBadge || $attachmentCountBadge || $resourceCountBadge)
+        {{-- Special badges layout: assigned, message/attachment/resource counts, priority, and due date --}}
+        @if($assignedBadge || $extraAssignedBadge || $dueDateBadge || $messageCountBadge || $attachmentCountBadge || $resourceCountBadge || $priorityBadge)
             <div class="flex justify-between mt-5 mb-1 gap-2">
                 
                 {{-- Left side: assigned badge and counts --}}
@@ -309,8 +319,8 @@
 
                 </div>
 
-                {{-- Right side: due date badge --}}
-                <div>
+                {{-- Right side: due date and priority badges --}}
+                <div class="flex flex-col gap-1.5 items-end">
                     @if($dueDateBadge)
                         <x-flowforge::card-badge
                             :label="$dueDateBadge['label']"
@@ -321,6 +331,18 @@
                             :badge="$dueDateBadge['badge'] ?? null"
                             :rounded="$dueDateBadge['rounded'] ?? 'md'"
                             :size="$dueDateBadge['size'] ?? 'md'"
+                        />
+                    @endif
+                    @if($priorityBadge)
+                        <x-flowforge::card-badge
+                            :label="$priorityBadge['label']"
+                            :value="$priorityBadge['value']"
+                            :color="$priorityBadge['color'] ?? 'default'"
+                            :icon="$priorityBadge['icon'] ?? null"
+                            :type="$priorityBadge['type'] ?? null"
+                            :badge="$priorityBadge['badge'] ?? null"
+                            :rounded="$priorityBadge['rounded'] ?? 'md'"
+                            :size="$priorityBadge['size'] ?? 'sm'"
                         />
                     @endif
                 </div>

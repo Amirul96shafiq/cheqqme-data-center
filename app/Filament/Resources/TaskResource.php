@@ -113,7 +113,7 @@ return false;
                                                 ->required()
                                                 ->placeholder(__('task.form.title_placeholder'))
                                                 ->columnSpanFull(),
-                                            Forms\Components\Grid::make(2)
+                                            Forms\Components\Grid::make(3)
                                                 ->schema([
                                                     Forms\Components\DatePicker::make('due_date')
                                                         ->label(__('task.form.due_date'))
@@ -130,6 +130,14 @@ return false;
                                                             'archived' => __('task.status.archived'),
                                                         ])
                                                         ->searchable(),
+                                                    Forms\Components\Select::make('priority')
+                                                        ->label(__('task.form.priority'))
+                                                        ->options([
+                                                            'low' => 'Low',
+                                                            'medium' => 'Medium',
+                                                            'high' => 'High',
+                                                        ])
+                                                        ->default('medium'),
                                                 ]),
                                             Forms\Components\RichEditor::make('description')
                                                 ->label(__('task.form.description'))
