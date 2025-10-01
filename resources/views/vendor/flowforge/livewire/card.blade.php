@@ -25,6 +25,7 @@
         $normalizedDueDate = null;
     }
 @endphp
+
 {{-- Card container with interactive/non-interactive classes and sortable attributes --}}
 <div
     @class([
@@ -59,17 +60,21 @@
     @if(method_exists($this, 'isTaskHighlighted') && $this->isTaskHighlighted((object) ['id' => $record['id']])) data-highlighted="true" @endif
 >
     <div class="ff-card__content">
+        
         {{-- Featured image section --}}
         @if(!empty($record['attributes']['featured_image']['value']))
             <div class="ff-card__featured-image -mx-4 -mt-4 mb-3 relative">
+                
                 {{-- Share button for cards with featured image --}}
                 <button
-                    class="ff-card__share-btn absolute top-2 right-2 z-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-md px-2 py-[3px] shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700"
+                    class="ff-card__share-btn absolute top-[15px] right-[15px] z-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-md px-2 py-[3px] shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700"
                     onclick="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
                     title="Share Task"
                 >
                     @svg('heroicon-o-share', 'w-3 h-3 text-gray-600 dark:text-gray-300')
                 </button>
+
+                {{-- Featured image --}}
                 <div class="block cursor-pointer"
                      onclick="window.location.href = '{{ \App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $record['id']]) }}'">
                     <img src="{{ $record['attributes']['featured_image']['value'] }}"
@@ -80,13 +85,18 @@
                          fetchpriority="low"
                          sizes="(max-width: 768px) 100vw, 280px">
                 </div>
+
             </div>
         @endif
 
         {{-- If no featured image, show card title and share button section --}}
         @if(empty($record['attributes']['featured_image']['value']))
             <div class="flex justify-between items-center mb-2">
+                
+                {{-- Card title --}}
                 <h4 class="ff-card__title m-0">{{ Str::limit($record['title'], 60) }}</h4>
+
+                {{-- Share button --}}
                 <span
                     class="ff-card__badge inline-flex items-center px-2 py-[3px] rounded-md bg-white/90 dark:bg-gray-800/90 hover:bg-white  dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 hover:border-gray-300 text-xs cursor-pointer"
                     onclick="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
@@ -94,10 +104,13 @@
                 >
                     @svg('heroicon-o-share', 'w-3 h-3 text-gray-600 dark:text-gray-300')
                 </span>
+
             </div>
         @else
+
             {{-- Card title --}}
             <h4 class="ff-card__title">{{ Str::limit($record['title'], 60) }}</h4>
+
         @endif
 
         {{-- Card description --}}
@@ -108,6 +121,7 @@
         {{-- Process and filter special badges --}}
         @php
             $attributes = collect($record['attributes'] ?? []);
+
             // Only show one assigned_to badge: prefer _self, else _username
             $assignedBadge = null;
             if (!empty($attributes['assigned_to_username_self']['value'])) {
@@ -133,33 +147,41 @@
             } elseif (!empty($attributes['due_date_green']['value'])) {
                 $dueDateBadge = $attributes['due_date_green'];
             }
+
             // Handle message count badge
             $messageCountBadge = null;
             if (!empty($attributes['message_count']['value']) && $attributes['message_count']['value'] > 0) {
                 $messageCountBadge = $attributes['message_count'];
             }
+
             // Handle attachment count badge
             $attachmentCountBadge = null;
             if (!empty($attributes['attachment_count']['value']) && $attributes['attachment_count']['value'] > 0) {
                 $attachmentCountBadge = $attributes['attachment_count'];
             }
+
             // Handle resource count badge
             $resourceCountBadge = null;
             if (!empty($attributes['resource_count']['value']) && $attributes['resource_count']['value'] > 0) {
                 $resourceCountBadge = $attributes['resource_count'];
             }
+
             // Remove from the attributes list so they're not rendered twice
             $filtered = $attributes->except(['assigned_to_username_self', 'assigned_to_username', 'assigned_to_full_username', 'all_assigned_usernames', 'assigned_to_extra_count_self', 'assigned_to_extra_count', 'due_date_red', 'due_date_yellow', 'due_date_gray', 'due_date_green', 'featured_image', 'message_count', 'attachment_count', 'resource_count']);
+
         @endphp
         
         {{-- Special badges layout: assigned, message/attachment/resource counts, and due date --}}
         @if($assignedBadge || $extraAssignedBadge || $dueDateBadge || $messageCountBadge || $attachmentCountBadge || $resourceCountBadge)
             <div class="flex justify-between mt-5 mb-1 gap-2">
+                
                 {{-- Left side: assigned badge and counts --}}
                 <div class="flex flex-col gap-1">
+                    
                     {{-- Assigned badge --}}
                     @if($assignedBadge)
                         @php
+                            
                             // Get assigned user IDs for filtering
                             $assignedUserIds = [];
                             
@@ -203,7 +225,10 @@
                                         ->pluck('id')->toArray();
                                 }
                             }
+
                         @endphp
+                        
+                        {{-- Assigned badge --}}
                         <div class="w-fit flex gap-1 items-center" 
                              data-assigned-user-ids="{{ implode(',', $assignedUserIds) }}">
                             <x-flowforge::card-badge
@@ -231,7 +256,9 @@
                                 />
                             @endif
                         </div>
+
                     @endif
+
                     {{-- Message, attachment, and resource count badges --}}
                     @if($messageCountBadge || $attachmentCountBadge || $resourceCountBadge)
                         <div class="flex gap-1">
@@ -279,7 +306,9 @@
                             @endif
                         </div>
                     @endif
+
                 </div>
+
                 {{-- Right side: due date badge --}}
                 <div>
                     @if($dueDateBadge)
@@ -295,6 +324,7 @@
                         />
                     @endif
                 </div>
+
             </div>
         @endif
         
@@ -317,6 +347,7 @@
                 @endforeach
             </div>
         @endif
+
     </div>
 </div>
 
