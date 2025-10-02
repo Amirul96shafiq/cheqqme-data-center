@@ -4,6 +4,7 @@
  */
 
 function openGoogleSignIn() {
+    
     // Open Google OAuth in a popup window
     const popup = window.open(
         "/auth/google",
@@ -23,16 +24,19 @@ function openGoogleSignIn() {
 
     // Listen for messages from the popup
     const messageListener = function (event) {
+        
         // Verify origin for security
         if (event.origin !== window.location.origin) {
             return;
         }
 
         if (event.data.type === "GOOGLE_SIGNIN_SUCCESS") {
+            
             // Clear timeout and cleanup
             if (messageListener.timeout) {
                 clearTimeout(messageListener.timeout);
             }
+
             window.removeEventListener("message", messageListener);
             showGoogleSignInSuccess(event.data.message);
 
@@ -40,10 +44,12 @@ function openGoogleSignIn() {
                 window.location.href = event.data.redirect_url;
             }, 1000);
         } else if (event.data.type === "GOOGLE_SIGNIN_ERROR") {
+            
             // Clear timeout and cleanup
             if (messageListener.timeout) {
                 clearTimeout(messageListener.timeout);
             }
+
             window.removeEventListener("message", messageListener);
             showGoogleSignInError(event.data.message);
         }
@@ -63,29 +69,38 @@ function openGoogleSignIn() {
 }
 
 function showGoogleSignInError(message) {
+    
     // Use custom notification system if available, fallback to basic notification
     if (typeof showErrorNotification === "function") {
         showErrorNotification(message);
     } else if (typeof showNotification === "function") {
         showNotification("error", message);
     } else {
+        
         // Fallback to basic notification
         showBasicNotification(message, "error");
+
     }
+
 }
 
 function showGoogleSignInSuccess(message) {
+    
     // Use custom notification system if available, fallback to basic notification
     if (typeof showSuccessNotification === "function") {
         showSuccessNotification(message);
     } else if (typeof showNotification === "function") {
         showNotification("success", message);
     } else {
+        
         // Fallback to basic notification
         showBasicNotification(message, "success");
+
     }
+
 }
 
+// Show basic notification
 function showBasicNotification(message, type) {
     const notification = document.createElement("div");
     const bgColor = type === "error" ? "bg-red-500" : "bg-green-500";
