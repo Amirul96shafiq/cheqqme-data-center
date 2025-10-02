@@ -256,6 +256,21 @@
                                     @if($this->replyingToId === $comment->id)
                                         <div class="mt-4 space-y-2">
                                             <div class="fi-form reply-form" data-reply-form="true">{{ $this->replyForm }}</div>
+                                            @error('replyText') 
+                                                <p class="text-xs text-danger-600" 
+                                                   wire:key="error-replyText-{{ $comment->id }}-{{ time() }}"
+                                                   x-data="{ show: true }" 
+                                                   x-show="show" 
+                                                   x-init="
+                                                       setTimeout(() => show = false, 3000);
+                                                       $wire.on('reply-added', () => show = false);
+                                                   "
+                                                   x-transition:leave="transition ease-in duration-300"
+                                                   x-transition:leave-start="opacity-100"
+                                                   x-transition:leave-end="opacity-0">
+                                                   {{ $message }}
+                                                </p> 
+                                            @enderror
                                             <div class="flex items-center gap-2">
                                                 <!-- Submit Reply button -->
                                                 <button wire:click="addReply" 
