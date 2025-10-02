@@ -83,7 +83,7 @@
                             </label>
                             <input id="email" type="email" name="email" value="{{ old('email') }}"
                                 required autofocus autocomplete="email"
-                                class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
+                                class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-1 focus:outline-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
                         </div>
 
                         {{-- Submit Button --}}

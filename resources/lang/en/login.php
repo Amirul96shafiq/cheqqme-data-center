@@ -15,6 +15,7 @@ return [
         'lightTheme' => 'Light Theme',
         'darkTheme' => 'Dark Theme',
         'systemTheme' => 'System Theme',
+        'languageSwitcher' => 'Change language',
     ],
 
     'form' => [

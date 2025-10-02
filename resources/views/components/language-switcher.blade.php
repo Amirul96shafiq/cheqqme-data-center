@@ -1,6 +1,7 @@
 {{-- Language Switcher Component --}}
 <div class="flex justify-center">
     <div x-data="{ open: false }" class="relative">
+        
         <!-- Dropdown -->
         <div x-show="open" @click.away="open = false"
             role="menu"
@@ -37,13 +38,15 @@
         </div>
 
         <!-- Toggle -->
-        <button @click="open = !open" 
-                type="button"
-                aria-label="Change language"
-                aria-expanded="false"
-                aria-haspopup="true"
-                class="flex items-center justify-center w-10 h-10 language-switch-trigger text-primary-600 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 hover:border-gray-300/50 dark:hover:border-gray-600/50 rounded-lg transition font-semibold">
-              {{ strtoupper(app()->getLocale()) }}
-        </button>
+        <x-tooltip position="left" :text="__('login.tooltips.languageSwitcher')">
+            <button @click="open = !open" 
+                    type="button"
+                    aria-label="Change language"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="flex items-center justify-center w-10 h-10 language-switch-trigger text-primary-600 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 hover:border-gray-300/50 dark:hover:border-gray-600/50 rounded-lg transition font-semibold">
+                {{ strtoupper(app()->getLocale()) }}
+            </button>
+        </x-tooltip>
     </div>
 </div>

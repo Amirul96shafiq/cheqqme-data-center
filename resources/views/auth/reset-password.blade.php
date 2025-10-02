@@ -93,7 +93,7 @@
                             </label>
                             <div class="relative">
                                 <input id="password" type="password" name="password" required autofocus
-                                    class="w-full p-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
+                                    class="w-full p-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-1 focus:outline-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
                                 <button type="button" onclick="togglePassword('password')"
                                     class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                                     <x-heroicon-o-eye-slash id="password-eye-slash" class="h-5 w-5" />
@@ -109,7 +109,7 @@
                             </label>
                             <div class="relative">
                                 <input id="password_confirmation" type="password" name="password_confirmation" required
-                                    class="w-full p-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
+                                    class="w-full p-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-1 focus:outline-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
                                 <button type="button" onclick="togglePassword('password_confirmation')"
                                     class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                                     <x-heroicon-o-eye-slash id="password_confirmation-eye-slash" class="h-5 w-5" />

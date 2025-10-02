@@ -15,6 +15,7 @@ return [
         'lightTheme' => 'Tema Terang',
         'darkTheme' => 'Tema Gelap',
         'systemTheme' => 'Tema Sistem',
+        'languageSwitcher' => 'Tukar bahasa',
     ],
 
     'form' => [
