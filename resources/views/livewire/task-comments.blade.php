@@ -2603,7 +2603,7 @@
                 return;
             }
             
-            console.log('Loading Livewire emoji reactions for comments:', commentIds);
+            // console.log('Loading Livewire emoji reactions for comments:', commentIds);
             
             // Send batch request to get emoji reactions
             const csrfToken = document.querySelector('[data-csrf-token]')?.getAttribute('data-csrf-token') || 
@@ -2623,7 +2623,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('Loaded Livewire emoji reactions:', data.reactions);
+                    // console.log('Loaded Livewire emoji reactions:', data.reactions);
                     
                     // Update UI for each comment with an emoji reaction
                     Object.keys(data.reactions).forEach(commentId => {

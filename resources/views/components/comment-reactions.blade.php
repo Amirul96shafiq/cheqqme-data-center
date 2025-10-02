@@ -53,44 +53,16 @@ function commentReactions() {
                 this.removeOrUpdateReaction(emoji, count);
             }
             
-            // Force UI update
-            this.$nextTick(() => {
-                this.updateReactionDisplay();
-            });
+            // No need to force UI update - optimistic updates handle this
+            // this.$nextTick(() => {
+            //     this.updateReactionDisplay();
+            // });
         },
 
         async addReaction(emoji) {
-            try {
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                
-                const response = await fetch('/api/comment-reactions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': csrfToken || ''
-                    },
-                    body: JSON.stringify({
-                        comment_id: this.commentId,
-                        emoji: emoji
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    if (data.data.action === 'added') {
-                        this.addOrUpdateReaction(emoji, data.data.reaction_count);
-                    } else if (data.data.action === 'removed') {
-                        this.removeOrUpdateReaction(emoji, data.data.reaction_count);
-                    }
-                    
-                    this.updateReactionDisplay();
-                }
-            } catch (error) {
-                console.error('Failed to add reaction:', error);
-            }
+            // This method is now handled by the emoji picker component
+            // with optimistic updates for better performance
+            console.log('addReaction called from comment-reactions - this should be handled by emoji picker');
         },
 
         addOrUpdateReaction(emoji, count, reactionData = null) {
@@ -146,6 +118,8 @@ function commentReactions() {
         },
 
         async updateReactionDisplay() {
+            // This method is now only used for error recovery
+            // Optimistic updates handle the normal flow
             try {
                 const response = await fetch(`/api/comments/${this.commentId}/reactions`, {
                     headers: {

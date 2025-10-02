@@ -2,14 +2,14 @@
     <!-- Emoji Picker Trigger Button -->
     <button 
         type="button"
-        class="{{ $triggerClass }} inline-flex items-center justify-center w-8 h-8 rounded-full text-transition-colors duration-200"
+        class="{{ $triggerClass }} inline-flex items-center justify-center w-8 h-8 rounded-full text-transition-colors duration-100"
         @click="toggle()"
         @keydown.enter.prevent="toggle()"
         @keydown.space.prevent="toggle()"
         :aria-expanded="open"
         aria-label="{{ __('comments.emoji_picker.add_reaction') }}"
     >
-        <x-heroicon-o-face-smile class="w-4 h-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200" />
+        <x-heroicon-o-face-smile class="w-4 h-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-100" />
     </button>
 
     <!-- Emoji Picker Dropdown -->
@@ -18,7 +18,7 @@
         x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0 scale-95"
         x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave="transition ease-in duration-75"
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
         @keydown.escape.window="close()"
@@ -34,7 +34,7 @@
             <button 
                 type="button" 
                 @click="close()"
-                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors duration-200"
+                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors duration-100"
                 aria-label="{{ __('comments.emoji_picker.close') }}"
             >
                 <x-heroicon-o-x-mark class="w-4 h-4" />
@@ -91,7 +91,7 @@
                 <template x-for="emojiItem in filteredEmojis" :key="emojiItem.emoji">
                     <button
                         type="button"
-                        class="emoji-button w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-2xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        class="emoji-button w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-100 text-2xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                         :data-emoji="emojiItem.emoji"
                         @click="addReaction(emojiItem.emoji)"
                         :class="{ 'bg-primary-100 dark:bg-primary-900': userReactions.includes(emojiItem.emoji) }"
@@ -335,6 +335,12 @@ function emojiPicker(commentId) {
 
             this.loading = true;
             
+            // Optimistic UI update - immediately update the UI
+            this.updateReactionOptimistically(emoji);
+            
+            // Close the picker immediately for instant feedback
+            this.close();
+            
             try {
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
                 
@@ -362,7 +368,10 @@ function emojiPicker(commentId) {
                         this.userReactions = this.userReactions.filter(e => e !== emoji);
                     }
                     
-                    // Refresh the reactions display
+                    // Update with actual server response
+                    this.updateReactionWithServerData(emoji, data.data);
+                    
+                    // Dispatch event to parent component
                     this.$dispatch('reaction-updated', {
                         commentId: this.commentId,
                         emoji: emoji,
@@ -382,24 +391,100 @@ function emojiPicker(commentId) {
                         }
                     }));
                     
-                    // Force refresh the reactions display directly
-                    this.refreshReactionsDisplay();
-                    
-                    // Close the picker after successfully adding/removing a reaction
-                    this.close();
-                    
-                    // Also try a simple page refresh as fallback (commented out for now)
-                    // setTimeout(() => { location.reload(); }, 1000);
+                    // Picker already closed for instant feedback
                 } else {
                     console.error('API Error:', data);
+                    // Revert optimistic update on error
+                    this.revertOptimisticUpdate(emoji);
                 }
             } catch (error) {
                 console.error('Failed to add reaction:', error);
+                // Revert optimistic update on error
+                this.revertOptimisticUpdate(emoji);
             } finally {
                 this.loading = false;
             }
         },
 
+        updateReactionOptimistically(emoji) {
+            // Find existing reaction button for this emoji
+            const existingButton = document.querySelector(`[data-comment-id="${this.commentId}"] .reaction-button[data-emoji="${emoji}"]`);
+            
+            if (existingButton) {
+                // Toggle existing reaction
+                const currentCount = parseInt(existingButton.getAttribute('data-count'));
+                const isUserReacted = existingButton.classList.contains('bg-primary-100/10');
+                
+                if (isUserReacted) {
+                    // Remove reaction
+                    const newCount = currentCount - 1;
+                    if (newCount === 0) {
+                        existingButton.remove();
+                    } else {
+                        existingButton.setAttribute('data-count', newCount);
+                        existingButton.querySelector('.text-xs').textContent = newCount;
+                        existingButton.className = existingButton.className.replace('bg-primary-100/10 text-primary-700 border border-primary-200 dark:bg-primary-900/10 dark:text-primary-300 dark:border-primary-700', 'bg-gray-100/10 text-gray-700 border border-gray-200 dark:bg-gray-700/10 dark:text-gray-300 dark:border-gray-600');
+                    }
+                } else {
+                    // Add reaction
+                    const newCount = currentCount + 1;
+                    existingButton.setAttribute('data-count', newCount);
+                    existingButton.querySelector('.text-xs').textContent = newCount;
+                    existingButton.className = existingButton.className.replace('bg-gray-100/10 text-gray-700 border border-gray-200 dark:bg-gray-700/10 dark:text-gray-300 dark:border-gray-600', 'bg-primary-100/10 text-primary-700 border border-primary-200 dark:bg-primary-900/10 dark:text-primary-300 dark:border-primary-700');
+                }
+            } else {
+                // Create new reaction button
+                const reactionsContainer = document.querySelector(`[data-comment-id="${this.commentId}"] .comment-reactions`);
+                if (reactionsContainer) {
+                    const newButton = this.createOptimisticReactionButton(emoji, 1);
+                    const emojiPicker = reactionsContainer.querySelector('.emoji-picker-trigger').parentElement;
+                    emojiPicker.parentElement.insertBefore(newButton, emojiPicker.nextSibling);
+                }
+            }
+        },
+
+        updateReactionWithServerData(emoji, serverData) {
+            // Update the reaction with actual server data
+            const existingButton = document.querySelector(`[data-comment-id="${this.commentId}"] .reaction-button[data-emoji="${emoji}"]`);
+            
+            if (serverData.action === 'removed' && serverData.reaction_count === 0) {
+                // Remove button if count is 0
+                if (existingButton) {
+                    existingButton.remove();
+                }
+            } else if (existingButton) {
+                // Update count and styling
+                existingButton.setAttribute('data-count', serverData.reaction_count);
+                existingButton.querySelector('.text-xs').textContent = serverData.reaction_count;
+                
+                if (serverData.action === 'added') {
+                    existingButton.className = existingButton.className.replace('bg-gray-100/10 text-gray-700 border border-gray-200 dark:bg-gray-700/10 dark:text-gray-300 dark:border-gray-600', 'bg-primary-100/10 text-primary-700 border border-primary-200 dark:bg-primary-900/10 dark:text-primary-300 dark:border-primary-700');
+                } else {
+                    existingButton.className = existingButton.className.replace('bg-primary-100/10 text-primary-700 border border-primary-200 dark:bg-primary-900/10 dark:text-primary-300 dark:border-primary-700', 'bg-gray-100/10 text-gray-700 border border-gray-200 dark:bg-gray-700/10 dark:text-gray-300 dark:border-gray-600');
+                }
+            }
+        },
+
+        revertOptimisticUpdate(emoji) {
+            // Revert the optimistic update by refreshing from server
+            this.refreshReactionsDisplay();
+        },
+
+        createOptimisticReactionButton(emoji, count) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'reaction-button inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-sm transition-colors duration-200 bg-primary-100/10 text-primary-700 border border-primary-200 dark:bg-primary-900/10 dark:text-primary-300 dark:border-primary-700 cursor-default';
+            button.setAttribute('data-emoji', emoji);
+            button.setAttribute('data-count', count);
+            button.setAttribute('title', 'You (just now)');
+            
+            button.innerHTML = `
+                <span class="text-sm">${emoji}</span>
+                <span class="text-xs font-medium">${count}</span>
+            `;
+            
+            return button;
+        },
 
         async refreshReactionsDisplay() {
             // Use the global function as a fallback
