@@ -12,20 +12,6 @@
         <x-heroicon-o-face-smile class="w-4 h-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200" />
     </button>
 
-    <!-- Overlay Background -->
-    <div 
-        x-show="open"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        @click="close()"
-        class="fixed inset-0 bg-black bg-opacity-50 z-[9998]"
-        style="display: none;"
-    ></div>
-
     <!-- Emoji Picker Dropdown -->
     <div 
         x-show="open"
@@ -36,6 +22,7 @@
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
         @keydown.escape.window="close()"
+        @click.outside="close()"
         x-ref="emojiPicker"
         class="fixed w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-[9999]"
         style="display: none;"
@@ -77,6 +64,27 @@
             </div>
         </div>
 
+        <!-- Recent Emojis Section -->
+        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700" x-show="!searchQuery && recentEmojis.length > 0">
+            <div class="mb-2">
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('comments.emoji_picker.recent') }}</p>
+            </div>
+            <div class="flex gap-2 flex-wrap justify-center">
+                <template x-for="emoji in recentEmojis.slice(0, 6)" :key="emoji">
+                    <button
+                        type="button"
+                        class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        :data-emoji="emoji"
+                        @click="addReaction(emoji)"
+                        :class="{ 'bg-primary-100 dark:bg-primary-900': userReactions.includes(emoji) }"
+                        :title="`Recently used: ${emoji}`"
+                    >
+                        <span x-text="emoji"></span>
+                    </button>
+                </template>
+            </div>
+        </div>
+
         <!-- Emoji Grid -->
         <div class="p-4">
             <div class="grid grid-cols-6 gap-3">
@@ -102,30 +110,6 @@
                     >
                         {{ __('comments.emoji_picker.clear_search') }}
                     </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer with Recent Emojis -->
-        <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-            <div class="mb-2">
-                <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('comments.emoji_picker.recent') }}</p>
-            </div>
-            <div class="flex gap-2 flex-wrap">
-                <template x-for="emoji in recentEmojis.slice(0, 8)" :key="emoji">
-                    <button
-                        type="button"
-                        class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        :data-emoji="emoji"
-                        @click="addReaction(emoji)"
-                        :class="{ 'bg-primary-100 dark:bg-primary-900': userReactions.includes(emoji) }"
-                        :title="`Recently used: ${emoji}`"
-                    >
-                        <span x-text="emoji"></span>
-                    </button>
-                </template>
-                <div x-show="recentEmojis.length === 0" class="text-xs text-gray-400 dark:text-gray-500 italic">
-                    {{ __('comments.emoji_picker.no_recent_emojis') }}
                 </div>
             </div>
         </div>
