@@ -11,7 +11,7 @@ class ImageOptimizationService
     /**
      * Generate optimized thumbnail for Kanban card display
      */
-    public function generateKanbanThumbnail(string $imagePath, int $width = 400, int $height = 128): ?string
+    public function generateKanbanThumbnail(string $imagePath, int $width = 800, ?int $height = null): ?string
     {
         try {
             if (! Storage::disk('public')->exists($imagePath)) {
@@ -30,9 +30,16 @@ class ImageOptimizationService
 
             // Generate thumbnail with proper aspect ratio and higher quality
             $manager = new ImageManager(new Driver);
-            $image = $manager->read($fullPath)
-                ->scaleDown($width, $height) // Preserve aspect ratio, no cropping
-                ->toJpeg(95); // Higher quality for better clarity
+            $image = $manager->read($fullPath);
+
+            // If height is not specified, scale based on width only to preserve aspect ratio
+            if ($height === null) {
+                $image = $image->scaleDown($width); // Scale to fit width, auto height
+            } else {
+                $image = $image->scaleDown($width, $height); // Scale to fit both dimensions
+            }
+
+            $image = $image->toJpeg(95); // Higher quality for better clarity
 
             Storage::disk('public')->put($thumbnailPath, $image);
 
