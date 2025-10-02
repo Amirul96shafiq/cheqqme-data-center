@@ -99,7 +99,7 @@ class HeroSlider {
     updateSlider(direction = null) {
         // Prevent overlapping animations
         if (this.isAnimating) {
-            console.log("Animation already in progress, ignoring request");
+            // console.log("Animation already in progress, ignoring request");
             return;
         }
 
@@ -168,7 +168,7 @@ class HeroSlider {
                 );
                 // Reset animation state to allow next animation
                 this.isAnimating = false;
-                console.log("Animation completed, ready for next transition");
+                // console.log("Animation completed, ready for next transition");
 
                 // Reset and start progress bar for current slide immediately
                 this.resetProgressBars();
@@ -292,7 +292,7 @@ class HeroSlider {
     processQueue() {
         if (this.animationQueue.length > 0 && this.canAnimate()) {
             const nextAction = this.animationQueue.shift();
-            console.log("Processing queued animation:", nextAction.type);
+            // console.log("Processing queued animation:", nextAction.type);
 
             switch (nextAction.type) {
                 case "previous":
@@ -314,18 +314,18 @@ class HeroSlider {
     queueAnimation(type, slideIndex = null) {
         // Check if queue is full
         if (this.isQueueFull()) {
-            console.log("Queue is full, ignoring animation request:", type);
+            // console.log("Queue is full, ignoring animation request:", type);
             this.showQueueFullFeedback();
             return false;
         }
 
         this.animationQueue.push({ type, slideIndex });
-        console.log(
-            "Queued animation:",
-            type,
-            "Queue length:",
-            this.animationQueue.length
-        );
+        // console.log(
+        //     "Queued animation:",
+        //     type,
+        //     "Queue length:",
+        //     this.animationQueue.length
+        // );
         this.processQueue();
         return true;
     }
@@ -338,10 +338,10 @@ class HeroSlider {
         const timeSinceLastClick = now - this.lastClickTime;
 
         if (timeSinceLastClick < this.clickDebounceDelay) {
-            console.log(
-                "Click too rapid, ignoring. Time since last click:",
-                timeSinceLastClick + "ms"
-            );
+            // console.log(
+            //     "Click too rapid, ignoring. Time since last click:",
+            //     timeSinceLastClick + "ms"
+            // );
             return true;
         }
 
@@ -362,7 +362,7 @@ class HeroSlider {
     clearQueue() {
         const clearedCount = this.animationQueue.length;
         this.animationQueue = [];
-        console.log("Cleared", clearedCount, "queued animations");
+        // console.log("Cleared", clearedCount, "queued animations");
     }
 
     /**
@@ -384,7 +384,7 @@ class HeroSlider {
             }
         });
 
-        console.log("Queue full - buttons temporarily disabled");
+        // console.log("Queue full - buttons temporarily disabled");
     }
 
     /**
@@ -397,10 +397,10 @@ class HeroSlider {
         }
 
         if (!this.canAnimate()) {
-            console.log("Cannot animate, queuing request");
+            // console.log("Cannot animate, queuing request");
             const queued = this.queueAnimation("goto", slideIndex);
             if (!queued) {
-                console.log("Queue full, request ignored");
+                // console.log("Queue full, request ignored");
             }
             return;
         }
@@ -423,10 +423,10 @@ class HeroSlider {
         }
 
         if (!this.canAnimate()) {
-            console.log("Cannot animate, queuing request");
+            // console.log("Cannot animate, queuing request");
             const queued = this.queueAnimation("previous");
             if (!queued) {
-                console.log("Queue full, request ignored");
+                // console.log("Queue full, request ignored");
             }
             return;
         }
@@ -452,10 +452,10 @@ class HeroSlider {
         }
 
         if (!this.canAnimate()) {
-            console.log("Cannot animate, queuing request");
+            // console.log("Cannot animate, queuing request");
             const queued = this.queueAnimation("next");
             if (!queued) {
-                console.log("Queue full, request ignored");
+                // console.log("Queue full, request ignored");
             }
             return;
         }
@@ -489,9 +489,9 @@ class HeroSlider {
             if (this.canAnimate() && !this.isPaused) {
                 this.nextSlide(true); // Pass true to indicate this is auto-advance
             } else {
-                console.log(
-                    "Skipping auto-advance, animation in progress or paused"
-                );
+                // console.log(
+                //     "Skipping auto-advance, animation in progress or paused"
+                // );
             }
         }, this.autoAdvanceDuration);
     }
@@ -525,7 +525,7 @@ class HeroSlider {
         this.isPaused = true;
         this.stopAutoAdvance();
         this.updatePausePlayButton();
-        console.log("Auto-advance paused");
+        // console.log("Auto-advance paused");
     }
 
     /**
@@ -536,7 +536,7 @@ class HeroSlider {
         this.startAutoAdvance();
         this.startProgressBar();
         this.updatePausePlayButton();
-        console.log("Auto-advance resumed");
+        // console.log("Auto-advance resumed");
     }
 
     /**
