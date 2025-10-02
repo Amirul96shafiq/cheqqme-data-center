@@ -3,6 +3,11 @@
         $reactions = $getReactions();
     @endphp
 
+    <!-- Emoji Picker - Always positioned first (left side) -->
+    @if(!$comment->isDeleted())
+        <x-emoji-picker :comment-id="$comment->id" trigger-class="emoji-picker-trigger" />
+    @endif
+
     @if($reactions->isNotEmpty())
         @foreach($reactions as $reaction)
             <button
@@ -16,11 +21,6 @@
                 <span class="text-xs font-medium">{{ $reaction['count'] }}</span>
             </button>
         @endforeach
-    @endif
-
-    <!-- Emoji Picker -->
-    @if(!$comment->isDeleted())
-        <x-emoji-picker :comment-id="$comment->id" trigger-class="emoji-picker-trigger" />
     @endif
 </div>
 

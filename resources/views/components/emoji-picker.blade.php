@@ -455,12 +455,12 @@ function emojiPicker(commentId) {
             const existingReactions = container.querySelectorAll('.reaction-button');
             existingReactions.forEach(btn => btn.remove());
             
-            // Add new reactions
+            // Add new reactions after the emoji picker (which is now first)
             reactions.forEach(reaction => {
                 const button = this.createReactionButton(reaction);
-                // Insert before the emoji picker
+                // Insert after the emoji picker
                 const emojiPicker = container.querySelector('.emoji-picker-trigger').parentElement;
-                container.insertBefore(button, emojiPicker);
+                emojiPicker.parentElement.insertBefore(button, emojiPicker.nextSibling);
             });
         },
 
@@ -516,11 +516,11 @@ window.refreshCommentReactions = async function(commentId) {
             const existingReactions = reactionsContainer.querySelectorAll('.reaction-button');
             existingReactions.forEach(btn => btn.remove());
             
-            // Add new reactions
+            // Add new reactions after the emoji picker (which is now first)
             data.data.forEach(reaction => {
                 const button = window.createReactionButton(reaction, commentId);
                 const emojiPicker = reactionsContainer.querySelector('.emoji-picker-trigger').parentElement;
-                reactionsContainer.insertBefore(button, emojiPicker);
+                emojiPicker.parentElement.insertBefore(button, emojiPicker.nextSibling);
             });
         }
     } catch (error) {
