@@ -16,6 +16,9 @@ return [
         'darkTheme' => 'Tema Gelap',
         'systemTheme' => 'Tema Sistem',
         'languageSwitcher' => 'Tukar bahasa',
+        'previousSlide' => 'Slide sebelumnya',
+        'pausePlaySlide' => 'Hentikan / Mainkan slide',
+        'nextSlide' => 'Slide seterusnya',
     ],
 
     'form' => [

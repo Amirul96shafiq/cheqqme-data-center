@@ -16,6 +16,9 @@ return [
         'darkTheme' => 'Dark Theme',
         'systemTheme' => 'System Theme',
         'languageSwitcher' => 'Change language',
+        'previousSlide' => 'Previous slide',
+        'pausePlaySlide' => 'Pause / Play slide',
+        'nextSlide' => 'Next slide',
     ],
 
     'form' => [
