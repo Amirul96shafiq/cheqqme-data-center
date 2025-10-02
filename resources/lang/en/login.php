@@ -22,6 +22,7 @@ return [
         'password' => 'Password',
         'remember' => 'Remember Me',
         'or' => 'Or',
+        'emailPlaceholder' => 'Enter username or email',
     ],
 
     'errors' => [

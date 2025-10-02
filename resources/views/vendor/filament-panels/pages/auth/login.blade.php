@@ -22,15 +22,19 @@
     <x-auth-loading />
     
     <div class="auth-frame flex h-screen overflow-hidden">
+        
         {{-- Left Section (70%) - Hero Section --}}
         <x-auth-hero />
 
         {{-- Right Section (30%) - Login Form --}}
         <div class="w-full lg:w-[30%] flex flex-col bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 custom-scrollbar overflow-y-auto">
+            
             {{-- Header Section --}}
             <div class="flex-shrink-0 p-6 pb-4">
+                
                 {{-- Theme Toggle Buttons --}}
                 <x-theme-toggle />
+
             </div>
 
             {{-- Main Content Section --}}
@@ -79,9 +83,9 @@
                             </label>
                             <input id="email" type="text" name="email" value="{{ old('email') }}"
                                 required autofocus autocomplete="username"
-                                placeholder="Enter username or email"
+                                placeholder="{{ __('login.form.emailPlaceholder') }}"
                                 @keydown.enter="$el.form.submit()"
-                                class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
+                                class="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-1 focus:outline-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
                             @error('email')
                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
@@ -100,7 +104,7 @@
                                     required
                                     autocomplete="current-password"
                                     @keydown.enter="$el.form.submit()"
-                                    class="w-full p-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
+                                    class="w-full p-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-1 focus:outline-primary-500 focus:ring-1 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 dark:text-white text-sm">
                                 <div class="absolute inset-y-0 right-0 flex items-center">
                                     <div class="h-full w-px bg-gray-300 dark:bg-gray-700"></div>
                                     <button type="button" 
@@ -160,26 +164,35 @@
 
                         {{-- Social Sign-in Buttons --}}
                         <div class="space-y-6">
+                            
                             {{-- Google Sign-in Button --}}
                             <x-google-signin-button />
 
                             {{-- Microsoft Sign-in Button --}}
                             <x-microsoft-signin-button />
+
                         </div>
+
                     </form>
+
                 </div>
             </div>
 
             {{-- Footer Section --}}
             <div class="flex-shrink-0 p-6 pt-4">
+                
                 {{-- Language Switcher --}}
                 <x-language-switcher />
+
             </div>
+
         </div>
+
     </div>
 
     {{-- Hero Slider Translation Data --}}
     <script>
+        
         // Set hero slider language data
         window.heroSliderLang = {
             title1: @json(__('heroslider.title1')),
@@ -204,5 +217,6 @@
     <script src="{{ asset('js/google-signin.js') }}"></script>
     <script src="{{ asset('js/remember-me-toggle.js') }}"></script>
     <script src="{{ asset('js/auth-partial-nav.js') }}"></script>
+
 </body>
 </html>

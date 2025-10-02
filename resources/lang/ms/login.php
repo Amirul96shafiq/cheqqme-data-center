@@ -22,6 +22,7 @@ return [
         'password' => 'Kata Laluan',
         'remember' => 'Ingat Saya',
         'or' => 'Atau',
+        'emailPlaceholder' => 'Masukkan nama pengguna atau emel',
     ],
 
     'errors' => [
