@@ -1,6 +1,6 @@
 @props(['action'])
 
-<x-tooltip position="top" :text="__('login.tooltips.comingSoon')">
+<x-tooltip position="bottom" :text="__('login.tooltips.comingSoon')">
     <button
         type="button"
         onclick="preventMicrosoftClick(event)"
@@ -15,6 +15,7 @@
 
 <script>
 function preventMicrosoftClick(event) {
+    
     // Prevent the default button behavior
     event.preventDefault();
     event.stopPropagation();
