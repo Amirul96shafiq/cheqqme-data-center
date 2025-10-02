@@ -29,8 +29,10 @@ function openGoogleSignIn() {
         }
 
         if (event.data.type === "GOOGLE_SIGNIN_SUCCESS") {
-            // Close the popup and redirect
-            popup.close();
+            // Clear timeout and cleanup
+            if (messageListener.timeout) {
+                clearTimeout(messageListener.timeout);
+            }
             window.removeEventListener("message", messageListener);
             showGoogleSignInSuccess(event.data.message);
 
@@ -38,8 +40,10 @@ function openGoogleSignIn() {
                 window.location.href = event.data.redirect_url;
             }, 1000);
         } else if (event.data.type === "GOOGLE_SIGNIN_ERROR") {
-            // Close the popup and show error
-            popup.close();
+            // Clear timeout and cleanup
+            if (messageListener.timeout) {
+                clearTimeout(messageListener.timeout);
+            }
             window.removeEventListener("message", messageListener);
             showGoogleSignInError(event.data.message);
         }
@@ -48,13 +52,14 @@ function openGoogleSignIn() {
     // Add event listener
     window.addEventListener("message", messageListener);
 
-    // Check if popup was closed
-    const checkClosed = setInterval(function () {
-        if (popup.closed) {
-            clearInterval(checkClosed);
-            window.removeEventListener("message", messageListener);
-        }
-    }, 1000);
+    // Set a timeout to clean up if no response is received
+    const timeout = setTimeout(function () {
+        window.removeEventListener("message", messageListener);
+        showGoogleSignInError("Sign-in timed out. Please try again.");
+    }, 300000); // 5 minutes timeout
+
+    // Store timeout reference for cleanup
+    messageListener.timeout = timeout;
 }
 
 function showGoogleSignInError(message) {
