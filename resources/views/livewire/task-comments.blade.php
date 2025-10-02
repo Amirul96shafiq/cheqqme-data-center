@@ -256,7 +256,12 @@
                                             toggle() { 
                                                 this.expanded = !this.expanded;
                                             }
-                                        }">
+                                        }" 
+                                        x-init="
+                                            $watch('$wire.expandedReplies', (value) => {
+                                                expanded = value.includes({{ $comment->id }});
+                                            });
+                                        ">
                                             <button type="button" 
                                                     @click="toggle()" 
                                                     class="text-[10px] text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors duration-200 flex items-center gap-1">
