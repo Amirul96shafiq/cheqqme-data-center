@@ -27,6 +27,7 @@
              }, 100);
          })
      ">
+
     <!-- Composer (Top) -->
     <div class="px-0 pt-0 pb-5" data-composer x-show="!isFocusMode">
         <div class="space-y-3">
@@ -48,6 +49,7 @@
                    {{ $message }}
                 </p> 
             @enderror <!-- Error message -->
+
             <!-- Button to add a new comment -->
             <button wire:click="addComment" wire:loading.attr="disabled" wire:target="addComment" type="button" class="w-full inline-flex items-center justify-center gap-1.5 p-2.5 bg-primary-600 hover:bg-primary-500 text-primary-900 text-sm font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50 relative">
                 <div class="flex items-center gap-1.5">
@@ -58,13 +60,16 @@
                     <kbd class="px-1 py-0.5 bg-primary-transparent border border-primary-800 rounded font-mono">CTRL + ENTER</kbd>
                 </div>
             </button>
+
         </div>
     </div>
+
     <!-- Comments List (scroll area) -->
     <div class="flex-1 min-h-0 px-0 pb-0" :class="isFocusMode ? 'focus-mode-parent' : ''">
         <div class="px-2 pb-6 text-sm overflow-y-auto custom-thin-scroll h-full comment-list-container flex flex-col" 
              data-comment-list
              :class="isFocusMode ? 'focus-mode-full-height' : ''">
+
             <!-- Focus Mode Exit Button - Sticky at Top -->
             <div wire:ignore
                  x-show="isFocusMode" 
@@ -142,13 +147,36 @@
                                             @endif
                                         </span>
                                 </div>
+                                
                                 <!-- Action buttons: Reply (separate) + Group actions dropdown -->
                                 @if($this->editingId !== $comment->id && $this->replyingToId !== $comment->id)
                                     <div class="flex items-center gap-1">
                                         @if(!$comment->isDeleted())
+
                                             <!-- Reply button (always visible, separate from group actions) -->
-                                            <button type="button" wire:click="startReply({{ $comment->id }})" class="flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" title="{{ __('comments.buttons.reply') }}">
-                                                <span class="text-[10px] font-light">{{ __('comments.buttons.reply') }}</span>
+                                            <button type="button" 
+                                                    wire:click="startReply({{ $comment->id }})" 
+                                                    class="flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200" 
+                                                    title="{{ __('comments.buttons.reply') }}"
+                                                    wire:loading.attr="disabled"
+                                                    wire:target="startReply({{ $comment->id }})">
+                                                
+                                                    <!-- Loading spinner -->
+                                                <svg wire:loading wire:target="startReply({{ $comment->id }})" 
+                                                     class="animate-spin w-3 h-3 text-gray-400" 
+                                                     xmlns="http://www.w3.org/2000/svg" 
+                                                     fill="none" 
+                                                     viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+
+                                                <!-- Button text -->
+                                                <span class="text-[10px] font-light" 
+                                                      wire:loading.remove 
+                                                      wire:target="startReply({{ $comment->id }})">{{ __('comments.buttons.reply') }}
+                                                </span>
+                                                
                                             </button>
                                             
                                             <!-- Group actions dropdown (Focus, Edit, Delete) -->
@@ -242,8 +270,31 @@
                                                         {{ __('comments.buttons.submitting') }}
                                                     </span>
                                                 </button>
+                                                
                                                 <!-- Cancel Reply button -->
-                                                <button wire:click="cancelReply" type="button" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50">{{ __('comments.buttons.cancel') }}</button>
+                                                <button wire:click="cancelReply" 
+                                                        type="button" 
+                                                        class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="cancelReply">
+
+                                                    <!-- Loading spinner -->
+                                                    <svg wire:loading wire:target="cancelReply" 
+                                                         class="animate-spin w-3 h-3 text-gray-700 dark:text-gray-300 mr-1" 
+                                                         xmlns="http://www.w3.org/2000/svg" 
+                                                         fill="none" 
+                                                         viewBox="0 0 24 24">
+                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    
+                                                    <!-- Button text -->
+                                                    <span wire:loading.remove wire:target="cancelReply">
+                                                        {{ __('comments.buttons.cancel') }}
+                                                    </span>
+
+                                                </button>
+
                                             </div>
                                         </div>
                                     @endif
@@ -892,11 +943,11 @@
                 setTimeout(initializeMentions, 500);
             });
 
-            // Watch for edit form being added to DOM
+            // Watch for edit and reply forms being added to DOM
             const observer = new MutationObserver(function(mutations) {
                 mutations.forEach(function(mutation) {
                     if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                        // Check if any added nodes contain an edit form
+                        // Check if any added nodes contain an edit or reply form
                         mutation.addedNodes.forEach(function(node) {
                             if (node.nodeType === Node.ELEMENT_NODE) {
                                 // Check for edit form with data-edit-form attribute
@@ -908,11 +959,24 @@
                                     node.querySelector('.fi-form:not([data-composer] .fi-form)') :
                                     null;
                                     
-                                if (specificEditForm || editForm || 
+                                // Check for reply form with data-reply-form attribute
+                                const specificReplyForm = node.querySelector ?
+                                    node.querySelector('.reply-form[data-reply-form="true"]') :
+                                    null;
+                                    
+                                if (specificEditForm || editForm || specificReplyForm ||
                                    (node.classList && node.classList.contains('edit-form')) ||
+                                   (node.classList && node.classList.contains('reply-form')) ||
                                    (node.classList && node.classList.contains('fi-form') && !node.closest('[data-composer]'))) {
-                                    // Wait longer for the edit form to be fully rendered
-                                    setTimeout(initializeMentions, 1500);
+                                    // Initialize immediately for reply forms, with minimal delay for edit forms
+                                    if (specificReplyForm || (node.classList && node.classList.contains('reply-form'))) {
+                                        // Reply forms should initialize with zero delay
+                                        initializeMentions();
+                                        requestAnimationFrame(initializeMentions);
+                                    } else {
+                                        // Edit forms can wait a bit longer
+                                        setTimeout(initializeMentions, 1500);
+                                    }
                                 }
                             }
                         });
@@ -964,13 +1028,26 @@
                 // Listen for reply button clicks to prepare for reply form appearing
                 const replyButton = e.target.closest('button[wire\\:click*="startReply"]');
                 if (replyButton) {
-                    // Wait a bit for the reply form to appear, then initialize
-                    setTimeout(function() {
+                    // Zero delay initialization with multiple strategies
+                    const initializeReplyForm = function() {
                         const replyFormEditor = document.querySelector('.reply-form[data-reply-form="true"] trix-editor, .reply-form[data-reply-form="true"] .ProseMirror');
                         if (replyFormEditor && !replyFormEditor.dataset.mentionsInitialized) {
                             initializeEditor(replyFormEditor);
                         }
-                    }, 1500); // Wait for Livewire to update and render the reply form
+                    };
+                    
+                    // Try immediately
+                    initializeReplyForm();
+                    
+                    // Use requestAnimationFrame for next frame (0 delay)
+                    requestAnimationFrame(initializeReplyForm);
+                    
+                    // Also listen for Livewire update to catch it when it appears
+                    const livewireUpdateListener = function() {
+                        initializeReplyForm();
+                        document.removeEventListener('livewire:update', livewireUpdateListener);
+                    };
+                    document.addEventListener('livewire:update', livewireUpdateListener);
                 }
             });
 
