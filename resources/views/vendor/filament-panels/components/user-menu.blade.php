@@ -85,18 +85,26 @@
 
             <!-- User Info -->
             <div class="px-4 py-3 text-center">
+
+                <!-- Username -->
                 <h3 class="text-md font-bold text-gray-900 dark:text-white truncate">
                     {{ $user->username }}
                 </h3>
+
+                <!-- Name -->
                 <h4 class="text-xs font-regular text-gray-700 dark:text-gray-200 truncate -mt-1">
                     {{ $user->name }}
                 </h4>
-                <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
+
+                <!-- Email -->
+                <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-2">
                     {{ $user->email }}
                 </p>
                 
                 <!-- User Badges -->
                 <div class="flex flex-wrap gap-1 justify-center my-3">
+
+                    <!-- Country -->
                     @if($user->country)
                         <x-tooltip position="top" text="{{ __('user.table.country') }}">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
@@ -105,6 +113,7 @@
                         </x-tooltip>
                     @endif
                     
+                    <!-- Timezone -->
                     @if($user->timezone)
                         <x-tooltip position="top" text="{{ __('user.table.timezone') }}">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
@@ -112,6 +121,7 @@
                             </span>
                         </x-tooltip>
                     @endif
+                    
                 </div>
             </div>
         </div>
