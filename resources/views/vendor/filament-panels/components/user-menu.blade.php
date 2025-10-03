@@ -102,17 +102,19 @@
             </div>
         </div>
 
-        <x-filament::dropdown.list>
-            <x-filament::dropdown.list.item
-                :color="$profileItem?->getColor()"
-                :icon="$profileItem?->getIcon() ?? \Filament\Support\Facades\FilamentIcon::resolve('panels::user-menu.profile-item') ?? 'heroicon-m-user-circle'"
-                :href="$profileItemUrl ?? filament()->getProfileUrl()"
-                :target="($profileItem?->shouldOpenUrlInNewTab() ?? false) ? '_blank' : null"
-                tag="a"
-            >
-                {{ $profileItem?->getLabel() ?? ($profilePage ? $profilePage::getLabel() : null) ?? filament()->getUserName($user) }}
-            </x-filament::dropdown.list.item>
-        </x-filament::dropdown.list>
+        @if(!$profileItem || $profileItem->getUrl() !== 'javascript:void(0)')
+            <x-filament::dropdown.list>
+                <x-filament::dropdown.list.item
+                    :color="$profileItem?->getColor()"
+                    :icon="$profileItem?->getIcon() ?? \Filament\Support\Facades\FilamentIcon::resolve('panels::user-menu.profile-item') ?? 'heroicon-m-user-circle'"
+                    :href="$profileItemUrl ?? filament()->getProfileUrl()"
+                    :target="($profileItem?->shouldOpenUrlInNewTab() ?? false) ? '_blank' : null"
+                    tag="a"
+                >
+                    {{ $profileItem?->getLabel() ?? ($profilePage ? $profilePage::getLabel() : null) ?? filament()->getUserName($user) }}
+                </x-filament::dropdown.list.item>
+            </x-filament::dropdown.list>
+        @endif
 
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::USER_MENU_PROFILE_AFTER) }}
     @endif
@@ -120,6 +122,29 @@
     @if (filament()->hasDarkMode() && (! filament()->hasDarkModeForced()))
         <x-filament::dropdown.list>
             <x-filament-panels::theme-switcher />
+        </x-filament::dropdown.list>
+    @endif
+
+    @php
+        $greetingItem = null;
+        $originalItems = filament()->getUserMenuItems();
+        if (isset($originalItems['profile']) && $originalItems['profile']->getUrl() === 'javascript:void(0)') {
+            $greetingItem = $originalItems['profile'];
+        }
+    @endphp
+
+    @if ($greetingItem && $greetingItem->getUrl() === 'javascript:void(0)')
+        <x-filament::dropdown.list>
+            <x-tooltip position="top" text="{{ __('dashboard.user-menu.tooltip.greeting') }}">
+                <div class="px-3 py-2 text-center hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-md transition-colors cursor-pointer">
+                    <div class="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                        @if($greetingItem->getIcon())
+                            @svg($greetingItem->getIcon(), 'h-5 w-5 text-primary-500')
+                        @endif
+                        <span class="text-primary-500 dark:text-primary-400 font-regular">{{ $greetingItem->getLabel() }}</span>
+                    </div>
+                </div>
+            </x-tooltip>
         </x-filament::dropdown.list>
     @endif
 

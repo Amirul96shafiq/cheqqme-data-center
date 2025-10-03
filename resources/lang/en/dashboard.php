@@ -2,6 +2,10 @@
 
 return [
     'user-menu' => [
+        'tooltip' => [
+            'greeting' => 'Greeting Menu',
+        ],
+        
         'profile-label' => 'Profile',
         'settings-label' => 'Settings',
         'logout-label' => 'Logout',
