@@ -85,7 +85,7 @@
                 <div class="flex flex-wrap gap-1 justify-center my-3">
                     @if($user->country)
                         <x-tooltip position="top" text="{{ __('user.table.country') }}">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 cursor-help">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
                                 {{ $user->country }}
                             </span>
                         </x-tooltip>
@@ -93,7 +93,7 @@
                     
                     @if($user->timezone)
                         <x-tooltip position="top" text="{{ __('user.table.timezone') }}">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 cursor-help">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
                                 {{ $user->timezone }}
                             </span>
                         </x-tooltip>
