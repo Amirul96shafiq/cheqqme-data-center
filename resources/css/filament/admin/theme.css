@@ -218,7 +218,7 @@
     /* Action Board: remove vertical scrolling on the page when Flowforge board is present */
     .fi-main:has(.ff-board),
     .fi-page:has(.ff-board) {
-         overflow-y: hidden !important;
+        overflow-y: hidden !important;
     }
 
     /* Ensure the main container fills the viewport to avoid stray scrollbars */
@@ -530,5 +530,21 @@
     .fi-sidebar-group-collapse-button .fi-icon {
         height: 1rem !important;
         width: 1rem !important;
+    }
+
+    /* Hide scrollbar completely on sidebar navigation */
+    .fi-sidebar-nav {
+        /* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+        scrollbar-width: none !important; /* Firefox */
+        -ms-overflow-style: none !important; /* Internet Explorer 10+ */
+    }
+
+    .fi-sidebar-nav::-webkit-scrollbar {
+        display: none !important; /* WebKit browsers */
+    }
+
+    /* Remove the negative margin that was trying to hide scrollbar */
+    .fi-sidebar-nav[style*="margin-right: -18px"] {
+        margin-right: 0 !important;
     }
 }
