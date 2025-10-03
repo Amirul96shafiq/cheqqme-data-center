@@ -18,22 +18,25 @@
     $dropdownAttributes = \Filament\Support\prepare_inherited_attributes($attributes)
         ->class(['fi-user-menu']);
     
-    // Always add user data attributes, using optimized images if available
-    $originalCoverImageUrl = $user->getFilamentCoverImageUrl() ?? '/images/default-cover-img.png';
+    // Always add user data attributes, using optimized images when available
+    $originalCoverImageUrl = $user->getFilamentCoverImageUrl() ?? '/storage/default-cover-img.png';
     
-    // Use ImageOptimizationService for cover image only if user has uploaded a custom cover image
+    try {
+        $imageOptimization = app(\App\Services\ImageOptimizationService::class);
+        
+    // Use ImageOptimizationService for both custom uploads and default cover image
     if ($user->cover_image && !empty($user->cover_image)) {
-        try {
-            $imageOptimization = app(\App\Services\ImageOptimizationService::class);
-            $optimizedCoverUrl = $imageOptimization->getOptimizedImageUrl($user->cover_image, 'medium');
-            $coverImageUrl = $optimizedCoverUrl ?? $originalCoverImageUrl;
-        } catch (\Exception $e) {
-            // Fallback to original if optimization fails
-            $coverImageUrl = $originalCoverImageUrl;
-        }
+        // Optimize custom uploaded cover image (stored in storage/app/public/)
+        $optimizedCoverUrl = $imageOptimization->getOptimizedImageUrl($user->cover_image, 'medium');
+        $coverImageUrl = $optimizedCoverUrl ?? $originalCoverImageUrl;
     } else {
-        // Use default cover image for users without custom uploaded cover image
-        $coverImageUrl = '/images/default-cover-img.png';
+        // Optimize default cover image (now also in storage/app/public/)
+        $optimizedDefaultUrl = $imageOptimization->getOptimizedImageUrl('default-cover-img.png', 'medium');
+        $coverImageUrl = $optimizedDefaultUrl ?? '/storage/default-cover-img.png';
+    }
+    } catch (\Exception $e) {
+        // Fallback to original for custom images or storage path for default image
+        $coverImageUrl = $user->cover_image ? $originalCoverImageUrl : '/storage/default-cover-img.png';
     }
     
     $avatarUrl = filament()->getUserAvatarUrl($user); // This automatically handles fallback to Filament's default avatar
@@ -194,7 +197,7 @@
 {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::USER_MENU_AFTER) }}
 
 <!-- Preload images for better performance -->
-<link rel="preload" as="image" href="{{ $user->getFilamentCoverImageUrl() ?? '/images/default-cover-img.png' }}?v={{ time() }}" data-user-id="{{ $user->id }}">
+<link rel="preload" as="image" href="{{ $user->getFilamentCoverImageUrl() ?? '/storage/default-cover-img.png' }}?v={{ time() }}" data-user-id="{{ $user->id }}">
 <link rel="preload" as="image" href="{{ $avatarUrl }}?v={{ time() }}" data-user-id="{{ $user->id }}">
 
 <!-- Custom styling for compact user menu -->
@@ -263,7 +266,7 @@ document.addEventListener('livewire:init', function() {
 
 // Image preloading for better performance
 document.addEventListener('DOMContentLoaded', function() {
-    const coverImageUrl = '{{ $user->getFilamentCoverImageUrl() ?? '/images/default-cover-img.png' }}?v={{ time() }}';
+    const coverImageUrl = '{{ $user->getFilamentCoverImageUrl() ?? '/storage/default-cover-img.png' }}?v={{ time() }}';
     const avatarImageUrl = '{{ $avatarUrl }}?v={{ time() }}';
     
     // Preload cover image

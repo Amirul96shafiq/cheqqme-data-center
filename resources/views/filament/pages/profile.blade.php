@@ -9,7 +9,7 @@
     {{-- Cover Image Section --}}
     <div class="relative h-48 md:h-64 lg:h-80 xl:h-96 w-full overflow-visible rounded-2xl z-10">
         <img
-            src="{{ $user && $user->cover_image ? $user->getFilamentCoverImageUrl() : asset('images/default-cover-img.png') }}"
+            src="{{ $user && $user->cover_image ? $user->getFilamentCoverImageUrl() : asset('storage/default-cover-img.png') }}"
             alt="Cover Image"
             class="w-full h-full object-cover rounded-2xl"
         >
