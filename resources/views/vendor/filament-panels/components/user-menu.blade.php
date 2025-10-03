@@ -49,7 +49,12 @@
                         draggable="false"
                     />
                 @else
-                    <div class="w-full h-full bg-gradient-to-r from-blue-500 to-purple-600"></div>
+                    <img 
+                        src="{{ asset('images/default-cover-img.png') }}" 
+                        alt="Default Cover Image"
+                        class="w-full h-full object-cover z-5"
+                        draggable="false"
+                    />
                 @endif
             </div>
             
