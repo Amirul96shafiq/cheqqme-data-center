@@ -80,6 +80,25 @@
                 <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
                     {{ $user->email }}
                 </p>
+                
+                <!-- User Badges -->
+                <div class="flex flex-wrap gap-1 justify-center my-3">
+                    @if($user->country)
+                        <x-tooltip position="top" text="{{ __('user.table.country') }}">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 cursor-help">
+                                {{ $user->country }}
+                            </span>
+                        </x-tooltip>
+                    @endif
+                    
+                    @if($user->timezone)
+                        <x-tooltip position="top" text="{{ __('user.table.timezone') }}">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 cursor-help">
+                                {{ $user->timezone }}
+                            </span>
+                        </x-tooltip>
+                    @endif
+                </div>
             </div>
         </div>
 

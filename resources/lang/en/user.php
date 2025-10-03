@@ -108,6 +108,7 @@ return [
         'username' => 'Username',
         'email' => 'Email',
         'timezone' => 'Timezone',
+        'country' => 'Country',
         'created_at' => 'Created At',
         //'updated_at_by' => 'Updated At (by)',
         'personalize' => 'Personalize',

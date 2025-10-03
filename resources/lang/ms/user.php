@@ -108,6 +108,7 @@ return [
         'username' => 'Username',
         'email' => 'Email',
         'timezone' => 'Zon Waktu',
+        'country' => 'Negara',
         'created_at' => 'Created At',
         //'updated_at_by' => 'Updated At (by)',
         'personalize' => 'Personalisasi',
