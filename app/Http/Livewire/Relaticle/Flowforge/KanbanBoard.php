@@ -145,34 +145,37 @@ class KanbanBoard extends BaseKanbanBoard
                         'newStatus' => $newStatus,
                     ]);
 
-                    if ($originalOrder != $newOrder || $originalStatus != $newStatus) {
-                        logger()->debug('KANBAN ABOUT TO LOG ACTIVITY', [
+                    // Only log activity if there's a meaningful change
+                    if ($originalStatus != $newStatus) {
+                        logger()->debug('KANBAN ABOUT TO LOG ACTIVITY - STATUS CHANGE', [
                             'task_id' => $id,
-                            'newOrder' => $newOrder,
+                            'originalStatus' => $originalStatus,
                             'newStatus' => $newStatus,
                             'user' => Auth::id(),
                         ]);
+
+                        // Only log status changes, not order changes within the same column
                         $changes = [
-                            'order_column' => [
-                                'old' => $originalOrder,
-                                'new' => $newOrder,
-                            ],
                             'status' => [
                                 'old' => $originalStatus,
                                 'new' => $newStatus,
                             ],
                         ];
+
+                        // Generate meaningful description
+                        $description = "Task moved from {$originalStatus} to {$newStatus}";
+
                         try {
                             activity('Tasks')
                                 ->performedOn($updatedTasks[$id])
                                 ->causedBy(Auth::user())
                                 ->withProperties([
-                                    'order_column' => $newOrder,
                                     'status' => $newStatus,
                                     'changes' => $changes,
+                                    'description' => $description,
                                 ])
                                 ->event('Task Moved')
-                                ->log('Task moved');
+                                ->log($description);
                         } catch (\Throwable $e) {
                             // Fallback: try logging without causedBy
                             logger('KANBAN ACTIVITYLOG ERROR', [
@@ -184,12 +187,12 @@ class KanbanBoard extends BaseKanbanBoard
                                 activity('Tasks')
                                     ->performedOn($updatedTasks[$id])
                                     ->withProperties([
-                                        'order_column' => $newOrder,
                                         'status' => $newStatus,
                                         'changes' => $changes,
+                                        'description' => $description,
                                     ])
                                     ->event('Task Moved')
-                                    ->log('Task moved (no user)');
+                                    ->log($description);
                             } catch (\Throwable $e2) {
                                 logger('KANBAN ACTIVITYLOG FATAL', [
                                     'error' => $e2->getMessage(),
@@ -198,6 +201,12 @@ class KanbanBoard extends BaseKanbanBoard
                                 ]);
                             }
                         }
+                    } else {
+                        logger()->debug('KANBAN NO STATUS CHANGE - SKIPPING LOG', [
+                            'task_id' => $id,
+                            'status' => $originalStatus,
+                            'orderChanged' => $originalOrder != $newOrder,
+                        ]);
                     }
                 }
             }

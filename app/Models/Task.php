@@ -623,4 +623,29 @@ class Task extends Model
 
         return true;
     }
+
+    /**
+     * Get the description for the activity log entry.
+     */
+    public function getDescriptionForEvent(string $eventName): string
+    {
+        switch ($eventName) {
+            case 'created':
+                return 'Task created';
+            case 'updated':
+                // Check if this is a status change
+                if ($this->isDirty('status')) {
+                    $oldStatus = $this->getOriginal('status');
+                    $newStatus = $this->status;
+
+                    return "Task moved from {$oldStatus} to {$newStatus}";
+                }
+
+                return 'Task updated';
+            case 'deleted':
+                return 'Task deleted';
+            default:
+                return 'Task '.$eventName;
+        }
+    }
 }
