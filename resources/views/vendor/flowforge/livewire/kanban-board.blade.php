@@ -416,21 +416,63 @@
                 // Add CSS for sortable drag behavior
                 const style = document.createElement('style');
                 style.textContent = `
-                    .sortable-ghost {
-                        opacity: 0.3 !important;
-                        background: rgba(0, 0, 0, 0.1) !important;
-                        border: 2px dashed #ccc !important;
-                    }
-                    .sortable-chosen {
-                        opacity: 0.8 !important;
-                        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
-                    }
-                    .sortable-drag {
-                        opacity: 0.9 !important;
-                        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+                    .sortable-ghost, .fi-sortable-ghost {
+                        background-color: rgba(20, 184, 166, 0.1) !important;
+                        border: 1px dashed rgba(20, 184, 166, 0.6) !important;
+                        border-radius: 8px !important;
+                        position: relative !important;
+                        transition: all 0.2s ease !important;
+                        opacity: 0.6 !important;
+                        box-shadow: 0 0 8px rgba(20, 184, 166, 0.2) !important;
                     }
                 `;
                 document.head.appendChild(style);
+                
+                // Teal preview cleanup system
+                document.addEventListener('dragend', function(e) {
+                    cleanupTealStyles();
+                });
+                
+                function cleanupTealStyles() {
+                    // Clean up elements marked with teal styles
+                    const tealElements = document.querySelectorAll('[data-has-teal-styles="true"]');
+                    tealElements.forEach(element => {
+                        removeTealStyles(element);
+                        element.dataset.hasTealStyles = 'false';
+                    });
+                    
+                    // Clean up ghost elements
+                    document.querySelectorAll('.sortable-ghost, .fi-sortable-ghost').forEach(removeTealStyles);
+                }
+                
+                function removeTealStyles(element) {
+                    ['background-color', 'border', 'box-shadow', 'border-radius'].forEach(prop => {
+                        element.style.removeProperty(prop);
+                    });
+                }
+                
+                // Backup cleanup mechanism for mouse/touch events
+                function forceCleanup() {
+                    setTimeout(() => {
+                        document.querySelectorAll('.ff-card').forEach(card => {
+                            if (card.style.backgroundColor && card.style.backgroundColor.includes('rgba(20, 184, 166')) {
+                                removeTealStyles(card);
+                                card.dataset.hasTealStyles = 'false';
+                            }
+                        });
+                    }, 100);
+                }
+                
+                document.addEventListener('mouseup', forceCleanup);
+                document.addEventListener('touchend', forceCleanup);
+                
+                function applyTealPreview(element) {
+                    element.style.setProperty('background-color', 'rgba(20, 184, 166, 0.15)', 'important');
+                    element.style.setProperty('border', '1px dashed rgba(20, 184, 166, 0.8)', 'important');
+                    element.style.setProperty('box-shadow', '0 0 10px rgba(20, 184, 166, 0.3)', 'important');
+                    element.style.setProperty('border-radius', '8px', 'important');
+                    element.dataset.hasTealStyles = 'true';
+                }
                 
                 // Use mutation observer to detect when sortable classes are added/removed
                 const observer = new MutationObserver(function(mutations) {
@@ -438,16 +480,27 @@
                         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
                             const target = mutation.target;
                             
-                            // Hide empty column when dragging starts
+                            // Handle drag interactions
                             if (target.classList.contains('sortable-ghost') || target.classList.contains('sortable-chosen')) {
                                 const columnContent = target.closest('.ff-column__content');
                                 if (columnContent) {
                                     const emptyColumn = columnContent.querySelector('.ff-empty-column');
                                     if (emptyColumn) {
-                                        const hideTimestamp = new Date().toISOString().substr(11, 12);
-                                        // console.log(`[${hideTimestamp}] Hiding empty column via mutation observer`);
                                         emptyColumn.style.display = 'none';
                                     }
+                                }
+                                
+                                // Apply teal preview styling to ghost elements
+                                if (target.classList.contains('sortable-ghost') || target.classList.contains('fi-sortable-ghost')) {
+                                    applyTealPreview(target);
+                                }
+                                
+                                // Cleanup when drag ends
+                                if (!target.classList.contains('sortable-ghost') && 
+                                    !target.classList.contains('fi-sortable-ghost') && 
+                                    target.dataset.hasTealStyles === 'true') {
+                                    removeTealStyles(target);
+                                    target.dataset.hasTealStyles = 'false';
                                 }
                             }
                         }
