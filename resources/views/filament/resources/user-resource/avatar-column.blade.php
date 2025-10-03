@@ -8,7 +8,7 @@
     <img
         src="{{ $avatarUrl }}"
         alt="{{ filament()->getUserName($user) }}"
-        class="w-12 h-12 rounded-full object-cover {{ $coverImageUrl ? 'border-4 border-white/50' : 'border-0' }}"
+        class="w-12 h-12 rounded-full object-cover {{ $coverImageUrl ? 'border-4 border-white' : 'border-0' }}"
     />
     
     <!-- Online Status Indicator -->
