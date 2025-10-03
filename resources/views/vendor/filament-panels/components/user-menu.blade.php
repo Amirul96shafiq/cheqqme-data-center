@@ -70,11 +70,14 @@
             </div>
 
             <!-- User Info -->
-            <div class="pt-2 pb-3 px-4 text-center">
-                <h3 class="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                    {{ $user->name }}
+            <div class="px-4 py-3 text-center">
+                <h3 class="text-md font-bold text-gray-900 dark:text-white truncate">
+                    {{ $user->username }}
                 </h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                <h4 class="text-xs font-regular text-gray-700 dark:text-gray-200 truncate -mt-1">
+                    {{ $user->name }}
+                </h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
                     {{ $user->email }}
                 </p>
             </div>
