@@ -133,7 +133,8 @@
 <!-- Minimal styling for user profile header -->
 <style>
 .fi-user-menu .fi-dropdown-panel {
-    width: 280px;
+    margin-top: -45px;
+    z-index: 1000 !important;
 }
 
 .fi-user-menu .user-profile-header img {
@@ -141,7 +142,4 @@
     height: auto;
 }
 
-.fi-user-menu .user-profile-header .fi-avatar {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
 </style>
