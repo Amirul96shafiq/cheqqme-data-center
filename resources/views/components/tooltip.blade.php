@@ -38,20 +38,20 @@
     {{ $slot }}
     
     {{-- Tooltip --}}
-    <div class="tooltip tooltip-{{ $position }} absolute {{ $yAlign }} {{ $xAlign }} px-3 py-1 bg-white text-gray-900 dark:bg-gray-900 dark:text-white text-sm rounded-md opacity-0 invisible transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg"
+    <div class="tooltip tooltip-{{ $position }} absolute {{ $yAlign }} {{ $xAlign }} px-3 py-1 bg-white text-gray-900 dark:bg-gray-700 dark:text-white text-sm rounded-md opacity-0 invisible transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg"
          data-tooltip-text="{{ $text }}"
          style="font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;">
         {{ $text }}
 
         {{-- Tooltip arrow --}}
         @if($position === 'top')
-            <div class="absolute top-full {{ $align === 'start' ? 'left-3' : ($align === 'end' ? 'right-3' : 'left-1/2 transform -translate-x-1/2') }} w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-white dark:border-t-gray-900"></div>
+            <div class="absolute top-full {{ $align === 'start' ? 'left-3' : ($align === 'end' ? 'right-3' : 'left-1/2 transform -translate-x-1/2') }} w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-white dark:border-t-gray-700"></div>
         @elseif($position === 'bottom')
-            <div class="absolute bottom-full {{ $align === 'start' ? 'left-3' : ($align === 'end' ? 'right-3' : 'left-1/2 transform -translate-x-1/2') }} w-0 h-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent border-b-white dark:border-b-gray-900"></div>
+            <div class="absolute bottom-full {{ $align === 'start' ? 'left-3' : ($align === 'end' ? 'right-3' : 'left-1/2 transform -translate-x-1/2') }} w-0 h-0 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent border-b-white dark:border-b-gray-700"></div>
         @elseif($position === 'left')
-            <div class="absolute left-full {{ $align === 'start' ? 'top-3' : ($align === 'end' ? 'bottom-3' : 'top-1/2 transform -translate-y-1/2') }} w-0 h-0 border-t-[6px] border-b-[6px] border-l-[6px] border-t-transparent border-b-transparent border-l-white dark:border-l-gray-900"></div>
+            <div class="absolute left-full {{ $align === 'start' ? 'top-3' : ($align === 'end' ? 'bottom-3' : 'top-1/2 transform -translate-y-1/2') }} w-0 h-0 border-t-[6px] border-b-[6px] border-l-[6px] border-t-transparent border-b-transparent border-l-white dark:border-l-gray-700"></div>
         @elseif($position === 'right')
-            <div class="absolute right-full {{ $align === 'start' ? 'top-3' : ($align === 'end' ? 'bottom-3' : 'top-1/2 transform -translate-y-1/2') }} w-0 h-0 border-t-[6px] border-b-[6px] border-r-[6px] border-t-transparent border-b-transparent border-r-white dark:border-r-gray-900"></div>
+            <div class="absolute right-full {{ $align === 'start' ? 'top-3' : ($align === 'end' ? 'bottom-3' : 'top-1/2 transform -translate-y-1/2') }} w-0 h-0 border-t-[6px] border-b-[6px] border-r-[6px] border-t-transparent border-b-transparent border-r-white dark:border-r-gray-700"></div>
         @endif
         
     </div>
