@@ -140,7 +140,7 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 100px;
+    height: 56px;
     background-image: url('{{ $user->getFilamentCoverImageUrl() ?? '/images/default-cover-img.png' }}?v={{ time() }}');
     background-size: cover;
     background-position: center top;
@@ -162,7 +162,7 @@
 /* Custom avatar overlay styles for img element */
 .fi-user-menu .fi-dropdown-panel .avatar-overlay {
     position: absolute;
-    top: 62px;
+    top: 14px;
     left: 50%;
     transform: translateX(-50%);
     width: 82px;
@@ -182,7 +182,7 @@
 /* Add space and gap for cover image at top */
 .fi-user-menu .fi-dropdown-panel .fi-dropdown-list:first-child,
 .fi-user-menu .fi-dropdown-panel .fi-dropdown-header:first-child {
-    padding-top: 145px !important;
+    padding-top: 100px !important;
 }
 </style>
 
