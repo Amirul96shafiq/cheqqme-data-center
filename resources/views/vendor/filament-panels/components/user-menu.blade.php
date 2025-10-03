@@ -92,7 +92,7 @@
                 </h3>
 
                 <!-- Name -->
-                <h4 class="text-xs font-regular text-gray-700 dark:text-gray-200 truncate -mt-1">
+                <h4 class="text-[10px] font-regular text-gray-700 dark:text-gray-200 truncate -mt-1">
                     {{ $user->name }}
                 </h4>
 
@@ -121,7 +121,7 @@
                             </span>
                         </x-tooltip>
                     @endif
-                    
+
                 </div>
             </div>
         </div>
