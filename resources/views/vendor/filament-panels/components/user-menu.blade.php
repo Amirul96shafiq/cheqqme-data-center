@@ -18,9 +18,28 @@
     $dropdownAttributes = \Filament\Support\prepare_inherited_attributes($attributes)
         ->class(['fi-user-menu']);
     
-    // Always add user data attributes, using default images if needed
-    $coverImageUrl = $user->getFilamentCoverImageUrl() ?? '/images/default-cover-img.png';
+    // Always add user data attributes, using optimized images if available
+    $originalCoverImageUrl = $user->getFilamentCoverImageUrl() ?? '/images/default-cover-img.png';
+    
+    // Use ImageOptimizationService for cover image only if user has uploaded a custom cover image
+    if ($user->cover_image && !empty($user->cover_image)) {
+        try {
+            $imageOptimization = app(\App\Services\ImageOptimizationService::class);
+            $optimizedCoverUrl = $imageOptimization->getOptimizedImageUrl($user->cover_image, 'medium');
+            $coverImageUrl = $optimizedCoverUrl ?? $originalCoverImageUrl;
+        } catch (\Exception $e) {
+            // Fallback to original if optimization fails
+            $coverImageUrl = $originalCoverImageUrl;
+        }
+    } else {
+        // Use default cover image for users without custom uploaded cover image
+        $coverImageUrl = '/images/default-cover-img.png';
+    }
+    
     $avatarUrl = filament()->getUserAvatarUrl($user); // This automatically handles fallback to Filament's default avatar
+    
+    // Create optimized URL for JavaScript usage
+    $coverImageOptimizedUrl = $coverImageUrl;
     
     $dropdownAttributes = $dropdownAttributes->merge([
         'data-user-cover' => $user->id,
@@ -215,7 +234,7 @@
 // Alpine.js data function for profile header
 function profileHeader() {
     return {
-        coverImageUrl: '{{ $user->getFilamentCoverImageUrl() ?? '/images/default-cover-img.png' }}?v={{ time() }}',
+        coverImageUrl: '{{ $coverImageOptimizedUrl }}?v={{ time() }}',
         avatarImageUrl: '{{ $avatarUrl }}?v={{ time() }}',
         
         get coverImageStyle() {
@@ -223,7 +242,7 @@ function profileHeader() {
         },
         
         refreshImages() {
-            this.coverImageUrl = '{{ $user->getFilamentCoverImageUrl() ?? '/images/default-cover-img.png' }}?v={{ time() }}';
+            this.coverImageUrl = '{{ $coverImageOptimizedUrl }}?v={{ time() }}';
             this.avatarImageUrl = '{{ $avatarUrl }}?v={{ time() }}';
         }
     }
