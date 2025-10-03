@@ -16,7 +16,7 @@
           <x-online-status-dropdown 
               :user="$user" 
               :status-options="$getStatusOptions()"
-              position="bottom" 
+              :position="$position" 
               :show-tooltip="$showTooltip"
           />
     </div>
@@ -36,7 +36,7 @@
         <x-online-status-dropdown 
             :user="$user" 
             :status-options="$getStatusOptions()"
-            position="top" 
+            :position="$position" 
             :show-tooltip="$showTooltip"
         />
     </div>

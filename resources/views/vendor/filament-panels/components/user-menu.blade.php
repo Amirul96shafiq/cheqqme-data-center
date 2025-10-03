@@ -58,11 +58,18 @@
 
                 <!-- Avatar Overlay -->
                 <div class="absolute top-6 left-1/2 transform -translate-x-1/2">
-                    <div class="relative w-14 h-14 rounded-full border-4 border-white dark:border-gray-900 bg-white dark:bg-gray-800 shadow-lgr"
-                         data-open-image-modal>
-                        <img :src="avatarImageUrl" 
-                             :alt="$user.name" 
-                             class="w-full h-full rounded-full object-cover">
+                    <div class="relative">
+                        <div class="relative w-14 h-14 rounded-full border-4 border-white dark:border-gray-900 bg-white dark:bg-gray-800"
+                             data-open-image-modal>
+                            <img :src="avatarImageUrl" 
+                                 :alt="$user.name" 
+                                 class="w-full h-full rounded-full object-cover">
+                        </div>
+                        
+                        <!-- Online Status Indicator -->
+                        <div class="absolute -bottom-0.5 -right-0.5">
+                            <x-interactive-online-status-indicator :user="$user" size="md" :showTooltip="false" position="bottom" />
+                        </div>
                     </div>
                 </div>
             </div>

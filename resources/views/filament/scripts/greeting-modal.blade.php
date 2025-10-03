@@ -226,8 +226,8 @@ function openGreetingModal(forceOpen = false) {
                             draggable="false"
                         />
                         <!-- Online Status Indicator -->
-                        <div class="relative -bottom-4 right-4">
-                            <x-interactive-online-status-indicator :user="auth()->user()" size="md" />
+                        <div class="relative -bottom-5 right-4">
+                            <x-interactive-online-status-indicator :user="auth()->user()" size="lg" />
                         </div>
                     </div>
                     <!-- Greeting Time icon and text -->
