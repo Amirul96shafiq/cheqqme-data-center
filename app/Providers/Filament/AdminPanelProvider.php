@@ -262,7 +262,7 @@ class AdminPanelProvider extends PanelProvider
                         }
 
                         // Format name: First name + initials for remaining parts
-                        $formattedName = \App\Helpers\ClientFormatter::formatClientName($userName);
+                        // $formattedName = \App\Helpers\ClientFormatter::formatClientName($userName);
 
                         $hour = now()->hour;
                         $greeting = match (true) {
@@ -272,7 +272,8 @@ class AdminPanelProvider extends PanelProvider
                             default => __('greetings.goodnight') // 12AM-6AM
                         };
 
-                        return "{$greeting}, {$formattedName}";
+                        return "{$greeting}";
+                        // return "{$greeting}, {$formattedName}";
                     })
                     ->color('primary')
                     ->url(fn () => 'javascript:void(0)'),

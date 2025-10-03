@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'morning' => 'Morning',
-    'afternoon' => 'Afternoon',
-    'evening' => 'Evening',
-    'goodnight' => 'Goodnight',
+    'morning' => 'Good Morning, Sunshine',
+    'afternoon' => 'Good Afternoon, Dear',
+    'evening' => 'Good Evening, My Love',
+    'goodnight' => 'Goodnight, Sweet Dreams',
     'profile' => 'Profile',
 ];
