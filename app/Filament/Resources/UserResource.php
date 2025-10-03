@@ -376,7 +376,6 @@ class UserResource extends Resource
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
                 ])
-                    ->dropdownPlacement('top-start'),
             ])
             ->bulkActions([
                 //
