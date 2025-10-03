@@ -40,65 +40,59 @@
         height: 9rem !important;
     }
 
-    .fi-table-row > td {
-        vertical-align: middle;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }
-
     /* Ensure global search field and results are above other elements */
-    .fi-global-search {
+    /* .fi-global-search {
         position: relative;
         z-index: 30;
-    }
+    } */
 
     /* Increase width of the global search field */
-    .fi-global-search .fi-input-wrp {
-        width: 10rem !important; /* w-80 - increased from default */
+    /* .fi-global-search .fi-input-wrp {
+        width: 10rem !important;
         min-width: 10rem !important;
-    }
+    } */
 
     /* Responsive width adjustments */
     @media (min-width: 640px) {
         .fi-global-search .fi-input-wrp {
-            width: 14rem !important; /* w-96 on sm and up */
+            width: 14rem !important;
             min-width: 14rem !important;
         }
     }
 
     @media (min-width: 1024px) {
         .fi-global-search .fi-input-wrp {
-            width: 18rem !important; /* w-112 on lg and up */
+            width: 18rem !important;
             min-width: 18rem !important;
         }
     }
 
-    .fi-global-search-results-ctn {
+    /* .fi-global-search-results-ctn {
         z-index: 50 !important;
-    }
+    } */
 
     /* Custom placement for Filament Language Switch Outside Panel (Admin) */
-    .fls-display-on {
+    /* .fls-display-on {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
         z-index: 50;
         display: flex;
-        justify-content: center; /* centers child horizontally */
+        justify-content: center;
         padding: 1rem;
-        pointer-events: none; /* optional, allows clicks to pass through */
-    }
+        pointer-events: none;
+    } */
 
     /* Enable interaction for inner content */
-    .fls-display-on > * {
-        pointer-events: auto; /* enable interaction for inner content */
-    }
+    /* .fls-display-on > * {
+        pointer-events: auto;
+    } */
 
     /* Hide the repeater-collapsible toolbar */
-    .no-repeater-collapse-toolbar .fi-link {
+    /* .no-repeater-collapse-toolbar .fi-link {
         display: none !important;
-    }
+    } */
 
     /* Global Search Modal Styles for DT */
     .global-search-modal-details .inline.font-medium {
@@ -120,51 +114,62 @@
     /* Dark mode Flowforge Kanban column: force background color */
     .fi-page .dark .ff-column,
     .fi-page .ff-column:is(.dark *) {
-        background-color: rgb(34 39 43 / 0.8) !important;
+        background-color: rgb(39 39 42 / 0.3) !important;
         --tw-bg-opacity: 1 !important;
+        border-color: rgb(63 63 70 / 0.8) !important;
     }
 
     /* Dark mode Flowforge Kanban card: force background color */
     .ff-card:is(.dark *) {
-        background-color: rgb(41 47 51) !important;
-        border-color: rgb(250 250 250 / 0.1) !important;
+        background-color: rgb(39 39 42 / 0.8) !important;
+        border-color: rgb(63 63 70 / 0.8) !important;
+    }
+
+    /* Dark mode Flowforge Kanban column header: force bottom border color */
+    .fi-page .ff-column__header:is(.dark *) {
+        border-color: rgb(63 63 70 / 0.8) !important;
     }
 
     /* Dark mode Flowforge Kanban card: force border color on hover */
     .ff-card:is(.dark *):hover {
-        border-color: rgb(250 250 250 / 0.25) !important;
+        border-color: rgb(250 250 250 / 0.2) !important;
+    }
+
+    /* Dark mode Flowforge Kanban empty column: force border color */
+    .ff-empty-column:is(.dark *) {
+        border-color: rgb(63 63 70 / 0.4) !important;
     }
 
     /* Action Board: remove vertical scrolling on the page when Flowforge board is present */
     @media (min-width: 1024px) {
-        .fi-main:has(.ff-board),
+        /* .fi-main:has(.ff-board),
         .fi-page:has(.ff-board) {
             overflow-y: hidden !important;
-        }
+        } */
 
         /* Ensure the main container fills the viewport to avoid stray scrollbars */
-        .fi-main:has(.ff-board) {
+        /* .fi-main:has(.ff-board) {
             min-height: 80vh;
             max-height: 90vh;
-        }
+        } */
     }
 
     /* Action Board: clamp each column's internal scroll area to avoid page-level scrollbars */
-    .fi-page:has(.ff-board) .ff-board__columns {
+    /* .fi-page:has(.ff-board) .ff-board__columns {
         overflow-y: hidden;
-    }
+    } */
 
     /* Tighten column content height relative to viewport to be below the page chrome */
-    .fi-page:has(.ff-board) .ff-column__content {
+    /* .fi-page:has(.ff-board) .ff-column__content {
         max-height: calc(100vh - 17rem) !important;
-    }
+    } */
 
     /* Final guard: disable body vertical scroll when the board is present */
-    body:has(.ff-board),
+    /* body:has(.ff-board),
     html:has(.ff-board) {
         overflow-y: hidden !important;
         height: 100%;
-    }
+    } */
 
     /* Explicit board sizing so page + board fits viewport without page scroll */
     .fi-page .ff-board {
@@ -172,7 +177,7 @@
     }
 
     /* Ensure columns region fills the board height and enables horizontal scrolling - synced with global theme */
-    .fi-page .ff-board__columns {
+    /* .fi-page .ff-board__columns {
         height: 100% !important;
         overflow-x: auto !important;
         overflow-y: hidden !important;
@@ -180,39 +185,30 @@
         gap: 1rem !important;
         padding: 0rem !important;
         scrollbar-width: thin !important;
-        scrollbar-color: rgb(161 161 170) transparent !important; /* zinc-400 - synced with global */
-    }
+        scrollbar-color: rgb(161 161 170) transparent !important;
+    } */
 
     /* Custom scrollbar styling for horizontal scrolling - synced with global theme */
-    .fi-page .ff-board__columns::-webkit-scrollbar {
+    /* .fi-page .ff-board__columns::-webkit-scrollbar {
         height: 8px !important;
-    }
+    } */
 
-    .fi-page .ff-board__columns::-webkit-scrollbar-track {
+    /* .fi-page .ff-board__columns::-webkit-scrollbar-track {
         background: transparent !important;
-    }
+    } */
 
-    .fi-page .ff-board__columns::-webkit-scrollbar-thumb {
+    /* .fi-page .ff-board__columns::-webkit-scrollbar-thumb {
         background: rgb(
             161 161 170
-        ) !important; /* zinc-400 - synced with global */
+        ) !important;
         border-radius: 4px !important;
-    }
+    } */
 
-    .fi-page .ff-board__columns::-webkit-scrollbar-thumb:hover {
+    /* .fi-page .ff-board__columns::-webkit-scrollbar-thumb:hover {
         background: rgb(
             113 113 122
-        ) !important; /* zinc-500 - synced with global */
-    }
-
-    /* Remove scrollbar buttons (arrows) for horizontal scrolling */
-    .fi-page .ff-board__columns::-webkit-scrollbar-button {
-        display: none !important;
-    }
-
-    .fi-page .ff-board__columns::-webkit-scrollbar-corner {
-        display: none !important;
-    }
+        ) !important;
+    } */
 
     /* Columns respect the board height and maintain proper width for horizontal scrolling */
     .fi-page .ff-column {
@@ -220,53 +216,51 @@
     }
 
     /* Enable vertical scrolling for column content - synced with global theme */
-    .fi-page .ff-column__content {
+    /* .fi-page .ff-column__content {
         overflow-y: auto !important;
         overflow-x: hidden !important;
         flex: 1 1 auto !important;
         max-height: calc(100% - 3.25rem) !important;
         scrollbar-width: thin !important;
-        scrollbar-color: rgb(161 161 170) transparent !important; /* zinc-400 - synced with global */
-    }
+        scrollbar-color: rgb(161 161 170) transparent !important;
+    } */
 
     /* Custom vertical scrollbar styling for column content - synced with global theme */
     .fi-page .ff-column__content::-webkit-scrollbar {
         width: 6px !important;
     }
 
-    .fi-page .ff-column__content::-webkit-scrollbar-track {
+    /* .fi-page .ff-column__content::-webkit-scrollbar-track {
         background: transparent !important;
-    }
+    } */
 
+    /* Custom vertical scrollbar styling for column content - synced with global theme */
     .fi-page .ff-column__content::-webkit-scrollbar-thumb {
-        background: rgb(
-            161 161 170
-        ) !important; /* zinc-400 - synced with global */
+        background: rgb(161 161 170) !important;
         border-radius: 3px !important;
     }
 
+    /* Custom vertical scrollbar hover styling for column content - synced with global theme */
     .fi-page .ff-column__content::-webkit-scrollbar-thumb:hover {
-        background: rgb(
-            113 113 122
-        ) !important; /* zinc-500 - synced with global */
+        background: rgb(250, 181, 79) !important;
     }
 
     /* Remove scrollbar buttons (arrows) for vertical scrolling */
-    .fi-page .ff-column__content::-webkit-scrollbar-button {
+    /* .fi-page .ff-column__content::-webkit-scrollbar-button {
         display: none !important;
-    }
+    } */
 
-    .fi-page .ff-column__content::-webkit-scrollbar-corner {
+    /* .fi-page .ff-column__content::-webkit-scrollbar-corner {
         display: none !important;
-    }
+    } */
 
     /* While drag-scrolling, prevent text selection cursor and highlight */
-    .ff-drag-scrolling,
+    /* .ff-drag-scrolling,
     .ff-drag-scrolling * {
         user-select: none !important;
         cursor: grabbing !important;
         cursor: -webkit-grabbing !important;
-    }
+    } */
 
     /* User mention highlighting styles - for rich text editors */
     .user-mention,
