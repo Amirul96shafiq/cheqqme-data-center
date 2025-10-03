@@ -17,7 +17,7 @@
                 </tr>
             @endif
 
-            <tr class="bg-gray-50/65 dark:bg-white/5 backdrop-blur-lg">
+            <tr class="bg-gray-50/65 dark:bg-white/5">
                 {{ $header }}
             </tr>
         </thead>
