@@ -58,15 +58,29 @@
                 @endif
             </div>
             
-            <!-- Avatar Below Cover Image -->
-            <div class="flex justify-center -mt-8">
-                <x-filament::avatar
-                    :src="filament()->getUserAvatarUrl($user)"
-                    :alt="filament()->getUserName($user)"
-                    size="w-16 h-16"
-                    class="border-4 border-white dark:border-gray-900 z-10"
-                    draggable="false"
-                />
+            <!-- Avatar Container -->
+            <div class="flex justify-center -mt-8 relative">
+                <div class="relative inline-block">
+                    <x-filament::avatar
+                        :src="filament()->getUserAvatarUrl($user)"
+                        :alt="filament()->getUserName($user)"
+                        size="w-16 h-16"
+                        class="border-4 border-white dark:border-gray-900 z-10"
+                        draggable="false"
+                    />
+                    
+                    <!-- Online Status Indicator - positioned within avatar -->
+                    <div class="absolute bottom-0.5 right-0.5 z-20">
+                        <x-tooltip position="top" text="{{ $user->online_status }}">
+                            <x-interactive-online-status-indicator 
+                                :user="$user" 
+                                size="md" 
+                                :showTooltip="false" 
+                                position="bottom"
+                            />
+                        </x-tooltip>
+                    </div>
+                </div>
             </div>
 
             <!-- User Info -->
