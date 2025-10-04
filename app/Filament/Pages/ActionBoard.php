@@ -723,7 +723,8 @@ class ActionBoard extends KanbanBoardPage
                         ->success()
                         ->send();
 
-                    // No task-created event dispatch to prevent position reversion
+                    // Refresh the entire ActionBoard page to show the new task
+                    $this->redirect(static::getUrl());
                 }),
         ];
     }
