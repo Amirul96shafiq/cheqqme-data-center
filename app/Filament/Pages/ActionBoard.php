@@ -120,30 +120,10 @@ class ActionBoard extends KanbanBoardPage
 
     public function createAction(Action $action): Action
     {
-        return $action
-            ->iconButton()
-            ->icon('heroicon-o-plus')
-            ->modalHeading(__('action.modal.create_title'))
-            ->modalWidth('3xl')
-            ->form(function (Forms\Form $form) use ($action) {
-                $args = method_exists($action, 'getArguments') ? $action->getArguments() : [];
-                $col = $args['column'] ?? $this->detectCreateColumn();
-
-                return $this->taskFormSchema($form, 'create', $col);
-            })
-            ->action(function (array $data) {
-                $task = Task::create($data);
-                $task->update(['order_column' => Task::max('order_column') + 1]); // Ensure new task is listed at the bottom
-                Notification::make()
-                    ->title(__('action.notifications.created'))
-                    ->body(__('task.notifications.created_body', ['title' => $task->title]))
-                    ->icon('heroicon-o-check-circle')
-                    ->success()
-                    ->send();
-
-                // Dispatch task-created event for badge updates
-                $this->dispatch('task-created');
-            });
+        // COMPLETELY REMOVED: Old buggy create action that caused position reversion
+        // This will hide all "+" buttons in kanban columns
+        // Users should use the header "Create Task" button instead
+        return $action->hidden();
     }
 
     public function editAction(Action $action): Action
@@ -713,6 +693,39 @@ class ActionBoard extends KanbanBoardPage
     {
         // Badge is now handled by custom JavaScript for better collapsed sidebar support
         return null;
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            // Create Task button - the only way to create tasks (replaces buggy Flowforge createAction)
+            Action::make('createTask')
+                ->label(__('action.modal.create_title'))
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->size('lg')
+                ->modalHeading(__('action.modal.create_title'))
+                ->modalWidth('3xl')
+                ->form(function (Forms\Form $form) {
+                    // Use database default status 'todo'
+                    $col = 'todo';
+
+                    return $this->taskFormSchema($form, 'create', $col);
+                })
+                ->action(function (array $data) {
+                    $task = Task::create($data);
+                    $task->update(['order_column' => Task::max('order_column') + 1]);
+
+                    Notification::make()
+                        ->title(__('action.notifications.created'))
+                        ->body(__('task.notifications.created_body', ['title' => $task->title]))
+                        ->icon('heroicon-o-check-circle')
+                        ->success()
+                        ->send();
+
+                    // No task-created event dispatch to prevent position reversion
+                }),
+        ];
     }
 
     public function getTitle(): string
