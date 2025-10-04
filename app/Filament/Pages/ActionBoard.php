@@ -208,7 +208,9 @@ class ActionBoard extends KanbanBoardPage
                                                         ->label(__('task.form.due_date'))
                                                         ->placeholder('dd/mm/yyyy')
                                                         ->native(false)
-                                                        ->displayFormat('j/n/y'),
+                                                        ->displayFormat('j/n/y')
+                                                        ->default(now()->toDateString())
+                                                        ->nullable(),
                                                     Forms\Components\Select::make('status')
                                                         ->label(__('task.form.status'))
                                                         ->options([
@@ -219,7 +221,8 @@ class ActionBoard extends KanbanBoardPage
                                                             'archived' => __('task.status.archived'),
                                                         ])
                                                         ->searchable()
-                                                        ->default($defaultStatus),
+                                                        ->default($defaultStatus)
+                                                        ->required(),
                                                     Forms\Components\Select::make('priority')
                                                         ->label(__('task.form.priority'))
                                                         ->options([
@@ -227,8 +230,9 @@ class ActionBoard extends KanbanBoardPage
                                                             'medium' => __('task.priority.medium'),
                                                             'high' => __('task.priority.high'),
                                                         ])
-                                                        ->default('medium')
-                                                        ->searchable(),
+                                                        ->default('low')
+                                                        ->searchable()
+                                                        ->nullable(),
                                                 ]),
                                             Forms\Components\RichEditor::make('description')
                                                 ->label(__('task.form.description'))
