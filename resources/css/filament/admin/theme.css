@@ -177,16 +177,16 @@
     }
 
     /* Ensure columns region fills the board height and enables horizontal scrolling - synced with global theme */
-    /* .fi-page .ff-board__columns {
-        height: 100% !important;
-        overflow-x: auto !important;
-        overflow-y: hidden !important;
-        display: flex !important;
-        gap: 1rem !important;
+    .fi-page .ff-board__columns {
+        /* height: 100% !important; */
+        /* overflow-x: auto !important; */
+        /* overflow-y: hidden !important; */
+        /* display: flex !important; */
+        /* gap: 1rem !important; */
         padding: 0rem !important;
-        scrollbar-width: thin !important;
-        scrollbar-color: rgb(161 161 170) transparent !important;
-    } */
+        /* scrollbar-width: thin !important; */
+        /* scrollbar-color: rgb(161 161 170) transparent !important; */
+    }
 
     /* Custom scrollbar styling for horizontal scrolling - synced with global theme */
     /* .fi-page .ff-board__columns::-webkit-scrollbar {
