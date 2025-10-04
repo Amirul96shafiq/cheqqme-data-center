@@ -26,7 +26,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
      data-initial-due-date-from="{{ $dueDateFrom }}"
      data-initial-due-date-to="{{ $dueDateTo }}"
      data-initial-priority-filter="{{ json_encode($priorityFilter) }}">
-    <div class="flex items-center gap-4">
+    <div class="flex items-center justify-start sm:justify-end gap-4">
         <div class="relative">
 
            <!-- Search icon (prefix) -->
@@ -40,7 +40,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                x-model="globalSearch"
                @input="handleSearchInput()"
                placeholder="{{ $placeholder ?: __('action.search_placeholder') }}"
-                class="w-[237px] py-3 pl-10 pr-12 text-sm bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-gray-600 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 hover:bg-white/40 dark:hover:bg-gray-800/40 focus:bg-white/40 dark:focus:bg-gray-800/40 focus:ring-1 focus:ring-primary-500"
+                class="w-[237px] py-2 pl-10 pr-12 text-sm bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-600 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 hover:bg-white/40 dark:hover:bg-gray-800/40 focus:bg-white/40 dark:focus:bg-gray-800/40 focus:ring-1 focus:ring-primary-500"
                autocomplete="off"
            />
               <!-- Clear button (always visible, conditionally styled) -->
@@ -59,10 +59,10 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
 
             <!-- Filter Button -->
             <div class="relative" @click.outside="filterOpen = false">
-                <x-tooltip :text="__('action.filter_tasks')" position="top" align="center">
+                <x-tooltip :text="__('action.filter_tasks')" position="left" align="center">
                 <button
                         @click="filterOpen = !filterOpen"
-                    class="flex items-center justify-center w-12 h-12 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 focus:ring-1 focus:ring-primary-500"
+                    class="flex items-center justify-center w-10 h-10 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 focus:ring-1 focus:ring-primary-500"
                         :class="{ 'ring-1 ring-primary-500 dark:ring-offset-gray-800': filterOpen }"
                 >
                     <x-heroicon-m-funnel class="w-4 h-4" />
@@ -92,7 +92,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                     x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-95"
-                    class="fixed sm:absolute top-10 sm:top-full left-1/2 sm:left-0 -translate-x-1/2 sm:translate-x-0 mt-0 sm:mt-2 z-50 w-80"
+                    class="fixed sm:absolute top-10 sm:top-full left-1/2 sm:right-0 -translate-x-1/2 sm:-translate-x-full mt-0 sm:mt-2 z-50 w-80"
                     style="display: none;"
                 >
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
