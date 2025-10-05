@@ -92,8 +92,8 @@ return [
         'cannot_force_delete_with_replies_body' => 'This comment has replies and cannot be permanently deleted. All replies must be deleted first.',
     ],
     'mentions' => [
-        'no_users_found' => 'No users found',
-        'searching' => 'Searching users...',
+        'no_users_found_for' => 'No users found for',
+        '@_not_allowed' => '@ is not allowed in the search',
         'dropdown' => [
             'navigate' => 'Navigate',
             'select' => 'Select',

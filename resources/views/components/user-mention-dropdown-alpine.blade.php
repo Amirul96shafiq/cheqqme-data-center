@@ -41,12 +41,12 @@
     <!-- Scrollable user list -->
     <div class="overflow-y-auto max-h-48 p-2" id="user-mention-list">
 		<template x-if="users.length === 0">
-				<div class="p-4 text-center text-gray-500 dark:text-gray-400">
+				<div class="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
 				<template x-if="errorMessage">
 					<span x-text="errorMessage"></span>
 				</template>
 				<template x-if="!errorMessage">
-					<span x-text="search ? ('No users found for ' + (search.startsWith('@') ? search : '@' + search)) : 'No users found'"></span>
+					<span x-text="search ? ('{{ __('comments.mentions.no_users_found_for') }} ' + (search.startsWith('@') ? search : '@' + search)) : '{{ __('comments.mentions.no_users_found') }}'"></span>
 				</template>
 				</div>
 			</template>
@@ -152,7 +152,7 @@ function userMentionDropdown() {
                 this.selectedIndex = 0;
                 if (e.detail.hasExtraAt) {
                     this.extraAtActive = true;
-                    this.errorMessage = "'@' is not allowed in the search";
+                    this.errorMessage = "{{ __('comments.mentions.@_not_allowed') }}";
                     this.users = [];
                 } else {
                     // Reset any previous error and show results (even for single '@')
@@ -192,7 +192,7 @@ function userMentionDropdown() {
 
             // Disallow additional '@' characters beyond the first trigger
             if (this.extraAtActive || afterFirstAt.includes('@')) {
-                this.errorMessage = "'@' is not allowed in the search";
+                this.errorMessage = "{{ __('comments.mentions.@_not_allowed') }}";
                 this.users = [];
                 return;
             }

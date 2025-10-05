@@ -92,8 +92,8 @@ return [
         'cannot_force_delete_with_replies_body' => 'Komen ini mempunyai balasan dan tidak boleh dipadam kekal. Semua balasan perlu dipadam terlebih dahulu.',
     ],
     'mentions' => [
-        'no_users_found' => 'Tiada pengguna ditemui',
-        'searching' => 'Mencari pengguna...',
+        'no_users_found_for' => 'Tiada pengguna ditemui untuk',
+        '@_not_allowed' => '@ tidak dibenarkan dalam pencarian',
         'dropdown' => [
             'navigate' => 'Navigasi',
             'select' => 'Pilih',
