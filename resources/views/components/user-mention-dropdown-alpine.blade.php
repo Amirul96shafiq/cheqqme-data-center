@@ -210,9 +210,13 @@ function userMentionDropdown() {
             this.errorMessage = '';
             const cleanSearch = afterFirstAt.toLowerCase();
             
-            // Start with @Everyone if search matches
+            // Get already mentioned users from the current comment text
+            const alreadyMentionedUsers = this.getAlreadyMentionedUsers();
+            
+            
+            // Start with @Everyone if search matches and not already mentioned
             const users = [];
-            if (cleanSearch === '' || 'everyone'.includes(cleanSearch)) {
+            if ((cleanSearch === '' || 'everyone'.includes(cleanSearch)) && !alreadyMentionedUsers.includes('@Everyone')) {
                 users.push({
                     id: '@Everyone',
                     username: 'Everyone',
@@ -223,15 +227,32 @@ function userMentionDropdown() {
                 });
             }
             
-            // Filter regular users
+            // Filter regular users (exclude already mentioned ones)
             const filteredUsers = this.allUsers.filter(user => {
                 const username = (user.username || '').toLowerCase();
                 const email = (user.email || '').toLowerCase();
                 const name = (user.name || '').toLowerCase();
                 
-                return username.includes(cleanSearch) || 
-                       email.includes(cleanSearch) || 
-                       name.includes(cleanSearch);
+                // Check if user matches search criteria
+                const matchesSearch = username.includes(cleanSearch) || 
+                                    email.includes(cleanSearch) || 
+                                    name.includes(cleanSearch);
+                
+                // Check if user is not already mentioned
+                // Use exact matching only to prevent false positives
+                const userIdentifiers = [
+                    user.username,
+                    user.name
+                ].filter(Boolean); // Remove empty values
+                
+                const isAlreadyMentioned = userIdentifiers.some(identifier => 
+                    alreadyMentionedUsers.some(mentioned => 
+                        // Exact match only - no partial matching
+                        mentioned.toLowerCase() === identifier.toLowerCase()
+                    )
+                );
+                
+                return matchesSearch && !isAlreadyMentioned;
             });
             
             // Limit to 10 results and add avatar URLs
@@ -249,6 +270,90 @@ function userMentionDropdown() {
         generateDefaultAvatar(user) {
             const name = user.name || user.username || 'U';
             return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=ffffff&size=64&format=png`;
+        },
+        
+        getAlreadyMentionedUsers() {
+            const mentionedUsers = [];
+            
+            // Find the target editor/input
+            let targetEditor = null;
+            
+            // First try to find by targetInputId
+            if (this.targetInputId) {
+                targetEditor = document.querySelector(`#${this.targetInputId}`) ||
+                              document.querySelector(`[data-input-id="${this.targetInputId}"]`);
+            }
+            
+            // If not found, try to find the active/composer editor
+            if (!targetEditor) {
+                // Look for composer trix-editor first
+                targetEditor = document.querySelector('[data-composer] trix-editor') ||
+                              document.querySelector('trix-editor') ||
+                              document.querySelector(".ProseMirror") ||
+                              document.querySelector('[contenteditable="true"]');
+            }
+            
+            
+            if (!targetEditor) {
+                return mentionedUsers;
+            }
+            
+            let text = '';
+            
+            // Get text content based on editor type
+            if (targetEditor.tagName === 'TRIX-EDITOR') {
+                // For Trix editor, try multiple methods to get the actual content
+                if (targetEditor.editor && targetEditor.editor.getDocument) {
+                    text = targetEditor.editor.getDocument().toString();
+                } else if (targetEditor.editor && targetEditor.editor.getHTML) {
+                    text = targetEditor.editor.getHTML();
+                } else {
+                    text = targetEditor.textContent || targetEditor.innerText || '';
+                }
+                
+                // If we got placeholder text, try to get the actual HTML content
+                if (text.includes('voluptatem consequatur') || text.includes('Lorem ipsum')) {
+                    text = targetEditor.innerHTML || targetEditor.textContent || '';
+                }
+            } else if (targetEditor.classList.contains('ProseMirror')) {
+                // For ProseMirror editor
+                text = targetEditor.textContent || targetEditor.innerText || '';
+            } else {
+                // For contenteditable elements
+                text = targetEditor.textContent || targetEditor.innerText || '';
+            }
+            
+            // Extract mentions using regex similar to the backend logic
+            // Remove HTML tags for plain text processing
+            text = text.replace(/<[^>]*>/g, '');
+            
+            
+            // Get the current search term (what user is typing after @)
+            const currentSearch = this.search.replace(/^@/, '').trim();
+            
+            // Check for @Everyone mention
+            if (text.includes('@Everyone')) {
+                mentionedUsers.push('@Everyone');
+            }
+            
+            // Find all @mentions, but exclude the one currently being typed
+            const mentionMatches = text.match(/@([A-Za-z0-9_.-]+(?:\s+[A-Za-z0-9_.-]+){0,4})/g);
+            
+            if (mentionMatches) {
+                mentionMatches.forEach(mention => {
+                    // Remove the @ symbol and get the username/name part
+                    const cleanMention = mention.substring(1).trim();
+                    
+                    // Only include if it's not the current search term being typed
+                    if (cleanMention && cleanMention !== currentSearch) {
+                        // Only add the exact mention, not individual words
+                        // This prevents partial matching issues (e.g., "Amirul" matching "Amirul96Shafiq")
+                        mentionedUsers.push(cleanMention);
+                    }
+                });
+            }
+            
+            return mentionedUsers;
         },
         
         setupKeyboardNavigation() {
