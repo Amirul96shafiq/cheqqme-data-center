@@ -143,13 +143,9 @@ function handleTrixMentionInput(e, trixEditor) {
     const atIndex = beforeCursor.lastIndexOf("@");
     if (atIndex !== -1) {
         const afterAt = beforeCursor.substring(atIndex + 1);
-        const trailingAtsMatch = beforeCursor.match(/@+$/);
-        const hasExtraAt = trailingAtsMatch
-            ? trailingAtsMatch[0].length > 1
-            : false;
         if (!afterAt.includes(" ") && !afterAt.includes("\n")) {
             const searchTerm = afterAt;
-            updateTrixMentionDropdown(trixEditor, searchTerm, hasExtraAt);
+            updateTrixMentionDropdown(trixEditor, searchTerm);
         } else {
             hideMentionDropdown();
         }
@@ -170,17 +166,9 @@ function handleProseMirrorMentionInput(e, proseMirrorEditor) {
     const atIndex = beforeCursor.lastIndexOf("@");
     if (atIndex !== -1) {
         const afterAt = beforeCursor.substring(atIndex + 1);
-        const trailingAtsMatch = beforeCursor.match(/@+$/);
-        const hasExtraAt = trailingAtsMatch
-            ? trailingAtsMatch[0].length > 1
-            : false;
         if (!afterAt.includes(" ") && !afterAt.includes("\n")) {
             const searchTerm = afterAt;
-            updateProseMirrorMentionDropdown(
-                proseMirrorEditor,
-                searchTerm,
-                hasExtraAt
-            );
+            updateProseMirrorMentionDropdown(proseMirrorEditor, searchTerm);
         } else {
             hideMentionDropdown();
         }
@@ -201,17 +189,9 @@ function handleContentEditableMentionInput(e, element) {
     const atIndex = beforeCursor.lastIndexOf("@");
     if (atIndex !== -1) {
         const afterAt = beforeCursor.substring(atIndex + 1);
-        const trailingAtsMatch = beforeCursor.match(/@+$/);
-        const hasExtraAt = trailingAtsMatch
-            ? trailingAtsMatch[0].length > 1
-            : false;
         if (!afterAt.includes(" ") && !afterAt.includes("\n")) {
             const searchTerm = afterAt;
-            updateContentEditableMentionDropdown(
-                element,
-                searchTerm,
-                hasExtraAt
-            );
+            updateContentEditableMentionDropdown(element, searchTerm);
         } else {
             hideMentionDropdown();
         }
@@ -235,7 +215,7 @@ function handleMentionKeydown(e, editor) {
 }
 
 // Update mention dropdown for Trix editor
-function updateTrixMentionDropdown(trixEditor, searchTerm, hasExtraAt = false) {
+function updateTrixMentionDropdown(trixEditor, searchTerm) {
     const inputId = getInputIdFromEditor(trixEditor);
     const composerPosition = getComposerBottomLeftPosition(trixEditor);
     const position = composerPosition || {
@@ -250,18 +230,13 @@ function updateTrixMentionDropdown(trixEditor, searchTerm, hasExtraAt = false) {
                 searchTerm: searchTerm,
                 x: position.left,
                 y: position.top,
-                hasExtraAt: hasExtraAt,
             },
         })
     );
 }
 
 // Update mention dropdown for ProseMirror editor
-function updateProseMirrorMentionDropdown(
-    proseMirrorEditor,
-    searchTerm,
-    hasExtraAt = false
-) {
+function updateProseMirrorMentionDropdown(proseMirrorEditor, searchTerm) {
     const inputId = getInputIdFromEditor(proseMirrorEditor);
     const position = {
         left: proseMirrorEditor.getBoundingClientRect().left,
@@ -275,18 +250,13 @@ function updateProseMirrorMentionDropdown(
                 searchTerm: searchTerm,
                 x: position.left,
                 y: position.top,
-                hasExtraAt: hasExtraAt,
             },
         })
     );
 }
 
 // Update mention dropdown for contenteditable element
-function updateContentEditableMentionDropdown(
-    element,
-    searchTerm,
-    hasExtraAt = false
-) {
+function updateContentEditableMentionDropdown(element, searchTerm) {
     const inputId = getInputIdFromEditor(element);
     const position = {
         left: element.getBoundingClientRect().left,
@@ -300,7 +270,6 @@ function updateContentEditableMentionDropdown(
                 searchTerm: searchTerm,
                 x: position.left,
                 y: position.top,
-                hasExtraAt: hasExtraAt,
             },
         })
     );

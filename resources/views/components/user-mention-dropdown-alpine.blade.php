@@ -41,15 +41,25 @@
     <!-- Scrollable user list -->
     <div class="overflow-y-auto max-h-48 p-2" id="user-mention-list">
 		<template x-if="users.length === 0">
-				<div class="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+			<div class="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
 				<template x-if="errorMessage">
-					<span x-text="errorMessage"></span>
+					<span class="flex flex-col items-center justify-center">
+						<span class="mb-4 inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+							<x-heroicon-o-exclamation-triangle class="w-5 h-5" />
+						</span>
+						<span x-text="errorMessage"></span>
+					</span>
 				</template>
 				<template x-if="!errorMessage">
-					<span x-text="search ? ('{{ __('comments.mentions.no_users_found_for') }} ' + (search.startsWith('@') ? search : '@' + search)) : '{{ __('comments.mentions.no_users_found') }}'"></span>
+					<span class="flex flex-col items-center justify-center">
+						<span class="mb-4 inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-300">
+							<x-heroicon-o-magnifying-glass class="w-5 h-5" />
+						</span>
+						<span x-text="search ? ('{{ __('comments.mentions.no_users_found_for') }} ' + (search.startsWith('@') ? search : '@' + search)) : '{{ __('comments.mentions.no_users_found') }}'"></span>
+					</span>
 				</template>
-				</div>
-			</template>
+			</div>
+		</template>
         
         <template x-for="(user, index) in users" :key="user.id">
             <div 
