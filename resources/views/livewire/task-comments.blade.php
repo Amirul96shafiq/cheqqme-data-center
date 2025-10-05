@@ -1214,6 +1214,37 @@
         }
 
         // Show mention dropdown for Trix editor
+        
+        // Get the bottom-left position of the composer form
+        function getComposerBottomLeftPosition(editor) {
+            try {
+                // Find the composer form container
+                const composerForm =
+                    editor.closest("form") ||
+                    editor.closest(".comment-composer") ||
+                    editor.closest("[data-composer]");
+
+                if (!composerForm) {
+                    // Fallback to editor itself
+                    const editorRect = editor.getBoundingClientRect();
+                    return {
+                        left: editorRect.left,
+                        top: editorRect.bottom + 5,
+                    };
+                }
+
+                // Get the Trix editor's position instead of the entire form
+                const editorRect = editor.getBoundingClientRect();
+                return {
+                    left: editorRect.left,
+                    top: editorRect.bottom + 5,
+                };
+            } catch (error) {
+                console.warn("Failed to get composer position:", error);
+                return null;
+            }
+        }
+        
         // Helper function to determine input ID based on editor context
         function getInputIdFromEditor(trixEditor) {
             if (trixEditor.closest('[data-composer]')) {
@@ -1248,12 +1279,11 @@
                 const rect = trixEditor.editor.getClientRectAtPosition(atIndex);
                 
                 if (rect && rect.left > 0 && rect.top > 0) {
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-                    
-                    const finalPosition = {
-                        left: rect.left + scrollLeft,
-                        top: rect.bottom + scrollTop
+                    // Use composer-based positioning instead of caret-based positioning
+                    const composerPosition = getComposerBottomLeftPosition(trixEditor);
+                    const finalPosition = composerPosition || {
+                        left: rect.left,
+                        top: rect.bottom + 5
                     };
 
                     atSymbolPosition = finalPosition;
@@ -1295,12 +1325,11 @@
 
         // Fallback method to show dropdown
         function showTrixMentionDropdownFallback(trixEditor, searchTerm, editorRect) {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-            
-            const finalPosition = {
-                left: editorRect.left + scrollLeft,
-                top: editorRect.bottom + scrollTop + 5
+            // Use composer-based positioning for consistency
+            const composerPosition = getComposerBottomLeftPosition(trixEditor);
+            const finalPosition = composerPosition || {
+                left: editorRect.left,
+                top: editorRect.bottom + 5
             };
 
             atSymbolPosition = finalPosition;
@@ -1325,11 +1354,11 @@
             // Determine which form this editor belongs to
             const inputId = getInputIdFromEditor(trixEditor);
             
-            // Calculate position for this specific editor instead of using global atSymbolPosition
-            const editorRect = trixEditor.getBoundingClientRect();
-            const position = {
-                left: editorRect.left + 20, // Offset from editor left edge
-                top: editorRect.bottom + 5   // Position below editor
+            // Use composer-based positioning for consistency
+            const composerPosition = getComposerBottomLeftPosition(trixEditor);
+            const position = composerPosition || {
+                left: trixEditor.getBoundingClientRect().left,
+                top: trixEditor.getBoundingClientRect().bottom + 5
             };
             
             console.log('📡 Dispatching Trix showMentionDropdown (update):', { 
@@ -1670,14 +1699,14 @@
                 // Show new dropdown
                 const atPosition = getCaretCoordinatesAtIndex(editor, atIndex);
 
-                // Try to get position, with fallbacks
-                let finalPosition = atPosition;
+                // Use composer-based positioning for consistency
+                let finalPosition = getComposerBottomLeftPosition(editor);
                 
-                console.log('📍 Initial position:', atPosition);
+                console.log('📍 Composer position:', finalPosition);
 
-                if (!finalPosition || finalPosition.left === 0 || finalPosition.top === 0) {
-                    console.log('🔄 Using fallback position...');
-                    // Fallback 1: Try to get editor's bounding rect
+                if (!finalPosition) {
+                    console.log('🔄 Using editor fallback position...');
+                    // Fallback: Use editor's bounding rect
                     const editorRect = editor.getBoundingClientRect();
                     if (editorRect) {
                         finalPosition = {

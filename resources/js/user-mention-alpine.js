@@ -390,13 +390,18 @@ function handleMentionInputDebounced(e, editor) {
     const searchTerm = atMatch[1] || "";
     const atIndex = beforeCursor.lastIndexOf("@");
 
-    const backChars = (searchTerm.length || 0) + 1; // include '@'
-    if (!mentionState.dropdownActive) {
-        // Show new dropdown
-        const atPosition = getCaretCoordinatesForAt(editor, backChars);
+    // Always calculate position from the @ symbol (not from current cursor)
+    // For Trix, we need to account for the fact that text might have been formatted
+    const backChars = beforeCursor.length - atIndex; // Distance from @ to current cursor
 
-        if (atPosition) {
-            mentionState.atSymbolPosition = atPosition;
+    // Position calculation for composer-based positioning
+
+    if (!mentionState.dropdownActive) {
+        // Show new dropdown - position at bottom-left of composer
+        const composerPosition = getComposerBottomLeftPosition(editor);
+
+        if (composerPosition) {
+            mentionState.atSymbolPosition = composerPosition;
             mentionState.dropdownActive = true;
 
             const inputId = getInputIdFromEditor(editor);
@@ -406,29 +411,29 @@ function handleMentionInputDebounced(e, editor) {
                     detail: {
                         inputId: inputId,
                         searchTerm: searchTerm,
-                        x: atPosition.left,
-                        y: atPosition.top,
+                        x: composerPosition.left,
+                        y: composerPosition.top,
                     },
                 })
             );
         }
     } else {
-        // Update existing dropdown: recompute @ position to follow reflow
-        const updatedPosition = getCaretCoordinatesForAt(editor, backChars);
-        if (updatedPosition) {
-            mentionState.atSymbolPosition = updatedPosition;
-        }
+        // Update existing dropdown: use fixed position at bottom-left of composer
+        const composerPosition = getComposerBottomLeftPosition(editor);
+        if (composerPosition) {
+            mentionState.atSymbolPosition = composerPosition;
 
-        window.dispatchEvent(
-            new CustomEvent("showMentionDropdown", {
-                detail: {
-                    inputId: getInputIdFromEditor(editor),
-                    searchTerm: searchTerm,
-                    x: mentionState.atSymbolPosition.left,
-                    y: mentionState.atSymbolPosition.top,
-                },
-            })
-        );
+            window.dispatchEvent(
+                new CustomEvent("showMentionDropdown", {
+                    detail: {
+                        inputId: getInputIdFromEditor(editor),
+                        searchTerm: searchTerm,
+                        x: composerPosition.left,
+                        y: composerPosition.top,
+                    },
+                })
+            );
+        }
     }
 }
 
@@ -507,14 +512,61 @@ function getCaretCoordinatesForAt(editor, backChars) {
     try {
         if (editor.tagName === "TRIX-EDITOR") {
             const sel = editor.editor.getSelectedRange();
-            const atPos = Math.max((sel ? sel[0] : 0) - backChars, 0);
-            editor.editor.setSelectedRange([atPos, atPos]);
-            const rect =
-                editor.editor.getClientRectAtPosition(atPos) ||
-                editor.getBoundingClientRect();
-            // restore current caret after measuring
-            if (sel) editor.editor.setSelectedRange(sel);
-            return { left: rect.left, top: rect.bottom + 5 };
+            const currentPos = sel ? sel[0] : 0;
+            const atPos = Math.max(currentPos - backChars, 0);
+
+            // Store original selection
+            const originalRange = sel ? [...sel] : [currentPos, currentPos];
+
+            // For Trix, try multiple approaches to get stable positioning
+            let rect;
+            try {
+                // First try: get position at the @ character
+                editor.editor.setSelectedRange([atPos, atPos]);
+                rect = editor.editor.getClientRectAtPosition(atPos);
+
+                // If that failed, try getting position at current cursor
+                if (!rect) {
+                    editor.editor.setSelectedRange([currentPos, currentPos]);
+                    rect = editor.editor.getClientRectAtPosition(currentPos);
+                }
+
+                // If still no rect, try getting the rect at the beginning of the current line
+                if (!rect) {
+                    // Try to find the beginning of the current line by searching backwards for newline
+                    let lineStart = atPos;
+                    const text = editor.editor.getDocument().toString();
+                    for (let i = atPos - 1; i >= 0; i--) {
+                        if (text[i] === "\n") {
+                            lineStart = i + 1;
+                            break;
+                        }
+                    }
+                    editor.editor.setSelectedRange([lineStart, lineStart]);
+                    rect = editor.editor.getClientRectAtPosition(lineStart);
+                }
+            } catch (e) {
+                console.warn("Trix position calculation failed:", e);
+            }
+
+            // Always restore original selection
+            editor.editor.setSelectedRange(originalRange);
+
+            // If we still couldn't get the rect, use editor bounds as fallback
+            if (!rect) {
+                const editorRect = editor.getBoundingClientRect();
+                return { left: editorRect.left, top: editorRect.bottom + 5 };
+            }
+
+            // For Trix, use a consistent Y offset
+            const adjustedTop = rect.bottom + 3;
+
+            console.log(
+                `Trix position: atPos=${atPos}, currentPos=${currentPos}, backChars=${backChars}, rect=`,
+                rect
+            );
+
+            return { left: rect.left, top: adjustedTop };
         } else if (editor.contentEditable === "true") {
             const selection = window.getSelection();
             if (!selection || selection.rangeCount === 0) return null;
@@ -545,6 +597,36 @@ function getCaretCoordinatesForAt(editor, backChars) {
         console.warn("getCaretCoordinatesForAt failed", e);
     }
     return null;
+}
+
+// Get the bottom-left position of the composer form
+function getComposerBottomLeftPosition(editor) {
+    try {
+        // Find the composer form container
+        const composerForm =
+            editor.closest("form") ||
+            editor.closest(".comment-composer") ||
+            editor.closest("[data-composer]");
+
+        if (!composerForm) {
+            // Fallback to editor itself
+            const editorRect = editor.getBoundingClientRect();
+            return {
+                left: editorRect.left,
+                top: editorRect.bottom + 5,
+            };
+        }
+
+        // Get the editor's position instead of the entire form
+        const editorRect = editor.getBoundingClientRect();
+        return {
+            left: editorRect.left,
+            top: editorRect.bottom + 5,
+        };
+    } catch (error) {
+        console.warn("Failed to get composer position:", error);
+        return null;
+    }
 }
 
 // Get input ID from editor context
