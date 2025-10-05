@@ -40,11 +40,16 @@
 
     <!-- Scrollable user list -->
     <div class="overflow-y-auto max-h-48 p-2" id="user-mention-list">
-        <template x-if="users.length === 0">
-            <div class="p-4 text-center text-gray-500 dark:text-gray-400">
-                <span x-text="search ? ('No users found for ' + search) : 'No users found'"></span>
-            </div>
-        </template>
+		<template x-if="users.length === 0">
+				<div class="p-4 text-center text-gray-500 dark:text-gray-400">
+				<template x-if="errorMessage">
+					<span x-text="errorMessage"></span>
+				</template>
+				<template x-if="!errorMessage">
+					<span x-text="search ? ('No users found for ' + (search.startsWith('@') ? search : '@' + search)) : 'No users found'"></span>
+				</template>
+				</div>
+			</template>
         
         <template x-for="(user, index) in users" :key="user.id">
             <div 
@@ -124,6 +129,8 @@ function userMentionDropdown() {
         users: [],
         selectedIndex: 0,
         search: '',
+        errorMessage: '',
+        extraAtActive: false,
         targetInputId: '',
         dropdownX: 0,
         dropdownY: 0,
@@ -143,7 +150,16 @@ function userMentionDropdown() {
                 this.dropdownX = e.detail.x || 0;
                 this.dropdownY = e.detail.y || 0;
                 this.selectedIndex = 0;
-                this.searchUsers();
+                if (e.detail.hasExtraAt) {
+                    this.extraAtActive = true;
+                    this.errorMessage = "'@' is not allowed in the search";
+                    this.users = [];
+                } else {
+                    // Reset any previous error and show results (even for single '@')
+                    this.extraAtActive = false;
+                    this.errorMessage = '';
+                    this.searchUsers();
+                }
                 this.setupKeyboardNavigation();
             });
             
@@ -171,7 +187,18 @@ function userMentionDropdown() {
         },
         
         searchUsers() {
-            const cleanSearch = this.search.replace(/^@/, '').toLowerCase();
+            const rawSearch = (this.search || '');
+            const afterFirstAt = rawSearch.replace(/^@/, '');
+
+            // Disallow additional '@' characters beyond the first trigger
+            if (this.extraAtActive || afterFirstAt.includes('@')) {
+                this.errorMessage = "'@' is not allowed in the search";
+                this.users = [];
+                return;
+            }
+
+            this.errorMessage = '';
+            const cleanSearch = afterFirstAt.toLowerCase();
             
             // Start with @Everyone if search matches
             const users = [];

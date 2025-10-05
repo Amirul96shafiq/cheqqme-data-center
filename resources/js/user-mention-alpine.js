@@ -143,9 +143,13 @@ function handleTrixMentionInput(e, trixEditor) {
     const atIndex = beforeCursor.lastIndexOf("@");
     if (atIndex !== -1) {
         const afterAt = beforeCursor.substring(atIndex + 1);
+        const trailingAtsMatch = beforeCursor.match(/@+$/);
+        const hasExtraAt = trailingAtsMatch
+            ? trailingAtsMatch[0].length > 1
+            : false;
         if (!afterAt.includes(" ") && !afterAt.includes("\n")) {
             const searchTerm = afterAt;
-            updateTrixMentionDropdown(trixEditor, searchTerm);
+            updateTrixMentionDropdown(trixEditor, searchTerm, hasExtraAt);
         } else {
             hideMentionDropdown();
         }
@@ -166,9 +170,17 @@ function handleProseMirrorMentionInput(e, proseMirrorEditor) {
     const atIndex = beforeCursor.lastIndexOf("@");
     if (atIndex !== -1) {
         const afterAt = beforeCursor.substring(atIndex + 1);
+        const trailingAtsMatch = beforeCursor.match(/@+$/);
+        const hasExtraAt = trailingAtsMatch
+            ? trailingAtsMatch[0].length > 1
+            : false;
         if (!afterAt.includes(" ") && !afterAt.includes("\n")) {
             const searchTerm = afterAt;
-            updateProseMirrorMentionDropdown(proseMirrorEditor, searchTerm);
+            updateProseMirrorMentionDropdown(
+                proseMirrorEditor,
+                searchTerm,
+                hasExtraAt
+            );
         } else {
             hideMentionDropdown();
         }
@@ -189,9 +201,17 @@ function handleContentEditableMentionInput(e, element) {
     const atIndex = beforeCursor.lastIndexOf("@");
     if (atIndex !== -1) {
         const afterAt = beforeCursor.substring(atIndex + 1);
+        const trailingAtsMatch = beforeCursor.match(/@+$/);
+        const hasExtraAt = trailingAtsMatch
+            ? trailingAtsMatch[0].length > 1
+            : false;
         if (!afterAt.includes(" ") && !afterAt.includes("\n")) {
             const searchTerm = afterAt;
-            updateContentEditableMentionDropdown(element, searchTerm);
+            updateContentEditableMentionDropdown(
+                element,
+                searchTerm,
+                hasExtraAt
+            );
         } else {
             hideMentionDropdown();
         }
@@ -215,7 +235,7 @@ function handleMentionKeydown(e, editor) {
 }
 
 // Update mention dropdown for Trix editor
-function updateTrixMentionDropdown(trixEditor, searchTerm) {
+function updateTrixMentionDropdown(trixEditor, searchTerm, hasExtraAt = false) {
     const inputId = getInputIdFromEditor(trixEditor);
     const composerPosition = getComposerBottomLeftPosition(trixEditor);
     const position = composerPosition || {
@@ -230,13 +250,18 @@ function updateTrixMentionDropdown(trixEditor, searchTerm) {
                 searchTerm: searchTerm,
                 x: position.left,
                 y: position.top,
+                hasExtraAt: hasExtraAt,
             },
         })
     );
 }
 
 // Update mention dropdown for ProseMirror editor
-function updateProseMirrorMentionDropdown(proseMirrorEditor, searchTerm) {
+function updateProseMirrorMentionDropdown(
+    proseMirrorEditor,
+    searchTerm,
+    hasExtraAt = false
+) {
     const inputId = getInputIdFromEditor(proseMirrorEditor);
     const position = {
         left: proseMirrorEditor.getBoundingClientRect().left,
@@ -250,13 +275,18 @@ function updateProseMirrorMentionDropdown(proseMirrorEditor, searchTerm) {
                 searchTerm: searchTerm,
                 x: position.left,
                 y: position.top,
+                hasExtraAt: hasExtraAt,
             },
         })
     );
 }
 
 // Update mention dropdown for contenteditable element
-function updateContentEditableMentionDropdown(element, searchTerm) {
+function updateContentEditableMentionDropdown(
+    element,
+    searchTerm,
+    hasExtraAt = false
+) {
     const inputId = getInputIdFromEditor(element);
     const position = {
         left: element.getBoundingClientRect().left,
@@ -270,6 +300,7 @@ function updateContentEditableMentionDropdown(element, searchTerm) {
                 searchTerm: searchTerm,
                 x: position.left,
                 y: position.top,
+                hasExtraAt: hasExtraAt,
             },
         })
     );

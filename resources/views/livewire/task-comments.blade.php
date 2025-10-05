@@ -1185,7 +1185,7 @@
             const beforeCursor = text.substring(0, cursorPosition);
 
             // Check for @ mention pattern - improved regex to capture search term properly
-            let atMatch = beforeCursor.match(/(?:^|\s)@(\w*)$/);
+            let atMatch = beforeCursor.match(/(?:^|\s)@([^\s\n]*)$/);
             
             if (!atMatch && beforeCursor.endsWith('@')) {
                 atMatch = ['@', '']; // New @ symbol with empty search term
@@ -1203,6 +1203,9 @@
             // Clean the search term - remove @ symbol if present
             let searchTerm = atMatch[1] || '';
             searchTerm = searchTerm.replace(/^@+/, ''); // Remove leading @ symbols
+            // Detect multiple trailing @ symbols to flag error state for dropdown
+            const trailingAtsMatch = beforeCursor.match(/@+$/);
+            const hasExtraAt = trailingAtsMatch ? trailingAtsMatch[0].length > 1 : false;
             
             const atIndex = beforeCursor.lastIndexOf('@');
 
@@ -1213,9 +1216,9 @@
             });
 
             if (!dropdownActive) {
-                showTrixMentionDropdown(trixEditor, searchTerm, atIndex);
+                showTrixMentionDropdown(trixEditor, searchTerm, atIndex, hasExtraAt);
             } else {
-                updateTrixMentionDropdown(trixEditor, searchTerm);
+                updateTrixMentionDropdown(trixEditor, searchTerm, hasExtraAt);
             }
         }
 
@@ -1279,7 +1282,7 @@
             }
         }
 
-        function showTrixMentionDropdown(trixEditor, searchTerm, atIndex) {
+        function showTrixMentionDropdown(trixEditor, searchTerm, atIndex, hasExtraAt = false) {
             try {
                 // Get position using Trix's built-in method
                 const rect = trixEditor.editor.getClientRectAtPosition(atIndex);
@@ -1302,7 +1305,8 @@
                         inputId, 
                         searchTerm, 
                         x: finalPosition.left, 
-                        y: finalPosition.top 
+                        y: finalPosition.top,
+                        hasExtraAt
                     });
 
                     window.dispatchEvent(new CustomEvent('showMentionDropdown', {
@@ -1310,7 +1314,8 @@
                             inputId: inputId,
                             searchTerm: searchTerm,
                             x: finalPosition.left,
-                            y: finalPosition.top
+                            y: finalPosition.top,
+                            hasExtraAt: hasExtraAt
                         }
                     }));
                 } else {
@@ -1330,7 +1335,7 @@
         }
 
         // Fallback method to show dropdown
-        function showTrixMentionDropdownFallback(trixEditor, searchTerm, editorRect) {
+        function showTrixMentionDropdownFallback(trixEditor, searchTerm, editorRect, hasExtraAt = false) {
             // Use composer-based positioning for consistency
             const composerPosition = getComposerBottomLeftPosition(trixEditor);
             const finalPosition = composerPosition || {
@@ -1350,13 +1355,14 @@
                     inputId: inputId,
                     searchTerm: searchTerm,
                     x: finalPosition.left,
-                    y: finalPosition.top
+                    y: finalPosition.top,
+                    hasExtraAt: hasExtraAt
                 }
             }));
         }
 
         // Update mention dropdown for Trix editor
-        function updateTrixMentionDropdown(trixEditor, searchTerm) {
+        function updateTrixMentionDropdown(trixEditor, searchTerm, hasExtraAt = false) {
             // Determine which form this editor belongs to
             const inputId = getInputIdFromEditor(trixEditor);
             
@@ -1373,7 +1379,8 @@
                 x: position.left, 
                 y: position.top,
                 editorId: trixEditor.id,
-                editorClass: trixEditor.className
+                editorClass: trixEditor.className,
+                hasExtraAt
             });
 
             window.dispatchEvent(new CustomEvent('showMentionDropdown', {
@@ -1381,7 +1388,8 @@
                     inputId: inputId,
                     searchTerm: searchTerm,
                     x: position.left,
-                    y: position.top
+                    y: position.top,
+                    hasExtraAt: hasExtraAt
                 }
             }));
         }
@@ -1669,7 +1677,7 @@
             // ENHANCED LOGIC: Handle both new @ and search updates with better pattern matching
             
             // 1. Check if we have a valid @ pattern - handle both @ at end and @ followed by space
-            let atMatch = beforeCursor.match(/(?:^|\s)@(\w*)$/);
+            let atMatch = beforeCursor.match(/(?:^|\s)@([^\s\n]*)$/);
             
             // If no match and cursor is right after @, check for @ at end of beforeCursor
             if (!atMatch && beforeCursor.endsWith('@')) {
