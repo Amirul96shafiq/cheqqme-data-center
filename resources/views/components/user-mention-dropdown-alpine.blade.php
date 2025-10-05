@@ -451,16 +451,4 @@ function userMentionDropdown() {
 .user-mention-item.dark\:bg-primary-900\/20 {
     position: relative;
 }
-
-.user-mention-item.bg-primary-50::before,
-.user-mention-item.dark\:bg-primary-900\/20::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background-color: currentColor;
-    border-radius: 2px 0 0 2px;
-}
 </style>
