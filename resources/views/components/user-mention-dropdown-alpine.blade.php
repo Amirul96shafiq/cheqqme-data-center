@@ -201,7 +201,8 @@ function userMentionDropdown() {
             const regularUsers = filteredUsers.slice(0, 10).map(user => ({
                 ...user,
                 avatar_url: user.avatar ? `/storage/${user.avatar}` : null,
-                default_avatar: this.generateDefaultAvatar(user),
+                // Prefer server-provided default avatar (Filament provider) and fall back to UI Avatars
+                default_avatar: user.default_avatar || this.generateDefaultAvatar(user),
                 is_special: false
             }));
             
@@ -209,10 +210,8 @@ function userMentionDropdown() {
         },
         
         generateDefaultAvatar(user) {
-            // Generate avatar URL using the same logic as the original
-            // This would typically use a service like Gravatar or UiAvatars
             const name = user.name || user.username || 'U';
-            return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=ffffff&size=32`;
+            return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=ffffff&size=64&format=png`;
         },
         
         setupKeyboardNavigation() {

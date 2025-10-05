@@ -225,6 +225,8 @@ Route::middleware('auth')->group(function () {
 
     // Web-authenticated mention search for Alpine dropdown (avoids 401 from API route)
     Route::get('/api/users/mention-search', function () {
+        $provider = new \Filament\AvatarProviders\UiAvatarsProvider();
+
         $users = \App\Models\User::query()
             ->select(['id', 'username', 'email', 'name', 'avatar'])
             ->orderBy('username')
@@ -236,6 +238,7 @@ Route::middleware('auth')->group(function () {
                 'email' => $u->email,
                 'name' => $u->name,
                 'avatar' => $u->avatar,
+                'default_avatar' => $provider->get($u),
             ]);
 
         return response()->json([
