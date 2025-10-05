@@ -150,6 +150,11 @@ function userMentionDropdown() {
             window.addEventListener('hideMentionDropdown', () => {
                 this.hideDropdown();
             });
+
+            // Extra safety: close dropdown when a selection is announced globally
+            window.addEventListener('userSelected', () => {
+                this.hideDropdown();
+            });
         },
         
         async loadAllUsers() {
