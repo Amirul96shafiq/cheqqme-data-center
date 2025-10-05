@@ -292,9 +292,22 @@ class AppServiceProvider extends ServiceProvider
             return '<style>.ff-card__title{font-weight:400!important}</style>';
         });
 
+        // Add version text beside search bar in header
+        \Filament\Facades\Filament::registerRenderHook(\Filament\View\PanelsRenderHook::GLOBAL_SEARCH_BEFORE, function () {
+            $gitVersion = GitHelper::getVersionString();
+
+            return <<<HTML
+                <div class="text-xs text-gray-300 dark:text-gray-600 font-mono">
+                    <span class="sm:hidden">_local</span>
+                    <span class="hidden sm:inline">{$gitVersion}</span>
+                </div>
+            HTML;
+        });
+
         // Share git version with views
         View::composer([
             'components.auth-hero',
+            'vendor.filament-panels.components.topbar.index',
         ], function ($view) {
             $view->with('gitVersion', GitHelper::getVersionString());
         });
