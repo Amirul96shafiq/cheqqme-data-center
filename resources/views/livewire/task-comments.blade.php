@@ -884,7 +884,13 @@
                     // Notify server of selected user id
                     if (typeof data.userId !== 'undefined') {
                         
-                        Livewire.dispatch('mentionSelected', { userId: data.userId });
+                        window.dispatchEvent(new CustomEvent('userSelected', {
+                            detail: {
+                                userId: data.userId,
+                                username: data.username,
+                                inputId: data.inputId
+                            }
+                        }));
                         
                     } else {
                     }
@@ -1593,15 +1599,15 @@
                 }
             }
             
-            // Listen for hideMentionDropdown event
-            Livewire.on('hideMentionDropdown', function() {
+            // Listen for hideMentionDropdown event (Alpine.js version)
+            window.addEventListener('hideMentionDropdown', function() {
                 // Dropdown hidden - reset all state
                 dropdownActive = false;
                 atSymbolPosition = null;
             });
 
-            // Listen for showMentionDropdown event - keep editor focused for typing
-            Livewire.on('showMentionDropdown', function() {
+            // Listen for showMentionDropdown event (Alpine.js version) - keep editor focused for typing
+            window.addEventListener('showMentionDropdown', function() {
                 // Mark dropdown as active when it appears
                 dropdownActive = true;
                 
@@ -1804,12 +1810,14 @@
                     y: atSymbolPosition.top 
                 });
                 
-                Livewire.dispatch('showMentionDropdown', {
-                    inputId: inputId,
-                    searchTerm: searchTerm,
-                    x: atSymbolPosition.left,
-                    y: atSymbolPosition.top
-                });
+                window.dispatchEvent(new CustomEvent('showMentionDropdown', {
+                    detail: {
+                        inputId: inputId,
+                        searchTerm: searchTerm,
+                        x: atSymbolPosition.left,
+                        y: atSymbolPosition.top
+                    }
+                }));
             }
         }
         function handleMentionKeydown(e, editor) {
