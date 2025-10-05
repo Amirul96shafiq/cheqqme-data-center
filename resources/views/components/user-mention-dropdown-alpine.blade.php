@@ -306,21 +306,11 @@ function userMentionDropdown() {
         },
         
         get dropdownStyle() {
-            const isLargeScreen = window.innerWidth >= 1536;
-            
-            if (isLargeScreen) {
-                return {
-                    left: `${this.dropdownX}px`,
-                    top: `${this.dropdownY}px`,
-                    transform: 'none'
-                };
-            } else {
-                return {
-                    left: '50%',
-                    top: '50%',
-                    transform: 'translate(-50%, -50%)'
-                };
-            }
+            return {
+                left: `${this.dropdownX}px`,
+                top: `${this.dropdownY}px`,
+                transform: 'none',
+            };
         },
         
         destroy() {

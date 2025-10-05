@@ -390,9 +390,10 @@ function handleMentionInputDebounced(e, editor) {
     const searchTerm = atMatch[1] || "";
     const atIndex = beforeCursor.lastIndexOf("@");
 
+    const backChars = (searchTerm.length || 0) + 1; // include '@'
     if (!mentionState.dropdownActive) {
         // Show new dropdown
-        const atPosition = getCaretCoordinatesAtIndex(editor, atIndex);
+        const atPosition = getCaretCoordinatesForAt(editor, backChars);
 
         if (atPosition) {
             mentionState.atSymbolPosition = atPosition;
@@ -412,7 +413,12 @@ function handleMentionInputDebounced(e, editor) {
             );
         }
     } else {
-        // Update existing dropdown
+        // Update existing dropdown: recompute @ position to follow reflow
+        const updatedPosition = getCaretCoordinatesForAt(editor, backChars);
+        if (updatedPosition) {
+            mentionState.atSymbolPosition = updatedPosition;
+        }
+
         window.dispatchEvent(
             new CustomEvent("showMentionDropdown", {
                 detail: {
@@ -455,26 +461,88 @@ function getCaretCoordinatesAtIndex(editor, index) {
         if (editor.tagName === "TRIX-EDITOR") {
             const range = [index, index];
             editor.editor.setSelectedRange(range);
-            const rect = editor.editor.getClientRectAtPosition(index);
+            const rect =
+                editor.editor.getClientRectAtPosition(index) ||
+                editor.getBoundingClientRect();
             return {
                 left: rect.left,
-                top: rect.bottom + window.scrollY + 5,
+                top: rect.bottom + 5,
             };
         } else if (editor.contentEditable === "true") {
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
-                const range = selection.getRangeAt(0);
-                range.setStart(editor, index);
-                range.setEnd(editor, index);
-                const rect = range.getBoundingClientRect();
+                const range = selection.getRangeAt(0).cloneRange();
+                // Insert a temporary marker span at the desired index to get stable coords
+                const marker = document.createElement("span");
+                marker.textContent = "\u200b";
+                const child = editor.firstChild;
+                if (
+                    child &&
+                    child.nodeType === Node.TEXT_NODE &&
+                    index <= child.length
+                ) {
+                    range.setStart(child, index);
+                    range.setEnd(child, index);
+                } else {
+                    range.setStart(editor, editor.childNodes.length);
+                    range.setEnd(editor, editor.childNodes.length);
+                }
+                range.insertNode(marker);
+                const rect = marker.getBoundingClientRect();
+                marker.remove();
                 return {
                     left: rect.left,
-                    top: rect.bottom + window.scrollY + 5,
+                    top: rect.bottom + 5,
                 };
             }
         }
     } catch (error) {
         console.warn("Could not get caret coordinates:", error);
+    }
+    return null;
+}
+
+// Compute coordinates for the original '@' by stepping back from current caret
+function getCaretCoordinatesForAt(editor, backChars) {
+    try {
+        if (editor.tagName === "TRIX-EDITOR") {
+            const sel = editor.editor.getSelectedRange();
+            const atPos = Math.max((sel ? sel[0] : 0) - backChars, 0);
+            editor.editor.setSelectedRange([atPos, atPos]);
+            const rect =
+                editor.editor.getClientRectAtPosition(atPos) ||
+                editor.getBoundingClientRect();
+            // restore current caret after measuring
+            if (sel) editor.editor.setSelectedRange(sel);
+            return { left: rect.left, top: rect.bottom + 5 };
+        } else if (editor.contentEditable === "true") {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) return null;
+            const current = selection.getRangeAt(0).cloneRange();
+            const range = selection.getRangeAt(0).cloneRange();
+            const node = range.startContainer;
+            let offset = range.startOffset - backChars;
+            if (node.nodeType !== Node.TEXT_NODE) {
+                // try text node
+                if (node.childNodes.length) {
+                    return getCaretCoordinatesAtIndex(editor, 0);
+                }
+            }
+            offset = Math.max(offset, 0);
+            range.setStart(node, offset);
+            range.setEnd(node, offset);
+            const marker = document.createElement("span");
+            marker.textContent = "\u200b";
+            range.insertNode(marker);
+            const rect = marker.getBoundingClientRect();
+            marker.remove();
+            // restore
+            selection.removeAllRanges();
+            selection.addRange(current);
+            return { left: rect.left, top: rect.bottom + 5 };
+        }
+    } catch (e) {
+        console.warn("getCaretCoordinatesForAt failed", e);
     }
     return null;
 }
