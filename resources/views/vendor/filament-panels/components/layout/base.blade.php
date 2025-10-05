@@ -316,6 +316,9 @@
 
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::SCRIPTS_AFTER, scopes: $livewire?->getRenderHookScopes()) }}
 
+        {{-- Global User Mention Dropdown Component --}}
+        <x-user-mention-dropdown-alpine />
+
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::BODY_END, scopes: $livewire?->getRenderHookScopes()) }}
     </body>
 </html>

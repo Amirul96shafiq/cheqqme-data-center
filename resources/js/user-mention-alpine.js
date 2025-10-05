@@ -33,17 +33,9 @@ function initializeMentionSystem() {
 // Legacy no-op: dropdown is provided by Blade component now
 function addMentionDropdownToPage() {}
 
-// User Mention Dropdown Alpine.js Component - DEPRECATED
+// User Mention Dropdown Alpine.js Component - REMOVED
 // This component has been moved to the Blade component to avoid duplication
-// Keeping this file for reference but the component is now defined in the Blade template
-
-// Legacy no-op: component is now provided by Blade component
-function userMentionDropdown() {
-    console.warn(
-        "userMentionDropdown from JS file is deprecated. Use the Blade component instead."
-    );
-    return {};
-}
+// The function is now defined inline in the Blade template to prevent conflicts
 
 // Initialize all editors (Trix, ProseMirror, etc.)
 function initializeAllEditors() {

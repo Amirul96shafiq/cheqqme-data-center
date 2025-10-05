@@ -2901,8 +2901,7 @@
         }
     </script>
 
-    <!-- Include the Pure Alpine.js User Mention Dropdown Component -->
-    <x-user-mention-dropdown-alpine />
+    {{-- Dropdown component moved to global layout to prevent Livewire re-rendering issues --}}
     
     <!-- Floating Emoji Picker Container for Livewire Comments -->
     <div id="livewire-comments-emoji-picker-container" class="fixed hidden z-[11]">
