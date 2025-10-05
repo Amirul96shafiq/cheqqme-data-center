@@ -2,14 +2,10 @@
 <div 
     data-mention-dropdown-root
     x-data="userMentionDropdown()"
+    x-cloak
     x-show="showDropdown"
-    x-transition:enter="transition ease-out duration-150"
-    x-transition:enter-start="opacity-0 scale-95 translate-y-1"
-    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-    x-transition:leave="transition ease-in duration-100"
-    x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-    x-transition:leave-end="opacity-0 scale-95 translate-y-1"
-    class="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl max-h-64 w-80 user-mention-dropdown rounded-xl overflow-hidden"
+    x-transition.opacity.duration.0ms
+    class="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl max-h-64 w-80 user-mention-dropdown rounded-xl overflow-hidden origin-top-left transform-gpu will-change-transform motion-reduce:transition-none motion-reduce:transform-none"
     :style="dropdownStyle"
     @click.away="hideDropdown()"
     @keydown.escape="hideDropdown()"
