@@ -16,6 +16,7 @@ export default defineConfig({
                 "resources/css/task-comments.css",
                 "resources/js/presence-status.js",
                 "resources/js/kanban-alpine.js",
+                "resources/js/user-mention-alpine.js",
                 "resources/css/kanban-drag-drop.css",
             ],
             refresh: true,

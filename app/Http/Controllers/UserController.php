@@ -124,4 +124,34 @@ class UserController extends Controller
             );
         }
     }
+
+    public function mentionSearch(Request $request)
+    {
+        try {
+            $users = User::query()
+                ->select(['id', 'username', 'email', 'name', 'avatar'])
+                ->orderBy('username')
+                ->get()
+                ->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'username' => $user->username,
+                        'email' => $user->email,
+                        'name' => $user->name,
+                        'avatar' => $user->avatar,
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'users' => $users,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve users',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

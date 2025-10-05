@@ -245,6 +245,7 @@ Route::middleware([\App\Http\Middleware\ApiKeyAuth::class])->group(function () {
     Route::get('/important-urls', [ImportantUrlController::class, 'index'])->name('api.important-urls');
     Route::get('/phone-numbers', [PhoneNumberController::class, 'index'])->name('api.phone-numbers');
     Route::get('/users', [UserController::class, 'index'])->name('api.users');
+    Route::get('/users/mention-search', [UserController::class, 'mentionSearch'])->name('api.users.mention-search');
     Route::get('/tasks', [TaskController::class, 'index'])->name('api.tasks');
     Route::get('/comments', [CommentController::class, 'index'])->name('api.comments');
     Route::get('/comments/{comment}', [CommentController::class, 'show'])->name('api.comments.show');

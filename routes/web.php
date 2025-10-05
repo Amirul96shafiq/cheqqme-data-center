@@ -223,6 +223,27 @@ Route::middleware('auth')->group(function () {
         Route::post('/api/user/restore-auto-status', [\App\Http\Controllers\Api\UserStatusController::class, 'restoreFromAutoStatus'])->name('api.user.restore-auto-status');
     });
 
+    // Web-authenticated mention search for Alpine dropdown (avoids 401 from API route)
+    Route::get('/api/users/mention-search', function () {
+        $users = \App\Models\User::query()
+            ->select(['id', 'username', 'email', 'name', 'avatar'])
+            ->orderBy('username')
+            ->limit(500)
+            ->get()
+            ->map(fn ($u) => [
+                'id' => $u->id,
+                'username' => $u->username,
+                'email' => $u->email,
+                'name' => $u->name,
+                'avatar' => $u->avatar,
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'users' => $users,
+        ]);
+    })->name('web.users.mention-search');
+
     // Fallback polling endpoint (kept for compatibility, will be removed after WebSocket migration)
     Route::get('/action-board/assigned-active-count', function () {
         if (! auth()->check()) {

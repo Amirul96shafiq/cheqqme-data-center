@@ -1161,7 +1161,7 @@
                     e.preventDefault();
                     dropdownActive = false;
                     atSymbolPosition = null;
-                    Livewire.dispatch('hideMentionDropdown');
+                    window.dispatchEvent(new CustomEvent('hideMentionDropdown'));
                 }
                 // Note: Arrow keys and Enter are now handled by the dropdown's global listener
                 // This allows the editor to maintain focus while still enabling navigation
@@ -1189,7 +1189,7 @@
                 if (dropdownActive) {
                     dropdownActive = false;
                     atSymbolPosition = null;
-                    Livewire.dispatch('hideMentionDropdown');
+                    window.dispatchEvent(new CustomEvent('hideMentionDropdown'));
                 }
                 return;
             }
@@ -1269,12 +1269,14 @@
                         y: finalPosition.top 
                     });
 
-                    Livewire.dispatch('showMentionDropdown', {
-                        inputId: inputId,
-                        searchTerm: searchTerm,
-                        x: finalPosition.left,
-                        y: finalPosition.top
-                    });
+                    window.dispatchEvent(new CustomEvent('showMentionDropdown', {
+                        detail: {
+                            inputId: inputId,
+                            searchTerm: searchTerm,
+                            x: finalPosition.left,
+                            y: finalPosition.top
+                        }
+                    }));
                 } else {
                     // Fallback to editor position
                     const editorRect = trixEditor.getBoundingClientRect();
@@ -1308,12 +1310,14 @@
             const inputId = getInputIdFromEditor(trixEditor);
             
 
-            Livewire.dispatch('showMentionDropdown', {
-                inputId: inputId,
-                searchTerm: searchTerm,
-                x: finalPosition.left,
-                y: finalPosition.top
-            });
+            window.dispatchEvent(new CustomEvent('showMentionDropdown', {
+                detail: {
+                    inputId: inputId,
+                    searchTerm: searchTerm,
+                    x: finalPosition.left,
+                    y: finalPosition.top
+                }
+            }));
         }
 
         // Update mention dropdown for Trix editor
@@ -1337,12 +1341,14 @@
                 editorClass: trixEditor.className
             });
 
-            Livewire.dispatch('showMentionDropdown', {
-                inputId: inputId,
-                searchTerm: searchTerm,
-                x: position.left,
-                y: position.top
-            });
+            window.dispatchEvent(new CustomEvent('showMentionDropdown', {
+                detail: {
+                    inputId: inputId,
+                    searchTerm: searchTerm,
+                    x: position.left,
+                    y: position.top
+                }
+            }));
         }
         // Find the reply form editor specifically
         function findReplyEditor() {
@@ -1648,7 +1654,7 @@
                 if (dropdownActive) {
                     dropdownActive = false;
                     atSymbolPosition = null;
-                    Livewire.dispatch('hideMentionDropdown');
+                    window.dispatchEvent(new CustomEvent('hideMentionDropdown'));
                 }
                 return;
             }
@@ -1720,12 +1726,14 @@
                         y: finalPosition.top 
                     });
                     
-                    Livewire.dispatch('showMentionDropdown', {
-                        inputId: inputId,
-                        searchTerm: searchTerm,
-                        x: finalPosition.left,
-                        y: finalPosition.top
-                    });
+                    window.dispatchEvent(new CustomEvent('showMentionDropdown', {
+                        detail: {
+                            inputId: inputId,
+                            searchTerm: searchTerm,
+                            x: finalPosition.left,
+                            y: finalPosition.top
+                        }
+                    }));
                 } else {
                     console.log('❌ Could not determine position for dropdown');
                 }
@@ -1815,7 +1823,7 @@
                 e.preventDefault();
                 dropdownActive = false;
                 atSymbolPosition = null;
-                Livewire.dispatch('hideMentionDropdown');
+                window.dispatchEvent(new CustomEvent('hideMentionDropdown'));
             }
             // Note: Arrow keys and Enter are now handled by the dropdown's Alpine.js component
             // All other keys (letters, numbers, etc.) pass through to the editor for typing
@@ -2848,10 +2856,8 @@
         }
     </script>
 
-    <!-- Include the User Mention Dropdown Component -->
-    <div wire:ignore>
-        @livewire('user-mention-dropdown')
-    </div>
+    <!-- Include the Pure Alpine.js User Mention Dropdown Component -->
+    <x-user-mention-dropdown-alpine />
     
     <!-- Floating Emoji Picker Container for Livewire Comments -->
     <div id="livewire-comments-emoji-picker-container" class="fixed hidden z-[11]">
