@@ -94,6 +94,7 @@ return [
     'mentions' => [
         'no_users_found_for' => 'No users found for',
         '@_not_allowed' => '@ is not allowed in the search',
+        'loading' => 'Loading...',
         'dropdown' => [
             'navigate' => 'Navigate',
             'select' => 'Select',

@@ -55,7 +55,7 @@
 						<span class="mb-4 inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-300">
 							<x-heroicon-o-magnifying-glass class="w-5 h-5" />
 						</span>
-						<span x-text="search ? ('{{ __('comments.mentions.no_users_found_for') }} ' + (search.startsWith('@') ? search : '@' + search)) : '{{ __('comments.mentions.no_users_found') }}'"></span>
+						<span x-text="search ? ('{{ __('comments.mentions.no_users_found_for') }} ' + (search.startsWith('@') ? search : '@' + search)) : '{{ __('comments.mentions.loading') }}'"></span>
 					</span>
 				</template>
 			</div>

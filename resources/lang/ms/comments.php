@@ -94,6 +94,7 @@ return [
     'mentions' => [
         'no_users_found_for' => 'Tiada pengguna ditemui untuk',
         '@_not_allowed' => '@ tidak dibenarkan dalam pencarian',
+        'loading' => 'Memuatkan...',
         'dropdown' => [
             'navigate' => 'Navigasi',
             'select' => 'Pilih',
