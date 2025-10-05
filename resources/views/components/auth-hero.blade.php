@@ -32,7 +32,7 @@
                 <div class="flex flex-col justify-start space-y-6 max-w-2xl">
                     
                     {{-- Version Text --}}
-                    <div class="text-xs text-gray-600/20 dark:text-gray-500">
+                    <div class="text-xs text-gray-600/20 dark:text-gray-500 font-mono">
                         {{ $gitVersion ?? 'v0.3_local' }}
                     </div>
                     
