@@ -65,8 +65,8 @@
             <div 
                 class="flex items-center space-x-3 p-2 rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 user-mention-item transition-colors duration-75"
                 :class="{
-                    'bg-blue-50 dark:bg-blue-900/20': selectedIndex === index,
-                    'border-l-4 border-primary-500 bg-primary-50 dark:bg-primary-900/20': user.is_special
+                    'bg-primary-50 dark:bg-primary-900/20 text-primary-500': selectedIndex === index,
+                    '': user.is_special
                 }"
                 :data-index="index"
                 @mouseenter="selectedIndex = index"
@@ -112,7 +112,7 @@
                     <div class="flex items-center space-x-2 min-w-0">
                         <p 
                             class="text-sm font-medium truncate flex-shrink-0 user-mention-username"
-                            :class="user.is_special ? 'text-orange-600 dark:text-orange-400' : 'text-gray-900 dark:text-gray-100'"
+                            :class="user.is_special ? 'text-primary-600 dark:text-primary-400' : 'text-gray-900 dark:text-gray-100'"
                             x-text="user.username"
                         ></p>
                         <template x-if="user.name && user.name !== user.username">
@@ -123,7 +123,7 @@
                     </div>
                     <p 
                         class="text-xs truncate mt-1 user-mention-email"
-                        :class="user.is_special ? 'text-orange-500 dark:text-orange-300' : 'text-gray-500 dark:text-gray-400'"
+                        :class="user.is_special ? 'text-primary-500 dark:text-primary-300' : 'text-gray-500 dark:text-gray-400'"
                         x-text="user.email"
                     ></p>
                 </div>
@@ -447,20 +447,20 @@ function userMentionDropdown() {
 }
 
 /* Enhanced selection styles */
-.user-mention-item.bg-blue-50,
-.user-mention-item.dark\:bg-blue-900\/20 {
+.user-mention-item.bg-primary-50,
+.user-mention-item.dark\:bg-primary-900\/20 {
     position: relative;
 }
 
-.user-mention-item.bg-blue-50::before,
-.user-mention-item.dark\:bg-blue-900\/20::before {
+.user-mention-item.bg-primary-50::before,
+.user-mention-item.dark\:bg-primary-900\/20::before {
     content: '';
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
     width: 3px;
-    background-color: rgb(59, 130, 246);
-    border-radius: 0 2px 2px 0;
+    background-color: currentColor;
+    border-radius: 2px 0 0 2px;
 }
 </style>
