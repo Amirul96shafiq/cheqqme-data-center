@@ -5,6 +5,31 @@
          isFocusMode: false,
          focusedCommentId: null,
         baseEditPath: null,
+        lastSharedId: null,
+        feedbackTimeoutId: null,
+        async shareComment(commentId) {
+            try {
+                const base = this.baseEditPath ?? (window.location.pathname || '').replace(/\/(comments)\/(\d+)(?:\/)?$/, '');
+                const path = `${base.replace(/\/(comments)\/(\d+)(?:\/)?$/, '')}/comments/${commentId}`;
+                const url = `${window.location.origin}${path}`;
+                await navigator.clipboard.writeText(url);
+                // Filament native notification
+                window.dispatchEvent(new CustomEvent('notify', {
+                    detail: { status: 'success', message: 'Comment link copied' }
+                }));
+                // Inline feedback near the clicked button (2s)
+                this.lastSharedId = Number(commentId);
+                if (this.feedbackTimeoutId) clearTimeout(this.feedbackTimeoutId);
+                this.feedbackTimeoutId = setTimeout(() => { this.lastSharedId = null; }, 2000);
+            } catch (e) {
+                window.dispatchEvent(new CustomEvent('notify', {
+                    detail: { status: 'danger', message: 'Failed to copy link' }
+                }));
+                this.lastSharedId = Number(commentId);
+                if (this.feedbackTimeoutId) clearTimeout(this.feedbackTimeoutId);
+                this.feedbackTimeoutId = setTimeout(() => { this.lastSharedId = null; }, 2000);
+            }
+        },
         init() {
             // Determine base edit path (strip any /comments/{id}) and sync UI from URL
             const path = window.location.pathname || '';
@@ -247,6 +272,17 @@
                                                 </span>
                                                 
                                             </button>
+
+                                            <!-- Share button (copy focus link) -->
+                                            <div class="flex items-center">
+                                                <button type="button"
+                                                        x-on:click="shareComment({{ $comment->id }})"
+                                                        class="flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900/20 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200"
+                                                        title="{{ __('Share') }}">
+                                                    @svg('heroicon-o-share', 'w-3 h-3')
+                                                </button>
+                                                <span class="ml-1 text-[10px] text-primary-600 dark:text-primary-400" x-show="lastSharedId === {{ $comment->id }}" x-transition.opacity.duration.150ms>{{ __('Copied') }}</span>
+                                            </div>
                                             
                                             <!-- Group actions dropdown (Focus, Edit, Delete) -->
                                             @if(auth()->id() === $comment->user_id)

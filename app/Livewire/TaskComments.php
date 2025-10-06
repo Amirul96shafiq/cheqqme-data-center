@@ -60,6 +60,11 @@ class TaskComments extends Component implements HasForms
     // Timestamp to force re-render
     public int $lastRefresh = 0;
 
+    // Deep-link focused comment handling
+    public ?int $focusCommentId = null;
+
+    public ?int $focusParentId = null;
+
     #[On('refreshTaskComments')]
     public function refresh(): void
     {
@@ -121,6 +126,41 @@ class TaskComments extends Component implements HasForms
         }
         if (method_exists($this, 'composerForm')) {
             $this->composerForm->fill(['newComment' => '']);
+        }
+
+        // Handle deep links: ensure focused comment is loaded and replies expanded
+        $focusId = (int) request()->get('focus_comment', 0);
+        if ($focusId > 0) {
+            $this->focusCommentId = $focusId;
+
+            $comment = $this->task->comments()->find($focusId);
+            if ($comment) {
+                $targetTopLevelId = $comment->parent_id ?: $comment->id;
+                $this->focusParentId = $comment->parent_id ?: null;
+
+                if ($comment->parent_id && ! in_array($comment->parent_id, $this->expandedReplies, true)) {
+                    $this->expandedReplies[] = $comment->parent_id;
+                }
+
+                // Determine the position of the target top-level comment in desc created_at order
+                $target = $this->task->comments()->where('id', $targetTopLevelId)->whereNull('parent_id')->first();
+                if ($target) {
+                    $position = $this->task->comments()
+                        ->whereNull('parent_id')
+                        ->where(function ($q) use ($target) {
+                            $q->where('created_at', '>', $target->created_at)
+                                ->orWhere(function ($q2) use ($target) {
+                                    $q2->where('created_at', $target->created_at)
+                                        ->where('id', '>=', $target->id);
+                                });
+                        })
+                        ->count();
+
+                    if ($position > $this->visibleCount) {
+                        $this->visibleCount = $position;
+                    }
+                }
+            }
         }
     }
 
