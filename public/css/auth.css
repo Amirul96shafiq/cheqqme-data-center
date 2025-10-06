@@ -519,7 +519,7 @@ img#heroImage.hero-image-exit-right {
 @keyframes slideRight {
     from {
         opacity: 0;
-        transform: translateX(-100%);
+        transform: translateX(100%);
     }
     to {
         opacity: 1;
@@ -545,7 +545,7 @@ img#heroImage.hero-image-exit-right {
     }
     to {
         opacity: 0;
-        transform: translateX(-100%);
+        transform: translateX(100%);
     }
 }
 
