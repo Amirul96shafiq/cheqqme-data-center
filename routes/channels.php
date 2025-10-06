@@ -21,7 +21,7 @@ Broadcast::channel('online-users', function (User $user) {
         'id' => $user->id,
         'name' => $user->name,
         'email' => $user->email,
-        'avatar' => $user->avatar_url ?? null,
+        'avatar' => $user->getFilamentAvatarUrl(), // allow frontend to render Filament default when null
         'status' => $user->online_status ?? 'online',
         'last_seen' => now()->toISOString(),
     ];
@@ -35,4 +35,15 @@ Broadcast::channel('App.Models.User.{id}', function (User $user, $id) {
 // Private channel for user-specific data
 Broadcast::channel('user.{id}', function (User $user, $id) {
     return (int) $user->id === (int) $id;
+});
+
+// Presence channel for users currently viewing a specific task edit page
+Broadcast::channel('task-viewers.{taskId}', function (User $user, int $taskId) {
+    // Authorize any authenticated user to join; return minimal profile data
+    return [
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'avatar' => $user->getFilamentAvatarUrl(), // allow frontend to render Filament default when null
+    ];
 });
