@@ -1,4 +1,4 @@
 import "./bootstrap";
 import "./app-custom";
 import "./presence-status";
-import "./user-mention-alpine";
+import "./user-mention-system";

@@ -224,28 +224,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Web-authenticated mention search for Alpine dropdown (avoids 401 from API route)
-    Route::get('/api/users/mention-search', function () {
-        $provider = new \Filament\AvatarProviders\UiAvatarsProvider();
-
-        $users = \App\Models\User::query()
-            ->select(['id', 'username', 'email', 'name', 'avatar'])
-            ->orderBy('username')
-            ->limit(500)
-            ->get()
-            ->map(fn ($u) => [
-                'id' => $u->id,
-                'username' => $u->username,
-                'email' => $u->email,
-                'name' => $u->name,
-                'avatar' => $u->avatar,
-                'default_avatar' => $provider->get($u),
-            ]);
-
-        return response()->json([
-            'success' => true,
-            'users' => $users,
-        ]);
-    })->name('web.users.mention-search');
+    Route::get('/api/users/mention-search', [\App\Http\Controllers\UserMentionController::class, 'search'])->name('web.users.mention-search');
 
     // Fallback polling endpoint (kept for compatibility, will be removed after WebSocket migration)
     Route::get('/action-board/assigned-active-count', function () {
