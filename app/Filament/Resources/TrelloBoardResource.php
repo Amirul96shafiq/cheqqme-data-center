@@ -280,25 +280,9 @@ class TrelloBoardResource extends Resource
                     ->dateTime('j/n/y, h:i A')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('updated_at')
+                Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('trelloboard.table.updated_at_by'))
-                    ->formatStateUsing(function ($state, $record) {
-                        // Show '-' if there's no update or updated_by
-                        $updatedAt = $record->updated_at;
-                        $createdAt = $record->created_at;
-                        if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
-                            return '-';
-                        }
-
-                        $user = $record->updatedBy;
-                        $formattedName = 'Unknown';
-
-                        if ($user) {
-                            $formattedName = $user->short_name;
-                        }
-
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
-                    })
+                    ->view('filament.resources.trello-board-resource.updated-by-column')
                     ->sortable(),
             ])
             ->filters([

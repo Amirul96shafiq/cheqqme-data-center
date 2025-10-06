@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\DocumentResource\Pages;
 use App\Filament\Resources\DocumentResource\RelationManagers\DocumentActivityLogRelationManager;
-use App\Filament\Resources\ProjectResource;
 use App\Models\Document;
 use Closure;
 use Filament\Forms\Components\Actions\Action;
@@ -384,25 +383,9 @@ class DocumentResource extends Resource
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))
                     ->dateTime('j/n/y, h:i A')->sortable(),
-                TextColumn::make('updated_at')
+                Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('document.table.updated_at_by'))
-                    ->formatStateUsing(function ($state, $record) {
-                        // Show '-' if there's no update or updated_by
-                        $updatedAt = $record->updated_at;
-                        $createdAt = $record->created_at;
-                        if (! $record->updated_by || ($updatedAt && $createdAt && $updatedAt->eq($createdAt))) {
-                            return '-';
-                        }
-
-                        $user = $record->updatedBy;
-                        $formattedName = 'Unknown';
-
-                        if ($user) {
-                            $formattedName = $user->short_name;
-                        }
-
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
-                    })
+                    ->view('filament.resources.document-resource.updated-by-column')
                     ->sortable(),
             ])
             ->filters([

@@ -339,7 +339,7 @@ class ClientResource extends Resource
                         return ClientFormatter::formatClientDisplay($state, $record->company_name);
                     })
                     ->tooltip(function ($record) {
-                        return __('client.table.tooltip.full_name') . ": {$record->pic_name}" . ", " . __('client.table.tooltip.company') . ": {$record->company_name}";
+                        return __('client.table.tooltip.full_name').": {$record->pic_name}".', '.__('client.table.tooltip.company').": {$record->company_name}";
                     }),
                 TextColumn::make('pic_contact_number')
                     ->label(__('client.table.pic_contact_number'))
@@ -356,26 +356,9 @@ class ClientResource extends Resource
                     ->label(__('client.table.created_at'))
                     ->dateTime('j/n/y, h:i A')
                     ->sortable(),
-                TextColumn::make('updated_at')
+                Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('client.table.updated_at_by'))
-                    ->formatStateUsing(function ($state, $record) {
-                        // Show '-' if there's no update or updated_by
-                        if (
-                            ! $record->updated_by ||
-                            $record->updated_at?->eq($record->created_at)
-                        ) {
-                            return '-';
-                        }
-
-                        $user = $record->updatedBy;
-                        $formattedName = 'Unknown';
-
-                        if ($user) {
-                            $formattedName = $user->short_name;
-                        }
-
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
-                    })
+                    ->view('filament.resources.client-resource.updated-by-column')
                     ->sortable(),
             ])
             ->filters([

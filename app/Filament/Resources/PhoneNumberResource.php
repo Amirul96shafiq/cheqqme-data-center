@@ -314,26 +314,9 @@ class PhoneNumberResource extends Resource
                     ->label(__('phonenumber.table.created_at'))
                     ->dateTime('j/n/y, h:i A')
                     ->sortable(),
-                TextColumn::make('updated_at')
+                Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('phonenumber.table.updated_at_by'))
-                    ->formatStateUsing(function ($state, $record) {
-                        // Show '-' if there's no update or updated_by
-                        if (
-                            ! $record->updated_by ||
-                            $record->updated_at?->eq($record->created_at)
-                        ) {
-                            return '-';
-                        }
-
-                        $user = $record->updatedBy;
-                        $formattedName = 'Unknown';
-
-                        if ($user) {
-                            $formattedName = $user->short_name;
-                        }
-
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
-                    })
+                    ->view('filament.resources.phone-number-resource.updated-by-column')
                     ->sortable(),
             ])
             ->filters([
