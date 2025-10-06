@@ -33,8 +33,7 @@ export function initTaskViewersBanner(root) {
             viewers.slice(0, 5).forEach(function (u) {
                 if (u.avatar) {
                     var img = document.createElement("img");
-                    img.className =
-                        "h-6 w-6 rounded-full";
+                    img.className = "h-6 w-6 rounded-full";
                     img.alt = u.name || "User";
                     img.src = u.avatar;
                     avatars.appendChild(img);
@@ -159,8 +158,7 @@ export function initBoardViewersBanner(root) {
             viewers.slice(0, 5).forEach(function (u) {
                 if (u.avatar) {
                     var img = document.createElement("img");
-                    img.className =
-                        "h-6 w-6 rounded-full dark:ring-gray-900";
+                    img.className = "h-6 w-6 rounded-full dark:ring-gray-900";
                     img.alt = u.name || "User";
                     img.src = u.avatar;
                     avatars.appendChild(img);

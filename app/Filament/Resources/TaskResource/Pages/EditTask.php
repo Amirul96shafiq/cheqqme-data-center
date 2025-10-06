@@ -7,12 +7,9 @@ use App\Filament\Resources\TaskResource;
 use Filament\Notifications\Notification;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\EditRecord;
-// use Kenepa\ResourceLock\Resources\Pages\Concerns\UsesResourceLock;
 
 class EditTask extends EditRecord
 {
-    // use UsesResourceLock;
-
     protected static string $resource = TaskResource::class;
 
     // Use custom Blade template

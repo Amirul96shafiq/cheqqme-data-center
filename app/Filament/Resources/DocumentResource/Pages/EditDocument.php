@@ -5,13 +5,12 @@ namespace App\Filament\Resources\DocumentResource\Pages;
 use App\Filament\Pages\Base\BaseEditRecord;
 use App\Filament\Resources\DocumentResource;
 use Filament\Actions;
-use Kenepa\ResourceLock\Resources\Pages\Concerns\UsesResourceLock;
 
 class EditDocument extends BaseEditRecord
 {
-    use UsesResourceLock;
-
     protected static string $resource = DocumentResource::class;
+
+    protected static string $view = 'filament.resources.document-resource.pages.edit-document';
 
     protected function getFormActions(): array
     {

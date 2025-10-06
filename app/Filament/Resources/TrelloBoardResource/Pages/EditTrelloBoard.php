@@ -5,13 +5,13 @@ namespace App\Filament\Resources\TrelloBoardResource\Pages;
 use App\Filament\Pages\Base\BaseEditRecord;
 use App\Filament\Resources\TrelloBoardResource;
 use Filament\Actions;
-use Kenepa\ResourceLock\Resources\Pages\Concerns\UsesResourceLock;
 
 class EditTrelloBoard extends BaseEditRecord
 {
-    use UsesResourceLock;
 
     protected static string $resource = TrelloBoardResource::class;
+
+    protected static string $view = 'filament.resources.trello-board-resource.pages.edit-trello-board';
 
     protected function getFormActions(): array
     {

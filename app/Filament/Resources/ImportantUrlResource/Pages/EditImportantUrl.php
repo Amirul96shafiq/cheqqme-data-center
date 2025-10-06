@@ -5,13 +5,12 @@ namespace App\Filament\Resources\ImportantUrlResource\Pages;
 use App\Filament\Pages\Base\BaseEditRecord;
 use App\Filament\Resources\ImportantUrlResource;
 use Filament\Actions;
-use Kenepa\ResourceLock\Resources\Pages\Concerns\UsesResourceLock;
-
+ 
 class EditImportantUrl extends BaseEditRecord
 {
-    use UsesResourceLock;
-
     protected static string $resource = ImportantUrlResource::class;
+
+    protected static string $view = 'filament.resources.important-url-resource.pages.edit-important-url';
 
     protected function getFormActions(): array
     {

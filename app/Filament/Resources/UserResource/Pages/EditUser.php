@@ -5,13 +5,12 @@ namespace App\Filament\Resources\UserResource\Pages;
 use App\Filament\Pages\Base\BaseEditRecord;
 use App\Filament\Resources\UserResource;
 use Filament\Actions;
-use Kenepa\ResourceLock\Resources\Pages\Concerns\UsesResourceLock;
 
 class EditUser extends BaseEditRecord
 {
-    use UsesResourceLock;
-
     protected static string $resource = UserResource::class;
+
+    protected static string $view = 'filament.resources.user-resource.pages.edit-user';
 
     protected function getFormActions(): array
     {
