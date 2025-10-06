@@ -7,11 +7,11 @@ use App\Filament\Resources\TaskResource;
 use Filament\Notifications\Notification;
 use Filament\Pages\Actions;
 use Filament\Resources\Pages\EditRecord;
-use Kenepa\ResourceLock\Resources\Pages\Concerns\UsesResourceLock;
+// use Kenepa\ResourceLock\Resources\Pages\Concerns\UsesResourceLock;
 
 class EditTask extends EditRecord
 {
-    use UsesResourceLock;
+    // use UsesResourceLock;
 
     protected static string $resource = TaskResource::class;
 
@@ -63,7 +63,7 @@ class EditTask extends EditRecord
                 ->label(__('task.action.comment'))
                 ->icon('heroicon-o-chat-bubble-oval-left-ellipsis')
                 ->color('primary')
-                ->visible(fn() => true) // Will be controlled by CSS for responsive behavior
+                ->visible(fn () => true) // Will be controlled by CSS for responsive behavior
                 ->extraAttributes([
                     'class' => '2xl:hidden', // Hide on large screens and above
                     'onclick' => 'scrollToComments(); return false;', // Client-side scroll, prevent default action
