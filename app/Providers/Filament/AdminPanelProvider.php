@@ -32,10 +32,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 // Global Search Modal by CharrafiMed
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Request;
-// ActivityLog by Rômulo Ramos
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Kenepa\ResourceLock\ResourceLockPlugin;
-// Resource Lock by Kenepa
+// ActivityLog by Rômulo Ramos
 use Rmsramos\Activitylog\ActivitylogPlugin;
 
 class AdminPanelProvider extends PanelProvider
@@ -367,8 +365,6 @@ class AdminPanelProvider extends PanelProvider
                 ActivitylogPlugin::make()
                     ->navigationGroup(fn () => __('activitylog.navigation_group'))
                     ->navigationSort(11),
-
-                ResourceLockPlugin::make(),
             ]);
     }
 }
