@@ -56,6 +56,12 @@
                         draggable="false"
                     />
                 @endif
+                <!-- User ID badge -->
+                <div class="absolute top-1 right-1 z-20">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/25 text-white dark:bg-black/25">
+                        ID: {{ $user->id }}
+                    </span>
+                </div>
             </div>
             
             <!-- Avatar Container -->
