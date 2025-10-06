@@ -8,7 +8,11 @@
 <div 
     x-data="{ 
         showModal: false,
-        openModal() {
+        modalPosition: { x: 0, y: 0 },
+        openModal(event) {
+            // Capture click position
+            this.modalPosition.x = event.clientX;
+            this.modalPosition.y = event.clientY + 10; // 10px below cursor
             this.showModal = true;
         },
         closeModal() {
@@ -26,7 +30,7 @@
 >
     <!-- Clickable Avatar -->
     <button 
-        @click.prevent="openModal()"
+        @click.prevent="openModal($event)"
         class="cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full"
         type="button"
     >

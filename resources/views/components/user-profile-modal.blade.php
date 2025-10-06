@@ -13,6 +13,7 @@
             x-transition:leave-end="opacity-0"
             class="fixed inset-0 z-[9999] overflow-y-auto"
             x-cloak
+            x-ref="modalContainer"
         >
             <!-- Backdrop -->
             <div 
@@ -28,7 +29,14 @@
             ></div>
 
             <!-- Modal -->
-            <div class="flex min-h-full items-center justify-center p-4">
+            <div 
+                class="fixed p-4"
+                :style="{
+                    left: modalPosition.x + 'px',
+                    top: modalPosition.y + 'px',
+                    transform: 'translateX(-50%)'
+                }"
+            >
                 <div 
                     x-show="showModal"
                     x-transition:enter="ease-out duration-300"

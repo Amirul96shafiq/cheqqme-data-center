@@ -7,14 +7,18 @@
 <div 
     x-data="{ 
         showModal: false,
-        openModal() {
+        modalPosition: { x: 0, y: 0 },
+        openModal(event) {
+            // Capture click position
+            this.modalPosition.x = event.clientX;
+            this.modalPosition.y = event.clientY + 10; // 10px below cursor
             this.showModal = true;
         },
         closeModal() {
             this.showModal = false;
         }
     }"
-    @click.prevent="openModal()"
+    @click.prevent="openModal($event)"
     class="cursor-pointer"
     x-init="$watch('showModal', value => {
         if (value) {
