@@ -358,6 +358,15 @@ Route::middleware('auth')->group(function () {
             ],
         ]);
     })->name('profile.debug-tab-logs');
+
+    // Focused comment deep link: redirect to Task edit while preserving focus comment via query param
+    Route::get('/admin/tasks/{task}/edit/comments/{comment}', function (\App\Models\Task $task, \App\Models\Comment $comment) {
+        // Redirect to Filament Task edit page and carry the focused comment id
+        $url = \App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $task->getKey()]);
+        $separator = str_contains($url, '?') ? '&' : '?';
+
+        return redirect()->to($url.$separator.'focus_comment='.$comment->getKey());
+    })->whereNumber('task')->whereNumber('comment')->name('admin.tasks.edit.focus');
 });
 
 // Weather API routes

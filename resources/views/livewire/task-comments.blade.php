@@ -1,18 +1,85 @@
 <!-- Task Comments Component -->
 <div class="flex flex-col flex-1 h-full min-h-0 rounded-xl" 
-     x-data="{
+    x-data="{
          ...notificationHandler(),
          isFocusMode: false,
          focusedCommentId: null,
+        baseEditPath: null,
+        init() {
+            // Determine base edit path (strip any /comments/{id}) and sync UI from URL
+            const path = window.location.pathname || '';
+            const match = path.match(/\/(comments)\/(\d+)(?:\/)?$/);
+            if (match) {
+                this.baseEditPath = path.replace(/\/(comments)\/(\d+)(?:\/)?$/, '');
+                const id = Number(match[2]);
+                if (!Number.isNaN(id)) {
+                    this.focusedCommentId = id;
+                    this.isFocusMode = true;
+                }
+            } else {
+                this.baseEditPath = path;
+                // Also support query param focus_comment for deep links that were redirected
+                const params = new URLSearchParams(window.location.search);
+                const q = params.get('focus_comment');
+                if (q) {
+                    const qid = Number(q);
+                    if (!Number.isNaN(qid)) {
+                        this.focusedCommentId = qid;
+                        this.isFocusMode = true;
+                        // Normalize URL to /comments/{id} without reloading
+                        try {
+                            const newPath = `${this.baseEditPath}/comments/${qid}`;
+                            history.replaceState({ commentId: qid }, '', newPath);
+                        } catch (e) {}
+                    }
+                }
+            }
+
+            // Keep UI in sync with browser navigation (back/forward)
+            window.addEventListener('popstate', () => {
+                const p = window.location.pathname || '';
+                const m = p.match(/\/(comments)\/(\d+)(?:\/)?$/);
+                if (m) {
+                    const cid = Number(m[2]);
+                    if (!Number.isNaN(cid)) {
+                        this.focusedCommentId = cid;
+                        this.isFocusMode = true;
+                    }
+                } else {
+                    this.isFocusMode = false;
+                    this.focusedCommentId = null;
+                }
+            });
+        },
          enterFocusMode(commentId) {
              this.focusedCommentId = commentId;
              this.isFocusMode = true;
+            // Push focus URL without reloading
+            try {
+                const base = this.baseEditPath ?? (window.location.pathname || '');
+                const newPath = `${base.replace(/\/(comments)\/(\d+)(?:\/)?$/, '')}/comments/${commentId}`;
+                if (window.location.pathname !== newPath) {
+                    history.pushState({ commentId }, '', newPath);
+                }
+            } catch (e) {
+                // no-op
+            }
          },
          exitFocusMode() {
              this.isFocusMode = false;
              this.focusedCommentId = null;
+            // Restore base edit URL without reloading
+            try {
+                const base = this.baseEditPath ?? (window.location.pathname || '').replace(/\/(comments)\/(\d+)(?:\/)?$/, '');
+                if (window.location.pathname !== base) {
+                    history.pushState({}, '', base);
+                }
+            } catch (e) {
+                // no-op
+            }
          }
      }"
+    x-init="init()"
      x-on:keydown.ctrl.enter.prevent="
          ($event.target.closest('[data-composer]') || $event.target.closest('.minimal-comment-editor')) && 
          ($wire.editingId === null || $wire.editingId === undefined) && 
