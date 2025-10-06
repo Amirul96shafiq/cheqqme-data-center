@@ -1209,11 +1209,11 @@
             
             const atIndex = beforeCursor.lastIndexOf('@');
 
-            console.log('🔍 Trix mention detection:', { 
-                beforeCursor: beforeCursor.substring(Math.max(0, beforeCursor.length - 20)),
-                rawMatch: atMatch,
-                cleanedSearchTerm: searchTerm
-            });
+            // console.log('🔍 Trix mention detection:', { 
+            //     beforeCursor: beforeCursor.substring(Math.max(0, beforeCursor.length - 20)),
+            //     rawMatch: atMatch,
+            //     cleanedSearchTerm: searchTerm
+            // });
 
             if (!dropdownActive) {
                 showTrixMentionDropdown(trixEditor, searchTerm, atIndex, hasExtraAt);
@@ -1301,13 +1301,13 @@
                     // Determine input ID based on editor context
                     const inputId = getInputIdFromEditor(trixEditor);
                     
-                    console.log('� Dispatching Trix showMentionDropdown:', { 
-                        inputId, 
-                        searchTerm, 
-                        x: finalPosition.left, 
-                        y: finalPosition.top,
-                        hasExtraAt
-                    });
+                    // console.log('� Dispatching Trix showMentionDropdown:', { 
+                    //     inputId, 
+                    //     searchTerm, 
+                    //     x: finalPosition.left, 
+                    //     y: finalPosition.top,
+                    //     hasExtraAt
+                    // });
 
                     window.dispatchEvent(new CustomEvent('showMentionDropdown', {
                         detail: {
@@ -1373,15 +1373,15 @@
                 top: trixEditor.getBoundingClientRect().bottom + 5
             };
             
-            console.log('📡 Dispatching Trix showMentionDropdown (update):', { 
-                inputId, 
-                searchTerm, 
-                x: position.left, 
-                y: position.top,
-                editorId: trixEditor.id,
-                editorClass: trixEditor.className,
-                hasExtraAt
-            });
+            // console.log('📡 Dispatching Trix showMentionDropdown (update):', { 
+            //     inputId, 
+            //     searchTerm, 
+            //     x: position.left, 
+            //     y: position.top,
+            //     editorId: trixEditor.id,
+            //     editorClass: trixEditor.className,
+            //     hasExtraAt
+            // });
 
             window.dispatchEvent(new CustomEvent('showMentionDropdown', {
                 detail: {
@@ -1545,12 +1545,12 @@
         }
 
         function initializeEditor(editor) {
-            console.log('🚀 Initializing editor:', { 
-                tagName: editor.tagName, 
-                id: editor.id, 
-                className: editor.className,
-                alreadyInitialized: !!editor.dataset.mentionsInitialized
-            });
+            // console.log('🚀 Initializing editor:', { 
+            //     tagName: editor.tagName, 
+            //     id: editor.id, 
+            //     className: editor.className,
+            //     alreadyInitialized: !!editor.dataset.mentionsInitialized
+            // });
             
             if (editor.dataset.mentionsInitialized) {
                 return;
@@ -1685,11 +1685,11 @@
                 if (atMatch) {
                     // This is a new @ symbol, treat as empty search term
                     atMatch = ['@', '']; // Simulate match with empty search term
-                    console.log('🎯 Found @ at end, treating as new mention');
+                    // console.log('🎯 Found @ at end, treating as new mention');
                 }
             }
             
-            console.log('🔎 Pattern matching result:', { atMatch, dropdownActive });
+            // console.log('🔎 Pattern matching result:', { atMatch, dropdownActive });
             // If no match, hide the dropdown
             if (!atMatch) {
                 console.log('❌ No @ pattern found, hiding dropdown if active');
@@ -1706,20 +1706,20 @@
             const searchTerm = atMatch[1] || '';
             const atIndex = beforeCursor.lastIndexOf('@');
             
-            console.log('✅ Valid @ pattern found:', { searchTerm, atIndex, dropdownActive });
+            // console.log('✅ Valid @ pattern found:', { searchTerm, atIndex, dropdownActive });
             
             if (!dropdownActive) {
-                console.log('🚀 Showing new dropdown...');
+                // console.log('🚀 Showing new dropdown...');
                 // Show new dropdown
                 const atPosition = getCaretCoordinatesAtIndex(editor, atIndex);
 
                 // Use composer-based positioning for consistency
                 let finalPosition = getComposerBottomLeftPosition(editor);
                 
-                console.log('📍 Composer position:', finalPosition);
+                // console.log('📍 Composer position:', finalPosition);
 
                 if (!finalPosition) {
-                    console.log('🔄 Using editor fallback position...');
+                    // console.log('🔄 Using editor fallback position...');
                     // Fallback: Use editor's bounding rect
                     const editorRect = editor.getBoundingClientRect();
                     if (editorRect) {
@@ -1762,12 +1762,12 @@
                         }
                     }
                     
-                    console.log('📡 Dispatching showMentionDropdown:', { 
-                        inputId, 
-                        searchTerm, 
-                        x: finalPosition.left, 
-                        y: finalPosition.top 
-                    });
+                    // console.log('📡 Dispatching showMentionDropdown:', { 
+                    //     inputId, 
+                    //     searchTerm, 
+                    //     x: finalPosition.left, 
+                    //     y: finalPosition.top 
+                    // });
                     
                     window.dispatchEvent(new CustomEvent('showMentionDropdown', {
                         detail: {
@@ -1781,7 +1781,7 @@
                     console.log('❌ Could not determine position for dropdown');
                 }
             } else {
-                console.log('🔄 Updating existing dropdown...');
+                // console.log('🔄 Updating existing dropdown...');
                 // Update existing dropdown with new search term
                 // Determine the input ID based on the editor element
                 let inputId;
@@ -1811,12 +1811,12 @@
                     }
                 }
                 
-                console.log('📡 Dispatching showMentionDropdown (update):', { 
-                    inputId, 
-                    searchTerm, 
-                    x: atSymbolPosition.left, 
-                    y: atSymbolPosition.top 
-                });
+                // console.log('📡 Dispatching showMentionDropdown (update):', { 
+                //     inputId, 
+                //     searchTerm, 
+                //     x: atSymbolPosition.left, 
+                //     y: atSymbolPosition.top 
+                // });
                 
                 window.dispatchEvent(new CustomEvent('showMentionDropdown', {
                     detail: {
@@ -1886,16 +1886,16 @@
                 return;
             }
             
-            console.log('🎯 Starting insertMention:', { 
-                editor: editor.tagName, 
-                username: username,
-                editorClass: editor.className,
-                isEditReplyForm: !!editor.closest('.edit-reply-form[data-edit-reply-form="true"]'),
-                formType: editor.closest('.edit-reply-form[data-edit-reply-form="true"]') ? 'edit-reply-form' : 
-                         editor.closest('.edit-form[data-edit-form="true"]') ? 'edit-form' :
-                         editor.closest('.reply-form[data-reply-form="true"]') ? 'reply-form' :
-                         editor.closest('[data-composer]') ? 'composer' : 'unknown'
-            });
+            // console.log('🎯 Starting insertMention:', { 
+            //     editor: editor.tagName, 
+            //     username: username,
+            //     editorClass: editor.className,
+            //     isEditReplyForm: !!editor.closest('.edit-reply-form[data-edit-reply-form="true"]'),
+            //     formType: editor.closest('.edit-reply-form[data-edit-reply-form="true"]') ? 'edit-reply-form' : 
+            //              editor.closest('.edit-form[data-edit-form="true"]') ? 'edit-form' :
+            //              editor.closest('.reply-form[data-reply-form="true"]') ? 'reply-form' :
+            //              editor.closest('[data-composer]') ? 'composer' : 'unknown'
+            // });
             
             insertingMention = true;
             
@@ -1957,12 +1957,12 @@
                         
                         const beforeCursor = text.substring(0, cursorPosition);
                         
-                        console.log('🔍 insertMention debug:', {
-                            text: text,
-                            cursorPosition: cursorPosition,
-                            beforeCursor: beforeCursor,
-                            username: username
-                        });
+                        // console.log('🔍 insertMention debug:', {
+                        //     text: text,
+                        //     cursorPosition: cursorPosition,
+                        //     beforeCursor: beforeCursor,
+                        //     username: username
+                        // });
                         
                         // Find the @ symbol in the current text - look for the last @ in the entire text
                         const atIndex = text.lastIndexOf('@');
@@ -2122,10 +2122,10 @@
                     // Get current text content
                     const currentText = trixEditor.getDocument().toString();
                     
-                    console.log('🔍 Trix insertMention debug:', {
-                        currentText: currentText,
-                        username: username
-                    });
+                    // console.log('🔍 Trix insertMention debug:', {
+                    //     currentText: currentText,
+                    //     username: username
+                    // });
                     
                     // Find the @ symbol in the current text
                     const atIndex = currentText.lastIndexOf('@');
@@ -2141,12 +2141,12 @@
                         if (spaceIndex !== -1) endIndex = Math.min(endIndex, spaceIndex);
                         if (newlineIndex !== -1) endIndex = Math.min(endIndex, newlineIndex);
                         
-                        console.log('🔍 Trix replacement calculation:', {
-                            atIndex: atIndex,
-                            textFromAt: textFromAt,
-                            endIndex: endIndex,
-                            partialToReplace: currentText.substring(atIndex, atIndex + endIndex)
-                        });
+                        // console.log('🔍 Trix replacement calculation:', {
+                        //     atIndex: atIndex,
+                        //     textFromAt: textFromAt,
+                        //     endIndex: endIndex,
+                        //     partialToReplace: currentText.substring(atIndex, atIndex + endIndex)
+                        // });
                         
                         // Create new text: replace @ and partial text with @username
                         const beforeAt = currentText.substring(0, atIndex);
