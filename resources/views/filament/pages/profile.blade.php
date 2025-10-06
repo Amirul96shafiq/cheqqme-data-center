@@ -7,8 +7,8 @@
     class="fi-resource-edit-record-page"
 >
     {{-- Cover Image Section --}}
-    <div class="relative h-48 md:h-64 lg:h-80 xl:h-96 w-full overflow-visible rounded-2xl z-10">
-        <img
+    <div class="relative h-[30vh] md:h-64 lg:h-80 xl:h-96 w-full overflow-visible rounded-2xl z-10">
+    <img
             src="{{ $user && $user->cover_image ? $user->getFilamentCoverImageUrl() : asset('storage/default-cover-img.png') }}"
             alt="Cover Image"
             class="w-full h-full object-cover rounded-2xl"
@@ -40,11 +40,40 @@
                 </div>
 
                 {{-- User information --}}
-                <div class="space-y-1">
+                <div class="space-y-3">
                     {{-- Username --}}
                     <h1 class="text-lg md:text-2xl lg:text-3xl font-bold drop-shadow-lg">
                         {{ $user->username ?? 'Username' }}
                     </h1>
+
+                    {{-- Name --}}
+                    @if ($user && $user->name)
+                        <p class="text-xs md:text-sm text-white/90 drop-shadow !mt-0">
+                            {{ $user->name }}
+                        </p>
+                    @endif
+
+                    {{-- Email --}}
+                    @if ($user && $user->email)
+                        <p class="text-[11px] md:text-lg font-semibold text-white/80 drop-shadow">
+                            {{ $user->email }}
+                        </p>
+                    @endif
+
+                    {{-- Badges: Country & Timezone --}}
+                    <div class="flex flex-wrap gap-2 justify-center">
+                        @if ($user && $user->country)
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium bg-teal-100/90 text-teal-900">
+                                {{ $user->country }}
+                            </span>
+                        @endif
+
+                        @if ($user && $user->timezone)
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium bg-teal-100/90 text-teal-900">
+                                {{ $user->timezone }}
+                            </span>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
