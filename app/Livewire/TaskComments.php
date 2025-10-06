@@ -51,6 +51,8 @@ class TaskComments extends Component implements HasForms
 
     public bool $isLoadingMore = false; // loading state for show more button
 
+    public ?int $cachedTotalComments = null; // cache total comments count to avoid repeated queries
+
     // Track mentions selected from dropdown to avoid relying only on text parsing
     public array $pendingMentionUserIds = [];
 
@@ -255,6 +257,8 @@ class TaskComments extends Component implements HasForms
             $this->composerForm->fill(['newComment' => '']);
         }
         $this->composerData['newComment'] = '';
+        // Invalidate cached total count
+        $this->cachedTotalComments = null;
         // keep visibleCount stable (newest-first list already includes new comment)
         $this->dispatch('refreshTaskComments');
         // Browser event to forcibly clear editor DOM (fallback)
@@ -766,7 +770,9 @@ class TaskComments extends Component implements HasForms
 
         // Only adjust visibleCount for main comments (not replies)
         if (is_null($comment->parent_id)) {
-            $total = $this->task->comments()->whereNull('parent_id')->count();
+            // Invalidate cached total count
+            $this->cachedTotalComments = null;
+            $total = $this->getTotalCommentsProperty();
             if ($this->visibleCount > $total) {
                 $this->visibleCount = $total;
             }
@@ -803,9 +809,16 @@ class TaskComments extends Component implements HasForms
     public function getCommentsProperty()
     {
         return $this->task->comments()
-            // Remove the deleted filter to show deleted comments
+            ->where('status', '!=', 'deleted')
             ->whereNull('parent_id') // Only top-level comments
-            ->with(['user', 'reactions.user', 'replies.user', 'replies.reactions.user'])
+            ->with([
+                'user:id,name,avatar',
+                'reactions.user:id,name,avatar',
+                'replies' => function ($query) {
+                    $query->where('status', '!=', 'deleted')
+                        ->with(['user:id,name,avatar', 'reactions.user:id,name,avatar']);
+                },
+            ])
             ->orderByDesc('created_at')
             ->take($this->visibleCount)
             ->get();
@@ -814,25 +827,28 @@ class TaskComments extends Component implements HasForms
     // Get the total comments
     public function getTotalCommentsProperty(): int
     {
-        return $this->task->comments()->whereNull('parent_id')->count();
+        if ($this->cachedTotalComments === null) {
+            $this->cachedTotalComments = $this->task->comments()
+                ->where('status', '!=', 'deleted')
+                ->whereNull('parent_id')
+                ->count();
+        }
+
+        return $this->cachedTotalComments;
     }
 
     // Show more comments
     public function showMore(): void
     {
-        $this->isLoadingMore = true;
-
-        $total = $this->task->comments()->where('status', '!=', 'deleted')->whereNull('parent_id')->count();
+        $total = $this->getTotalCommentsProperty();
         $remaining = $total - $this->visibleCount;
-        if ($remaining <= 0) {
-            $this->isLoadingMore = false;
 
+        if ($remaining <= 0) {
             return;
         }
+
         $this->visibleCount += min(5, $remaining);
         $this->dispatch('comments-show-more');
-
-        $this->isLoadingMore = false;
     }
 
     // Render the component
@@ -1110,7 +1126,9 @@ class TaskComments extends Component implements HasForms
 
         // Adjust visibleCount if it exceeds remaining comments
         if ($isMainComment) {
-            $total = $this->task->comments()->whereNull('parent_id')->count();
+            // Invalidate cached total count
+            $this->cachedTotalComments = null;
+            $total = $this->getTotalCommentsProperty();
             if ($this->visibleCount > $total) {
                 $this->visibleCount = $total;
             }

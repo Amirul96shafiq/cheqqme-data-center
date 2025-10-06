@@ -7,6 +7,7 @@
         baseEditPath: null,
         lastSharedId: null,
         feedbackTimeoutId: null,
+        isLoadingMore: false,
         // Livewire-entangled composer value for enabling/disabling submit button
         composerValue: $wire.entangle('composerData.newComment').live,
         async shareComment(commentId) {
@@ -104,6 +105,24 @@
             } catch (e) {
                 // no-op
             }
+         },
+         async showMoreComments() {
+             // Set loading state immediately for better UX
+             this.isLoadingMore = true;
+             
+             try {
+                 // Call Livewire method without awaiting to avoid blocking
+                 $wire.showMore().then(() => {
+                     // Loading state will be managed by Livewire's re-render
+                     this.isLoadingMore = false;
+                 }).catch((error) => {
+                     console.error('Error loading more comments:', error);
+                     this.isLoadingMore = false;
+                 });
+             } catch (error) {
+                 console.error('Error calling showMore:', error);
+                 this.isLoadingMore = false;
+             }
          }
      }"
     x-init="init()"
@@ -644,15 +663,14 @@
             @if($this->totalComments > $visibleCount)
                 @php $remaining = $this->totalComments - $visibleCount; @endphp
                 <div class="mt-2 relative z-10" x-show="!isFocusMode">
-                    <button wire:click="showMore" 
+                    <button @click="showMoreComments()" 
                             type="button" 
                             class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40 relative z-10"
-                            wire:loading.attr="disabled"
-                            wire:target="showMore">
-                        <span wire:loading.remove wire:target="showMore">
+                            :disabled="isLoadingMore">
+                        <span x-show="!isLoadingMore">
                             {{ __('comments.list.show_more', ['count' => ($remaining < 5 ? $remaining : 5)]) }}
                         </span>
-                        <span wire:loading wire:target="showMore">
+                        <span x-show="isLoadingMore">
                             {{ __('comments.list.loading') }}
                         </span>
                     </button>
