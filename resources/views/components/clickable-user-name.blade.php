@@ -18,6 +18,13 @@
             }
         }"
         class="inline-flex items-center"
+        x-init="$watch('showModal', value => {
+            if (value) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        })"
     >
         @if($showDate && $date)
             <span class="text-sm text-gray-900 dark:text-white">
@@ -27,7 +34,7 @@
         @endif
         
         <button 
-            @click="openModal()"
+            @click.prevent="openModal()"
             class="cursor-pointer text-sm font-semibold text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-200 underline transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded px-1"
             type="button"
         >
@@ -38,18 +45,19 @@
             <span>)</span>
         @endif
 
-        <!-- User Profile Modal -->
-        <div 
-            x-show="showModal"
-            x-transition:enter="ease-out duration-300"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="ease-in duration-200"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 z-50 overflow-y-auto"
-            x-cloak
-        >
+        <!-- User Profile Modal - Teleported to body for proper z-index -->
+        <template x-teleport="body">
+            <div 
+                x-show="showModal"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 z-[9999] overflow-y-auto"
+                x-cloak
+            >
             <!-- Backdrop -->
             <div 
                 x-show="showModal"
@@ -60,7 +68,7 @@
                 x-transition:leave-start="opacity-100"
                 x-transition:leave-end="opacity-0"
                 class="fixed inset-0 bg-black bg-opacity-50"
-                @click="closeModal()"
+                @click.prevent="closeModal()"
             ></div>
 
             <!-- Modal -->
@@ -162,7 +170,8 @@
                     <!-- Close Button -->
                     <div class="absolute top-4 right-4">
                         <button
-                            @click="closeModal()"
+                            @click.prevent="closeModal()"
+                            type="button"
                             class="rounded-md p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700 transition-colors"
                         >
                             <x-heroicon-o-x-mark class="w-5 h-5" />
@@ -171,6 +180,8 @@
                 </div>
             </div>
         </div>
+            </div>
+        </template>
     </div>
 @else
     @if($showDate && $date)

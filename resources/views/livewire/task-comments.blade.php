@@ -101,32 +101,34 @@
                          x-transition:leave-start="opacity-100 transform scale-100"
                          x-transition:leave-end="opacity-0 transform scale-95">
                         <div class="flex-shrink-0 relative">
-                        @php
-                            $avatarPath = $comment->user->avatar ?? null;
-                            $avatarUrl = $avatarPath ? \Storage::url($avatarPath) : null;
-                        @endphp
-                        @if($avatarUrl)
-                            <img src="{{ $avatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm relative z-10 {{ auth()->id() === $comment->user_id ? 'border-2 border-primary-500/80' : '' }}" loading="lazy">
-                        @else
-                            <!-- Default avatar if no avatar is set -->
-                            @php
-                                $defaultAvatarUrl = (new \Filament\AvatarProviders\UiAvatarsProvider())->get($comment->user);
-                            @endphp
-                            @if($defaultAvatarUrl)
-                                <img src="{{ $defaultAvatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm relative z-10 {{ auth()->id() === $comment->user_id ? 'border-2 border-primary-500/80' : '' }}" loading="lazy">
-                            @else
-                                <div class="w-10 h-10 rounded-full bg-primary-500 ring-1 ring-white/20 dark:ring-gray-800 shadow-sm flex items-center justify-center relative z-10 {{ auth()->id() === $comment->user_id ? 'border-2 border-white/80' : '' }}">
-                                    <span class="text-sm font-medium text-white">
-                                        {{ substr($comment->user->username ?? __('comments.meta.user_fallback'), 0, 1) }}
-                                    </span>
+                            <x-clickable-avatar-wrapper :user="$comment->user">
+                                @php
+                                    $avatarPath = $comment->user->avatar ?? null;
+                                    $avatarUrl = $avatarPath ? \Storage::url($avatarPath) : null;
+                                @endphp
+                                @if($avatarUrl)
+                                    <img src="{{ $avatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm relative z-10 {{ auth()->id() === $comment->user_id ? 'border-2 border-primary-500/80' : '' }}" loading="lazy">
+                                @else
+                                    <!-- Default avatar if no avatar is set -->
+                                    @php
+                                        $defaultAvatarUrl = (new \Filament\AvatarProviders\UiAvatarsProvider())->get($comment->user);
+                                    @endphp
+                                    @if($defaultAvatarUrl)
+                                        <img src="{{ $defaultAvatarUrl }}" alt="{{ $comment->user->username ?? __('comments.meta.user_fallback') }}" class="w-10 h-10 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm relative z-10 {{ auth()->id() === $comment->user_id ? 'border-2 border-primary-500/80' : '' }}" loading="lazy">
+                                    @else
+                                        <div class="w-10 h-10 rounded-full bg-primary-500 ring-1 ring-white/20 dark:ring-gray-800 shadow-sm flex items-center justify-center relative z-10 {{ auth()->id() === $comment->user_id ? 'border-2 border-white/80' : '' }}">
+                                            <span class="text-sm font-medium text-white">
+                                                {{ substr($comment->user->username ?? __('comments.meta.user_fallback'), 0, 1) }}
+                                            </span>
+                                        </div>
+                                    @endif
+                                @endif
+                                
+                                <!-- Online Status Indicator -->
+                                <div class="relative bottom-3 -right-7 z-20">
+                                    <x-online-status-indicator :user="$comment->user" size="md" />
                                 </div>
-                            @endif
-                        @endif
-                        
-                        <!-- Online Status Indicator -->
-                        <div class="relative bottom-3 -right-7 z-20">
-                            <x-online-status-indicator :user="$comment->user" size="md" />
-                        </div>
+                            </x-clickable-avatar-wrapper>
                         <!-- Vertical connecting line that extends from avatar -->
                         <div class="absolute left-1/2 top-10 w-[0.5px] {{ auth()->id() === $comment->user_id ? 'bg-primary-500/80' : 'bg-gray-300/80 dark:bg-gray-600/80' }} {{ $comment->isDeleted() ? 'opacity-25' : '' }} transform -translate-x-1/2 z-0" style="height: calc(100% + 1.5rem);"></div>
                         </div>
