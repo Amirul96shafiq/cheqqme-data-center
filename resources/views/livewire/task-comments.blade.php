@@ -7,6 +7,8 @@
         baseEditPath: null,
         lastSharedId: null,
         feedbackTimeoutId: null,
+        // Livewire-entangled composer value for enabling/disabling submit button
+        composerValue: $wire.entangle('composerData.newComment').live,
         async shareComment(commentId) {
             try {
                 const base = this.baseEditPath ?? (window.location.pathname || '').replace(/\/(comments)\/(\d+)(?:\/)?$/, '');
@@ -108,6 +110,7 @@
      x-on:keydown.ctrl.enter.prevent="
          ($event.target.closest('[data-composer]') || $event.target.closest('.minimal-comment-editor')) && 
          ($wire.editingId === null || $wire.editingId === undefined) && 
+         composerValue && composerValue.replace(/<[^>]+>/g, '').trim() !== '' &&
          $wire.addComment().then(() => {
              setTimeout(() => {
                  const editor = document.querySelector('[data-composer] trix-editor');
@@ -143,7 +146,14 @@
             @enderror <!-- Error message -->
 
             <!-- Button to add a new comment -->
-            <button wire:click="addComment" wire:loading.attr="disabled" wire:target="addComment" type="button" class="w-full inline-flex items-center justify-center gap-1.5 p-2.5 bg-primary-600 hover:bg-primary-500 text-primary-900 text-sm font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50 relative">
+            <button 
+                wire:click="addComment" 
+                wire:loading.attr="disabled" 
+                wire:target="addComment" 
+                type="button" 
+                :disabled="!composerValue || composerValue.replace(/<[^>]+>/g, '').trim() === ''"
+                :aria-disabled="!composerValue || composerValue.replace(/<[^>]+>/g, '').trim() === ''"
+                class="w-full inline-flex items-center justify-center gap-1.5 p-2.5 bg-primary-600 hover:bg-primary-500 disabled:hover:bg-primary-600 text-primary-900 text-sm font-medium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50 disabled:opacity-50 disabled:cursor-not-allowed relative">
                 <div class="flex items-center gap-1.5">
                     <span wire:loading.remove wire:target="addComment">{{ __('comments.composer.send') }}</span>
                     <span wire:loading wire:target="addComment">{{ __('comments.composer.saving') }}</span>
