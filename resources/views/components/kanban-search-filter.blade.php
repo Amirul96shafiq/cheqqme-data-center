@@ -27,6 +27,11 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
      data-initial-due-date-to="{{ $dueDateTo }}"
      data-initial-priority-filter="{{ json_encode($priorityFilter) }}">
     <div class="flex items-center justify-start sm:justify-end gap-4">
+        
+        {{-- Board viewers beside search (unified component, full width) --}}
+        <x-viewers-banner channel="board-viewers" id="action-board" :fullWidth="true" />
+
+        {{-- Search input --}}
         <div class="relative">
 
            <!-- Search icon (prefix) -->
@@ -34,7 +39,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                <x-heroicon-o-magnifying-glass class="w-4 h-4 text-gray-400 dark:text-gray-500" />
            </div>
            
-           <!-- Search input -->
+           <!-- Search bar-->
            <input
                type="text"
                x-model="globalSearch"

@@ -47,3 +47,13 @@ Broadcast::channel('task-viewers.{taskId}', function (User $user, int $taskId) {
         'avatar' => $user->getFilamentAvatarUrl(), // allow frontend to render Filament default when null
     ];
 });
+
+// Presence channel for users viewing the Action Board (board-wide)
+Broadcast::channel('board-viewers.{boardId}', function (User $user, string $boardId) {
+    return [
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'avatar' => $user->getFilamentAvatarUrl(),
+    ];
+});

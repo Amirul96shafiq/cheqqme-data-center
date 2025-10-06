@@ -6,8 +6,8 @@
         'fi-resource-record-' . $record->getKey(),
     ])
 >
-    {{-- Top viewers banner: shows who is currently viewing this task (non-locking) --}}
-    @include('components.task-viewers-banner', ['taskId' => (int) $record->getKey()])
+{{-- Top viewers banner: unified generic component --}}
+<x-viewers-banner channel="task-viewers" :id="(int) $record->getKey()" />
 
     {{-- JavaScript for scroll to comments functionality --}}
     <script>

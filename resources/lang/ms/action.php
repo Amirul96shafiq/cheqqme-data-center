@@ -60,6 +60,7 @@ return [
 
     'search_placeholder' => 'Cari tugasan',
     'clear_search' => 'Kosongkan carian',
+    'currently_viewing' => 'Sedang melihat',
     'filter_tasks' => 'Tapis tugasan',
     'filters' => 'Tapisan',
     'reset' => 'Tetapkan Semula Tapisan',

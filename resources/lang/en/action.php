@@ -60,6 +60,7 @@ return [
 
     'search_placeholder' => 'Search tasks',
     'clear_search' => 'Clear search',
+    'currently_viewing' => 'Currently viewing',
     'filter_tasks' => 'Filter tasks',
     'filters' => 'Filters',
     'reset' => 'Reset',
