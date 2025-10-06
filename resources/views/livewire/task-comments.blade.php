@@ -365,7 +365,9 @@
                                                         @endphp
                                                         @if($avatarUrl)
                                                             <div class="relative">
-                                                                <img src="{{ $avatarUrl }}" alt="{{ $reply->user->username ?? __('comments.meta.user_fallback') }}" class="w-8 h-8 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm relative z-10 {{ auth()->id() === $reply->user_id ? 'border-2 border-primary-500/80' : '' }}" loading="lazy">
+                                                                <x-clickable-avatar-wrapper :user="$reply->user">
+                                                                    <img src="{{ $avatarUrl }}" alt="{{ $reply->user->username ?? __('comments.meta.user_fallback') }}" class="w-8 h-8 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm relative z-10 {{ auth()->id() === $reply->user_id ? 'border-2 border-primary-500/80' : '' }}" loading="lazy">
+                                                                </x-clickable-avatar-wrapper>
                                                                 <!-- Online Status Indicator for Reply Avatar (User Image) -->
                                                                 <div class="absolute -bottom-0.5 -right-0.5 z-20">
                                                                     <x-online-status-indicator :user="$reply->user" size="sm" />
@@ -377,7 +379,9 @@
                                                             @endphp
                                                             @if($defaultAvatarUrl)
                                                                 <div class="relative">
-                                                                    <img src="{{ $defaultAvatarUrl }}" alt="{{ $reply->user->username ?? __('comments.meta.user_fallback') }}" class="w-8 h-8 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm relative z-10 {{ auth()->id() === $reply->user_id ? 'border-2 border-primary-500/80' : '' }}" loading="lazy">
+                                                                    <x-clickable-avatar-wrapper :user="$reply->user">
+                                                                        <img src="{{ $defaultAvatarUrl }}" alt="{{ $reply->user->username ?? __('comments.meta.user_fallback') }}" class="w-8 h-8 rounded-full object-cover ring-1 ring-white/20 dark:ring-gray-800 shadow-sm relative z-10 {{ auth()->id() === $reply->user_id ? 'border-2 border-primary-500/80' : '' }}" loading="lazy">
+                                                                    </x-clickable-avatar-wrapper>
                                                                     <!-- Online Status Indicator for Reply Avatar (Default Avatar Image) -->
                                                                     <div class="absolute -bottom-0.5 -right-0.5 z-20">
                                                                         <x-online-status-indicator :user="$reply->user" size="sm" />
@@ -385,11 +389,13 @@
                                                                 </div>
                                                             @else
                                                                 <div class="relative">
-                                                                    <div class="w-8 h-8 rounded-full bg-primary-500 ring-1 ring-white/20 dark:ring-gray-800 shadow-sm flex items-center justify-center relative z-10 {{ auth()->id() === $reply->user_id ? 'border-2 border-white/80' : '' }}">
-                                                                        <span class="text-xs font-medium text-white">
-                                                                            {{ substr($reply->user->username ?? __('comments.meta.user_fallback'), 0, 1) }}
-                                                                        </span>
-                                                                    </div>
+                                                                    <x-clickable-avatar-wrapper :user="$reply->user">
+                                                                        <div class="w-8 h-8 rounded-full bg-primary-500 ring-1 ring-white/20 dark:ring-gray-800 shadow-sm flex items-center justify-center relative z-10 {{ auth()->id() === $reply->user_id ? 'border-2 border-white/80' : '' }}">
+                                                                            <span class="text-xs font-medium text-white">
+                                                                                {{ substr($reply->user->username ?? __('comments.meta.user_fallback'), 0, 1) }}
+                                                                            </span>
+                                                                        </div>
+                                                                    </x-clickable-avatar-wrapper>
                                                                     <!-- Online Status Indicator for Reply Avatar (Initial Avatar) -->
                                                                     <div class="absolute -bottom-0.5 -right-0.5 z-20">
                                                                         <x-online-status-indicator :user="$reply->user" size="sm" />
