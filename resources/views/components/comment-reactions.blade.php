@@ -36,17 +36,26 @@ function commentReactions() {
         },
 
         setupGlobalEventListener() {
-            window.addEventListener('comment-reaction-updated', (event) => {
-                const { commentId, emoji, action, count, reaction } = event.detail;
-                
-                // Only update if this is for our comment
+            // console.debug('[CommentReactions] setupGlobalEventListener for comment', this.commentId);
+            // Listen on a comment-scoped event channel to avoid cross-comment updates
+            const handler = (event) => {
+                const { commentId, emoji, action, count, reaction } = event.detail || {};
+                // console.debug('[CommentReactions] received event', { expect: this.commentId, got: commentId, emoji, action, count, reaction });
                 if (commentId === this.commentId) {
+                    // console.debug('[CommentReactions] handling reaction update for', this.commentId);
                     this.handleReactionUpdate(emoji, action, count, reaction);
+                } else {
+                    // console.debug('[CommentReactions] ignored event for different comment', { thisId: this.commentId, eventCommentId: commentId });
                 }
-            });
+            };
+
+            const eventName = `comment-reaction-updated-${this.commentId}`;
+            // console.debug('[CommentReactions] addEventListener', eventName);
+            window.addEventListener(eventName, handler);
         },
 
         handleReactionUpdate(emoji, action, count, reactionData = null) {
+            // console.debug('[CommentReactions] handleReactionUpdate', { commentId: this.commentId, emoji, action, count });
             if (action === 'added') {
                 this.addOrUpdateReaction(emoji, count, reactionData);
             } else if (action === 'removed') {
@@ -66,11 +75,13 @@ function commentReactions() {
         },
 
         addOrUpdateReaction(emoji, count, reactionData = null) {
+            // console.debug('[CommentReactions] addOrUpdateReaction', { commentId: this.commentId, emoji, count });
             const existingIndex = this.reactions.findIndex(r => r.emoji === emoji);
             
             if (existingIndex >= 0) {
                 this.reactions[existingIndex].count = count;
                 this.reactions[existingIndex].user_reacted = true;
+                // console.debug('[CommentReactions] updated existing reaction', { index: existingIndex, reactions: this.reactions });
             } else {
                 const currentUser = this.getCurrentUserInfo(reactionData);
                 
@@ -80,23 +91,43 @@ function commentReactions() {
                     user_reacted: true,
                     users: [currentUser]
                 });
+                // console.debug('[CommentReactions] added new reaction', { reactions: this.reactions });
             }
+
+            // Ensure only this comment's DOM is updated (not replies) when hydrated elsewhere
+            this.$nextTick(() => {
+                const container = this.$el.closest('.comment-reactions');
+                if (!container) return;
+                const buttons = container.querySelectorAll(':scope > .reaction-button');
+                // console.debug('[CommentReactions] DOM buttons count (self only)', buttons.length);
+            });
         },
 
         removeOrUpdateReaction(emoji, count) {
+            // console.debug('[CommentReactions] removeOrUpdateReaction', { commentId: this.commentId, emoji, count });
             const existingIndex = this.reactions.findIndex(r => r.emoji === emoji);
             
             if (existingIndex >= 0) {
                 if (count === 0) {
                     this.reactions.splice(existingIndex, 1);
+                    // console.debug('[CommentReactions] removed reaction button entirely', { emoji });
                 } else {
                     this.reactions[existingIndex].count = count;
                     this.reactions[existingIndex].user_reacted = false;
                     
                     const currentUserId = this.getCurrentUserId();
                     this.reactions[existingIndex].users = this.reactions[existingIndex].users.filter(u => u.id !== currentUserId);
+                    // console.debug('[CommentReactions] updated reaction after removal', { index: existingIndex, reactions: this.reactions });
                 }
             }
+
+            // Debug: log only self container state in DOM
+            this.$nextTick(() => {
+                const container = this.$el.closest('.comment-reactions');
+                if (!container) return;
+                const buttons = container.querySelectorAll(':scope > .reaction-button');
+                // console.debug('[CommentReactions] DOM buttons after removal (self only)', buttons.length);
+            });
         },
 
         getCurrentUserInfo(reactionData = null) {
