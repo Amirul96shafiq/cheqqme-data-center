@@ -812,11 +812,11 @@ class TaskComments extends Component implements HasForms
             ->where('status', '!=', 'deleted')
             ->whereNull('parent_id') // Only top-level comments
             ->with([
-                'user:id,name,avatar',
-                'reactions.user:id,name,avatar',
+                'user:id,name,username,avatar',
+                'reactions.user:id,name,username,avatar',
                 'replies' => function ($query) {
                     $query->where('status', '!=', 'deleted')
-                        ->with(['user:id,name,avatar', 'reactions.user:id,name,avatar']);
+                        ->with(['user:id,name,username,avatar', 'reactions.user:id,name,username,avatar']);
                 },
             ])
             ->orderByDesc('created_at')

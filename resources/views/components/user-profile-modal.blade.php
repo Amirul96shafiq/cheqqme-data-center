@@ -14,6 +14,7 @@
             class="fixed inset-0 z-[9999] overflow-y-auto"
             x-cloak
             x-ref="modalContainer"
+            @click.self="closeModal()"
         >
 
             <!-- Modal -->
@@ -55,6 +56,12 @@
                                     draggable="false"
                                 />
                             @endif
+                            <!-- User ID badge -->
+                            <div class="absolute top-1 left-1/2 -translate-x-1/2 z-20">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/30 text-white dark:bg-black/30">
+                                    ID: {{ $user->id }}
+                                </span>
+                            </div>
                         </div>
                         
                         <!-- Avatar Container -->
