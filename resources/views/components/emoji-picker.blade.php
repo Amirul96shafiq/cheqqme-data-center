@@ -334,15 +334,22 @@ function emojiPicker(commentId) {
             if (this.loading) return;
 
             this.loading = true;
+            // console.debug('[EmojiPicker] addReaction start', { commentId: this.commentId, emoji });
             
             // Optimistic UI update - immediately update the UI
-            this.updateReactionOptimistically(emoji);
+            try {
+                this.updateReactionOptimistically(emoji);
+            } catch (e) {
+                console.error('[EmojiPicker] updateReactionOptimistically error', e);
+            }
             
             // Close the picker immediately for instant feedback
             this.close();
+            // console.debug('[EmojiPicker] picker closed after optimistic update', { commentId: this.commentId, emoji });
             
             try {
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                // console.debug('[EmojiPicker] POST /api/comment-reactions', { commentId: this.commentId, emoji, csrfPresent: !!csrfToken });
                 
                 const response = await fetch('/api/comment-reactions', {
                     method: 'POST',
@@ -361,6 +368,7 @@ function emojiPicker(commentId) {
                 const data = await response.json();
 
                 if (response.ok) {
+                    // console.debug('[EmojiPicker] server OK', { data });
                     if (data.data.action === 'added') {
                         this.userReactions.push(emoji);
                         this.addToRecentEmojis(emoji);
@@ -369,7 +377,11 @@ function emojiPicker(commentId) {
                     }
                     
                     // Update with actual server response
-                    this.updateReactionWithServerData(emoji, data.data);
+                    try {
+                        this.updateReactionWithServerData(emoji, data.data);
+                    } catch (e) {
+                        console.error('[EmojiPicker] updateReactionWithServerData error', e);
+                    }
                     
                     // Dispatch event to parent component
                     this.$dispatch('reaction-updated', {
@@ -380,8 +392,15 @@ function emojiPicker(commentId) {
                         reaction: data.data.reaction || null
                     });
                     
-                    // Also dispatch a global event for the parent component
-                    window.dispatchEvent(new CustomEvent('comment-reaction-updated', {
+                    // Also dispatch a global, comment-scoped event for other components
+                    const scopedEventName = `comment-reaction-updated-${this.commentId}`;
+                    // console.debug('[EmojiPicker] dispatch scoped event', scopedEventName, {
+                    //     commentId: this.commentId,
+                    //     emoji,
+                    //     action: data.data.action,
+                    //     count: data.data.reaction_count
+                    // });
+                    window.dispatchEvent(new CustomEvent(scopedEventName, {
                         detail: {
                             commentId: this.commentId,
                             emoji: emoji,
@@ -398,32 +417,42 @@ function emojiPicker(commentId) {
                     this.revertOptimisticUpdate(emoji);
                 }
             } catch (error) {
-                console.error('Failed to add reaction:', error);
+                console.error('[EmojiPicker] Failed to add reaction', error);
                 // Revert optimistic update on error
                 this.revertOptimisticUpdate(emoji);
             } finally {
                 this.loading = false;
+                // console.debug('[EmojiPicker] addReaction end', { commentId: this.commentId, emoji });
             }
         },
 
         updateReactionOptimistically(emoji) {
-            // Find existing reaction button for this emoji
-            const existingButton = document.querySelector(`[data-comment-id="${this.commentId}"] .reaction-button[data-emoji="${emoji}"]`);
+            // console.debug('[EmojiPicker] updateReactionOptimistically', { commentId: this.commentId, emoji });
+            // Scope strictly to this comment's reactions container (not replies nested inside)
+            const reactionsContainer = this.$el.closest('.comment-reactions');
+            if (!reactionsContainer) {
+                console.warn('[EmojiPicker] reactionsContainer not found for optimistic update');
+            }
+            const existingButton = reactionsContainer?.querySelector(`:scope > .reaction-button[data-emoji="${emoji}"]`);
+            // console.debug('[EmojiPicker] optimistic existingButton', existingButton);
             
             if (existingButton) {
                 // Toggle existing reaction
                 const currentCount = parseInt(existingButton.getAttribute('data-count'));
                 const isUserReacted = existingButton.classList.contains('bg-primary-100/10');
+                // console.debug('[EmojiPicker] optimistic existing', { currentCount, isUserReacted, classes: existingButton.className });
                 
                 if (isUserReacted) {
                     // Remove reaction
                     const newCount = currentCount - 1;
                     if (newCount === 0) {
+                        // console.debug('[EmojiPicker] optimistic remove button (count 0)', { emoji });
                         existingButton.remove();
                     } else {
                         existingButton.setAttribute('data-count', newCount);
                         existingButton.querySelector('.text-xs').textContent = newCount;
                         existingButton.className = existingButton.className.replace('bg-primary-100/10 text-primary-700 border border-primary-200 dark:bg-primary-900/10 dark:text-primary-300 dark:border-primary-700', 'bg-gray-100/10 text-gray-700 border border-gray-200 dark:bg-gray-700/10 dark:text-gray-300 dark:border-gray-600');
+                        // console.debug('[EmojiPicker] optimistic updated (removed)', { newCount, classes: existingButton.className });
                     }
                 } else {
                     // Add reaction
@@ -431,25 +460,32 @@ function emojiPicker(commentId) {
                     existingButton.setAttribute('data-count', newCount);
                     existingButton.querySelector('.text-xs').textContent = newCount;
                     existingButton.className = existingButton.className.replace('bg-gray-100/10 text-gray-700 border border-gray-200 dark:bg-gray-700/10 dark:text-gray-300 dark:border-gray-600', 'bg-primary-100/10 text-primary-700 border border-primary-200 dark:bg-primary-900/10 dark:text-primary-300 dark:border-primary-700');
+                    // console.debug('[EmojiPicker] optimistic updated (added)', { newCount, classes: existingButton.className });
                 }
             } else {
                 // Create new reaction button
-                const reactionsContainer = document.querySelector(`[data-comment-id="${this.commentId}"] .comment-reactions`);
-                if (reactionsContainer) {
+                const reactionsContainer2 = reactionsContainer;
+                // console.debug('[EmojiPicker] optimistic create new button', { hasContainer: !!reactionsContainer2 });
+                if (reactionsContainer2) {
                     const newButton = this.createOptimisticReactionButton(emoji, 1);
-                    const emojiPicker = reactionsContainer.querySelector('.emoji-picker-trigger').parentElement;
+                    const emojiPicker = reactionsContainer2.querySelector('.emoji-picker-trigger').parentElement;
                     emojiPicker.parentElement.insertBefore(newButton, emojiPicker.nextSibling);
+                    // console.debug('[EmojiPicker] optimistic inserted new button', { emoji });
                 }
             }
         },
 
         updateReactionWithServerData(emoji, serverData) {
+            console.debug('[EmojiPicker] updateReactionWithServerData', { commentId: this.commentId, emoji, serverData });
             // Update the reaction with actual server data
-            const existingButton = document.querySelector(`[data-comment-id="${this.commentId}"] .reaction-button[data-emoji="${emoji}"]`);
+            const reactionsContainer = this.$el.closest('.comment-reactions');
+            const existingButton = reactionsContainer?.querySelector(`:scope > .reaction-button[data-emoji="${emoji}"]`);
+            // console.debug('[EmojiPicker] server existingButton', existingButton);
             
             if (serverData.action === 'removed' && serverData.reaction_count === 0) {
                 // Remove button if count is 0
                 if (existingButton) {
+                    // console.debug('[EmojiPicker] server removed button (count 0)', { emoji });
                     existingButton.remove();
                 }
             } else if (existingButton) {
@@ -459,8 +495,10 @@ function emojiPicker(commentId) {
                 
                 if (serverData.action === 'added') {
                     existingButton.className = existingButton.className.replace('bg-gray-100/10 text-gray-700 border border-gray-200 dark:bg-gray-700/10 dark:text-gray-300 dark:border-gray-600', 'bg-primary-100/10 text-primary-700 border border-primary-200 dark:bg-primary-900/10 dark:text-primary-300 dark:border-primary-700');
+                    // console.debug('[EmojiPicker] server updated (added)', { count: serverData.reaction_count });
                 } else {
                     existingButton.className = existingButton.className.replace('bg-primary-100/10 text-primary-700 border border-primary-200 dark:bg-primary-900/10 dark:text-primary-300 dark:border-primary-700', 'bg-gray-100/10 text-gray-700 border border-gray-200 dark:bg-gray-700/10 dark:text-gray-300 dark:border-gray-600');
+                    // console.debug('[EmojiPicker] server updated (removed)', { count: serverData.reaction_count });
                 }
             }
         },
@@ -487,14 +525,16 @@ function emojiPicker(commentId) {
         },
 
         async refreshReactionsDisplay() {
+            // console.debug('[EmojiPicker] refreshReactionsDisplay', { commentId: this.commentId });
             // Use the global function as a fallback
             if (window.refreshCommentReactions) {
+                // console.debug('[EmojiPicker] delegating to window.refreshCommentReactions');
                 window.refreshCommentReactions(this.commentId);
                 return;
             }
             
             // Fallback to local implementation
-            const reactionsContainer = document.querySelector(`[data-comment-id="${this.commentId}"] .comment-reactions`);
+            const reactionsContainer = this.$el.closest('.comment-reactions');
             if (!reactionsContainer) {
                 return;
             }
@@ -512,10 +552,11 @@ function emojiPicker(commentId) {
                 if (response.ok) {
                     const data = await response.json();
                     // Update the reactions display
+                    // console.debug('[EmojiPicker] refreshed reactions from server', { reactions: data.data });
                     this.updateReactionsHTML(reactionsContainer, data.data);
                 }
             } catch (error) {
-                console.error('Error refreshing reactions:', error);
+                console.error('[EmojiPicker] Error refreshing reactions', error);
             }
         },
 
