@@ -15,18 +15,6 @@
             x-cloak
             x-ref="modalContainer"
         >
-            <!-- Backdrop -->
-            <div 
-                x-show="showModal"
-                x-transition:enter="ease-out duration-300"
-                x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100"
-                x-transition:leave="ease-in duration-200"
-                x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0"
-                class="fixed inset-0 bg-black bg-opacity-50"
-                @click.prevent="closeModal()"
-            ></div>
 
             <!-- Modal -->
             <div 
@@ -136,9 +124,9 @@
                         <button
                             @click.prevent="closeModal()"
                             type="button"
-                            class="rounded-md p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700 transition-colors"
+                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
                         >
-                            <x-heroicon-o-x-mark class="w-5 h-5" />
+                            <x-heroicon-o-x-mark class="w-4 h-4" />
                         </button>
                     </div>
                 </div>
