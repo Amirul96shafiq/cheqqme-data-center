@@ -16,7 +16,7 @@
 
 @php
     $dropdownAttributes = \Filament\Support\prepare_inherited_attributes($attributes)
-        ->class(['fi-user-menu']);
+        ->class(['fi-user-menu', 'fi-user-profile-menu']);
 @endphp
 
 <x-filament::dropdown
@@ -221,13 +221,14 @@
 
 <!-- Minimal styling for user profile header -->
 <style>
-.fi-user-menu .fi-dropdown-panel {
+/* Only target the user profile menu dropdown, not language switcher */
+.fi-user-profile-menu .fi-dropdown-panel {
     margin-top: -45px;
     z-index: 1000 !important;
     max-width: 312px !important;
 }
 
-.fi-user-menu .user-profile-header img {
+.fi-user-profile-menu .user-profile-header img {
     max-width: 100%;
     height: auto;
 }
