@@ -50,7 +50,7 @@
                     <img 
                         src="{{ $track['album_art'] }}" 
                         alt="{{ $track['album_name'] }} cover" 
-                        class="w-10 h-10 rounded-md shadow-sm object-cover"
+                        class="w-20 h-20 rounded-md object-cover"
                         onerror="this.style.display='none'"
                         draggable="false"
                     >
