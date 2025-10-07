@@ -132,7 +132,7 @@
 
                 <!-- Spotify Now Playing -->
                 @if($user->hasSpotifyAuth())
-                    <div class="mt-3 px-4">
+                    <div class="my-3">
                         @livewire('spotify-now-playing-compact')
                     </div>
                 @endif
