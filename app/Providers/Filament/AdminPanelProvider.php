@@ -330,6 +330,14 @@ class AdminPanelProvider extends PanelProvider
                 },
             )
             ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                function () {
+                    // Preload Spotify SDK for faster initialization
+                    return '<link rel="preload" href="https://sdk.scdn.co/spotify-player.js" as="script" crossorigin="anonymous">'.
+                           '<script src="https://sdk.scdn.co/spotify-player.js" async></script>';
+                },
+            )
+            ->renderHook(
                 'panels::scripts.after',
                 function () {
                     // Expose Reverb configuration to frontend

@@ -155,6 +155,12 @@ Route::get('/auth/spotify/callback', [\App\Http\Controllers\Auth\SpotifyAuthCont
 Route::get('/auth/spotify/popup-callback', [\App\Http\Controllers\Auth\SpotifyAuthController::class, 'showPopupCallback'])->name('auth.spotify.popup-callback');
 Route::post('/auth/spotify/clear-session', [\App\Http\Controllers\Auth\SpotifyAuthController::class, 'clearSession'])->name('auth.spotify.clear-session');
 
+// Spotify Web Playback SDK routes
+Route::middleware('auth')->group(function () {
+    Route::get('/api/spotify/token', [\App\Http\Controllers\SpotifyPlayerController::class, 'getToken'])->name('spotify.token');
+    Route::post('/api/spotify/transfer-playback', [\App\Http\Controllers\SpotifyPlayerController::class, 'transferPlayback'])->name('spotify.transfer-playback');
+});
+
 // Microsoft OAuth routes
 // Route::get('/auth/microsoft', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'redirectToMicrosoft'])->name('auth.microsoft');
 // Route::get('/auth/microsoft/callback', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'handleMicrosoftCallback'])->name('auth.microsoft.callback');

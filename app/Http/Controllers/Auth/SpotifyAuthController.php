@@ -33,7 +33,13 @@ class SpotifyAuthController extends Controller
 
         return Socialite::driver('spotify')
             ->stateless()
-            ->scopes(['user-read-currently-playing', 'user-read-playback-state'])
+            ->scopes([
+                'user-read-currently-playing',
+                'user-read-playback-state',
+                'streaming',  // Required for Web Playback SDK
+                'user-read-email',
+                'user-read-private',
+            ])
             ->redirect();
     }
 
