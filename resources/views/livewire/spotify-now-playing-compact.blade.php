@@ -18,29 +18,22 @@
                 this.timeoutId = null;
             }
             
-            @if($track && $track['is_playing'] && isset($track['progress_ms']) && isset($track['duration_ms']))
-                // Calculate remaining time in the current song (in milliseconds)
-                const progressMs = {{ $track['progress_ms'] }};
-                const durationMs = {{ $track['duration_ms'] }};
-                const remainingMs = durationMs - progressMs;
+            @if($track && isset($track['progress_ms']) && isset($track['duration_ms']))
+                // Check every 1 second for near real-time sync (reasonable API usage)
+                const checkInterval = 1000;
                 
-                // Add a small buffer (2 seconds before song ends) to ensure we catch the song change
-                const bufferMs = 2000;
-                const nextCheckMs = Math.max(remainingMs - bufferMs, 1000);
+                // console.log('Spotify: Auto-refreshing every 1 second for real-time sync');
                 
-                // console.log('Spotify: Song playing, next check in', Math.round(nextCheckMs / 1000), 'seconds (when song ends)');
-                
-                // Schedule the next update to run when the song ends
                 this.timeoutId = setTimeout(() => {
-                    // console.log('Spotify: Song should have ended, checking for new track...');
+                    // console.log('Spotify: Syncing with Spotify app...');
                     @this.call('loadCurrentTrack');
-                }, nextCheckMs);
-            @elseif(!$track || ($track && !$track['is_playing']))
-                // If nothing is playing or paused, check every 30 seconds
-                // console.log('Spotify: Nothing playing or paused, checking in 30 seconds');
+                }, checkInterval);
+            @elseif(!$track)
+                // If nothing is playing, check every 10 seconds
+                // console.log('Spotify: Nothing playing, checking in 10 seconds');
                 this.timeoutId = setTimeout(() => {
                     @this.call('loadCurrentTrack');
-                }, 30000);
+                }, 10000);
             @endif
         }
     }"
@@ -82,8 +75,8 @@
                     @endif  
                 </div>
                 
-                {{-- <!-- Refresh button -->
-                <button 
+                <!-- Refresh button -->
+                {{-- <button 
                     wire:click="refresh" 
                     class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                     title="Refresh"
@@ -121,43 +114,19 @@
                         {{ $track['artist_name'] }}
                     </div>
 
-                    <!-- Progress Bar (if playing) -->
-                    @if($track['is_playing'] && isset($track['progress_ms']) && isset($track['duration_ms']))
-                        <div class="mt-4" x-data="{
-                            currentProgress: {{ $track['progress_percentage'] }},
-                            progressMs: {{ $track['progress_ms'] }},
-                            durationMs: {{ $track['duration_ms'] }},
-                            startTime: Date.now(),
-                            init() {
-                                this.startRealTimeProgress();
-                            },
-                            startRealTimeProgress() {
-                                setInterval(() => {
-                                    if (this.progressMs < this.durationMs) {
-                                        // Update progress every second
-                                        const elapsed = (Date.now() - this.startTime) / 1000;
-                                        this.progressMs = Math.min({{ $track['progress_ms'] }} + (elapsed * 1000), this.durationMs);
-                                        this.currentProgress = (this.progressMs / this.durationMs) * 100;
-                                    }
-                                }, 1000);
-                            },
-                            formatTime(ms) {
-                                const totalSeconds = Math.floor(ms / 1000);
-                                const minutes = Math.floor(totalSeconds / 60);
-                                const seconds = totalSeconds % 60;
-                                return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-                            }
-                        }">
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
+                     <!-- Progress Bar (Pure Spotify API Data) -->
+                     @if(isset($track['progress_ms']) && isset($track['duration_ms']))
+                         <div class="mt-4">
+                           <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
                                 <div 
-                                    class="bg-green-500 h-1 rounded-full transition-all duration-1000" 
-                                    :style="'width: ' + currentProgress + '%'"
+                                    class="h-1 rounded-full transition-all duration-300 {{ $track['is_playing'] ? 'bg-green-500' : 'bg-yellow-500' }}" 
+                                    style="width: {{ $track['progress_percentage'] }}%"
                                 ></div>
                             </div>
-                            <div class="flex justify-between text-[10px] text-gray-500/50 dark:text-gray-400/50 mt-1">
-                                <span x-text="formatTime(progressMs)"></span>
-                                <span>{{ gmdate('i:s', floor($track['duration_ms'] / 1000)) }}</span>
-                            </div>
+                             <div class="flex justify-between text-[10px] text-gray-500/50 dark:text-gray-400/50 mt-1">
+                                 <span>{{ gmdate('i:s', floor($track['progress_ms'] / 1000)) }}</span>
+                                 <span>{{ gmdate('i:s', floor($track['duration_ms'] / 1000)) }}</span>
+                             </div>
                         </div>
                     @endif
 
@@ -187,7 +156,7 @@
                 <span class="text-sm">{{ __('spotify.status.nothing_playing') }}</span>
             </div>
 
-        </div>
-        
+</div>
+
     @endif
 </div>

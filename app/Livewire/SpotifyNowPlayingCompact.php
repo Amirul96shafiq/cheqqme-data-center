@@ -52,7 +52,7 @@ class SpotifyNowPlayingCompact extends Component
 
         $this->isLoading = false;
 
-        // Dispatch event to reschedule the next update based on new track data
+        // Dispatch event to reschedule the next update
         $this->dispatch('track-updated');
     }
 
