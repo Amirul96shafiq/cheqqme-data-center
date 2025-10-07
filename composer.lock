@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0d1e8c54a5decac43c9a2c64fc6ea4bf",
+    "content-hash": "efa138ed79a0b821eab30516ad330436",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -7317,6 +7317,47 @@
                 "source": "https://github.com/socialiteproviders/providers"
             },
             "time": "2025-07-06T00:25:25+00:00"
+        },
+        {
+            "name": "socialiteproviders/spotify",
+            "version": "4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialiteProviders/Spotify.git",
+                "reference": "f47da534af1fe3905d6d1ff63902e66f73206fce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialiteProviders/Spotify/zipball/f47da534af1fe3905d6d1ff63902e66f73206fce",
+                "reference": "f47da534af1fe3905d6d1ff63902e66f73206fce",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.2 || ^8.0",
+                "socialiteproviders/manager": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialiteProviders\\Spotify\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Brian Faust",
+                    "email": "hello@brianfaust.de"
+                }
+            ],
+            "description": "Spotify OAuth2 Provider for Laravel Socialite",
+            "support": {
+                "source": "https://github.com/SocialiteProviders/Spotify/tree/4.1.0"
+            },
+            "time": "2020-12-01T23:10:59+00:00"
         },
         {
             "name": "spatie/color",

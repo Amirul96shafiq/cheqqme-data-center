@@ -34,5 +34,9 @@ return [
         'googleAuthenticationFailed' => 'Failed to authenticate with Google. Please try again.',
         'googleAccountConnected' => 'Google account connected successfully!',
         'googleSigninSuccess' => 'Successfully signed in with Google!',
+        'spotifyAccountNotFound' => 'Failed to login. The selected Spotify Account does not exist in CheQQme Data Center.',
+        'spotifyAuthenticationFailed' => 'Failed to authenticate with Spotify. Please try again.',
+        'spotifyAccountConnected' => 'Spotify account connected successfully!',
+        'spotifySigninSuccess' => 'Successfully signed in with Spotify!',
     ],
 ];

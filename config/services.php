@@ -53,4 +53,10 @@ return [
         'include_tenant_info' => true,
     ],
 
+    'spotify' => [
+        'client_id' => env('SPOTIFY_CLIENT_ID'),
+        'client_secret' => env('SPOTIFY_CLIENT_SECRET'),
+        'redirect' => env('SPOTIFY_REDIRECT_URI', env('APP_URL').'/auth/spotify/callback'),
+    ],
+
 ];

@@ -24,6 +24,8 @@ return [
         'profile_settings_description' => 'Configure and customize your profile settings here',
         'connection_settings' => 'Connection Settings',
         'connection_settings_description' => 'Manage your account connections and integrations',
+        'spotify_integration' => 'Spotify Integration',
+        'spotify_integration_description' => 'Display your currently playing music from Spotify',
         'password_settings' => 'Password Settings',
         'user_info' => 'User Information',
         'password_info' => 'Password Information',
@@ -86,6 +88,19 @@ return [
         // Microsoft Connection
         'connect_microsoft' => 'Coming Soon',
         'microsoft_coming_soon' => 'Coming Soon',
+
+        // Spotify Connection
+        'connect_spotify' => 'Connect Now',
+        'disconnect_spotify' => 'Disconnect',
+        'disconnect_spotify_confirm' => 'Disconnect Spotify Account',
+        'disconnect_spotify_description' => 'Are you sure you want to disconnect your Spotify account? You will no longer be able to use Spotify integration features.',
+        'spotify_disconnected' => 'Spotify Account Disconnected',
+        'spotify_disconnected_body' => 'Your Spotify account has been successfully disconnected.',
+        'spotify_connection' => 'Spotify oAuth',
+        'spotify_description' => 'Connect your Spotify account to access music integration features and synchronize your Spotify profile.',
+        'spotify_connected' => 'Spotify Account Connected',
+        'spotify_connected_body' => 'Your Spotify account has been successfully connected. You can now use Spotify integration features.',
+        'spotify_connection_failed' => 'Spotify Connection Failed',
     ],
 
     // Online Status Indicator
@@ -110,7 +125,7 @@ return [
         'timezone' => 'Timezone',
         'country' => 'Country',
         'created_at' => 'Created At',
-        //'updated_at_by' => 'Updated At (by)',
+        // 'updated_at_by' => 'Updated At (by)',
         'personalize' => 'Personalize',
         'settings' => 'Settings',
         'chatbot-history' => 'Chatbot History',

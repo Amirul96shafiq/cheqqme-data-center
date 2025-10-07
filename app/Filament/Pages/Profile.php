@@ -22,11 +22,22 @@ class Profile extends EditProfile
     {
         parent::mount();
 
+        // Check for flash messages from OAuth connections
+        if (session('spotify_connection_success')) {
+            $this->showSpotifyConnectionSuccess();
+            session()->forget('spotify_connection_success');
+        }
+
         // Check if user was redirected here after successful OAuth connection
         $this->js('
             if (sessionStorage.getItem("google_connection_success") === "true") {
                 sessionStorage.removeItem("google_connection_success");
                 $wire.call("showGoogleConnectionSuccess");
+            }
+            
+            if (sessionStorage.getItem("spotify_connection_success") === "true") {
+                sessionStorage.removeItem("spotify_connection_success");
+                $wire.call("showSpotifyConnectionSuccess");
             }
             
         ');
@@ -385,9 +396,119 @@ class Profile extends EditProfile
                             ->columns(columns: 3)
                             ->columnSpanFull(),
 
+                        Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
+                            '<div class="flex items-center gap-2">
+                                    <img src="'.asset('images/spotify-icon.svg').'" alt="Spotify" class="w-5 h-5">
+                                    <span>Spotify oAuth</span>
+                                </div>'
+                        ))
+                            ->schema([
+                                Forms\Components\Placeholder::make('spotify_status')
+                                    ->label(__('user.form.connection_status'))
+                                    ->content(function () {
+                                        $user = auth()->user();
+                                        if ($user->hasSpotifyAuth()) {
+                                            return new \Illuminate\Support\HtmlString(
+                                                '<div class="flex items-center gap-2">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        '.__('user.form.connected').'
+                                                    </span>
+                                                </div>'
+                                            );
+                                        }
+
+                                        return new \Illuminate\Support\HtmlString(
+                                            '<div class="flex items-center gap-2">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    '.__('user.form.not_connected').'
+                                                </span>
+                                            </div>'
+                                        );
+                                    })
+                                    ->columnSpan(2),
+
+                                Forms\Components\Actions::make([
+                                    Forms\Components\Actions\Action::make('connect_spotify')
+                                        ->label(__('user.form.connect_spotify'))
+                                        ->color('primary')
+                                        ->icon('heroicon-o-link')
+                                        ->visible(fn () => ! auth()->user()->hasSpotifyAuth())
+                                        ->requiresConfirmation()
+                                        ->modalIcon('heroicon-o-link')
+                                        ->modalHeading(__('user.form.connect_spotify'))
+                                        ->modalDescription(__('user.form.spotify_description'))
+                                        ->modalSubmitActionLabel(__('user.form.connect_spotify'))
+                                        ->modalCancelActionLabel(__('user.form.cancel'))
+                                        ->modalWidth('md')
+                                        ->action(function () {
+                                            $this->openSpotifyAuthPopup();
+                                        }),
+
+                                    Forms\Components\Actions\Action::make('disconnect_spotify')
+                                        ->label(__('user.form.disconnect_spotify'))
+                                        ->color('danger')
+                                        ->outlined()
+                                        ->icon('heroicon-o-link-slash')
+                                        ->visible(fn () => auth()->user()->hasSpotifyAuth())
+                                        ->requiresConfirmation()
+                                        ->modalIcon('heroicon-o-link-slash')
+                                        ->modalHeading(__('user.form.disconnect_spotify_confirm'))
+                                        ->modalDescription(__('user.form.disconnect_spotify_description'))
+                                        ->modalSubmitActionLabel(__('user.form.disconnect'))
+                                        ->modalCancelActionLabel(__('user.form.cancel'))
+                                        ->modalWidth('md')
+                                        ->action(function () {
+                                            $this->confirmDisconnectSpotify();
+                                        }),
+                                ])
+                                    ->columnSpan(1)
+                                    ->alignment(Alignment::End)
+                                    ->extraAttributes([
+                                        'class' => '-mt-14 lg:-mt-0',
+                                    ]),
+                            ])
+                            ->columns(columns: 3)
+                            ->columnSpanFull(),
+
                     ])
                     ->collapsible()
                     ->collapsed()
+                    ->columns(1),
+
+                Forms\Components\Section::make(__('user.section.spotify_integration'))
+                    ->description(__('user.section.spotify_integration_description'))
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Forms\Components\Placeholder::make('spotify_now_playing')
+                            ->label('')
+                            ->content(function () {
+                                $user = auth()->user();
+                                if ($user->hasSpotifyAuth()) {
+                                    return new \Illuminate\Support\HtmlString(
+                                        '<div wire:key="spotify-now-playing-'.$user->id.'">
+                                            @livewire("spotify-now-playing")
+                                        </div>'
+                                    );
+                                } else {
+                                    return new \Illuminate\Support\HtmlString(
+                                        '<div class="text-center py-6 text-gray-500 dark:text-gray-400">
+                                            <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                                            </svg>
+                                            <p class="text-sm">Connect your Spotify account above to see your currently playing music here.</p>
+                                        </div>'
+                                    );
+                                }
+                            })
+                            ->columnSpanFull(),
+                    ])
                     ->columns(1),
 
                 Forms\Components\Section::make(__('user.section.password_settings'))
@@ -648,6 +769,129 @@ class Profile extends EditProfile
             // Check if popup was closed manually
             const checkClosed = setInterval(function () {
                 if (popup.closed) {
+                    clearInterval(checkClosed);
+                    window.removeEventListener("message", messageListener);
+                }
+            }, 1000);
+        ');
+    }
+
+    /**
+     * Confirm disconnect Spotify account
+     */
+    public function confirmDisconnectSpotify(): void
+    {
+        $user = auth()->user();
+        if (! $user) {
+            return;
+        }
+
+        $user->disconnectSpotify();
+
+        Notification::make()
+            ->title(__('user.form.spotify_disconnected'))
+            ->body(__('user.form.spotify_disconnected_body'))
+            ->success()
+            ->send();
+    }
+
+    /**
+     * Show success notification for Spotify connection
+     */
+    public function showSpotifyConnectionSuccess(): void
+    {
+        Notification::make()
+            ->title(__('user.form.spotify_connected'))
+            ->body(__('user.form.spotify_connected_body'))
+            ->success()
+            ->send();
+    }
+
+    /**
+     * Show error notification for Spotify connection
+     */
+    public function showSpotifyConnectionError(string $message): void
+    {
+        Notification::make()
+            ->title(__('user.form.spotify_connection_failed'))
+            ->body($message)
+            ->danger()
+            ->send();
+    }
+
+    /**
+     * Open Spotify OAuth popup window for account connection
+     */
+    public function openSpotifyAuthPopup(): void
+    {
+        $this->js('
+            const popup = window.open(
+                "'.route('auth.spotify', ['source' => 'profile']).'",
+                "spotifySignIn",
+                "width=460,height=800,scrollbars=yes,resizable=yes,top=" +
+                    Math.max(0, (screen.height - 800) / 2) +
+                    ",left=" +
+                    Math.max(0, (screen.width - 460) / 2)
+            );
+            
+            if (!popup) {
+                alert("Popup window was blocked. Please allow popups for this site.");
+                return;
+            }
+            
+            // Listen for messages from the popup
+            const messageListener = (event) => {
+                console.log("Spotify OAuth message received:", event.data);
+                
+                if (event.origin !== window.location.origin) {
+                    console.log("Ignoring message from different origin:", event.origin);
+                    return;
+                }
+                
+                if (event.data.success === true) {
+                    console.log("Spotify OAuth success message received");
+                    popup.close();
+                    window.removeEventListener("message", messageListener);
+                    // Show success notification using custom notification system
+                    if (typeof showSuccessNotification === "function") {
+                        showSuccessNotification(event.data.message || "Spotify account connected successfully!");
+                    } else if (typeof showNotification === "function") {
+                        showNotification("success", event.data.message || "Spotify account connected successfully!");
+                    }
+                    // Store success in session storage and redirect
+                    sessionStorage.setItem("spotify_connection_success", "true");
+                    console.log("Redirecting to profile page...");
+                    window.location.href = "'.route('filament.admin.auth.profile').'";
+                } else if (event.data.success === false) {
+                    console.log("Spotify OAuth error message received");
+                    popup.close();
+                    window.removeEventListener("message", messageListener);
+                    // Show error notification using custom notification system
+                    if (typeof showErrorNotification === "function") {
+                        showErrorNotification(event.data.message || "Failed to connect Spotify account");
+                    } else if (typeof showNotification === "function") {
+                        showNotification("error", event.data.message || "Failed to connect Spotify account");
+                    } else {
+                        // Fallback to Livewire notification
+                        $wire.call("showSpotifyConnectionError", event.data.message || "Failed to connect Spotify account");
+                    }
+                } else {
+                    console.log("Unknown message format:", event.data);
+                }
+            };
+            
+            console.log("Adding message listener to main window");
+            window.addEventListener("message", messageListener);
+            
+            // Also add a global message listener for debugging
+            window.addEventListener("message", function(event) {
+                console.log("Global message listener received:", event.data, "from origin:", event.origin);
+            });
+            
+            // Check if popup was closed manually
+            const checkClosed = setInterval(function () {
+                if (popup.closed) {
+                    console.log("Popup was closed manually");
                     clearInterval(checkClosed);
                     window.removeEventListener("message", messageListener);
                 }

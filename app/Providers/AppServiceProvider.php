@@ -39,6 +39,17 @@ class AppServiceProvider extends ServiceProvider
             $event->extendSocialite('microsoft', \SocialiteProviders\Microsoft\Provider::class);
         });
 
+        // Register Spotify socialite provider
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+            $event->extendSocialite('spotify', \SocialiteProviders\Spotify\Provider::class);
+        });
+
+        // Configure HTTP client for development (disable SSL verification)
+        if (app()->environment('local')) {
+            // Configure Laravel HTTP client to disable SSL verification
+            config(['http.verify' => false]);
+        }
+
         // Register Task observer to ensure activity logging on order/status changes
         Task::observe(TaskObserver::class);
 

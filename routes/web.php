@@ -149,6 +149,12 @@ Route::get('/auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::cla
 Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 Route::get('/auth/google/popup-callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'showPopupCallback'])->name('auth.google.popup-callback');
 
+// Spotify OAuth routes
+Route::get('/auth/spotify', [\App\Http\Controllers\Auth\SpotifyAuthController::class, 'redirectToSpotify'])->name('auth.spotify');
+Route::get('/auth/spotify/callback', [\App\Http\Controllers\Auth\SpotifyAuthController::class, 'handleSpotifyCallback'])->name('auth.spotify.callback');
+Route::get('/auth/spotify/popup-callback', [\App\Http\Controllers\Auth\SpotifyAuthController::class, 'showPopupCallback'])->name('auth.spotify.popup-callback');
+Route::post('/auth/spotify/clear-session', [\App\Http\Controllers\Auth\SpotifyAuthController::class, 'clearSession'])->name('auth.spotify.clear-session');
+
 // Microsoft OAuth routes
 // Route::get('/auth/microsoft', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'redirectToMicrosoft'])->name('auth.microsoft');
 // Route::get('/auth/microsoft/callback', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'handleMicrosoftCallback'])->name('auth.microsoft.callback');

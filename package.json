@@ -4,7 +4,7 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "serve:php": "php artisan serve --host=localhost",
+        "serve:php": "php artisan serve --host=0.0.0.0 --port=8000",
         "dev:full": "concurrently -k -n php,vite -c green,cyan \"npm:serve:php\" \"npm:dev\"",
         "test:watch": "php artisan test --watch"
     },

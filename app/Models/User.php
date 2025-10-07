@@ -43,6 +43,10 @@ class User extends Authenticatable implements HasAvatar
         'google_avatar_url',
         'microsoft_id',
         'microsoft_avatar_url',
+        'spotify_id',
+        'spotify_avatar_url',
+        'spotify_access_token',
+        'spotify_refresh_token',
         'timezone',
         'timezone_source',
         'password',
@@ -350,6 +354,39 @@ class User extends Authenticatable implements HasAvatar
         $this->update([
             'microsoft_id' => null,
             'microsoft_avatar_url' => null, // Also clear Microsoft avatar
+        ]);
+    }
+
+    /**
+     * Check if user has Spotify authentication linked
+     */
+    public function hasSpotifyAuth(): bool
+    {
+        return ! empty($this->spotify_id);
+    }
+
+    /**
+     * Update Spotify avatar URL (only if no custom avatar exists)
+     */
+    public function updateSpotifyAvatar(string $spotifyAvatarUrl): void
+    {
+        // Only update Spotify avatar if no custom avatar exists
+        if (! $this->avatar) {
+            $this->update(['spotify_avatar_url' => $spotifyAvatarUrl]);
+        }
+        // If custom avatar exists, do nothing (preserve custom avatar)
+    }
+
+    /**
+     * Disconnect Spotify account from user
+     */
+    public function disconnectSpotify(): void
+    {
+        $this->update([
+            'spotify_id' => null,
+            'spotify_avatar_url' => null, // Also clear Spotify avatar
+            'spotify_access_token' => null,
+            'spotify_refresh_token' => null,
         ]);
     }
 

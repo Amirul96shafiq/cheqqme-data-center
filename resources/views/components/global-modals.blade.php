@@ -602,8 +602,19 @@
         clearConversation: { show: false }
     };
     
+    // Force close all modals on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded - forcing all modals closed');
+        Object.keys(window.globalModals).forEach(key => {
+            window.globalModals[key].show = false;
+        });
+    });
+    
     // Show modal function
     window.showGlobalModal = function(type, id) {
+        // Debug: Log modal show request
+        console.log('showGlobalModal called:', { type, id, stack: new Error().stack });
+        
         // Close all other modals first
         Object.keys(window.globalModals).forEach(key => {
             window.globalModals[key].show = false;
@@ -669,14 +680,24 @@
             modals: window.globalModals,
             
             init() {
+                // Debug: Log initial modal state
+                console.log('Global modal container initialized', window.globalModals);
+                
+                // Force reset all modals to false on init
+                Object.keys(window.globalModals).forEach(key => {
+                    window.globalModals[key].show = false;
+                });
+                
                 this.updateModals();
                 
                 // Listen for custom events to update modals
-                document.addEventListener('global-modal-opened', () => {
+                document.addEventListener('global-modal-opened', (event) => {
+                    console.log('Global modal opened:', event.detail);
                     this.updateModals();
                 });
                 
-                document.addEventListener('global-modal-closed', () => {
+                document.addEventListener('global-modal-closed', (event) => {
+                    console.log('Global modal closed:', event.detail);
                     this.updateModals();
                 });
                 
