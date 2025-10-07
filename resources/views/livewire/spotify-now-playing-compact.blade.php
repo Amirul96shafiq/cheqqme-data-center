@@ -31,7 +31,7 @@
                     @endif
                 </div>
                 
-                <!-- Refresh button -->
+                {{-- <!-- Refresh button -->
                 <button 
                     wire:click="refresh" 
                     class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -40,23 +40,37 @@
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                     </svg>
-                </button>
+                </button> --}}
             </div>
 
-            <!-- Track Info -->
-            <div class="space-y-1">
-                <!-- Track Name -->
-                <div class="text-xs font-medium text-gray-900 dark:text-white truncate" title="{{ $track['track_name'] }}">
-                    {{ $track['track_name'] }}
+            <!-- Track Info with Album Cover -->
+            <div class="flex items-center gap-3">
+                <!-- Album Cover -->
+                <div class="shrink-0">
+                    <img 
+                        src="{{ $track['album_art'] }}" 
+                        alt="{{ $track['album_name'] }} cover" 
+                        class="w-10 h-10 rounded-md shadow-sm object-cover"
+                        onerror="this.style.display='none'"
+                        draggable="false"
+                    >
                 </div>
                 
-                <!-- Artist Name -->
-                <div class="text-xs text-gray-600 dark:text-gray-400 truncate" title="{{ $track['artist_name'] }}">
-                    {{ $track['artist_name'] }}
+                <!-- Track Details -->
+                <div class="flex-1 min-w-0 space-y-1">
+                    <!-- Track Name -->
+                    <div class="text-xs font-medium text-gray-900 dark:text-white truncate" title="{{ $track['track_name'] }}">
+                        {{ $track['track_name'] }}
+                    </div>
+                    
+                    <!-- Artist Name -->
+                    <div class="text-xs text-gray-600 dark:text-gray-400 truncate" title="{{ $track['artist_name'] }}">
+                        {{ $track['artist_name'] }}
+                    </div>
                 </div>
             </div>
 
-            <!-- Progress Bar (if playing) -->
+            {{-- <!-- Progress Bar (if playing) -->
             @if($track['is_playing'] && isset($track['progress_ms']) && isset($track['duration_ms']))
                 <div class="mt-2">
                     <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
@@ -70,7 +84,7 @@
                         <span>{{ gmdate('i:s', floor($track['duration_ms'] / 1000)) }}</span>
                     </div>
                 </div>
-            @endif
+            @endif --}}
         </div>
     @else
         <!-- No Track Playing -->
