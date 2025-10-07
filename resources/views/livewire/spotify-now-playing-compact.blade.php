@@ -55,6 +55,7 @@
             <span class="text-xs">{{ __('spotify.status.loading') }}</span>
         </div>
     @elseif($hasError)
+
         <!-- Error State -->
         <div class="flex items-center gap-2 text-gray-400 dark:text-gray-500">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,9 +63,12 @@
             </svg>
             <span class="text-xs">{{ __('spotify.status.spotify_unavailable') }}</span>
         </div>
+
     @elseif($track)
+
         <!-- Playing Track -->
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
+
             <!-- Header with Spotify icon and status -->
             <div class="flex items-center justify-between mb-1.5">
                 <div class="flex items-center gap-1">
@@ -92,19 +96,21 @@
 
             <!-- Track Info with Album Cover -->
             <div class="flex items-center gap-3">
+
                 <!-- Album Cover -->
                 <div class="shrink-0">
                     <img 
                         src="{{ $track['album_art'] }}" 
                         alt="{{ $track['album_name'] }} cover" 
-                        class="w-14 h-14 rounded-md object-cover"
+                        class="w-20 h-20 rounded-md object-cover"
                         onerror="this.style.display='none'"
                         draggable="false"
                     >
                 </div>
                 
                 <!-- Track Details -->
-                <div class="flex-1 min-w-0 space-y-0.5 text-left">
+                <div class="flex-1 min-w-0 text-left">
+                    
                     <!-- Track Name -->
                     <div class="text-sm font-medium text-gray-900 dark:text-white truncate text-left" title="{{ $track['track_name'] }}">
                         {{ $track['track_name'] }}
@@ -114,28 +120,58 @@
                     <div class="text-xs text-gray-600 dark:text-gray-400 truncate text-left" title="{{ $track['artist_name'] }}">
                         {{ $track['artist_name'] }}
                     </div>
+
+                    <!-- Progress Bar (if playing) -->
+                    @if($track['is_playing'] && isset($track['progress_ms']) && isset($track['duration_ms']))
+                        <div class="mt-4" x-data="{
+                            currentProgress: {{ $track['progress_percentage'] }},
+                            progressMs: {{ $track['progress_ms'] }},
+                            durationMs: {{ $track['duration_ms'] }},
+                            startTime: Date.now(),
+                            init() {
+                                this.startRealTimeProgress();
+                            },
+                            startRealTimeProgress() {
+                                setInterval(() => {
+                                    if (this.progressMs < this.durationMs) {
+                                        // Update progress every second
+                                        const elapsed = (Date.now() - this.startTime) / 1000;
+                                        this.progressMs = Math.min({{ $track['progress_ms'] }} + (elapsed * 1000), this.durationMs);
+                                        this.currentProgress = (this.progressMs / this.durationMs) * 100;
+                                    }
+                                }, 1000);
+                            },
+                            formatTime(ms) {
+                                const totalSeconds = Math.floor(ms / 1000);
+                                const minutes = Math.floor(totalSeconds / 60);
+                                const seconds = totalSeconds % 60;
+                                return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+                            }
+                        }">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
+                                <div 
+                                    class="bg-green-500 h-1 rounded-full transition-all duration-1000" 
+                                    :style="'width: ' + currentProgress + '%'"
+                                ></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] text-gray-500/50 dark:text-gray-400/50 mt-1">
+                                <span x-text="formatTime(progressMs)"></span>
+                                <span>{{ gmdate('i:s', floor($track['duration_ms'] / 1000)) }}</span>
+                            </div>
+                        </div>
+                    @endif
+
                 </div>
+
             </div>
 
-            {{-- <!-- Progress Bar (if playing) -->
-            @if($track['is_playing'] && isset($track['progress_ms']) && isset($track['duration_ms']))
-                <div class="mt-2">
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
-                        <div 
-                            class="bg-green-500 h-1 rounded-full transition-all duration-1000" 
-                            style="width: {{ $track['progress_percentage'] }}%"
-                        ></div>
-                    </div>
-                    <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        <span>{{ gmdate('i:s', floor($track['progress_ms'] / 1000)) }}</span>
-                        <span>{{ gmdate('i:s', floor($track['duration_ms'] / 1000)) }}</span>
-                    </div>
-                </div>
-            @endif --}}
+            
         </div>
     @else
+
         <!-- No Track Playing -->
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
+
             <!-- Header with Spotify icon -->
             <div class="flex items-center justify-center mb-1.5">
                 <div class="flex items-center gap-1">
@@ -150,6 +186,8 @@
             <div class="flex items-center justify-center text-gray-400 dark:text-gray-500">
                 <span class="text-sm">{{ __('spotify.status.nothing_playing') }}</span>
             </div>
+
         </div>
+        
     @endif
 </div>
