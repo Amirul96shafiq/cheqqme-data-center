@@ -92,24 +92,26 @@ class SpotifyNowPlayingCompact extends Component
             $spotifyService = app(SpotifyService::class);
             $track = $spotifyService->getCurrentlyPlaying($user);
 
-            \Log::info('Spotify API Polling: Response received', [
-                'has_track' => ! empty($track),
-                'track_data' => $track,
-            ]);
+            // \Log::info('Spotify API Polling: Response received', [
+            //     'has_track' => ! empty($track),
+            //     'track_data' => $track,
+            // ]);
 
             if ($track) {
                 $this->track = $track;
-                \Log::info('Spotify API Polling: Track loaded successfully', [
-                    'track' => $track['track_name'],
-                    'artist' => $track['artist_name'],
-                ]);
-                
+
+                // \Log::info('Spotify API Polling: Track loaded successfully', [
+                //     'track' => $track['track_name'],
+                //     'artist' => $track['artist_name'],
+                // ]);
+
                 // Dispatch to JavaScript for console logging
                 $this->dispatch('spotify-track-loaded', track: $track['track_name']);
             } else {
                 $this->track = null;
-                \Log::info('Spotify API Polling: No track currently playing');
-                
+
+                // \Log::info('Spotify API Polling: No track currently playing');
+
                 // Dispatch to JavaScript for console logging
                 $this->dispatch('spotify-no-track');
             }

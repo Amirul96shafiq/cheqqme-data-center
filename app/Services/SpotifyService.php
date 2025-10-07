@@ -30,18 +30,17 @@ class SpotifyService
             if ($response->successful()) {
                 $data = $response->json();
 
-                // Log the raw response from Spotify for debugging
-                \Log::info('Spotify API getCurrentlyPlaying response:', [
-                    'user_id' => $user->id,
-                    'status_code' => $response->status(),
-                    'response_data' => $data,
-                    'has_item' => isset($data['item']) && ! empty($data['item']),
-                    'is_playing' => $data['is_playing'] ?? 'not_set',
-                ]);
+                // \Log::info('Spotify API getCurrentlyPlaying response:', [
+                //     'user_id' => $user->id,
+                //     'status_code' => $response->status(),
+                //     'response_data' => $data,
+                //     'has_item' => isset($data['item']) && ! empty($data['item']),
+                //     'is_playing' => $data['is_playing'] ?? 'not_set',
+                // ]);
 
                 // If no track is currently playing, return null
                 if (empty($data['item'])) {
-                    \Log::info('No track currently playing on Spotify', ['user_id' => $user->id]);
+                    // \Log::info('No track currently playing on Spotify', ['user_id' => $user->id]);
 
                     return null;
                 }

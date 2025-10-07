@@ -17,6 +17,7 @@ export default defineConfig({
                 "resources/js/presence-status.js",
                 "resources/js/kanban-alpine.js",
                 "resources/css/kanban-drag-drop.css",
+                "resources/js/spotify-player.js",
             ],
             refresh: true,
         }),
