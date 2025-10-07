@@ -57,9 +57,9 @@
                 </div>
                 
                 <!-- Track Details -->
-                <div class="flex-1 min-w-0 space-y-1 text-left">
+                <div class="flex-1 min-w-0 space-y-0.5 text-left">
                     <!-- Track Name -->
-                    <div class="text-xs font-medium text-gray-900 dark:text-white truncate text-left" title="{{ $track['track_name'] }}">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white truncate text-left" title="{{ $track['track_name'] }}">
                         {{ $track['track_name'] }}
                     </div>
                     
