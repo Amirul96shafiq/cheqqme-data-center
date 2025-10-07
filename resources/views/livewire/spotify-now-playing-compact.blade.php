@@ -1,4 +1,51 @@
-<div class="spotify-now-playing-compact">
+<div 
+    class="spotify-now-playing-compact"
+    x-data="{
+        timeoutId: null,
+        init() {
+            this.scheduleNextUpdate();
+            
+            // Cleanup on component destroy
+            this.$watch('timeoutId', () => {});
+            window.addEventListener('beforeunload', () => {
+                if (this.timeoutId) clearTimeout(this.timeoutId);
+            });
+        },
+        scheduleNextUpdate() {
+            // Clear any existing timeout
+            if (this.timeoutId) {
+                clearTimeout(this.timeoutId);
+                this.timeoutId = null;
+            }
+            
+            @if($track && $track['is_playing'] && isset($track['progress_ms']) && isset($track['duration_ms']))
+                // Calculate remaining time in the current song (in milliseconds)
+                const progressMs = {{ $track['progress_ms'] }};
+                const durationMs = {{ $track['duration_ms'] }};
+                const remainingMs = durationMs - progressMs;
+                
+                // Add a small buffer (2 seconds before song ends) to ensure we catch the song change
+                const bufferMs = 2000;
+                const nextCheckMs = Math.max(remainingMs - bufferMs, 1000);
+                
+                // console.log('Spotify: Song playing, next check in', Math.round(nextCheckMs / 1000), 'seconds (when song ends)');
+                
+                // Schedule the next update to run when the song ends
+                this.timeoutId = setTimeout(() => {
+                    // console.log('Spotify: Song should have ended, checking for new track...');
+                    @this.call('loadCurrentTrack');
+                }, nextCheckMs);
+            @elseif(!$track || ($track && !$track['is_playing']))
+                // If nothing is playing or paused, check every 30 seconds
+                // console.log('Spotify: Nothing playing or paused, checking in 30 seconds');
+                this.timeoutId = setTimeout(() => {
+                    @this.call('loadCurrentTrack');
+                }, 30000);
+            @endif
+        }
+    }"
+    @track-updated.window="scheduleNextUpdate()"
+>
     <!-- Loading State -->
     @if($isLoading)
         <div class="flex items-center gap-2 text-gray-500 dark:text-gray-400">

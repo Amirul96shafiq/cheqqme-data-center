@@ -9,14 +9,13 @@ use Livewire\Component;
 class SpotifyNowPlayingCompact extends Component
 {
     public $track = null;
-    public $isLoading = true;
-    public $hasError = false;
 
-    protected $spotifyService;
+    public $isLoading = true;
+
+    public $hasError = false;
 
     public function mount()
     {
-        $this->spotifyService = new SpotifyService();
         $this->loadCurrentTrack();
     }
 
@@ -27,28 +26,34 @@ class SpotifyNowPlayingCompact extends Component
 
         try {
             $user = Auth::user();
-            
-            if (!$user || !$user->hasSpotifyAuth()) {
+
+            if (! $user || ! $user->hasSpotifyAuth()) {
                 $this->hasError = true;
                 $this->isLoading = false;
+                $this->dispatch('track-updated');
+
                 return;
             }
 
-            $track = $this->spotifyService->getCurrentlyPlaying($user);
-            
+            $spotifyService = app(SpotifyService::class);
+            $track = $spotifyService->getCurrentlyPlaying($user);
+
             if ($track) {
                 $this->track = $track;
             } else {
                 $this->track = null;
             }
-            
+
         } catch (\Exception $e) {
-            \Log::error('Spotify Now Playing Compact Error: ' . $e->getMessage());
+            \Log::error('Spotify Now Playing Compact Error: '.$e->getMessage());
             $this->hasError = true;
             $this->track = null;
         }
 
         $this->isLoading = false;
+
+        // Dispatch event to reschedule the next update based on new track data
+        $this->dispatch('track-updated');
     }
 
     public function refresh()
