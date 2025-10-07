@@ -31,7 +31,10 @@ class SpotifyAuthController extends Controller
         // Use the same callback URL for both regular and popup flows
         // The popup handling is done in the callback method based on the source
 
-        return Socialite::driver('spotify')->stateless()->redirect();
+        return Socialite::driver('spotify')
+            ->stateless()
+            ->scopes(['user-read-currently-playing', 'user-read-playback-state'])
+            ->redirect();
     }
 
     /**

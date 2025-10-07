@@ -20,7 +20,9 @@ class SpotifyService
         }
 
         try {
-            $response = Http::withHeaders([
+            $response = Http::withOptions([
+                'verify' => false, // Disable SSL verification for local development
+            ])->withHeaders([
                 'Authorization' => 'Bearer '.$user->spotify_access_token,
                 'Content-Type' => 'application/json',
             ])->get(self::SPOTIFY_API_BASE.'/me/player/currently-playing');
@@ -28,8 +30,19 @@ class SpotifyService
             if ($response->successful()) {
                 $data = $response->json();
 
+                // Log the raw response from Spotify for debugging
+                \Log::info('Spotify API getCurrentlyPlaying response:', [
+                    'user_id' => $user->id,
+                    'status_code' => $response->status(),
+                    'response_data' => $data,
+                    'has_item' => isset($data['item']) && ! empty($data['item']),
+                    'is_playing' => $data['is_playing'] ?? 'not_set',
+                ]);
+
                 // If no track is currently playing, return null
                 if (empty($data['item'])) {
+                    \Log::info('No track currently playing on Spotify', ['user_id' => $user->id]);
+
                     return null;
                 }
 
@@ -83,7 +96,9 @@ class SpotifyService
         }
 
         try {
-            $response = Http::withHeaders([
+            $response = Http::withOptions([
+                'verify' => false, // Disable SSL verification for local development
+            ])->withHeaders([
                 'Authorization' => 'Bearer '.$user->spotify_access_token,
                 'Content-Type' => 'application/json',
             ])->get(self::SPOTIFY_API_BASE.'/me/player');
@@ -117,7 +132,9 @@ class SpotifyService
         }
 
         try {
-            $response = Http::asForm()->post('https://accounts.spotify.com/api/token', [
+            $response = Http::withOptions([
+                'verify' => false, // Disable SSL verification for local development
+            ])->asForm()->post('https://accounts.spotify.com/api/token', [
                 'grant_type' => 'refresh_token',
                 'refresh_token' => $user->spotify_refresh_token,
                 'client_id' => config('services.spotify.client_id'),

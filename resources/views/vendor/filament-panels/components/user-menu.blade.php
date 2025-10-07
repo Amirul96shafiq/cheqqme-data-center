@@ -129,6 +129,13 @@
                     @endif
 
                 </div>
+
+                <!-- Spotify Now Playing -->
+                @if($user->hasSpotifyAuth())
+                    <div class="mt-3 px-4">
+                        @livewire('spotify-now-playing-compact')
+                    </div>
+                @endif
             </div>
         </div>
 
