@@ -269,7 +269,7 @@ class Profile extends EditProfile
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
                                 <img src="'.asset('images/google-icon.svg').'" alt="Google" class="w-5 h-5">
-                                <span>Google oAuth</span>
+                                <span>'.__('user.form.google_connection').'</span>
                             </div>'
                         ))
                             ->schema([
@@ -349,7 +349,7 @@ class Profile extends EditProfile
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
                                     <img src="'.asset('images/microsoft-icon.svg').'" alt="Microsoft" class="w-5 h-5">
-                                    <span>Microsoft oAuth</span>
+                                    <span>'.__('user.form.microsoft_connection').'</span>
                                 </div>'
                         ))
                             ->schema([
@@ -399,7 +399,7 @@ class Profile extends EditProfile
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
                                     <img src="'.asset('images/spotify-icon.svg').'" alt="Spotify" class="w-5 h-5">
-                                    <span>Spotify oAuth</span>
+                                    <span>'.__('user.form.spotify_connection').'</span>
                                 </div>'
                         ))
                             ->schema([
@@ -479,36 +479,6 @@ class Profile extends EditProfile
                     ])
                     ->collapsible()
                     ->collapsed()
-                    ->columns(1),
-
-                Forms\Components\Section::make(__('user.section.spotify_integration'))
-                    ->description(__('user.section.spotify_integration_description'))
-                    ->collapsible()
-                    ->collapsed()
-                    ->schema([
-                        Forms\Components\Placeholder::make('spotify_now_playing')
-                            ->label('')
-                            ->content(function () {
-                                $user = auth()->user();
-                                if ($user->hasSpotifyAuth()) {
-                                    return new \Illuminate\Support\HtmlString(
-                                        '<div wire:key="spotify-now-playing-'.$user->id.'">
-                                            @livewire("spotify-now-playing")
-                                        </div>'
-                                    );
-                                } else {
-                                    return new \Illuminate\Support\HtmlString(
-                                        '<div class="text-center py-6 text-gray-500 dark:text-gray-400">
-                                            <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
-                                            </svg>
-                                            <p class="text-sm">Connect your Spotify account above to see your currently playing music here.</p>
-                                        </div>'
-                                    );
-                                }
-                            })
-                            ->columnSpanFull(),
-                    ])
                     ->columns(1),
 
                 Forms\Components\Section::make(__('user.section.password_settings'))

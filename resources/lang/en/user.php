@@ -96,7 +96,7 @@ return [
         'disconnect_spotify_description' => 'Are you sure you want to disconnect your Spotify account? You will no longer be able to use Spotify integration features.',
         'spotify_disconnected' => 'Spotify Account Disconnected',
         'spotify_disconnected_body' => 'Your Spotify account has been successfully disconnected.',
-        'spotify_connection' => 'Spotify oAuth',
+        'spotify_connection' => 'Spotify Player',
         'spotify_description' => 'Connect your Spotify account to access music integration features and synchronize your Spotify profile.',
         'spotify_connected' => 'Spotify Account Connected',
         'spotify_connected_body' => 'Your Spotify account has been successfully connected. You can now use Spotify integration features.',

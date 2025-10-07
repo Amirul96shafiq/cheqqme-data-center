@@ -84,8 +84,22 @@ return [
         'not_connected' => 'Tidak Disambungkan',
 
         // Microsoft Connection
+        'microsoft_connection' => 'Microsoft oAuth',
         'connect_microsoft' => 'Akan Datang',
         'microsoft_coming_soon' => 'Akan Datang',
+
+        // Spotify Connection
+        'connect_spotify' => 'Sambung Sekarang',
+        'disconnect_spotify' => 'Putuskan Sambungan',
+        'disconnect_spotify_confirm' => 'Putuskan Sambungan Akaun Spotify',
+        'disconnect_spotify_description' => 'Adakah anda pasti ingin memutuskan sambungan akaun Spotify anda? Anda tidak lagi boleh menggunakan integrasi Spotify.',
+        'spotify_disconnected' => 'Akaun Spotify Diputuskan',
+        'spotify_disconnected_body' => 'Akaun Spotify anda telah berjaya diputuskan.',
+        'spotify_connection' => 'Pemain Spotify',
+        'spotify_description' => 'Sambungkan akaun Spotify anda untuk mengakses integrasi muzik & menyesuaikan profil Spotify anda.',
+        'spotify_connected' => 'Akaun Spotify Disambungkan',
+        'spotify_connected_body' => 'Akaun Spotify anda telah berjaya disambungkan. Anda kini boleh menggunakan integrasi muzik.',
+        'spotify_connection_failed' => 'Sambungan Spotify Gagal',
     ],
 
     // Online Status Indicator

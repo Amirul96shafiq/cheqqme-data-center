@@ -604,7 +604,7 @@
     
     // Force close all modals on page load
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM loaded - forcing all modals closed');
+        // onsole.log('DOM loaded - forcing all modals closed');
         Object.keys(window.globalModals).forEach(key => {
             window.globalModals[key].show = false;
         });
@@ -681,7 +681,7 @@
             
             init() {
                 // Debug: Log initial modal state
-                console.log('Global modal container initialized', window.globalModals);
+                // console.log('Global modal container initialized', window.globalModals);
                 
                 // Force reset all modals to false on init
                 Object.keys(window.globalModals).forEach(key => {

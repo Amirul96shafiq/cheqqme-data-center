@@ -40,7 +40,7 @@
         <!-- User Profile Header with Cover Image -->
         <div class="relative user-profile-header">
             <!-- Cover Image Background -->
-            <div class="relative h-[56px] bg-gray-100 dark:bg-gray-800 rounded-t-lg overflow-hidden">
+            <div class="relative h-full bg-gray-100 dark:bg-gray-800 rounded-t-lg overflow-hidden">
                 @if($user->getFilamentCoverImageUrl())
                     <img 
                         src="{{ $user->getFilamentCoverImageUrl() }}" 
@@ -224,6 +224,7 @@
 .fi-user-menu .fi-dropdown-panel {
     margin-top: -45px;
     z-index: 1000 !important;
+    max-width: 312px !important;
 }
 
 .fi-user-menu .user-profile-header img {

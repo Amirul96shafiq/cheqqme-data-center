@@ -64,16 +64,16 @@ class SpotifyNowPlaying extends Component
         $this->loadCurrentlyPlaying();
     }
 
-    public function toggleAutoRefresh()
-    {
-        $this->autoRefresh = ! $this->autoRefresh;
+    // public function toggleAutoRefresh()
+    // {
+    //     $this->autoRefresh = ! $this->autoRefresh;
 
-        if ($this->autoRefresh) {
-            $this->dispatch('start-spotify-refresh');
-        } else {
-            $this->dispatch('stop-spotify-refresh');
-        }
-    }
+    //     if ($this->autoRefresh) {
+    //         $this->dispatch('start-spotify-refresh');
+    //     } else {
+    //         $this->dispatch('stop-spotify-refresh');
+    //     }
+    // }
 
     public function render()
     {
