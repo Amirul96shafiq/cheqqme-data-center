@@ -1398,7 +1398,7 @@ window.syncAllUserStatuses = function() {
     // console.log('👥 User IDs found:', userIds);
     
     if (userIds.length === 0) {
-        console.log('❌ No user indicators found on page');
+        // console.log('❌ No user indicators found on page');
         return;
     }
     
