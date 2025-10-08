@@ -14,6 +14,8 @@
             </svg>
             <span class="text-xs">{{ __('spotify.status.loading') }}</span>
         </div>
+    @elseif($notConnected)
+        {{-- User not connected to Spotify - don't show anything --}}
     @elseif($hasError)
 
         <!-- Error State -->

@@ -8,8 +8,8 @@ return [
 
     'status' => [
         'loading' => 'Loading...',
-        'spotify_unavailable' => 'Spotify unavailable',
-        'nothing_playing' => 'Ready to jam? Open a song in your Spotify!',
+        // 'spotify_unavailable' => 'Spotify unavailable',
+        'nothing_playing' => 'Ready to jam? Play a song in your Spotify!',
     ],
 
     'tooltip' => [

@@ -14,6 +14,8 @@ class SpotifyNowPlayingCompact extends Component
 
     public $hasError = false;
 
+    public $notConnected = false;
+
     public $useWebPlaybackSdk = true; // Enable Web Playback SDK by default
 
     public function mount()
@@ -31,6 +33,7 @@ class SpotifyNowPlayingCompact extends Component
     {
         $this->isLoading = false;
         $this->hasError = false;
+        $this->notConnected = false;
 
         // If state is null or empty, nothing is playing
         if (! $state || empty($state)) {
@@ -82,7 +85,8 @@ class SpotifyNowPlayingCompact extends Component
             $user = Auth::user();
 
             if (! $user || ! $user->hasSpotifyAuth()) {
-                $this->hasError = true;
+                $this->notConnected = true;
+                $this->hasError = false;
                 $this->isLoading = false;
                 $this->dispatch('track-updated');
 

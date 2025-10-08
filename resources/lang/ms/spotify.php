@@ -8,8 +8,8 @@ return [
 
     'status' => [
         'loading' => 'Memuatkan...',
-        'spotify_unavailable' => 'Spotify tidak tersedia',
-        'nothing_playing' => 'Bersedia untuk ber-karaoke? Buka lagu di Spotify anda!',
+        // 'spotify_unavailable' => 'Spotify tidak tersedia',
+        'nothing_playing' => 'Bersedia untuk ber-karaoke? Mainkan lagu di Spotify anda!',
     ],
 
     'tooltip' => [
