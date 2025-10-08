@@ -129,13 +129,10 @@
 
                     <!-- Close Button -->
                     <div class="absolute top-4 right-4">
-                        <button
+                        <x-close-button 
                             @click.prevent="closeModal()"
-                            type="button"
-                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
-                        >
-                            <x-heroicon-o-x-mark class="w-4 h-4" />
-                        </button>
+                            aria-label="Close profile modal"
+                        />
                     </div>
                 </div>
             </div>

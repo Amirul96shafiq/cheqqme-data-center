@@ -94,12 +94,13 @@
              class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
             
             <!-- Close Button -->
-            <button type="button" 
-                    @click="closeModal('deleteReply')" 
-                    class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900" 
-                    aria-label="Close">
-                <x-heroicon-o-x-mark class="w-6 h-6" />
-            </button>
+            <x-close-button 
+                @click="closeModal('deleteReply')" 
+                size="lg"
+                variant="minimal"
+                class="absolute end-4 top-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                aria-label="Close"
+            />
             
             <!-- Content -->
             <div class="flex flex-col items-center text-center">
@@ -157,12 +158,13 @@
              class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
             
             <!-- Close Button -->
-            <button type="button" 
-                    @click="closeModal('forceDeleteComment')" 
-                    class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900" 
-                    aria-label="Close">
-                <x-heroicon-o-x-mark class="w-6 h-6" />
-            </button>
+            <x-close-button 
+                @click="closeModal('forceDeleteComment')" 
+                size="lg"
+                variant="minimal"
+                class="absolute end-4 top-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                aria-label="Close"
+            />
             
             <!-- Content -->
             <div class="flex flex-col items-center text-center">
@@ -220,12 +222,13 @@
              class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
 
             <!-- Close Button -->
-            <button type="button"
-                    @click="closeModal('forceDeleteReply')"
-                    class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
-                    aria-label="Close">
-                <x-heroicon-o-x-mark class="w-6 h-6" />
-            </button>
+            <x-close-button 
+                @click="closeModal('forceDeleteReply')"
+                size="lg"
+                variant="minimal"
+                class="absolute end-4 top-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                aria-label="Close"
+            />
 
             <!-- Content -->
             <div class="flex flex-col items-center text-center">
@@ -289,12 +292,13 @@
              class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
 
             <!-- Close Button -->
-            <button type="button"
-                    @click="closeModal('createBackup')"
-                    class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
-                    aria-label="Close">
-                <x-heroicon-o-x-mark class="w-6 h-6" />
-            </button>
+            <x-close-button 
+                @click="closeModal('createBackup')"
+                size="lg"
+                variant="minimal"
+                class="absolute end-4 top-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                aria-label="Close"
+            />
 
             <!-- Content -->
             <div class="flex flex-col items-center text-center">
@@ -352,12 +356,13 @@
              class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
 
             <!-- Close Button -->
-            <button type="button"
-                    @click="closeModal('restoreBackup')"
-                    class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
-                    aria-label="Close">
-                <x-heroicon-o-x-mark class="w-6 h-6" />
-            </button>
+            <x-close-button 
+                @click="closeModal('restoreBackup')"
+                size="lg"
+                variant="minimal"
+                class="absolute end-4 top-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                aria-label="Close"
+            />
 
             <!-- Content -->
             <div class="flex flex-col items-center text-center">
@@ -415,12 +420,13 @@
              class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
 
             <!-- Close Button -->
-            <button type="button"
-                    @click="closeModal('deleteBackup')"
-                    class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
-                    aria-label="Close">
-                <x-heroicon-o-x-mark class="w-6 h-6" />
-            </button>
+            <x-close-button 
+                @click="closeModal('deleteBackup')"
+                size="lg"
+                variant="minimal"
+                class="absolute end-4 top-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                aria-label="Close"
+            />
 
             <!-- Content -->
             <div class="flex flex-col items-center text-center">
@@ -545,12 +551,13 @@
              class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
 
             <!-- Close Button -->
-            <button type="button"
-                    @click="closeModal('clearConversation')"
-                    class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
-                    aria-label="Close">
-                <x-heroicon-o-x-mark class="w-6 h-6" />
-            </button>
+            <x-close-button 
+                @click="closeModal('clearConversation')"
+                size="lg"
+                variant="minimal"
+                class="absolute end-4 top-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                aria-label="Close"
+            />
 
             <!-- Content -->
             <div class="flex flex-col items-center text-center">

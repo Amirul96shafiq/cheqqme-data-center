@@ -336,9 +336,10 @@ function openGreetingModal(forceOpen = false) {
                                 <h6 class="text-sm font-semibold text-gray-900 dark:text-white">
                                     {{ __('greetingmodal.video-title') }}
                                 </h6>
-                                <button onclick="toggleDataManagementVideo()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600">
-                                    @svg('heroicon-o-x-mark', 'w-4 h-4')
-                                </button>
+                                <x-close-button 
+                                    onclick="toggleDataManagementVideo()"
+                                    aria-label="Close video"
+                                />
                             </div>
                             <div class="relative">
                                 <video 
