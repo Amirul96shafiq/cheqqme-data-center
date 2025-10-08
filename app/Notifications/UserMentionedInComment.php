@@ -78,6 +78,11 @@ class UserMentionedInComment extends Notification
     {
         $taskTitle = Str::limit($this->task->title, 50);
 
+        // Build the comment URL using the same format as the share comment functionality
+        // If this is a reply comment, use the parent comment's ID since replies don't have their own share URL
+        $targetCommentId = $this->comment->parent_id ?: $this->comment->id;
+        $commentUrl = \App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $this->task->id]).'/comments/'.$targetCommentId;
+
         // Create the notification
         return FilamentNotification::make()
             ->title(__('task.notifications.mentioned_title'))
@@ -88,10 +93,14 @@ class UserMentionedInComment extends Notification
             ->icon('heroicon-o-at-symbol')
             ->iconColor('primary')
             ->actions([
-                FilamentAction::make('view')
+                FilamentAction::make('view_comment')
+                    ->label(__('task.notifications.view_comment'))
+                    ->url($commentUrl)
+                    ->button(),
+                FilamentAction::make('view_task')
                     ->label(__('task.notifications.view_task'))
                     ->url(\App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $this->task->id]))
-                    ->button(),
+                    ->link(),
             ])
             ->getDatabaseMessage();
     }

@@ -83,6 +83,7 @@ return [
         'assigned_title' => 'Task Assigned',
         'assigned_body' => 'A task was assigned to you.',
         'view_task' => 'View Task',
+        'view_comment' => 'View Comment',
         'mentioned_title' => 'You were mentioned in a comment',
         'mentioned_body' => ':username mentioned you on ":task_title"',
         'mentioned_someone' => 'Someone',
