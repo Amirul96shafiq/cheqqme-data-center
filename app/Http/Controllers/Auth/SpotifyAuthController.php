@@ -158,7 +158,7 @@ class SpotifyAuthController extends Controller
                 return view('auth.spotify-popup-callback', [
                     'oauth_success' => true,
                     'oauth_message' => $this->getLocalizedMessage('spotifyAccountConnected'),
-                    'oauth_redirect_url' => 'http://localhost:8000/admin/profile',                      // route('filament.admin.auth.profile'),
+                    'oauth_redirect_url' => config('app.url') . '/admin/profile',                      // route('filament.admin.auth.profile'),
                 ]);
             }
 
