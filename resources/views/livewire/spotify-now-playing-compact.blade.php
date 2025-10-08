@@ -62,6 +62,7 @@
                     <img 
                         src="{{ $track['album_art'] }}" 
                         alt="{{ $track['album_name'] }} cover" 
+                        title="{{ __('spotify.tooltip.album_info', ['track' => $track['track_name'], 'artist' => $track['artist_name'], 'album' => $track['album_name']]) }}"
                         class="w-20 h-20 rounded-md object-cover"
                         onerror="this.style.display='none'"
                         draggable="false"

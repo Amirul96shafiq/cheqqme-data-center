@@ -1,7 +1,7 @@
 @if($showTooltip)
     <x-tooltip :text="$getStatusDisplayName()" position="top" align="center">
         <div 
-            class="{{ $getStatusClasses() }} online-status-indicator cursor-help"
+            class="{{ $getStatusClasses() }} online-status-indicator
             {!! $getDataAttributesString() !!}
         ></div>
     </x-tooltip>
