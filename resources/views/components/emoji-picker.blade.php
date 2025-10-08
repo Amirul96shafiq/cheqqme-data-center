@@ -34,7 +34,7 @@
             <button 
                 type="button" 
                 @click="close()"
-                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors duration-100"
+                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
                 aria-label="{{ __('comments.emoji_picker.close') }}"
             >
                 <x-heroicon-o-x-mark class="w-4 h-4" />
@@ -69,11 +69,11 @@
             <div class="mb-2">
                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('comments.emoji_picker.recent') }}</p>
             </div>
-            <div class="flex gap-2 flex-wrap justify-center">
-                <template x-for="emoji in recentEmojis.slice(0, 6)" :key="emoji">
+            <div class="grid grid-cols-5 gap-2">
+                <template x-for="emoji in recentEmojis.slice(0, 5)" :key="emoji">
                     <button
                         type="button"
-                        class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        class="w-full aspect-square flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-3xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                         :data-emoji="emoji"
                         @click="addReaction(emoji)"
                         :class="{ 'bg-primary-100 dark:bg-primary-900': userReactions.includes(emoji) }"
@@ -91,7 +91,7 @@
                 <template x-for="emojiItem in filteredEmojis" :key="emojiItem.emoji">
                     <button
                         type="button"
-                        class="emoji-button w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-100 text-2xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        class="emoji-button w-full aspect-square flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-100 text-2xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                         :data-emoji="emojiItem.emoji"
                         @click="addReaction(emojiItem.emoji)"
                         :class="{ 'bg-primary-100 dark:bg-primary-900': userReactions.includes(emojiItem.emoji) }"
