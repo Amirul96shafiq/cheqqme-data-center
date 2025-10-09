@@ -76,9 +76,16 @@
                 <!-- Track Details -->
                 <div class="flex-1 min-w-0 text-left">
                     
-                    <!-- Track Name -->
-                    <div class="text-sm font-medium text-gray-900 dark:text-white truncate text-left" title="{{ $track['track_name'] }}">
-                        {{ $track['track_name'] }}
+                    <!-- Track Name with Conditional Scrolling -->
+                    <div 
+                        class="overflow-hidden relative w-full track-name-container"
+                        x-data="{ isLongTitle: '{{ $track['track_name'] }}'.length > 25 }"
+                    >
+                        <div :class="{ 'track-marquee': isLongTitle }">
+                            <span class="text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                {{ $track['track_name'] }}
+                            </span>
+                        </div>
                     </div>
                     
                     <!-- Artist Name -->
@@ -134,4 +141,31 @@
 
     <!-- Spotify Web Playback SDK Integration -->
     @vite('resources/js/spotify-player.js')
+
+    <!-- Track Name Scrolling Animation Styles -->
+    <style>
+        /* Marquee animation: scroll left to show full track name, then return */
+        @keyframes marquee-loop {
+            0%, 25% {
+                transform: translateX(0);
+            }
+            65%, 85% {
+                transform: translateX(calc(-100% + 10rem));
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .track-marquee {
+            display: inline-block;
+            animation: marquee-loop 12s linear infinite;
+            will-change: transform;
+        }
+
+        /* Pause animation on hover */
+        .track-name-container:hover .track-marquee {
+            animation-play-state: paused;
+        }
+    </style>
 </div>
