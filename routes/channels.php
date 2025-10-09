@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Broadcast;
 
 // Presence channel for online users
 Broadcast::channel('online-users', function (User $user) {
-    // Return user data that will be available to other users
+    // Allow all users to join, but return their actual status
+    // The JavaScript will handle displaying invisible users appropriately
     return [
         'id' => $user->id,
         'name' => $user->name,

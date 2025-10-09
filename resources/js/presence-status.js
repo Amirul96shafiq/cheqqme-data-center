@@ -308,9 +308,12 @@ class PresenceStatusManager {
 
         container.innerHTML = "";
 
+        // Only show users who are not invisible in the online users list
         this.onlineUsers.forEach((user) => {
-            const userElement = this.createUserElement(user);
-            container.appendChild(userElement);
+            if (user.status !== "invisible") {
+                const userElement = this.createUserElement(user);
+                container.appendChild(userElement);
+            }
         });
     }
 
@@ -356,8 +359,21 @@ class PresenceStatusManager {
                 const user = this.onlineUsers.get(parseInt(userId));
 
                 if (user) {
-                    // Update the status indicator with new classes
+                    // Use the actual status from the presence channel data
                     this.updateStatusIndicatorElement(element, user.status);
+
+                } else {
+                    // If user is not in onlineUsers, check server-side status
+                    const serverStatus = element.getAttribute(
+                        "data-current-status"
+                    );
+                    if (serverStatus) {
+                        // Respect the server-side status
+                        this.updateStatusIndicatorElement(
+                            element,
+                            serverStatus
+                        );
+                    }
                 }
             });
 
@@ -371,6 +387,22 @@ class PresenceStatusManager {
     updateStatusIndicatorElement(element, status) {
         // Get status configuration
         const statusConfig = this.getStatusConfig();
+
+        // Handle invisible status by showing gray indicator
+        if (status === "invisible") {
+            // Show the element for invisible status
+            element.style.display = "";
+
+            // Remove old status classes
+            Object.values(statusConfig).forEach((config) => {
+                element.classList.remove(config.color);
+            });
+
+            // Add gray color for invisible status
+            element.classList.add(statusConfig.invisible.color);
+            element.setAttribute("data-current-status", status);
+            return;
+        }
 
         if (statusConfig[status]) {
             // Remove old status classes
@@ -449,7 +481,11 @@ class PresenceStatusManager {
     updateUserCount() {
         const countElement = document.getElementById("online-users-count");
         if (countElement) {
-            countElement.textContent = this.onlineUsers.size;
+            // Count only non-invisible users
+            const visibleUsersCount = Array.from(
+                this.onlineUsers.values()
+            ).filter((user) => user.status !== "invisible").length;
+            countElement.textContent = visibleUsersCount;
         }
     }
 
@@ -638,6 +674,62 @@ function initializePresenceStatusManager() {
     }
 }
 
+// Initialize status indicators based on server-side data
+function initializeStatusIndicators() {
+    // console.log("initializeStatusIndicators called");
+
+    // Update all status indicators with their initial server-side status
+    const indicators = document.querySelectorAll(
+        ".online-status-indicator, [data-status-indicator]"
+    );
+    // console.log("Found", indicators.length, "status indicators");
+
+    indicators.forEach((element) => {
+        const serverStatus = element.getAttribute("data-current-status");
+        const userId = element.getAttribute("data-user-id");
+
+        // console.log("Processing indicator:", {
+        //     userId: userId,
+        //     serverStatus: serverStatus,
+        //     classes: element.className,
+        // });
+
+        if (serverStatus && serverStatus === "invisible") {
+            // console.log("Processing invisible status for user", userId);
+            // Show gray indicator for invisible status immediately
+            if (window.presenceStatusManager) {
+                window.presenceStatusManager.updateStatusIndicatorElement(
+                    element,
+                    "invisible"
+                );
+            } else {
+                // Fallback: apply gray color directly
+                element.classList.add("bg-gray-400");
+                element.style.display = "";
+            }
+        }
+    });
+}
+
+// Initialize status indicators immediately on page load
+document.addEventListener("DOMContentLoaded", function () {
+    // console.log("DOM Content Loaded - Initializing status indicators");
+    // Add a small delay to ensure Livewire components are rendered
+    setTimeout(initializeStatusIndicators, 100);
+});
+
+// Also initialize when Livewire updates (for dynamic content)
+document.addEventListener("livewire:update", function () {
+    // console.log("Livewire updated - Re-initializing status indicators");
+    setTimeout(initializeStatusIndicators, 100);
+});
+
+// Also initialize when Livewire navigates
+document.addEventListener("livewire:navigated", function () {
+    // console.log("Livewire navigated - Re-initializing status indicators");
+    setTimeout(initializeStatusIndicators, 100);
+});
+
 // Wait for Echo to be loaded
 if (window.Echo) {
     // Echo is already available
@@ -653,6 +745,35 @@ if (window.Echo) {
         }
     }, 1000);
 }
+
+// Global debugging function
+window.debugGretaStatus = function () {
+    // Check all status indicators
+    const indicators = document.querySelectorAll(
+        ".online-status-indicator, [data-status-indicator]"
+    );
+    // console.log("Total indicators found:", indicators.length);
+
+    indicators.forEach((element, index) => {
+        const userId = element.getAttribute("data-user-id");
+        const status = element.getAttribute("data-current-status");
+        // console.log(`Indicator ${index}:`, {
+        //     userId: userId,
+        //     status: status,
+        //     classes: element.className,
+        //     element: element,
+        // });
+    });
+
+    // Check presence status manager
+    if (window.presenceStatusManager) {
+        // console.log("Presence Status Manager:", window.presenceStatusManager);
+        const greta = window.presenceStatusManager.onlineUsers.get(3);
+        // console.log("Greta in presence channel:", greta);
+    } else {
+        // console.log("Presence Status Manager not initialized");
+    }
+};
 
 // Export for use in other modules
 if (typeof module !== "undefined" && module.exports) {
