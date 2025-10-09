@@ -458,8 +458,8 @@ class PresenceStatusManager {
      */
     getStatusColor(status) {
         const colors = {
-            online: "bg-green-500",
-            away: "bg-yellow-500",
+            online: "bg-teal-500",
+            away: "bg-primary-500",
             dnd: "bg-red-500",
             invisible: "bg-gray-400",
         };
