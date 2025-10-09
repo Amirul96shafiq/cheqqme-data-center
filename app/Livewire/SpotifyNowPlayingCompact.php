@@ -6,7 +6,7 @@ use App\Services\SpotifyService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-class SpotifyNowPlayingCompact extends Component
+class SpotifyNowPlaying extends Component
 {
     public $track = null;
 
@@ -159,6 +159,6 @@ class SpotifyNowPlayingCompact extends Component
 
     public function render()
     {
-        return view('livewire.spotify-now-playing-compact');
+        return view('livewire.spotify-now-playing');
     }
 }

@@ -11,7 +11,7 @@ Successfully refactored the Spotify Web Playback SDK integration for better main
 ### Before
 
 ```
-resources/views/livewire/spotify-now-playing-compact.blade.php (559 lines)
+resources/views/livewire/spotify-now-playing.blade.php (559 lines)
 ├── HTML template
 ├── Inline JavaScript (400+ lines)
 └── Console logging everywhere
@@ -20,7 +20,7 @@ resources/views/livewire/spotify-now-playing-compact.blade.php (559 lines)
 ### After
 
 ```
-resources/views/livewire/spotify-now-playing-compact.blade.php (132 lines) ✅
+resources/views/livewire/spotify-now-playing.blade.php (132 lines) ✅
 ├── Clean HTML template only
 └── Single @vite() directive
 
@@ -132,7 +132,7 @@ Added SDK preload to head:
 
 ## 🎨 Blade Template Cleanup
 
-### `resources/views/livewire/spotify-now-playing-compact.blade.php`
+### `resources/views/livewire/spotify-now-playing.blade.php`
 
 **Before:** 559 lines (HTML + 400+ lines of JS)  
 **After:** 132 lines (clean HTML only)
@@ -182,7 +182,7 @@ vendor/bin/pint --dirty
 
 ```
 FIXED  2 files, 1 style issue fixed
-✓ app/Livewire/SpotifyNowPlayingCompact.php
+✓ app/Livewire/SpotifyNowPlaying.php
 ✓ app/Services/SpotifyService.php
 ```
 
