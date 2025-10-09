@@ -87,3 +87,36 @@ select {
         animation: none;
     }
 }
+
+/* Marquee Scrolling Animation (for long text like track names) */
+@keyframes marquee-loop {
+    0%,
+    25% {
+        transform: translateX(0);
+    }
+    65%,
+    85% {
+        transform: translateX(calc(-100% + 10rem));
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.track-marquee {
+    display: inline-block;
+    animation: marquee-loop 12s linear infinite;
+    will-change: transform;
+}
+
+/* Pause animation on hover for parent container */
+.track-name-container:hover .track-marquee {
+    animation-play-state: paused;
+}
+
+/* Disable animation for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .track-marquee {
+        animation: none;
+    }
+}
