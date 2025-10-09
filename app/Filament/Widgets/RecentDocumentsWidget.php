@@ -22,9 +22,22 @@ class RecentDocumentsWidget extends TableWidget
                 ->label(__('dashboard.recent_documents.id'))
                 ->sortable()
                 ->url(fn ($record) => route('filament.admin.resources.documents.edit', $record)),
-            TextColumn::make('title')->label(__('dashboard.recent_documents.document_title'))->limit(10),
-            TextColumn::make('project.title')->label(__('dashboard.recent_documents.project_title'))->limit(10),
-            TextColumn::make('created_at')->label(__('dashboard.recent_documents.created_at'))->dateTime('j/n/y, h:i A'),
+            TextColumn::make('title')
+                ->label(__('dashboard.recent_documents.document_title'))
+                ->limit(10)
+                ->tooltip(function ($record) {
+                    return $record->title;
+                }),
+            TextColumn::make('project.title')
+                ->label(__('dashboard.recent_documents.project_title'))
+                ->limit(10)
+                ->tooltip(function ($record) {
+                    return $record->project->title;
+                }),
+            TextColumn::make('created_at')
+                ->label(__('dashboard.recent_documents.created_at'))
+                ->dateTime('j/n/y, h:i A')
+                ->sortable(),
         ];
     }
 

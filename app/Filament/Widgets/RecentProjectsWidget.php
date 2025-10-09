@@ -23,7 +23,12 @@ class RecentProjectsWidget extends TableWidget
                 ->label(__('dashboard.recent_projects.id'))
                 ->sortable()
                 ->url(fn ($record) => route('filament.admin.resources.projects.edit', $record)),
-            TextColumn::make('title')->label(__('dashboard.recent_projects.project_title'))->limit(10),
+            TextColumn::make('title')
+                ->label(__('dashboard.recent_projects.project_title'))
+                ->limit(10)
+                ->tooltip(function ($record) {
+                    return $record->title;
+                }),
             TextColumn::make('status')
                 ->badge()
                 ->colors([
@@ -37,7 +42,10 @@ class RecentProjectsWidget extends TableWidget
                     'Completed' => __('dashboard.recent_projects.completed'),
                     default => $state,
                 }),
-            TextColumn::make('created_at')->label(__('dashboard.recent_projects.created_at'))->dateTime('j/n/y, h:i A'),
+            TextColumn::make('created_at')
+                ->label(__('dashboard.recent_projects.created_at'))
+                ->dateTime('j/n/y, h:i A')
+                ->sortable(),
         ];
     }
 
