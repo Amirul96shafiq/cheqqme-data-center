@@ -3,6 +3,7 @@
 return [
     'play' => [
         'now_playing' => 'Sedang Diputar',
+        'currently_playing' => 'Sedang Diputar',
         'paused' => 'Dijeda',
     ],
 

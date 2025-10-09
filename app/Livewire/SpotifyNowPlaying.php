@@ -18,8 +18,12 @@ class SpotifyNowPlaying extends Component
 
     public $useWebPlaybackSdk = true; // Enable Web Playback SDK by default
 
-    public function mount()
+    public $context = 'dropdown'; // 'dropdown' or 'modal'
+
+    public function mount($context = 'dropdown')
     {
+        $this->context = $context;
+        
         // Always load track immediately for instant display
         // SDK will override if it connects and has playback
         $this->loadCurrentTrack();

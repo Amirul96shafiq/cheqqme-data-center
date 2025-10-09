@@ -3,6 +3,7 @@
 return [
     'play' => [
         'now_playing' => 'Now Playing',
+        'currently_playing' => 'Currently Playing',
         'paused' => 'Paused',
     ],
 

@@ -124,6 +124,13 @@
                                     </x-tooltip>
                                 @endif
                             </div>
+
+                            <!-- Spotify Now Playing -->
+                            @if($user->hasSpotifyAuth())
+                                <div class="my-3">
+                                    @livewire('spotify-now-playing', ['context' => 'modal'])
+                                </div>
+                            @endif
                         </div>
                     </div>
 
