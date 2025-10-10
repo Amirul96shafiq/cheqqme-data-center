@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Models\ChatbotBackup;
 use App\Services\ChatbotBackupService;
 use Filament\Actions\Action;
+use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Tables\Actions\Action as TableAction;
@@ -18,6 +19,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ChatbotHistory extends Page implements HasTable
 {
@@ -209,6 +211,29 @@ class ChatbotHistory extends Page implements HasTable
                 ->action(function () {
                     $this->createBackup();
                 }),
+
+            Action::make('upload_backup')
+                ->label(__('chatbot.history.upload_backup'))
+                ->icon('heroicon-o-arrow-up-tray')
+                ->color('primary')
+                ->form([
+                    FileUpload::make('backup_file')
+                        ->label(__('chatbot.upload.file_label'))
+                        ->helperText(__('chatbot.upload.file_helper'))
+                        ->acceptedFileTypes(['application/json'])
+                        ->maxSize(10240) // 10MB
+                        ->required()
+                        ->disk('local')
+                        ->directory('temp-backups')
+                        ->visibility('private'),
+                ])
+                ->modalHeading(__('chatbot.upload.modal_heading'))
+                ->modalDescription(__('chatbot.upload.modal_description'))
+                ->modalSubmitActionLabel(__('chatbot.upload.submit'))
+                ->modalWidth('lg')
+                ->action(function (array $data) {
+                    $this->uploadBackup($data);
+                }),
         ];
     }
 
@@ -365,5 +390,108 @@ class ChatbotHistory extends Page implements HasTable
                 ->danger()
                 ->send();
         }
+    }
+
+    public function uploadBackup(array $data): void
+    {
+        try {
+            $user = Auth::user();
+            $backupService = new ChatbotBackupService;
+
+            // Get the uploaded file path
+            $filePath = $data['backup_file'];
+
+            if (! $filePath) {
+                throw new \Exception(__('chatbot.upload.no_file'));
+            }
+
+            // Read the JSON file
+            $jsonContent = Storage::disk('local')->get($filePath);
+
+            if (! $jsonContent) {
+                throw new \Exception(__('chatbot.upload.read_failed'));
+            }
+
+            // Parse JSON
+            $backupData = json_decode($jsonContent, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception(__('chatbot.upload.invalid_json'));
+            }
+
+            // Validate backup data structure
+            if (! $backupService->validateBackupData($backupData)) {
+                throw new \Exception(__('chatbot.upload.invalid_structure'));
+            }
+
+            // Verify the backup is for the current user or allow import anyway
+            // (Users might want to import backups even if user_id doesn't match)
+
+            // Create conversations from backup data
+            $conversations = collect($backupData['conversations']);
+
+            if ($conversations->isEmpty()) {
+                throw new \Exception(__('chatbot.upload.no_conversations'));
+            }
+
+            // Create new backup record with type 'import'
+            $backup = ChatbotBackup::create([
+                'user_id' => $user->id,
+                'backup_name' => $this->generateImportBackupName($backupData),
+                'backup_data' => $backupData,
+                'backup_type' => 'import',
+                'message_count' => $conversations->count(),
+                'backup_date' => now(),
+                'conversation_start_date' => $conversations->min('created_at'),
+                'conversation_end_date' => $conversations->max('created_at'),
+            ]);
+
+            // Clean up the temporary file
+            Storage::disk('local')->delete($filePath);
+
+            Notification::make()
+                ->title(__('chatbot.upload.success'))
+                ->body(__('chatbot.upload.success_body', [
+                    'name' => $backup->backup_name,
+                    'count' => $backup->message_count,
+                ]))
+                ->success()
+                ->send();
+        } catch (\Exception $e) {
+            // Clean up the temporary file if it exists
+            if (isset($filePath) && $filePath) {
+                Storage::disk('local')->delete($filePath);
+            }
+
+            Notification::make()
+                ->title(__('chatbot.upload.failed'))
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+        }
+    }
+
+    private function generateImportBackupName(array $backupData): string
+    {
+        $userId = Auth::id();
+        $importedAt = now()->format('Ymd_His');
+
+        // Get the next sequence number for this user
+        $existingCount = ChatbotBackup::where('user_id', $userId)->count();
+        $sequenceNumber = str_pad($existingCount + 1, 4, '0', STR_PAD_LEFT);
+
+        // Extract original backup date if available
+        $originalDate = '';
+        if (isset($backupData['backup_created_at'])) {
+            try {
+                $originalDate = \Carbon\Carbon::parse($backupData['backup_created_at'])->format('Ymd');
+            } catch (\Exception $e) {
+                // Ignore if parsing fails
+            }
+        }
+
+        $originalInfo = $originalDate ? "_orig_{$originalDate}" : '';
+
+        return "arem_chat_{$userId}_import_{$importedAt}{$originalInfo}_{$sequenceNumber}";
     }
 }

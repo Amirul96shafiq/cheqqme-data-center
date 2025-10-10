@@ -28,6 +28,7 @@ return [
         'navigation_label' => 'Sejarah Chatbot',
         'title' => 'Sejarah Chatbot',
         'create_backup' => 'Tambah Backup',
+        'upload_backup' => 'Muat Naik Backup',
         'backups_title' => 'Backup Perbualan',
     ],
 
@@ -109,5 +110,22 @@ return [
         'this_week' => 'Minggu Ini',
         'this_month' => 'Bulan Ini',
         'this_year' => 'Tahun Ini',
+    ],
+
+    // Upload
+    'upload' => [
+        'modal_heading' => 'Muat Naik Backup',
+        'modal_description' => 'Muat naik fail backup chatbot yang telah dimuat turun untuk diimport ke dalam sejarah anda.',
+        'file_label' => 'Fail Backup',
+        'file_helper' => 'Pilih fail backup JSON (maksimum 10MB)',
+        'submit' => 'Muat Naik',
+        'success' => 'Backup Berjaya Dimuat Naik',
+        'success_body' => 'Backup ":name" telah diimport dengan :count mesej.',
+        'failed' => 'Muat Naik Gagal',
+        'no_file' => 'Tiada fail dimuat naik.',
+        'read_failed' => 'Gagal membaca fail yang dimuat naik.',
+        'invalid_json' => 'Fail yang dimuat naik bukan fail JSON yang sah.',
+        'invalid_structure' => 'Fail backup mempunyai struktur yang tidak sah. Sila pastikan anda memuat naik fail backup chatbot yang sah.',
+        'no_conversations' => 'Fail backup tidak mengandungi sebarang perbualan.',
     ],
 ];

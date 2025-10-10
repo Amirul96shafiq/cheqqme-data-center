@@ -28,6 +28,7 @@ return [
         'navigation_label' => 'Chatbot History',
         'title' => 'Chatbot History',
         'create_backup' => 'Create Backup',
+        'upload_backup' => 'Upload Backup',
         'backups_title' => 'Chatbot Backups',
     ],
 
@@ -110,5 +111,22 @@ return [
         'this_week' => 'This Week',
         'this_month' => 'This Month',
         'this_year' => 'This Year',
+    ],
+
+    // Upload
+    'upload' => [
+        'modal_heading' => 'Upload Backup',
+        'modal_description' => 'Upload a previously downloaded chatbot backup file to import it into your history.',
+        'file_label' => 'Backup File',
+        'file_helper' => 'Select a JSON backup file (max 10MB)',
+        'submit' => 'Upload',
+        'success' => 'Backup Uploaded Successfully',
+        'success_body' => 'Imported backup ":name" with :count messages.',
+        'failed' => 'Upload Failed',
+        'no_file' => 'No file was uploaded.',
+        'read_failed' => 'Failed to read the uploaded file.',
+        'invalid_json' => 'The uploaded file is not a valid JSON file.',
+        'invalid_structure' => 'The backup file has an invalid structure. Please ensure you upload a valid chatbot backup file.',
+        'no_conversations' => 'The backup file contains no conversations.',
     ],
 ];
