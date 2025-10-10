@@ -124,7 +124,7 @@ return [
         'timezone' => 'Zon Waktu',
         'country' => 'Negara',
         'created_at' => 'Created At',
-        //'updated_at_by' => 'Updated At (by)',
+        // 'updated_at_by' => 'Updated At (by)',
         'personalize' => 'Personalisasi',
         'settings' => 'Tetapan',
         'chatbot-history' => 'Sejarah Chatbot',
@@ -137,6 +137,12 @@ return [
         'trashed' => 'Dihapus',
     ],
 
+    // Modal
+    'modal' => [
+        'create_heading' => 'Tambah Pengguna Baru',
+        'create_description' => 'Isi borang di bawah untuk menambah akaun pengguna baru.',
+    ],
+
     // Notifications
     'notifications' => [
         'saved' => 'Disimpan',
@@ -145,5 +151,10 @@ return [
         'saved_password_body' => 'Muat semula halaman untuk melihat perubahan.',
         'validation_error' => 'Kesilapan Pengesahan',
         'old_password_incorrect' => 'Kata laluan lama tidak betul.',
+        'created' => 'Pengguna Ditambah',
+        'created_body' => 'Pengguna :name telah berjaya ditambah.',
+        'create_failed' => 'Tambah Pengguna Gagal',
+        'password_generated' => 'Kata Laluan Dijana',
+        'password_generated_body' => 'Kata laluan dijana: :password (Salin kata laluan ini sebelum ditutup)',
     ],
 ];

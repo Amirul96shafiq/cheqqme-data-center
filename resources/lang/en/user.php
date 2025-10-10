@@ -138,6 +138,12 @@ return [
         'trashed' => 'Trashed',
     ],
 
+    // Modal
+    'modal' => [
+        'create_heading' => 'Create New User',
+        'create_description' => 'Fill in the form below to create a new user account.',
+    ],
+
     // Notifications
     'notifications' => [
         'saved' => 'Saved',
@@ -146,5 +152,10 @@ return [
         'saved_password_body' => 'Refresh the page to view the changes.',
         'validation_error' => 'Validation Error',
         'old_password_incorrect' => 'The old password is incorrect.',
+        'created' => 'User Created',
+        'created_body' => 'User :name has been successfully created.',
+        'create_failed' => 'User Creation Failed',
+        'password_generated' => 'Password Generated',
+        'password_generated_body' => 'Generated password: :password (Copy this password before closing)',
     ],
 ];
