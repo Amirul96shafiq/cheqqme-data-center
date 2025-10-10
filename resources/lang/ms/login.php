@@ -22,11 +22,11 @@ return [
     ],
 
     'form' => [
-        'email' => 'Username / Email',
+        'email' => 'Username / Email / Telefon',
         'password' => 'Kata Laluan',
         'remember' => 'Ingat Saya',
         'or' => 'Atau',
-        'emailPlaceholder' => 'Masukkan nama pengguna atau emel',
+        'emailPlaceholder' => 'Masukkan nama pengguna, emel atau nombor telefon',
     ],
 
     'errors' => [

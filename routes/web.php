@@ -125,10 +125,21 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
         'password' => ['required'],
     ]);
 
-    $loginField = filter_var($credentials['email'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+    // Determine login field: check if it's a phone number, email, or username
+    $input = $credentials['email'];
+    $loginField = 'username'; // default
+
+    // Check if input is a phone number (contains only digits, potentially with + at start)
+    if (preg_match('/^\+?\d+$/', $input)) {
+        // Remove + if present and use phone field
+        $loginField = 'phone';
+        $input = preg_replace('/\D+/', '', $input); // Keep only digits
+    } elseif (filter_var($input, FILTER_VALIDATE_EMAIL)) {
+        $loginField = 'email';
+    }
 
     $attemptCredentials = [
-        $loginField => $credentials['email'],
+        $loginField => $input,
         'password' => $credentials['password'],
     ];
 

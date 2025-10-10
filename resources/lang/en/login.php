@@ -22,11 +22,11 @@ return [
     ],
 
     'form' => [
-        'email' => 'Username / Email',
+        'email' => 'Username / Email / Phone',
         'password' => 'Password',
         'remember' => 'Remember Me',
         'or' => 'Or',
-        'emailPlaceholder' => 'Enter username or email',
+        'emailPlaceholder' => 'Enter username, email or phone number',
     ],
 
     'errors' => [
