@@ -107,6 +107,25 @@
                     {{ $user->email }}
                 </p>
                 
+                <!-- Phone Number -->
+                @if($user->phone)
+                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
+                        @php
+                            $country = $user->phone_country ?? 'MY';
+                            $flag = match($country) {
+                                'MY' => '🇲🇾',
+                                'ID' => '🇮🇩',
+                                'SG' => '🇸🇬',
+                                'PH' => '🇵🇭',
+                                'US' => '🇺🇸',
+                                default => '🌐',
+                            };
+                        @endphp
+                        {{ $flag }} {{ $user->phone }}
+                    </p>
+                @endif
+                            
+                
                 <!-- User Badges -->
                 <div class="flex flex-wrap gap-1 justify-center my-3">
 
