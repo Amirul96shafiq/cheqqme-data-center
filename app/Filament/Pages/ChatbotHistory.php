@@ -231,35 +231,11 @@ class ChatbotHistory extends Page implements HasTable
         $backupService = new ChatbotBackupService;
         $fileName = $backupService->downloadBackup($backup);
 
-        // Use js() method to execute JavaScript directly
-        $jsonData = json_encode($backup->backup_data);
-        $escapedFilename = addslashes($fileName);
-
-        $this->js("
-            // console.log('Direct JS execution for download');
-            try {
-                const backupData = {$jsonData};
-                const filename = '{$escapedFilename}';
-
-                // console.log('Backup data:', backupData);
-                // console.log('Filename:', filename);
-
-                const jsonString = JSON.stringify(backupData, null, 2);
-                const blob = new Blob([jsonString], { type: 'application/json' });
-
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                URL.revokeObjectURL(link.href);
-                // console.log('Download completed successfully');
-            } catch (error) {
-                console.error('Download failed:', error);
-            }
-        ");
+        // Dispatch browser event with backup data
+        $this->dispatch('download-backup', [
+            'data' => $backup->backup_data,
+            'filename' => $fileName,
+        ]);
 
         Notification::make()
             ->title(__('settings.downloads.started'))
