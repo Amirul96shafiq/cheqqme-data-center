@@ -30,30 +30,30 @@ class ListUsers extends ListRecords
                     Section::make(__('user.section.user_info'))
                         ->schema([
                             TextInput::make('username')
-                                    ->label(__('user.form.username'))
-                                    ->required()
-                                    ->maxLength(20)
-                                    ->unique(table: 'users', column: 'username')
-                                    ->reactive()
-                                    ->debounce(500),
+                                ->label(__('user.form.username'))
+                                ->required()
+                                ->maxLength(20)
+                                ->unique(table: 'users', column: 'username')
+                                ->reactive()
+                                ->debounce(500),
 
-                                TextInput::make('name')
-                                    ->label(__('user.form.name'))
-                                    ->nullable()
-                                    ->helperText(__('user.form.name_helper'))
-                                    ->placeholder(fn (callable $get) => $get('username'))
-                                    ->maxLength(50),
+                            TextInput::make('name')
+                                ->label(__('user.form.name'))
+                                ->nullable()
+                                ->helperText(__('user.form.name_helper'))
+                                ->placeholder(fn (callable $get) => $get('username'))
+                                ->maxLength(50),
 
-                                TextInput::make('email')
-                                    ->label(__('user.form.email'))
-                                    ->required()
-                                    ->email()
-                                    ->maxLength(60)
-                                    ->unique(
-                                        table: 'users',
-                                        column: 'email',
-                                        modifyRuleUsing: fn (Unique $rule) => $rule->whereNull('deleted_at')
-                                    ),
+                            TextInput::make('email')
+                                ->label(__('user.form.email'))
+                                ->required()
+                                ->email()
+                                ->maxLength(60)
+                                ->unique(
+                                    table: 'users',
+                                    column: 'email',
+                                    modifyRuleUsing: fn (Unique $rule) => $rule->whereNull('deleted_at')
+                                ),
                         ]),
 
                     Section::make(__('user.section.password_info'))
@@ -104,6 +104,9 @@ class ListUsers extends ListRecords
             // Hash the password
             $data['password'] = Hash::make($data['password']);
             $data['updated_by'] = auth()->id();
+
+            // Set default online status to invisible
+            $data['online_status'] = 'invisible';
 
             // Remove password_confirmation from data
             unset($data['password_confirmation']);
