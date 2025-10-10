@@ -42,7 +42,8 @@ class ListUsers extends ListRecords
                                 ->nullable()
                                 ->helperText(__('user.form.name_helper'))
                                 ->placeholder(fn (callable $get) => $get('username'))
-                                ->maxLength(50),
+                                ->maxLength(50)
+                                ->dehydrateStateUsing(fn ($state) => filled($state) ? $state : null),
 
                             TextInput::make('email')
                                 ->label(__('user.form.email'))
@@ -107,6 +108,11 @@ class ListUsers extends ListRecords
 
             // Set default online status to invisible
             $data['online_status'] = 'invisible';
+
+            // Set name to username if empty
+            if (empty($data['name'])) {
+                $data['name'] = $data['username'];
+            }
 
             // Remove password_confirmation from data
             unset($data['password_confirmation']);
