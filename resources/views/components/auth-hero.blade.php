@@ -167,7 +167,7 @@
 
 {{-- Sticky Version Text for Responsive (1024px and below) --}}
 <div class="version-text-sticky hidden">
-    <div class="text-[11px] text-gray-600/20 dark:text-gray-500 pt-1">
+    <div class="text-[11px] text-gray-600/20 dark:text-gray-500 pt-1 font-mono">
         {{ $gitVersion ?? 'v0.3_local' }}
     </div>
 </div>
