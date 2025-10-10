@@ -39,6 +39,8 @@ class User extends Authenticatable implements HasAvatar
         'username',
         'name',
         'email',
+        'phone',
+        'phone_country',
         'google_id',
         'google_avatar_url',
         'microsoft_id',
@@ -71,6 +73,8 @@ class User extends Authenticatable implements HasAvatar
                 'username',
                 'name',
                 'email',
+                'phone',
+                'phone_country',
                 'avatar',
                 'cover_image',
                 'web_app_background_enabled',
@@ -98,7 +102,7 @@ class User extends Authenticatable implements HasAvatar
         // Don't log updates if no tracked fields actually changed
         if ($eventName === 'updated') {
             $dirtyFields = $this->getDirty();
-            $trackedFields = ['username', 'name', 'email', 'avatar', 'cover_image', 'web_app_background_enabled', 'email_verified_at', 'deleted_at', 'timezone', 'timezone_source', 'api_key_generated_at', 'city', 'country', 'location_updated_at', 'location_source', 'location_manually_set', 'timezone_manually_set'];
+            $trackedFields = ['username', 'name', 'email', 'phone', 'phone_country', 'avatar', 'cover_image', 'web_app_background_enabled', 'email_verified_at', 'deleted_at', 'timezone', 'timezone_source', 'api_key_generated_at', 'city', 'country', 'location_updated_at', 'location_source', 'location_manually_set', 'timezone_manually_set'];
 
             // Check if any tracked fields actually changed
             $trackedFieldsChanged = ! empty(array_intersect(array_keys($dirtyFields), $trackedFields));

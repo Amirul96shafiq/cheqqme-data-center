@@ -257,6 +257,43 @@ class UserResource extends Resource
                         return strlen($record->email) > 40 ? substr($record->email, 0, length: 40).'...' : $record->email;
                     }),
 
+                TextColumn::make('phone')
+                    ->label(__('user.table.phone_number'))
+                    ->searchable()
+                    ->sortable()
+                    ->getStateUsing(function ($record) {
+                        return $record->phone ?? '-';
+                    })
+                    ->formatStateUsing(function ($state, $record) {
+                        if (! $record->phone) {
+                            return '-';
+                        }
+
+                        // Format phone number for display
+                        $phone = $record->phone;
+                        $country = $record->phone_country ?? 'MY';
+
+                        // Add country flag emoji
+                        $flag = match ($country) {
+                            'MY' => '🇲🇾',
+                            'ID' => '🇮🇩',
+                            'SG' => '🇸🇬',
+                            'PH' => '🇵🇭',
+                            'US' => '🇺🇸',
+                            default => '🌐',
+                        };
+
+                        return $flag.' '.$phone;
+                    })
+                    ->limit(20)
+                    ->tooltip(function ($record) {
+                        if (! $record->phone) {
+                            return null;
+                        }
+
+                        return $record->phone;
+                    }),
+
                 TextColumn::make('timezone')
                     ->label(__('user.table.timezone'))
                     ->getStateUsing(function ($record) {
@@ -375,12 +412,12 @@ class UserResource extends Resource
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 //
             ])
-            //->defaultSort('updated_at', 'desc')
+            // ->defaultSort('updated_at', 'desc')
             ->defaultPaginationPageOption(5);
     }
 

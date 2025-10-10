@@ -5,12 +5,15 @@ namespace App\Filament\Pages;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\EditProfile;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class Profile extends EditProfile
 {
@@ -97,6 +100,68 @@ class Profile extends EditProfile
                             ->placeholder(fn (callable $get) => $get('username')),
 
                         $this->getEmailFormComponent()->label(__('user.form.email')),
+
+                        PhoneInput::make('phone')
+                            ->label(__('user.form.phone_number'))
+                            ->countryStatePath('phone_country')
+                            ->initialCountry('MY')
+                            ->countryOrder(['MY', 'ID', 'SG', 'PH', 'US'])
+                            ->onlyCountries(['MY', 'ID', 'SG', 'PH', 'US'])
+                            ->countrySearch(false)
+                            ->dropdownContainer(false)
+                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
+                                $digits = preg_replace('/\D+/', '', (string) $state);
+                                if ($digits === '') {
+                                    $set('phone', '');
+
+                                    return;
+                                }
+
+                                $country = $get('phone_country') ?: 'MY';
+                                $dialCode = match ($country) {
+                                    'MY' => '60',
+                                    'ID' => '62',
+                                    'SG' => '65',
+                                    'PH' => '63',
+                                    'US' => '1',
+                                    default => '60',
+                                };
+
+                                if (! str_starts_with($digits, $dialCode)) {
+                                    $digits = ltrim($digits, '0');
+                                    if (! str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode.$digits;
+                                    }
+                                }
+
+                                $set('phone', $digits);
+                            })
+                            ->dehydrateStateUsing(function (?string $state, Get $get): string {
+                                $digits = preg_replace('/\D+/', '', (string) $state);
+                                if ($digits === '') {
+                                    return '';
+                                }
+
+                                $country = $get('phone_country') ?: 'MY';
+                                $dialCode = match ($country) {
+                                    'MY' => '60',
+                                    'ID' => '62',
+                                    'SG' => '65',
+                                    'PH' => '63',
+                                    'US' => '1',
+                                    default => '60',
+                                };
+
+                                if (! str_starts_with($digits, $dialCode)) {
+                                    $digits = ltrim($digits, '0');
+                                    if (! str_starts_with($digits, $dialCode)) {
+                                        $digits = $dialCode.$digits;
+                                    }
+                                }
+
+                                return $digits;
+                            })
+                            ->nullable(),
 
                         \App\Forms\Components\OnlineStatusSelect::make('online_status')
                             ->label(__('user.form.online_status'))
