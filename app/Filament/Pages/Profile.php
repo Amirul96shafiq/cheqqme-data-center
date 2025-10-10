@@ -463,7 +463,7 @@ class Profile extends EditProfile
 
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
-                                    <img src="'.asset('images/spotify-icon.svg').'" alt="Spotify" class="w-5 h-5">
+                                    <img src="'.asset('images/spotify-icon-green.svg').'" alt="Spotify" class="w-5 h-5">
                                     <span>'.__('user.form.spotify_connection').'</span>
                                 </div>'
                         ))
