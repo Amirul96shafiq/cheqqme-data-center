@@ -18,6 +18,11 @@ return [
 
     // General
     'back_to_login' => 'Kembali ke Log Masuk',
+    'failed' => 'Bukti kelayakan ini tidak sepadan dengan rekod kami.',
+    'password' => 'Kata laluan yang diberikan tidak betul.',
+    'throttle' => 'Terlalu banyak percubaan log masuk. Sila cuba lagi dalam :seconds saat.',
+    'failed_with_attempts' => 'Bukti kelayakan ini tidak sepadan dengan rekod kami. Anda mempunyai :attempts percubaan lagi.',
+    'locked_out' => 'Terlalu banyak percubaan log masuk yang gagal. Sila cuba lagi dalam 1 minit.',
 
     // Language
     'english' => 'Inggeris',

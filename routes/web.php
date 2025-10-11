@@ -8,6 +8,7 @@ use App\Http\Controllers\WeatherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
 // OpenAI logs endpoint (web UI)
@@ -120,6 +121,9 @@ Route::get('/admin/login', function () {
 
 // Admin login route (custom) - POST
 Route::post('/admin/login', function (Illuminate\Http\Request $request) {
+    // Set locale from session
+    App::setLocale(session('locale', config('app.locale')));
+
     $credentials = $request->validate([
         'email' => ['required', 'string'],
         'password' => ['required'],
@@ -138,6 +142,21 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
         $loginField = 'email';
     }
 
+    // Rate limiting: track by input + IP address for security
+    $rateLimitKey = 'login-attempt:'.strtolower($input).':'.$request->ip();
+    $maxAttempts = 5;
+    $decaySeconds = 60; // 1 minute lockout
+
+    // Check if too many attempts have been made
+    if (RateLimiter::tooManyAttempts($rateLimitKey, $maxAttempts)) {
+        $seconds = RateLimiter::availableIn($rateLimitKey);
+        $minutes = ceil($seconds / 60);
+
+        return back()->withErrors([
+            'email' => trans('auth.throttle', ['seconds' => $seconds, 'minutes' => $minutes]),
+        ])->onlyInput('email');
+    }
+
     $attemptCredentials = [
         $loginField => $input,
         'password' => $credentials['password'],
@@ -146,12 +165,28 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
     if (Auth::attempt($attemptCredentials, $request->boolean('remember'))) {
         $request->session()->regenerate();
 
+        // Clear rate limit on successful login
+        RateLimiter::clear($rateLimitKey);
+
         // Redirect to Filament admin dashboard
         return redirect()->route('filament.admin.pages.dashboard');
     }
 
+    // Increment failed login attempts
+    RateLimiter::hit($rateLimitKey, $decaySeconds);
+
+    // Calculate remaining attempts
+    $attemptsLeft = $maxAttempts - RateLimiter::attempts($rateLimitKey);
+
+    if ($attemptsLeft > 0) {
+        return back()->withErrors([
+            'email' => trans('auth.failed_with_attempts', ['attempts' => $attemptsLeft]),
+        ])->onlyInput('email');
+    }
+
+    // This is the last failed attempt
     return back()->withErrors([
-        'email' => 'The provided credentials do not match our records.',
+        'email' => trans('auth.locked_out'),
     ])->onlyInput('email');
 })->name('admin.login');
 
