@@ -263,6 +263,7 @@ class Settings extends Page
     private function getApiSection(): Forms\Components\Section
     {
         return Forms\Components\Section::make(__('settings.sections.api'))
+            ->icon('heroicon-m-code-bracket-square')
             ->description(__('settings.sections.api_description'))
             ->collapsible()
             ->schema([
@@ -451,6 +452,7 @@ class Settings extends Page
     private function getLocationTab(): Forms\Components\Tabs\Tab
     {
         return Forms\Components\Tabs\Tab::make(__('settings.sections.location'))
+            ->icon('heroicon-m-map-pin')
             ->schema([
                 $this->getLocationActionsRow(),
                 $this->getLocationFieldsRow(),
@@ -463,6 +465,7 @@ class Settings extends Page
     private function getTimezoneTab(): Forms\Components\Tabs\Tab
     {
         return Forms\Components\Tabs\Tab::make(__('settings.sections.timezone'))
+            ->icon('heroicon-m-clock')
             ->schema([
                 $this->getTimezoneFieldRow(),
                 $this->getTimezoneStatusRow(),
@@ -718,6 +721,7 @@ class Settings extends Page
     private function getWeatherPreviewSection(): Forms\Components\Section
     {
         return Forms\Components\Section::make(__('settings.weather.preview'))
+            ->icon('heroicon-m-sparkles')
             ->collapsible()
             ->description(__('settings.weather.preview_description'))
             ->schema([
@@ -902,6 +906,7 @@ class Settings extends Page
     private function getTimezonePreviewSection(): Forms\Components\Section
     {
         return Forms\Components\Section::make(__('settings.timezone.current_time_preview'))
+            ->icon('heroicon-m-sparkles')
             ->collapsible()
             ->description(__('settings.timezone.preview_description'))
             ->schema([

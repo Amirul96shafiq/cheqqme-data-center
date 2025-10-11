@@ -73,6 +73,7 @@ class Profile extends EditProfile
         return $form
             ->schema([
                 Forms\Components\Section::make(__('user.section.profile_settings'))
+                    ->icon('heroicon-m-user')
                     ->description(__('user.section.profile_settings_description'))
                     ->schema([
                         Forms\Components\TextInput::make('username')
@@ -328,6 +329,7 @@ class Profile extends EditProfile
                     ->columns(1),
 
                 Forms\Components\Section::make(__('user.section.connection_settings'))
+                    ->icon('heroicon-m-link')
                     ->description(__('user.section.connection_settings_description'))
                     ->schema([
                         // Google connection fieldset
@@ -548,6 +550,7 @@ class Profile extends EditProfile
 
                 Forms\Components\Section::make(__('user.section.password_settings'))
                     ->description(__('user.section.password_info_description_profile'))
+                    ->icon('heroicon-m-lock-closed')
                     ->collapsible()
                     ->collapsed()
                     ->schema([
