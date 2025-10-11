@@ -995,7 +995,7 @@ class Settings extends Page
                                     ];
 
                                     foreach ($sampleData as $row) {
-                                        $html .= '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">';
+                                        // $html .= '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">';
                                         $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">'.$row['id'].'</td>';
                                         $html .= '<td class="py-2 px-3 text-gray-900 dark:text-gray-100">'.$row['title'].'</td>';
                                         $html .= '<td class="py-2 px-3 text-gray-600 dark:text-gray-400">'.$row['created']->format('j/n/y, h:i A').'</td>';
@@ -1086,7 +1086,7 @@ class Settings extends Page
             $deviceIcon = SessionHelper::getDeviceIcon($sessionData);
 
             // Session card
-            $html .= '<div class="bg-white dark:bg-gray-800 rounded-lg p-6">';
+            $html .= '<div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6">';
 
             $html .= '<div class="flex items-start justify-between gap-4">';
 
