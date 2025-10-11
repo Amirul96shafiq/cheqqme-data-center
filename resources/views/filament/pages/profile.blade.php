@@ -13,19 +13,24 @@
             alt="Cover Image"
             class="w-full h-full object-cover rounded-2xl"
         >
-        {{-- User information overlay --}}
-        {{-- User ID at top center --}}
-        <div class="absolute top-4 left-1/2 transform -translate-x-1/2 text-center">
-            <p class="text-xs md:text-sm text-white/80 drop-shadow-md px-3 py-1 bg-black/20 rounded-full">
-                ID: {{ $user->id ?? 'N/A' }}
-            </p>
+
+        {{-- Dark transparent background box --}}
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-full max-w-xl h-full bg-gradient-to-t from-black/35 to-transparent"></div>
         </div>
 
         {{-- Avatar, username, and email at center middle --}}
         <div class="absolute inset-0 flex items-center justify-center">
-            <div class="text-center text-white">
-                {{-- Avatar --}}
+            <div class="text-center text-white relative z-10">
+
+                {{-- User ID and Avatar --}}
                 <div class="mb-4 mt-8 md:mt-0 relative inline-block">
+                    {{-- User ID above avatar --}}
+                    <div class="mb-2 text-center">
+                        <p class="text-xs md:text-sm text-white/90 drop-shadow-md px-3 py-1 bg-black/40 rounded-full inline-block">
+                            ID: {{ $user->id ?? 'N/A' }}
+                        </p>
+                    </div>
                     <x-filament::avatar
                         :src="$user ? filament()->getUserAvatarUrl($user) : null"
                         alt="Avatar"
