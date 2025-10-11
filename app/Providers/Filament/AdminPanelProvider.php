@@ -334,7 +334,7 @@ class AdminPanelProvider extends PanelProvider
                 function () {
                     // Preload Spotify SDK for faster initialization
                     return '<link rel="preload" href="https://sdk.scdn.co/spotify-player.js" as="script" crossorigin="anonymous">'.
-                           '<script src="https://sdk.scdn.co/spotify-player.js" async></script>';
+                           '<script src="https://sdk.scdn.co/spotify-player.js" async crossorigin="anonymous"></script>';
                 },
             )
             ->renderHook(

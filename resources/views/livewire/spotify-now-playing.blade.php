@@ -79,7 +79,7 @@
                     <!-- Track Name with Conditional Scrolling -->
                     <div 
                         class="overflow-hidden relative w-full track-name-container"
-                        x-data="marqueeAnimation('{{ $track['track_name'] }}', 25)"
+                        x-data="marqueeAnimation(@js($track['track_name']), 25)"
                     >
                         <div :class="{ 'track-marquee': isLongText }">
                             <span class="text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
