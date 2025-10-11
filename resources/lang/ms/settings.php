@@ -22,6 +22,8 @@ return [
         'timezone_description' => 'Tetapkan zon masa anda untuk aplikasi.',
         'chatbot_history' => 'Sejarah Chatbot',
         'chatbot_history_description' => 'Urus sandaran perbualan chatbot anda dan pulihkan perbualan sebelumnya.',
+        'active_sessions' => 'Sesi Aktif',
+        'active_sessions_description' => 'Urus dan pantau sesi log masuk aktif anda merentasi semua peranti.',
     ],
 
     // API-related translations
@@ -104,6 +106,29 @@ return [
         'no_location_data_available' => 'Tiada data lokasi tersedia. Tetapkan <strong>Tetapan Lokasi</strong> di atas untuk melihat pratonton cuaca.',
     ],
 
+    // Active sessions translations
+    'sessions' => [
+        'title' => 'Sesi Aktif',
+        'current_session' => 'Peranti ini',
+        'last_active' => 'Aktif terakhir',
+        'browser' => 'Pelayar',
+        'device' => 'Peranti',
+        'location' => 'Lokasi',
+        'ip_address' => 'Alamat IP',
+        'logout_other_sessions' => 'Log Keluar Sesi Lain',
+        'logout_other_sessions_confirm' => 'Log Keluar Sesi Lain?',
+        'logout_other_sessions_confirm_description' => 'Ini akan menamatkan semua sesi aktif yang lain. Anda akan kekal log masuk di peranti ini.',
+        'logout_other_sessions_action' => 'Log Keluar Sesi Lain',
+        'logout_this_session' => 'Log Keluar Sesi Ini',
+        'logout_this_session_confirm' => 'Log Keluar Sesi Ini?',
+        'logout_this_session_confirm_description' => 'Ini akan menamatkan sesi ini dan anda akan dilog keluar.',
+        'no_sessions' => 'Tiada sesi aktif dijumpai',
+        'no_sessions_description' => 'Anda tidak log masuk pada mana-mana peranti.',
+        'password_label' => 'Kata Laluan',
+        'password_placeholder' => 'Masukkan kata laluan anda untuk mengesahkan',
+        'password_required' => 'Sila masukkan kata laluan anda untuk log keluar sesi lain.',
+    ],
+
     // Notification messages
     'notifications' => [
         'api_key_generated' => 'Kunci API Dijana',
@@ -140,6 +165,12 @@ return [
         'location_manual_default_body' => 'Lokasi telah ditentukan secara manual kepada :city, :country dengan zon masa lalai :timezone. Kemas kini automatik telah dilumpuhkan.',
         'settings_saved' => 'Tetapan Disimpan',
         'settings_saved_body' => 'Tetapan anda telah berjaya disimpan.',
+        'settings_save_failed' => 'Gagal Menyimpan Tetapan',
+        'settings_save_failed_body' => 'Tidak dapat menyimpan tetapan anda. Sila cuba lagi.',
+        'sessions_logged_out' => 'Sesi Dilog Keluar',
+        'sessions_logged_out_body' => 'Semua sesi lain telah berjaya dilog keluar.',
+        'sessions_logout_failed' => 'Log Keluar Gagal',
+        'sessions_logout_failed_body' => 'Gagal log keluar sesi lain. Sila semak kata laluan anda dan cuba lagi.',
     ],
 
     // Backup-related messages

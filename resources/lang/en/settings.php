@@ -22,6 +22,8 @@ return [
         'timezone_description' => 'Set your timezone for the application.',
         'chatbot_history' => 'Chatbot History',
         'chatbot_history_description' => 'Manage your chatbot conversation backups and restore previous conversations.',
+        'active_sessions' => 'Active Sessions',
+        'active_sessions_description' => 'Manage and monitor your active login sessions across all devices.',
     ],
 
     // API-related translations
@@ -104,6 +106,29 @@ return [
         'no_location_data_available' => 'No location data available. Use the <strong>Location Settings</strong> above to preview the current Weather Preview',
     ],
 
+    // Active sessions translations
+    'sessions' => [
+        'title' => 'Active Sessions',
+        'current_session' => 'This device',
+        'last_active' => 'Last active',
+        'browser' => 'Browser',
+        'device' => 'Device',
+        'location' => 'Location',
+        'ip_address' => 'IP Address',
+        'logout_other_sessions' => 'Logout Other Sessions',
+        'logout_other_sessions_confirm' => 'Logout Other Sessions?',
+        'logout_other_sessions_confirm_description' => 'This will end all other active sessions. You will remain logged in on this device.',
+        'logout_other_sessions_action' => 'Logout Other Sessions',
+        'logout_this_session' => 'Logout This Session',
+        'logout_this_session_confirm' => 'Logout This Session?',
+        'logout_this_session_confirm_description' => 'This will end this session and you will be logged out.',
+        'no_sessions' => 'No active sessions found',
+        'no_sessions_description' => 'You are not logged in on any devices.',
+        'password_label' => 'Password',
+        'password_placeholder' => 'Enter your password to confirm',
+        'password_required' => 'Please enter your password to logout other sessions.',
+    ],
+
     // Notification messages
     'notifications' => [
         'api_key_generated' => 'API Key Generated',
@@ -140,6 +165,12 @@ return [
         'location_manual_default_body' => 'Location manually set to :city, :country with default timezone :timezone. Auto-updates are now disabled.',
         'settings_saved' => 'Settings Saved',
         'settings_saved_body' => 'Your settings have been successfully saved.',
+        'settings_save_failed' => 'Settings Save Failed',
+        'settings_save_failed_body' => 'Unable to save your settings. Please try again.',
+        'sessions_logged_out' => 'Sessions Logged Out',
+        'sessions_logged_out_body' => 'All other sessions have been logged out successfully.',
+        'sessions_logout_failed' => 'Logout Failed',
+        'sessions_logout_failed_body' => 'Failed to logout other sessions. Please check your password and try again.',
     ],
 
     // Backup-related messages

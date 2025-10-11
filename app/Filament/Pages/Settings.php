@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Forms\Components\TimezoneField;
+use App\Helpers\SessionHelper;
 use App\Helpers\TimezoneHelper;
 use App\Services\WeatherService;
 use Filament\Forms;
@@ -10,7 +11,10 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Session;
 
 class Settings extends Page
 {
@@ -256,6 +260,7 @@ class Settings extends Page
         return [
             $this->getApiSection(),
             $this->getLocationTimezoneTabs(),
+            $this->getActiveSessionsSection(),
         ];
     }
 
@@ -1013,6 +1018,210 @@ class Settings extends Page
                             ->columnSpan(12),
                     ]),
             ]);
+    }
+
+    // Get active sessions section
+    private function getActiveSessionsSection(): Forms\Components\Section
+    {
+        $currentSessionId = Session::getId();
+        $userId = Auth::id();
+        $sessionsCount = DB::table('sessions')
+            ->where('user_id', $userId)
+            ->count();
+
+        return Forms\Components\Section::make(__('settings.sections.active_sessions'))
+            ->icon('heroicon-m-computer-desktop')
+            ->description(__('settings.sections.active_sessions_description'))
+            ->collapsible()
+            ->schema([
+                Forms\Components\Grid::make(12)
+                    ->schema([
+                        Forms\Components\Placeholder::make('active_sessions')
+                            ->label('')
+                            ->content(function () {
+                                return $this->renderActiveSessions();
+                            })
+                            ->columnSpan(12),
+                    ]),
+
+                // Add logout other sessions action button
+                Forms\Components\Grid::make(12)
+                    ->schema([
+                        Forms\Components\Actions::make([
+                            $this->getLogoutOtherSessionsAction(),
+                        ])
+                            ->alignEnd()
+                            ->columnSpan(12)
+                            ->visible($sessionsCount > 1),
+                    ]),
+            ]);
+    }
+
+    // Render active sessions
+    private function renderActiveSessions(): \Illuminate\Support\HtmlString
+    {
+        $currentSessionId = Session::getId();
+        $userId = Auth::id();
+
+        // Fetch all active sessions for the current user
+        $sessions = DB::table('sessions')
+            ->where('user_id', $userId)
+            ->orderBy('last_activity', 'desc')
+            ->get();
+
+        if ($sessions->isEmpty()) {
+            $html = '<div class="text-center py-8 text-gray-500 dark:text-gray-400">';
+            $html .= '<div class="text-lg font-semibold">'.__('settings.sessions.no_sessions').'</div>';
+            $html .= '<div class="text-sm mt-2">'.__('settings.sessions.no_sessions_description').'</div>';
+            $html .= '</div>';
+
+            return new \Illuminate\Support\HtmlString($html);
+        }
+
+        $html = '<div class="space-y-4">';
+
+        foreach ($sessions as $session) {
+            $isCurrentSession = $session->id === $currentSessionId;
+            $sessionData = SessionHelper::formatSessionData($session, $isCurrentSession);
+            $deviceIcon = SessionHelper::getDeviceIcon($sessionData);
+
+            // Session card
+            $html .= '<div class="bg-white dark:bg-gray-800 rounded-lg p-6">';
+
+            $html .= '<div class="flex items-start justify-between gap-4">';
+
+            // Left side - Device icon and info
+            $html .= '<div class="flex items-start gap-4 flex-1">';
+
+            // Device icon
+            $html .= '<div class="flex-shrink-0">';
+            $html .= '<div class="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">';
+            $html .= '<svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+
+            if ($sessionData['is_mobile']) {
+                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />';
+            } elseif ($sessionData['is_tablet']) {
+                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />';
+            } else {
+                $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />';
+            }
+
+            $html .= '</svg>';
+            $html .= '</div>';
+            $html .= '</div>';
+
+            // Session details
+            $html .= '<div class="flex-1 min-w-0">';
+
+            // Browser and device
+            $html .= '<div class="flex items-center gap-2 flex-wrap">';
+            $html .= '<h4 class="font-semibold text-gray-900 dark:text-gray-100">';
+            $html .= htmlspecialchars($sessionData['browser']);
+            if (! empty($sessionData['browser_version'])) {
+                $html .= ' '.htmlspecialchars($sessionData['browser_version']);
+            }
+            $html .= '</h4>';
+
+            if ($isCurrentSession) {
+                $html .= '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">';
+                $html .= __('settings.sessions.current_session');
+                $html .= '</span>';
+            }
+            $html .= '</div>';
+
+            // Platform and device type
+            $html .= '<div class="text-sm text-gray-600 dark:text-gray-400 mt-1">';
+            $html .= htmlspecialchars($sessionData['platform']);
+            if (! empty($sessionData['platform_version'])) {
+                $html .= ' '.htmlspecialchars($sessionData['platform_version']);
+            }
+            $html .= ' • '.htmlspecialchars($sessionData['device']);
+            $html .= '</div>';
+
+            // Location and IP
+            $html .= '<div class="flex items-center gap-4 mt-2 text-sm text-gray-600 dark:text-gray-400">';
+            $html .= '<div class="flex items-center gap-1">';
+            $html .= '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+            $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />';
+            $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />';
+            $html .= '</svg>';
+            $html .= '<span>'.htmlspecialchars($sessionData['city']).', '.htmlspecialchars($sessionData['country']).'</span>';
+            $html .= '</div>';
+            $html .= '<div class="flex items-center gap-1">';
+            $html .= '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
+            $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />';
+            $html .= '</svg>';
+            $html .= '<span>'.htmlspecialchars($sessionData['ip_address']).'</span>';
+            $html .= '</div>';
+            $html .= '</div>';
+
+            // Last activity
+            $html .= '<div class="text-xs text-gray-500 dark:text-gray-500 mt-2">';
+            $html .= __('settings.sessions.last_active').': '.$sessionData['last_activity']->diffForHumans();
+            $html .= '</div>';
+
+            $html .= '</div>'; // End session details
+            $html .= '</div>'; // End left side
+
+            $html .= '</div>'; // End flex container
+            $html .= '</div>'; // End session card
+        }
+
+        $html .= '</div>'; // End space-y-4
+
+        return new \Illuminate\Support\HtmlString($html);
+    }
+
+    // Get logout other sessions action
+    private function getLogoutOtherSessionsAction(): \Filament\Forms\Components\Actions\Action
+    {
+        return \Filament\Forms\Components\Actions\Action::make('logout_other_sessions')
+            ->label(__('settings.sessions.logout_other_sessions'))
+            ->icon('heroicon-o-arrow-right-on-rectangle')
+            ->color('danger')
+            ->requiresConfirmation()
+            ->modalHeading(__('settings.sessions.logout_other_sessions_confirm'))
+            ->modalDescription(__('settings.sessions.logout_other_sessions_confirm_description'))
+            ->modalSubmitActionLabel(__('settings.sessions.logout_other_sessions_action'))
+            ->form([
+                Forms\Components\TextInput::make('password')
+                    ->label(__('settings.sessions.password_label'))
+                    ->password()
+                    ->required()
+                    ->placeholder(__('settings.sessions.password_placeholder'))
+                    ->helperText(__('settings.sessions.password_required'))
+                    ->rule('current_password'),
+            ])
+            ->action(function (array $data) {
+                $currentSessionId = Session::getId();
+                $user = Auth::user();
+
+                // Verify password
+                if (! Hash::check($data['password'], $user->password)) {
+                    Notification::make()
+                        ->title(__('settings.notifications.sessions_logout_failed'))
+                        ->body(__('settings.notifications.sessions_logout_failed_body'))
+                        ->danger()
+                        ->send();
+
+                    return;
+                }
+
+                // Delete all other sessions
+                DB::table('sessions')
+                    ->where('user_id', $user->id)
+                    ->where('id', '!=', $currentSessionId)
+                    ->delete();
+
+                Notification::make()
+                    ->title(__('settings.notifications.sessions_logged_out'))
+                    ->body(__('settings.notifications.sessions_logged_out_body'))
+                    ->success()
+                    ->send();
+
+                // Refresh the component
+                $this->dispatch('$refresh');
+            });
     }
 
     // Save form data
