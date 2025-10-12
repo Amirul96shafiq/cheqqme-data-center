@@ -65,7 +65,7 @@
         <x-reverb-config />
         
         {{-- Include main app bundle with Echo initialization --}}
-        @vite('resources/js/app.js')
+        @vite(['resources/js/app.js', 'resources/js/drag-to-scroll.js'])
 
         <style>
             :root {

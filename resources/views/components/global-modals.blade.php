@@ -822,6 +822,14 @@
                 // Trigger changelog loading after a small delay to ensure modal is visible
                 setTimeout(() => {
                     document.dispatchEvent(new CustomEvent('changelog-modal-opened'));
+                    
+                    // Re-initialize drag-to-scroll for modal content
+                    if (window.initDragToScroll) {
+                        const modalContainer = document.querySelector('[aria-labelledby="changelog-heading"]');
+                        if (modalContainer) {
+                            window.initDragToScroll(modalContainer);
+                        }
+                    }
                 }, 100);
             }
 
