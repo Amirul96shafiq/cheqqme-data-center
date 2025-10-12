@@ -19,6 +19,7 @@ export default defineConfig({
                 "resources/css/kanban-drag-drop.css",
                 "resources/js/spotify-player.js",
                 "resources/js/marquee-animation.js",
+                "resources/js/drag-to-scroll.js",
             ],
             refresh: true,
         }),

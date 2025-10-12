@@ -2,24 +2,6 @@
 
 <style>
 [x-cloak] { display: none !important; }
-
-/* Hide scrollbar while maintaining scroll functionality */
-.scrollbar-hide {
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    scrollbar-width: none;  /* Firefox */
-}
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;  /* Safari and Chrome */
-}
-
-/* Drag-to-scroll cursor styles */
-.cursor-grab {
-    cursor: grab;
-}
-.cursor-grabbing {
-    cursor: grabbing !important;
-    user-select: none;
-}
 </style>
 
 <!-- Global Modal Container for Global Modals -->
@@ -665,7 +647,7 @@
             </div>
             
             {{-- Content - Scrollable --}}
-            <div class="changelog-scroll-container overflow-y-auto scrollbar-hide px-6 py-4 cursor-grab">
+            <div class="overflow-y-auto px-6 py-4" data-drag-scroll data-drag-scroll-speed="1">
                 {{-- Loading State --}}
                 <div x-show="loading" class="text-center py-12">
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
@@ -924,7 +906,9 @@
                     this.loadCommits();
                     // Initialize drag-to-scroll after commits load
                     this.$nextTick(() => {
-                        this.initDragToScroll();
+                        if (window.initDragToScroll) {
+                            window.initDragToScroll(this.$el);
+                        }
                     });
                 });
                 
@@ -933,40 +917,6 @@
                     if (e.key === 'Escape') {
                         this.closeAllModals();
                     }
-                });
-            },
-            
-            initDragToScroll() {
-                const scrollContainer = this.$el.querySelector('.changelog-scroll-container');
-                if (!scrollContainer) return;
-                
-                let isDown = false;
-                let startY;
-                let scrollTop;
-                
-                scrollContainer.addEventListener('mousedown', (e) => {
-                    isDown = true;
-                    scrollContainer.classList.add('cursor-grabbing');
-                    startY = e.pageY - scrollContainer.offsetTop;
-                    scrollTop = scrollContainer.scrollTop;
-                });
-                
-                scrollContainer.addEventListener('mouseleave', () => {
-                    isDown = false;
-                    scrollContainer.classList.remove('cursor-grabbing');
-                });
-                
-                scrollContainer.addEventListener('mouseup', () => {
-                    isDown = false;
-                    scrollContainer.classList.remove('cursor-grabbing');
-                });
-                
-                scrollContainer.addEventListener('mousemove', (e) => {
-                    if (!isDown) return;
-                    e.preventDefault();
-                    const y = e.pageY - scrollContainer.offsetTop;
-                    const walk = (y - startY) * 2; // Scroll speed multiplier
-                    scrollContainer.scrollTop = scrollTop - walk;
                 });
             },
             

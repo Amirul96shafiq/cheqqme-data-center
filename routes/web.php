@@ -437,7 +437,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/weather/clear-cache', [WeatherController::class, 'clearCache'])->name('weather.clear-cache');
 });
 
-// Changelog routes
+// What's New / Changelog / Commits History routes
 Route::get('/changelog', function () {
     try {
         $changelog = \App\Helpers\ChangelogHelper::getPaginatedChangelog(10, request('page', 1));

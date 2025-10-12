@@ -3,6 +3,7 @@
 
 /* Import component-specific styles */
 @import "task-comments.css";
+@import "drag-to-scroll.css";
 
 @tailwind base;
 @tailwind components;

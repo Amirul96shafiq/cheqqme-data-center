@@ -1,0 +1,37 @@
+/**
+ * Drag-to-Scroll Styles
+ * 
+ * CSS styles for the drag-to-scroll functionality.
+ * Automatically applied when using the drag-to-scroll.js utility.
+ */
+
+/* Hide scrollbar while maintaining scroll functionality */
+.drag-scroll-enabled {
+    /* Firefox */
+    scrollbar-width: none;
+
+    /* IE 10+ */
+    -ms-overflow-style: none;
+
+    /* Default cursor when not dragging */
+    cursor: grab;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.drag-scroll-enabled::-webkit-scrollbar {
+    display: none;
+}
+
+/* Active dragging state */
+.drag-scroll-active {
+    cursor: grabbing !important;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Smooth scrolling when not dragging */
+.drag-scroll-enabled:not(.drag-scroll-active) {
+    scroll-behavior: smooth;
+}

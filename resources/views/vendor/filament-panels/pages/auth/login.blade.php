@@ -11,7 +11,7 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/js/drag-to-scroll.js'])
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 
     {{-- Alpine.js --}}
