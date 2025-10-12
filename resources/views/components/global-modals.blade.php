@@ -720,7 +720,7 @@
             {{-- Pagination --}}
             <div x-show="!loading && pagination && pagination.last_page > 1" class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
                         <span x-text="pagination ? 'Showing ' + pagination.from + ' to ' + pagination.to + ' of ' + pagination.total + ' commits' : ''"></span>
                     </div>
                     
@@ -728,10 +728,10 @@
                         {{-- Previous Page --}}
                         <button x-show="pagination && pagination.current_page > 1"
                                 @click="loadPage(pagination.current_page - 1)"
-                                class="px-3 py-1 text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
+                                class="px-3 py-1 text-xs text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
                             Previous
                         </button>
-                        <button x-show="pagination && pagination.current_page === 1" disabled class="px-3 py-1 text-sm text-gray-400 cursor-not-allowed">
+                        <button x-show="pagination && pagination.current_page === 1" disabled class="px-3 py-1 text-xs text-gray-400 cursor-not-allowed">
                             Previous
                         </button>
                         
@@ -739,7 +739,7 @@
                         <template x-for="page in getPageNumbers()" :key="page">
                             <button @click="loadPage(page)"
                                     :class="page === (pagination ? pagination.current_page : 1) ? 
-                                        'px-3 py-1 text-sm bg-primary-600 text-white rounded' : 
+                                        'px-3 py-1 text-xs bg-primary-600 text-white rounded' : 
                                         'px-3 py-1 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'"
                                     x-text="page">
                             </button>
@@ -748,10 +748,10 @@
                         {{-- Next Page --}}
                         <button x-show="pagination && pagination.current_page < pagination.last_page"
                                 @click="loadPage(pagination.current_page + 1)"
-                                class="px-3 py-1 text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
+                                class="px-3 py-1 text-xs text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
                             Next
                         </button>
-                        <button x-show="pagination && pagination.current_page === pagination.last_page" disabled class="px-3 py-1 text-sm text-gray-400 cursor-not-allowed">
+                        <button x-show="pagination && pagination.current_page === pagination.last_page" disabled class="px-3 py-1 text-xs text-gray-400 cursor-not-allowed">
                             Next
                         </button>
                     </div>
