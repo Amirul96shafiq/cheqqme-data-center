@@ -629,9 +629,9 @@
                     </div>
                     <div>
                         <h2 id="changelog-heading" class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            What's New? (Changelogs)
+                            {{ __('changelog.title') }}
                         </h2>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5" x-text="totalCommits ? totalCommits + ' commits • Recent changes' : 'Loading...'">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5" x-text="totalCommits ? '{{ __('changelog.subtitle') }}'.replace(':total', totalCommits) : '{{ __('changelog.loading_subtitle') }}'">
                         </p>
                     </div>
                 </div>
@@ -660,10 +660,10 @@
                     {{-- Loading Text --}}
                     <div class="text-center space-y-2">
                         <p class="text-base font-medium text-gray-700 dark:text-gray-300">
-                            Loading commits...
+                            {{ __('changelog.loading_commits') }}
                         </p>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Please wait
+                            {{ __('changelog.please_wait') }}
                         </p>
                     </div>
                     
@@ -693,7 +693,7 @@
                                     <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                                         <span class="font-medium text-gray-700 dark:text-gray-300" x-text="commit.author_name">
                                         </span>
-                                        <span>committed</span>
+                                        <span>{{ __('changelog.committed') }}</span>
                                         <time :datetime="commit.date" :title="commit.date_formatted" x-text="commit.date_relative">
                                         </time>
                                     </div>
@@ -708,7 +708,7 @@
                                     </code>
                                     
                                     {{-- View Details Button --}}
-                                    <x-tooltip text="View commit details" position="left">
+                                    <x-tooltip :text="__('changelog.view_commit_details')" position="left">
                                         <button type="button"
                                                 @click="showCommitDetail(commit.short_hash)"
                                                 class="p-1 text-primary-400 hover:text-primary-600 dark:text-primary-500 dark:hover:text-primary-300 transition-colors">
@@ -729,7 +729,7 @@
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
                         <x-heroicon-o-code-bracket class="w-8 h-8 text-gray-400 dark:text-gray-500" />
                     </div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">No commits found</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('changelog.no_commits_found') }}</p>
                 </div>
             </div>
             
@@ -737,7 +737,7 @@
             <div x-show="!loading && pagination && pagination.last_page > 1" class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between">
                     <div class="text-xs text-gray-500 dark:text-gray-400">
-                        <span x-text="pagination ? 'Page ' + pagination.current_page + ' of ' + pagination.last_page + ' (' + pagination.total + ' commits)' : ''"></span>
+                        <span x-text="pagination ? '{{ __('changelog.page_info') }}'.replace(':current', pagination.current_page).replace(':last', pagination.last_page).replace(':total', pagination.total) : ''"></span>
                     </div>
                     
                     <div class="flex items-center space-x-3">
@@ -745,22 +745,22 @@
                         {{-- Previous Page --}}
                         <button x-show="pagination && pagination.current_page > 1"
                                 @click="loadPage(pagination.current_page - 1)"
-                                aria-label="Previous page"
+                                :aria-label="'{{ __('changelog.previous_page') }}'"
                                 class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
                             <x-heroicon-o-arrow-left class="w-5 h-5 text-primary-900 transition-colors" />
                         </button>
-                        <button x-show="pagination && pagination.current_page === 1" disabled aria-label="Previous page" class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center cursor-not-allowed opacity-50">
+                        <button x-show="pagination && pagination.current_page === 1" disabled :aria-label="'{{ __('changelog.previous_page') }}'" class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center cursor-not-allowed opacity-50">
                             <x-heroicon-o-arrow-left class="w-5 h-5 text-gray-500 dark:text-gray-400" />
                         </button>
                         
                         {{-- Next Page --}}
                         <button x-show="pagination && pagination.current_page < pagination.last_page"
                                 @click="loadPage(pagination.current_page + 1)"
-                                aria-label="Next page"
+                                :aria-label="'{{ __('changelog.next_page') }}'"
                                 class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
                             <x-heroicon-o-arrow-right class="w-5 h-5 text-primary-900 transition-colors" />
                         </button>
-                        <button x-show="pagination && pagination.current_page === pagination.last_page" disabled aria-label="Next page" class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center cursor-not-allowed opacity-50">
+                        <button x-show="pagination && pagination.current_page === pagination.last_page" disabled :aria-label="'{{ __('changelog.next_page') }}'" class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center cursor-not-allowed opacity-50">
                             <x-heroicon-o-arrow-right class="w-5 h-5 text-gray-500 dark:text-gray-400" />
                         </button>
                     </div>

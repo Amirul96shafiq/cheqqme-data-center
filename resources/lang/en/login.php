@@ -19,6 +19,7 @@ return [
         'previousSlide' => 'Previous slide',
         'pausePlaySlide' => 'Pause / Play slide',
         'nextSlide' => 'Next slide',
+        'whatsNew' => 'View what\'s new',
     ],
 
     'form' => [

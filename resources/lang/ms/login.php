@@ -19,6 +19,7 @@ return [
         'previousSlide' => 'Slide sebelumnya',
         'pausePlaySlide' => 'Hentikan / Mainkan slide',
         'nextSlide' => 'Slide seterusnya',
+        'whatsNew' => 'Lihat Apa yang Baru',
     ],
 
     'form' => [
