@@ -690,7 +690,7 @@
                                     </div>
                                     
                                     {{-- Author & Time --}}
-                                    <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                    <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                                         <span class="font-medium text-gray-700 dark:text-gray-300" x-text="commit.author_name">
                                         </span>
                                         <span> • Committed on</span>
