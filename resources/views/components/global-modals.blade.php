@@ -760,9 +760,6 @@
             
         </div>
     </div>
-
-    {{-- Include Commit Detail Modal --}}
-    <x-commit-detail-modal />
 </div>
 
 <script data-navigate-once>
@@ -777,8 +774,7 @@
         deleteBackup: { show: false, backupId: null },
         downloadBackup: { show: false, backupId: null },
         clearConversation: { show: false },
-        changelog: { show: false },
-        commitDetail: { show: false, hash: null }
+        changelog: { show: false }
     };
     
     // Force close all modals on page load
@@ -1147,7 +1143,9 @@
             },
 
             showCommitDetail(hash) {
-                window.open(`/changelog/commit/${hash}`, '_blank');
+                // Redirect to GitHub commit page
+                const githubUrl = `https://github.com/Amirul96shafiq/cheqqme-data-center/commit/${hash}`;
+                window.open(githubUrl, '_blank');
             },
 
             resetChangelog() {

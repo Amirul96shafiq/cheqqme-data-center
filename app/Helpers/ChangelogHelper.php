@@ -73,53 +73,6 @@ class ChangelogHelper
     }
     
     /**
-     * Get single commit details
-     */
-    public static function getCommitDetails(string $hash): ?array
-    {
-        try {
-            // Get detailed commit info
-            $format = '%h|%H|%ci|%an|%ae|%s|%b';
-            $command = sprintf('git show %s --pretty=format:"%s" --no-patch', $hash, $format);
-            
-            exec($command, $output, $returnCode);
-            
-            if ($returnCode !== 0 || empty($output)) {
-                return null;
-            }
-            
-            $line = $output[0];
-            [$shortHash, $fullHash, $date, $authorName, $authorEmail, $subject, $body] = explode('|', $line, 7);
-            
-            // Get changed files
-            exec(sprintf('git diff-tree --no-commit-id --name-status -r %s', $hash), $filesOutput);
-            $files = collect($filesOutput)->map(function ($line) {
-                [$status, $file] = explode("\t", $line, 2);
-                return [
-                    'status' => $status,
-                    'file' => $file,
-                ];
-            });
-            
-            return [
-                'short_hash' => $shortHash,
-                'full_hash' => $fullHash,
-                'date' => \Carbon\Carbon::parse($date),
-                'author_name' => $authorName,
-                'author_email' => $authorEmail,
-                'author_avatar' => self::getGravatarUrl($authorEmail),
-                'subject' => $subject,
-                'body' => trim($body),
-                'files' => $files,
-            ];
-            
-        } catch (\Exception $e) {
-            \Log::error('Failed to fetch commit details: ' . $e->getMessage());
-            return null;
-        }
-    }
-    
-    /**
      * Get Gravatar URL for email
      */
     protected static function getGravatarUrl(string $email, int $size = 32): string
