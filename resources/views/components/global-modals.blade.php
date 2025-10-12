@@ -788,8 +788,8 @@
     // Show modal function
     window.showGlobalModal = function(type, id) {
         // Debug: Log modal show request
-        console.log('showGlobalModal called:', { type, id });
-        console.log('Available modals:', window.globalModals);
+        // console.log('showGlobalModal called:', { type, id });
+        // console.log('Available modals:', window.globalModals);
         
         // Close all other modals first
         Object.keys(window.globalModals).forEach(key => {
@@ -872,7 +872,7 @@
             
             init() {
                 // Debug: Log initial modal state
-                console.log('Global modal container initialized', window.globalModals);
+                // console.log('Global modal container initialized', window.globalModals);
                 
                 // Force reset all modals to false on init
                 Object.keys(window.globalModals).forEach(key => {
@@ -884,16 +884,16 @@
                 // Remove x-cloak after initialization
                 this.$el.removeAttribute('x-cloak');
                 
-                console.log('Global modal container ready');
+                // console.log('Global modal container ready');
                 
                 // Listen for custom events to update modals
                 document.addEventListener('global-modal-opened', (event) => {
-                    console.log('Global modal opened:', event.detail);
+                    // console.log('Global modal opened:', event.detail);
                     this.updateModals();
                 });
                 
                 document.addEventListener('global-modal-closed', (event) => {
-                    console.log('Global modal closed:', event.detail);
+                        // console.log('Global modal closed:', event.detail);
                     this.updateModals();
                     
                     // Reset changelog data when modal is closed
@@ -1136,7 +1136,7 @@
 
             copyHash(hash) {
                 navigator.clipboard.writeText(hash).then(() => {
-                    console.log('Hash copied:', hash);
+                    // console.log('Hash copied:', hash);
                 }).catch(err => {
                     console.error('Failed to copy hash:', err);
                 });

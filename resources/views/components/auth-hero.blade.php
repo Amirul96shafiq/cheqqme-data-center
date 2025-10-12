@@ -95,7 +95,7 @@
                 <nav class="flex justify-end" aria-label="Whats new action button">
                     <x-tooltip position="left" text="View what's new">
                         <button type="button"
-                                onclick="console.log('What\'s New button clicked'); console.log('showGlobalModal exists:', typeof window.showGlobalModal); if (window.showGlobalModal) { window.showGlobalModal('changelog'); } else { console.error('showGlobalModal function not found'); }"
+                                onclick="if (window.showGlobalModal) { window.showGlobalModal('changelog'); }"
                                 class="inline-flex items-start cursor-pointer hover:scale-105 transition-transform duration-300"
                                 aria-label="What's New">
                             <img src="{{ asset('images/actions/whats-news.png') }}" 
@@ -183,7 +183,7 @@
 <div class="whats-new-sticky hidden">
     <x-tooltip position="bottom" text="View what's new">
         <button type="button"
-                @click="window.showGlobalModal('changelog')"
+                onclick="if (window.showGlobalModal) { window.showGlobalModal('changelog'); }"
                 class="inline-flex items-start cursor-pointer"
                 aria-label="What's New">
             <img src="{{ asset('images/actions/whats-news.png') }}" 
