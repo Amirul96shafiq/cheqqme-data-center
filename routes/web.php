@@ -454,8 +454,6 @@ Route::get('/changelog', function () {
                 'author_email' => $commit['author_email'],
                 'author_avatar' => $commit['author_avatar'],
                 'message' => $commit['message'],
-                'type' => $commit['type'],
-                'icon' => $commit['icon'],
             ];
         });
 
@@ -506,8 +504,6 @@ Route::get('/changelog/commit/{hash}', function (string $hash) {
             'author_avatar' => $commit['author_avatar'],
             'subject' => $commit['subject'],
             'body' => $commit['body'],
-            'type' => $commit['type'],
-            'icon' => $commit['icon'],
             'files' => $commit['files']->map(function ($file) {
                 return [
                     'status' => $file['status'],

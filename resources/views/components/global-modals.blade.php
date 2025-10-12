@@ -674,8 +674,7 @@
                                 {{-- Commit Info --}}
                                 <div class="flex-1 min-w-0">
                                     {{-- Commit Message --}}
-                                    <div class="flex items-start gap-2 mb-2">
-                                        <span class="text-sm" x-text="commit.icon"></span>
+                                    <div class="mb-2">
                                         <p class="text-sm font-medium text-gray-900 dark:text-gray-100 leading-relaxed" x-text="commit.message">
                                         </p>
                                     </div>

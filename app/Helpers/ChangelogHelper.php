@@ -46,8 +46,6 @@ class ChangelogHelper
                     'author_email' => $authorEmail,
                     'author_avatar' => self::getGravatarUrl($authorEmail),
                     'message' => $message,
-                    'type' => self::parseCommitType($message),
-                    'icon' => self::getIconForType(self::parseCommitType($message)),
                 ];
             });
             
@@ -113,8 +111,6 @@ class ChangelogHelper
                 'subject' => $subject,
                 'body' => trim($body),
                 'files' => $files,
-                'type' => self::parseCommitType($subject),
-                'icon' => self::getIconForType(self::parseCommitType($subject)),
             ];
             
         } catch (\Exception $e) {
@@ -132,47 +128,4 @@ class ChangelogHelper
         return "https://www.gravatar.com/avatar/{$hash}?s={$size}&d=identicon";
     }
     
-    /**
-     * Parse commit type from conventional commit message
-     */
-    protected static function parseCommitType(string $message): string
-    {
-        if (preg_match('/^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?:/i', $message, $matches)) {
-            return strtolower($matches[1]);
-        }
-        
-        $message = strtolower($message);
-        if (str_contains($message, 'fix') || str_contains($message, 'bug')) {
-            return 'fix';
-        }
-        if (str_contains($message, 'add') || str_contains($message, 'implement')) {
-            return 'feat';
-        }
-        if (str_contains($message, 'update') || str_contains($message, 'improve')) {
-            return 'refactor';
-        }
-        
-        return 'other';
-    }
-    
-    /**
-     * Get icon for commit type
-     */
-    protected static function getIconForType(string $type): string
-    {
-        return match($type) {
-            'feat' => '✨',
-            'fix' => '🔧',
-            'docs' => '📝',
-            'style' => '💄',
-            'refactor' => '♻️',
-            'perf' => '⚡',
-            'test' => '✅',
-            'chore' => '🔨',
-            'ci' => '👷',
-            'build' => '📦',
-            'revert' => '⏪',
-            default => '•',
-        };
-    }
 }

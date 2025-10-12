@@ -56,7 +56,7 @@
             {{-- Commit Message --}}
             <div>
                 <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-                    {{ $commit['icon'] }} {{ $commit['subject'] }}
+                    {{ $commit['subject'] }}
                 </h3>
                 @if($commit['body'])
                     <div class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
