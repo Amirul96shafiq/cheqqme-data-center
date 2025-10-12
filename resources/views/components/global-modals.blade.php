@@ -637,15 +637,13 @@
                 </div>
                 
                 {{-- Close Button --}}
-                <button type="button" 
-                        @click="closeModal('changelog')" 
-                        class="inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30" 
-                        aria-label="Close">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
+                <x-close-button 
+                    @click="closeModal('changelog')" 
+                    size="lg"
+                    variant="minimal"
+                    class="focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                />
+                
             </div>
             
             {{-- Content - Scrollable --}}
