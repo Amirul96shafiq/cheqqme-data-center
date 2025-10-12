@@ -664,13 +664,15 @@
                     <template x-for="commit in commits" :key="commit.short_hash">
                         <div class="group border-b border-gray-100 dark:border-gray-800 last:border-b-0 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 -mx-6 px-6 transition-colors">
                             <div class="flex items-start gap-3">
+
                                 {{-- Author Avatar --}}
                                 <img :src="commit.author_avatar" 
                                      :alt="commit.author_name"
-                                     class="w-8 h-8 rounded-full flex-shrink-0">
+                                     class="w-6 h-6 rounded-full flex-shrink-0">
                                 
                                 {{-- Commit Info --}}
                                 <div class="flex-1 min-w-0">
+
                                     {{-- Commit Message --}}
                                     <div class="mb-2">
                                         <p class="text-sm font-medium text-gray-900 dark:text-gray-100 leading-relaxed" x-text="commit.message">
@@ -685,23 +687,29 @@
                                         <time :datetime="commit.date" :title="commit.date_formatted" x-text="commit.date_relative">
                                         </time>
                                     </div>
+
                                 </div>
                                 
                                 {{-- Commit Hash & Actions --}}
                                 <div class="flex items-center gap-2 flex-shrink-0">
+
                                     {{-- Commit Hash --}}
                                     <code class="text-xs font-mono text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded" x-text="commit.short_hash">
                                     </code>
                                     
                                     {{-- View Details Button --}}
-                                    <button type="button"
-                                            @click="showCommitDetail(commit.short_hash)"
-                                            class="p-1 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
-                                            title="View commit details">
-                                        <x-heroicon-o-code-bracket class="w-4 h-4" />
-                                    </button>
+                                    <x-tooltip text="View commit details" position="left">
+                                        <button type="button"
+                                                @click="showCommitDetail(commit.short_hash)"
+                                                class="p-1 text-primary-400 hover:text-primary-600 dark:text-primary-500 dark:hover:text-primary-300 transition-colors">
+                                            <x-heroicon-o-code-bracket class="w-4 h-4" />
+                                        </button>
+                                    </x-tooltip>
+
                                 </div>
+
                             </div>
+
                         </div>
                     </template>
                 </div>
