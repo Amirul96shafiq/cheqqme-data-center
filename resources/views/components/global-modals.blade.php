@@ -905,15 +905,17 @@
                         // console.log('Global modal closed:', event.detail);
                     this.updateModals();
                     
-                    // Reset changelog data when modal is closed
-                    if (event.detail.type === 'changelog') {
-                        this.resetChangelog();
-                    }
+                    // Don't reset changelog data when modal is closed
+                    // Keep the content so it doesn't show "No commits found"
                 });
                 
                 // Listen for changelog modal opened event
                 document.addEventListener('changelog-modal-opened', () => {
-                    this.loadCommits();
+                    // Only load data if not already loaded
+                    if (this.commits.length === 0) {
+                        this.loading = true;
+                        this.loadCommits();
+                    }
                     // Initialize drag-to-scroll after commits load
                     this.$nextTick(() => {
                         if (window.initDragToScroll) {
@@ -1134,11 +1136,12 @@
             },
 
             resetChangelog() {
-                this.loading = true;
+                // Reset changelog data (used for manual reset if needed)
                 this.commits = [];
                 this.totalCommits = 0;
                 this.pagination = null;
                 this.currentPage = 1;
+                this.loading = true;
             }
         }
     };
