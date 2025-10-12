@@ -10,9 +10,6 @@ return [
     'loading_commits' => 'Loading commits...',
     'please_wait' => 'Please wait',
     
-    // Commit Display
-    'committed' => 'committed',
-    
     // Actions
     'view_commit_details' => 'View Commit Details',
     

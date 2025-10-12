@@ -10,8 +10,6 @@ return [
     'loading_commits' => 'Memuatkan commit...',
     'please_wait' => 'Sila tunggu',
     
-    // Commit Display
-    'committed' => 'dihantar',
     
     // Actions
     'view_commit_details' => 'Lihat butiran Commit',
