@@ -694,8 +694,11 @@
                                     <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                                         <span class="font-medium text-gray-700 dark:text-gray-300" x-text="commit.author_name">
                                         </span>
-                                        <span> • Committed on</span>
-                                        <time :datetime="commit.date" :title="commit.date_formatted" x-text="commit.date_relative">
+                                        <span>Committed</span>
+                                        <time :datetime="commit.date" :title="commit.date_formatted">
+                                            <span x-text="commit.date_relative"></span>
+                                            <span> • </span>
+                                            <span x-text="new Date(commit.date).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '').toUpperCase()"></span>
                                         </time>
                                     </div>
 
