@@ -624,7 +624,7 @@
             {{-- Header --}}
             <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center gap-3">
-                    <div class="p-2 rounded-lg bg-primary-100 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400">
+                    <div class="p-2 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400">
                         <x-heroicon-o-code-bracket class="h-5 w-5" />
                     </div>
                     <div>
@@ -721,38 +721,31 @@
             <div x-show="!loading && pagination && pagination.last_page > 1" class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between">
                     <div class="text-xs text-gray-500 dark:text-gray-400">
-                        <span x-text="pagination ? 'Showing ' + pagination.from + ' to ' + pagination.to + ' of ' + pagination.total + ' commits' : ''"></span>
+                        <span x-text="pagination ? 'Page ' + pagination.current_page + ' of ' + pagination.last_page + ' (' + pagination.total + ' commits)' : ''"></span>
                     </div>
                     
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center space-x-3">
+                        
                         {{-- Previous Page --}}
                         <button x-show="pagination && pagination.current_page > 1"
                                 @click="loadPage(pagination.current_page - 1)"
-                                class="px-3 py-1 text-xs text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
-                            Previous
+                                aria-label="Previous page"
+                                class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                            <x-heroicon-o-arrow-left class="w-5 h-5 text-primary-900 transition-colors" />
                         </button>
-                        <button x-show="pagination && pagination.current_page === 1" disabled class="px-3 py-1 text-xs text-gray-400 cursor-not-allowed">
-                            Previous
+                        <button x-show="pagination && pagination.current_page === 1" disabled aria-label="Previous page" class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center cursor-not-allowed opacity-50">
+                            <x-heroicon-o-arrow-left class="w-5 h-5 text-gray-500 dark:text-gray-400" />
                         </button>
-                        
-                        {{-- Page Numbers --}}
-                        <template x-for="page in getPageNumbers()" :key="page">
-                            <button @click="loadPage(page)"
-                                    :class="page === (pagination ? pagination.current_page : 1) ? 
-                                        'px-3 py-1 text-xs bg-primary-600 text-white rounded' : 
-                                        'px-3 py-1 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'"
-                                    x-text="page">
-                            </button>
-                        </template>
                         
                         {{-- Next Page --}}
                         <button x-show="pagination && pagination.current_page < pagination.last_page"
                                 @click="loadPage(pagination.current_page + 1)"
-                                class="px-3 py-1 text-xs text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
-                            Next
+                                aria-label="Next page"
+                                class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                            <x-heroicon-o-arrow-right class="w-5 h-5 text-primary-900 transition-colors" />
                         </button>
-                        <button x-show="pagination && pagination.current_page === pagination.last_page" disabled class="px-3 py-1 text-xs text-gray-400 cursor-not-allowed">
-                            Next
+                        <button x-show="pagination && pagination.current_page === pagination.last_page" disabled aria-label="Next page" class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center cursor-not-allowed opacity-50">
+                            <x-heroicon-o-arrow-right class="w-5 h-5 text-gray-500 dark:text-gray-400" />
                         </button>
                     </div>
                 </div>
@@ -1103,36 +1096,6 @@
                 this.loadCommits(page);
             },
 
-            getPageNumbers() {
-                if (!this.pagination) return [];
-                
-                const current = this.pagination.current_page;
-                const last = this.pagination.last_page;
-                const delta = 2;
-                
-                const range = [];
-                const rangeWithDots = [];
-                
-                for (let i = Math.max(2, current - delta); i <= Math.min(last - 1, current + delta); i++) {
-                    range.push(i);
-                }
-                
-                if (current - delta > 2) {
-                    rangeWithDots.push(1, '...');
-                } else {
-                    rangeWithDots.push(1);
-                }
-                
-                rangeWithDots.push(...range);
-                
-                if (current + delta < last - 1) {
-                    rangeWithDots.push('...', last);
-                } else {
-                    rangeWithDots.push(last);
-                }
-                
-                return rangeWithDots;
-            },
 
             copyHash(hash) {
                 navigator.clipboard.writeText(hash).then(() => {
