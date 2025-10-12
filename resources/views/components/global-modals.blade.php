@@ -1,8 +1,13 @@
 @props([])
 
+<style>
+[x-cloak] { display: none !important; }
+</style>
+
 <!-- Global Modal Container for Global Modals -->
 <div id="global-modal-container" 
      x-data="globalModalContainer()"
+     x-cloak
      class="fixed inset-0 z-[99999] pointer-events-none"
      style="z-index: 99999 !important;">
     
@@ -593,6 +598,172 @@
             </div>
         </div>
     </div>
+
+    {{-- Changelog Modal --}}
+    <div x-show="modals.changelog.show"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         x-cloak
+         class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
+        
+        {{-- Backdrop --}}
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75" 
+             @click="closeModal('changelog')" 
+             aria-hidden="true"></div>
+        
+        {{-- Modal --}}
+        <div role="dialog" 
+             aria-modal="true" 
+             aria-labelledby="changelog-heading" 
+             class="relative w-full max-w-4xl mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 pointer-events-auto max-h-[90vh] overflow-hidden">
+            
+            {{-- Header --}}
+            <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-primary-100 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400">
+                        <x-heroicon-o-code-bracket class="h-5 w-5" />
+                    </div>
+                    <div>
+                        <h2 id="changelog-heading" class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            What's New? (Changelogs)
+                        </h2>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5" x-text="totalCommits ? totalCommits + ' commits • Recent changes' : 'Loading...'">
+                        </p>
+                    </div>
+                </div>
+                
+                {{-- Close Button --}}
+                <button type="button" 
+                        @click="closeModal('changelog')" 
+                        class="inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30" 
+                        aria-label="Close">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            
+            {{-- Content - Scrollable --}}
+            <div class="overflow-y-auto px-6 py-4">
+                {{-- Loading State --}}
+                <div x-show="loading" class="text-center py-12">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
+                        <svg class="w-8 h-8 text-gray-400 dark:text-gray-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Loading commits...</p>
+                </div>
+                
+                {{-- Commits List --}}
+                <div x-show="!loading && commits.length > 0" class="space-y-0">
+                    <template x-for="commit in commits" :key="commit.short_hash">
+                        <div class="group border-b border-gray-100 dark:border-gray-800 last:border-b-0 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 -mx-6 px-6 transition-colors">
+                            <div class="flex items-start gap-3">
+                                {{-- Author Avatar --}}
+                                <img :src="commit.author_avatar" 
+                                     :alt="commit.author_name"
+                                     class="w-8 h-8 rounded-full flex-shrink-0">
+                                
+                                {{-- Commit Info --}}
+                                <div class="flex-1 min-w-0">
+                                    {{-- Commit Message --}}
+                                    <div class="flex items-start gap-2 mb-2">
+                                        <span class="text-sm" x-text="commit.icon"></span>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100 leading-relaxed" x-text="commit.message">
+                                        </p>
+                                    </div>
+                                    
+                                    {{-- Author & Time --}}
+                                    <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                        <span class="font-medium text-gray-700 dark:text-gray-300" x-text="commit.author_name">
+                                        </span>
+                                        <span>committed</span>
+                                        <time :datetime="commit.date" :title="commit.date_formatted" x-text="commit.date_relative">
+                                        </time>
+                                    </div>
+                                </div>
+                                
+                                {{-- Commit Hash & Actions --}}
+                                <div class="flex items-center gap-2 flex-shrink-0">
+                                    {{-- Commit Hash --}}
+                                    <code class="text-xs font-mono text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded" x-text="commit.short_hash">
+                                    </code>
+                                    
+                                    {{-- View Details Button --}}
+                                    <button type="button"
+                                            @click="showCommitDetail(commit.short_hash)"
+                                            class="p-1 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                                            title="View commit details">
+                                        <x-heroicon-o-code-bracket class="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                {{-- Empty State --}}
+                <div x-show="!loading && commits.length === 0" class="text-center py-12">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
+                        <x-heroicon-o-code-bracket class="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">No commits found</p>
+                </div>
+            </div>
+            
+            {{-- Pagination --}}
+            <div x-show="!loading && pagination && pagination.last_page > 1" class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        <span x-text="pagination ? 'Showing ' + pagination.from + ' to ' + pagination.to + ' of ' + pagination.total + ' commits' : ''"></span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        {{-- Previous Page --}}
+                        <button x-show="pagination && pagination.current_page > 1"
+                                @click="loadPage(pagination.current_page - 1)"
+                                class="px-3 py-1 text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
+                            Previous
+                        </button>
+                        <button x-show="pagination && pagination.current_page === 1" disabled class="px-3 py-1 text-sm text-gray-400 cursor-not-allowed">
+                            Previous
+                        </button>
+                        
+                        {{-- Page Numbers --}}
+                        <template x-for="page in getPageNumbers()" :key="page">
+                            <button @click="loadPage(page)"
+                                    :class="page === (pagination ? pagination.current_page : 1) ? 
+                                        'px-3 py-1 text-sm bg-primary-600 text-white rounded' : 
+                                        'px-3 py-1 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'"
+                                    x-text="page">
+                            </button>
+                        </template>
+                        
+                        {{-- Next Page --}}
+                        <button x-show="pagination && pagination.current_page < pagination.last_page"
+                                @click="loadPage(pagination.current_page + 1)"
+                                class="px-3 py-1 text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
+                            Next
+                        </button>
+                        <button x-show="pagination && pagination.current_page === pagination.last_page" disabled class="px-3 py-1 text-sm text-gray-400 cursor-not-allowed">
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    {{-- Include Commit Detail Modal --}}
+    <x-commit-detail-modal />
 </div>
 
 <script data-navigate-once>
@@ -606,7 +777,9 @@
         restoreBackup: { show: false, backupId: null },
         deleteBackup: { show: false, backupId: null },
         downloadBackup: { show: false, backupId: null },
-        clearConversation: { show: false }
+        clearConversation: { show: false },
+        changelog: { show: false },
+        commitDetail: { show: false, hash: null }
     };
     
     // Force close all modals on page load
@@ -620,7 +793,8 @@
     // Show modal function
     window.showGlobalModal = function(type, id) {
         // Debug: Log modal show request
-        console.log('showGlobalModal called:', { type, id, stack: new Error().stack });
+        console.log('showGlobalModal called:', { type, id });
+        console.log('Available modals:', window.globalModals);
         
         // Close all other modals first
         Object.keys(window.globalModals).forEach(key => {
@@ -636,6 +810,14 @@
                 } else {
                     window.globalModals[type][type.includes('Reply') ? 'replyId' : 'commentId'] = id;
                 }
+            }
+
+            // Special handling for changelog modal
+            if (type === 'changelog') {
+                // Trigger changelog loading after a small delay to ensure modal is visible
+                setTimeout(() => {
+                    document.dispatchEvent(new CustomEvent('changelog-modal-opened'));
+                }, 100);
             }
 
             // Dispatch custom event to notify Alpine.js
@@ -686,9 +868,16 @@
         return {
             modals: window.globalModals,
             
+            // Changelog modal data
+            loading: true,
+            commits: [],
+            totalCommits: 0,
+            pagination: null,
+            currentPage: 1,
+            
             init() {
                 // Debug: Log initial modal state
-                // console.log('Global modal container initialized', window.globalModals);
+                console.log('Global modal container initialized', window.globalModals);
                 
                 // Force reset all modals to false on init
                 Object.keys(window.globalModals).forEach(key => {
@@ -696,6 +885,11 @@
                 });
                 
                 this.updateModals();
+                
+                // Remove x-cloak after initialization
+                this.$el.removeAttribute('x-cloak');
+                
+                console.log('Global modal container ready');
                 
                 // Listen for custom events to update modals
                 document.addEventListener('global-modal-opened', (event) => {
@@ -706,6 +900,16 @@
                 document.addEventListener('global-modal-closed', (event) => {
                     console.log('Global modal closed:', event.detail);
                     this.updateModals();
+                    
+                    // Reset changelog data when modal is closed
+                    if (event.detail.type === 'changelog') {
+                        this.resetChangelog();
+                    }
+                });
+                
+                // Listen for changelog modal opened event
+                document.addEventListener('changelog-modal-opened', () => {
+                    this.loadCommits();
                 });
                 
                 // Handle escape key
@@ -871,6 +1075,88 @@
                     window.executeClearConversation();
                 }
                 this.closeModal('clearConversation');
+            },
+
+            // Changelog modal methods
+            async loadCommits(page = 1) {
+                this.loading = true;
+                this.currentPage = page;
+                
+                try {
+                    const response = await fetch(`/changelog?page=${page}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.commits = data.commits;
+                        this.totalCommits = data.total;
+                        this.pagination = data.pagination;
+                    } else {
+                        console.error('Failed to load commits:', data.error);
+                        this.commits = [];
+                        this.totalCommits = 0;
+                    }
+                } catch (error) {
+                    console.error('Error loading commits:', error);
+                    this.commits = [];
+                    this.totalCommits = 0;
+                } finally {
+                    this.loading = false;
+                }
+            },
+
+            loadPage(page) {
+                this.loadCommits(page);
+            },
+
+            getPageNumbers() {
+                if (!this.pagination) return [];
+                
+                const current = this.pagination.current_page;
+                const last = this.pagination.last_page;
+                const delta = 2;
+                
+                const range = [];
+                const rangeWithDots = [];
+                
+                for (let i = Math.max(2, current - delta); i <= Math.min(last - 1, current + delta); i++) {
+                    range.push(i);
+                }
+                
+                if (current - delta > 2) {
+                    rangeWithDots.push(1, '...');
+                } else {
+                    rangeWithDots.push(1);
+                }
+                
+                rangeWithDots.push(...range);
+                
+                if (current + delta < last - 1) {
+                    rangeWithDots.push('...', last);
+                } else {
+                    rangeWithDots.push(last);
+                }
+                
+                return rangeWithDots;
+            },
+
+            copyHash(hash) {
+                navigator.clipboard.writeText(hash).then(() => {
+                    console.log('Hash copied:', hash);
+                }).catch(err => {
+                    console.error('Failed to copy hash:', err);
+                });
+            },
+
+            showCommitDetail(hash) {
+                window.open(`/changelog/commit/${hash}`, '_blank');
+            },
+
+            resetChangelog() {
+                this.loading = true;
+                this.commits = [];
+                this.totalCommits = 0;
+                this.pagination = null;
+                this.currentPage = 1;
             }
         }
     };

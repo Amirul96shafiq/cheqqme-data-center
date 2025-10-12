@@ -1,5 +1,5 @@
 {{-- Left Section (70%) - Hero Section --}}
-<div class="relative w-[70%] hidden lg:flex flex-col justify-between overflow-hidden bg-gray-50 dark:bg-gray-900 p-6">
+<div class="relative w-[70%] hidden lg:flex flex-col justify-between overflow-hidden bg-gray-50 dark:bg-gray-900 p-6" x-data="{}">
     
     {{-- Hero Section with Gradient Background --}}
     <div class="relative w-full h-full rounded-2xl overflow-hidden">
@@ -93,10 +93,17 @@
                 
                 {{-- New Update Button (Top) --}}
                 <nav class="flex justify-end" aria-label="Whats new action button">
-                    <x-tooltip position="left" :text="__('login.tooltips.comingSoon')">
-                        <div class="inline-flex items-start cursor-not-allowed" aria-label="What's New (Coming Soon)">
-                            <img src="{{ asset('images/actions/whats-news.png') }}" alt="What's New" class="h-28 w-auto opacity-80 hover:opacity-100 transition-all duration-300 bounce-bounce whats-new-button" loading="eager" draggable="false">
-                        </div>
+                    <x-tooltip position="left" text="View what's new">
+                        <button type="button"
+                                onclick="console.log('What\'s New button clicked'); console.log('showGlobalModal exists:', typeof window.showGlobalModal); if (window.showGlobalModal) { window.showGlobalModal('changelog'); } else { console.error('showGlobalModal function not found'); }"
+                                class="inline-flex items-start cursor-pointer hover:scale-105 transition-transform duration-300"
+                                aria-label="What's New">
+                            <img src="{{ asset('images/actions/whats-news.png') }}" 
+                                 alt="What's New" 
+                                 class="h-28 w-auto opacity-80 hover:opacity-100 transition-all duration-300 bounce-bounce whats-new-button" 
+                                 loading="eager" 
+                                 draggable="false">
+                        </button>
                     </x-tooltip>
                 </nav>
                 
@@ -174,9 +181,15 @@
 
 {{-- Sticky What's New Button for Responsive (1024px and below) --}}
 <div class="whats-new-sticky hidden">
-    <x-tooltip position="bottom" :text="__('login.tooltips.comingSoon')">
-        <div class="inline-flex items-start cursor-not-allowed" aria-label="What's New (Coming Soon)">
-            <img src="{{ asset('images/actions/whats-news.png') }}" alt="What's New" class="transition-all duration-300 bounce-bounce" loading="eager">
-        </div>
+    <x-tooltip position="bottom" text="View what's new">
+        <button type="button"
+                @click="window.showGlobalModal('changelog')"
+                class="inline-flex items-start cursor-pointer"
+                aria-label="What's New">
+            <img src="{{ asset('images/actions/whats-news.png') }}" 
+                 alt="What's New" 
+                 class="transition-all duration-300 bounce-bounce" 
+                 loading="eager">
+        </button>
     </x-tooltip>
 </div>

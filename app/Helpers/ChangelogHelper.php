@@ -1,0 +1,178 @@
+<?php
+
+namespace App\Helpers;
+
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+
+class ChangelogHelper
+{
+    /**
+     * Get paginated changelog entries from git commits
+     */
+    public static function getPaginatedChangelog(int $perPage = 10, int $page = 1): LengthAwarePaginator
+    {
+        try {
+            // Get total commit count
+            exec('git rev-list --count HEAD', $totalOutput);
+            $total = (int) ($totalOutput[0] ?? 0);
+            
+            if ($total === 0) {
+                return new LengthAwarePaginator(collect(), 0, $perPage, $page);
+            }
+            
+            // Calculate offset
+            $offset = ($page - 1) * $perPage;
+            
+            // Get commits with detailed format: hash|full_hash|date|author_name|author_email|message
+            $format = '%h|%H|%ci|%an|%ae|%s';
+            $command = sprintf('git log --pretty=format:"%s" --skip=%d -n %d', $format, $offset, $perPage);
+            
+            exec($command, $output, $returnCode);
+            
+            if ($returnCode !== 0 || empty($output)) {
+                return new LengthAwarePaginator(collect(), 0, $perPage, $page);
+            }
+            
+            $commits = collect($output)->map(function ($line) {
+                [$shortHash, $fullHash, $date, $authorName, $authorEmail, $message] = explode('|', $line, 6);
+                
+                return [
+                    'short_hash' => $shortHash,
+                    'full_hash' => $fullHash,
+                    'date' => \Carbon\Carbon::parse($date),
+                    'author_name' => $authorName,
+                    'author_email' => $authorEmail,
+                    'author_avatar' => self::getGravatarUrl($authorEmail),
+                    'message' => $message,
+                    'type' => self::parseCommitType($message),
+                    'icon' => self::getIconForType(self::parseCommitType($message)),
+                ];
+            });
+            
+            // Create paginator
+            $paginator = new LengthAwarePaginator(
+                $commits,
+                $total,
+                $perPage,
+                $page,
+                [
+                    'path' => request()->url(),
+                    'pageName' => 'page',
+                ]
+            );
+            
+            // Add custom pagination links
+            $paginator->withQueryString();
+            
+            return $paginator;
+            
+        } catch (\Exception $e) {
+            \Log::error('Failed to fetch git changelog: ' . $e->getMessage());
+            return new LengthAwarePaginator(collect(), 0, $perPage, $page);
+        }
+    }
+    
+    /**
+     * Get single commit details
+     */
+    public static function getCommitDetails(string $hash): ?array
+    {
+        try {
+            // Get detailed commit info
+            $format = '%h|%H|%ci|%an|%ae|%s|%b';
+            $command = sprintf('git show %s --pretty=format:"%s" --no-patch', $hash, $format);
+            
+            exec($command, $output, $returnCode);
+            
+            if ($returnCode !== 0 || empty($output)) {
+                return null;
+            }
+            
+            $line = $output[0];
+            [$shortHash, $fullHash, $date, $authorName, $authorEmail, $subject, $body] = explode('|', $line, 7);
+            
+            // Get changed files
+            exec(sprintf('git diff-tree --no-commit-id --name-status -r %s', $hash), $filesOutput);
+            $files = collect($filesOutput)->map(function ($line) {
+                [$status, $file] = explode("\t", $line, 2);
+                return [
+                    'status' => $status,
+                    'file' => $file,
+                ];
+            });
+            
+            return [
+                'short_hash' => $shortHash,
+                'full_hash' => $fullHash,
+                'date' => \Carbon\Carbon::parse($date),
+                'author_name' => $authorName,
+                'author_email' => $authorEmail,
+                'author_avatar' => self::getGravatarUrl($authorEmail),
+                'subject' => $subject,
+                'body' => trim($body),
+                'files' => $files,
+                'type' => self::parseCommitType($subject),
+                'icon' => self::getIconForType(self::parseCommitType($subject)),
+            ];
+            
+        } catch (\Exception $e) {
+            \Log::error('Failed to fetch commit details: ' . $e->getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Get Gravatar URL for email
+     */
+    protected static function getGravatarUrl(string $email, int $size = 32): string
+    {
+        $hash = md5(strtolower(trim($email)));
+        return "https://www.gravatar.com/avatar/{$hash}?s={$size}&d=identicon";
+    }
+    
+    /**
+     * Parse commit type from conventional commit message
+     */
+    protected static function parseCommitType(string $message): string
+    {
+        if (preg_match('/^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?:/i', $message, $matches)) {
+            return strtolower($matches[1]);
+        }
+        
+        $message = strtolower($message);
+        if (str_contains($message, 'fix') || str_contains($message, 'bug')) {
+            return 'fix';
+        }
+        if (str_contains($message, 'add') || str_contains($message, 'implement')) {
+            return 'feat';
+        }
+        if (str_contains($message, 'update') || str_contains($message, 'improve')) {
+            return 'refactor';
+        }
+        
+        return 'other';
+    }
+    
+    /**
+     * Get icon for commit type
+     */
+    protected static function getIconForType(string $type): string
+    {
+        return match($type) {
+            'feat' => '✨',
+            'fix' => '🔧',
+            'docs' => '📝',
+            'style' => '💄',
+            'refactor' => '♻️',
+            'perf' => '⚡',
+            'test' => '✅',
+            'chore' => '🔨',
+            'ci' => '👷',
+            'build' => '📦',
+            'revert' => '⏪',
+            default => '•',
+        };
+    }
+}

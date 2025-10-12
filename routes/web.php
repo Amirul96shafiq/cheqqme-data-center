@@ -437,6 +437,97 @@ Route::middleware('auth')->group(function () {
     Route::post('/weather/clear-cache', [WeatherController::class, 'clearCache'])->name('weather.clear-cache');
 });
 
+// Changelog routes
+Route::get('/changelog', function () {
+    try {
+        $changelog = \App\Helpers\ChangelogHelper::getPaginatedChangelog(10, request('page', 1));
+
+        // Format commits for JSON response
+        $commits = $changelog->map(function ($commit) {
+            return [
+                'short_hash' => $commit['short_hash'],
+                'full_hash' => $commit['full_hash'],
+                'date' => $commit['date']->toISOString(),
+                'date_formatted' => $commit['date']->format('M j, Y g:i A'),
+                'date_relative' => $commit['date']->diffForHumans(),
+                'author_name' => $commit['author_name'],
+                'author_email' => $commit['author_email'],
+                'author_avatar' => $commit['author_avatar'],
+                'message' => $commit['message'],
+                'type' => $commit['type'],
+                'icon' => $commit['icon'],
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'commits' => $commits,
+            'total' => $changelog->total(),
+            'pagination' => [
+                'current_page' => $changelog->currentPage(),
+                'last_page' => $changelog->lastPage(),
+                'per_page' => $changelog->perPage(),
+                'total' => $changelog->total(),
+                'from' => $changelog->firstItem(),
+                'to' => $changelog->lastItem(),
+                'has_more_pages' => $changelog->hasMorePages(),
+            ],
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'commits' => [],
+            'total' => 0,
+            'pagination' => null,
+        ], 500);
+    }
+})->name('changelog');
+
+Route::get('/changelog/commit/{hash}', function (string $hash) {
+    try {
+        $commit = \App\Helpers\ChangelogHelper::getCommitDetails($hash);
+
+        if (! $commit) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Commit not found',
+            ], 404);
+        }
+
+        // Format commit for JSON response
+        $formattedCommit = [
+            'short_hash' => $commit['short_hash'],
+            'full_hash' => $commit['full_hash'],
+            'date' => $commit['date']->toISOString(),
+            'date_formatted' => $commit['date']->format('M j, Y g:i A'),
+            'author_name' => $commit['author_name'],
+            'author_email' => $commit['author_email'],
+            'author_avatar' => $commit['author_avatar'],
+            'subject' => $commit['subject'],
+            'body' => $commit['body'],
+            'type' => $commit['type'],
+            'icon' => $commit['icon'],
+            'files' => $commit['files']->map(function ($file) {
+                return [
+                    'status' => $file['status'],
+                    'file' => $file['file'],
+                ];
+            }),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'commit' => $formattedCommit,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+})->name('changelog.commit');
+
 // Microsoft "coming soon" notification route
 Route::get('/microsoft/coming-soon', function (Illuminate\Http\Request $request) {
     $message = $request->get('message', 'Microsoft Sign-in: This feature is coming soon!');
