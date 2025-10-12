@@ -678,7 +678,8 @@
                                 {{-- Author Avatar --}}
                                 <img :src="commit.author_avatar" 
                                      :alt="commit.author_name"
-                                     class="w-6 h-6 rounded-full flex-shrink-0">
+                                     class="w-6 h-6 rounded-full flex-shrink-0"
+                                     draggable="false">
                                 
                                 {{-- Commit Info --}}
                                 <div class="flex-1 min-w-0">
