@@ -15,9 +15,19 @@ class PresenceStatusManager
 {
     /**
      * Set user as online and broadcast status change
+     *
+     * @param  User  $user  The user to set online
+     * @param  bool  $forceOverride  If true, override manual status changes (used on fresh login)
      */
-    public static function setOnline(User $user): void
+    public static function setOnline(User $user, bool $forceOverride = false): void
     {
+        // If user has manually set their status and we're not forcing, don't override it
+        if (! $forceOverride && $user->last_status_change !== null) {
+            Log::info("User {$user->id} has manual status ({$user->online_status}), not setting to online");
+
+            return;
+        }
+
         $previousStatus = $user->online_status;
 
         // Clear last_status_change when setting to online (allows auto-away to work)
@@ -29,7 +39,7 @@ class PresenceStatusManager
         // Broadcast the status change to all users
         broadcast(new UserOnlineStatusChanged($user, StatusConfig::ONLINE, $previousStatus));
 
-        Log::info("User {$user->id} set to online status via presence channel");
+        Log::info("User {$user->id} set to online status via presence channel".($forceOverride ? ' (forced)' : ''));
     }
 
     /**

@@ -18,8 +18,8 @@ class UpdateUserOnlineStatus implements ShouldQueue
     public function handle(Login|Logout $event): void
     {
         if ($event instanceof Login) {
-            // User logged in - set to online
-            PresenceStatusManager::setOnline($event->user);
+            // User logged in - set to online (force override any previous manual status)
+            PresenceStatusManager::setOnline($event->user, forceOverride: true);
         } elseif ($event instanceof Logout) {
             // User logged out - set to invisible
             PresenceStatusManager::setInvisible($event->user);

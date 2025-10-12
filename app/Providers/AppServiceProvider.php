@@ -55,7 +55,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Register online status event listeners
         Event::listen(Login::class, function (Login $event) {
-            \App\Services\OnlineStatus\PresenceStatusManager::setOnline($event->user);
+            \App\Services\OnlineStatus\PresenceStatusManager::setOnline($event->user, forceOverride: true);
         });
 
         Event::listen(Logout::class, function (Logout $event) {

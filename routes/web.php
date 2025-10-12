@@ -342,11 +342,25 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/profile/set-invisible-on-close', function (Request $request) {
         $user = auth()->user();
 
-        // Always set to invisible regardless of current status
+        // Only set to invisible if user hasn't manually set their status
+        // If they have a manual status (last_status_change is not null), preserve it
+        if ($user->last_status_change !== null) {
+            // User has manually set their status, don't change it
+            \Illuminate\Support\Facades\Log::info("User {$user->id} has manual status ({$user->online_status}), not setting to invisible on tab close");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User status unchanged (manual status preserved)',
+                'status' => $user->online_status,
+                'manual_status' => true,
+            ]);
+        }
+
+        // User has auto status, set to invisible
         $previousStatus = $user->online_status;
         $user->update([
             'online_status' => 'invisible',
-            'last_status_change' => null, // Clear to mark as auto-invisible
+            'last_status_change' => null, // Keep null to mark as auto-invisible
         ]);
 
         \Illuminate\Support\Facades\Log::info("User {$user->id} set to invisible status on browser tab close (auto-invisible) from status: {$previousStatus}");
@@ -362,36 +376,30 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/profile/set-online-on-return', function (Request $request) {
         $user = auth()->user();
 
+        // If user has a manual status, don't change it
+        if ($user->last_status_change !== null) {
+            \Illuminate\Support\Facades\Log::info("User {$user->id} has manual status ({$user->online_status}), not changing on tab return");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User status unchanged (manual status preserved)',
+                'status' => $user->online_status,
+                'manual_status' => true,
+            ]);
+        }
+
         // Only set to online if user is currently invisible AND it was set automatically (not manually)
         if ($user->online_status === 'invisible') {
-            // Check if the user was set to invisible automatically (via tab close)
-            // We determine this by checking if there's a manual status change timestamp
-            $lastStatusChange = $user->last_status_change;
+            // This is auto-invisible (last_status_change is null), restore to online
+            \App\Services\OnlineStatus\PresenceStatusManager::setOnline($user);
+            \Illuminate\Support\Facades\Log::info("User {$user->id} set back to online status on tab return (was auto-invisible)");
 
-            // If there's no manual status change, it was likely set by tab close (auto-invisible)
-            $wasAutoInvisible = ! $lastStatusChange;
-
-            if ($wasAutoInvisible) {
-                \App\Services\OnlineStatus\PresenceStatusManager::setOnline($user);
-                \Illuminate\Support\Facades\Log::info("User {$user->id} set back to online status on tab return (was auto-invisible)");
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'User set back to online (was auto-invisible)',
-                    'status' => $user->fresh()->online_status,
-                    'wasAutoInvisible' => true,
-                ]);
-            } else {
-                \Illuminate\Support\Facades\Log::info("User {$user->id} status unchanged on tab return (was manually set to invisible)");
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'User status unchanged (was manually set to invisible)',
-                    'status' => $user->online_status,
-                    'wasAutoInvisible' => false,
-                    'reason' => 'manually_set_to_invisible',
-                ]);
-            }
+            return response()->json([
+                'success' => true,
+                'message' => 'User set back to online (was auto-invisible)',
+                'status' => $user->fresh()->online_status,
+                'wasAutoInvisible' => true,
+            ]);
         }
 
         return response()->json([
