@@ -654,7 +654,7 @@
 
                     {{-- Loading Spinner --}}
                     <div class="relative">
-                        <div class="w-12 h-12 border-4 border-gray-200 dark:border-gray-700 border-t-primary-500 rounded-full animate-spin"></div>
+                        <x-icons.custom-icon name="refresh" class="w-12 h-12 text-primary-500" />
                     </div>
                     
                     {{-- Loading Text --}}
@@ -1125,6 +1125,10 @@
                 this.loading = true;
                 this.currentPage = page;
                 
+                // Record start time for minimum loading duration
+                const startTime = Date.now();
+                const minLoadingTime = 1000; // 1 second minimum
+                
                 try {
                     const response = await fetch(`/changelog?page=${page}`);
                     const data = await response.json();
@@ -1143,7 +1147,17 @@
                     this.commits = [];
                     this.totalCommits = 0;
                 } finally {
-                    this.loading = false;
+                    // Ensure minimum loading time for better UX
+                    const elapsedTime = Date.now() - startTime;
+                    const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
+                    
+                    if (remainingTime > 0) {
+                        setTimeout(() => {
+                            this.loading = false;
+                        }, remainingTime);
+                    } else {
+                        this.loading = false;
+                    }
                 }
             },
 

@@ -279,22 +279,22 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn () => __('dashboard.user-menu.profile-label'))
                     ->icon('heroicon-o-user')
                     ->url(fn () => filament()->getProfileUrl())
-                    ->sort(-1),
+                    ->sort(-2),
                 MenuItem::make()
                     ->label(fn () => __('dashboard.user-menu.settings-label'))
                     ->icon('heroicon-o-cog-6-tooth')
                     ->url(fn () => route('filament.admin.pages.settings'))
-                    ->sort(0),
+                    ->sort(-1),
                 MenuItem::make()
                     ->label(fn () => __('chatbot.history.navigation_label'))
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->url(fn () => '/admin/chatbot-history')
-                    ->sort(1),
+                    ->sort(0),
                 MenuItem::make()
                     ->label(fn () => __('dashboard.user-menu.whats-news-label'))
                     ->icon('heroicon-o-code-bracket')
                     ->url('javascript:void(0)')
-                    ->sort(0.5),
+                    ->sort(1),
                 'logout' => MenuItem::make()
                     ->label(fn () => __('dashboard.user-menu.logout-label'))
                     ->icon('heroicon-o-arrow-right-on-rectangle')
