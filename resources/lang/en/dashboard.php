@@ -5,9 +5,10 @@ return [
         'tooltip' => [
             'greeting' => 'Greeting Menu',
         ],
-        
+
         'profile-label' => 'Profile',
         'settings-label' => 'Settings',
+        'whats-news-label' => "What's News",
         'logout-label' => 'Logout',
     ],
 

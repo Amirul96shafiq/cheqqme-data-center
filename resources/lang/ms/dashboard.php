@@ -5,9 +5,10 @@ return [
         'tooltip' => [
             'greeting' => 'Menu Greeting',
         ],
-        
+
         'profile-label' => 'Profil',
         'settings-label' => 'Tetapan',
+        'whats-news-label' => 'Apa Yang Baru',
         'logout-label' => 'Log Keluar',
     ],
 

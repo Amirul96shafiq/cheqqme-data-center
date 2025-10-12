@@ -853,6 +853,36 @@
             const { type, id } = data;
             window.showGlobalModal(type, id);
         });
+        
+        // Listen for the custom "What's News" modal event
+        Livewire.on('open-whats-new-modal', () => {
+            window.showGlobalModal('changelog');
+        });
+    });
+    
+    // Handle "What's News" menu item clicks
+    document.addEventListener('click', function(event) {
+        // Check if the clicked element contains "What's News" text
+        let element = event.target;
+        
+        // Traverse up the DOM tree to find the menu item
+        while (element) {
+            if (element.textContent && (element.textContent.includes("What's News") || element.textContent.includes('Apa Yang Baru'))) {
+                // Make sure it's actually a menu item
+                if (element.closest('[role="menuitem"], .fi-menu-item, [data-filament-menu-item], a[href*="javascript"]')) {
+                    // console.log('Found What\'s News menu item:', element);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (window.showGlobalModal) {
+                        window.showGlobalModal('changelog');
+                    } else {
+                        console.error('showGlobalModal function not found');
+                    }
+                    return;
+                }
+            }
+            element = element.parentElement;
+        }
     });
     
     // Close modal function
