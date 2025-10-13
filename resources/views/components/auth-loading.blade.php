@@ -56,9 +56,9 @@
         </div>
         
         {{-- Loading Spinner --}}
-        <div class="relative">
-            <div class="w-12 h-12 border-4 border-gray-200 dark:border-gray-700 border-t-primary-500 rounded-full opacity-0"
-                 style="animation: fade-in 0.6s ease-out 0.4s forwards, spin 1s linear infinite 0.4s;"></div>
+        <div class="relative opacity-0 animate-fade-in"
+             style="animation-delay: 0.4s; animation-fill-mode: forwards;">
+            <x-icons.custom-icon name="refresh" class="w-12 h-12" color="text-primary-500" />
         </div>
         
         {{-- Loading Text --}}
