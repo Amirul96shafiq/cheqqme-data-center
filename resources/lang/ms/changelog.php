@@ -3,7 +3,7 @@
 return [
     // Modal Header
     'title' => "Apa Yang Baru? (Log Perubahan)",
-    'subtitle' => ':total commit • Perubahan terkini',
+    'subtitle' => ':total commit',
     'loading_subtitle' => 'Memuatkan...',
     
     // Loading State

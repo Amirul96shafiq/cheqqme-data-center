@@ -3,7 +3,7 @@
 return [
     // Modal Header
     'title' => "What's New? (Changelogs)",
-    'subtitle' => ':total commits • Recent changes',
+    'subtitle' => ':total commits',
     'loading_subtitle' => 'Loading...',
     
     // Loading State
