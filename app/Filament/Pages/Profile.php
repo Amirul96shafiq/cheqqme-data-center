@@ -543,6 +543,90 @@ class Profile extends EditProfile
                             ->columns(columns: 3)
                             ->columnSpanFull(),
 
+                        Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
+                            '<div class="flex items-center gap-2">
+                                    <img src="'.asset('images/google-icon.svg').'" alt="Google Calendar" class="w-5 h-5">
+                                    <span>Google Calendar Connection</span>
+                                </div>'
+                        ))
+                            ->schema([
+                                Forms\Components\Placeholder::make('google_calendar_status')
+                                    ->label(__('user.form.connection_status'))
+                                    ->content(function () {
+                                        $user = auth()->user();
+                                        if ($user->google_calendar_token && $user->google_calendar_connected_at) {
+                                            return new \Illuminate\Support\HtmlString(
+                                                '<div class="flex items-center gap-2">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        '.__('user.form.connected').'
+                                                    </span>
+                                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                        Connected on '.$user->google_calendar_connected_at->format('M d, Y').'
+                                                    </span>
+                                                </div>'
+                                            );
+                                        }
+
+                                        return new \Illuminate\Support\HtmlString(
+                                            '<div class="flex items-center gap-2">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    '.__('user.form.not_connected').'
+                                                </span>
+                                            </div>'
+                                        );
+                                    })
+                                    ->columnSpan(2),
+
+                                Forms\Components\Actions::make([
+                                    Forms\Components\Actions\Action::make('connect_google_calendar')
+                                        ->label('Connect Google Calendar')
+                                        ->color('primary')
+                                        ->icon('heroicon-o-link')
+                                        ->visible(fn () => ! auth()->user()->google_calendar_token)
+                                        ->url('/auth/google/calendar?state=profile')
+                                        ->openUrlInNewTab(false),
+
+                                    Forms\Components\Actions\Action::make('disconnect_google_calendar')
+                                        ->label('Disconnect Google Calendar')
+                                        ->color('danger')
+                                        ->outlined()
+                                        ->icon('heroicon-o-link-slash')
+                                        ->visible(fn () => (bool) auth()->user()->google_calendar_token)
+                                        ->requiresConfirmation()
+                                        ->modalIcon('heroicon-o-link-slash')
+                                        ->modalHeading('Disconnect Google Calendar')
+                                        ->modalDescription('Are you sure you want to disconnect your Google Calendar? You will no longer be able to generate Google Meet links.')
+                                        ->modalSubmitActionLabel('Disconnect')
+                                        ->modalCancelActionLabel(__('user.form.cancel'))
+                                        ->modalWidth('md')
+                                        ->action(function () {
+                                            $user = auth()->user();
+                                            $user->update([
+                                                'google_calendar_token' => null,
+                                                'google_calendar_connected_at' => null,
+                                            ]);
+
+                                            \Filament\Notifications\Notification::make()
+                                                ->title('Google Calendar disconnected successfully')
+                                                ->success()
+                                                ->send();
+                                        }),
+                                ])
+                                    ->columnSpan(1)
+                                    ->alignment(Alignment::End)
+                                    ->extraAttributes([
+                                        'class' => '-mt-14 lg:-mt-0',
+                                    ]),
+                            ])
+                            ->columns(columns: 3)
+                            ->columnSpanFull(),
+
                     ])
                     ->collapsible()
                     ->collapsed()

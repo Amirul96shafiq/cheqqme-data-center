@@ -20,6 +20,7 @@ export default defineConfig({
                 "resources/js/spotify-player.js",
                 "resources/js/marquee-animation.js",
                 "resources/js/drag-to-scroll.js",
+                "resources/js/meeting-links.js",
             ],
             refresh: true,
         }),

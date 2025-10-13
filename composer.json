@@ -12,6 +12,7 @@
         "blade-ui-kit/blade-heroicons": "^2.6",
         "charrafimed/global-search-modal": "^3.7",
         "filament/filament": "^3.0",
+        "google/apiclient": "^2.0",
         "guzzlehttp/guzzle": "^7.9",
         "intervention/image": "^3.11",
         "jenssegers/agent": "^2.6",

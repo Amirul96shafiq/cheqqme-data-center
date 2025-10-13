@@ -43,6 +43,7 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL').'/auth/google/callback'),
+        'calendar_redirect' => env('GOOGLE_CALENDAR_REDIRECT_URI', env('APP_URL').'/auth/google/calendar/callback'),
     ],
 
     'microsoft' => [

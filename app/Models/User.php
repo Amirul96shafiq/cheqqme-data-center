@@ -43,6 +43,8 @@ class User extends Authenticatable implements HasAvatar
         'phone_country',
         'google_id',
         'google_avatar_url',
+        'google_calendar_token',
+        'google_calendar_connected_at',
         'microsoft_id',
         'microsoft_avatar_url',
         'spotify_id',
@@ -141,6 +143,7 @@ class User extends Authenticatable implements HasAvatar
             'location_updated_at' => 'datetime',
             'last_auto_location_update' => 'datetime',
             'last_status_change' => 'datetime',
+            'google_calendar_connected_at' => 'datetime',
         ];
     }
 

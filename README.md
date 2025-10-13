@@ -734,6 +734,7 @@ Currently a solo project; outside contributions may open later. Feel free to for
 -   [Laravel Docs](https://laravel.com/docs/12.x)
 -   [Filament Docs](https://filamentphp.com/docs)
 -   [Debugging Methodology](docs/debugging-methodology.md) - Comprehensive debugging guide with console log management
+-   [Google Meet Integration](docs/google-meet-setup.md) - Complete setup guide for Google Calendar and Google Meet integration
 
 ---
 

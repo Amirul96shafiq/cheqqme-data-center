@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\GoogleCalendarController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\CommentController;
@@ -194,6 +195,25 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
 Route::get('/auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 Route::get('/auth/google/popup-callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'showPopupCallback'])->name('auth.google.popup-callback');
+
+// Google Calendar OAuth routes
+Route::get('/auth/google/calendar', [GoogleCalendarController::class, 'redirectToGoogleCalendar'])->name('auth.google.calendar')->middleware('auth');
+Route::get('/auth/google/calendar/callback', [GoogleCalendarController::class, 'handleGoogleCalendarCallback'])->name('auth.google.calendar.callback');
+Route::post('/auth/google/calendar/disconnect', [GoogleCalendarController::class, 'disconnectGoogleCalendar'])->name('auth.google.calendar.disconnect')->middleware('auth');
+Route::get('/auth/google/calendar/status', [GoogleCalendarController::class, 'checkConnectionStatus'])->name('auth.google.calendar.status')->middleware('auth');
+
+// Debug route for testing OAuth flow (remove in production)
+Route::get('/debug/google-calendar', function () {
+    $user = auth()->user();
+
+    return response()->json([
+        'user_id' => $user?->id,
+        'has_token' => ! is_null($user?->google_calendar_token),
+        'connected_at' => $user?->google_calendar_connected_at,
+        'session_state' => session('google_calendar_state'),
+        'auth_url' => app(\App\Services\GoogleMeetService::class)->getAuthUrl('debug'),
+    ]);
+})->middleware('auth');
 
 // Spotify OAuth routes
 Route::get('/auth/spotify', [\App\Http\Controllers\Auth\SpotifyAuthController::class, 'redirectToSpotify'])->name('auth.spotify');
