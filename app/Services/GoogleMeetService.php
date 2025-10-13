@@ -58,6 +58,7 @@ class GoogleMeetService
             // Create the event with Google Meet conference
             $event = new Event([
                 'summary' => $title,
+                'description' => $title,
                 'start' => new EventDateTime([
                     'dateTime' => $startDateTime,
                     'timeZone' => config('app.timezone'),
