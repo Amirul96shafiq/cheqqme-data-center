@@ -41,7 +41,7 @@
     <div class="tooltip tooltip-{{ $position }} absolute {{ $yAlign }} {{ $xAlign }} px-3 py-1 bg-white text-gray-900 dark:bg-gray-700 dark:text-white text-sm rounded-md opacity-0 invisible transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg"
          data-tooltip-text="{{ $text }}"
          style="font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;">
-        {{ $text }}
+        {!! $text !!}
 
         {{-- Tooltip arrow --}}
         @if($position === 'top')
