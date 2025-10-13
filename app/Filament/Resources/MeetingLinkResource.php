@@ -68,6 +68,35 @@ class MeetingLinkResource extends Resource
                                                         ->default('Google Meet')
                                                         ->columnSpan(1),
 
+                                                    Forms\Components\DateTimePicker::make('meeting_start_time')
+                                                        ->label('Meeting Start')
+                                                        ->seconds(false)
+                                                        ->native(false)
+                                                        ->minutesStep(5)
+                                                        ->displayFormat('M d, Y - h:i A')
+                                                        ->default(now())
+                                                        ->required()
+                                                        ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Google Meet')
+                                                        ->columnSpan(1),
+
+                                                    Forms\Components\Select::make('meeting_duration')
+                                                        ->label('Duration')
+                                                        ->options([
+                                                            30 => '30 minutes',
+                                                            60 => '1 hour',
+                                                            90 => '1 hour 30 minutes',
+                                                            120 => '2 hours',
+                                                        ])
+                                                        ->default(60)
+                                                        ->required()
+                                                        ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Google Meet')
+                                                        ->columnSpan(1),
+                                                ])
+                                                ->columns(3),
+
+                                            Forms\Components\Grid::make(2)
+                                                ->schema([
+
                                                     Forms\Components\TextInput::make('meeting_url')
                                                         ->label('Meeting URL')
                                                         ->disabled()
@@ -103,7 +132,18 @@ class MeetingLinkResource extends Resource
                                                                         $googleMeetService->setAccessToken(json_decode($token, true));
 
                                                                         $title = $get('title') ?: 'Meeting';
-                                                                        $result = $googleMeetService->generateMeetLink($title);
+                                                                        $startTime = $get('meeting_start_time');
+                                                                        $duration = (int) $get('meeting_duration') ?: 60;
+
+                                                                        // Calculate end time
+                                                                        $endTime = $startTime
+                                                                            ? \Carbon\Carbon::parse($startTime)->addMinutes($duration)->toIso8601String()
+                                                                            : null;
+                                                                        $startTime = $startTime
+                                                                            ? \Carbon\Carbon::parse($startTime)->toIso8601String()
+                                                                            : null;
+
+                                                                        $result = $googleMeetService->generateMeetLink($title, $startTime, $endTime);
 
                                                                         if ($result) {
                                                                             $set('meeting_url', $result['meeting_url']);
@@ -190,7 +230,18 @@ class MeetingLinkResource extends Resource
                                                             $googleMeetService->setAccessToken(json_decode($token, true));
 
                                                             $title = $get('title') ?: 'Meeting';
-                                                            $result = $googleMeetService->generateMeetLink($title);
+                                                            $startTime = $get('meeting_start_time');
+                                                            $duration = (int) $get('meeting_duration') ?: 60;
+
+                                                            // Calculate end time
+                                                            $endTime = $startTime
+                                                                ? \Carbon\Carbon::parse($startTime)->addMinutes($duration)->toIso8601String()
+                                                                : null;
+                                                            $startTime = $startTime
+                                                                ? \Carbon\Carbon::parse($startTime)->toIso8601String()
+                                                                : null;
+
+                                                            $result = $googleMeetService->generateMeetLink($title, $startTime, $endTime);
 
                                                             if ($result) {
                                                                 $set('meeting_url', $result['meeting_url']);

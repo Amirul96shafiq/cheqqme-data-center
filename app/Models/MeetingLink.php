@@ -23,6 +23,8 @@ class MeetingLink extends Model
         'meeting_platform',
         'meeting_url',
         'meeting_id',
+        'meeting_start_time',
+        'meeting_duration',
         'notes',
         'extra_information',
         'created_by',
@@ -36,6 +38,7 @@ class MeetingLink extends Model
         'important_url_ids' => 'array',
         'user_ids' => 'array',
         'extra_information' => 'array',
+        'meeting_start_time' => 'datetime',
     ];
 
     public function getActivityLogOptions(): LogOptions
