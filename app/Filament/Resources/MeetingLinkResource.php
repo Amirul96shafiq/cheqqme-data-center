@@ -38,7 +38,7 @@ class MeetingLinkResource extends Resource
             default => $duration.' minutes'
         };
 
-        return "Meeting - {$platform} - {$formattedDate} - {$durationText}";
+        return "CheQQMeeting - {$platform} - {$formattedDate} - {$durationText}";
     }
 
     public static function form(Form $form): Form
