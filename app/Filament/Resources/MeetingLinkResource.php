@@ -91,11 +91,14 @@ class MeetingLinkResource extends Resource
                 '2xl' => 5,
             ])
                 ->schema([
-                    // Main content (left side) - spans 5 columns
-                    Forms\Components\Grid::make(1)
+                    // Main content with responsive 60/40 (lg+) and 100/100 (below lg)
+                    Forms\Components\Grid::make([
+                        'default' => 1,
+                        'xl' => 5,
+                    ])
                         ->schema([
                             // -----------------------------
-                            // Meeting Information Section
+                            // Meeting Information Section (60% - 3 columns)
                             // -----------------------------
                             Forms\Components\Section::make(__('meetinglink.form.meeting_information'))
                                 ->schema([
@@ -332,11 +335,13 @@ class MeetingLinkResource extends Resource
                                         ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Google Meet')
                                         ->columnSpanFull(),
                                 ])
-                                ->collapsible()
-                                ->collapsed(false),
+                                ->columnSpan([
+                                    'default' => 1,
+                                    'xl' => 3,
+                                ]),
 
                             // -----------------------------
-                            // Invite Attendees Section
+                            // Invite Attendees Section (40% - 2 columns)
                             // -----------------------------
                             Forms\Components\Section::make(__('meetinglink.form.invite_attendees'))
                                 ->schema([
@@ -359,10 +364,14 @@ class MeetingLinkResource extends Resource
                                         ->columnSpanFull(),
                                 ])
                                 ->collapsible()
-                                ->collapsed(false),
+                                ->collapsed(false)
+                                ->columnSpan([
+                                    'default' => 1,
+                                    'xl' => 2,
+                                ]),
 
                             // -----------------------------
-                            // Meeting Resources Section
+                            // Meeting Resources Section (Full Width)
                             // -----------------------------
                             Forms\Components\Section::make(__('meetinglink.form.meeting_resources'))
                                 ->schema([
@@ -583,10 +592,14 @@ class MeetingLinkResource extends Resource
                                         ]),
                                 ])
                                 ->collapsible()
-                                ->collapsed(),
+                                ->collapsed()
+                                ->columnSpan([
+                                    'default' => 1,
+                                    'xl' => 5,
+                                ]),
 
                             // -----------------------------
-                            // Additional Information Section
+                            // Additional Information Section (Full Width)
                             // -----------------------------
                             Forms\Components\Section::make(__('meetinglink.form.additional_information'))
                                 ->schema([
@@ -672,7 +685,11 @@ class MeetingLinkResource extends Resource
                                         ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
                                 ])
                                 ->collapsible()
-                                ->collapsed(),
+                                ->collapsed()
+                                ->columnSpan([
+                                    'default' => 1,
+                                    'xl' => 5,
+                                ]),
                         ])
                         ->columnSpan([
                             'default' => 1,
