@@ -25,6 +25,22 @@ class MeetingLinkResource extends Resource
 
     protected static ?int $navigationSort = 5;
 
+    protected static function generateMeetingTitle(string $platform, string $startTime, int $duration): string
+    {
+        $date = \Carbon\Carbon::parse($startTime);
+        $formattedDate = $date->format('j/n/y - h:i A');
+
+        $durationText = match ($duration) {
+            30 => '30 minutes',
+            60 => '1 hour',
+            90 => '1 hour 30 minutes',
+            120 => '2 hours',
+            default => $duration.' minutes'
+        };
+
+        return "Meeting - {$platform} - {$formattedDate} - {$durationText}";
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -51,6 +67,29 @@ class MeetingLinkResource extends Resource
                                                 ->label('Meeting Title')
                                                 ->required()
                                                 ->maxLength(255)
+                                                ->live(onBlur: true)
+                                                ->afterStateHydrated(function (Forms\Components\TextInput $component, Forms\Get $get, Forms\Set $set) {
+                                                    // Generate title on form load if title is empty
+                                                    if (empty($component->getState())) {
+                                                        $platform = $get('meeting_platform') ?: 'Google Meet';
+                                                        $startTime = $get('meeting_start_time') ?: now()->format('Y-m-d H:i:s');
+                                                        $duration = $get('meeting_duration') ?: 60;
+
+                                                        $generatedTitle = static::generateMeetingTitle($platform, $startTime, $duration);
+                                                        $component->state($generatedTitle);
+                                                    }
+                                                })
+                                                ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                                                    $platform = $get('meeting_platform');
+                                                    $startTime = $get('meeting_start_time');
+                                                    $duration = $get('meeting_duration');
+
+                                                    if ($platform && $startTime && $duration) {
+                                                        $generatedTitle = static::generateMeetingTitle($platform, $startTime, $duration);
+                                                        $set('title', $generatedTitle);
+                                                    }
+                                                })
+                                                ->helperText('Automatically generated meeting title based on the platform, start time, and duration.')
                                                 ->columnSpanFull(),
 
                                             Forms\Components\Grid::make(3)
@@ -66,6 +105,16 @@ class MeetingLinkResource extends Resource
                                                         ->live()
                                                         ->searchable()
                                                         ->default('Google Meet')
+                                                        ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                                                            $platform = $get('meeting_platform');
+                                                            $startTime = $get('meeting_start_time');
+                                                            $duration = $get('meeting_duration');
+
+                                                            if ($platform && $startTime && $duration) {
+                                                                $generatedTitle = static::generateMeetingTitle($platform, $startTime, $duration);
+                                                                $set('title', $generatedTitle);
+                                                            }
+                                                        })
                                                         ->columnSpan(1),
 
                                                     Forms\Components\DateTimePicker::make('meeting_start_time')
@@ -76,6 +125,17 @@ class MeetingLinkResource extends Resource
                                                         ->displayFormat('j/n/y, h:i A')
                                                         ->default(now())
                                                         ->required()
+                                                        ->live()
+                                                        ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                                                            $platform = $get('meeting_platform');
+                                                            $startTime = $get('meeting_start_time');
+                                                            $duration = $get('meeting_duration');
+
+                                                            if ($platform && $startTime && $duration) {
+                                                                $generatedTitle = static::generateMeetingTitle($platform, $startTime, $duration);
+                                                                $set('title', $generatedTitle);
+                                                            }
+                                                        })
                                                         ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Google Meet')
                                                         ->columnSpan(1),
 
@@ -89,6 +149,17 @@ class MeetingLinkResource extends Resource
                                                         ])
                                                         ->default(60)
                                                         ->required()
+                                                        ->live()
+                                                        ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                                                            $platform = $get('meeting_platform');
+                                                            $startTime = $get('meeting_start_time');
+                                                            $duration = $get('meeting_duration');
+
+                                                            if ($platform && $startTime && $duration) {
+                                                                $generatedTitle = static::generateMeetingTitle($platform, $startTime, $duration);
+                                                                $set('title', $generatedTitle);
+                                                            }
+                                                        })
                                                         ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Google Meet')
                                                         ->columnSpan(1),
                                                 ])
