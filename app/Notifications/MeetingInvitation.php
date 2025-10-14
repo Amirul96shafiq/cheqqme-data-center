@@ -48,19 +48,23 @@ class MeetingInvitation extends Notification implements ShouldQueue
         $platform = $this->meetingLink->meeting_platform;
 
         return FilamentNotification::make()
-            ->title('Meeting Invitation')
-            ->body("You've been invited to a {$platform} meeting by {$this->invitedBy}. Meeting: {$meetingTitle}")
+            ->title(__('meetinglink.notifications.invitation_title'))
+            ->body(__('meetinglink.notifications.invitation_body', [
+                'platform' => $platform,
+                'invitedBy' => $this->invitedBy,
+                'meetingTitle' => $meetingTitle,
+            ]))
             ->icon('heroicon-o-video-camera')
             ->iconColor('success')
             ->actions([
                 FilamentAction::make('join_meeting')
-                    ->label('Join Meeting')
+                    ->label(__('meetinglink.notifications.join_meeting'))
                     ->url($this->meetingLink->meeting_url)
                     ->openUrlInNewTab()
                     ->button()
                     ->color('primary'),
                 FilamentAction::make('view_details')
-                    ->label('View Details')
+                    ->label(__('meetinglink.notifications.view_details'))
                     ->url(\App\Filament\Resources\MeetingLinkResource::getUrl('edit', ['record' => $this->meetingLink->id]))
                     ->link()
                     ->color('gray'),

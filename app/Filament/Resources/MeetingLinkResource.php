@@ -22,11 +22,29 @@ class MeetingLinkResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-video-camera';
 
-    protected static ?string $navigationGroup = 'Resources';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('meetinglink.navigation_group');
+    }
 
     protected static ?int $navigationSort = 5;
 
     protected static ?string $recordTitleAttribute = 'title';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('navigation.meeting_links');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('navigation.meeting_link');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('navigation.meeting_links');
+    }
 
     public static function getGloballySearchableAttributes(): array
     {
@@ -36,10 +54,10 @@ class MeetingLinkResource extends Resource
     public static function getGlobalSearchResultDetails($record): array
     {
         return [
-            'Platform' => $record->meeting_platform,
-            'Created By' => optional($record->createdBy)->name,
-            'Meeting Start Time' => $record->meeting_start_time,
-            'Meeting URL' => $record->meeting_url,
+            __('meetinglink.table.platform') => $record->meeting_platform,
+            __('meetinglink.table.created_by') => optional($record->createdBy)->name,
+            __('meetinglink.table.start_time') => $record->meeting_start_time,
+            __('meetinglink.form.meeting_url') => $record->meeting_url,
         ];
     }
 
@@ -79,10 +97,10 @@ class MeetingLinkResource extends Resource
                                     // -----------------------------
                                     // Meeting Information
                                     // -----------------------------
-                                    Forms\Components\Tabs\Tab::make('Meeting Information')
+                                    Forms\Components\Tabs\Tab::make(__('meetinglink.form.meeting_information'))
                                         ->schema([
                                             Forms\Components\TextInput::make('title')
-                                                ->label('Meeting Title')
+                                                ->label(__('meetinglink.form.title'))
                                                 ->required()
                                                 ->maxLength(255)
                                                 ->live(onBlur: true)
@@ -107,17 +125,17 @@ class MeetingLinkResource extends Resource
                                                         $set('title', $generatedTitle);
                                                     }
                                                 })
-                                                ->helperText('Automatically generated meeting title based on the platform, start time, and duration.')
+                                                ->helperText(__('meetinglink.form.title_helper'))
                                                 ->columnSpanFull(),
 
                                             Forms\Components\Grid::make(3)
                                                 ->schema([
                                                     Forms\Components\Select::make('meeting_platform')
-                                                        ->label('Platform')
+                                                        ->label(__('meetinglink.form.meeting_platform'))
                                                         ->options([
-                                                            'Google Meet' => 'Google Meet',
-                                                            'Zoom Meeting' => 'Zoom Meeting (Coming Soon)',
-                                                            'Teams Meeting' => 'Teams Meeting (Coming Soon)',
+                                                            'Google Meet' => __('meetinglink.platform.google_meet'),
+                                                            'Zoom Meeting' => __('meetinglink.platform.zoom_meeting').' (Coming Soon)',
+                                                            'Teams Meeting' => __('meetinglink.platform.teams_meeting').' (Coming Soon)',
                                                         ])
                                                         ->required()
                                                         ->live()
@@ -136,7 +154,7 @@ class MeetingLinkResource extends Resource
                                                         ->columnSpan(1),
 
                                                     Forms\Components\DateTimePicker::make('meeting_start_time')
-                                                        ->label('Meeting Start')
+                                                        ->label(__('meetinglink.form.meeting_start_time'))
                                                         ->seconds(false)
                                                         ->native(false)
                                                         ->minutesStep(5)
@@ -158,12 +176,12 @@ class MeetingLinkResource extends Resource
                                                         ->columnSpan(1),
 
                                                     Forms\Components\Select::make('meeting_duration')
-                                                        ->label('Duration')
+                                                        ->label(__('meetinglink.form.meeting_duration'))
                                                         ->options([
-                                                            30 => '30 minutes',
-                                                            60 => '1 hour',
-                                                            90 => '1 hour 30 minutes',
-                                                            120 => '2 hours',
+                                                            30 => __('meetinglink.duration.30_minutes'),
+                                                            60 => __('meetinglink.duration.1_hour'),
+                                                            90 => __('meetinglink.duration.1_hour_30_minutes'),
+                                                            120 => __('meetinglink.duration.2_hours'),
                                                         ])
                                                         ->default(60)
                                                         ->required()
@@ -187,10 +205,10 @@ class MeetingLinkResource extends Resource
                                                 ->schema([
 
                                                     Forms\Components\TextInput::make('meeting_url')
-                                                        ->label('Meeting URL')
+                                                        ->label(__('meetinglink.form.meeting_url'))
                                                         ->disabled()
                                                         ->dehydrated()
-                                                        ->placeholder('No meeting link generated')
+                                                        ->placeholder(__('meetinglink.notifications.no_meeting_url'))
                                                         ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Google Meet')
                                                         ->columnSpan(2),
                                                 ]),
@@ -205,7 +223,7 @@ class MeetingLinkResource extends Resource
                                             // Actions for Google Meet
                                             Forms\Components\Actions::make([
                                                 Forms\Components\Actions\Action::make('generate_meet_link')
-                                                    ->label('Generate Google Meet URL')
+                                                    ->label(__('meetinglink.actions.generate_meet_link'))
                                                     ->icon('heroicon-o-video-camera')
                                                     ->color('primary')
                                                     ->visible(fn (Forms\Get $get) => ! $get('meeting_url'))
@@ -216,8 +234,8 @@ class MeetingLinkResource extends Resource
                                                         if (! $token) {
                                                             // Redirect to Google Calendar OAuth
                                                             Notification::make()
-                                                                ->title('Google Calendar Access Required')
-                                                                ->body('Please connect your Google Calendar account to generate meeting links.')
+                                                                ->title(__('meetinglink.notifications.google_meet_required'))
+                                                                ->body(__('meetinglink.notifications.google_meet_required_body'))
                                                                 ->warning()
                                                                 ->actions([
                                                                     \Filament\Notifications\Actions\Action::make('connect')
@@ -254,36 +272,36 @@ class MeetingLinkResource extends Resource
                                                                 $set('has_unsaved_meeting', true);
 
                                                                 Notification::make()
-                                                                    ->title('Google Meet link generated successfully!')
-                                                                    ->body('Don\'t forget to save the meeting link.')
+                                                                    ->title(__('meetinglink.notifications.link_generated_title'))
+                                                                    ->body(__('meetinglink.notifications.link_generated_body'))
                                                                     ->success()
                                                                     ->send();
                                                             } else {
                                                                 Notification::make()
-                                                                    ->title('Failed to generate Google Meet link')
-                                                                    ->body('Please try again or reconnect your Google Calendar account.')
+                                                                    ->title(__('meetinglink.notifications.link_failed_title'))
+                                                                    ->body(__('meetinglink.notifications.link_failed_body'))
                                                                     ->danger()
                                                                     ->send();
                                                             }
                                                         } catch (\Exception $e) {
                                                             Notification::make()
-                                                                ->title('Error generating Google Meet link')
-                                                                ->body('Please reconnect your Google Calendar account.')
+                                                                ->title(__('meetinglink.notifications.link_error_title'))
+                                                                ->body(__('meetinglink.notifications.link_error_body'))
                                                                 ->danger()
                                                                 ->send();
                                                         }
                                                     }),
 
                                                 Forms\Components\Actions\Action::make('delete_meet_link')
-                                                    ->label('Delete Link')
+                                                    ->label(__('meetinglink.actions.delete_meet_link'))
                                                     ->icon('heroicon-o-trash')
                                                     ->color('danger')
                                                     ->outlined()
                                                     ->visible(fn (Forms\Get $get, string $context) => $context === 'edit' && (bool) $get('meeting_url'))
                                                     ->requiresConfirmation()
-                                                    ->modalHeading('Delete Google Meet Link')
-                                                    ->modalDescription('Are you sure you want to delete this meeting link? This action cannot be undone.')
-                                                    ->modalSubmitActionLabel('Delete')
+                                                    ->modalHeading(__('meetinglink.notifications.delete_link_heading'))
+                                                    ->modalDescription(__('meetinglink.notifications.delete_link_description'))
+                                                    ->modalSubmitActionLabel(__('meetinglink.actions.delete'))
                                                     ->action(function (Forms\Set $set, Forms\Get $get) {
                                                         $user = Auth::user();
                                                         $token = $user?->google_calendar_token;
@@ -305,7 +323,7 @@ class MeetingLinkResource extends Resource
                                                         $set('has_unsaved_meeting', false);
 
                                                         Notification::make()
-                                                            ->title('Meeting link deleted')
+                                                            ->title(__('meetinglink.notifications.link_deleted_title'))
                                                             ->success()
                                                             ->send();
                                                     }),
@@ -317,7 +335,7 @@ class MeetingLinkResource extends Resource
                                     // -----------------------------
                                     // Meeting Resources
                                     // -----------------------------
-                                    Forms\Components\Tabs\Tab::make('Meeting Resources')
+                                    Forms\Components\Tabs\Tab::make(__('meetinglink.form.meeting_resources'))
                                         ->badge(function (Forms\Get $get) {
                                             // Count the number of resources selected
                                             $clients = $get('client_ids') ?? [];
@@ -548,7 +566,7 @@ class MeetingLinkResource extends Resource
                                     // -----------------------------
                                     // Meeting Additional Information
                                     // -----------------------------
-                                    Forms\Components\Tabs\Tab::make('Additional Information')
+                                    Forms\Components\Tabs\Tab::make(__('meetinglink.form.additional_information'))
                                         ->badge(function (Forms\Get $get) {
                                             $extraInfo = $get('extra_information') ?? [];
 
@@ -640,7 +658,7 @@ class MeetingLinkResource extends Resource
                                     // -----------------------------
                                     // Invite Users
                                     // -----------------------------
-                                    Forms\Components\Tabs\Tab::make('Invite Attendees')
+                                    Forms\Components\Tabs\Tab::make(__('meetinglink.form.invite_attendees'))
                                         ->badge(function (Forms\Get $get) {
                                             $userIds = $get('user_ids') ?? [];
 
@@ -648,7 +666,7 @@ class MeetingLinkResource extends Resource
                                         })
                                         ->schema([
                                             Forms\Components\Select::make('user_ids')
-                                                ->label('User(s)')
+                                                ->label(__('meetinglink.form.users'))
                                                 ->options(function () {
                                                     return \App\Models\User::withTrashed()
                                                         ->orderBy('username')
@@ -687,15 +705,16 @@ class MeetingLinkResource extends Resource
             ->recordAction(null)
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label('ID'),
+                    ->label(__('meetinglink.table.id')),
 
                 Tables\Columns\TextColumn::make('title')
+                    ->label(__('meetinglink.table.title'))
                     ->searchable()
                     ->limit(30)
                     ->tooltip(fn ($record) => $record->title),
 
                 Tables\Columns\TextColumn::make('meeting_platform')
-                    ->label('Platform')
+                    ->label(__('meetinglink.table.platform'))
                     ->sortable()
                     ->searchable()
                     ->badge()
@@ -707,7 +726,7 @@ class MeetingLinkResource extends Resource
                     }),
 
                 Tables\Columns\TextColumn::make('meeting_url')
-                    ->label('URL Link')
+                    ->label(__('meetinglink.table.url_link'))
                     ->searchable()
                     ->limit(40)
                     ->copyable()
@@ -716,13 +735,13 @@ class MeetingLinkResource extends Resource
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('meeting_start_time')
-                    ->label('Start Time')
+                    ->label(__('meetinglink.table.start_time'))
                     ->sortable()
                     ->dateTime('j/n/y, h:i A')
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('attendees_count')
-                    ->label('Attendees')
+                    ->label(__('meetinglink.table.attendees'))
                     ->badge()
                     ->alignCenter()
                     ->getStateUsing(function ($record) {
@@ -757,24 +776,27 @@ class MeetingLinkResource extends Resource
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created At')
+                    ->label(__('meetinglink.table.created_at'))
                     ->dateTime('j/n/y, h:i A')
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\ViewColumn::make('updated_at')
-                    ->label('Updated At (By)')
+                    ->label(__('meetinglink.table.updated_at_by'))
                     ->sortable()
                     ->view('filament.resources.meeting-link-resource.updated-by-column'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('meeting_platform')
+                    ->label(__('meetinglink.form.meeting_platform'))
+                    ->searchable()
                     ->options([
-                        'Google Meet' => 'Google Meet',
-                        'Zoom Meeting' => 'Zoom Meeting',
-                        'Teams Meeting' => 'Teams Meeting',
+                        'Google Meet' => __('meetinglink.platform.google_meet'),
+                        'Zoom Meeting' => __('meetinglink.platform.zoom_meeting'),
+                        'Teams Meeting' => __('meetinglink.platform.teams_meeting'),
                     ]),
 
-                Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\TrashedFilter::make()
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\Action::make('open_url')
@@ -788,14 +810,21 @@ class MeetingLinkResource extends Resource
 
                         return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     }),
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
+                Tables\Actions\ViewAction::make()
+                    ->label(__('meetinglink.actions.view')),
+                Tables\Actions\EditAction::make()
+                    ->label(__('meetinglink.actions.edit'))
+                    ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
-                    ActivityLogTimelineTableAction::make('Log'),
-                    Tables\Actions\DeleteAction::make(),
-                    Tables\Actions\RestoreAction::make(),
-                    Tables\Actions\ForceDeleteAction::make(),
+                    ActivityLogTimelineTableAction::make('Log')
+                        ->label(__('meetinglink.actions.activity_log')),
+                    Tables\Actions\DeleteAction::make()
+                        ->label(__('meetinglink.actions.delete')),
+                    Tables\Actions\RestoreAction::make()
+                        ->label(__('meetinglink.actions.restore')),
+                    Tables\Actions\ForceDeleteAction::make()
+                        ->label(__('meetinglink.actions.force_delete')),
                 ]),
             ])
             ->bulkActions([

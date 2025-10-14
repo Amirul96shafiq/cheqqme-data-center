@@ -40,9 +40,16 @@ class CreateMeetingLink extends CreateRecord
 
             // Show success notification
             if ($notifiedCount > 0) {
+                $attendeeWord = $notifiedCount === 1
+                    ? __('meetinglink.table.attendee')
+                    : __('meetinglink.table.attendees_plural');
+
                 Notification::make()
-                    ->title('Meeting invitations sent!')
-                    ->body("Successfully sent meeting invitations to {$notifiedCount} ".str('attendee')->plural($notifiedCount))
+                    ->title(__('meetinglink.notifications.invitations_sent_title'))
+                    ->body(__('meetinglink.notifications.invitations_sent_body', [
+                        'count' => $notifiedCount,
+                        'attendee' => $attendeeWord,
+                    ]))
                     ->success()
                     ->send();
             }

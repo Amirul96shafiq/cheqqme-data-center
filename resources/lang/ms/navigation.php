@@ -8,4 +8,6 @@ return [
         'tools' => 'Alat',
     ],
     'trello_board_suffix' => 'Papan Trello',
+    'meeting_link' => 'Pautan Mesyuarat',
+    'meeting_links' => 'Pautan Mesyuarat',
 ];

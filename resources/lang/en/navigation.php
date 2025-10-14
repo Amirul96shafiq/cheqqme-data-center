@@ -8,4 +8,6 @@ return [
         'tools' => 'Tools',
     ],
     'trello_board_suffix' => 'Trello Board',
+    'meeting_link' => 'Meeting Link',
+    'meeting_links' => 'Meeting Links',
 ];

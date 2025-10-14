@@ -62,9 +62,16 @@ class EditMeetingLink extends BaseEditRecord
 
             // Show success notification
             if ($notifiedCount > 0) {
+                $attendeeWord = $notifiedCount === 1
+                    ? __('meetinglink.table.attendee')
+                    : __('meetinglink.table.attendees_plural');
+
                 Notification::make()
-                    ->title('New meeting invitations sent!')
-                    ->body("Successfully sent meeting invitations to {$notifiedCount} new ".str('attendee')->plural($notifiedCount))
+                    ->title(__('meetinglink.notifications.new_invitations_sent_title'))
+                    ->body(__('meetinglink.notifications.new_invitations_sent_body', [
+                        'count' => $notifiedCount,
+                        'attendee' => $attendeeWord,
+                    ]))
                     ->success()
                     ->send();
             }
