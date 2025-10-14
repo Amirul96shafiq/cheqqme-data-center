@@ -222,7 +222,7 @@ class MeetingLinkResource extends Resource
                                                         ->modalHeading(__('meetinglink.notifications.regenerate_link_heading'))
                                                         ->modalDescription(__('meetinglink.notifications.regenerate_link_description'))
                                                         ->modalSubmitActionLabel(__('meetinglink.actions.regenerate_meet_link'))
-                                                        ->visible(fn (Forms\Get $get, string $context) => $context === 'edit' && (bool) $get('meeting_url'))
+                                                        ->visible(fn (Forms\Get $get) => (bool) $get('meeting_url'))
                                                         ->action(function (Forms\Set $set, Forms\Get $get) {
                                                             $user = Auth::user();
                                                             $token = $user?->google_calendar_token;
