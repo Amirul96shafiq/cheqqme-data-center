@@ -73,7 +73,7 @@ class MeetingLinkResource extends Resource
                                                         ->seconds(false)
                                                         ->native(false)
                                                         ->minutesStep(5)
-                                                        ->displayFormat('M d, Y - h:i A')
+                                                        ->displayFormat('j/n/y, h:i A')
                                                         ->default(now())
                                                         ->required()
                                                         ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Google Meet')
