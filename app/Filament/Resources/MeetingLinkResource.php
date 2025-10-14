@@ -690,9 +690,11 @@ class MeetingLinkResource extends Resource
 
                 Tables\Columns\TextColumn::make('meeting_url')
                     ->label('Meeting Link')
-                    ->limit(30)
+                    ->searchable()
+                    ->sortable()
+                    ->limit(40)
                     ->copyable()
-                    ->tooltip(fn ($record) => $record->meeting_url)
+                    ->color('primary')
                     ->url(fn ($record) => $record->meeting_url, true)
                     ->toggleable(),
 
