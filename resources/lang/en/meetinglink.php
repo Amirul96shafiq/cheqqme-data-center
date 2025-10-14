@@ -66,6 +66,7 @@ return [
         'regenerate_meet_link' => 'Regenerate Meet Link',
         'delete_meet_link' => 'Delete Meet Link',
         'open_url' => 'Open URL',
+        'create' => 'Create Meeting Link',
         'view' => 'View',
         'edit' => 'Edit',
         'delete' => 'Delete',
@@ -131,3 +132,4 @@ return [
         'title_max' => 'Title must not exceed 100 characters.',
     ],
 ];
+
