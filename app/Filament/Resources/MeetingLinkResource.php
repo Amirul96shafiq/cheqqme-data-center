@@ -701,7 +701,8 @@ class MeetingLinkResource extends Resource
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Created At')
+                    ->dateTime('j/n/y, h:i A')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
