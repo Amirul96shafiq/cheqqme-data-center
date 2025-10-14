@@ -724,7 +724,19 @@ class MeetingLinkResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('open_url')
+                    ->label('')
+                    ->icon('heroicon-o-link')
+                    ->color('primary')
+                    ->url(fn ($record) => $record->meeting_url)
+                    ->openUrlInNewTab()
+                    ->tooltip(function ($record) {
+                        $url = $record->meeting_url;
+
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
+                    }),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
