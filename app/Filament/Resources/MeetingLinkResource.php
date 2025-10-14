@@ -344,8 +344,7 @@ class MeetingLinkResource extends Resource
                                                         ->actions([
                                                             \Filament\Notifications\Actions\Action::make('connect')
                                                                 ->label('Connect Google Calendar')
-                                                                ->url('/auth/google/calendar?state=meeting_link')
-                                                                ->openUrlInNewTab(),
+                                                                ->url('/auth/google/calendar?state=meeting_link'),
                                                         ])
                                                         ->send();
 
@@ -892,21 +891,21 @@ class MeetingLinkResource extends Resource
 
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\Action::make('copy_meeting_text')
-                    ->label(__('meetinglink.actions.copy_meeting_text'))
-                    ->icon('heroicon-o-clipboard-document')
-                    ->color('primary')
-                    ->visible(fn ($record) => ! $record->trashed() && $record->meeting_url)
-                    ->action(function ($record, $livewire) {
-                        $meetingText = self::getMeetingTextForCopy($record);
+                        ->label(__('meetinglink.actions.copy_meeting_text'))
+                        ->icon('heroicon-o-clipboard-document')
+                        ->color('primary')
+                        ->visible(fn ($record) => ! $record->trashed() && $record->meeting_url)
+                        ->action(function ($record, $livewire) {
+                            $meetingText = self::getMeetingTextForCopy($record);
 
-                        // Dispatch browser event with the text to copy
-                        $livewire->dispatch('copy-to-clipboard', text: $meetingText);
+                            // Dispatch browser event with the text to copy
+                            $livewire->dispatch('copy-to-clipboard', text: $meetingText);
 
-                        Notification::make()
-                            ->title(__('meetinglink.actions.copy_meeting_text_success'))
-                            ->success()
-                            ->send();
-                    }),
+                            Notification::make()
+                                ->title(__('meetinglink.actions.copy_meeting_text_success'))
+                                ->success()
+                                ->send();
+                        }),
                     ActivityLogTimelineTableAction::make('Log')
                         ->label(__('meetinglink.actions.activity_log')),
                     Tables\Actions\DeleteAction::make()

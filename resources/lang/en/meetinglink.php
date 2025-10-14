@@ -98,6 +98,8 @@ return [
         'url_copied_body' => 'Meeting URL has been copied to clipboard',
         'google_meet_required' => 'Google Calendar connection required',
         'google_meet_required_body' => 'Please connect your Google Calendar in your profile first',
+        'google_calendar_connected' => 'Google Calendar API Connected',
+        'google_calendar_connected_body' => 'You can now generate Google Meet links for meetings.',
         'no_meeting_url' => 'No meeting link generated',
         'link_generated_title' => 'Google Meet link generated successfully!',
         'link_generated_body' => "Don't forget to save the meeting link.",
