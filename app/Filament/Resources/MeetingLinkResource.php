@@ -771,7 +771,8 @@ class MeetingLinkResource extends Resource
                     ->limit(40)
                     ->copyable()
                     ->color('primary')
-                    ->url(fn ($record) => $record->meeting_url, true)
+                    ->formatStateUsing(fn ($state) => $state ? str_replace(['https://', 'http://'], '', $state) : null)
+                    ->url(fn ($record) => $record->meeting_url)
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('meeting_start_time')
