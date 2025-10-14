@@ -753,12 +753,6 @@ class MeetingLinkResource extends Resource
                     })
                     ->toggleable(),
 
-                Tables\Columns\ViewColumn::make('createdBy.avatar')
-                    ->label('Created By')
-                    ->view('filament.resources.meeting-link-resource.created-by-avatar-column')
-                    ->alignCenter()
-                    ->toggleable(),
-
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime('j/n/y, h:i A')
