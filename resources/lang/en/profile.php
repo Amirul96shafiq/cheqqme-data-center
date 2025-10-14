@@ -1,0 +1,99 @@
+<?php
+
+return [
+    'fieldset' => [
+        'title' => [
+            'google_calendar_connection' => 'Google Calendar API',
+        ],
+    ],
+
+    // Sections
+    'section' => [
+        'profile_settings' => 'Profile Settings',
+        'profile_settings_description' => 'Configure and customize your profile settings here',
+        'connection_settings' => 'Connection Settings',
+        'connection_settings_description' => 'Manage your account connections and integrations',
+        'password_settings' => 'Password Settings',
+        'password_info_description_profile' => 'Change and update your account password here',
+    ],
+
+    // Form Fields
+    'form' => [
+        'avatar' => 'Avatar',
+        'cover_image' => 'Cover Image',
+        'cover_image_helper' => 'Upload a cover image for your profile (recommended: max 20MB)',
+        'web_app_background' => 'Stylized Background',
+        'web_app_background_helper' => 'Enable custom background images for CheQQme Data Center',
+        'background_preview' => 'Background Preview',
+        'enabled' => 'Enabled: Stylized Mode',
+        'disabled' => 'Disabled: Focus Mode',
+        'username' => 'Username',
+        'name' => 'Name',
+        'email' => 'Email',
+        'phone_number' => 'Phone Number',
+        'online_status' => 'Online Status',
+        'online_status_helper' => 'Choose your online status that will be visible to other users',
+        'change_password' => 'Change Password',
+        'generate_password' => 'Generate Strong Password',
+        'old_password' => 'Old Password',
+        'new_password' => 'New Password',
+        'password' => 'Password',
+        'confirm_password' => 'Confirm Password',
+        'password_helper' => 'Must be at least 5 characters',
+        'confirm_new_password' => 'Confirm New Password',
+        'name_helper' => 'Automatically filled with username if left empty, changeable',
+        'personalize' => 'Personalize',
+        'uploading' => 'Uploading...',
+
+        // Google Connection
+        'disconnect_google' => 'Disconnect',
+        'disconnect_google_confirm' => 'Disconnect Google Account',
+        'disconnect_google_description' => 'Are you sure you want to disconnect your Google account? You will no longer be able to sign in using Google, but you can still use your username and password.',
+        'disconnect' => 'Disconnect',
+        'cancel' => 'Cancel',
+        'google_disconnected' => 'Google Account Disconnected',
+        'google_disconnected_body' => 'Your Google account has been successfully disconnected. You can still sign in using your username and password.',
+        'google_connection' => 'Google oAuth',
+        'google_description' => 'Connect your Google account for faster login and synchronize your Google avatar with your profile.',
+        'connect_google' => 'Connect Now',
+        'google_connected' => 'Google Account Connected',
+        'google_connected_body' => 'Your Google account has been successfully connected. You can now sign in using Google.',
+        'google_connection_failed' => 'Google Connection Failed',
+        'connection_status' => 'Connection Status',
+        'connected' => 'Connected',
+        'not_connected' => 'Not Connected',
+        'connect_google_calendar' => 'Connect',
+        'disconnect_google_calendar' => 'Disconnect',
+        'disconnect_google_calendar_confirm' => 'Disconnect Google Calendar',
+        'disconnect_google_calendar_description' => 'Are you sure you want to disconnect your Google Calendar? You will no longer be able to generate Google Meet links.',
+        'google_calendar_disconnected' => 'Google Calendar API Disconnected',
+
+        // Microsoft Connection
+        'connect_microsoft' => 'Coming Soon',
+        'microsoft_coming_soon' => 'Coming Soon',
+        'microsoft_connection' => 'Microsoft oAuth',
+
+        // Spotify Connection
+        'connect_spotify' => 'Connect Now',
+        'disconnect_spotify' => 'Disconnect',
+        'disconnect_spotify_confirm' => 'Disconnect Spotify Account',
+        'disconnect_spotify_description' => 'Are you sure you want to disconnect your Spotify account? You will no longer be able to use Spotify integration features.',
+        'spotify_disconnected' => 'Spotify Account Disconnected',
+        'spotify_disconnected_body' => 'Your Spotify account has been successfully disconnected.',
+        'spotify_connection' => 'Spotify Player',
+        'spotify_description' => 'Connect your Spotify account to access music integration features and synchronize your Spotify profile.',
+        'spotify_connected' => 'Spotify Account Connected',
+        'spotify_connected_body' => 'Your Spotify account has been successfully connected. You can now use Spotify integration features.',
+        'spotify_connection_failed' => 'Spotify Connection Failed',
+    ],
+
+    // Notifications
+    'notifications' => [
+        'saved' => 'Saved',
+        'saved_body' => 'Refresh the page to view the changes.',
+        'saved_password' => 'Saved',
+        'saved_password_body' => 'Refresh the page to view the changes.',
+        'validation_error' => 'Validation Error',
+        'old_password_incorrect' => 'The old password is incorrect.',
+    ],
+];
