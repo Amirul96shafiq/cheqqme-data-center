@@ -31,6 +31,11 @@ class Profile extends EditProfile
             session()->forget('spotify_connection_success');
         }
 
+        if (session('success')) {
+            $this->showGoogleCalendarConnectionSuccess();
+            session()->forget('success');
+        }
+
         // Check if user was redirected here after successful OAuth connection
         $this->js('
             if (sessionStorage.getItem("google_connection_success") === "true") {
@@ -938,6 +943,18 @@ class Profile extends EditProfile
             ->title(__('profile.form.spotify_connection_failed'))
             ->body($message)
             ->danger()
+            ->send();
+    }
+
+    /**
+     * Show success notification for Google Calendar connection
+     */
+    public function showGoogleCalendarConnectionSuccess(): void
+    {
+        Notification::make()
+            ->title(__('profile.form.google_calendar_connected'))
+            ->body(__('profile.form.google_calendar_connected_body'))
+            ->success()
             ->send();
     }
 

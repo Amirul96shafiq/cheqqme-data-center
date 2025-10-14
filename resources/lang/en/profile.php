@@ -67,6 +67,8 @@ return [
         'disconnect_google_calendar_confirm' => 'Disconnect Google Calendar',
         'disconnect_google_calendar_description' => 'Are you sure you want to disconnect your Google Calendar? You will no longer be able to generate Google Meet links.',
         'google_calendar_disconnected' => 'Google Calendar API Disconnected',
+        'google_calendar_connected' => 'Google Calendar API Connected',
+        'google_calendar_connected_body' => 'You can now generate Google Meet links for meetings.',
 
         // Microsoft Connection
         'connect_microsoft' => 'Coming Soon',

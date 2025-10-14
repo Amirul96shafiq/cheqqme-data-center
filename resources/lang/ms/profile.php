@@ -67,6 +67,8 @@ return [
         'disconnect_google_calendar_confirm' => 'Putuskan Sambungan Google Calendar',
         'disconnect_google_calendar_description' => 'Adakah anda pasti ingin memutuskan sambungan Google Calendar anda? Anda tidak lagi boleh menghasilkan pautan Google Meet.',
         'google_calendar_disconnected' => 'API Google Calendar Diputuskan',
+        'google_calendar_connected' => 'API Google Calendar Disambungkan',
+        'google_calendar_connected_body' => 'Anda kini boleh menjana pautan Google Meet untuk mesyuarat.',
 
         // Microsoft Connection
         'connect_microsoft' => 'Akan Datang',
