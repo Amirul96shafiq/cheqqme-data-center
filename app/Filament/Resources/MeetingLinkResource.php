@@ -700,10 +700,10 @@ class MeetingLinkResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\ViewColumn::make('updated_at')
+                    ->label('Updated At (By)')
+                    ->view('filament.resources.meeting-link-resource.updated-by-column')
+                    ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('meeting_platform')
