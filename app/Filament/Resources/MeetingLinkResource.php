@@ -695,9 +695,10 @@ class MeetingLinkResource extends Resource
                     ->url(fn ($record) => $record->meeting_url, true)
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('createdBy.name')
+                Tables\Columns\ViewColumn::make('createdBy.avatar')
                     ->label('Created By')
-                    ->sortable()
+                    ->view('filament.resources.meeting-link-resource.created-by-avatar-column')
+                    ->alignCenter()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
