@@ -835,18 +835,10 @@ class MeetingLinkResource extends Resource
                     ->dateTime('j/n/y, h:i A')
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('updatedBy.name')
+                Tables\Columns\ViewColumn::make('updated_by')
                     ->label(__('meetinglink.table.updated_at_by'))
-                    ->sortable()
-                    ->formatStateUsing(function ($record) {
-                        if (! $record->updated_by || ($record->updated_at && $record->created_at && $record->updated_at->eq($record->created_at))) {
-                            return '-';
-                        }
-                        $date = $record->updated_at?->format('j/n/y, h:i A');
-                        $name = $record->updatedBy?->short_name ?? 'Unknown';
-
-                        return $name.($date ? ' • '.$date : '');
-                    }),
+                    ->view('filament.resources.meeting-link-resource.updated-by-column')
+                    ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('meeting_platform')
