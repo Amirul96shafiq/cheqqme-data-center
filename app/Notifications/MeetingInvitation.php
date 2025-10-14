@@ -49,7 +49,7 @@ class MeetingInvitation extends Notification implements ShouldQueue
 
         return FilamentNotification::make()
             ->title('Meeting Invitation')
-            ->body("You've been invited to a {$platform} meeting by {$this->invitedBy}")
+            ->body("You've been invited to a {$platform} meeting by {$this->invitedBy}. Meeting: {$meetingTitle}")
             ->icon('heroicon-o-video-camera')
             ->iconColor('success')
             ->actions([

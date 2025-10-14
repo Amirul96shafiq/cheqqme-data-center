@@ -14,6 +14,8 @@ class EditMeetingLink extends BaseEditRecord
 
     protected static string $view = 'filament.resources.meeting-link-resource.pages.edit-meeting-link';
 
+    protected ?array $originalUserIds = null;
+
     protected function getFormActions(): array
     {
         return [
@@ -21,6 +23,14 @@ class EditMeetingLink extends BaseEditRecord
             $this->getCancelFormAction(),
             Actions\DeleteAction::make(),
         ];
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // Capture the original user_ids when the form loads
+        $this->originalUserIds = $data['user_ids'] ?? [];
+
+        return $data;
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
@@ -32,12 +42,11 @@ class EditMeetingLink extends BaseEditRecord
 
     protected function afterSave(): void
     {
-        // Get the original user_ids before the update
-        $originalUserIds = $this->record->getOriginal('user_ids') ?? [];
+        // Get the new user_ids after save
         $newUserIds = $this->record->user_ids ?? [];
 
-        // Find newly added users
-        $newlyAddedUserIds = array_diff($newUserIds, $originalUserIds);
+        // Find newly added users by comparing with the original captured during form load
+        $newlyAddedUserIds = array_diff($newUserIds, $this->originalUserIds ?? []);
 
         if (! empty($newlyAddedUserIds)) {
             $invitedBy = auth()->user()->name ?? auth()->user()->username ?? 'Unknown';
