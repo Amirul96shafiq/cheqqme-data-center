@@ -687,18 +687,16 @@ class MeetingLinkResource extends Resource
             ->recordAction(null)
             ->columns([
                 Tables\Columns\TextColumn::make('id')
-                    ->label('ID')
-                    ->sortable(),
+                    ->label('ID'),
 
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()
-                    ->sortable()
                     ->limit(30)
                     ->tooltip(fn ($record) => $record->title),
 
                 Tables\Columns\TextColumn::make('meeting_platform')
+                    ->label('Platform')
                     ->searchable()
-                    ->sortable()
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Google Meet' => 'success',
@@ -708,13 +706,51 @@ class MeetingLinkResource extends Resource
                     }),
 
                 Tables\Columns\TextColumn::make('meeting_url')
-                    ->label('Meeting Link')
+                    ->label('URL Link')
                     ->searchable()
-                    ->sortable()
                     ->limit(40)
                     ->copyable()
                     ->color('primary')
                     ->url(fn ($record) => $record->meeting_url, true)
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('meeting_start_time')
+                    ->label('Start Time')
+                    ->dateTime('j/n/y, h:i A')
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('attendees_count')
+                    ->label('Attendees')
+                    ->badge()
+                    ->getStateUsing(function ($record) {
+                        $userIds = $record->user_ids;
+
+                        // Handle both array and JSON string cases
+                        if (is_array($userIds)) {
+                            $count = count($userIds);
+                        } elseif (is_string($userIds)) {
+                            $decoded = json_decode($userIds, true);
+                            $count = is_array($decoded) ? count($decoded) : 0;
+                        } else {
+                            $count = 0;
+                        }
+
+                        return $count > 0 ? $count.' '.str('attendee')->plural($count) : 'No attendees';
+                    })
+                    ->color(function ($record) {
+                        $userIds = $record->user_ids;
+
+                        // Handle both array and JSON string cases for color
+                        if (is_array($userIds)) {
+                            return count($userIds) > 0 ? 'success' : 'gray';
+                        } elseif (is_string($userIds)) {
+                            $decoded = json_decode($userIds, true);
+
+                            return is_array($decoded) && count($decoded) > 0 ? 'success' : 'gray';
+                        }
+
+                        return 'gray';
+                    })
                     ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('createdBy.avatar')
@@ -726,13 +762,11 @@ class MeetingLinkResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime('j/n/y, h:i A')
-                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label('Updated At (By)')
-                    ->view('filament.resources.meeting-link-resource.updated-by-column')
-                    ->sortable(),
+                    ->view('filament.resources.meeting-link-resource.updated-by-column'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('meeting_platform')
