@@ -26,6 +26,23 @@ class MeetingLinkResource extends Resource
 
     protected static ?int $navigationSort = 5;
 
+    protected static ?string $recordTitleAttribute = 'title';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'meeting_url', 'meeting_platform'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            'Platform' => $record->meeting_platform,
+            'Created By' => optional($record->createdBy)->name,
+            'Meeting Start Time' => $record->meeting_start_time,
+            'Meeting URL' => $record->meeting_url,
+        ];
+    }
+
     protected static function generateMeetingTitle(string $platform, string $startTime, int $duration): string
     {
         $date = \Carbon\Carbon::parse($startTime);
@@ -680,6 +697,8 @@ class MeetingLinkResource extends Resource
                     ->tooltip(fn ($record) => $record->title),
 
                 Tables\Columns\TextColumn::make('meeting_platform')
+                    ->searchable()
+                    ->sortable()
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Google Meet' => 'success',
