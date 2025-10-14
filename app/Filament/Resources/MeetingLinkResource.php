@@ -672,7 +672,7 @@ class MeetingLinkResource extends Resource
                                         ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
                                 ])
                                 ->collapsible()
-                                ->collapsed(false),
+                                ->collapsed(),
                         ])
                         ->columnSpan([
                             'default' => 1,
