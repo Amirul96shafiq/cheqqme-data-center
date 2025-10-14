@@ -268,7 +268,9 @@ class TrelloBoardResource extends Resource
                     ->sortable()
                     ->limit(40)
                     ->copyable()
-                    ->color('primary'),
+                    ->color('primary')
+                    ->url(fn ($record) => $record->url)
+                    ->toggleable(),
 
                 Tables\Columns\IconColumn::make('show_on_boards')
                     ->label(__('trelloboard.table.show_on_boards'))
