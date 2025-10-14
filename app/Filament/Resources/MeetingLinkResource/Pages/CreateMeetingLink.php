@@ -13,6 +13,32 @@ class CreateMeetingLink extends CreateRecord
 
     protected static string $view = 'filament.resources.meeting-link-resource.pages.create-meeting-link';
 
+    public function mount(): void
+    {
+        parent::mount();
+
+        // Check for Google Calendar connection flash messages
+        if (session('success')) {
+            Notification::make()
+                ->title(__('meetinglink.notifications.google_calendar_connected'))
+                ->body(__('meetinglink.notifications.google_calendar_connected_body'))
+                ->success()
+                ->send();
+
+            session()->forget('success');
+        }
+
+        if (session('error')) {
+            Notification::make()
+                ->title(__('meetinglink.notifications.google_calendar_connection_failed'))
+                ->body(session('error'))
+                ->danger()
+                ->send();
+
+            session()->forget('error');
+        }
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['created_by'] = auth()->id();

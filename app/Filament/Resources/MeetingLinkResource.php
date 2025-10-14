@@ -251,8 +251,7 @@ class MeetingLinkResource extends Resource
                                                                     ->actions([
                                                                         \Filament\Notifications\Actions\Action::make('connect')
                                                                             ->label('Connect Google Calendar')
-                                                                            ->url('/auth/google/calendar?state=meeting_link')
-                                                                            ->openUrlInNewTab(),
+                                                                            ->url('/auth/google/calendar?state=meeting_link'),
                                                                     ])
                                                                     ->send();
 

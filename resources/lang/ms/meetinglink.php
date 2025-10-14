@@ -100,6 +100,7 @@ return [
         'google_meet_required_body' => 'Sila sambungkan Google Calendar anda dalam profil terlebih dahulu',
         'google_calendar_connected' => 'API Google Calendar Disambungkan',
         'google_calendar_connected_body' => 'Anda kini boleh menjana pautan Google Meet untuk mesyuarat.',
+        'google_calendar_connection_failed' => 'Sambungan Google Calendar Gagal',
         'no_meeting_url' => 'Belum jana pautan mesyuarat',
         'link_generated_title' => 'Pautan Google Meet berjaya dijana!',
         'link_generated_body' => 'Jangan lupa untuk simpan pautan mesyuarat.',

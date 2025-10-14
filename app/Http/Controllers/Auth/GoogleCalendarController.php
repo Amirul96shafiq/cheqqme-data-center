@@ -25,6 +25,12 @@ class GoogleCalendarController extends Controller
         $state = $request->get('state', 'meeting_link');
         session(['google_calendar_state' => $state]);
 
+        // Store the referring URL to redirect back after OAuth
+        $referrer = $request->headers->get('referer');
+        if ($referrer) {
+            session(['google_calendar_referrer' => $referrer]);
+        }
+
         $authUrl = $this->googleMeetService->getAuthUrl($state);
 
         return redirect($authUrl);
@@ -47,7 +53,10 @@ class GoogleCalendarController extends Controller
             ]);
 
             if (! $code) {
-                return $this->handleError('Authorization code not received');
+                $referrer = session('google_calendar_referrer');
+                session()->forget('google_calendar_referrer');
+
+                return $this->handleError('Authorization code not received', $referrer);
             }
 
             // Exchange code for token
@@ -60,7 +69,10 @@ class GoogleCalendarController extends Controller
             ]);
 
             if (! $token) {
-                return $this->handleError('Failed to exchange authorization code for token');
+                $referrer = session('google_calendar_referrer');
+                session()->forget('google_calendar_referrer');
+
+                return $this->handleError('Failed to exchange authorization code for token', $referrer);
             }
 
             // Store token in user's session or database
@@ -88,8 +100,12 @@ class GoogleCalendarController extends Controller
                 'state' => $state,
             ]);
 
+            // Clear the referrer from session
+            $referrer = session('google_calendar_referrer');
+            session()->forget('google_calendar_referrer');
+
             // Redirect based on state
-            return $this->redirectAfterAuth($state);
+            return $this->redirectAfterAuth($state, $referrer);
 
         } catch (\Exception $e) {
             Log::error('Google Calendar OAuth callback failed', [
@@ -97,7 +113,11 @@ class GoogleCalendarController extends Controller
                 'user_id' => Auth::id(),
             ]);
 
-            return $this->handleError('Authentication failed: '.$e->getMessage());
+            // Get referrer before clearing
+            $referrer = session('google_calendar_referrer');
+            session()->forget('google_calendar_referrer');
+
+            return $this->handleError('Authentication failed: '.$e->getMessage(), $referrer);
         }
     }
 
@@ -179,25 +199,29 @@ class GoogleCalendarController extends Controller
     /**
      * Handle authentication errors
      */
-    private function handleError(string $message)
+    private function handleError(string $message, ?string $referrer = null)
     {
         Log::error('Google Calendar authentication error: '.$message, [
             'user_id' => Auth::id(),
         ]);
 
-        // Redirect to meeting links with error
-        return redirect()->route('filament.admin.resources.meeting-links.index')
+        // Redirect back to referrer if available, otherwise to meeting links list
+        $redirectUrl = $referrer ?: route('filament.admin.resources.meeting-links.index');
+
+        return redirect($redirectUrl)
             ->with('error', 'Google Calendar authentication failed: '.$message);
     }
 
     /**
      * Redirect after successful authentication
      */
-    private function redirectAfterAuth(string $state)
+    private function redirectAfterAuth(string $state, ?string $referrer = null)
     {
         switch ($state) {
             case 'meeting_link':
-                return redirect()->route('filament.admin.resources.meeting-links.index')
+                $redirectUrl = $referrer ?: route('filament.admin.resources.meeting-links.index');
+
+                return redirect($redirectUrl)
                     ->with('success', 'Google Calendar connected successfully! You can now generate Google Meet links.');
 
             case 'profile':

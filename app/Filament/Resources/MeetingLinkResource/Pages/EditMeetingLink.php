@@ -16,6 +16,32 @@ class EditMeetingLink extends BaseEditRecord
 
     protected ?array $originalUserIds = null;
 
+    public function mount(int | string $record): void
+    {
+        parent::mount($record);
+
+        // Check for Google Calendar connection flash messages
+        if (session('success')) {
+            Notification::make()
+                ->title(__('meetinglink.notifications.google_calendar_connected'))
+                ->body(__('meetinglink.notifications.google_calendar_connected_body'))
+                ->success()
+                ->send();
+
+            session()->forget('success');
+        }
+
+        if (session('error')) {
+            Notification::make()
+                ->title(__('meetinglink.notifications.google_calendar_connection_failed'))
+                ->body(session('error'))
+                ->danger()
+                ->send();
+
+            session()->forget('error');
+        }
+    }
+
     protected function getFormActions(): array
     {
         return [
