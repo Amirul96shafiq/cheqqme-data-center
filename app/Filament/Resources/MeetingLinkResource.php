@@ -805,11 +805,11 @@ class MeetingLinkResource extends Resource
 
                         // Handle both array and JSON string cases for color
                         if (is_array($userIds)) {
-                            return count($userIds) > 0 ? 'success' : 'gray';
+                            return count($userIds) > 0 ? 'primary' : 'gray';
                         } elseif (is_string($userIds)) {
                             $decoded = json_decode($userIds, true);
 
-                            return is_array($decoded) && count($decoded) > 0 ? 'success' : 'gray';
+                            return is_array($decoded) && count($decoded) > 0 ? 'primary' : 'gray';
                         }
 
                         return 'gray';
