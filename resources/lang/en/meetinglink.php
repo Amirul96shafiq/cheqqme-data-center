@@ -61,6 +61,11 @@ return [
         'attendees_plural' => 'attendees',
     ],
 
+    'filters' => [
+        'start_date_from' => 'Start Date From',
+        'start_date_until' => 'Start Date Until',
+    ],
+
     'actions' => [
         'generate_meet_link' => 'Generate Meet Link',
         'regenerate_meet_link' => 'Regenerate Meet Link',

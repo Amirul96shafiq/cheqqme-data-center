@@ -61,6 +61,11 @@ return [
         'attendees_plural' => 'peserta',
     ],
 
+    'filters' => [
+        'start_date_from' => 'Tarikh Mula Dari',
+        'start_date_until' => 'Tarikh Mula Hingga',
+    ],
+
     'actions' => [
         'generate_meet_link' => 'Jana Pautan Mesyuarat',
         'regenerate_meet_link' => 'Jana Semula Pautan',

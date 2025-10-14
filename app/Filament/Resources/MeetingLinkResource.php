@@ -9,6 +9,8 @@ use App\Models\MeetingLink;
 use App\Services\GoogleMeetService;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -780,10 +782,18 @@ class MeetingLinkResource extends Resource
                     ->dateTime('j/n/y, h:i A')
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\ViewColumn::make('updated_at')
+                Tables\Columns\TextColumn::make('updatedBy.name')
                     ->label(__('meetinglink.table.updated_at_by'))
                     ->sortable()
-                    ->view('filament.resources.meeting-link-resource.updated-by-column'),
+                    ->formatStateUsing(function ($record) {
+                        if (! $record->updated_by || ($record->updated_at && $record->created_at && $record->updated_at->eq($record->created_at))) {
+                            return '-';
+                        }
+                        $date = $record->updated_at?->format('j/n/y, h:i A');
+                        $name = $record->updatedBy?->short_name ?? 'Unknown';
+
+                        return $name.($date ? ' • '.$date : '');
+                    }),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('meeting_platform')
@@ -795,6 +805,29 @@ class MeetingLinkResource extends Resource
                         'Teams Meeting' => __('meetinglink.platform.teams_meeting'),
                     ]),
 
+                Tables\Filters\Filter::make('meeting_start_time')
+                    ->form([
+                        Forms\Components\DatePicker::make('start_date_from')
+                            ->label(__('meetinglink.filters.start_date_from'))
+                            ->native(false)
+                            ->displayFormat('j/n/y'),
+                        Forms\Components\DatePicker::make('start_date_until')
+                            ->label(__('meetinglink.filters.start_date_until'))
+                            ->native(false)
+                            ->displayFormat('j/n/y'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when(
+                                $data['start_date_from'] ?? null,
+                                fn ($query, $date) => $query->whereDate('meeting_start_time', '>=', $date)
+                            )
+                            ->when(
+                                $data['start_date_until'] ?? null,
+                                fn ($query, $date) => $query->whereDate('meeting_start_time', '<=', $date)
+                            );
+                    }),
+
                 Tables\Filters\TrashedFilter::make()
                     ->searchable(),
             ])
@@ -805,11 +838,7 @@ class MeetingLinkResource extends Resource
                     ->color('primary')
                     ->url(fn ($record) => $record->meeting_url)
                     ->openUrlInNewTab()
-                    ->tooltip(function ($record) {
-                        $url = $record->meeting_url;
-
-                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
-                    }),
+                    ->visible(fn ($record) => ! empty($record->meeting_url)),
                 Tables\Actions\ViewAction::make()
                     ->label(__('meetinglink.actions.view')),
                 Tables\Actions\EditAction::make()
@@ -835,6 +864,74 @@ class MeetingLinkResource extends Resource
                 ]),
             ])
             ->defaultSort('updated_at', 'desc');
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make(__('meetinglink.infolist.meeting_details'))
+                    ->schema([
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('title')
+                                    ->label(__('meetinglink.infolist.meeting_title')),
+                                Infolists\Components\TextEntry::make('meeting_platform')
+                                    ->label(__('meetinglink.infolist.platform'))
+                                    ->badge()
+                                    ->color(fn (string $state): string => match ($state) {
+                                        'Google Meet' => 'success',
+                                        'Zoom Meeting' => 'info',
+                                        'Teams Meeting' => 'warning',
+                                        default => 'gray',
+                                    }),
+                            ]),
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('meeting_start_time')
+                                    ->label(__('meetinglink.infolist.start_time'))
+                                    ->dateTime('j/n/y - h:i A'),
+                                Infolists\Components\TextEntry::make('meeting_duration')
+                                    ->label(__('meetinglink.infolist.duration'))
+                                    ->formatStateUsing(fn (int $state): string => match ($state) {
+                                        30 => __('meetinglink.duration.30_minutes'),
+                                        60 => __('meetinglink.duration.1_hour'),
+                                        90 => __('meetinglink.duration.1_hour_30_minutes'),
+                                        120 => __('meetinglink.duration.2_hours'),
+                                        default => $state.' minutes'
+                                    }),
+                            ]),
+                        Infolists\Components\TextEntry::make('meeting_url')
+                            ->label(__('meetinglink.infolist.meeting_url'))
+                            ->copyable()
+                            ->url(fn ($record) => $record->meeting_url)
+                            ->openUrlInNewTab()
+                            ->placeholder(__('meetinglink.infolist.no_meeting_url')),
+                    ]),
+
+                Infolists\Components\Section::make(__('meetinglink.infolist.additional_information'))
+                    ->schema([
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('createdBy.name')
+                                    ->label(__('meetinglink.infolist.created_by'))
+                                    ->placeholder(__('meetinglink.infolist.unknown')),
+                                Infolists\Components\TextEntry::make('created_at')
+                                    ->label(__('meetinglink.infolist.created_at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('updatedBy.name')
+                                    ->label(__('meetinglink.infolist.updated_by'))
+                                    ->placeholder('-'),
+                                Infolists\Components\TextEntry::make('updated_at')
+                                    ->label(__('meetinglink.infolist.updated_at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                    ])
+                    ->collapsible(),
+            ]);
     }
 
     public static function getRelations(): array
