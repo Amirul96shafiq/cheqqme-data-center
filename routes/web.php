@@ -432,18 +432,18 @@ Route::middleware('auth')->group(function () {
     })->name('profile.set-online-on-return');
 
     // Debug endpoint to view tab close logs
-    Route::get('/admin/profile/debug-tab-logs', function () {
-        return response()->json([
-            'success' => true,
-            'message' => 'Check browser console for localStorage.getItem("tabCloseLogs") to view persistent logs',
-            'instructions' => [
-                '1. Open browser console (F12)',
-                '2. Run: localStorage.getItem("tabCloseLogs")',
-                '3. Copy the JSON and format it for readability',
-                '4. Look for beforeunload events and their data',
-            ],
-        ]);
-    })->name('profile.debug-tab-logs');
+    // Route::get('/admin/profile/debug-tab-logs', function () {
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Check browser console for localStorage.getItem("tabCloseLogs") to view persistent logs',
+    //         'instructions' => [
+    //             '1. Open browser console (F12)',
+    //             '2. Run: localStorage.getItem("tabCloseLogs")',
+    //             '3. Copy the JSON and format it for readability',
+    //             '4. Look for beforeunload events and their data',
+    //         ],
+    //     ]);
+    // })->name('profile.debug-tab-logs');
 
     // Focused comment deep link: redirect to Task edit while preserving focus comment via query param
     Route::get('/admin/tasks/{task}/edit/comments/{comment}', function (\App\Models\Task $task, \App\Models\Comment $comment) {
