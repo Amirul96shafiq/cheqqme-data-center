@@ -262,7 +262,7 @@ class MeetingLinkResource extends Resource
                                                     ->icon('heroicon-o-trash')
                                                     ->color('danger')
                                                     ->outlined()
-                                                    ->visible(fn (Forms\Get $get) => (bool) $get('meeting_url'))
+                                                    ->visible(fn (Forms\Get $get, string $context) => $context === 'edit' && (bool) $get('meeting_url'))
                                                     ->requiresConfirmation()
                                                     ->modalHeading('Delete Google Meet Link')
                                                     ->modalDescription('Are you sure you want to delete this meeting link? This action cannot be undone.')
@@ -735,7 +735,6 @@ class MeetingLinkResource extends Resource
 
                         return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     }),
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
