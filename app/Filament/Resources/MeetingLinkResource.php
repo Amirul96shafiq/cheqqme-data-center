@@ -696,6 +696,7 @@ class MeetingLinkResource extends Resource
 
                 Tables\Columns\TextColumn::make('meeting_platform')
                     ->label('Platform')
+                    ->sortable()
                     ->searchable()
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -716,12 +717,14 @@ class MeetingLinkResource extends Resource
 
                 Tables\Columns\TextColumn::make('meeting_start_time')
                     ->label('Start Time')
+                    ->sortable()
                     ->dateTime('j/n/y, h:i A')
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('attendees_count')
                     ->label('Attendees')
                     ->badge()
+                    ->alignCenter()
                     ->getStateUsing(function ($record) {
                         $userIds = $record->user_ids;
 
@@ -735,7 +738,7 @@ class MeetingLinkResource extends Resource
                             $count = 0;
                         }
 
-                        return $count > 0 ? $count.' '.str('attendee')->plural($count) : 'No attendees';
+                        return $count;
                     })
                     ->color(function ($record) {
                         $userIds = $record->user_ids;
@@ -760,6 +763,7 @@ class MeetingLinkResource extends Resource
 
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label('Updated At (By)')
+                    ->sortable()
                     ->view('filament.resources.meeting-link-resource.updated-by-column'),
             ])
             ->filters([
@@ -784,6 +788,7 @@ class MeetingLinkResource extends Resource
 
                         return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     }),
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
