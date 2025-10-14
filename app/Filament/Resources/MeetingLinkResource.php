@@ -79,6 +79,22 @@ class MeetingLinkResource extends Resource
         return "CheQQMeeting - {$platform} - {$formattedDate} - {$durationText}";
     }
 
+    protected static function getMeetingTextForCopy($record): string
+    {
+        $meetingUrl = $record->meeting_url ?? 'TBD';
+        $platform = $record->meeting_platform ?? 'TBD';
+        $startTime = $record->meeting_start_time ? $record->meeting_start_time->format('j/n/y, h:i A') : 'TBD';
+        $duration = $record->meeting_duration ? match ($record->meeting_duration) {
+            30 => '30 minutes',
+            60 => '1 hour',
+            90 => '1 hour 30 minutes',
+            120 => '2 hours',
+            default => $record->meeting_duration.' minutes'
+        } : 'TBD';
+
+        return "Good day everyone ✨,\n\nHere's the meeting link for the upcoming session yea!\n\n👉 {$meetingUrl}\n\n💻 Platform: {$platform}\n📅 Date & Time: {$startTime} GMT+8\n⏰ Duration: {$duration}\n\nCan't wait to catch up with you all soon! ☺️";
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -883,6 +899,22 @@ class MeetingLinkResource extends Resource
                     ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('copy_meeting_text')
+                    ->label(__('meetinglink.actions.copy_meeting_text'))
+                    ->icon('heroicon-o-clipboard-document')
+                    ->color('primary')
+                    ->visible(fn ($record) => ! $record->trashed() && $record->meeting_url)
+                    ->action(function ($record, $livewire) {
+                        $meetingText = self::getMeetingTextForCopy($record);
+
+                        // Dispatch browser event with the text to copy
+                        $livewire->dispatch('copy-to-clipboard', text: $meetingText);
+
+                        Notification::make()
+                            ->title(__('meetinglink.actions.copy_meeting_text_success'))
+                            ->success()
+                            ->send();
+                    }),
                     ActivityLogTimelineTableAction::make('Log')
                         ->label(__('meetinglink.actions.activity_log')),
                     Tables\Actions\DeleteAction::make()

@@ -70,6 +70,11 @@ return [
         'generate_meet_link' => 'Jana Pautan Mesyuarat',
         'regenerate_meet_link' => 'Jana Semula Pautan',
         'delete_meet_link' => 'Padam Pautan Mesyuarat',
+        'copy_meeting_text' => 'Salin Teks Mesyuarat',
+        'copy_meeting_text_success' => 'Teks jemputan mesyuarat disalin ke papan keratan!',
+        'copy_meeting_text_body' => 'Anda boleh menampalnya di mana-mana',
+        'copy_to_clipboard' => 'Salin ke Papan Keratan',
+        'cancel' => 'Batal',
         'open_url' => 'Buka URL',
         'create' => 'Tambah Pautan Mesyuarat',
         'view' => 'Papar',
@@ -141,4 +146,3 @@ return [
         'title_max' => 'Tajuk tidak boleh melebihi 100 aksara.',
     ],
 ];
-

@@ -1,12 +1,30 @@
 // Listen for copy-to-clipboard event
 document.addEventListener("livewire:init", () => {
     Livewire.on("copy-to-clipboard", (event) => {
+        // console.log("Copy event received:", event);
         const text = event.text;
 
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).catch((err) => {
-                console.error("Failed to copy:", err);
-            });
+        if (navigator.clipboard && text) {
+            navigator.clipboard
+                .writeText(text)
+                .then(() => {
+                    // console.log("Text copied successfully:", text);
+                })
+                .catch((err) => {
+                    console.error("Failed to copy:", err);
+                    // Fallback method
+                    const textarea = document.createElement("textarea");
+                    textarea.value = text;
+                    textarea.style.position = "fixed";
+                    textarea.style.opacity = "0";
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(textarea);
+                    // console.log("Text copied using fallback method");
+                });
+        } else {
+            console.error("No clipboard API or no text to copy");
         }
     });
 });
@@ -24,5 +42,3 @@ window.addEventListener("beforeunload", function (e) {
         return e.returnValue;
     }
 });
-
-
