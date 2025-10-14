@@ -4,7 +4,9 @@ namespace App\Filament\Resources\MeetingLinkResource\Pages;
 
 use App\Filament\Pages\Base\BaseEditRecord;
 use App\Filament\Resources\MeetingLinkResource;
+use App\Notifications\MeetingInvitation;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 
 class EditMeetingLink extends BaseEditRecord
 {
@@ -26,5 +28,37 @@ class EditMeetingLink extends BaseEditRecord
         $data['updated_by'] = auth()->id();
 
         return $data;
+    }
+
+    protected function afterSave(): void
+    {
+        // Get the original user_ids before the update
+        $originalUserIds = $this->record->getOriginal('user_ids') ?? [];
+        $newUserIds = $this->record->user_ids ?? [];
+
+        // Find newly added users
+        $newlyAddedUserIds = array_diff($newUserIds, $originalUserIds);
+
+        if (! empty($newlyAddedUserIds)) {
+            $invitedBy = auth()->user()->name ?? auth()->user()->username ?? 'Unknown';
+            $notifiedCount = 0;
+
+            foreach ($newlyAddedUserIds as $userId) {
+                $user = \App\Models\User::find($userId);
+                if ($user) {
+                    $user->notify(new MeetingInvitation($this->record, $invitedBy));
+                    $notifiedCount++;
+                }
+            }
+
+            // Show success notification
+            if ($notifiedCount > 0) {
+                Notification::make()
+                    ->title('New meeting invitations sent!')
+                    ->body("Successfully sent meeting invitations to {$notifiedCount} new ".str('attendee')->plural($notifiedCount))
+                    ->success()
+                    ->send();
+            }
+        }
     }
 }

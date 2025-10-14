@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\MeetingLinkResource\Pages;
 
 use App\Filament\Resources\MeetingLinkResource;
+use App\Notifications\MeetingInvitation;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateMeetingLink extends CreateRecord
@@ -17,6 +19,34 @@ class CreateMeetingLink extends CreateRecord
         $data['updated_by'] = auth()->id();
 
         return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        // Send notifications to invited users
+        $userIds = $this->record->user_ids ?? [];
+
+        if (! empty($userIds)) {
+            $invitedBy = auth()->user()->name ?? auth()->user()->username ?? 'Unknown';
+            $notifiedCount = 0;
+
+            foreach ($userIds as $userId) {
+                $user = \App\Models\User::find($userId);
+                if ($user) {
+                    $user->notify(new MeetingInvitation($this->record, $invitedBy));
+                    $notifiedCount++;
+                }
+            }
+
+            // Show success notification
+            if ($notifiedCount > 0) {
+                Notification::make()
+                    ->title('Meeting invitations sent!')
+                    ->body("Successfully sent meeting invitations to {$notifiedCount} ".str('attendee')->plural($notifiedCount))
+                    ->success()
+                    ->send();
+            }
+        }
     }
 
     protected function getRedirectUrl(): string
