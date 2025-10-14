@@ -103,6 +103,10 @@ return [
         'delete_link_heading' => 'Padam Pautan Google Meet',
         'delete_link_description' => 'Adakah anda pasti mahu memadam pautan mesyuarat ini? Tindakan ini tidak boleh dibatalkan.',
         'link_deleted_title' => 'Pautan mesyuarat dipadam',
+        'regenerate_link_heading' => 'Jana Semula Pautan Google Meet',
+        'regenerate_link_description' => 'Ini akan menggantikan pautan mesyuarat lama dan mencipta pautan baharu dengan butiran terkini.',
+        'link_regenerated_title' => 'Pautan Google Meet berjaya dijana semula!',
+        'link_regenerated_body' => 'Jangan lupa untuk simpan pautan mesyuarat.',
     ],
 
     'infolist' => [

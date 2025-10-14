@@ -213,6 +213,90 @@ class MeetingLinkResource extends Resource
                                                 ->disabled()
                                                 ->dehydrated()
                                                 ->placeholder(__('meetinglink.notifications.no_meeting_url'))
+                                                ->prefixAction(
+                                                    Forms\Components\Actions\Action::make('regenerate_meet_link')
+                                                        ->label(__('meetinglink.actions.regenerate_meet_link'))
+                                                        ->icon('heroicon-o-arrow-path')
+                                                        ->color('warning')
+                                                        ->requiresConfirmation()
+                                                        ->modalHeading(__('meetinglink.notifications.regenerate_link_heading'))
+                                                        ->modalDescription(__('meetinglink.notifications.regenerate_link_description'))
+                                                        ->modalSubmitActionLabel(__('meetinglink.actions.regenerate_meet_link'))
+                                                        ->visible(fn (Forms\Get $get, string $context) => $context === 'edit' && (bool) $get('meeting_url'))
+                                                        ->action(function (Forms\Set $set, Forms\Get $get) {
+                                                            $user = Auth::user();
+                                                            $token = $user?->google_calendar_token;
+
+                                                            if (! $token) {
+                                                                Notification::make()
+                                                                    ->title(__('meetinglink.notifications.google_meet_required'))
+                                                                    ->body(__('meetinglink.notifications.google_meet_required_body'))
+                                                                    ->warning()
+                                                                    ->actions([
+                                                                        \Filament\Notifications\Actions\Action::make('connect')
+                                                                            ->label('Connect Google Calendar')
+                                                                            ->url('/auth/google/calendar?state=meeting_link')
+                                                                            ->openUrlInNewTab(),
+                                                                    ])
+                                                                    ->send();
+
+                                                                return;
+                                                            }
+
+                                                            try {
+                                                                $googleMeetService = app(GoogleMeetService::class);
+                                                                $googleMeetService->setAccessToken(json_decode($token, true));
+
+                                                                // Delete old meeting
+                                                                $oldMeetingId = $get('meeting_id');
+                                                                if ($oldMeetingId) {
+                                                                    try {
+                                                                        $googleMeetService->deleteMeetEvent($oldMeetingId);
+                                                                    } catch (\Exception $e) {
+                                                                        \Log::error('Failed to delete old Google Meet event: '.$e->getMessage());
+                                                                    }
+                                                                }
+
+                                                                // Generate new meeting with updated details
+                                                                $title = $get('title') ?: 'Meeting';
+                                                                $startTime = $get('meeting_start_time');
+                                                                $duration = (int) $get('meeting_duration') ?: 60;
+
+                                                                $endTime = $startTime
+                                                                    ? \Carbon\Carbon::parse($startTime)->addMinutes($duration)->toIso8601String()
+                                                                    : null;
+                                                                $startTime = $startTime
+                                                                    ? \Carbon\Carbon::parse($startTime)->toIso8601String()
+                                                                    : null;
+
+                                                                $result = $googleMeetService->generateMeetLink($title, $startTime, $endTime);
+
+                                                                if ($result) {
+                                                                    $set('meeting_url', $result['meeting_url']);
+                                                                    $set('meeting_id', $result['meeting_id']);
+                                                                    $set('has_unsaved_meeting', true);
+
+                                                                    Notification::make()
+                                                                        ->title(__('meetinglink.notifications.link_regenerated_title'))
+                                                                        ->body(__('meetinglink.notifications.link_regenerated_body'))
+                                                                        ->success()
+                                                                        ->send();
+                                                                } else {
+                                                                    Notification::make()
+                                                                        ->title(__('meetinglink.notifications.link_failed_title'))
+                                                                        ->body(__('meetinglink.notifications.link_failed_body'))
+                                                                        ->danger()
+                                                                        ->send();
+                                                                }
+                                                            } catch (\Exception $e) {
+                                                                Notification::make()
+                                                                    ->title(__('meetinglink.notifications.link_error_title'))
+                                                                    ->body(__('meetinglink.notifications.link_error_body'))
+                                                                    ->danger()
+                                                                    ->send();
+                                                            }
+                                                        })
+                                                )
                                                 ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Google Meet')
                                                 ->columnSpan(2),
                                         ]),

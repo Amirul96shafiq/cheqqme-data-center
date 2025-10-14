@@ -103,6 +103,10 @@ return [
         'delete_link_heading' => 'Delete Google Meet Link',
         'delete_link_description' => 'Are you sure you want to delete this meeting link? This action cannot be undone.',
         'link_deleted_title' => 'Meeting link deleted',
+        'regenerate_link_heading' => 'Regenerate Google Meet Link',
+        'regenerate_link_description' => 'This will replace the old meeting link and create a new one with the updated details.',
+        'link_regenerated_title' => 'Google Meet link regenerated successfully!',
+        'link_regenerated_body' => "Don't forget to save the meeting link.",
     ],
 
     'infolist' => [
@@ -137,4 +141,3 @@ return [
         'title_max' => 'Title must not exceed 100 characters.',
     ],
 ];
-
