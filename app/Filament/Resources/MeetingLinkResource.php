@@ -179,6 +179,7 @@ class MeetingLinkResource extends Resource
 
                                                     Forms\Components\Select::make('meeting_duration')
                                                         ->label(__('meetinglink.form.meeting_duration'))
+                                                        ->searchable()
                                                         ->options([
                                                             30 => __('meetinglink.duration.30_minutes'),
                                                             60 => __('meetinglink.duration.1_hour'),
