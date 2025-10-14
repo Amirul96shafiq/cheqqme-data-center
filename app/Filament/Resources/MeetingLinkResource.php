@@ -640,7 +640,7 @@ class MeetingLinkResource extends Resource
                                     // -----------------------------
                                     // Invite Users
                                     // -----------------------------
-                                    Forms\Components\Tabs\Tab::make('Invite')
+                                    Forms\Components\Tabs\Tab::make('Invite Attendees')
                                         ->badge(function (Forms\Get $get) {
                                             $userIds = $get('user_ids') ?? [];
 
