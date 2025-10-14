@@ -664,6 +664,9 @@ class MeetingLinkResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            // Disable record URL and record action for all records
+            ->recordUrl(null)
+            ->recordAction(null)
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('ID')
@@ -671,7 +674,9 @@ class MeetingLinkResource extends Resource
 
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(30)
+                    ->tooltip(fn ($record) => $record->title),
 
                 Tables\Columns\TextColumn::make('meeting_platform')
                     ->badge()
@@ -725,7 +730,8 @@ class MeetingLinkResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('updated_at', 'desc');
     }
 
     public static function getRelations(): array
