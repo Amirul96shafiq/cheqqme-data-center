@@ -308,7 +308,8 @@ class ProjectResource extends Resource
                     ->color(function ($record) {
                         return $record->client_id ? 'primary' : 'default';
                     })
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    ->toggleable(),
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -327,7 +328,8 @@ class ProjectResource extends Resource
                 TextColumn::make('document_count')
                     ->label(__('project.table.document_count'))
                     ->badge()
-                    ->alignCenter(),
+                    ->alignCenter()
+                    ->toggleable(),
                 TextColumn::make(__('created_at'))
                     ->label(__('project.table.created_at'))
                     ->dateTime('j/n/y, h:i A')

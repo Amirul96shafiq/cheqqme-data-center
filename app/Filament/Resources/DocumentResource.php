@@ -379,7 +379,8 @@ class DocumentResource extends Resource
                     ->color(function ($record) {
                         return $record->project_id ? 'primary' : 'default';
                     })
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))
                     ->dateTime('j/n/y, h:i A')->sortable(),

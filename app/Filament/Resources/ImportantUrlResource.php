@@ -331,7 +331,8 @@ class ImportantUrlResource extends Resource
                     ->color(function ($record) {
                         return $record->client_id ? 'primary' : 'default';
                     })
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    ->toggleable(),
 
                 TextColumn::make('project.title')
                     ->label(__('importanturl.table.project'))
@@ -354,7 +355,8 @@ class ImportantUrlResource extends Resource
                     ->color(function ($record) {
                         return $record->project_id ? 'primary' : 'default';
                     })
-                    ->openUrlInNewTab(),
+                    ->openUrlInNewTab()
+                    ->toggleable(),
 
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))

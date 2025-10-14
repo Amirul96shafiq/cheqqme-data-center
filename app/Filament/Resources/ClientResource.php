@@ -343,15 +343,18 @@ class ClientResource extends Resource
                     }),
                 TextColumn::make('pic_contact_number')
                     ->label(__('client.table.pic_contact_number'))
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 TextColumn::make('project_count')
                     ->label(__('client.table.project_count'))
                     ->badge()
-                    ->alignCenter(),
+                    ->alignCenter()
+                    ->toggleable(),
                 TextColumn::make('important_url_count')
                     ->label(__('client.table.important_url_count'))
                     ->badge()
-                    ->alignCenter(),
+                    ->alignCenter()
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->label(__('client.table.created_at'))
                     ->dateTime('j/n/y, h:i A')
