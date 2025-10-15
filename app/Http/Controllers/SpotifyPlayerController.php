@@ -41,6 +41,39 @@ class SpotifyPlayerController extends Controller
     }
 
     /**
+     * Get currently playing track
+     * Used by pure Alpine.js component to avoid Livewire snapshot conflicts
+     */
+    public function getCurrentTrack(Request $request)
+    {
+        $user = Auth::user();
+
+        if (! $user || ! $user->hasSpotifyAuth()) {
+            return response()->json([
+                'connected' => false,
+                'track' => null,
+            ]);
+        }
+
+        try {
+            $track = $this->spotifyService->getCurrentlyPlaying($user);
+
+            return response()->json([
+                'connected' => true,
+                'track' => $track,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Spotify getCurrentTrack error: '.$e->getMessage());
+
+            return response()->json([
+                'connected' => true,
+                'track' => null,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Transfer playback to the web player device
      */
     public function transferPlayback(Request $request)

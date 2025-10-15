@@ -144,12 +144,12 @@
                             </div>
 
                             <!-- Spotify Now Playing -->
-                            <!-- Disabled for now, it can cause issues with the livewire snapshot -->
-                            {{-- @if($user->hasSpotifyAuth())
-                                <div class="my-3" wire:ignore>
-                                    @livewire('spotify-now-playing', ['context' => 'modal'])
+                            <!-- Pure Alpine.js component - No Livewire to avoid snapshot conflicts -->
+                            @if($user->hasSpotifyAuth())
+                                <div class="my-3">
+                                    <x-spotify-now-playing-alpine :user="$user" context="modal" />
                                 </div>
-                            @endif --}}
+                            @endif
                         </div>
                     </div>
 
