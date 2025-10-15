@@ -132,6 +132,7 @@ class SpotifyAuthController extends Controller
                 'spotify_id' => $spotifyUser->getId(),
                 'spotify_access_token' => $spotifyUser->token ?? null,
                 'spotify_refresh_token' => $spotifyUser->refreshToken ?? null,
+                'spotify_connected_at' => now(),
             ]);
 
             // Update Spotify avatar only if no custom avatar exists
@@ -158,7 +159,7 @@ class SpotifyAuthController extends Controller
                 return view('auth.spotify-popup-callback', [
                     'oauth_success' => true,
                     'oauth_message' => $this->getLocalizedMessage('spotifyAccountConnected'),
-                    'oauth_redirect_url' => config('app.url') . '/admin/profile',                      // route('filament.admin.auth.profile'),
+                    'oauth_redirect_url' => config('app.url').'/admin/profile',                      // route('filament.admin.auth.profile'),
                 ]);
             }
 

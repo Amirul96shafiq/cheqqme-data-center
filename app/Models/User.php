@@ -43,12 +43,15 @@ class User extends Authenticatable implements HasAvatar
         'phone_country',
         'google_id',
         'google_avatar_url',
+        'google_connected_at',
         'google_calendar_token',
         'google_calendar_connected_at',
         'microsoft_id',
         'microsoft_avatar_url',
+        'microsoft_connected_at',
         'spotify_id',
         'spotify_avatar_url',
+        'spotify_connected_at',
         'spotify_access_token',
         'spotify_refresh_token',
         'timezone',
@@ -143,7 +146,10 @@ class User extends Authenticatable implements HasAvatar
             'location_updated_at' => 'datetime',
             'last_auto_location_update' => 'datetime',
             'last_status_change' => 'datetime',
+            'google_connected_at' => 'datetime',
             'google_calendar_connected_at' => 'datetime',
+            'microsoft_connected_at' => 'datetime',
+            'spotify_connected_at' => 'datetime',
         ];
     }
 
@@ -330,6 +336,7 @@ class User extends Authenticatable implements HasAvatar
         $this->update([
             'google_id' => null,
             'google_avatar_url' => null, // Also clear Google avatar
+            'google_connected_at' => null, // Clear connection date
         ]);
     }
 
@@ -361,6 +368,7 @@ class User extends Authenticatable implements HasAvatar
         $this->update([
             'microsoft_id' => null,
             'microsoft_avatar_url' => null, // Also clear Microsoft avatar
+            'microsoft_connected_at' => null, // Clear connection date
         ]);
     }
 
@@ -394,6 +402,7 @@ class User extends Authenticatable implements HasAvatar
             'spotify_avatar_url' => null, // Also clear Spotify avatar
             'spotify_access_token' => null,
             'spotify_refresh_token' => null,
+            'spotify_connected_at' => null, // Clear connection date
         ]);
     }
 

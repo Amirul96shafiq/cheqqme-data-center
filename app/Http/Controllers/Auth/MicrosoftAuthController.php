@@ -114,9 +114,10 @@ class MicrosoftAuthController extends Controller
                 ], 404);
             }
 
-            // Update Microsoft ID and avatar (if no custom avatar)
+            // Update Microsoft ID and connection date
             $user->update([
                 'microsoft_id' => $microsoftUser->getId(),
+                'microsoft_connected_at' => now(),
             ]);
 
             // Update Microsoft avatar only if no custom avatar exists

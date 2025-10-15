@@ -71,9 +71,10 @@ class GoogleAuthController extends Controller
                 ], 404);
             }
 
-            // Update Google ID and avatar (if no custom avatar)
+            // Update Google ID and connection date
             $user->update([
                 'google_id' => $googleUser->getId(),
+                'google_connected_at' => now(),
             ]);
 
             // Update Google avatar only if no custom avatar exists
