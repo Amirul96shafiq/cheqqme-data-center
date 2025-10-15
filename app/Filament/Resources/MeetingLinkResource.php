@@ -889,21 +889,56 @@ class MeetingLinkResource extends Resource
                     ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('copy_meeting_text')
-                        ->label(__('meetinglink.actions.copy_meeting_text'))
-                        ->icon('heroicon-o-clipboard-document')
+                    Tables\Actions\Action::make('share_meeting_link')
+                        ->label(__('meetinglink.actions.share_meeting_link'))
+                        ->icon('heroicon-o-share')
                         ->color('primary')
                         ->visible(fn ($record) => ! $record->trashed() && $record->meeting_url)
-                        ->action(function ($record, $livewire) {
+                        ->modalWidth('2xl')
+                        ->modalHeading(__('meetinglink.actions.share_meeting_link'))
+                        ->modalDescription(__('meetinglink.actions.share_meeting_link_description'))
+                        ->form(function ($record) {
                             $meetingText = self::getMeetingTextForCopy($record);
 
-                            // Dispatch browser event with the text to copy
-                            $livewire->dispatch('copy-to-clipboard', text: $meetingText);
+                            return [
+                                Forms\Components\Textarea::make('meeting_preview')
+                                    ->label(__('meetinglink.actions.meeting_preview'))
+                                    ->default($meetingText)
+                                    ->disabled()
+                                    ->rows(12)
+                                    ->extraAttributes([
+                                        'class' => 'font-mono text-sm',
+                                        'style' => 'resize: none;',
+                                    ])
+                                    ->columnSpanFull(),
+                            ];
+                        })
+                        ->modalSubmitAction(false)
+                        ->modalCancelAction(false)
+                        ->extraModalFooterActions(function ($record, $livewire) {
+                            return [
+                                Tables\Actions\Action::make('copy_to_clipboard')
+                                    ->label(__('meetinglink.actions.copy_to_clipboard'))
+                                    ->icon('heroicon-o-clipboard-document')
+                                    ->color('primary')
+                                    ->action(function () use ($record, $livewire) {
+                                        $meetingText = self::getMeetingTextForCopy($record);
 
-                            Notification::make()
-                                ->title(__('meetinglink.actions.copy_meeting_text_success'))
-                                ->success()
-                                ->send();
+                                        // Dispatch browser event with the text to copy
+                                        $livewire->dispatch('copy-to-clipboard', text: $meetingText);
+
+                                        Notification::make()
+                                            ->title(__('meetinglink.actions.copy_to_clipboard_success'))
+                                            ->success()
+                                            ->send();
+                                    }),
+                                Tables\Actions\Action::make('edit_meeting_link')
+                                    ->label(__('meetinglink.actions.edit_meeting_link'))
+                                    ->icon('heroicon-o-pencil')
+                                    ->color('gray')
+                                    ->url(fn ($record) => self::getUrl('edit', ['record' => $record->id]))
+                                    ->close(),
+                            ];
                         }),
                     ActivityLogTimelineTableAction::make('Log')
                         ->label(__('meetinglink.actions.activity_log')),
