@@ -17,27 +17,27 @@
             @click.self="closeModal()"
         >
 
-            <!-- Modal -->
+        <!-- Modal -->
+        <div 
+            class="fixed p-4"
+            :style="{
+                left: modalPosition.x + 'px',
+                top: modalPosition.y + 'px',
+                transform: 'translateX(-50%)'
+            }"
+        >
             <div 
-                class="fixed p-4"
-                :style="{
-                    left: modalPosition.x + 'px',
-                    top: modalPosition.y + 'px',
-                    transform: 'translateX(-50%)'
-                }"
+                x-show="showModal"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-gray-900 shadow-xl transition-all w-80"
+                x-ref="modalPanel"
+                @click.stop
             >
-                <div 
-                    x-show="showModal"
-                    x-transition:enter="ease-out duration-300"
-                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                    x-transition:leave="ease-in duration-200"
-                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-gray-900 shadow-xl transition-all w-80"
-                    x-ref="modalPanel"
-                    @click.stop
-                >
                     <!-- User Profile Header with Cover Image -->
                     <div class="relative user-profile-header">
                         <!-- Cover Image Background -->
@@ -145,7 +145,7 @@
 
                             <!-- Spotify Now Playing -->
                             @if($user->hasSpotifyAuth())
-                                <div class="my-3">
+                                <div class="my-3" wire:ignore>
                                     @livewire('spotify-now-playing', ['context' => 'modal'])
                                 </div>
                             @endif
