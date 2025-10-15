@@ -35,6 +35,24 @@
         z-index: 90;
     }
 
+    /* Fix for modal cleanup issues - ensure proper pointer events after close */
+    .fi-modal-close-overlay:not([x-show]) {
+        display: none !important;
+        pointer-events: none !important;
+    }
+
+    /* Ensure table actions are clickable after modal close */
+    .fi-table-actions {
+        pointer-events: auto !important;
+        z-index: 10 !important;
+    }
+
+    /* Fix for action groups after modal close */
+    .fi-ac-action-group {
+        pointer-events: auto !important;
+        z-index: 10 !important;
+    }
+
     /* Custom styles for increased table row height */
     .fi-table-row {
         height: 9rem !important;
