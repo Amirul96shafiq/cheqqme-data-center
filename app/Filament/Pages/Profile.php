@@ -376,7 +376,7 @@ class Profile extends EditProfile
                                             </div>'
                                         );
                                     })
-                                    ->columnSpan(2),
+                                    ->columnSpan(['default' => 'full', 'lg' => 4]),
 
                                 Forms\Components\Actions::make([
                                     Forms\Components\Actions\Action::make('connect_google')
@@ -391,6 +391,7 @@ class Profile extends EditProfile
                                         ->modalSubmitActionLabel(__('profile.form.connect_google'))
                                         ->modalCancelActionLabel(__('profile.form.cancel'))
                                         ->modalWidth('md')
+                                        ->extraAttributes(['class' => 'w-full'])
                                         ->action(function () {
                                             $this->openGoogleAuthPopup();
                                         }),
@@ -408,17 +409,18 @@ class Profile extends EditProfile
                                         ->modalSubmitActionLabel(__('profile.form.disconnect'))
                                         ->modalCancelActionLabel(__('profile.form.cancel'))
                                         ->modalWidth('md')
+                                        ->extraAttributes(['class' => 'w-full'])
                                         ->action(function () {
                                             $this->confirmDisconnectGoogle();
                                         }),
                                 ])
-                                    ->columnSpan(1)
+                                    ->columnSpan(['default' => 'full', 'lg' => 1])
                                     ->alignment(Alignment::End)
                                     ->extraAttributes([
-                                        'class' => '-mt-14 lg:-mt-0',
+                                        'class' => 'lg:-mt-2.5 mt-0',
                                     ]),
                             ])
-                            ->columns(columns: 3)
+                            ->columns(['lg' => 5])
                             ->columnSpanFull(),
 
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
@@ -459,7 +461,7 @@ class Profile extends EditProfile
                                                 </div>'
                                         );
                                     })
-                                    ->columnSpan(2),
+                                    ->columnSpan(['default' => 'full', 'lg' => 4]),
 
                                 Forms\Components\Actions::make([
                                     Forms\Components\Actions\Action::make('connect_google_calendar')
@@ -468,7 +470,8 @@ class Profile extends EditProfile
                                         ->icon('heroicon-o-link')
                                         ->visible(fn () => ! auth()->user()->google_calendar_token)
                                         ->url('/auth/google/calendar?state=profile')
-                                        ->openUrlInNewTab(false),
+                                        ->openUrlInNewTab(false)
+                                        ->extraAttributes(['class' => 'w-full']),
 
                                     Forms\Components\Actions\Action::make('disconnect_google_calendar')
                                         ->label(__('profile.form.disconnect_google_calendar'))
@@ -483,6 +486,7 @@ class Profile extends EditProfile
                                         ->modalSubmitActionLabel(__('profile.form.disconnect'))
                                         ->modalCancelActionLabel(__('profile.form.cancel'))
                                         ->modalWidth('md')
+                                        ->extraAttributes(['class' => 'w-full'])
                                         ->action(function () {
                                             $user = auth()->user();
                                             $user->update([
@@ -496,13 +500,13 @@ class Profile extends EditProfile
                                                 ->send();
                                         }),
                                 ])
-                                    ->columnSpan(1)
+                                    ->columnSpan(['default' => 'full', 'lg' => 1])
                                     ->alignment(Alignment::End)
                                     ->extraAttributes([
-                                        'class' => '-mt-14 lg:-mt-0',
+                                        'class' => 'lg:-mt-2.5 mt-0',
                                     ]),
                             ])
-                            ->columns(columns: 3)
+                            ->columns(['lg' => 5])
                             ->columnSpanFull(),
 
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
@@ -526,7 +530,7 @@ class Profile extends EditProfile
                                                 </div>'
                                         );
                                     })
-                                    ->columnSpan(2),
+                                    ->columnSpan(['default' => 'full', 'lg' => 4]),
 
                                 Forms\Components\Actions::make([
                                     Forms\Components\Actions\Action::make('connect_microsoft')
@@ -535,7 +539,8 @@ class Profile extends EditProfile
                                         ->outlined()
                                         ->icon('heroicon-o-link')
                                         ->disabled()
-                                        ->requiresConfirmation(false),
+                                        ->requiresConfirmation(false)
+                                        ->extraAttributes(['class' => 'w-full']),
                                     // ->modalIcon('heroicon-o-link')
                                     // ->modalHeading(__('profile.form.microsoft_coming_soon'))
                                     // ->modalDescription(__('profile.form.microsoft_coming_soon_description'))
@@ -546,13 +551,13 @@ class Profile extends EditProfile
                                     //     // Coming soon functionality
                                     // }),
                                 ])
-                                    ->columnSpan(1)
+                                    ->columnSpan(['default' => 'full', 'lg' => 1])
                                     ->alignment(Alignment::End)
                                     ->extraAttributes([
-                                        'class' => '-mt-14 lg:-mt-0',
+                                        'class' => 'lg:-mt-2.5 mt-0',
                                     ]),
                             ])
-                            ->columns(columns: 3)
+                            ->columns(['lg' => 5])
                             ->columnSpanFull(),
 
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
@@ -593,7 +598,7 @@ class Profile extends EditProfile
                                             </div>'
                                         );
                                     })
-                                    ->columnSpan(2),
+                                    ->columnSpan(['default' => 'full', 'lg' => 4]),
 
                                 Forms\Components\Actions::make([
                                     Forms\Components\Actions\Action::make('connect_spotify')
@@ -608,6 +613,7 @@ class Profile extends EditProfile
                                         ->modalSubmitActionLabel(__('profile.form.connect_spotify'))
                                         ->modalCancelActionLabel(__('profile.form.cancel'))
                                         ->modalWidth('md')
+                                        ->extraAttributes(['class' => 'w-full'])
                                         ->action(function () {
                                             $this->openSpotifyAuthPopup();
                                         }),
@@ -625,17 +631,18 @@ class Profile extends EditProfile
                                         ->modalSubmitActionLabel(__('profile.form.disconnect'))
                                         ->modalCancelActionLabel(__('profile.form.cancel'))
                                         ->modalWidth('md')
+                                        ->extraAttributes(['class' => 'w-full'])
                                         ->action(function () {
                                             $this->confirmDisconnectSpotify();
                                         }),
                                 ])
-                                    ->columnSpan(1)
+                                    ->columnSpan(['default' => 'full', 'lg' => 1])
                                     ->alignment(Alignment::End)
                                     ->extraAttributes([
-                                        'class' => '-mt-14 lg:-mt-0',
+                                        'class' => 'lg:-mt-2.5 mt-0',
                                     ]),
                             ])
-                            ->columns(columns: 3)
+                            ->columns(['lg' => 5])
                             ->columnSpanFull(),
 
                     ])
