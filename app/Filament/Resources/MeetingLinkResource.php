@@ -933,7 +933,7 @@ class MeetingLinkResource extends Resource
                                     }),
                                 Tables\Actions\Action::make('edit_meeting_link')
                                     ->label(__('meetinglink.actions.edit_meeting_link'))
-                                    ->icon('heroicon-o-pencil')
+                                    ->icon('heroicon-o-pencil-square')
                                     ->color('gray')
                                     ->url(fn ($record) => self::getUrl('edit', ['record' => $record->id]))
                                     ->close(),
