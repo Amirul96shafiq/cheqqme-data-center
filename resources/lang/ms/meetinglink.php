@@ -78,6 +78,7 @@ return [
         'meeting_preview' => 'Pratonton Jemputan Mesyuarat',
         'copy_to_clipboard' => 'Salin ke Papan Keratan',
         'copy_to_clipboard_success' => 'Jemputan mesyuarat disalin ke papan keratan!',
+        'copied' => 'Disalin',
         'edit_meeting_link' => 'Sunting Pautan Mesyuarat',
         'close' => 'Tutup',
         'cancel' => 'Batal',

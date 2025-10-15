@@ -78,6 +78,7 @@ return [
         'meeting_preview' => 'Meeting Invitation Preview',
         'copy_to_clipboard' => 'Copy to Clipboard',
         'copy_to_clipboard_success' => 'Meeting invitation copied to clipboard!',
+        'copied' => 'Copied',
         'edit_meeting_link' => 'Edit Meeting Link',
         'close' => 'Close',
         'cancel' => 'Cancel',

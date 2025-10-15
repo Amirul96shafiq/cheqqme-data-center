@@ -249,6 +249,11 @@ window.copyToClipboard = function (
         return Promise.reject(new Error("No text provided"));
     }
 
+    // Ensure document is focused for clipboard API
+    if (document.hasFocus && !document.hasFocus()) {
+        window.focus();
+    }
+
     return navigator.clipboard
         .writeText(text)
         .then(function () {
@@ -259,22 +264,32 @@ window.copyToClipboard = function (
         .catch(function (err) {
             console.error("Failed to copy to clipboard: ", err);
 
-            // Fallback for older browsers
+            // Fallback for older browsers or when clipboard API fails
             const textArea = document.createElement("textarea");
             textArea.value = text;
             textArea.style.position = "fixed";
             textArea.style.left = "-9999px";
             textArea.style.top = "-9999px";
+            textArea.style.opacity = "0";
+            textArea.setAttribute("readonly", "");
             document.body.appendChild(textArea);
+
+            // Focus and select the textarea
+            textArea.focus();
             textArea.select();
+            textArea.setSelectionRange(0, 99999); // For mobile devices
 
             try {
-                document.execCommand("copy");
+                const successful = document.execCommand("copy");
                 document.body.removeChild(textArea);
 
-                // Success - notification will be handled by PHP side
-                // console.log(successMessage + " (fallback):", text);
-                return text;
+                if (successful) {
+                    // Success - notification will be handled by PHP side
+                    // console.log(successMessage + " (fallback):", text);
+                    return text;
+                } else {
+                    throw new Error("execCommand('copy') returned false");
+                }
             } catch (fallbackErr) {
                 document.body.removeChild(textArea);
                 console.error("Fallback copy also failed:", fallbackErr);
@@ -291,6 +306,24 @@ document.addEventListener("livewire:init", function () {
     Livewire.on("copy-to-clipboard", function (data) {
         const { text, message } = data;
         copyToClipboard(text, message);
+    });
+
+    // Copy with success callback for meeting links
+    Livewire.on("copy-to-clipboard-with-callback", function (data) {
+        const { text } = data;
+
+        // Small delay to ensure modal is focused
+        setTimeout(function () {
+            copyToClipboard(text)
+                .then(function () {
+                    // Success - dispatch event to show bubble
+                    Livewire.dispatch("copy-success");
+                })
+                .catch(function (error) {
+                    console.error("Copy failed:", error);
+                    // Could dispatch a failure event here if needed
+                });
+        }, 100);
     });
 
     // Legacy event handlers for backward compatibility

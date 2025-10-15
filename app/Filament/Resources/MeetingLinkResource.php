@@ -921,16 +921,15 @@ class MeetingLinkResource extends Resource
                                     ->label(__('meetinglink.actions.copy_to_clipboard'))
                                     ->icon('heroicon-o-clipboard-document')
                                     ->color('primary')
+                                    ->extraAttributes([
+                                        'x-data' => '{}',
+                                        'x-on:copy-success.window' => 'showCopiedBubble($el)',
+                                    ])
                                     ->action(function () use ($record, $livewire) {
                                         $meetingText = self::getMeetingTextForCopy($record);
 
-                                        // Dispatch browser event with the text to copy
-                                        $livewire->dispatch('copy-to-clipboard', text: $meetingText);
-
-                                        Notification::make()
-                                            ->title(__('meetinglink.actions.copy_to_clipboard_success'))
-                                            ->success()
-                                            ->send();
+                                        // Dispatch browser event with the text to copy and success callback
+                                        $livewire->dispatch('copy-to-clipboard-with-callback', text: $meetingText);
                                     }),
                                 Tables\Actions\Action::make('edit_meeting_link')
                                     ->label(__('meetinglink.actions.edit_meeting_link'))
