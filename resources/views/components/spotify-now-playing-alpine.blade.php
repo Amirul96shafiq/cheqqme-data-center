@@ -53,16 +53,12 @@
             
             <!-- Track Details -->
             <div class="flex-1 min-w-0 text-left">
-                <!-- Track Name with Marquee -->
-                <div class="overflow-hidden relative w-full track-name-container">
-                    <div 
-                        x-data="{ isLongText: false }"
-                        x-init="$nextTick(() => { isLongText = $el.querySelector('span').scrollWidth > $el.offsetWidth })"
-                        :class="{ 'track-marquee': isLongText }"
-                    >
-                        <span x-text="track ? track.track_name : ''" class="text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap"></span>
-                    </div>
-                </div>
+                <!-- Track Name -->
+                <div 
+                    x-text="track ? track.track_name : ''" 
+                    :title="track ? track.track_name : ''"
+                    class="text-sm font-medium text-gray-900 dark:text-white truncate text-left"
+                ></div>
                 
                 <!-- Artist -->
                 <div 
@@ -109,31 +105,6 @@
         </div>
     </div>
 
-    <!-- Marquee Animation Styles -->
-    <style>
-        .track-marquee {
-            animation: marquee 10s linear infinite;
-        }
-
-        @keyframes marquee {
-            0% {
-                transform: translateX(0%);
-            }
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        .track-marquee span {
-            display: inline-block;
-            padding-right: 2rem;
-        }
-
-        .track-marquee span::after {
-            content: attr(data-text);
-            padding-left: 2rem;
-        }
-    </style>
 </div>
 @endif
 

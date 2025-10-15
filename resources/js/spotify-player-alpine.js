@@ -121,6 +121,63 @@ document.addEventListener("alpine:init", () => {
             }, 100);
         },
 
+        // Retry checking track name length until text is rendered
+        checkTrackNameLengthWithRetry(attempt = 0) {
+            const maxAttempts = 10;
+
+            const container = this.$el?.querySelector(".track-name-container");
+            const trackNameDiv = container?.querySelector("div");
+            const trackNameSpan = trackNameDiv?.querySelector("span");
+
+            console.log(`🎵 Attempt ${attempt + 1}:`, {
+                hasSpan: !!trackNameSpan,
+                textContent: trackNameSpan?.textContent,
+                innerText: trackNameSpan?.innerText,
+                scrollWidth: trackNameSpan?.scrollWidth,
+                offsetWidth: trackNameSpan?.offsetWidth,
+                clientWidth: trackNameSpan?.clientWidth,
+                computedDisplay: trackNameSpan
+                    ? window.getComputedStyle(trackNameSpan).display
+                    : null,
+                computedVisibility: trackNameSpan
+                    ? window.getComputedStyle(trackNameSpan).visibility
+                    : null,
+            });
+
+            if (container && trackNameSpan && trackNameSpan.scrollWidth > 0) {
+                // Text is rendered, now we can check
+                this.isLongTrackName =
+                    trackNameSpan.scrollWidth > container.offsetWidth;
+                console.log("🎵 Marquee check SUCCESS:", {
+                    scrollWidth: trackNameSpan.scrollWidth,
+                    containerWidth: container.offsetWidth,
+                    isLong: this.isLongTrackName,
+                    trackName: this.track?.track_name,
+                    attempt: attempt + 1,
+                });
+            } else if (attempt < maxAttempts) {
+                // Retry after a short delay
+                setTimeout(() => {
+                    this.checkTrackNameLengthWithRetry(attempt + 1);
+                }, 50);
+            } else {
+                console.log("🎵 Marquee check FAILED after max attempts");
+            }
+        },
+
+        // Check if track name is too long and needs marquee
+        checkTrackNameLength() {
+            const container = this.$el?.querySelector(".track-name-container");
+            const trackNameDiv = container?.querySelector("div");
+            const trackNameSpan = trackNameDiv?.querySelector("span");
+
+            if (container && trackNameSpan && trackNameSpan.scrollWidth > 0) {
+                // Compare span's content width to container's width
+                this.isLongTrackName =
+                    trackNameSpan.scrollWidth > container.offsetWidth;
+            }
+        },
+
         // Format milliseconds to MM:SS
         formatTime(ms) {
             if (!ms || ms < 0) return "00:00";
