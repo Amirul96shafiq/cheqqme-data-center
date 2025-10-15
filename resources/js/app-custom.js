@@ -253,7 +253,7 @@ window.copyToClipboard = function (
         .writeText(text)
         .then(function () {
             // Success - notification will be handled by PHP side
-            console.log(successMessage, text);
+            // console.log(successMessage, text);
             return text;
         })
         .catch(function (err) {
@@ -273,7 +273,7 @@ window.copyToClipboard = function (
                 document.body.removeChild(textArea);
 
                 // Success - notification will be handled by PHP side
-                console.log(successMessage + " (fallback):", text);
+                // console.log(successMessage + " (fallback):", text);
                 return text;
             } catch (fallbackErr) {
                 document.body.removeChild(textArea);
