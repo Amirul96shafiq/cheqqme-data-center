@@ -906,9 +906,10 @@ class MeetingLinkResource extends Resource
                                     ->default($meetingText)
                                     ->disabled()
                                     ->rows(12)
-                                    ->extraAttributes([
-                                        'class' => 'font-mono text-sm',
-                                        'style' => 'resize: none;',
+                                    ->extraInputAttributes([
+                                        'class' => 'font-mono text-sm !resize-none',
+                                        'style' => 'resize: none !important; max-height: none !important;',
+                                        'x-init' => '$el.style.resize = "none"',
                                     ])
                                     ->columnSpanFull(),
                             ];
