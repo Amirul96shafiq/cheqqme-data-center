@@ -47,7 +47,7 @@
                     :alt="track ? track.album_name + ' cover' : ''"
                     class="w-20 h-20 rounded-md object-cover"
                     draggable="false"
-                    onerror="this.style.display='none'"
+                    {{-- onerror="this.style.display='none'" --}} {{-- this is causing the image to not load --}}
                 >
             </div>
             
