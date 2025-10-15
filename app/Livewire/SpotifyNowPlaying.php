@@ -23,7 +23,7 @@ class SpotifyNowPlaying extends Component
     public function mount($context = 'dropdown')
     {
         $this->context = $context;
-        
+
         // Always load track immediately for instant display
         // SDK will override if it connects and has playback
         $this->loadCurrentTrack();
@@ -67,6 +67,9 @@ class SpotifyNowPlaying extends Component
                 'is_playing' => ! $state['paused'],
                 'spotify_url' => $track['uri'] ?? null,
             ];
+
+            // Dispatch event with track data for Alpine to sync (for wire:ignore contexts)
+            $this->dispatch('spotify-track-updated', track: $this->track);
 
         } catch (\Exception $e) {
             \Log::error('Spotify Web Playback SDK state update error: '.$e->getMessage(), [
@@ -113,8 +116,8 @@ class SpotifyNowPlaying extends Component
                 //     'artist' => $track['artist_name'],
                 // ]);
 
-                // Dispatch to JavaScript for console logging
-                $this->dispatch('spotify-track-loaded', track: $track['track_name']);
+                // Dispatch full track data to JavaScript for Alpine to sync
+                $this->dispatch('spotify-track-loaded', track: $track);
             } else {
                 $this->track = null;
 

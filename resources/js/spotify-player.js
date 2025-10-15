@@ -22,14 +22,27 @@ document.addEventListener("alpine:init", () => {
         trackDuration: 0,
         isPlaying: false,
         lastSyncTime: null,
+        initialProgressMs: 0,
+        currentTrackData: null,
 
         async initPlayer() {
             // console.log('🎵 Spotify Web Playback SDK: Initializing...');
 
-            // Listen for Livewire events
+            // Listen for Livewire events (works with wire:ignore)
             window.addEventListener("spotify-track-loaded", (event) => {
-                // console.log('🎵 Track loaded from API:', event.detail.track);
-                this.syncProgressFromServer();
+                const track = event.detail.track;
+                // console.log('🎵 Track loaded from API:', track);
+
+                // Update local track data from event
+                this.updateTrackFromEvent(track);
+            });
+
+            window.addEventListener("spotify-track-updated", (event) => {
+                const track = event.detail.track;
+                // console.log('🔄 Track updated from SDK:', track);
+
+                // Update local track data from event
+                this.updateTrackFromEvent(track);
             });
 
             window.addEventListener("spotify-no-track", () => {
@@ -310,20 +323,60 @@ document.addEventListener("alpine:init", () => {
             }
         },
 
-        // Sync progress from server data (called after API response)
-        syncProgressFromServer() {
-            const track = this.$wire.track;
-
-            if (!track || !track.progress_ms || !track.duration_ms) {
+        // Update track data from Livewire event (works with wire:ignore)
+        updateTrackFromEvent(track) {
+            if (
+                !track ||
+                track.progress_ms === undefined ||
+                !track.duration_ms
+            ) {
                 this.stopProgressTracking();
                 return;
             }
 
-            // Update track data
-            this.trackPosition = track.progress_ms;
+            // Store initial values for interpolation
+            this.initialProgressMs = track.progress_ms;
             this.trackDuration = track.duration_ms;
             this.isPlaying = track.is_playing;
             this.lastSyncTime = Date.now();
+            this.trackPosition = track.progress_ms;
+
+            // Store track metadata for display updates
+            this.currentTrackData = {
+                track_name: track.track_name,
+                artist_name: track.artist_name,
+                album_name: track.album_name,
+                album_art: track.album_art,
+            };
+
+            // console.log('⏱️ Synced position:', Math.floor(this.trackPosition / 1000) + 's / ' + Math.floor(this.trackDuration / 1000) + 's');
+
+            // Start smooth progress tracking
+            this.startProgressTracking();
+
+            // Update DOM elements that might not re-render due to wire:ignore
+            this.updateTrackDisplay();
+        },
+
+        // Sync progress from server data (fallback for non-event contexts)
+        syncProgressFromServer() {
+            const track = this.$wire.track;
+
+            if (
+                !track ||
+                track.progress_ms === undefined ||
+                !track.duration_ms
+            ) {
+                this.stopProgressTracking();
+                return;
+            }
+
+            // Store initial values for interpolation
+            this.initialProgressMs = track.progress_ms;
+            this.trackDuration = track.duration_ms;
+            this.isPlaying = track.is_playing;
+            this.lastSyncTime = Date.now();
+            this.trackPosition = track.progress_ms;
 
             // console.log('⏱️ Synced position:', Math.floor(this.trackPosition / 1000) + 's / ' + Math.floor(this.trackDuration / 1000) + 's');
 
@@ -345,8 +398,8 @@ document.addEventListener("alpine:init", () => {
                     const now = Date.now();
                     const elapsed = now - this.lastSyncTime;
 
-                    // Interpolate position
-                    this.trackPosition = this.$wire.track.progress_ms + elapsed;
+                    // Interpolate position from the initial synced value
+                    this.trackPosition = this.initialProgressMs + elapsed;
 
                     // Prevent going over duration
                     if (this.trackPosition >= this.trackDuration) {
@@ -391,6 +444,32 @@ document.addEventListener("alpine:init", () => {
                     minutes.toString().padStart(2, "0") +
                     ":" +
                     seconds.toString().padStart(2, "0");
+            }
+        },
+
+        // Update track display elements (for wire:ignore contexts where DOM doesn't auto-update)
+        updateTrackDisplay() {
+            if (!this.currentTrackData) return;
+
+            const trackNameEl = this.$el.querySelector(
+                ".track-name-container span"
+            );
+            const artistNameEl = this.$el.querySelector(
+                ".text-xs.text-gray-600"
+            );
+            const albumArtEl = this.$el.querySelector("img[alt*='cover']");
+
+            if (trackNameEl && this.currentTrackData.track_name) {
+                trackNameEl.textContent = this.currentTrackData.track_name;
+            }
+
+            if (artistNameEl && this.currentTrackData.artist_name) {
+                artistNameEl.textContent = this.currentTrackData.artist_name;
+            }
+
+            if (albumArtEl && this.currentTrackData.album_art) {
+                albumArtEl.src = this.currentTrackData.album_art;
+                albumArtEl.alt = this.currentTrackData.album_name + " cover";
             }
         },
 
