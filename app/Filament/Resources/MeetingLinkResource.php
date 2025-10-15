@@ -939,9 +939,7 @@ class MeetingLinkResource extends Resource
                                     ->label(__('meetinglink.infolist.platform'))
                                     ->badge()
                                     ->color(fn (string $state): string => match ($state) {
-                                        'Google Meet' => 'success',
-                                        'Zoom Meeting' => 'info',
-                                        'Teams Meeting' => 'warning',
+                                        'Google Meet', 'Zoom Meeting', 'Teams Meeting' => 'primary',
                                         default => 'gray',
                                     }),
                             ]),
