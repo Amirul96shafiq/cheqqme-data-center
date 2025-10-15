@@ -144,11 +144,12 @@
                             </div>
 
                             <!-- Spotify Now Playing -->
-                            @if($user->hasSpotifyAuth())
+                            <!-- Disabled for now, it can cause issues with the livewire snapshot -->
+                            {{-- @if($user->hasSpotifyAuth())
                                 <div class="my-3" wire:ignore>
                                     @livewire('spotify-now-playing', ['context' => 'modal'])
                                 </div>
-                            @endif
+                            @endif --}}
                         </div>
                     </div>
 
