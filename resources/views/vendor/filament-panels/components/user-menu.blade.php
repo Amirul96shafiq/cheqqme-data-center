@@ -131,7 +131,7 @@
 
                     <!-- Country -->
                     @if($user->country)
-                        <x-tooltip position="top" text="{{ __('user.table.country') }}">
+                        <x-tooltip position="top" text="{{ __('user.badge.country') }}">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
                                 {{ $user->country }}
                             </span>
@@ -140,7 +140,7 @@
                     
                     <!-- Timezone -->
                     @if($user->timezone)
-                        <x-tooltip position="top" text="{{ __('user.table.timezone') }}">
+                        <x-tooltip position="top" text="{{ __('user.badge.timezone') }}">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
                                 {{ $user->timezone }}
                             </span>
@@ -149,7 +149,7 @@
 
                     <!-- Google OAuth -->
                     @if($user->google_id && $user->google_connected_at)
-                        <x-tooltip position="top" text="{{ __('user.table.google_oauth_connected') }}">
+                        <x-tooltip position="top" text="{{ __('user.badge.google_oauth') }}">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
                                 Google
                             </span>
@@ -158,7 +158,7 @@
 
                     <!-- Google Calendar API -->
                     @if($user->google_calendar_token && $user->google_calendar_connected_at)
-                        <x-tooltip position="top" text="{{ __('user.table.google_calendar_connected') }}">
+                        <x-tooltip position="top" text="{{ __('user.badge.google_calendar') }}">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
                                 Calendar
                             </span>
@@ -167,7 +167,7 @@
 
                     <!-- Zoom API -->
                     @if($user->zoom_token && $user->zoom_connected_at)
-                        <x-tooltip position="top" text="{{ __('user.table.zoom_connected') }}">
+                        <x-tooltip position="top" text="{{ __('user.badge.zoom_api') }}">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
                                 Zoom
                             </span>
@@ -176,7 +176,7 @@
 
                     <!-- Spotify -->
                     @if($user->spotify_id && $user->spotify_connected_at)
-                        <x-tooltip position="top" text="{{ __('user.table.spotify_connected') }}">
+                        <x-tooltip position="top" text="{{ __('user.badge.spotify') }}">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
                                 Spotify
                             </span>

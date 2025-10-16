@@ -117,6 +117,16 @@ return [
         'online_status_update_failed' => 'Failed to update status',
     ],
 
+    // User Profile Badges
+    'badge' => [
+        'country' => 'Country',
+        'timezone' => 'Timezone',
+        'google_oauth' => 'Google OAuth Connected',
+        'google_calendar' => 'Google Calendar API Connected',
+        'zoom_api' => 'Zoom API Connected',
+        'spotify' => 'Spotify Connected',
+    ],
+
     // Table Columns
     'table' => [
         'id' => 'ID',
@@ -131,10 +141,6 @@ return [
         'personalize' => 'Personalize',
         'settings' => 'Settings',
         'chatbot-history' => 'Chatbot History',
-        'google_oauth_connected' => 'Google OAuth Connected',
-        'google_calendar_connected' => 'Google Calendar API Connected',
-        'zoom_connected' => 'Zoom API Connected',
-        'spotify_connected' => 'Spotify Connected',
     ],
 
     // Filters

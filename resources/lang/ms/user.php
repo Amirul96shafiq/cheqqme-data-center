@@ -116,6 +116,16 @@ return [
         'online_status_update_failed' => 'Gagal mengemaskini status',
     ],
 
+    // User Profile Badges
+    'badge' => [
+        'country' => 'Negara',
+        'timezone' => 'Zon Waktu',
+        'google_oauth' => 'Google OAuth Disambungkan',
+        'google_calendar' => 'API Google Calendar Disambungkan',
+        'zoom_api' => 'API Zoom Disambungkan',
+        'spotify' => 'Spotify Disambungkan',
+    ],
+
     // Table Columns
     'table' => [
         'id' => 'ID',
@@ -130,10 +140,6 @@ return [
         'personalize' => 'Personalisasi',
         'settings' => 'Tetapan',
         'chatbot-history' => 'Sejarah Chatbot',
-        'google_oauth_connected' => 'Google OAuth Disambungkan',
-        'google_calendar_connected' => 'API Google Calendar Disambungkan',
-        'zoom_connected' => 'API Zoom Disambungkan',
-        'spotify_connected' => 'Spotify Disambungkan',
     ],
 
     // Filters
