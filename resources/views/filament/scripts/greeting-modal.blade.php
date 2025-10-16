@@ -28,7 +28,7 @@ function openGreetingModal(forceOpen = false) {
     const iconColor = hour >= 7 && hour <= 19 ? 'text-yellow-500' : 'text-blue-400';
     
     modal.innerHTML = `
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] transform transition-all duration-300 scale-95 opacity-0 border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col">
+        <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] transform transition-all duration-300 scale-95 opacity-0 border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col">
             <div class="flex flex-col lg:flex-row flex-1 overflow-y-auto">
                 
                 <!-- Weather Information Section (40% width on desktop, 100% on mobile) - Order 2 on small devices, Order 1 on large devices -->
@@ -85,7 +85,7 @@ function openGreetingModal(forceOpen = false) {
                         <div class="grid grid-cols-2 gap-3">
 
                             <!-- Humidity -->
-                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
                                         <x-icons.custom-icon name="humidity" />
@@ -98,7 +98,7 @@ function openGreetingModal(forceOpen = false) {
                             </div>
 
                             <!-- Wind -->
-                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
                                         <x-icons.custom-icon name="wind" />
@@ -111,7 +111,7 @@ function openGreetingModal(forceOpen = false) {
                             </div>
 
                             <!-- UV Index -->
-                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
                                         <x-icons.custom-icon name="uv-index" />
@@ -124,7 +124,7 @@ function openGreetingModal(forceOpen = false) {
                             </div>
 
                             <!-- Sunset -->
-                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
                                         <x-icons.custom-icon name="sunset" />
@@ -150,7 +150,7 @@ function openGreetingModal(forceOpen = false) {
                         <div class="space-y-2" id="forecast-container">
 
                             <!-- Today -->
-                            <div class="flex items-center justify-between py-4 px-3 rounded-lg bg-gray-100 dark:bg-gray-700">
+                            <div class="flex items-center justify-between py-4 px-3 rounded-lg bg-gray-100 dark:bg-gray-800">
                                 <div class="flex items-center space-x-3">
                                     <span class="text-sm text-gray-600 dark:text-gray-400 w-24">{{ __('weather.today') }}</span>
                                     <x-icons.custom-icon name="refresh" class="w-6 h-6 text-primary-600 dark:text-primary-400"/>
@@ -225,11 +225,14 @@ function openGreetingModal(forceOpen = false) {
                             class="border-4 border-white dark:border-gray-800"
                             draggable="false"
                         />
+
                         <!-- Online Status Indicator -->
                         <div class="relative -bottom-5 right-4">
                             <x-interactive-online-status-indicator :user="auth()->user()" size="lg" />
                         </div>
+
                     </div>
+
                     <!-- Greeting Time icon and text -->
                     <div class="text-center mb-8">
                         <div class="flex items-center justify-center space-x-2">
@@ -243,21 +246,24 @@ function openGreetingModal(forceOpen = false) {
                                 ${greeting}
                             </p>
                         </div>
+
                         <!-- Greeting Title (Name and "ready to get started?") -->
                         <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                             <span class="font-bold text-primary-600 dark:text-primary-400">{{ \App\Helpers\ClientFormatter::formatClientName(auth()->user()?->name) }}</span>{{ __('greetingmodal.content-title') }}
                         </h4>
+
                         <!-- Greeting description -->
                         <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
                             {{ __('greetingmodal.content-message') }}
                         </p>
+                        
                     </div>
                 
                     <!-- Quick Actions -->
                     <div class="space-y-3 mb-6">
 
                         <!-- Profile Quick Action -->
-                        <button onclick="navigateToProfile()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                        <button onclick="navigateToProfile()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
                                 @svg('heroicon-o-user', 'w-5 h-5 text-primary-600 dark:text-primary-400')
                             </div>
@@ -275,7 +281,7 @@ function openGreetingModal(forceOpen = false) {
                         </button>
 
                         <!-- Settings Quick Action -->
-                        <button onclick="navigateToSettings()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                        <button onclick="navigateToSettings()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
                                 @svg('heroicon-o-cog-6-tooth', 'w-5 h-5 text-primary-600 dark:text-primary-400')
                             </div>
@@ -293,7 +299,7 @@ function openGreetingModal(forceOpen = false) {
                         </button>
 
                         <!-- Action Board Quick Action -->
-                        <button onclick="navigateToActionBoard()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                        <button onclick="navigateToActionBoard()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
                                 @svg('heroicon-o-rocket-launch', 'w-5 h-5 text-primary-600 dark:text-primary-400')
                             </div>
@@ -311,7 +317,7 @@ function openGreetingModal(forceOpen = false) {
                         </button>
                         
                         <!-- Resources Quick Action -->
-                        <button onclick="toggleDataManagementVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                        <button onclick="toggleDataManagementVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
                                 @svg('heroicon-o-table-cells', 'w-5 h-5 text-primary-600 dark:text-primary-400')
                             </div>
@@ -357,7 +363,7 @@ function openGreetingModal(forceOpen = false) {
             </div>
             
             <!-- Footer Actions -->
-            <div class="px-6 py-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 flex-shrink-0">
+            <div class="px-6 py-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-600 flex-shrink-0">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
                     <div class="flex items-center">
                         <input type="checkbox" id="noShowGreetingToday" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
