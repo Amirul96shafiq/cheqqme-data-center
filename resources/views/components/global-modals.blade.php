@@ -22,7 +22,7 @@
          class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
         
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75" 
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md" 
              @click="closeModal('deleteComment')" 
              aria-hidden="true"></div>
         
@@ -88,7 +88,7 @@
          class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
         
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75" 
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md" 
              @click="closeModal('deleteReply')" 
              aria-hidden="true"></div>
         
@@ -152,7 +152,7 @@
          class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
         
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75" 
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md" 
              @click="closeModal('forceDeleteComment')" 
              aria-hidden="true"></div>
         
@@ -216,7 +216,7 @@
          class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
 
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75"
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md"
              @click="closeModal('forceDeleteReply')"
              aria-hidden="true"></div>
 
@@ -286,7 +286,7 @@
          class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
 
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75"
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md"
              @click="closeModal('createBackup')"
              aria-hidden="true"></div>
 
@@ -350,7 +350,7 @@
          class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
 
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75"
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md"
              @click="closeModal('restoreBackup')"
              aria-hidden="true"></div>
 
@@ -414,7 +414,7 @@
          class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
 
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75"
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md"
              @click="closeModal('deleteBackup')"
              aria-hidden="true"></div>
 
@@ -478,7 +478,7 @@
          class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
 
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75"
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md"
              @click="closeModal('downloadBackup')"
              aria-hidden="true"></div>
 
@@ -544,7 +544,7 @@
          class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
 
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75"
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md"
              @click="closeModal('clearConversation')"
              aria-hidden="true"></div>
 
@@ -611,7 +611,7 @@
          class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
         
         {{-- Backdrop --}}
-        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75" 
+        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md" 
              @click="closeModal('changelog')" 
              aria-hidden="true"></div>
         
