@@ -131,6 +131,10 @@ return [
         'personalize' => 'Personalize',
         'settings' => 'Settings',
         'chatbot-history' => 'Chatbot History',
+        'google_oauth_connected' => 'Google OAuth Connected',
+        'google_calendar_connected' => 'Google Calendar API Connected',
+        'zoom_connected' => 'Zoom API Connected',
+        'spotify_connected' => 'Spotify Connected',
     ],
 
     // Filters

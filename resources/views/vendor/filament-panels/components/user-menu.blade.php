@@ -147,6 +147,42 @@
                         </x-tooltip>
                     @endif
 
+                    <!-- Google OAuth -->
+                    @if($user->google_id && $user->google_connected_at)
+                        <x-tooltip position="top" text="{{ __('user.table.google_oauth_connected') }}">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
+                                Google
+                            </span>
+                        </x-tooltip>
+                    @endif
+
+                    <!-- Google Calendar API -->
+                    @if($user->google_calendar_token && $user->google_calendar_connected_at)
+                        <x-tooltip position="top" text="{{ __('user.table.google_calendar_connected') }}">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
+                                Calendar
+                            </span>
+                        </x-tooltip>
+                    @endif
+
+                    <!-- Zoom API -->
+                    @if($user->zoom_token && $user->zoom_connected_at)
+                        <x-tooltip position="top" text="{{ __('user.table.zoom_connected') }}">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
+                                Zoom
+                            </span>
+                        </x-tooltip>
+                    @endif
+
+                    <!-- Spotify -->
+                    @if($user->spotify_id && $user->spotify_connected_at)
+                        <x-tooltip position="top" text="{{ __('user.table.spotify_connected') }}">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
+                                Spotify
+                            </span>
+                        </x-tooltip>
+                    @endif
+
                 </div>
 
                 <!-- Spotify Now Playing -->

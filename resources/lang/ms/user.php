@@ -130,6 +130,10 @@ return [
         'personalize' => 'Personalisasi',
         'settings' => 'Tetapan',
         'chatbot-history' => 'Sejarah Chatbot',
+        'google_oauth_connected' => 'Google OAuth Disambungkan',
+        'google_calendar_connected' => 'API Google Calendar Disambungkan',
+        'zoom_connected' => 'API Zoom Disambungkan',
+        'spotify_connected' => 'Spotify Disambungkan',
     ],
 
     // Filters
