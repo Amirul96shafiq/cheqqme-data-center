@@ -68,6 +68,7 @@ class ChangelogHelper
                         'author_avatar' => self::getGravatarUrl($authorEmail),
                         'message' => $message,
                         'description' => trim($body),
+                        'tags' => self::getCommitTags($fullHash),
                     ];
                 } else {
                     // This is a continuation line of the commit body
@@ -114,5 +115,26 @@ class ChangelogHelper
         $hash = md5(strtolower(trim($email)));
 
         return "https://www.gravatar.com/avatar/{$hash}?s={$size}&d=identicon";
+    }
+
+    /**
+     * Get tags pointing to a specific commit
+     */
+    protected static function getCommitTags(string $commitHash): array
+    {
+        try {
+            $command = sprintf('git tag --points-at %s', escapeshellarg($commitHash));
+            exec($command, $output, $returnCode);
+
+            if ($returnCode !== 0 || empty($output)) {
+                return [];
+            }
+
+            return array_filter(array_map('trim', $output));
+        } catch (\Exception $e) {
+            \Log::error("Failed to fetch tags for commit {$commitHash}: ".$e->getMessage());
+
+            return [];
+        }
     }
 }

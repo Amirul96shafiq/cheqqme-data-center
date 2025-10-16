@@ -13,7 +13,8 @@ return [
     
     // Actions
     'view_commit_details' => 'Lihat butiran Commit',
-    
+    'toggle_commit_description' => 'Lihat deskripsi Commit',
+
     // Empty State
     'no_commits_found' => 'Tiada commit dijumpai',
     

@@ -688,19 +688,25 @@
                                 {{-- Commit Info --}}
                                 <div class="flex-1 min-w-0">
 
+                                    {{-- Tag Badges and Commit Hash --}}
+                                    <div class="mb-2 flex flex-wrap gap-1.5">
+                                        {{-- Tag Badges --}}
+                                        <template x-for="tag in commit.tags" :key="tag">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200"
+                                                  x-text="tag">
+                                            </span>
+                                        </template>
+                                        
+                                        {{-- Commit Hash Badge --}}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200"
+                                              x-text="commit.short_hash">
+                                        </span>
+                                    </div>
+
                                     {{-- Commit Message --}}
                                     <div class="mb-2 flex items-start gap-2">
                                         <p class="text-sm font-medium text-gray-900 dark:text-gray-100 leading-relaxed flex-1" x-text="commit.message">
                                         </p>
-                                        
-                                        {{-- Chevron Icon (only show if description exists) --}}
-                                        <button type="button"
-                                                x-show="commit.description && commit.description.length > 0"
-                                                @click.stop="toggleCommitDescription(commit.short_hash)"
-                                                class="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-all duration-200"
-                                                :class="expandedCommit === commit.short_hash ? 'rotate-180' : 'rotate-0'">
-                                            <x-heroicon-o-chevron-down class="w-4 h-4" />
-                                        </button>
                                     </div>
                                     
                                     {{-- Author & Time --}}
@@ -717,13 +723,20 @@
 
                                 </div>
                                 
-                                {{-- Commit Hash & Actions --}}
+                                {{-- Actions --}}
                                 <div class="flex items-center gap-2 flex-shrink-0">
-
-                                    {{-- Commit Hash --}}
-                                    <code class="text-xs font-mono text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded" x-text="commit.short_hash">
-                                    </code>
                                     
+                                    {{-- Chevron Icon (only show if description exists) --}}
+                                    <x-tooltip :text="__('changelog.toggle_commit_description')" position="left">
+                                        <button type="button"
+                                                x-show="commit.description && commit.description.length > 0"
+                                                @click.stop="toggleCommitDescription(commit.short_hash)"
+                                                class="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-all duration-200"
+                                                :class="expandedCommit === commit.short_hash ? 'rotate-180' : 'rotate-0'">
+                                            <x-heroicon-o-chevron-down class="w-4 h-4" />
+                                        </button>
+                                    </x-tooltip>
+
                                     {{-- View Details Button --}}
                                     <x-tooltip :text="__('changelog.view_commit_details')" position="left">
                                         <button type="button"

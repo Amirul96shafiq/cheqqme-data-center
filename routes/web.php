@@ -484,6 +484,7 @@ Route::get('/changelog', function () {
                 'author_avatar' => $commit['author_avatar'],
                 'message' => $commit['message'],
                 'description' => $commit['description'] ?? '',
+                'tags' => $commit['tags'] ?? [],
             ];
         })->values(); // Convert to indexed array
 
