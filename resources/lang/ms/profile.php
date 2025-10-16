@@ -74,8 +74,15 @@ return [
         // Zoom Connection
         'connect_zoom' => 'Sambung',
         'disconnect_zoom' => 'Putuskan Sambungan',
+        'disconnect_zoom_confirm' => 'Putuskan Sambungan Akaun Zoom',
         'disconnect_zoom_description' => 'Adakah anda pasti ingin memutuskan sambungan Zoom? Anda tidak lagi boleh menghasilkan pautan Zoom Meeting.',
         'zoom_disconnected' => 'API Zoom Diputuskan',
+        'zoom_disconnected_body' => 'Akaun Zoom anda telah berjaya diputuskan.',
+        'zoom_connection' => 'API Zoom',
+        'zoom_description' => 'Sambungkan akaun Zoom anda untuk menjana pautan mesyuarat dan mengurus mesyuarat Zoom.',
+        'zoom_connected' => 'API Zoom Disambungkan',
+        'zoom_connected_body' => 'Anda kini boleh menjana pautan Zoom Meeting untuk mesyuarat.',
+        'zoom_connection_failed' => 'Sambungan Zoom Gagal',
 
         // Microsoft Connection
         'connect_microsoft' => 'Akan Datang',

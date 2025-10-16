@@ -569,7 +569,7 @@ class Profile extends EditProfile
                                         ->visible(fn () => (bool) auth()->user()->zoom_token)
                                         ->requiresConfirmation()
                                         ->modalIcon('heroicon-o-link-slash')
-                                        ->modalHeading(__('profile.form.disconnect_zoom'))
+                                        ->modalHeading(__('profile.form.disconnect_zoom_confirm'))
                                         ->modalDescription(__('profile.form.disconnect_zoom_description'))
                                         ->modalSubmitActionLabel(__('profile.form.disconnect'))
                                         ->modalCancelActionLabel(__('profile.form.cancel'))

@@ -74,8 +74,15 @@ return [
         // Zoom Connection
         'connect_zoom' => 'Connect',
         'disconnect_zoom' => 'Disconnect',
+        'disconnect_zoom_confirm' => 'Disconnect Zoom Account',
         'disconnect_zoom_description' => 'Are you sure you want to disconnect your Zoom account? You will no longer be able to generate Zoom meeting links.',
         'zoom_disconnected' => 'Zoom API Disconnected',
+        'zoom_disconnected_body' => 'Your Zoom account has been successfully disconnected.',
+        'zoom_connection' => 'Zoom API',
+        'zoom_description' => 'Connect your Zoom account to generate meeting links and manage Zoom meetings.',
+        'zoom_connected' => 'Zoom API Connected',
+        'zoom_connected_body' => 'You can now generate Zoom meeting links for meetings.',
+        'zoom_connection_failed' => 'Zoom Connection Failed',
 
         // Microsoft Connection
         'connect_microsoft' => 'Coming Soon',
