@@ -62,12 +62,31 @@
                         </p>
                     @endif
 
-                    {{-- Email --}}
-                    @if ($user && $user->email)
-                        <p class="text-[11px] md:text-lg font-semibold text-white/80 drop-shadow">
-                            {{ $user->email }}
-                        </p>
-                    @endif
+                    {{-- Email & Phone --}}
+                    <div class="space-y-0">
+                        @if ($user && $user->email)
+                            <p class="text-[11px] md:text-lg font-semibold text-white/80 drop-shadow">
+                                {{ $user->email }}
+                            </p>
+                        @endif
+
+                        @if ($user && $user->phone)
+                            <p class="text-[11px] md:text-lg font-semibold text-white/80 drop-shadow">
+                                @php
+                                    $country = $user->phone_country ?? 'MY';
+                                    $flag = match($country) {
+                                        'MY' => '🇲🇾',
+                                        'ID' => '🇮🇩',
+                                        'SG' => '🇸🇬',
+                                        'PH' => '🇵🇭',
+                                        'US' => '🇺🇸',
+                                        default => '🌐',
+                                    };
+                                @endphp
+                                {{ $flag }} {{ $user->phone }}
+                            </p>
+                        @endif
+                    </div>
 
                     {{-- Badges --}}
                     <div class="flex flex-wrap gap-2 justify-center">
