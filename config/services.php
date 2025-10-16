@@ -46,6 +46,12 @@ return [
         'calendar_redirect' => env('GOOGLE_CALENDAR_REDIRECT_URI', env('APP_URL').'/auth/google/calendar/callback'),
     ],
 
+    'zoom' => [
+        'client_id' => env('ZOOM_CLIENT_ID'),
+        'client_secret' => env('ZOOM_CLIENT_SECRET'),
+        'redirect_uri' => env('ZOOM_REDIRECT_URI', env('APP_URL').'/auth/zoom/callback'),
+    ],
+
     'microsoft' => [
         'client_id' => env('MICROSOFT_CLIENT_ID'),
         'client_secret' => env('MICROSOFT_CLIENT_SECRET'),

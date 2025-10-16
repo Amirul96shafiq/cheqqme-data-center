@@ -509,6 +509,94 @@ class Profile extends EditProfile
                             ->columns(['lg' => 5])
                             ->columnSpanFull(),
 
+                        // Zoom Connection
+                        Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
+                            '<div class="flex items-center gap-2">
+                                    <img src="'.asset('images/zoom-icon.svg').'" alt="Zoom" class="w-5 h-5">
+                                    <span>'.__('profile.fieldset.title.zoom_connection').'</span>
+                                </div>'
+                        ))
+                            ->schema([
+                                Forms\Components\Placeholder::make('zoom_status')
+                                    ->label(__('profile.form.connection_status'))
+                                    ->content(function () {
+                                        $user = auth()->user();
+
+                                        if ($user->zoom_token && $user->zoom_connected_at) {
+                                            return new \Illuminate\Support\HtmlString(
+                                                '<div class="flex items-center gap-2">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        '.__('profile.form.connected').'
+                                                    </span>
+                                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                        Connected on '.$user->zoom_connected_at->format('j/n/y, h:i A').'
+                                                    </span>
+                                                </div>'
+                                            );
+                                        }
+
+                                        return new \Illuminate\Support\HtmlString(
+                                            '<div class="flex items-center gap-2">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    '.__('profile.form.not_connected').'
+                                                </span>
+                                            </div>'
+                                        );
+                                    })
+                                    ->columnSpan(['default' => 'full', 'lg' => 4]),
+
+                                Forms\Components\Actions::make([
+                                    Forms\Components\Actions\Action::make('connect_zoom')
+                                        ->label(__('profile.form.connect_zoom'))
+                                        ->color('primary')
+                                        ->icon('heroicon-o-link')
+                                        ->visible(fn () => ! auth()->user()->zoom_token)
+                                        ->url('/auth/zoom?state=profile')
+                                        ->openUrlInNewTab(false)
+                                        ->extraAttributes(['class' => 'w-full']),
+
+                                    Forms\Components\Actions\Action::make('disconnect_zoom')
+                                        ->label(__('profile.form.disconnect_zoom'))
+                                        ->color('danger')
+                                        ->outlined()
+                                        ->icon('heroicon-o-link-slash')
+                                        ->visible(fn () => (bool) auth()->user()->zoom_token)
+                                        ->requiresConfirmation()
+                                        ->modalIcon('heroicon-o-link-slash')
+                                        ->modalHeading(__('profile.form.disconnect_zoom'))
+                                        ->modalDescription(__('profile.form.disconnect_zoom_description'))
+                                        ->modalSubmitActionLabel(__('profile.form.disconnect'))
+                                        ->modalCancelActionLabel(__('profile.form.cancel'))
+                                        ->modalWidth('md')
+                                        ->extraAttributes(['class' => 'w-full'])
+                                        ->action(function () {
+                                            $user = auth()->user();
+                                            $user->update([
+                                                'zoom_token' => null,
+                                                'zoom_connected_at' => null,
+                                            ]);
+
+                                            Notification::make()
+                                                ->title(__('profile.form.zoom_disconnected'))
+                                                ->success()
+                                                ->send();
+                                        }),
+                                ])
+                                    ->columnSpan(['default' => 'full', 'lg' => 1])
+                                    ->alignment(Alignment::End)
+                                    ->extraAttributes([
+                                        'class' => 'lg:-mt-2.5 mt-0',
+                                    ]),
+                            ])
+                            ->columns(['lg' => 5])
+                            ->columnSpanFull(),
+
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
                                     <img src="'.asset('images/microsoft-icon.svg').'" alt="Microsoft" class="w-5 h-5">

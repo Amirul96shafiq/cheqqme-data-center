@@ -46,6 +46,8 @@ class User extends Authenticatable implements HasAvatar
         'google_connected_at',
         'google_calendar_token',
         'google_calendar_connected_at',
+        'zoom_token',
+        'zoom_connected_at',
         'microsoft_id',
         'microsoft_avatar_url',
         'microsoft_connected_at',
@@ -148,6 +150,7 @@ class User extends Authenticatable implements HasAvatar
             'last_status_change' => 'datetime',
             'google_connected_at' => 'datetime',
             'google_calendar_connected_at' => 'datetime',
+            'zoom_connected_at' => 'datetime',
             'microsoft_connected_at' => 'datetime',
             'spotify_connected_at' => 'datetime',
         ];

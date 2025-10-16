@@ -4,6 +4,7 @@ return [
     'fieldset' => [
         'title' => [
             'google_calendar_connection' => 'Google Calendar API',
+            'zoom_connection' => 'Zoom API',
         ],
     ],
 
@@ -69,6 +70,12 @@ return [
         'google_calendar_disconnected' => 'Google Calendar API Disconnected',
         'google_calendar_connected' => 'Google Calendar API Connected',
         'google_calendar_connected_body' => 'You can now generate Google Meet links for meetings.',
+
+        // Zoom Connection
+        'connect_zoom' => 'Connect',
+        'disconnect_zoom' => 'Disconnect',
+        'disconnect_zoom_description' => 'Are you sure you want to disconnect your Zoom account? You will no longer be able to generate Zoom meeting links.',
+        'zoom_disconnected' => 'Zoom API Disconnected',
 
         // Microsoft Connection
         'connect_microsoft' => 'Coming Soon',

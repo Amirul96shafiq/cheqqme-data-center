@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\GoogleCalendarController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\ZoomController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\WeatherController;
@@ -201,6 +202,12 @@ Route::get('/auth/google/calendar', [GoogleCalendarController::class, 'redirectT
 Route::get('/auth/google/calendar/callback', [GoogleCalendarController::class, 'handleGoogleCalendarCallback'])->name('auth.google.calendar.callback');
 Route::post('/auth/google/calendar/disconnect', [GoogleCalendarController::class, 'disconnectGoogleCalendar'])->name('auth.google.calendar.disconnect')->middleware('auth');
 Route::get('/auth/google/calendar/status', [GoogleCalendarController::class, 'checkConnectionStatus'])->name('auth.google.calendar.status')->middleware('auth');
+
+// Zoom OAuth routes
+Route::get('/auth/zoom', [ZoomController::class, 'redirectToZoom'])->name('auth.zoom')->middleware('auth');
+Route::get('/auth/zoom/callback', [ZoomController::class, 'handleZoomCallback'])->name('auth.zoom.callback');
+Route::post('/auth/zoom/disconnect', [ZoomController::class, 'disconnectZoom'])->name('auth.zoom.disconnect')->middleware('auth');
+Route::get('/auth/zoom/status', [ZoomController::class, 'checkConnectionStatus'])->name('auth.zoom.status')->middleware('auth');
 
 // Debug route for testing OAuth flow (remove in production)
 Route::get('/debug/google-calendar', function () {

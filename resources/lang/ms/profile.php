@@ -4,6 +4,7 @@ return [
     'fieldset' => [
         'title' => [
             'google_calendar_connection' => 'API Google Calendar',
+            'zoom_connection' => 'API Zoom',
         ],
     ],
 
@@ -69,6 +70,12 @@ return [
         'google_calendar_disconnected' => 'API Google Calendar Diputuskan',
         'google_calendar_connected' => 'API Google Calendar Disambungkan',
         'google_calendar_connected_body' => 'Anda kini boleh menjana pautan Google Meet untuk mesyuarat.',
+
+        // Zoom Connection
+        'connect_zoom' => 'Sambung',
+        'disconnect_zoom' => 'Putuskan Sambungan',
+        'disconnect_zoom_description' => 'Adakah anda pasti ingin memutuskan sambungan Zoom? Anda tidak lagi boleh menghasilkan pautan Zoom Meeting.',
+        'zoom_disconnected' => 'API Zoom Diputuskan',
 
         // Microsoft Connection
         'connect_microsoft' => 'Akan Datang',
