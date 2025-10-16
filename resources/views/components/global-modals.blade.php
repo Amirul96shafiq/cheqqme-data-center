@@ -672,8 +672,12 @@
                 {{-- Commits List --}}
                 <div x-show="!loading && commits.length > 0" class="space-y-0">
                     <template x-for="commit in commits" :key="commit.short_hash">
-                        <div class="group border-b border-gray-100 dark:border-gray-800 last:border-b-0 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 -mx-6 px-6 transition-colors">
-                            <div class="flex items-start gap-3">
+                        <div class="group border-b border-gray-100 dark:border-gray-800 last:border-b-0 py-4 -mx-6 px-6 transition-colors">
+                            
+                            {{-- Commit Header (Clickable) --}}
+                            <div @click="commit.description && commit.description.length > 0 ? toggleCommitDescription(commit.short_hash) : null"
+                                 :class="commit.description && commit.description.length > 0 ? 'cursor-pointer' : ''"
+                                 class="flex items-start gap-3 -mx-6 px-6 py-0">
 
                                 {{-- Author Avatar --}}
                                 <img :src="commit.author_avatar" 
@@ -685,9 +689,18 @@
                                 <div class="flex-1 min-w-0">
 
                                     {{-- Commit Message --}}
-                                    <div class="mb-2">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100 leading-relaxed" x-text="commit.message">
+                                    <div class="mb-2 flex items-start gap-2">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100 leading-relaxed flex-1" x-text="commit.message">
                                         </p>
+                                        
+                                        {{-- Chevron Icon (only show if description exists) --}}
+                                        <button type="button"
+                                                x-show="commit.description && commit.description.length > 0"
+                                                @click.stop="toggleCommitDescription(commit.short_hash)"
+                                                class="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-all duration-200"
+                                                :class="expandedCommit === commit.short_hash ? 'rotate-180' : 'rotate-0'">
+                                            <x-heroicon-o-chevron-down class="w-4 h-4" />
+                                        </button>
                                     </div>
                                     
                                     {{-- Author & Time --}}
@@ -714,7 +727,7 @@
                                     {{-- View Details Button --}}
                                     <x-tooltip :text="__('changelog.view_commit_details')" position="left">
                                         <button type="button"
-                                                @click="showCommitDetail(commit.short_hash)"
+                                                @click.stop="showCommitDetail(commit.short_hash)"
                                                 class="p-1 text-primary-400 hover:text-primary-600 dark:text-primary-500 dark:hover:text-primary-300 transition-colors">
                                             <x-heroicon-o-code-bracket class="w-4 h-4" />
                                         </button>
@@ -722,6 +735,20 @@
 
                                 </div>
 
+                            </div>
+
+                            {{-- Commit Description (Collapsible) --}}
+                            <div x-show="expandedCommit === commit.short_hash && commit.description && commit.description.length > 0"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 -translate-y-2"
+                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 translate-y-0"
+                                 x-transition:leave-end="opacity-0 -translate-y-2"
+                                 class="mt-3 pl-9 pr-6">
+                                <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                                    <p class="font-mono text-xs text-gray-500 dark:text-gray-400 leading-relaxed whitespace-pre-wrap" x-text="commit.description"></p>
+                                </div>
                             </div>
 
                         </div>
@@ -920,6 +947,7 @@
             totalCommits: 0,
             pagination: null,
             currentPage: 1,
+            expandedCommit: null,
             
             init() {
                 // Debug: Log initial modal state
@@ -1189,6 +1217,11 @@
                 // Redirect to GitHub commit page
                 const githubUrl = `https://github.com/Amirul96shafiq/cheqqme-data-center/commit/${hash}`;
                 window.open(githubUrl, '_blank');
+            },
+
+            toggleCommitDescription(hash) {
+                // Toggle the expanded commit (collapse if already open)
+                this.expandedCommit = this.expandedCommit === hash ? null : hash;
             },
 
             resetChangelog() {

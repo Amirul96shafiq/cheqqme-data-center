@@ -483,8 +483,9 @@ Route::get('/changelog', function () {
                 'author_email' => $commit['author_email'],
                 'author_avatar' => $commit['author_avatar'],
                 'message' => $commit['message'],
+                'description' => $commit['description'] ?? '',
             ];
-        });
+        })->values(); // Convert to indexed array
 
         return response()->json([
             'success' => true,
