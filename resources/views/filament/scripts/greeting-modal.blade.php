@@ -357,7 +357,7 @@ function openGreetingModal(forceOpen = false) {
             </div>
             
             <!-- Footer Actions -->
-            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 flex-shrink-0">
+            <div class="px-6 py-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 flex-shrink-0">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
                     <div class="flex items-center">
                         <input type="checkbox" id="noShowGreetingToday" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
