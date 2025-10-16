@@ -63,6 +63,7 @@ return [
         'connection_status' => 'Connection Status',
         'connected' => 'Connected',
         'not_connected' => 'Not Connected',
+        'connected_on' => 'Connected on',
         'connect_google_calendar' => 'Connect',
         'disconnect_google_calendar' => 'Disconnect',
         'disconnect_google_calendar_confirm' => 'Disconnect Google Calendar',

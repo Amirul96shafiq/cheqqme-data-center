@@ -359,7 +359,7 @@ class Profile extends EditProfile
                                                         '.__('profile.form.connected').'
                                                     </span>
                                                     <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                        Connected on '.($user->google_connected_at ? $user->google_connected_at->format('j/n/y, h:i A') : $user->updated_at->format('j/n/y, h:i A')).'
+                                                        '.__('profile.form.connected_on').' '.($user->google_connected_at ? $user->google_connected_at->format('j/n/y, h:i A') : $user->updated_at->format('j/n/y, h:i A')).'
                                                     </span>
                                                 </div>'
                                             );
@@ -444,7 +444,7 @@ class Profile extends EditProfile
                                                             '.__('profile.form.connected').'
                                                         </span>
                                                         <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                            Connected on '.$user->google_calendar_connected_at->format('j/n/y, h:i A').'
+                                                            '.__('profile.form.connected_on').' '.$user->google_calendar_connected_at->format('j/n/y, h:i A').'
                                                         </span>
                                                     </div>'
                                             );
@@ -532,7 +532,7 @@ class Profile extends EditProfile
                                                         '.__('profile.form.connected').'
                                                     </span>
                                                     <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                        Connected on '.$user->zoom_connected_at->format('j/n/y, h:i A').'
+                                                        '.__('profile.form.connected_on').' '.$user->zoom_connected_at->format('j/n/y, h:i A').'
                                                     </span>
                                                 </div>'
                                             );
@@ -669,7 +669,7 @@ class Profile extends EditProfile
                                                         '.__('profile.form.connected').'
                                                     </span>
                                                     <span class="text-xs text-gray-500 dark:text-gray-400">
-                                                        Connected on '.($user->spotify_connected_at ? $user->spotify_connected_at->format('j/n/y, h:i A') : $user->updated_at->format('j/n/y, h:i A')).'
+                                                        '.__('profile.form.connected_on').' '.($user->spotify_connected_at ? $user->spotify_connected_at->format('j/n/y, h:i A') : $user->updated_at->format('j/n/y, h:i A')).'
                                                     </span>
                                                 </div>'
                                             );
