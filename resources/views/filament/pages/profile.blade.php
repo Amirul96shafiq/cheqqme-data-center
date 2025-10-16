@@ -8,7 +8,7 @@
 >
     {{-- Cover Image Section --}}
     <div class="relative h-[30vh] md:h-64 lg:h-80 xl:h-96 w-full overflow-visible rounded-2xl z-10">
-    <img
+        <img
             src="{{ $user && $user->cover_image ? $user->getFilamentCoverImageUrl() : asset('storage/default-cover-img.png') }}"
             alt="Cover Image"
             class="w-full h-full object-cover rounded-2xl"
@@ -25,12 +25,14 @@
 
                 {{-- User ID and Avatar --}}
                 <div class="mb-4 mt-8 md:mt-0 relative inline-block">
+
                     {{-- User ID above avatar --}}
                     <div class="mb-2 text-center">
                         <p class="text-xs md:text-sm text-white/90 drop-shadow-md px-3 py-1 bg-black/40 rounded-full inline-block">
                             ID: {{ $user->id ?? 'N/A' }}
                         </p>
                     </div>
+
                     <x-filament::avatar
                         :src="$user ? filament()->getUserAvatarUrl($user) : null"
                         alt="Avatar"
@@ -42,10 +44,12 @@
                     <div class="absolute -bottom-1 right-2">
                         <x-interactive-online-status-indicator :user="$user" size="xl" />
                     </div>
+
                 </div>
 
                 {{-- User information --}}
                 <div class="space-y-3">
+
                     {{-- Username --}}
                     <h1 class="text-lg md:text-2xl lg:text-3xl font-bold drop-shadow-lg">
                         {{ $user->username ?? 'Username' }}
@@ -65,23 +69,70 @@
                         </p>
                     @endif
 
-                    {{-- Badges: Country & Timezone --}}
+                    {{-- Badges --}}
                     <div class="flex flex-wrap gap-2 justify-center">
+
+                        <!-- Country -->
                         @if ($user && $user->country)
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium bg-teal-100/90 text-teal-900">
-                                {{ $user->country }}
-                            </span>
+                            <x-tooltip position="top" text="{{ __('user.badge.country') }}">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium bg-teal-100/90 text-teal-900">
+                                    {{ $user->country }}
+                                </span>
+                            </x-tooltip>
                         @endif
 
+                        <!-- Timezone -->
                         @if ($user && $user->timezone)
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium bg-teal-100/90 text-teal-900">
-                                {{ $user->timezone }}
-                            </span>
+                            <x-tooltip position="top" text="{{ __('user.badge.timezone') }}">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium bg-teal-100/90 text-teal-900">
+                                    {{ $user->timezone }}
+                                </span>
+                            </x-tooltip>
                         @endif
+
+                        <!-- Google OAuth -->
+                        @if ($user->google_id && $user->google_connected_at)
+                            <x-tooltip position="top" text="{{ __('user.badge.google_oauth') }}">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium bg-teal-100/90 text-teal-900">
+                                    Google
+                                </span>
+                            </x-tooltip>
+                        @endif
+
+                        <!-- Google Calendar API -->
+                        @if ($user->google_calendar_token && $user->google_calendar_connected_at)
+                            <x-tooltip position="top" text="{{ __('user.badge.google_calendar') }}">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium bg-teal-100/90 text-teal-900">
+                                    Calendar
+                                </span>
+                            </x-tooltip>
+                        @endif
+                        
+                        <!-- Zoom API -->
+                        @if ($user->zoom_token && $user->zoom_connected_at)
+                            <x-tooltip position="top" text="{{ __('user.badge.zoom_api') }}">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium bg-teal-100/90 text-teal-900">
+                                    Zoom
+                                </span>
+                            </x-tooltip>
+                        @endif
+
+                        <!-- Spotify -->
+                        @if ($user->spotify_id && $user->spotify_connected_at)
+                            <x-tooltip position="top" text="{{ __('user.badge.spotify') }}">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium bg-teal-100/90 text-teal-900">
+                                    Spotify
+                                </span>
+                            </x-tooltip>
+                        @endif
+
                     </div>
+
                 </div>
+
             </div>
         </div>
+
     </div>
 
     {{-- Profile Form Sections --}}
