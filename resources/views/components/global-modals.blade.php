@@ -619,7 +619,7 @@
         <div role="dialog" 
              aria-modal="true" 
              aria-labelledby="changelog-heading" 
-             class="relative w-full max-w-4xl mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 pointer-events-auto min-h-[90vh] max-h-[90vh] overflow-hidden">
+             class="relative w-full max-w-4xl mx-auto cursor-default flex flex-col rounded-xl bg-white/65 dark:bg-gray-800/65 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 pointer-events-auto min-h-[90vh] max-h-[90vh] overflow-hidden">
             
             {{-- Header --}}
             <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-200 dark:border-gray-700">
