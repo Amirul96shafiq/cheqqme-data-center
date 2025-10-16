@@ -759,7 +759,7 @@
                                  x-transition:leave-start="opacity-100 translate-y-0"
                                  x-transition:leave-end="opacity-0 -translate-y-2"
                                  class="mt-3 pl-9 pr-6">
-                                <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                                <div class="py-2">
                                     <p class="font-mono text-xs text-gray-500 dark:text-gray-400 leading-relaxed whitespace-pre-wrap" x-text="commit.description"></p>
                                 </div>
                             </div>
