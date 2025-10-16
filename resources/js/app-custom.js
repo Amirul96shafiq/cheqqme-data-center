@@ -238,6 +238,61 @@ document.addEventListener("DOMContentLoaded", () => {
 })();
 
 // -----------------------------
+// Show a tiny "Refreshed" helper bubble after refreshing weather
+// -----------------------------
+(function () {
+    window.showRefreshedBubble = function (anchor) {
+        try {
+            const rect = anchor.getBoundingClientRect();
+            const bubble = document.createElement("div");
+            // Get the language from document's lang attribute or default to 'en'
+            const lang = document.documentElement.lang || "en";
+            const messages = {
+                en: "Refreshed!",
+                ms: "Dikemas Kini!",
+            };
+            bubble.textContent = messages[lang] || messages["en"];
+            bubble.style.position = "fixed";
+            bubble.style.zIndex = "9999";
+            bubble.style.top = rect.top - 40 + "px";
+            bubble.style.left = "0px";
+            bubble.style.background = "#00AE9F";
+            bubble.style.color = "#fff";
+            bubble.style.padding = "4px 8px";
+            bubble.style.borderRadius = "6px";
+            bubble.style.fontSize = "12px";
+            bubble.style.opacity = "0";
+            bubble.style.transition =
+                "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
+            bubble.style.whiteSpace = "nowrap"; // Prevent text wrapping
+            document.body.appendChild(bubble);
+
+            // Center the bubble after it's rendered and we can measure its actual width
+            requestAnimationFrame(() => {
+                const bubbleRect = bubble.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                bubble.style.left = centerX - bubbleRect.width / 2 + "px";
+            });
+
+            // Smooth fade in
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    bubble.style.opacity = "1";
+                });
+            });
+
+            // Smooth fade out and remove
+            setTimeout(() => {
+                bubble.style.opacity = "0";
+                setTimeout(() => bubble.remove(), 400);
+            }, 1200);
+        } catch (e) {
+            // Silently fail if DOM not ready
+        }
+    };
+})();
+
+// -----------------------------
 // Reusable Clipboard Utility
 // -----------------------------
 window.copyToClipboard = function (

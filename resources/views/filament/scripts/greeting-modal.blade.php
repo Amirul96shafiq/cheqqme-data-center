@@ -973,6 +973,11 @@ async function refreshWeatherData() {
         
         // Fetch fresh data
         await fetchWeatherData();
+        
+        // Show success bubble after successful refresh
+        if (refreshButton && window.showRefreshedBubble) {
+            window.showRefreshedBubble(refreshButton);
+        }
     } catch (error) {
         console.error('Error refreshing weather data:', error);
         showWeatherError();
