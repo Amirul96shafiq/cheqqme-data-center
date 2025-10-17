@@ -6,6 +6,18 @@ return [
             'google_calendar_connection' => 'API Google Calendar',
             'zoom_connection' => 'API Zoom',
         ],
+        'description' => [
+            'google_title' => 'Kegunaan',
+            'google_text' => 'Sambungkan akaun Google anda untuk log masuk yang lebih cepat menggunakan OAuth dan mensinkronkan avatar Google dengan profil CheQQme anda secara automatik.',
+            'google_calendar_title' => 'Kegunaan',
+            'google_calendar_text' => 'Integrasikan Google Calendar untuk menghasilkan pautan Google Meet dan mengurus mesyuarat yang dijadualkan secara langsung dari CheQQme Data Center.',
+            'zoom_title' => 'Kegunaan',
+            'zoom_text' => 'Sambungkan akaun Zoom anda untuk menghasilkan pautan mesyuarat dengan segera dan mengurus mesyuarat virtual dengan lancar dalam CheQQme.',
+            'microsoft_title' => 'Kegunaan',
+            'microsoft_text' => 'Integrasi Microsoft OAuth akan datang tidak lama lagi. Ini akan membolehkan anda log masuk dengan akaun Microsoft dan mensinkronkan profil Microsoft anda.',
+            'spotify_title' => 'Kegunaan',
+            'spotify_text' => 'Sambungkan akaun Spotify anda untuk memaparkan muzik yang sedang dimainkan, mensinkronkan profil Spotify anda, dan mengaktifkan ciri integrasi muzik.',
+        ],
     ],
 
     // Sections

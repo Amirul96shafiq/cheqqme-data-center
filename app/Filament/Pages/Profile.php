@@ -356,6 +356,7 @@ class Profile extends EditProfile
                             ->schema([
                                 Forms\Components\Placeholder::make('google_status')
                                     ->label(__('profile.form.connection_status'))
+                                    ->helperText(new \Illuminate\Support\HtmlString('<span class="text-xs">'.__('profile.fieldset.description.google_text').'</span>'))
                                     ->content(function () {
                                         $icons = $this->getStatusIcons();
                                         $user = auth()->user();
@@ -431,13 +432,14 @@ class Profile extends EditProfile
 
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
-                                        <img src="'.asset('images/google-calendar.svg').'" alt="Google Calendar" class="w-5 h-5">
-                                        <span>'.__('profile.fieldset.title.google_calendar_connection').'</span>
-                                    </div>'
+                                <img src="'.asset('images/google-calendar.svg').'" alt="Google Calendar" class="w-5 h-5">
+                                <span>'.__('profile.fieldset.title.google_calendar_connection').'</span>
+                            </div>'
                         ))
                             ->schema([
                                 Forms\Components\Placeholder::make('google_calendar_status')
                                     ->label(__('profile.form.connection_status'))
+                                    ->helperText(new \Illuminate\Support\HtmlString('<span class="text-xs">'.__('profile.fieldset.description.google_calendar_text').'</span>'))
                                     ->content(function () {
                                         $icons = $this->getStatusIcons();
                                         $user = auth()->user();
@@ -515,13 +517,14 @@ class Profile extends EditProfile
                         // Zoom Connection
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
-                                    <img src="'.asset('images/zoom-icon.svg').'" alt="Zoom" class="w-5 h-5">
-                                    <span>'.__('profile.fieldset.title.zoom_connection').'</span>
-                                </div>'
+                                <img src="'.asset('images/zoom-icon.svg').'" alt="Zoom" class="w-5 h-5">
+                                <span>'.__('profile.fieldset.title.zoom_connection').'</span>
+                            </div>'
                         ))
                             ->schema([
                                 Forms\Components\Placeholder::make('zoom_status')
                                     ->label(__('profile.form.connection_status'))
+                                    ->helperText(new \Illuminate\Support\HtmlString('<span class="text-xs">'.__('profile.fieldset.description.zoom_text').'</span>'))
                                     ->content(function () {
                                         $icons = $this->getStatusIcons();
                                         $user = auth()->user();
@@ -599,13 +602,14 @@ class Profile extends EditProfile
 
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
-                                    <img src="'.asset('images/microsoft-icon.svg').'" alt="Microsoft" class="w-5 h-5">
-                                    <span>'.__('profile.form.microsoft_connection').'</span>
-                                </div>'
+                                <img src="'.asset('images/microsoft-icon.svg').'" alt="Microsoft" class="w-5 h-5">
+                                <span>'.__('profile.form.microsoft_connection').'</span>
+                            </div>'
                         ))
                             ->schema([
                                 Forms\Components\Placeholder::make('microsoft_status')
                                     ->label(__('profile.form.connection_status'))
+                                    ->helperText(new \Illuminate\Support\HtmlString('<span class="text-xs">'.__('profile.fieldset.description.microsoft_text').'</span>'))
                                     ->content(function () {
                                         $icons = $this->getStatusIcons();
 
@@ -650,13 +654,14 @@ class Profile extends EditProfile
 
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
-                                    <img src="'.asset('images/spotify-icon-green.svg').'" alt="Spotify" class="w-5 h-5">
-                                    <span>'.__('profile.form.spotify_connection').'</span>
-                                </div>'
+                                <img src="'.asset('images/spotify-icon-green.svg').'" alt="Spotify" class="w-5 h-5">
+                                <span>'.__('profile.form.spotify_connection').'</span>
+                            </div>'
                         ))
                             ->schema([
                                 Forms\Components\Placeholder::make('spotify_status')
                                     ->label(__('profile.form.connection_status'))
+                                    ->helperText(new \Illuminate\Support\HtmlString('<span class="text-xs">'.__('profile.fieldset.description.spotify_text').'</span>'))
                                     ->content(function () {
                                         $icons = $this->getStatusIcons();
                                         $user = auth()->user();

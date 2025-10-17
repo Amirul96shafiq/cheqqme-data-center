@@ -6,6 +6,18 @@ return [
             'google_calendar_connection' => 'Google Calendar API',
             'zoom_connection' => 'Zoom API',
         ],
+        'description' => [
+            'google_title' => 'Purpose',
+            'google_text' => 'Connect your Google account for faster sign-in using OAuth and automatically sync your Google avatar with your CheQQme profile.',
+            'google_calendar_title' => 'Purpose',
+            'google_calendar_text' => 'Integrate Google Calendar to generate Google Meet links and manage scheduled meetings directly from CheQQme Data Center.',
+            'zoom_title' => 'Purpose',
+            'zoom_text' => 'Connect your Zoom account to generate meeting links instantly and manage virtual meetings seamlessly within CheQQme.',
+            'microsoft_title' => 'Purpose',
+            'microsoft_text' => 'Microsoft OAuth integration is coming soon. This will allow you to sign in with your Microsoft account and sync your Microsoft profile.',
+            'spotify_title' => 'Purpose',
+            'spotify_text' => 'Link your Spotify account to display your current playing music, sync your Spotify profile, and enable music integration features.',
+        ],
     ],
 
     // Sections
