@@ -76,9 +76,9 @@ class Profile extends EditProfile
     protected function getStatusIcons(): array
     {
         return [
-            'check' => \Illuminate\Support\Facades\Blade::render('<x-icons.custom-icon name="check" class="w-3 h-3 mr-1" />'),
-            'x-mark' => \Illuminate\Support\Facades\Blade::render('<x-icons.custom-icon name="x-mark" class="w-3 h-3 mr-1" />'),
-            'warning' => \Illuminate\Support\Facades\Blade::render('<x-icons.custom-icon name="warning" class="w-3 h-3 mr-1" />'),
+            'check' => svg('custom-check', 'w-3 h-3 mr-1')->toHtml(),
+            'x-mark' => svg('custom-x-mark', 'w-3 h-3 mr-1')->toHtml(),
+            'warning' => svg('custom-warning', 'w-3 h-3 mr-1')->toHtml(),
         ];
     }
 

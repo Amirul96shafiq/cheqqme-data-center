@@ -15,6 +15,11 @@ return [
 
     'sets' => [
 
+        'custom' => [
+            'path' => 'resources/views/components/icons',
+            'prefix' => 'custom',
+        ],
+
         // 'default' => [
         //
         //     /*
