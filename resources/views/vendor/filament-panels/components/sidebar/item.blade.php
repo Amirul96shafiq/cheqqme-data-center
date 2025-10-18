@@ -191,7 +191,7 @@
         >
             <div>
                 @if ($dropdownTitle)
-                    <div class="px-4 py-2 text-xs font-regular text-primary-300 dark:text-primary-600">
+                    <div class="px-4 py-2 text-xs font-regular text-primary-500">
                         {{ $dropdownTitle }}
                     </div>
                 @endif
@@ -207,7 +207,7 @@
                         @if (isset($dropdownItem['icon']))
                             <x-filament::icon
                                 :icon="$dropdownItem['icon']"
-                                class="fi-dropdown-list-item-icon h-5 w-5 text-gray-400 dark:text-gray-500"
+                                class="fi-dropdown-list-item-icon h-4 w-4 text-gray-400 dark:text-gray-500"
                             />
                         @endif
                         <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
