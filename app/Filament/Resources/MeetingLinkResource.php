@@ -364,9 +364,6 @@ class MeetingLinkResource extends Resource
                                                 ->columnSpan(2),
                                         ]),
 
-                                    // Hidden field to track meeting ID
-                                    Forms\Components\Hidden::make('meeting_id'),
-
                                     // Hidden field to track unsaved changes
                                     Forms\Components\Hidden::make('has_unsaved_meeting')
                                         ->dehydrated(false),
@@ -510,6 +507,13 @@ class MeetingLinkResource extends Resource
                                         ->native(false)
                                         ->nullable()
                                         ->multiple()
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\TextInput::make('meeting_id')
+                                        ->label('Meeting ID')
+                                        ->disabled()
+                                        ->dehydrated()
+                                        ->placeholder('Meeting ID auto-generated after Meeting URL is created / regenerated')
                                         ->columnSpanFull(),
                                 ])
                                 ->collapsible()
