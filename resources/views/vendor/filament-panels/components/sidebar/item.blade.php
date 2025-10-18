@@ -189,7 +189,7 @@
                 })
             "
         >
-            <div>
+            <div class="flex flex-col gap-y-1">
                 @if ($dropdownTitle)
                     <div class="px-4 py-2 text-xs font-light text-primary-500">
                         {{ $dropdownTitle }}
@@ -197,20 +197,37 @@
                 @endif
 
                 @foreach ($dropdownItems as $dropdownItem)
+                    @php
+                        $isActive = request()->url() === $dropdownItem['url'];
+                    @endphp
                     <a
                         href="{{ $dropdownItem['url'] ?? '#' }}"
                         @if ($dropdownItem['new_tab'] ?? false)
                             target="_blank"
                         @endif
-                        class="fi-dropdown-list-item group flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5 [&:hover_.fi-dropdown-list-item-icon]:text-gray-600 [&:hover_.fi-dropdown-list-item-icon]:dark:text-gray-300"
+                        @class([
+                            'fi-dropdown-list-item group flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none',
+                            'bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white' => $isActive,
+                            'hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5' => !$isActive,
+                            '[&:hover_.fi-dropdown-list-item-icon]:text-gray-600 [&:hover_.fi-dropdown-list-item-icon]:dark:text-gray-300' => !$isActive,
+                            '[&_.fi-dropdown-list-item-icon]:text-primary-600 [&_.fi-dropdown-list-item-icon]:dark:text-primary-400' => $isActive,
+                        ])
                     >
                         @if (isset($dropdownItem['icon']))
                             <x-filament::icon
                                 :icon="$dropdownItem['icon']"
-                                class="fi-dropdown-list-item-icon h-4 w-4 text-gray-400 dark:text-gray-500 transition-colors duration-75"
+                                @class([
+                                    'fi-dropdown-list-item-icon h-4 w-4 transition-colors duration-75',
+                                    'text-primary-600 dark:text-primary-400' => $isActive,
+                                    'text-gray-400 dark:text-gray-500' => !$isActive,
+                                ])
                             />
                         @endif
-                        <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
+                        <span @class([
+                            'fi-dropdown-list-item-label flex-1 truncate text-start',
+                            'text-primary-500 dark:text-primary-300' => $isActive,
+                            'text-gray-700 dark:text-gray-200' => !$isActive,
+                        ])>
                             {{ $dropdownItem['label'] }}
                         </span>
                     </a>
