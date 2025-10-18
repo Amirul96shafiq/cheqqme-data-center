@@ -39,15 +39,11 @@
         @if ($hasDropdown && $sidebarCollapsible)
             x-data="{
                 showDropdown: false,
-                timeout: null,
                 enter() {
-                    clearTimeout(this.timeout);
                     this.showDropdown = true;
                 },
                 leave() {
-                    this.timeout = setTimeout(() => {
-                        this.showDropdown = false;
-                    }, 150);
+                    this.showDropdown = false;
                 }
             }"
             @mouseenter="enter()"
@@ -179,7 +175,7 @@
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
             x-show="$store.sidebar.isOpen && showDropdown"
-            class="fixed z-[9999] ml-2 w-64 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-md focus:outline-none"
+            class="fixed z-[9999] ml-2 w-52 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none"
             style="display: none;"
             x-ref="dropdown"
             x-init="
