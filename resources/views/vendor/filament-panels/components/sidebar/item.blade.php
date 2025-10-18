@@ -191,7 +191,7 @@
         >
             <div>
                 @if ($dropdownTitle)
-                    <div class="px-4 py-2 text-xs font-regular text-primary-500">
+                    <div class="px-4 py-2 text-xs font-light text-primary-500">
                         {{ $dropdownTitle }}
                     </div>
                 @endif
