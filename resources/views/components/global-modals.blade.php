@@ -637,12 +637,14 @@
                 </div>
                 
                 {{-- Close Button --}}
-                <x-close-button 
-                    @click="closeModal('changelog')" 
-                    size="lg"
-                    variant="minimal"
-                    class="focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
-                />
+                <x-tooltip :text="__('changelog.close_modal')" position="left">
+                    <x-close-button 
+                        @click="closeModal('changelog')" 
+                        size="lg"
+                        variant="minimal"
+                        class="focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                    />
+                </x-tooltip>
                 
             </div>
             
@@ -787,26 +789,31 @@
                     <div class="flex items-center space-x-3">
                         
                         {{-- Previous Page --}}
-                        <button x-show="pagination && pagination.current_page > 1"
-                                @click="loadPage(pagination.current_page - 1)"
-                                :aria-label="'{{ __('changelog.previous_page') }}'"
-                                class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
-                            <x-heroicon-o-arrow-left class="w-5 h-5 text-primary-900 transition-colors" />
-                        </button>
-                        <button x-show="pagination && pagination.current_page === 1" disabled :aria-label="'{{ __('changelog.previous_page') }}'" class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center cursor-not-allowed opacity-50">
-                            <x-heroicon-o-arrow-left class="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                        </button>
+                        <x-tooltip :text="__('changelog.previous_page')" position="left">
+                            <button x-show="pagination && pagination.current_page > 1"
+                                    @click="loadPage(pagination.current_page - 1)"
+                                    :aria-label="'{{ __('changelog.previous_page') }}'"
+                                    class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
+                                <x-heroicon-o-arrow-left class="w-5 h-5 text-primary-900 transition-colors" />
+                            </button>
+                            <button x-show="pagination && pagination.current_page === 1" disabled :aria-label="'{{ __('changelog.previous_page') }}'" class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center cursor-not-allowed opacity-50">
+                                <x-heroicon-o-arrow-left class="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                            </button>
+                        </x-tooltip>
                         
                         {{-- Next Page --}}
+                        <x-tooltip :text="__('changelog.next_page')" position="left">
                         <button x-show="pagination && pagination.current_page < pagination.last_page"
                                 @click="loadPage(pagination.current_page + 1)"
                                 :aria-label="'{{ __('changelog.next_page') }}'"
                                 class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group">
                             <x-heroicon-o-arrow-right class="w-5 h-5 text-primary-900 transition-colors" />
                         </button>
-                        <button x-show="pagination && pagination.current_page === pagination.last_page" disabled :aria-label="'{{ __('changelog.next_page') }}'" class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center cursor-not-allowed opacity-50">
-                            <x-heroicon-o-arrow-right class="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                        </button>
+                            <button x-show="pagination && pagination.current_page === pagination.last_page" disabled :aria-label="'{{ __('changelog.next_page') }}'" class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center cursor-not-allowed opacity-50">
+                                <x-heroicon-o-arrow-right class="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                            </button>
+                        </x-tooltip>
+                        
                     </div>
                 </div>
             </div>

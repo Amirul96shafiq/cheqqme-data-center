@@ -13,6 +13,7 @@ return [
     // Actions
     'view_commit_details' => 'View Commit Details',
     'toggle_commit_description' => 'View Commit Description',
+    'close_modal' => 'Close',
     
     // Empty State
     'no_commits_found' => 'No commits found',
