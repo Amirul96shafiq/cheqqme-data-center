@@ -336,6 +336,11 @@ class MeetingLinkResource extends Resource
                                                                     $set('meeting_id', $result['meeting_id']);
                                                                     $set('has_unsaved_meeting', true);
 
+                                                                    // Set meeting passcode for Zoom meetings
+                                                                    if ($platform === 'Zoom Meeting' && isset($result['password'])) {
+                                                                        $set('meeting_passcode', $result['password']);
+                                                                    }
+
                                                                     $platformName = $platform === 'Google Meet' ? 'Google Meet' : 'Zoom';
                                                                     Notification::make()
                                                                         ->title("{$platformName} link regenerated successfully")
@@ -454,6 +459,11 @@ class MeetingLinkResource extends Resource
                                                         $set('meeting_id', $result['meeting_id']);
                                                         $set('has_unsaved_meeting', true);
 
+                                                        // Set meeting passcode for Zoom meetings
+                                                        if ($platform === 'Zoom Meeting' && isset($result['password'])) {
+                                                            $set('meeting_passcode', $result['password']);
+                                                        }
+
                                                         $platformName = $platform === 'Google Meet' ? 'Google Meet' : 'Zoom';
                                                         Notification::make()
                                                             ->title("{$platformName} link generated successfully")
@@ -487,9 +497,9 @@ class MeetingLinkResource extends Resource
                                 ]),
 
                             // -----------------------------
-                            // Invite Attendees Section (40% - 2 columns)
+                            // Meeting Settings Section (40% - 2 columns)
                             // -----------------------------
-                            Forms\Components\Section::make(__('meetinglink.form.invite_attendees'))
+                            Forms\Components\Section::make(__('meetinglink.form.meeting_settings'))
                                 ->schema([
                                     Forms\Components\Select::make('user_ids')
                                         ->label(__('meetinglink.form.users'))
@@ -514,6 +524,14 @@ class MeetingLinkResource extends Resource
                                         ->disabled()
                                         ->dehydrated()
                                         ->placeholder(__('meetinglink.form.meeting_id_placeholder'))
+                                        ->columnSpanFull(),
+
+                                    Forms\Components\TextInput::make('meeting_passcode')
+                                        ->label(__('meetinglink.form.meeting_passcode'))
+                                        ->disabled()
+                                        ->dehydrated()
+                                        ->placeholder(__('meetinglink.form.meeting_passcode_placeholder'))
+                                        ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Zoom Meeting')
                                         ->columnSpanFull(),
                                 ])
                                 ->collapsible()

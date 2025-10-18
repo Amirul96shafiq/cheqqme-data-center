@@ -23,6 +23,7 @@ class MeetingLink extends Model
         'meeting_platform',
         'meeting_url',
         'meeting_id',
+        'meeting_passcode',
         'meeting_start_time',
         'meeting_duration',
         'notes',
