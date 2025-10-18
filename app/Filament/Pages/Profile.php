@@ -32,7 +32,13 @@ class Profile extends EditProfile
         }
 
         if (session('success')) {
-            $this->showGoogleCalendarConnectionSuccess();
+            $successMessage = session('success');
+            // Check if it's a Zoom connection success message
+            if (str_contains($successMessage, 'Zoom connected successfully')) {
+                $this->showZoomConnectionSuccess();
+            } else {
+                $this->showGoogleCalendarConnectionSuccess();
+            }
             session()->forget('success');
         }
 
@@ -1057,6 +1063,18 @@ class Profile extends EditProfile
         Notification::make()
             ->title(__('profile.form.google_calendar_connected'))
             ->body(__('profile.form.google_calendar_connected_body'))
+            ->success()
+            ->send();
+    }
+
+    /**
+     * Show success notification for Zoom connection
+     */
+    public function showZoomConnectionSuccess(): void
+    {
+        Notification::make()
+            ->title(__('profile.form.zoom_connected'))
+            ->body(__('profile.form.zoom_connected_body'))
             ->success()
             ->send();
     }
