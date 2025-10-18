@@ -6,6 +6,7 @@
     'label' => null,
     'sidebarCollapsible' => true,
     'subNavigation' => false,
+    'resourceDropdowns' => [],
 ])
 
 @php
@@ -244,6 +245,38 @@
                 }
             @endphp
 
+            @php
+                $itemLabel = $item->getLabel();
+                $dropdownItems = [];
+                $dropdownTitle = null;
+                
+                // Skip dropdown for Trello Board navigation items (they are external links)
+                // But allow the actual "Trello Boards" resource to have dropdown
+                $isTrelloBoardItem = str_contains($itemLabel, __('navigation.trello_board_suffix')) && $itemLabel !== 'Trello Boards';
+                
+                if (!$isTrelloBoardItem) {
+                    // Dynamically match item labels with resource dropdowns
+                    foreach ($resourceDropdowns as $resourceKey => $dropdownConfig) {
+                        $resourceTitle = $dropdownConfig['title'];
+                        
+                        // Direct label match
+                        if ($itemLabel === $resourceTitle) {
+                            $dropdownItems = $dropdownConfig['items'];
+                            $dropdownTitle = $dropdownConfig['title'];
+                            break;
+                        }
+                        
+                        // Check for partial matches (for cases where labels might be slightly different)
+                        if (str_contains(strtolower($itemLabel), strtolower($resourceTitle)) || 
+                            str_contains(strtolower($resourceTitle), strtolower($itemLabel))) {
+                            $dropdownItems = $dropdownConfig['items'];
+                            $dropdownTitle = $dropdownConfig['title'];
+                            break;
+                        }
+                    }
+                }
+            @endphp
+            
             <x-filament-panels::sidebar.item
                 :active="$item->isActive()"
                 :active-child-items="$item->isChildItemsActive()"
@@ -259,6 +292,8 @@
                 :should-open-url-in-new-tab="$item->shouldOpenUrlInNewTab()"
                 :sidebar-collapsible="$sidebarCollapsible"
                 :url="$item->getUrl()"
+                :dropdown-items="$dropdownItems"
+                :dropdown-title="$dropdownTitle"
             >
                 {{ $item->getLabel() }}
 

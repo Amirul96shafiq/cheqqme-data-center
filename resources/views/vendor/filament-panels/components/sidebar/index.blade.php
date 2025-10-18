@@ -5,6 +5,49 @@
 @php
     $openSidebarClasses = 'fi-sidebar-open w-[--sidebar-width] translate-x-0 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 rtl:-translate-x-0';
     $isRtl = __('filament-panels::layout.direction') === 'rtl';
+
+    // Dynamically generate dropdown items for all Filament resources
+    $resourceDropdowns = [];
+    
+    try {
+        $resources = \Filament\Facades\Filament::getCurrentPanel()->getResources();
+        
+        foreach ($resources as $resource) {
+            $resourceName = $resource::getSlug();
+            $resourceLabel = $resource::getPluralModelLabel();
+            
+            // Note: We don't skip trello-boards resource here as it's a legitimate Filament resource
+            // The dynamic Trello Board navigation items are handled separately in the group component
+            
+            // Generate routes for index and create pages
+            $indexRoute = "filament.admin.resources.{$resourceName}.index";
+            $createRoute = "filament.admin.resources.{$resourceName}.create";
+            
+            // Check if routes exist before adding to dropdown
+            if (\Route::has($indexRoute) && \Route::has($createRoute)) {
+                $resourceDropdowns[$resourceName] = [
+                    'title' => $resourceLabel,
+                    'items' => [
+                        [
+                            'label' => "All {$resourceLabel}",
+                            'url' => route($indexRoute),
+                            'icon' => 'heroicon-o-list-bullet',
+                            'new_tab' => false,
+                        ],
+                        [
+                            'label' => "Create " . $resource::getModelLabel(),
+                            'url' => route($createRoute),
+                            'icon' => 'heroicon-o-plus',
+                            'new_tab' => false,
+                        ],
+                    ],
+                ];
+            }
+        }
+    } catch (\Exception $e) {
+        // Fallback to empty array if there's any error
+        $resourceDropdowns = [];
+    }
 @endphp
 
 {{-- format-ignore-start --}}
@@ -136,6 +179,7 @@
                     :icon="$group->getIcon()"
                     :items="$group->getItems()"
                     :label="$group->getLabel()"
+                    :resource-dropdowns="$resourceDropdowns"
                     :attributes="\Filament\Support\prepare_inherited_attributes($group->getExtraSidebarAttributeBag())"
                 />
             @endforeach
