@@ -175,20 +175,21 @@
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
             x-show="$store.sidebar.isOpen && showDropdown"
-            class="fixed z-[9999] ml-2 w-52 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none"
+            class="fixed z-[9999] ml-2 p-1 w-52 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none"
             style="display: none;"
             x-ref="dropdown"
             x-init="
                 $watch('showDropdown', value => {
                     if (value) {
                         const rect = $el.parentElement.getBoundingClientRect();
-                        $el.style.left = (rect.right + 2) + 'px';
+                        const sidebarOpen = $store.sidebar.isOpen;
+                        $el.style.left = (rect.right + (sidebarOpen ? -20 : 0)) + 'px';
                         $el.style.top = rect.top + 'px';
                     }
                 })
             "
         >
-            <div class="py-2">
+            <div>
                 @if ($dropdownTitle)
                     <div class="px-4 py-2 text-xs font-regular text-primary-300 dark:text-primary-600">
                         {{ $dropdownTitle }}
@@ -201,15 +202,17 @@
                         @if ($dropdownItem['new_tab'] ?? false)
                             target="_blank"
                         @endif
-                        class="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors duration-150"
+                        class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5"
                     >
                         @if (isset($dropdownItem['icon']))
                             <x-filament::icon
                                 :icon="$dropdownItem['icon']"
-                                class="h-4 w-4 text-gray-400 dark:text-gray-500"
+                                class="fi-dropdown-list-item-icon h-5 w-5 text-gray-400 dark:text-gray-500"
                             />
                         @endif
-                        <span>{{ $dropdownItem['label'] }}</span>
+                        <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">
+                            {{ $dropdownItem['label'] }}
+                        </span>
                     </a>
                 @endforeach
             </div>
