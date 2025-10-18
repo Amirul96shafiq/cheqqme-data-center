@@ -29,6 +29,8 @@ return [
         'extra_info_title' => 'Tajuk',
         'extra_info_value' => 'Nilai',
         'add_extra_info' => 'Tambah Maklumat',
+        'meeting_id' => 'ID Mesyuarat',
+        'meeting_id_placeholder' => 'ID Mesyuarat dijana secara automatik selepas Pautan Mesyuarat dicipta / dijana semula',
         'copy_url' => 'Salin',
         'copy_url_tooltip' => 'Salin pautan ke papan keratan',
     ],
@@ -90,6 +92,12 @@ return [
         'restore' => 'Pulih',
         'force_delete' => 'Padam Kekal',
         'activity_log' => 'Log',
+        'connect_google_calendar' => 'Sambung Google Calendar',
+        'connect_zoom' => 'Sambung Zoom',
+        'create_client' => 'Tambah Pelanggan',
+        'create_project' => 'Tambah Projek',
+        'create_document' => 'Tambah Dokumen',
+        'create_important_url' => 'Tambah URL Penting',
     ],
 
     'notifications' => [
@@ -122,6 +130,8 @@ return [
         'regenerate_link_description' => 'Ini akan menggantikan pautan mesyuarat lama dan mencipta pautan baharu dengan butiran terkini.',
         'link_regenerated_title' => 'Pautan Google Meet berjaya dijana semula!',
         'link_regenerated_body' => 'Jangan lupa untuk simpan pautan mesyuarat.',
+        'zoom_access_required' => 'Akses Zoom Diperlukan',
+        'zoom_access_required_body' => 'Sila sambungkan akaun Zoom anda untuk menjana pautan mesyuarat.',
     ],
 
     'infolist' => [

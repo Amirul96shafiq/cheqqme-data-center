@@ -255,7 +255,7 @@ class MeetingLinkResource extends Resource
                                                                         ->warning()
                                                                         ->actions([
                                                                             \Filament\Notifications\Actions\Action::make('connect')
-                                                                                ->label('Connect Google Calendar')
+                                                                                ->label(__('meetinglink.actions.connect_google_calendar'))
                                                                                 ->url('/auth/google/calendar?state=meeting_link'),
                                                                         ])
                                                                         ->send();
@@ -267,12 +267,12 @@ class MeetingLinkResource extends Resource
 
                                                                 if (! $token) {
                                                                     Notification::make()
-                                                                        ->title('Zoom Access Required')
-                                                                        ->body('Please connect your Zoom account to generate meeting links.')
+                                                                        ->title(__('meetinglink.notifications.zoom_access_required'))
+                                                                        ->body(__('meetinglink.notifications.zoom_access_required_body'))
                                                                         ->warning()
                                                                         ->actions([
                                                                             \Filament\Notifications\Actions\Action::make('connect')
-                                                                                ->label('Connect Zoom')
+                                                                                ->label(__('meetinglink.actions.connect_zoom'))
                                                                                 ->url('/auth/zoom?state=meeting_link'),
                                                                         ])
                                                                         ->send();
@@ -390,7 +390,7 @@ class MeetingLinkResource extends Resource
                                                             ->warning()
                                                             ->actions([
                                                                 \Filament\Notifications\Actions\Action::make('connect')
-                                                                    ->label('Connect Google Calendar')
+                                                                    ->label(__('meetinglink.actions.connect_google_calendar'))
                                                                     ->url('/auth/google/calendar?state=meeting_link'),
                                                             ])
                                                             ->send();
@@ -402,12 +402,12 @@ class MeetingLinkResource extends Resource
 
                                                     if (! $token) {
                                                         Notification::make()
-                                                            ->title('Zoom Access Required')
-                                                            ->body('Please connect your Zoom account to generate meeting links.')
+                                                            ->title(__('meetinglink.notifications.zoom_access_required'))
+                                                            ->body(__('meetinglink.notifications.zoom_access_required_body'))
                                                             ->warning()
                                                             ->actions([
                                                                 \Filament\Notifications\Actions\Action::make('connect')
-                                                                    ->label('Connect Zoom')
+                                                                    ->label(__('meetinglink.actions.connect_zoom'))
                                                                     ->url('/auth/zoom?state=meeting_link'),
                                                             ])
                                                             ->send();
@@ -510,10 +510,10 @@ class MeetingLinkResource extends Resource
                                         ->columnSpanFull(),
 
                                     Forms\Components\TextInput::make('meeting_id')
-                                        ->label('Meeting ID')
+                                        ->label(__('meetinglink.form.meeting_id'))
                                         ->disabled()
                                         ->dehydrated()
-                                        ->placeholder('Meeting ID auto-generated after Meeting URL is created / regenerated')
+                                        ->placeholder(__('meetinglink.form.meeting_id_placeholder'))
                                         ->columnSpanFull(),
                                 ])
                                 ->collapsible()
@@ -552,7 +552,7 @@ class MeetingLinkResource extends Resource
                                                 ->icon('heroicon-o-plus')
                                                 ->url(\App\Filament\Resources\ClientResource::getUrl('create'))
                                                 ->openUrlInNewTab()
-                                                ->label('Create Client')
+                                                ->label(__('meetinglink.actions.create_client'))
                                         )
                                         ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                             if ($state) {
@@ -600,7 +600,7 @@ class MeetingLinkResource extends Resource
                                                         ->icon('heroicon-o-plus')
                                                         ->url(\App\Filament\Resources\ProjectResource::getUrl('create'))
                                                         ->openUrlInNewTab()
-                                                        ->label('Create Project')
+                                                        ->label(__('meetinglink.actions.create_project'))
                                                 )
                                                 ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                                     $selectedProjects = $state ?? [];
@@ -669,7 +669,7 @@ class MeetingLinkResource extends Resource
                                                         ->icon('heroicon-o-plus')
                                                         ->url(\App\Filament\Resources\DocumentResource::getUrl('create'))
                                                         ->openUrlInNewTab()
-                                                        ->label('Create Document')
+                                                        ->label(__('meetinglink.actions.create_document'))
                                                 ),
 
                                             // Important URLs
@@ -702,7 +702,7 @@ class MeetingLinkResource extends Resource
                                                         ->icon('heroicon-o-plus')
                                                         ->url(\App\Filament\Resources\ImportantUrlResource::getUrl('create'))
                                                         ->openUrlInNewTab()
-                                                        ->label('Create Important URL')
+                                                        ->label(__('meetinglink.actions.create_important_url'))
                                                 ),
 
                                             // Display selected items with clickable links
@@ -743,7 +743,7 @@ class MeetingLinkResource extends Resource
                             Forms\Components\Section::make(__('meetinglink.form.additional_information'))
                                 ->schema([
                                     Forms\Components\RichEditor::make('notes')
-                                        ->label('Description')
+                                        ->label(__('meetinglink.form.description'))
                                         ->toolbarButtons([
                                             'bold',
                                             'italic',
@@ -775,14 +775,14 @@ class MeetingLinkResource extends Resource
                                         ->columnSpanFull(),
 
                                     Forms\Components\Repeater::make('extra_information')
-                                        ->label('Extra Information')
+                                        ->label(__('meetinglink.form.extra_information'))
                                         ->schema([
                                             Forms\Components\TextInput::make('title')
-                                                ->label('Title')
+                                                ->label(__('meetinglink.form.extra_info_title'))
                                                 ->maxLength(100)
                                                 ->columnSpanFull(),
                                             Forms\Components\RichEditor::make('value')
-                                                ->label('Value')
+                                                ->label(__('meetinglink.form.extra_info_value'))
                                                 ->toolbarButtons([
                                                     'bold',
                                                     'italic',
@@ -813,12 +813,12 @@ class MeetingLinkResource extends Resource
                                                 ->columnSpanFull(),
                                         ])
                                         ->defaultItems(1)
-                                        ->addActionLabel('Add Extra Info')
+                                        ->addActionLabel(__('meetinglink.form.add_extra_info'))
                                         ->cloneable()
                                         ->reorderable()
                                         ->collapsible(true)
                                         ->collapsed()
-                                        ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : 'Extra Information')
+                                        ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('meetinglink.form.extra_information'))
                                         ->live()
                                         ->columnSpanFull()
                                         ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
@@ -1031,7 +1031,7 @@ class MeetingLinkResource extends Resource
                                     ->close(),
                             ];
                         }),
-                    ActivityLogTimelineTableAction::make('Log')
+                    ActivityLogTimelineTableAction::make(__('meetinglink.actions.activity_log'))
                         ->label(__('meetinglink.actions.activity_log')),
                     Tables\Actions\DeleteAction::make()
                         ->label(__('meetinglink.actions.delete')),

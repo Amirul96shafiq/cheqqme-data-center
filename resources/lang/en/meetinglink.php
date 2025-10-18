@@ -29,6 +29,8 @@ return [
         'extra_info_title' => 'Title',
         'extra_info_value' => 'Value',
         'add_extra_info' => 'Add Extra Info',
+        'meeting_id' => 'Meeting ID',
+        'meeting_id_placeholder' => 'Meeting ID auto-generated after Meeting URL is created / regenerated',
         'copy_url' => 'Copy',
         'copy_url_tooltip' => 'Copy URL to clipboard',
     ],
@@ -90,6 +92,12 @@ return [
         'restore' => 'Restore',
         'force_delete' => 'Force Delete',
         'activity_log' => 'Log',
+        'connect_google_calendar' => 'Connect Google Calendar',
+        'connect_zoom' => 'Connect Zoom',
+        'create_client' => 'Create Client',
+        'create_project' => 'Create Project',
+        'create_document' => 'Create Document',
+        'create_important_url' => 'Create Important URL',
     ],
 
     'notifications' => [
@@ -122,6 +130,8 @@ return [
         'regenerate_link_description' => 'This will replace the old meeting link and create a new one with the updated details.',
         'link_regenerated_title' => 'Google Meet link regenerated successfully!',
         'link_regenerated_body' => "Don't forget to save the meeting link.",
+        'zoom_access_required' => 'Zoom Access Required',
+        'zoom_access_required_body' => 'Please connect your Zoom account to generate meeting links.',
     ],
 
     'infolist' => [
