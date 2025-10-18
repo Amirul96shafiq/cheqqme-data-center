@@ -53,6 +53,22 @@ class ZoomMeetingService
             // Set default start time if not provided
             $startDateTime = $startTime ?? now()->addHour()->toIso8601String();
 
+            // Basic Zoom meeting settings
+            $zoomSettings = [
+                'host_video' => true,
+                'participant_video' => true,
+                'join_before_host' => false,
+                'watermark' => false,
+                'audio' => 'both',
+                'auto_recording' => 'none',
+            ];
+
+            // Log the settings being sent to Zoom
+            Log::info('Creating Zoom meeting with settings', [
+                'zoom_settings_sent' => $zoomSettings,
+                'user_id' => Auth::id(),
+            ]);
+
             // Create the meeting
             $response = $this->client->post("users/{$userId}/meetings", [
                 'headers' => [
@@ -65,15 +81,7 @@ class ZoomMeetingService
                     'start_time' => $startDateTime,
                     'duration' => $duration,
                     'timezone' => config('app.timezone'),
-                    'settings' => [
-                        'host_video' => true,
-                        'participant_video' => true,
-                        'join_before_host' => false,
-                        'mute_upon_entry' => false,
-                        'watermark' => false,
-                        'audio' => 'both',
-                        'auto_recording' => 'none',
-                    ],
+                    'settings' => $zoomSettings,
                 ],
             ]);
 
