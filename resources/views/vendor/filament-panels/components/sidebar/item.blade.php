@@ -202,12 +202,12 @@
                         @if ($dropdownItem['new_tab'] ?? false)
                             target="_blank"
                         @endif
-                        class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5"
+                        class="fi-dropdown-list-item group flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/10 dark:focus-visible:bg-white/5 [&:hover_.fi-dropdown-list-item-icon]:text-gray-600 [&:hover_.fi-dropdown-list-item-icon]:dark:text-gray-300"
                     >
                         @if (isset($dropdownItem['icon']))
                             <x-filament::icon
                                 :icon="$dropdownItem['icon']"
-                                class="fi-dropdown-list-item-icon h-4 w-4 text-gray-400 dark:text-gray-500"
+                                class="fi-dropdown-list-item-icon h-4 w-4 text-gray-400 dark:text-gray-500 transition-colors duration-75"
                             />
                         @endif
                         <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-gray-700 dark:text-gray-200">

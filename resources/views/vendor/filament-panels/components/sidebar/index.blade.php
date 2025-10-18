@@ -31,7 +31,7 @@
                         [
                             'label' => "All {$resourceLabel}",
                             'url' => route($indexRoute),
-                            'icon' => 'heroicon-o-list-bullet',
+                            'icon' => 'heroicon-o-squares-2x2',
                             'new_tab' => false,
                         ],
                         [
