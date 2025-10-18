@@ -61,6 +61,7 @@ class ZoomMeetingService
                 'watermark' => false,
                 'audio' => 'both',
                 'auto_recording' => 'none',
+                'waiting_room' => true, // Enable waiting room - participants need host approval to enter
             ];
 
             // Log the settings being sent to Zoom
