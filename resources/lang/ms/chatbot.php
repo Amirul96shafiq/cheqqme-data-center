@@ -13,6 +13,13 @@ return [
     'clear_confirmation_message' => 'Adakah anda pasti ingin menghapus perbualan? Semua perbualan akan diset semula. (Anda masih boleh pulihkan melalui backup dari Sejarah Chatbot)',
     'clear_success_message' => 'Perbualan berjaya dihapus!',
 
+    // Actions
+    'action' => [
+        'open_chat' => 'Sembang dengan Arem',
+        'close_chat' => 'Tutup Chat',
+        'clear_conversation' => 'Kosongkan Perbualan',
+    ],
+
     // Header
     'header' => [
         'subheading01' => 'Asisten AI terpandai & terbijaksana~~',

@@ -13,6 +13,13 @@ return [
     'clear_confirmation_message' => 'Are you sure you want to clear the conversation? All conversation will be resetted. (You can still restore it via backup from Chatbot History)',
     'clear_success_message' => 'Conversation cleared successfully!',
 
+    // Actions
+    'action' => [
+        'open_chat' => 'Chat with Arem',
+        'close_chat' => 'Close chat',
+        'clear_conversation' => 'Clear Conversation',
+    ],
+
     // Header
     'header' => [
         'subheading01' => 'Your brilliant assistant is here~~',

@@ -379,7 +379,7 @@
     <div class="relative">
 
         <!-- Chat Icon (shown when chat is closed) -->
-        <x-tooltip position="left" text="Chat with Arem">
+        <x-tooltip position="left" text="{{ __('chatbot.action.open_chat') }}">
             <img
                 id="chat-icon"
                 src="{{ asset('images/chat.png') }}"
@@ -391,7 +391,7 @@
         </x-tooltip>
 
         <!-- Close Icon (shown when chat is open) -->
-        <x-tooltip position="left" text="Close chat">
+        <x-tooltip position="left" text="{{ __('chatbot.action.close_chat') }}">
             <div
                 id="close-icon"
                 onclick="toggleChatbot()"
@@ -429,22 +429,24 @@
             <div class="flex items-center space-x-1">
 
                 <!-- Clear Conversation Button -->
-                <button
-                    onclick="clearConversation()"
-                    class="fi-btn fi-btn-size-sm fi-btn-color-gray fi-btn-variant-ghost text-primary-900 hover:bg-white/20 focus:bg-white/20 rounded-lg p-2 transition-colors"
-                    title="Clear conversation"
-                >
-                    @svg('heroicon-o-trash', 'w-4 h-4')
-                </button>
+                <x-tooltip position="left" text="{{ __('chatbot.action.clear_conversation') }}">
+                    <button
+                        onclick="clearConversation()"
+                        class="fi-btn fi-btn-size-sm fi-btn-color-gray fi-btn-variant-ghost text-primary-900 hover:bg-white/20 focus:bg-white/20 rounded-lg p-2 transition-colors"
+                    >
+                        @svg('heroicon-o-trash', 'w-4 h-4')
+                    </button>
+                </x-tooltip>
 
                 <!-- Close Chat Button -->
-                <button
-                    onclick="toggleChatbot()"
-                    class="fi-btn fi-btn-size-sm fi-btn-color-gray fi-btn-variant-ghost text-primary-900 hover:bg-white/20 focus:bg-white/20 rounded-lg p-2 transition-colors"
-                    title="Close chat"
-                >
-                    @svg('heroicon-o-chevron-down', 'w-4 h-4')
-                </button>
+                <x-tooltip position="left" text="{{ __('chatbot.action.close_chat') }}">
+                    <button
+                        onclick="toggleChatbot()"
+                        class="fi-btn fi-btn-size-sm fi-btn-color-gray fi-btn-variant-ghost text-primary-900 hover:bg-white/20 focus:bg-white/20 rounded-lg p-2 transition-colors"
+                    >
+                        @svg('heroicon-o-chevron-down', 'w-4 h-4')
+                    </button>
+                </x-tooltip>
 
             </div>
 
@@ -477,7 +479,6 @@
                         id="emoji-button"
                         onclick="toggleEmojiPicker()"
                         class="absolute left-3 top-3 flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors"
-                        title="Add emoji"
                     >
                         @svg('heroicon-o-face-smile', 'w-5 h-5')
                     </button>
