@@ -533,6 +533,35 @@ class MeetingLinkResource extends Resource
                                         ->placeholder(__('meetinglink.form.meeting_passcode_placeholder'))
                                         ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Zoom Meeting')
                                         ->columnSpanFull(),
+
+                                    Forms\Components\Section::make(__('meetinglink.form.google_meet_guide'))
+                                        ->collapsible()
+                                        ->collapsed()
+                                        ->schema([
+                                            Forms\Components\Placeholder::make('google_meet_guide_content')
+                                                ->label('')
+                                                ->content(function () {
+                                                    $html = '<div class="space-y-4 text-sm font-mono">';
+
+                                                    $html .= '<ul class="list-disc list-outside text-gray-500 dark:text-gray-400 space-y-1 ml-4">';
+                                                    $html .= '<li>As a host, please enable <b>Host Controls</b> (bottom right corner of the screen) and toggle on <b>Host Management</b> to further setup the meeting</li>';
+                                                    $html .= '</ul>';
+
+                                                    // Host Controls Setup Image
+                                                    $html .= '<div class="mt-4">';
+                                                    $html .= '<a href="/images/google-meet-setup-02.png" target="_blank" rel="noopener noreferrer" class="block">';
+                                                    $html .= '<img src="/images/google-meet-setup-02.png" alt="Google Meet Host Controls Setup" class="w-full rounded-lg hover:opacity-60 transition-opacity cursor-pointer">';
+                                                    $html .= '</a>';
+                                                    $html .= '</div>';
+
+                                                    $html .= '</div>';
+
+                                                    return new \Illuminate\Support\HtmlString($html);
+                                                })
+                                                ->columnSpanFull(),
+                                        ])
+                                        ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Google Meet')
+                                        ->columnSpanFull(),
                                 ])
                                 ->collapsible()
                                 ->collapsed(false)

@@ -35,6 +35,7 @@ return [
         'meeting_passcode_placeholder' => 'Meeting passcode auto-generated from Zoom meeting URL',
         'copy_url' => 'Copy',
         'copy_url_tooltip' => 'Copy URL to clipboard',
+        'google_meet_guide' => 'Additional Google Meet Settings',
     ],
 
     'platform' => [

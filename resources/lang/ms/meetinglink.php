@@ -35,6 +35,7 @@ return [
         'meeting_passcode_placeholder' => 'Kod laluan mesyuarat dijana secara automatik dari pautan Zoom meeting',
         'copy_url' => 'Salin',
         'copy_url_tooltip' => 'Salin pautan ke papan keratan',
+        'google_meet_guide' => 'Pengaturan Tambahan Google Meet',
     ],
 
     'platform' => [
