@@ -5,3 +5,4 @@ import "./user-mention-system";
 import "./task-viewers";
 import "./meeting-links";
 import "./spotify-player-alpine";
+import "./smart-tooltip";

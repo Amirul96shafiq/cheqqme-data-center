@@ -34,12 +34,18 @@
     }
 @endphp
 
-<div class="relative tooltip-container" data-tooltip-key="{{ $key }}">
+<div class="relative tooltip-container" 
+     data-tooltip-key="{{ $key }}"
+     x-data="tooltipSmartPositioning()"
+     @mouseenter="positionTooltip($el)"
+     @mouseleave="resetTooltip($el)">
     {{ $slot }}
     
     {{-- Tooltip --}}
-    <div class="tooltip tooltip-{{ $position }} absolute {{ $yAlign }} {{ $xAlign }} px-3 py-1 bg-white text-gray-900 dark:bg-gray-700 dark:text-white text-sm rounded-md opacity-0 invisible transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg"
+    <div class="tooltip tooltip-{{ $position }} absolute {{ $yAlign }} {{ $xAlign }} px-3 py-1 bg-white text-gray-900 dark:bg-gray-700 dark:text-white text-sm rounded-md opacity-0 invisible transition-all duration-200 pointer-events-none z-[10000] shadow-lg whitespace-nowrap"
          data-tooltip-text="{{ $text }}"
+         data-tooltip-position="{{ $position }}"
+         data-tooltip-align="{{ $align }}"
          style="font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;">
         {!! $text !!}
 

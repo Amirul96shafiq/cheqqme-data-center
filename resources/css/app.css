@@ -26,6 +26,58 @@ select {
     visibility: visible;
 }
 
+/* Tooltip smart positioning classes */
+.tooltip-container .tooltip {
+    /* Allow tooltips to break out of modal containers */
+    transition: all 0.2s ease-in-out;
+}
+
+/* Smart positioning classes */
+.tooltip-container .tooltip.smart-top {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+}
+
+/* Smart bottom position animation */
+.tooltip-container .tooltip.smart-bottom {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+}
+
+/* Smart left position animation */
+.tooltip-container .tooltip.smart-left {
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-4px);
+}
+
+/* Smart right position animation */
+.tooltip-container .tooltip.smart-right {
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%) translateX(4px);
+}
+
+/* Adjust alignment for smart positioning */
+.tooltip-container .tooltip.smart-start {
+    left: 0;
+    transform: translateX(0);
+}
+
+/* Smart end position animation */
+.tooltip-container .tooltip.smart-end {
+    right: 0;
+    transform: translateX(0);
+}
+
+/* Smart center position animation */
+.tooltip-container .tooltip.smart-center {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 /* Tooltip top position animation */
 .tooltip-container:hover .tooltip-top {
     transform: translateX(-50%) translateY(-4px);
