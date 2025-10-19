@@ -127,62 +127,8 @@
                             
                 
                 <!-- User Badges -->
-                <div class="flex flex-wrap gap-1 justify-center my-3">
-
-                    <!-- Country -->
-                    @if($user->country)
-                        <x-tooltip position="top" text="{{ __('user.badge.country') }}">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
-                                {{ $user->country }}
-                            </span>
-                        </x-tooltip>
-                    @endif
-                    
-                    <!-- Timezone -->
-                    @if($user->timezone)
-                        <x-tooltip position="top" text="{{ __('user.badge.timezone') }}">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
-                                {{ $user->timezone }}
-                            </span>
-                        </x-tooltip>
-                    @endif
-
-                    <!-- Google OAuth -->
-                    @if($user->google_id && $user->google_connected_at)
-                        <x-tooltip position="top" text="{{ __('user.badge.google_oauth') }}">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
-                                Google
-                            </span>
-                        </x-tooltip>
-                    @endif
-
-                    <!-- Google Calendar API -->
-                    @if($user->google_calendar_token && $user->google_calendar_connected_at)
-                        <x-tooltip position="top" text="{{ __('user.badge.google_calendar') }}">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
-                                Calendar
-                            </span>
-                        </x-tooltip>
-                    @endif
-
-                    <!-- Zoom API -->
-                    @if($user->zoom_token && $user->zoom_connected_at)
-                        <x-tooltip position="top" text="{{ __('user.badge.zoom_api') }}">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
-                                Zoom
-                            </span>
-                        </x-tooltip>
-                    @endif
-
-                    <!-- Spotify -->
-                    @if($user->spotify_id && $user->spotify_connected_at)
-                        <x-tooltip position="top" text="{{ __('user.badge.spotify') }}">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
-                                Spotify
-                            </span>
-                        </x-tooltip>
-                    @endif
-
+                <div class="my-3">
+                    <x-user-badges :user="$user" size="sm" gap="1" :showIcons="true" />
                 </div>
 
                 <!-- Spotify Now Playing -->

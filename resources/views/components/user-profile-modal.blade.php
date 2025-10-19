@@ -123,24 +123,8 @@
                             @endif
                             
                             <!-- User Badges -->
-                            <div class="flex flex-wrap gap-1 justify-center my-3">
-                                <!-- Country -->
-                                @if($user->country)
-                                    <x-tooltip position="top" text="{{ __('user.table.country') }}">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
-                                            {{ $user->country }}
-                                        </span>
-                                    </x-tooltip>
-                                @endif
-                                
-                                <!-- Timezone -->
-                                @if($user->timezone)
-                                    <x-tooltip position="top" text="{{ __('user.table.timezone') }}">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200">
-                                            {{ $user->timezone }}
-                                        </span>
-                                    </x-tooltip>
-                                @endif
+                            <div class="my-3">
+                                <x-user-badges :user="$user" size="sm" gap="1" :showIcons="true" />
                             </div>
 
                             <!-- Spotify Now Playing -->

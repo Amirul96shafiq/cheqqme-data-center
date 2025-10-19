@@ -89,69 +89,7 @@
                     </div>
 
                     {{-- Badges --}}
-                    <div class="flex flex-wrap gap-2 justify-center">
-
-                        <!-- Country -->
-                        @if ($user && $user->country)
-                            <x-tooltip position="top" text="{{ __('user.badge.country') }}">
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] md:text-xs font-medium bg-blue-100/90 text-blue-900 shadow-sm">
-                                    <x-icons.custom-icon name="map-pin" class="w-3 h-3" color="" />
-                                    <span>{{ $user->country }}</span>
-                                </span>
-                            </x-tooltip>
-                        @endif
-
-                        <!-- Timezone -->
-                        @if ($user && $user->timezone)
-                            <x-tooltip position="top" text="{{ __('user.badge.timezone') }}">
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] md:text-xs font-medium bg-purple-100/90 text-purple-900 shadow-sm">
-                                    <x-icons.custom-icon name="clock" class="w-3 h-3" color="" />
-                                    <span>{{ $user->timezone }}</span>
-                                </span>
-                            </x-tooltip>
-                        @endif
-
-                        <!-- Google OAuth -->
-                        @if ($user->google_id && $user->google_connected_at)
-                            <x-tooltip position="top" text="{{ __('user.badge.google_oauth') }}">
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] md:text-xs font-medium bg-gray-100/90 text-gray-900 shadow-sm">
-                                    <x-icons.custom-icon name="google" class="w-3 h-3" color="" />
-                                    <span>Google</span>
-                                </span>
-                            </x-tooltip>
-                        @endif
-
-                        <!-- Google Calendar API -->
-                        @if ($user->google_calendar_token && $user->google_calendar_connected_at)
-                            <x-tooltip position="top" text="{{ __('user.badge.google_calendar') }}">
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] md:text-xs font-medium bg-sky-100/90 text-sky-900 shadow-sm">
-                                    <x-icons.custom-icon name="google-calendar" class="w-3 h-3" color="" />
-                                    <span>Calendar</span>
-                                </span>
-                            </x-tooltip>
-                        @endif
-                        
-                        <!-- Zoom API -->
-                        @if ($user->zoom_token && $user->zoom_connected_at)
-                            <x-tooltip position="top" text="{{ __('user.badge.zoom_api') }}">
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] md:text-xs font-medium bg-indigo-100/90 text-indigo-900 shadow-sm">
-                                    <x-icons.custom-icon name="video-camera" class="w-3 h-3" color="" />
-                                    <span>Zoom</span>
-                                </span>
-                            </x-tooltip>
-                        @endif
-
-                        <!-- Spotify -->
-                        @if ($user->spotify_id && $user->spotify_connected_at)
-                            <x-tooltip position="top" text="{{ __('user.badge.spotify') }}">
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] md:text-xs font-medium bg-green-100/90 text-green-900 shadow-sm">
-                                    <x-icons.custom-icon name="spotify" class="w-3 h-3" color="" />
-                                    <span>Spotify</span>
-                                </span>
-                            </x-tooltip>
-                        @endif
-
-                    </div>
+                    <x-user-badges :user="$user" size="md" gap="2" :showIcons="true" />
 
                 </div>
 
