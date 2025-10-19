@@ -93,7 +93,7 @@
                 
                 {{-- Whats New Button (Top) --}}
                 <nav class="flex justify-end" aria-label="Whats new action button">
-                    <x-tooltip position="top" text="{{ __('login.tooltips.whatsNew') }}">
+                    <x-tooltip position="bottom" text="{{ __('login.tooltips.whatsNew') }}">
                         <button type="button"
                                 onclick="if (window.showGlobalModal) { window.showGlobalModal('changelog'); }"
                                 class="inline-flex items-start cursor-pointer hover:scale-105 transition-transform duration-300"

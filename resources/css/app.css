@@ -41,6 +41,7 @@ select {
     transform: translateX(-50%) translateY(-4px) !important;
 }
 
+/* Smart bottom position animation */
 .tooltip-container .tooltip.smart-bottom {
     top: 100% !important;
     left: 50% !important;
@@ -49,6 +50,7 @@ select {
     transform: translateX(-50%) translateY(4px) !important;
 }
 
+/* Smart left position animation */
 .tooltip-container .tooltip.smart-left {
     right: 100% !important;
     top: 50% !important;
@@ -57,6 +59,7 @@ select {
     transform: translateY(-50%) translateX(-4px) !important;
 }
 
+/* Smart right position animation */
 .tooltip-container .tooltip.smart-right {
     left: 100% !important;
     top: 50% !important;
@@ -72,12 +75,14 @@ select {
     transform: translateX(0) !important;
 }
 
+/* Smart end position animation */
 .tooltip-container .tooltip.smart-end {
     right: 0 !important;
     left: auto !important;
     transform: translateX(0) !important;
 }
 
+/* Smart center position animation */
 .tooltip-container .tooltip.smart-center {
     left: 50% !important;
     right: auto !important;
@@ -89,14 +94,17 @@ select {
     transform: translateX(0) translateY(-4px) !important;
 }
 
+/* Smart top end position animation */
 .tooltip-container .tooltip.smart-top.smart-end {
     transform: translateX(0) translateY(-4px) !important;
 }
 
+/* Smart bottom start position animation */
 .tooltip-container .tooltip.smart-bottom.smart-start {
     transform: translateX(0) translateY(4px) !important;
 }
 
+/* Smart bottom end position animation */
 .tooltip-container .tooltip.smart-bottom.smart-end {
     transform: translateX(0) translateY(4px) !important;
 }
