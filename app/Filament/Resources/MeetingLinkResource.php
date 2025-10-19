@@ -544,13 +544,13 @@ class MeetingLinkResource extends Resource
                                                     $html = '<div class="space-y-4 text-sm font-mono">';
 
                                                     $html .= '<ul class="list-disc list-outside text-gray-500 dark:text-gray-400 space-y-1 ml-4">';
-                                                    $html .= '<li>As a host, please enable <b>Host Controls</b> (bottom right corner of the screen) and toggle on <b>Host Management</b> to further setup the meeting</li>';
+                                                    $html .= '<li>'.__('meetinglink.google_meet_guide.host_controls_instruction').'</li>';
                                                     $html .= '</ul>';
 
                                                     // Host Controls Setup Image
                                                     $html .= '<div class="mt-4">';
                                                     $html .= '<a href="/images/google-meet-setup-02.png" target="_blank" rel="noopener noreferrer" class="block">';
-                                                    $html .= '<img src="/images/google-meet-setup-02.png" alt="Google Meet Host Controls Setup" class="w-full rounded-lg hover:opacity-60 transition-opacity cursor-pointer">';
+                                                    $html .= '<img src="/images/google-meet-setup-02.png" alt="'.__('meetinglink.google_meet_guide.image_alt').'" class="w-full rounded-lg hover:opacity-60 transition-opacity cursor-pointer">';
                                                     $html .= '</a>';
                                                     $html .= '</div>';
 

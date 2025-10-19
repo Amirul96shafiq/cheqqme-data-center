@@ -38,6 +38,11 @@ return [
         'google_meet_guide' => 'Additional Google Meet Settings',
     ],
 
+    'google_meet_guide' => [
+        'host_controls_instruction' => 'As a host, please enable <b>Host Controls</b> (bottom right corner of the screen) and toggle on <b>Host Management</b> to further setup the meeting',
+        'image_alt' => 'Google Meet Host Controls Setup',
+    ],
+
     'platform' => [
         'google_meet' => 'Google Meet',
         'zoom_meeting' => 'Zoom Meeting',

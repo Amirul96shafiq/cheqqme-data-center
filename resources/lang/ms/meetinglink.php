@@ -38,6 +38,11 @@ return [
         'google_meet_guide' => 'Pengaturan Tambahan Google Meet',
     ],
 
+    'google_meet_guide' => [
+        'host_controls_instruction' => 'Sebagai hos, sila aktifkan <b>Host Controls</b> (sudut kanan bawah skrin) dan hidupkan <b>Host Management</b> untuk menyediakan mesyuarat dengan lebih lanjut',
+        'image_alt' => 'Persediaan Host Controls Google Meet',
+    ],
+
     'platform' => [
         'google_meet' => 'Google Meet',
         'zoom_meeting' => 'Zoom Meeting',
