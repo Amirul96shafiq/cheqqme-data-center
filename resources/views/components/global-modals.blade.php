@@ -619,10 +619,10 @@
         <div role="dialog" 
              aria-modal="true" 
              aria-labelledby="changelog-heading" 
-             class="relative w-full max-w-4xl mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-800/65 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 pointer-events-auto min-h-[90vh] max-h-[90vh] overflow-hidden">
+             class="relative w-full max-w-4xl mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900/65 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 pointer-events-auto min-h-[90vh] max-h-[90vh] overflow-hidden">
             
             {{-- Header --}}
-            <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between px-6 pt-6 pb-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center gap-3">
                     <div class="p-2 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400">
                         <x-heroicon-o-code-bracket class="h-5 w-5" />
@@ -779,8 +779,8 @@
                 </div>
             </div>
             
-            {{-- Pagination --}}
-            <div x-show="!loading && pagination && pagination.last_page > 1" class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+            {{-- Footer --}}
+            <div x-show="!loading && pagination && pagination.last_page > 1" class="px-6 py-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between">
                     <div class="text-xs text-gray-500 dark:text-gray-400">
                         <span x-text="pagination ? '{{ __('changelog.page_info') }}'.replace(':current', pagination.current_page).replace(':last', pagination.last_page).replace(':total', pagination.total) : ''"></span>
