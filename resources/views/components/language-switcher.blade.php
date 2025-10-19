@@ -3,34 +3,43 @@
     <div x-data="{ open: false }" class="relative">
         
         <!-- Dropdown -->
-        <div x-show="open" @click.away="open = false"
+        <div x-show="open" 
+            @click.away="open = false"
+            x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-75"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
             role="menu"
             aria-orientation="vertical"
-            class="absolute bottom-full mb-2 w-max rounded-md shadow-lg bg-white dark:bg-neutral-900 ring-1 ring-gray-950/5 dark:ring-white/10 z-10"
-            x-cloak
-            style="left: 50%; transform: translateX(-50%);">
-            <div class="py-2 text-sm text-gray-700 dark:text-gray-100">
+            class="fi-dropdown-panel absolute bottom-full mb-2 w-max overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10"
+            style="left: 50%; transform: translateX(-50%); z-index: 50;"
+            x-cloak>
+            <div class="fi-dropdown-list space-y-1 p-2">
                 @if(app()->getLocale() !== 'en')
-                <form method="POST" action="{{ route('locale.set') }}" class="inline-block w-full">
+                <form method="POST" action="{{ route('locale.set') }}" class="w-full">
                     @csrf
                     <input type="hidden" name="locale" value="en">
                     <input type="hidden" name="redirect" value="{{ request()->fullUrl() }}">
                     <button type="submit"
                             role="menuitem"
-                            class="block w-full text-center font-semibold px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                    <span class="text-center p-1.5 mr-2 text-primary-500 bg-primary-100/25 dark:bg-primary-100/5 rounded-lg">EN</span>{{ __('auth.english') }}
+                            class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm font-medium transition-colors duration-75 outline-none hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/5 dark:focus-visible:bg-white/5">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary-50 text-xs font-bold text-primary-600 dark:bg-primary-500/10 dark:text-primary-400">EN</span>
+                        <span class="flex-1 text-left text-gray-700 dark:text-gray-200">{{ __('auth.english') }}</span>
                     </button>
                 </form>
                 @endif
                 @if(app()->getLocale() !== 'ms')
-                <form method="POST" action="{{ route('locale.set') }}" class="inline-block w-full">
+                <form method="POST" action="{{ route('locale.set') }}" class="w-full">
                     @csrf
                     <input type="hidden" name="locale" value="ms">
                     <input type="hidden" name="redirect" value="{{ request()->fullUrl() }}">
                     <button type="submit"
                             role="menuitem"
-                            class="block w-full text-center font-semibold px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                        <span class="text-center p-1.5 mr-2 text-primary-500 bg-primary-100/25 dark:bg-primary-100/5 rounded-lg">MS</span>{{ __('auth.malay') }}
+                            class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm font-medium transition-colors duration-75 outline-none hover:bg-gray-50 focus-visible:bg-gray-50 dark:hover:bg-white/5 dark:focus-visible:bg-white/5">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary-50 text-xs font-bold text-primary-600 dark:bg-primary-500/10 dark:text-primary-400">MS</span>
+                        <span class="flex-1 text-left text-gray-700 dark:text-gray-200">{{ __('auth.malay') }}</span>
                     </button>
                 </form>
                 @endif
