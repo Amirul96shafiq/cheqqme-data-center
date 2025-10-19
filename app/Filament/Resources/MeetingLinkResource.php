@@ -562,6 +562,35 @@ class MeetingLinkResource extends Resource
                                         ])
                                         ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Google Meet')
                                         ->columnSpanFull(),
+
+                                    Forms\Components\Section::make(__('meetinglink.form.zoom_meeting_guide'))
+                                        ->collapsible()
+                                        ->collapsed()
+                                        ->schema([
+                                            Forms\Components\Placeholder::make('zoom_meeting_guide_content')
+                                                ->label('')
+                                                ->content(function () {
+                                                    $html = '<div class="space-y-4 text-sm font-mono">';
+
+                                                    $html .= '<ul class="list-disc list-outside text-gray-500 dark:text-gray-400 space-y-1 ml-4">';
+                                                    $html .= '<li>'.__('meetinglink.zoom_meeting_guide.host_controls_instruction').'</li>';
+                                                    $html .= '</ul>';
+
+                                                    // Zoom Meeting Setup Image
+                                                    $html .= '<div class="mt-4">';
+                                                    $html .= '<a href="/images/zoom-meet-setup-02.png" target="_blank" rel="noopener noreferrer" class="block">';
+                                                    $html .= '<img src="/images/zoom-meet-setup-02.png" alt="'.__('meetinglink.zoom_meeting_guide.image_alt').'" class="w-full rounded-lg hover:opacity-60 transition-opacity cursor-pointer">';
+                                                    $html .= '</a>';
+                                                    $html .= '</div>';
+
+                                                    $html .= '</div>';
+
+                                                    return new \Illuminate\Support\HtmlString($html);
+                                                })
+                                                ->columnSpanFull(),
+                                        ])
+                                        ->visible(fn (Forms\Get $get) => $get('meeting_platform') === 'Zoom Meeting')
+                                        ->columnSpanFull(),
                                 ])
                                 ->collapsible()
                                 ->collapsed(false)

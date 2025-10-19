@@ -36,11 +36,17 @@ return [
         'copy_url' => 'Salin',
         'copy_url_tooltip' => 'Salin pautan ke papan keratan',
         'google_meet_guide' => 'Pengaturan Tambahan Google Meet',
+        'zoom_meeting_guide' => 'Pengaturan Tambahan Zoom Meeting',
     ],
 
     'google_meet_guide' => [
         'host_controls_instruction' => 'Sebagai hos, sila aktifkan <b>Host Controls</b> (sudut kanan bawah skrin) dan hidupkan <b>Host Management</b> untuk menyediakan mesyuarat dengan lebih lanjut',
         'image_alt' => 'Persediaan Host Controls Google Meet',
+    ],
+
+    'zoom_meeting_guide' => [
+        'host_controls_instruction' => 'Sebagai hos, sila gunakan tab <b>Security</b> untuk menyediakan mesyuarat dengan lebih lanjut',
+        'image_alt' => 'Panduan Persediaan Zoom Meeting',
     ],
 
     'platform' => [

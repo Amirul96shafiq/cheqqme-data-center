@@ -36,11 +36,17 @@ return [
         'copy_url' => 'Copy',
         'copy_url_tooltip' => 'Copy URL to clipboard',
         'google_meet_guide' => 'Additional Google Meet Settings',
+        'zoom_meeting_guide' => 'Additional Zoom Meeting Settings',
     ],
 
     'google_meet_guide' => [
         'host_controls_instruction' => 'As a host, please enable <b>Host Controls</b> (bottom right corner of the screen) and toggle on <b>Host Management</b> to further setup the meeting',
         'image_alt' => 'Google Meet Host Controls Setup',
+    ],
+
+    'zoom_meeting_guide' => [
+        'host_controls_instruction' => 'As a host, please use <b>Security</b> tab to further setup the meeting',
+        'image_alt' => 'Zoom Meeting Setup Guide',
     ],
 
     'platform' => [
