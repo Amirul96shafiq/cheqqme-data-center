@@ -34,7 +34,7 @@
     {{
         $getExtraAttributeBag()
             ->class([
-                'fi-wi-stats-overview-stat relative rounded-xl bg-white/65 p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900/65 dark:ring-white/10 backdrop-blur-sm',
+                'fi-wi-stats-overview-stat relative rounded-xl bg-white/65 p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900/65 dark:ring-white/10 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 hover:shadow-md hover:ring-gray-950/10 dark:hover:bg-gray-900/80 dark:hover:ring-white/20',
             ])
     }}
 >
