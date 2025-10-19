@@ -48,6 +48,14 @@ return [
         'title' => 'Jumlah Dokumen',
     ],
 
+    'total_tasks' => [
+        'title' => 'Jumlah Tugasan',
+    ],
+
+    'total_trello_boards' => [
+        'title' => 'Jumlah Papan Trello',
+    ],
+
     'actions' => [
         'view_all' => 'Lihat Semua',
         'view' => 'Lihat',
@@ -55,5 +63,7 @@ return [
         'view_all_clients' => 'Lihat Semua Pelanggan →',
         'view_all_projects' => 'Lihat Semua Projek →',
         'view_all_documents' => 'Lihat Semua Dokumen →',
+        'view_all_tasks' => 'Lihat Semua Tugasan →',
+        'view_all_trello_boards' => 'Lihat Semua Papan Trello →',
     ],
 ];

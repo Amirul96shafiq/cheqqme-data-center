@@ -33,10 +33,12 @@
         @endif
         @class([
             'fi-wi-stats-overview-stats-ctn grid gap-6',
+            'grid-cols-1' => $columns === 5,
             'md:grid-cols-1' => $columns === 1,
             'md:grid-cols-2' => $columns === 2,
             'md:grid-cols-3' => $columns === 3,
             'md:grid-cols-2 xl:grid-cols-4' => $columns === 4,
+            '2xl:grid-cols-5' => $columns === 5,
         ])
     >
         @foreach ($this->getCachedStats() as $stat)

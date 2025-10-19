@@ -48,6 +48,14 @@ return [
         'title' => 'Total Documents',
     ],
 
+    'total_tasks' => [
+        'title' => 'Total Tasks',
+    ],
+
+    'total_trello_boards' => [
+        'title' => 'Total Trello Boards',
+    ],
+
     'actions' => [
         'view_all' => 'View All',
         'view' => 'View',
@@ -55,5 +63,7 @@ return [
         'view_all_clients' => 'View All Clients →',
         'view_all_projects' => 'View All Projects →',
         'view_all_documents' => 'View All Documents →',
+        'view_all_tasks' => 'View All Tasks →',
+        'view_all_trello_boards' => 'View All Trello Boards →',
     ],
 ];
