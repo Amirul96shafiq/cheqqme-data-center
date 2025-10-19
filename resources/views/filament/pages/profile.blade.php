@@ -7,7 +7,7 @@
     class="fi-resource-edit-record-page"
 >
     {{-- Cover Image Section --}}
-    <div class="relative h-[30vh] md:h-64 lg:h-80 xl:h-96 w-full overflow-visible rounded-2xl z-10">
+    <div class="relative h-[30vh] md:h-64 lg:h-80 xl:h-96 w-full overflow-visible rounded-2xl z-5">
         <img
             src="{{ $user && $user->cover_image ? $user->getFilamentCoverImageUrl() : asset('storage/default-cover-img.png') }}"
             alt="Cover Image"
@@ -101,7 +101,7 @@
     {{-- Profile Form Sections --}}
     <form
         wire:submit="save"
-        class="space-y-6 relative z-15"
+        class="space-y-6 relative z-10"
     >
         {{ $this->form }}
 
