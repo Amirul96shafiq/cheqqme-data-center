@@ -101,7 +101,7 @@
     {{-- Profile Form Sections --}}
     <form
         wire:submit="save"
-        class="space-y-6 relative z-10"
+        class="space-y-6 relative z-5"
     >
         {{ $this->form }}
 
