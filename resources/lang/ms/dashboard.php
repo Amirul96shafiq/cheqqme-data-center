@@ -15,6 +15,7 @@ return [
     'widgets' => [
         'welcome_back' => 'Selamat Kembali, :name',
         'dashboard_subtitle' => 'Tengoklah apa yang berlaku didalam CheQQme Data Center hari ini',
+        'view_calendar' => 'Lihat Kalendar 🡥',
     ],
 
     'recent_documents' => [
@@ -70,5 +71,12 @@ return [
         'view_all_documents' => 'Lihat Semua Dokumen →',
         'view_all_tasks' => 'Lihat Semua Tugasan →',
         'view_all_trello_boards' => 'Lihat Semua Papan Trello →',
+    ],
+
+    'calendar' => [
+        'title' => 'Kalendar',
+        'subtitle' => 'Lihat acara dan jadual anda',
+        'coming_soon' => 'Kalendar Akan Datang',
+        'empty_content' => 'Fungsi kalendar akan datang.',
     ],
 ];

@@ -15,6 +15,7 @@ return [
     'widgets' => [
         'welcome_back' => 'Welcome Back, :name',
         'dashboard_subtitle' => 'Here\'s what happening with CheQQme Data Center today',
+        'view_calendar' => 'View Calendar 🡥',
     ],
 
     'recent_documents' => [
@@ -70,5 +71,12 @@ return [
         'view_all_documents' => 'View All Documents →',
         'view_all_tasks' => 'View All Tasks →',
         'view_all_trello_boards' => 'View All Trello Boards →',
+    ],
+
+    'calendar' => [
+        'title' => 'Calendar',
+        'subtitle' => 'View your upcoming events and schedule',
+        'coming_soon' => 'Calendar Coming Soon',
+        'empty_content' => 'Calendar functionality will be available soon.',
     ],
 ];
