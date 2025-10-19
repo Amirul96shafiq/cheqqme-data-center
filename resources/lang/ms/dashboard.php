@@ -52,6 +52,11 @@ return [
         'title' => 'Jumlah Tugasan',
     ],
 
+    'your_tasks' => [
+        'title' => 'Tugasan Anda',
+        'description' => 'Lihat Semua :total tugasan →',
+    ],
+
     'total_trello_boards' => [
         'title' => 'Jumlah Papan Trello',
     ],

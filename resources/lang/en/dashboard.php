@@ -52,6 +52,11 @@ return [
         'title' => 'Total Tasks',
     ],
 
+    'your_tasks' => [
+        'title' => 'Your Tasks',
+        'description' => 'View all :total tasks →',
+    ],
+
     'total_trello_boards' => [
         'title' => 'Total Trello Boards',
     ],
