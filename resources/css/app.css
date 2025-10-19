@@ -32,50 +32,73 @@ select {
     transition: all 0.2s ease-in-out;
 }
 
-/* Smart positioning classes */
+/* Smart positioning classes - override default positioning */
 .tooltip-container .tooltip.smart-top {
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-4px);
+    bottom: 100% !important;
+    left: 50% !important;
+    right: auto !important;
+    top: auto !important;
+    transform: translateX(-50%) translateY(-4px) !important;
 }
 
-/* Smart bottom position animation */
 .tooltip-container .tooltip.smart-bottom {
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(4px);
+    top: 100% !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translateX(-50%) translateY(4px) !important;
 }
 
-/* Smart left position animation */
 .tooltip-container .tooltip.smart-left {
-    right: 100%;
-    top: 50%;
-    transform: translateY(-50%) translateX(-4px);
+    right: 100% !important;
+    top: 50% !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: translateY(-50%) translateX(-4px) !important;
 }
 
-/* Smart right position animation */
 .tooltip-container .tooltip.smart-right {
-    left: 100%;
-    top: 50%;
-    transform: translateY(-50%) translateX(4px);
+    left: 100% !important;
+    top: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translateY(-50%) translateX(4px) !important;
 }
 
 /* Adjust alignment for smart positioning */
 .tooltip-container .tooltip.smart-start {
-    left: 0;
-    transform: translateX(0);
+    left: 0 !important;
+    right: auto !important;
+    transform: translateX(0) !important;
 }
 
-/* Smart end position animation */
 .tooltip-container .tooltip.smart-end {
-    right: 0;
-    transform: translateX(0);
+    right: 0 !important;
+    left: auto !important;
+    transform: translateX(0) !important;
 }
 
-/* Smart center position animation */
 .tooltip-container .tooltip.smart-center {
-    left: 50%;
-    transform: translateX(-50%);
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+}
+
+/* Smart alignment combinations */
+.tooltip-container .tooltip.smart-top.smart-start {
+    transform: translateX(0) translateY(-4px) !important;
+}
+
+.tooltip-container .tooltip.smart-top.smart-end {
+    transform: translateX(0) translateY(-4px) !important;
+}
+
+.tooltip-container .tooltip.smart-bottom.smart-start {
+    transform: translateX(0) translateY(4px) !important;
+}
+
+.tooltip-container .tooltip.smart-bottom.smart-end {
+    transform: translateX(0) translateY(4px) !important;
 }
 
 /* Tooltip top position animation */

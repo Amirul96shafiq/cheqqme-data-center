@@ -91,9 +91,9 @@
             {{-- Right Content Container (35% width) --}}
             <div class="relative flex flex-col justify-start w-[35%]">
                 
-                {{-- New Update Button (Top) --}}
+                {{-- Whats New Button (Top) --}}
                 <nav class="flex justify-end" aria-label="Whats new action button">
-                    <x-tooltip position="left" text="{{ __('login.tooltips.whatsNew') }}">
+                    <x-tooltip position="top" text="{{ __('login.tooltips.whatsNew') }}">
                         <button type="button"
                                 onclick="if (window.showGlobalModal) { window.showGlobalModal('changelog'); }"
                                 class="inline-flex items-start cursor-pointer hover:scale-105 transition-transform duration-300"
