@@ -21,6 +21,7 @@ export default defineConfig({
                 "resources/js/marquee-animation.js",
                 "resources/js/drag-to-scroll.js",
                 "resources/js/meeting-links.js",
+                "resources/js/smart-tooltip.js",
             ],
             refresh: true,
         }),

@@ -221,5 +221,8 @@
     <script src="{{ asset('js/remember-me-toggle.js') }}"></script>
     <script src="{{ asset('js/auth-partial-nav.js') }}"></script>
 
+    {{-- Smart Tooltip JavaScript --}}
+    <script src="{{ asset('js/smart-tooltip.js') }}"></script>
+
 </body>
 </html>
