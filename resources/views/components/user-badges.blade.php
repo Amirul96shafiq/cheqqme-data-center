@@ -29,7 +29,7 @@
     <!-- Country Badge -->
     @if ($user && $user->country)
         <x-tooltip position="top" text="{{ __('user.badge.country') }}">
-            <span class="inline-flex items-center {{ $itemGap }} {{ $sizeClasses }} rounded-full font-medium bg-blue-100/90 text-blue-900 shadow-sm">
+            <span class="inline-flex items-center {{ $itemGap }} {{ $sizeClasses }} rounded-full font-medium bg-teal-100/90 text-teal-900 shadow-sm">
                 @if($showIcons)
                     <x-icons.custom-icon name="map-pin" class="{{ $iconSize }}" color="" />
                 @endif
@@ -41,7 +41,7 @@
     <!-- Timezone Badge -->
     @if ($user && $user->timezone)
         <x-tooltip position="top" text="{{ __('user.badge.timezone') }}">
-            <span class="inline-flex items-center {{ $itemGap }} {{ $sizeClasses }} rounded-full font-medium bg-purple-100/90 text-purple-900 shadow-sm">
+            <span class="inline-flex items-center {{ $itemGap }} {{ $sizeClasses }} rounded-full font-medium bg-teal-100/90 text-teal-900 shadow-sm">
                 @if($showIcons)
                     <x-icons.custom-icon name="clock" class="{{ $iconSize }}" color="" />
                 @endif
@@ -65,7 +65,7 @@
     <!-- Google Calendar Badge -->
     @if ($user->google_calendar_token && $user->google_calendar_connected_at)
         <x-tooltip position="top" text="{{ __('user.badge.google_calendar') }}">
-            <span class="inline-flex items-center {{ $itemGap }} {{ $sizeClasses }} rounded-full font-medium bg-sky-100/90 text-sky-900 shadow-sm">
+            <span class="inline-flex items-center {{ $itemGap }} {{ $sizeClasses }} rounded-full font-medium bg-gray-100/90 text-gray-900 shadow-sm">
                 @if($showIcons)
                     <x-icons.custom-icon name="google-calendar" class="{{ $iconSize }}" color="" />
                 @endif
