@@ -124,9 +124,9 @@
                                     @foreach($day['meetings']->take(3 - $day['tasks']->take(3)->count()) as $meeting)
                                         <a href="{{ route('filament.admin.resources.meeting-links.edit', $meeting) }}"
                                            target="_blank"
-                                           class="block px-2 py-1 text-xs rounded truncate bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 transition-colors"
+                                           class="block px-2 py-1 text-xs rounded truncate bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50 transition-colors"
                                            title="{{ $meeting->title }} - {{ $meeting->meeting_start_time->format('g:i A') }}">
-                                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span>
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5"></span>
                                             {{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit($meeting->title, 15) }}
                                         </a>
                                     @endforeach
