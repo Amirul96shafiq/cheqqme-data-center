@@ -1,4 +1,23 @@
-<div class="w-full h-full flex flex-col" x-data="{ selectedDate: null, showEventPopover: false, popoverEvents: [], popoverPosition: { x: 0, y: 0 } }">
+<div class="w-full h-full flex flex-col" x-data="{ 
+    selectedDate: null, 
+    showEventPopover: false, 
+    popoverEvents: [], 
+    popoverPosition: { x: 0, y: 0 },
+    closeAndOpen(eventData, position) {
+        if (this.showEventPopover) {
+            this.showEventPopover = false;
+            setTimeout(() => {
+                this.popoverEvents = eventData;
+                this.popoverPosition = position;
+                this.showEventPopover = true;
+            }, 150);
+        } else {
+            this.popoverEvents = eventData;
+            this.popoverPosition = position;
+            this.showEventPopover = true;
+        }
+    }
+}">
     
     {{-- Calendar Header --}}
     <div class="flex items-center justify-between mb-6">
@@ -110,13 +129,11 @@
                                     {{-- Tasks --}}
                                     @foreach($day['tasks']->take(3) as $task)
                                         <button type="button"
-                                                @click="showEventPopover = true; 
-                                                        popoverEvents = {{ json_encode([
+                                                @click="closeAndOpen({{ json_encode([
                                                             'date' => $day['date']->format('j/n/y'),
                                                             'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'type' => 'task']],
                                                             'meetings' => []
-                                                        ]) }};
-                                                        popoverPosition = { x: $event.clientX, y: $event.clientY }"
+                                                        ]) }}, { x: $event.clientX, y: $event.clientY })"
                                                 class="flex items-center px-2 py-1 text-xs rounded transition-colors w-full text-left
                                                        @if($task->priority === 'high')
                                                            bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50
@@ -141,13 +158,11 @@
                                     {{-- Meetings --}}
                                     @foreach($day['meetings']->take(3 - $day['tasks']->take(3)->count()) as $meeting)
                                         <button type="button"
-                                                @click="showEventPopover = true; 
-                                                        popoverEvents = {{ json_encode([
+                                                @click="closeAndOpen({{ json_encode([
                                                             'date' => $day['date']->format('j/n/y'),
                                                             'tasks' => [],
                                                             'meetings' => [['id' => $meeting->id, 'title' => $meeting->title, 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting']]
-                                                        ]) }};
-                                                        popoverPosition = { x: $event.clientX, y: $event.clientY }"
+                                                        ]) }}, { x: $event.clientX, y: $event.clientY })"
                                                 class="flex items-center px-2 py-1 text-xs rounded bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50 transition-colors w-full text-left"
                                                 title="{{ $meeting->title }} - {{ $meeting->meeting_start_time->format('g:i A') }}">
                                             <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5 flex-shrink-0"></span>
@@ -164,13 +179,11 @@
                                     
                                     @if($remainingEvents > 0)
                                         <button type="button"
-                                                @click="showEventPopover = true; 
-                                                        popoverEvents = {{ json_encode([
+                                                @click="closeAndOpen({{ json_encode([
                                                             'date' => $day['date']->format('j/n/y'),
                                                             'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task'])->values(),
                                                             'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting'])->values()
-                                                        ]) }};
-                                                        popoverPosition = { x: $event.clientX, y: $event.clientY }"
+                                                        ]) }}, { x: $event.clientX, y: $event.clientY })"
                                                 class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline font-medium transition-all">
                                             +{{ $remainingEvents }} more
                                         </button>
@@ -187,7 +200,7 @@
     </div>
     
     
-    {{-- Event Popover --}}
+    {{-- Event Popover Section --}}
     <div x-show="showEventPopover"
          @click.away="showEventPopover = false"
          x-transition:enter="transition ease-out duration-200"
@@ -200,6 +213,7 @@
          :style="`left: ${Math.max(20, Math.min(popoverPosition.x, window.innerWidth - 340))}px; top: ${Math.min(popoverPosition.y + 10, window.innerHeight - 400)}px; transform: translateX(${popoverPosition.x < 180 ? '0%' : '-50%'});`"
          x-cloak>
         
+        {{-- Popover Header --}}
         <div class="flex items-center justify-between mb-3">
             <h4 class="font-semibold text-gray-900 dark:text-gray-100" x-text="popoverEvents.date"></h4>
             <button type="button" @click="showEventPopover = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
@@ -207,9 +221,10 @@
             </button>
         </div>
         
+        {{-- Popover Content --}}
         <div class="space-y-3 max-h-64 overflow-y-auto">
 
-            {{-- Tasks --}}
+            {{-- Tasks Section --}}
             <template x-if="popoverEvents.tasks && popoverEvents.tasks.length > 0">
                 <div class="space-y-2">
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('dashboard.calendar.tasks') }}</p>
@@ -238,7 +253,7 @@
                 </div>
             </template>
             
-            {{-- Meetings --}}
+            {{-- Meetings Section --}}
             <template x-if="popoverEvents.meetings && popoverEvents.meetings.length > 0">
                 <div class="space-y-2">
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('dashboard.calendar.meetings') }}</p>
