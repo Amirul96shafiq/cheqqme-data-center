@@ -109,17 +109,23 @@
 
                                     {{-- Tasks --}}
                                     @foreach($day['tasks']->take(3) as $task)
-                                        <a href="{{ route('filament.admin.resources.tasks.edit', $task) }}"
-                                           target="_blank"
-                                           class="flex items-center px-2 py-1 text-xs rounded transition-colors
-                                                  @if($task->priority === 'high')
-                                                      bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50
-                                                  @elseif($task->priority === 'medium')
-                                                      bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:hover:bg-yellow-900/50
-                                                  @else
-                                                      bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50
-                                                  @endif"
-                                           title="{{ $task->title }}">
+                                        <button type="button"
+                                                @click="showEventPopover = true; 
+                                                        popoverEvents = {{ json_encode([
+                                                            'date' => $day['date']->format('F j, Y'),
+                                                            'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'type' => 'task']],
+                                                            'meetings' => []
+                                                        ]) }};
+                                                        popoverPosition = { x: $event.clientX, y: $event.clientY }"
+                                                class="flex items-center px-2 py-1 text-xs rounded transition-colors w-full text-left
+                                                       @if($task->priority === 'high')
+                                                           bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50
+                                                       @elseif($task->priority === 'medium')
+                                                           bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:hover:bg-yellow-900/50
+                                                       @else
+                                                           bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50
+                                                       @endif"
+                                                title="{{ $task->title }}">
                                             <span class="inline-block w-1.5 h-1.5 rounded-full mr-1.5 flex-shrink-0
                                                         @if($task->priority === 'high')
                                                             bg-red-500
@@ -129,29 +135,24 @@
                                                             bg-green-500
                                                         @endif"></span>
                                             <span class="truncate">{{ Str::limit($task->title, 35) }}</span>
-                                        </a>
+                                        </button>
                                     @endforeach
                                     
                                     {{-- Meetings --}}
                                     @foreach($day['meetings']->take(3 - $day['tasks']->take(3)->count()) as $meeting)
-                                        <div class="relative px-2 py-1 text-xs rounded bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50 transition-colors group">
-                                            <a href="{{ route('filament.admin.resources.meeting-links.edit', $meeting) }}"
-                                               target="_blank"
-                                               class="block"
-                                               title="{{ $meeting->title }} - {{ $meeting->meeting_start_time->format('g:i A') }}">
-                                                <div class="flex items-center gap-1 mb-1">
-                                                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 flex-shrink-0"></span>
-                                                    <span class="text-xs font-medium">{{ $meeting->meeting_start_time->format('g:i A') }}</span>
-                                                </div>
-                                                <p class="text-xs leading-tight truncate">{{ Str::limit($meeting->title, 35) }}</p>
-                                            </a>
-                                            <a href="{{ $meeting->meeting_url }}"
-                                               target="_blank"
-                                               class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center w-5 h-5 rounded hover:bg-primary-500 hover:text-primary-900"
-                                               title="{{ __('dashboard.calendar.join') }}">
-                                                <x-heroicon-o-video-camera class="w-3 h-3" />
-                                            </a>
-                                        </div>
+                                        <button type="button"
+                                                @click="showEventPopover = true; 
+                                                        popoverEvents = {{ json_encode([
+                                                            'date' => $day['date']->format('F j, Y'),
+                                                            'tasks' => [],
+                                                            'meetings' => [['id' => $meeting->id, 'title' => $meeting->title, 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting']]
+                                                        ]) }};
+                                                        popoverPosition = { x: $event.clientX, y: $event.clientY }"
+                                                class="flex items-center px-2 py-1 text-xs rounded bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50 transition-colors w-full text-left"
+                                                title="{{ $meeting->title }} - {{ $meeting->meeting_start_time->format('g:i A') }}">
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5 flex-shrink-0"></span>
+                                            <span class="truncate">{{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit($meeting->title, 25) }}</span>
+                                        </button>
                                     @endforeach
                                     
                                     {{-- More Events Indicator --}}
@@ -196,7 +197,7 @@
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
          class="fixed z-50 w-80 bg-white dark:bg-gray-900 rounded-lg shadow-xl ring-1 ring-gray-100 dark:ring-gray-800 p-4 max-h-[80vh]"
-         :style="`left: ${Math.min(popoverPosition.x, window.innerWidth - 340)}px; top: ${Math.min(popoverPosition.y + 10, window.innerHeight - 400)}px; transform: translateX(-50%);`"
+         :style="`left: ${Math.max(20, Math.min(popoverPosition.x, window.innerWidth - 340))}px; top: ${Math.min(popoverPosition.y + 10, window.innerHeight - 400)}px; transform: translateX(${popoverPosition.x < 180 ? '0%' : '-50%'});`"
          x-cloak>
         
         <div class="flex items-center justify-between mb-3">
