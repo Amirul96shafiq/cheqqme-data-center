@@ -62,7 +62,7 @@
             </div>
             
             {{-- Day Headers --}}
-            <div class="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-t-lg overflow-hidden">
+            <div class="grid grid-cols-7 gap-px bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 rounded-t-lg overflow-hidden">
                 @foreach(['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as $day)
                     <div class="bg-gray-50 dark:bg-gray-800 px-3 py-2 text-center">
                         <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ __("dashboard.calendar.days.{$day}") }}</span>
