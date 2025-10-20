@@ -85,6 +85,8 @@ return [
         'meetings' => 'Meetings',
         'loading' => 'Loading',
         'loading_description' => 'Fetching your calendar events...',
+        'event' => 'Event',
+        'events' => 'Events',
         'days' => [
             'sun' => 'Sun',
             'mon' => 'Mon',

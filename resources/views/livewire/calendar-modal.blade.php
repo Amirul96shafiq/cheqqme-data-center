@@ -82,19 +82,23 @@
                                 {{-- Date Number --}}
                                 <div class="flex items-center justify-between mb-1">
                                     <span class="text-sm font-medium 
-                                                {{ $day['is_today'] ? 'flex items-center justify-center w-6 h-6 rounded-full bg-primary-500 text-gray-900' : 'text-gray-900' }}">
+                                                {{ $day['is_today'] ? 'flex items-center justify-center w-6 h-6 rounded-full bg-primary-500 text-gray-900' : 'text-gray-500 dark:text-gray-200' }}">
                                         {{ $day['date']->day }}
                                     </span>
                                     
                                     @if($day['tasks']->count() + $day['meetings']->count() > 0)
+                                        @php
+                                            $totalEvents = $day['tasks']->count() + $day['meetings']->count();
+                                        @endphp
                                         <span class="text-xs text-gray-500 dark:text-gray-400">
-                                            {{ $day['tasks']->count() + $day['meetings']->count() }}
+                                            {{ $totalEvents }} {{ $totalEvents === 1 ? __('dashboard.calendar.event') : __('dashboard.calendar.events') }}
                                         </span>
                                     @endif
                                 </div>
                                 
                                 {{-- Events List --}}
                                 <div class="flex-1 space-y-1 overflow-y-auto">
+
                                     {{-- Tasks --}}
                                     @foreach($day['tasks']->take(3) as $task)
                                         <a href="{{ route('filament.admin.resources.tasks.edit', $task) }}"
