@@ -71,11 +71,11 @@
             </div>
             
             {{-- Calendar Days --}}
-            <div class="border-x border-b border-gray-200 dark:border-gray-700 rounded-b-lg overflow-hidden">
+            <div class="border-x border-b border-gray-100 dark:border-gray-800 rounded-b-lg overflow-hidden">
                 @foreach($weeks as $weekIndex => $week)
-                    <div class="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-700">
+                    <div class="grid grid-cols-7 gap-px bg-gray-100 dark:bg-gray-800">
                         @foreach($week as $day)
-                            <div class="bg-white dark:bg-gray-900 min-h-[120px] p-2 flex flex-col
+                            <div class="bg-white dark:bg-gray-900 min-h-[120px] p-2 flex flex-col border-b border-gray-100 dark:border-gray-800
                                         {{ !$day['is_current_month'] ? 'opacity-40' : '' }}
                                         {{ $day['is_today'] ? 'ring-2 ring-primary-500 ring-inset' : '' }}">
                                 
