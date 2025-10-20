@@ -112,7 +112,7 @@
                                         <button type="button"
                                                 @click="showEventPopover = true; 
                                                         popoverEvents = {{ json_encode([
-                                                            'date' => $day['date']->format('F j, Y'),
+                                                            'date' => $day['date']->format('j/n/y'),
                                                             'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'type' => 'task']],
                                                             'meetings' => []
                                                         ]) }};
@@ -143,7 +143,7 @@
                                         <button type="button"
                                                 @click="showEventPopover = true; 
                                                         popoverEvents = {{ json_encode([
-                                                            'date' => $day['date']->format('F j, Y'),
+                                                            'date' => $day['date']->format('j/n/y'),
                                                             'tasks' => [],
                                                             'meetings' => [['id' => $meeting->id, 'title' => $meeting->title, 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting']]
                                                         ]) }};
@@ -166,7 +166,7 @@
                                         <button type="button"
                                                 @click="showEventPopover = true; 
                                                         popoverEvents = {{ json_encode([
-                                                            'date' => $day['date']->format('F j, Y'),
+                                                            'date' => $day['date']->format('j/n/y'),
                                                             'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task'])->values(),
                                                             'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting'])->values()
                                                         ]) }};
