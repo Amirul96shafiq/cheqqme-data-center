@@ -208,25 +208,19 @@
                                  'border-yellow-500': task.priority === 'medium',
                                  'border-green-500': task.priority === 'low'
                              }">
-                            <div class="flex items-center justify-between">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xs px-2 py-1 rounded-full font-medium" 
-                                              :class="task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 
-                                                      task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
-                                                      'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'"
-                                              x-text="task.priority"></span>
-                                    </div>
-                                    <p class="text-sm text-gray-900 dark:text-gray-100 mt-1" x-text="task.title"></p>
-                                </div>
-                                <div class="flex items-center gap-1 ml-3">
-                                    <a :href="`{{ url('admin/tasks') }}/${task.id}/edit`"
-                                       target="_blank"
-                                       class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline transition-colors">
-                                        {{ __('dashboard.calendar.edit') }}
-                                    </a>
-                                </div>
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs px-2 py-1 rounded-full font-medium" 
+                                      :class="task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 
+                                              task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
+                                              'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'"
+                                      x-text="task.priority"></span>
+                                <a :href="`{{ url('admin/tasks') }}/${task.id}/edit`"
+                                   target="_blank"
+                                   class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                    {{ __('dashboard.calendar.edit') }}
+                                </a>
                             </div>
+                            <p class="text-sm text-gray-900 dark:text-gray-100" x-text="task.title"></p>
                         </div>
                     </template>
                 </div>
