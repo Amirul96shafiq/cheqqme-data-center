@@ -83,7 +83,8 @@ return [
         'next_month' => 'Next month',
         'tasks' => 'Tasks',
         'meetings' => 'Meetings',
-        'loading' => 'Loading...',
+        'loading' => 'Loading',
+        'loading_description' => 'Fetching your calendar events...',
         'days' => [
             'sun' => 'Sun',
             'mon' => 'Mon',

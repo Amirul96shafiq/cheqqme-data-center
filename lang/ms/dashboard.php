@@ -14,7 +14,8 @@ return [
     'next_month' => 'Bulan seterusnya',
     'tasks' => 'Tugasan',
     'meetings' => 'Mesyuarat',
-    'loading' => 'Memuatkan...',
+    'loading' => 'Memuatkan',
+    'loading_description' => 'Mengambil acara kalendar anda...',
     'days' => [
       'sun' => 'Ahd',
       'mon' => 'Isn',

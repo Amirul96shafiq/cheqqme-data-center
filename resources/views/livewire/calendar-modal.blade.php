@@ -34,8 +34,30 @@
     </div>
     
     {{-- Calendar Grid --}}
-    <div class="flex-1 overflow-auto">
-        <div class="min-w-[700px]">
+    <div class="flex-1 overflow-auto relative">
+        <div class="min-w-[700px] relative">
+            
+            {{-- Loading State --}}
+            <div wire:loading class="absolute inset-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex items-center justify-center z-20 rounded-lg">
+                <div class="flex flex-col items-center justify-center space-y-6 w-full h-full">
+                    
+                    {{-- Loading Spinner --}}
+                    <div class="relative">
+                        <x-icons.custom-icon name="refresh" class="w-12 h-12 text-primary-500" />
+                    </div>
+                    
+                    {{-- Loading Text --}}
+                    <div class="text-center space-y-2">
+                        <p class="text-base font-medium text-gray-700 dark:text-gray-300">
+                            {{ __('dashboard.calendar.loading') }}
+                        </p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ __('dashboard.calendar.loading_description') }}
+                        </p>
+                    </div>
+
+                </div>
+            </div>
             
             {{-- Day Headers --}}
             <div class="grid grid-cols-7 gap-px bg-gray-200 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-t-lg overflow-hidden">
@@ -136,13 +158,6 @@
         </div>
     </div>
     
-    {{-- Loading Indicator --}}
-    <div wire:loading class="absolute inset-0 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm flex items-center justify-center rounded-lg">
-        <div class="flex items-center gap-3">
-            <x-icons.custom-icon name="refresh" class="w-8 h-8 text-primary-500" />
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('dashboard.calendar.loading') }}</span>
-        </div>
-    </div>
     
     {{-- Event Popover --}}
     <div x-show="showEventPopover"
