@@ -63,9 +63,15 @@
             
             {{-- Day Headers --}}
             <div class="grid grid-cols-7 gap-px bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 rounded-t-lg overflow-hidden">
+                @php
+                    $currentDayName = strtolower(now()->format('D')); // Gets current day name in lowercase (e.g., 'tue')
+                    $isCurrentMonth = $year === now()->year && $month === now()->month;
+                @endphp
                 @foreach(['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as $day)
                     <div class="bg-gray-50 dark:bg-gray-800 px-3 py-2 text-center">
-                        <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ __("dashboard.calendar.days.{$day}") }}</span>
+                        <span class="text-xs font-semibold {{ ($day === $currentDayName && $isCurrentMonth) ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300' }}">
+                            {{ __("dashboard.calendar.days.{$day}") }}
+                        </span>
                     </div>
                 @endforeach
             </div>
@@ -82,7 +88,7 @@
                                 {{-- Date Number --}}
                                 <div class="flex items-center justify-between mb-1">
                                     <span class="text-sm font-medium 
-                                                {{ $day['is_today'] ? 'flex items-center justify-center w-6 h-6 rounded-full bg-primary-500 text-gray-900' : 'text-gray-500 dark:text-gray-200' }}">
+                                                 {{ $day['is_today'] ? 'flex items-center justify-center w-6 h-6 rounded-full bg-primary-500 text-primary-900' : 'text-gray-500 dark:text-gray-200' }}">
                                         {{ $day['date']->day }}
                                     </span>
                                     
