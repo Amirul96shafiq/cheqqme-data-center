@@ -872,22 +872,8 @@
             </div>
             
             <!-- Content -->
-            <div class="overflow-y-auto px-6 py-4 flex-1">
-                <div class="flex items-center justify-center h-full min-h-[60vh]">
-                    <div class="text-center space-y-4">
-                        <div class="p-4 rounded-full bg-gray-100 dark:bg-gray-800 mx-auto w-fit">
-                            <x-heroicon-o-calendar-days class="h-12 w-12 text-gray-400 dark:text-gray-500" />
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                                {{ __('dashboard.calendar.coming_soon') }}
-                            </h3>
-                            <p class="text-gray-500 dark:text-gray-400">
-                                {{ __('dashboard.calendar.empty_content') }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            <div class="overflow-hidden px-6 py-4 flex-1">
+                @livewire('calendar-modal')
             </div>
         </div>
     </div>
