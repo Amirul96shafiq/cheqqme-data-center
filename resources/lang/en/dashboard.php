@@ -88,6 +88,8 @@ return [
         'loading_description' => 'Fetching your calendar events...',
         'event' => 'Event',
         'events' => 'Events',
+        'edit' => 'Edit',
+        'join' => 'Join',
         'days' => [
             'sun' => 'Sun',
             'mon' => 'Mon',

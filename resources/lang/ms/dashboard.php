@@ -88,6 +88,8 @@ return [
         'loading_description' => 'Mengambil acara kalendar anda...',
         'event' => 'Acara',
         'events' => 'Acara',
+        'edit' => 'Sunting',
+        'join' => 'Sertai',
         'days' => [
             'sun' => 'Ahd',
             'mon' => 'Isn',

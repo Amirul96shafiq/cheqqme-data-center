@@ -156,7 +156,7 @@
                                                         popoverEvents = {{ json_encode([
                                                             'date' => $day['date']->format('F j, Y'),
                                                             'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task'])->values(),
-                                                            'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'type' => 'meeting'])->values()
+                                                            'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting'])->values()
                                                         ]) }};
                                                         popoverPosition = { x: $event.clientX, y: $event.clientY }"
                                                 class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline font-medium transition-all">
@@ -195,39 +195,66 @@
             </button>
         </div>
         
-        <div class="space-y-2 max-h-64 overflow-y-auto">
+        <div class="space-y-3 max-h-64 overflow-y-auto">
 
             {{-- Tasks --}}
             <template x-if="popoverEvents.tasks && popoverEvents.tasks.length > 0">
-                <div class="space-y-1.5">
-                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">{{ __('dashboard.calendar.tasks') }}</p>
+                <div class="space-y-2">
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('dashboard.calendar.tasks') }}</p>
                     <template x-for="task in popoverEvents.tasks" :key="task.id">
-                        <a :href="`{{ route('filament.admin.resources.tasks.index') }}/${task.id}`"
-                           target="_blank"
-                           class="block px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                           :class="{
-                               'border-l-4 border-red-500': task.priority === 'high',
-                               'border-l-4 border-yellow-500': task.priority === 'medium',
-                               'border-l-4 border-green-500': task.priority === 'low'
-                           }">
-                            <span x-text="task.title" class="text-gray-900 dark:text-gray-100"></span>
-                            <span x-text="`(${task.priority})`" class="text-xs text-gray-500 dark:text-gray-400 ml-1"></span>
-                        </a>
+                        <div class="px-3 py-2 rounded-lg border-l-4 bg-gray-50 dark:bg-gray-800/50"
+                             :class="{
+                                 'border-red-500': task.priority === 'high',
+                                 'border-yellow-500': task.priority === 'medium',
+                                 'border-green-500': task.priority === 'low'
+                             }">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs px-2 py-1 rounded-full font-medium" 
+                                              :class="task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 
+                                                      task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
+                                                      'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'"
+                                              x-text="task.priority"></span>
+                                    </div>
+                                    <p class="text-sm text-gray-900 dark:text-gray-100 mt-1" x-text="task.title"></p>
+                                </div>
+                                <div class="flex items-center gap-1 ml-3">
+                                    <a :href="`{{ url('admin/tasks') }}/${task.id}/edit`"
+                                       target="_blank"
+                                       class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline transition-colors">
+                                        {{ __('dashboard.calendar.edit') }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </template>
                 </div>
             </template>
             
             {{-- Meetings --}}
             <template x-if="popoverEvents.meetings && popoverEvents.meetings.length > 0">
-                <div class="space-y-1.5">
-                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">{{ __('dashboard.calendar.meetings') }}</p>
+                <div class="space-y-2">
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('dashboard.calendar.meetings') }}</p>
                     <template x-for="meeting in popoverEvents.meetings" :key="meeting.id">
-                        <a :href="`{{ route('filament.admin.resources.meeting-links.index') }}/${meeting.id}`"
-                           target="_blank"
-                           class="block px-3 py-2 text-sm rounded-lg border-l-4 border-teal-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <span x-text="meeting.time" class="font-medium text-teal-600 dark:text-teal-400"></span>
-                            <span x-text="meeting.title" class="text-gray-900 dark:text-gray-100 ml-2"></span>
-                        </a>
+                        <div class="px-3 py-2 rounded-lg border-l-4 border-teal-500 bg-teal-50 dark:bg-teal-900/20">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-medium text-teal-600 dark:text-teal-400" x-text="meeting.time"></span>
+                                <div class="flex items-center gap-1">
+                                    <a :href="`{{ url('admin/meeting-links') }}/${meeting.id}/edit`"
+                                       target="_blank"
+                                       class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                        {{ __('dashboard.calendar.edit') }}
+                                    </a>
+                                    <a :href="meeting.url"
+                                       target="_blank"
+                                       class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                        {{ __('dashboard.calendar.join') }}
+                                    </a>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-900 dark:text-gray-100" x-text="meeting.title"></p>
+                        </div>
                     </template>
                 </div>
             </template>
