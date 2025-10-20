@@ -82,7 +82,7 @@
                                 {{-- Date Number --}}
                                 <div class="flex items-center justify-between mb-1">
                                     <span class="text-sm font-medium 
-                                                {{ $day['is_today'] ? 'flex items-center justify-center w-6 h-6 rounded-full bg-primary-500 text-white' : 'text-gray-900 dark:text-gray-100' }}">
+                                                {{ $day['is_today'] ? 'flex items-center justify-center w-6 h-6 rounded-full bg-primary-500 text-gray-900' : 'text-gray-900' }}">
                                         {{ $day['date']->day }}
                                     </span>
                                     
