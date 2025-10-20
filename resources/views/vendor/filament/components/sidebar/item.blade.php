@@ -57,7 +57,7 @@
         <a
         {{ \Filament\Support\generate_href_html($url, $shouldOpenUrlInNewTab) }}
         x-on:click="window.matchMedia(`(max-width: 1024px)`).matches && $store.sidebar.close()"
-        @if ($sidebarCollapsible)
+        @if ($sidebarCollapsible && !$hasDropdown)
             x-data="{ tooltip: false }"
             x-effect="
                 tooltip = $store.sidebar.isOpen
