@@ -130,7 +130,7 @@
                                     @foreach($day['tasks']->take(3) as $task)
                                         <button type="button"
                                                 @click="closeAndOpen({{ json_encode([
-                                                            'date' => $day['date']->format('j/n/y'),
+                                                            'date' => $day['date']->format('l, j/n/y'),
                                                             'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'type' => 'task']],
                                                             'meetings' => []
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
@@ -159,7 +159,7 @@
                                     @foreach($day['meetings']->take(3 - $day['tasks']->take(3)->count()) as $meeting)
                                         <button type="button"
                                                 @click="closeAndOpen({{ json_encode([
-                                                            'date' => $day['date']->format('j/n/y'),
+                                                            'date' => $day['date']->format('l, j/n/y'),
                                                             'tasks' => [],
                                                             'meetings' => [['id' => $meeting->id, 'title' => $meeting->title, 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting']]
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
@@ -180,7 +180,7 @@
                                     @if($remainingEvents > 0)
                                         <button type="button"
                                                 @click="closeAndOpen({{ json_encode([
-                                                            'date' => $day['date']->format('j/n/y'),
+                                                            'date' => $day['date']->format('l, j/n/y'),
                                                             'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task'])->values(),
                                                             'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting'])->values()
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
