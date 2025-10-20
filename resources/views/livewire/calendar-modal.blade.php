@@ -7,6 +7,7 @@
         </h3>
         
         <div class="flex items-center gap-2">
+
             {{-- Today Button --}}
             <button type="button" 
                     wire:click="today"
@@ -15,21 +16,22 @@
             </button>
             
             {{-- Navigation Buttons --}}
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-3">
                 <button type="button" 
                         wire:click="previousMonth"
-                        class="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                        class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group"
                         aria-label="{{ __('dashboard.calendar.previous_month') }}">
-                    <x-heroicon-o-chevron-left class="w-5 h-5" />
+                    <x-heroicon-m-arrow-left class="w-5 h-5 text-primary-900 transition-colors" />
                 </button>
                 
                 <button type="button" 
                         wire:click="nextMonth"
-                        class="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                        class="w-10 h-10 bg-primary-500/80 dark:bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group"
                         aria-label="{{ __('dashboard.calendar.next_month') }}">
-                    <x-heroicon-o-chevron-right class="w-5 h-5" />
+                    <x-heroicon-m-arrow-right class="w-5 h-5 text-primary-900 transition-colors" />
                 </button>
             </div>
+
         </div>
     </div>
     
@@ -40,7 +42,7 @@
             {{-- Loading State --}}
             <div wire:loading class="absolute inset-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex items-center justify-center z-20 rounded-lg">
                 <div class="flex flex-col items-center justify-center space-y-6 w-full h-full">
-                    
+
                     {{-- Loading Spinner --}}
                     <div class="relative">
                         <x-icons.custom-icon name="refresh" class="w-12 h-12 text-primary-500" />
@@ -150,11 +152,13 @@
                                         </button>
                                     @endif
                                 </div>
+
                             </div>
                         @endforeach
                     </div>
                 @endforeach
             </div>
+
         </div>
     </div>
     
@@ -180,6 +184,7 @@
         </div>
         
         <div class="space-y-2 max-h-96 overflow-y-auto">
+
             {{-- Tasks --}}
             <template x-if="popoverEvents.tasks && popoverEvents.tasks.length > 0">
                 <div>
@@ -214,7 +219,9 @@
                     </template>
                 </div>
             </template>
+
         </div>
+
     </div>
     
 </div>
