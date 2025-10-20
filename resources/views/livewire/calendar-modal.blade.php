@@ -120,7 +120,7 @@
                                                         @else
                                                             bg-green-500
                                                         @endif"></span>
-                                            {{ Str::limit($task->title, 20) }}
+                                            {{ Str::limit($task->title, 35) }}
                                         </a>
                                     @endforeach
                                     
@@ -131,7 +131,7 @@
                                            class="block px-2 py-1 text-xs rounded truncate bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50 transition-colors"
                                            title="{{ $meeting->title }} - {{ $meeting->meeting_start_time->format('g:i A') }}">
                                             <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5"></span>
-                                            {{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit($meeting->title, 15) }}
+                                            {{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit($meeting->title, 25) }}
                                         </a>
                                     @endforeach
                                     
