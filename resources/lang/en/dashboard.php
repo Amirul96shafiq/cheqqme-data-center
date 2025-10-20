@@ -8,7 +8,7 @@ return [
 
         'profile-label' => 'Profile',
         'settings-label' => 'Settings',
-        'whats-news-label' => "What's News",
+        'whats-news-label' => "What's News 🡥",
         'logout-label' => 'Logout',
     ],
 
