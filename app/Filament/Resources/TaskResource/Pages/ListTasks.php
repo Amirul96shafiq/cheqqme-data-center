@@ -16,4 +16,9 @@ class ListTasks extends Page
         // Redirect to action board page using Livewire redirect
         $this->redirect('/admin/action-board');
     }
+
+    public function getBreadcrumbs(): array
+    {
+        return [];
+    }
 }

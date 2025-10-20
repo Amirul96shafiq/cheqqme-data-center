@@ -99,6 +99,11 @@ class ListUsers extends ListRecords
         ];
     }
 
+    public function getBreadcrumbs(): array
+    {
+        return [];
+    }
+
     protected function createUser(array $data): void
     {
         try {

@@ -18,4 +18,9 @@ class ListTrelloBoards extends ListRecords
                 ->icon('heroicon-o-plus'),
         ];
     }
+
+    public function getBreadcrumbs(): array
+    {
+        return [];
+    }
 }

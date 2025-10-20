@@ -18,4 +18,9 @@ class ListClients extends ListRecords
                 ->icon('heroicon-o-plus'),
         ];
     }
+
+    public function getBreadcrumbs(): array
+    {
+        return [];
+    }
 }
