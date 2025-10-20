@@ -1001,6 +1001,31 @@
         }
     });
     
+    // Handle "Calendar" menu item clicks
+    document.addEventListener('click', function(event) {
+        // Check if the clicked element contains "Calendar" text
+        let element = event.target;
+        
+        // Traverse up the DOM tree to find the menu item
+        while (element) {
+            if (element.textContent && (element.textContent.includes("Calendar") || element.textContent.includes('Kalendar'))) {
+                // Make sure it's actually a menu item
+                if (element.closest('[role="menuitem"], .fi-menu-item, [data-filament-menu-item], a[href*="javascript"]')) {
+                    // console.log('Found Calendar menu item:', element);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (window.showGlobalModal) {
+                        window.showGlobalModal('calendar');
+                    } else {
+                        console.error('showGlobalModal function not found');
+                    }
+                    return;
+                }
+            }
+            element = element.parentElement;
+        }
+    });
+    
     // Close modal function
     window.closeGlobalModal = function(type) {
         if (window.globalModals[type]) {

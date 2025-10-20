@@ -295,6 +295,11 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-o-code-bracket')
                     ->url('javascript:void(0)')
                     ->sort(1),
+                MenuItem::make()
+                    ->label(fn () => __('dashboard.user-menu.calendar-label'))
+                    ->icon('heroicon-o-calendar-days')
+                    ->url('javascript:void(0)')
+                    ->sort(1.5),
                 'logout' => MenuItem::make()
                     ->label(fn () => __('dashboard.user-menu.logout-label'))
                     ->icon('heroicon-o-arrow-right-on-rectangle')

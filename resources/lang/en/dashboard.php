@@ -9,6 +9,7 @@ return [
         'profile-label' => 'Profile',
         'settings-label' => 'Settings',
         'whats-news-label' => "What's News 🡥",
+        'calendar-label' => 'Calendar 🡥',
         'logout-label' => 'Logout',
     ],
 

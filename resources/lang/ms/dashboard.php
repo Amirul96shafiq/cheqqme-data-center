@@ -9,6 +9,7 @@ return [
         'profile-label' => 'Profil',
         'settings-label' => 'Tetapan',
         'whats-news-label' => 'Apa Yang Baru 🡥',
+        'calendar-label' => 'Kalendar 🡥',
         'logout-label' => 'Log Keluar',
     ],
 
