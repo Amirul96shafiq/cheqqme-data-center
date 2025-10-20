@@ -14,7 +14,8 @@ class ListTrelloBoards extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label(__('trelloboard.actions.create')),
+                ->label(__('trelloboard.actions.create'))
+                ->icon('heroicon-o-plus'),
         ];
     }
 }

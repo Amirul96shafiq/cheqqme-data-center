@@ -31,8 +31,8 @@ class ListMeetingLinks extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label(__('meetinglink.actions.create')),
+                ->label(__('meetinglink.actions.create'))
+                ->icon('heroicon-o-plus'),
         ];
     }
 }
-

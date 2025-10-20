@@ -49,7 +49,9 @@ class ListDocuments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label(__('document.actions.create')),
+            CreateAction::make()
+                ->label(__('document.actions.create'))
+                ->icon('heroicon-o-plus'),
         ];
     }
 }

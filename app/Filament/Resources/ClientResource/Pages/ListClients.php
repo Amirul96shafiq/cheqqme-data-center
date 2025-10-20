@@ -13,7 +13,9 @@ class ListClients extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label(__('client.actions.create')),
+            CreateAction::make()
+                ->label(__('client.actions.create'))
+                ->icon('heroicon-o-plus'),
         ];
     }
 }

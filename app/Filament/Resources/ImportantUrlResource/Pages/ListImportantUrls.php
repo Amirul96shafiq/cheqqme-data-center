@@ -49,7 +49,9 @@ class ListImportantUrls extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label(__('importanturl.actions.create')),
+            CreateAction::make()
+                ->label(__('importanturl.actions.create'))
+                ->icon('heroicon-o-plus'),
         ];
     }
 }

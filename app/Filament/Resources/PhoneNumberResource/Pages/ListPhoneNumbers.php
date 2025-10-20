@@ -13,7 +13,9 @@ class ListPhoneNumbers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->label(__('phonenumber.actions.create')),
+            CreateAction::make()
+                ->label(__('phonenumber.actions.create'))
+                ->icon('heroicon-o-plus'),
         ];
     }
 }
