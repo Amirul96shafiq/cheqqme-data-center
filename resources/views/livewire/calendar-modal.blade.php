@@ -134,13 +134,24 @@
                                     
                                     {{-- Meetings --}}
                                     @foreach($day['meetings']->take(3 - $day['tasks']->take(3)->count()) as $meeting)
-                                        <a href="{{ route('filament.admin.resources.meeting-links.edit', $meeting) }}"
-                                           target="_blank"
-                                           class="flex items-center px-2 py-1 text-xs rounded bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50 transition-colors"
-                                           title="{{ $meeting->title }} - {{ $meeting->meeting_start_time->format('g:i A') }}">
-                                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5 flex-shrink-0"></span>
-                                            <span class="truncate">{{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit($meeting->title, 25) }}</span>
-                                        </a>
+                                        <div class="relative px-2 py-1 text-xs rounded bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50 transition-colors group">
+                                            <a href="{{ route('filament.admin.resources.meeting-links.edit', $meeting) }}"
+                                               target="_blank"
+                                               class="block"
+                                               title="{{ $meeting->title }} - {{ $meeting->meeting_start_time->format('g:i A') }}">
+                                                <div class="flex items-center gap-1 mb-1">
+                                                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 flex-shrink-0"></span>
+                                                    <span class="text-xs font-medium">{{ $meeting->meeting_start_time->format('g:i A') }}</span>
+                                                </div>
+                                                <p class="text-xs leading-tight truncate">{{ Str::limit($meeting->title, 35) }}</p>
+                                            </a>
+                                            <a href="{{ $meeting->meeting_url }}"
+                                               target="_blank"
+                                               class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center w-5 h-5 rounded hover:bg-primary-500 hover:text-primary-900"
+                                               title="{{ __('dashboard.calendar.join') }}">
+                                                <x-heroicon-o-video-camera class="w-3 h-3" />
+                                            </a>
+                                        </div>
                                     @endforeach
                                     
                                     {{-- More Events Indicator --}}
