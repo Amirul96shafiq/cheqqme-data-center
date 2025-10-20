@@ -111,7 +111,7 @@
                                     @foreach($day['tasks']->take(3) as $task)
                                         <a href="{{ route('filament.admin.resources.tasks.edit', $task) }}"
                                            target="_blank"
-                                           class="block px-2 py-1 text-xs rounded truncate transition-colors
+                                           class="flex items-center px-2 py-1 text-xs rounded transition-colors
                                                   @if($task->priority === 'high')
                                                       bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50
                                                   @elseif($task->priority === 'medium')
@@ -120,7 +120,7 @@
                                                       bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50
                                                   @endif"
                                            title="{{ $task->title }}">
-                                            <span class="inline-block w-1.5 h-1.5 rounded-full mr-1.5
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full mr-1.5 flex-shrink-0
                                                         @if($task->priority === 'high')
                                                             bg-red-500
                                                         @elseif($task->priority === 'medium')
@@ -128,7 +128,7 @@
                                                         @else
                                                             bg-green-500
                                                         @endif"></span>
-                                            {{ Str::limit($task->title, 35) }}
+                                            <span class="truncate">{{ Str::limit($task->title, 35) }}</span>
                                         </a>
                                     @endforeach
                                     
@@ -136,10 +136,10 @@
                                     @foreach($day['meetings']->take(3 - $day['tasks']->take(3)->count()) as $meeting)
                                         <a href="{{ route('filament.admin.resources.meeting-links.edit', $meeting) }}"
                                            target="_blank"
-                                           class="block px-2 py-1 text-xs rounded truncate bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50 transition-colors"
+                                           class="flex items-center px-2 py-1 text-xs rounded bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50 transition-colors"
                                            title="{{ $meeting->title }} - {{ $meeting->meeting_start_time->format('g:i A') }}">
-                                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5"></span>
-                                            {{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit($meeting->title, 25) }}
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5 flex-shrink-0"></span>
+                                            <span class="truncate">{{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit($meeting->title, 25) }}</span>
                                         </a>
                                     @endforeach
                                     
