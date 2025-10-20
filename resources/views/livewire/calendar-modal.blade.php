@@ -159,7 +159,7 @@
                                                             'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'type' => 'meeting'])->values()
                                                         ]) }};
                                                         popoverPosition = { x: $event.clientX, y: $event.clientY }"
-                                                class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
+                                                class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline font-medium transition-all">
                                             +{{ $remainingEvents }} more
                                         </button>
                                     @endif
