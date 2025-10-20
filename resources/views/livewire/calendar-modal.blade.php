@@ -199,7 +199,7 @@
 
             {{-- Tasks --}}
             <template x-if="popoverEvents.tasks && popoverEvents.tasks.length > 0">
-                <div>
+                <div class="space-y-1.5">
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">{{ __('dashboard.calendar.tasks') }}</p>
                     <template x-for="task in popoverEvents.tasks" :key="task.id">
                         <a :href="`{{ route('filament.admin.resources.tasks.index') }}/${task.id}`"
@@ -219,13 +219,13 @@
             
             {{-- Meetings --}}
             <template x-if="popoverEvents.meetings && popoverEvents.meetings.length > 0">
-                <div>
+                <div class="space-y-1.5">
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">{{ __('dashboard.calendar.meetings') }}</p>
                     <template x-for="meeting in popoverEvents.meetings" :key="meeting.id">
                         <a :href="`{{ route('filament.admin.resources.meeting-links.index') }}/${meeting.id}`"
                            target="_blank"
-                           class="block px-3 py-2 text-sm rounded-lg border-l-4 border-blue-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <span x-text="meeting.time" class="font-medium text-blue-600 dark:text-blue-400"></span>
+                           class="block px-3 py-2 text-sm rounded-lg border-l-4 border-teal-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <span x-text="meeting.time" class="font-medium text-teal-600 dark:text-teal-400"></span>
                             <span x-text="meeting.title" class="text-gray-900 dark:text-gray-100 ml-2"></span>
                         </a>
                     </template>
