@@ -184,8 +184,8 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
-         class="fixed z-50 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl ring-1 ring-gray-200 dark:ring-gray-700 p-4"
-         :style="`left: ${popoverPosition.x}px; top: ${popoverPosition.y}px; transform: translate(-50%, 10px);`"
+         class="fixed z-50 w-80 bg-white dark:bg-gray-900 rounded-lg shadow-xl ring-1 ring-gray-100 dark:ring-gray-800 p-4 max-h-[80vh]"
+         :style="`left: ${Math.min(popoverPosition.x, window.innerWidth - 340)}px; top: ${Math.min(popoverPosition.y + 10, window.innerHeight - 400)}px; transform: translateX(-50%);`"
          x-cloak>
         
         <div class="flex items-center justify-between mb-3">
@@ -195,7 +195,7 @@
             </button>
         </div>
         
-        <div class="space-y-2 max-h-96 overflow-y-auto">
+        <div class="space-y-2 max-h-64 overflow-y-auto">
 
             {{-- Tasks --}}
             <template x-if="popoverEvents.tasks && popoverEvents.tasks.length > 0">
