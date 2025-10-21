@@ -135,12 +135,23 @@
                                                             'meetings' => []
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
                                                 class="flex items-center px-2 py-1 text-xs rounded transition-colors w-full text-left
-                                                       @if($task->priority === 'high')
-                                                           bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50
-                                                       @elseif($task->priority === 'medium')
-                                                           bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:hover:bg-yellow-900/50
+                                                       @if(in_array(auth()->id(), $task->assigned_to ?? []))
+                                                           @if($task->priority === 'high')
+                                                               bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50
+                                                           @elseif($task->priority === 'medium')
+                                                               bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:hover:bg-yellow-900/50
+                                                           @else
+                                                               bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50
+                                                           @endif
                                                        @else
-                                                           bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50
+                                                           bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50
+                                                           @if($task->priority === 'high')
+                                                               text-red-600 dark:text-red-400
+                                                           @elseif($task->priority === 'medium')
+                                                               text-yellow-600 dark:text-yellow-400
+                                                           @else
+                                                               text-green-600 dark:text-green-400
+                                                           @endif
                                                        @endif"
                                                 title="{{ $task->title }}">
                                             <span class="inline-block w-1.5 h-1.5 rounded-full mr-1.5 flex-shrink-0
@@ -163,7 +174,12 @@
                                                             'tasks' => [],
                                                             'meetings' => [['id' => $meeting->id, 'title' => $meeting->title, 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting']]
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
-                                                class="flex items-center px-2 py-1 text-xs rounded bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50 transition-colors w-full text-left"
+                                                class="flex items-center px-2 py-1 text-xs rounded transition-colors w-full text-left
+                                                       @if(in_array(auth()->id(), $meeting->user_ids ?? []))
+                                                           bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50
+                                                       @else
+                                                           bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50 text-teal-600 dark:text-teal-400
+                                                       @endif"
                                                 title="{{ $meeting->title }} - {{ $meeting->meeting_start_time->format('g:i A') }}">
                                             <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5 flex-shrink-0"></span>
                                             <span class="truncate">{{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit($meeting->title, 25) }}</span>
@@ -258,7 +274,7 @@
                 <div class="space-y-2">
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('dashboard.calendar.meetings') }}</p>
                     <template x-for="meeting in popoverEvents.meetings" :key="meeting.id">
-                        <div class="px-3 py-2 rounded-lg border-l-4 border-teal-500 bg-teal-50 dark:bg-teal-900/20">
+                        <div class="px-3 py-2 rounded-lg border-l-4 border-teal-500 bg-gray-50 dark:bg-gray-800/50">
                             <div class="flex items-center justify-between mb-1">
                                 <span class="text-xs font-medium text-teal-600 dark:text-teal-400" x-text="meeting.time"></span>
                                 <div class="flex items-center gap-1">
