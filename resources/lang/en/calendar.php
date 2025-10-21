@@ -50,6 +50,7 @@ return [
         ],
     ],
     'tooltip' => [
+        'close' => 'Close',
         'create_event' => 'Create New Event',
         'filter_events' => 'Filter Events',
         'previous_month' => 'Go to :month',

@@ -50,6 +50,7 @@ return [
         ],
     ],
     'tooltip' => [
+        'close' => 'Tutup',
         'create_event' => 'Cipta Acara Baru',
         'filter_events' => 'Tapis Acara',
         'previous_month' => 'Pergi ke :month',
