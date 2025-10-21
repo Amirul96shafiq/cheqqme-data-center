@@ -41,6 +41,12 @@ class CalendarModal extends Component
         $this->month = $now->month;
     }
 
+    public function goToMonth(int $month, int $year): void
+    {
+        $this->month = $month;
+        $this->year = $year;
+    }
+
     public function render()
     {
         // Get start and end dates for the calendar view

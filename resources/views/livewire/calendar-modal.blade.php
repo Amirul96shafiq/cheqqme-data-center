@@ -90,20 +90,110 @@
     
     {{-- Calendar Header --}}
     <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            <span wire:loading.remove wire:target="previousMonth,nextMonth">
 
-                {{-- Compact format (8/25) for small screens --}}
-                <span class="block 2xl:hidden">{{ $month }}/{{ substr($year, -2) }}</span>
+        {{-- Month Picker --}}
+        <div class="relative" 
+             @click.away="openMonthPicker = false"
+             x-data="{ 
+                openMonthPicker: false,
+                pickerYear: {{ $year }},
+                togglePicker() {
+                    if (this.openMonthPicker) {
+                        this.openMonthPicker = false;
+                    } else {
+                        this.pickerYear = {{ $year }};
+                        this.openMonthPicker = true;
+                        showEventPopover = false;
+                        isOverPopover = false;
+                    }
+                }
+             }"
+             x-init="pickerYear = {{ $year }}"
+             x-effect="pickerYear = {{ $year }}">
+            <button @click="togglePicker()" 
+                    class="text-xl font-semibold text-gray-900 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-2">
+                <span wire:loading.remove wire:target="previousMonth,nextMonth,goToMonth">
 
-                {{-- Full format (August 2025) for 2xl+ screens --}}
-                <span class="hidden 2xl:block">{{ $monthName }}</span>
-                
-            </span>
-            <span wire:loading wire:target="previousMonth,nextMonth">
-                {{ __('dashboard.calendar.loading') }}
-            </span>
-        </h3>
+                    {{-- Compact format (8/25) for small screens --}}
+                    <span class="block 2xl:hidden">{{ $month }}/{{ substr($year, -2) }}</span>
+
+                    {{-- Full format (August 2025) for 2xl+ screens --}}
+                    <span class="hidden 2xl:block">{{ $monthName }}</span>
+                    
+                </span>
+                <span wire:loading wire:target="previousMonth,nextMonth,goToMonth">
+                    {{ __('dashboard.calendar.loading') }}
+                </span>
+                <x-heroicon-m-chevron-down class="h-5 w-5 transition-transform" x-bind:class="openMonthPicker ? 'rotate-180' : ''" />
+            </button>
+            
+            {{-- Month Picker Dropdown --}}
+            <div x-show="openMonthPicker" 
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="transform opacity-0 scale-95"
+                 x-transition:enter-end="transform opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="transform opacity-100 scale-100"
+                 x-transition:leave-end="transform opacity-0 scale-95"
+                 class="absolute left-0 mt-2 w-72 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
+                 style="display: none;">
+
+                <div class="p-4 space-y-4">
+
+                    {{-- Year Navigation --}}
+                    <div class="flex items-center justify-between">
+                        <button type="button" 
+                                @click="pickerYear--"
+                                class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                            <x-heroicon-m-arrow-left class="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                        </button>
+                        <span class="text-lg font-semibold text-gray-900 dark:text-gray-100" x-text="pickerYear"></span>
+                        <button type="button" 
+                                @click="pickerYear++"
+                                class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                            <x-heroicon-m-arrow-right class="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                        </button>
+                    </div>
+
+                    {{-- Month Grid --}}
+                    <div class="grid grid-cols-3 gap-2">
+                        @php
+                            $currentMonth = now()->month;
+                            $currentYear = now()->year;
+                            $months = [
+                                1 => __('dashboard.calendar.months.jan'),
+                                2 => __('dashboard.calendar.months.feb'),
+                                3 => __('dashboard.calendar.months.mar'),
+                                4 => __('dashboard.calendar.months.apr'),
+                                5 => __('dashboard.calendar.months.may'),
+                                6 => __('dashboard.calendar.months.jun'),
+                                7 => __('dashboard.calendar.months.jul'),
+                                8 => __('dashboard.calendar.months.aug'),
+                                9 => __('dashboard.calendar.months.sep'),
+                                10 => __('dashboard.calendar.months.oct'),
+                                11 => __('dashboard.calendar.months.nov'),
+                                12 => __('dashboard.calendar.months.dec'),
+                            ];
+                        @endphp
+                        @foreach($months as $monthNum => $monthLabel)
+                            <button type="button"
+                                    @click="$wire.call('goToMonth', {{ $monthNum }}, pickerYear)"
+                                    class="px-3 py-2 text-sm font-medium rounded-lg transition-colors"
+                                    :class="{
+                                        'bg-primary-500 text-primary-900 hover:bg-primary-400': {{ $monthNum }} === {{ $month }} && pickerYear === {{ $year }},
+                                        'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-900/50': {{ $monthNum }} === {{ $currentMonth }} && pickerYear === {{ $currentYear }},
+                                        'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50': !({{ $monthNum }} === {{ $month }} && pickerYear === {{ $year }}) && !({{ $monthNum }} === {{ $currentMonth }} && pickerYear === {{ $currentYear }})
+                                    }">
+                                {{ $monthLabel }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                </div>
+
+            </div>
+            
+        </div>
         
         <div class="flex items-center gap-4">
 
