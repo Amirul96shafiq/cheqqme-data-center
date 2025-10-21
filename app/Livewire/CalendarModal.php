@@ -152,6 +152,12 @@ class CalendarModal extends Component
             ? Task::query()
                 ->whereNotNull('due_date')
                 ->whereBetween('due_date', [$calendarStart, $calendarEnd])
+                ->orderByRaw("CASE 
+                    WHEN priority = 'high' THEN 1 
+                    WHEN priority = 'medium' THEN 2 
+                    WHEN priority = 'low' THEN 3 
+                    ELSE 4 
+                END")
                 ->orderBy('due_date')
                 ->get()
                 ->groupBy(fn ($task) => Carbon::parse($task->due_date)->format('Y-m-d'))
