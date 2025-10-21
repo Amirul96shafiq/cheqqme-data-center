@@ -860,6 +860,14 @@
                 </div>
                 
                 <div class="flex items-center gap-3">
+
+                    <!-- Create Task Button -->
+                    <a href="{{ route('filament.admin.pages.action-board') }}?create_task=1" 
+                       class="inline-flex items-center gap-2 px-4 py-2 h-10 rounded-lg text-sm font-medium text-primary-900 bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 transition-colors">
+                        <x-heroicon-o-plus class="h-4 w-4" />
+                        {{ __('dashboard.calendar.create_task') }}
+                    </a>
+                    
                     <!-- Create Meeting Link Button -->
                     <a href="{{ route('filament.admin.resources.meeting-links.create') }}" 
                        class="inline-flex items-center gap-2 px-4 py-2 h-10 rounded-lg text-sm font-medium text-primary-900 bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 transition-colors">
@@ -884,8 +892,11 @@
             <div class="overflow-hidden px-6 py-4 flex-1">
                 @livewire('calendar-modal')
             </div>
+
         </div>
+
     </div>
+    
 </div>
 
 <script data-navigate-once>

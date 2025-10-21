@@ -90,6 +90,7 @@ return [
         'events' => 'Events',
         'edit' => 'Edit',
         'join' => 'Join',
+        'create_task' => 'Create Action Task',
         'create_meeting_link' => 'Create Meeting Link',
         'days' => [
             'sun' => 'Sun',

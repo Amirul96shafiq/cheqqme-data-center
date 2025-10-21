@@ -90,6 +90,7 @@ return [
         'events' => 'Acara',
         'edit' => 'Sunting',
         'join' => 'Sertai',
+        'create_task' => 'Cipta Tugasan Tindakan',
         'create_meeting_link' => 'Cipta Pautan Mesyuarat',
         'days' => [
             'sun' => 'Ahd',

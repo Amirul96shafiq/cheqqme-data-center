@@ -72,6 +72,33 @@
                     searchInput.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             };
+            
+            // Auto-open create task modal if URL parameter is present
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('create_task') === '1') {
+                // Wait for page to fully load and then trigger the create task modal
+                setTimeout(() => {
+                    // Find the create task button and click it
+                    const createTaskButton = document.querySelector('[wire\\:click="mountAction(\'createTask\')"]');
+                    if (createTaskButton) {
+                        createTaskButton.click();
+                    } else {
+                        // Fallback: try to find by text content
+                        const buttons = document.querySelectorAll('button');
+                        for (const button of buttons) {
+                            if (button.textContent.includes('{{ __("action.modal.create_title") }}')) {
+                                button.click();
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Clean up URL parameter without reloading
+                    const newUrl = new URL(window.location);
+                    newUrl.searchParams.delete('create_task');
+                    window.history.replaceState({}, '', newUrl);
+                }, 1000); // 1 second delay to ensure page is fully loaded
+            }
         });
     </script>
 </x-filament::page>
