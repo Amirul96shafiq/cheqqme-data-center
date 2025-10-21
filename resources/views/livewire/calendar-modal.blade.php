@@ -219,8 +219,8 @@
                             @click.away="open = false"
                             class="inline-flex items-center gap-2 px-4 py-2 h-10 text-sm font-medium bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300">
                         <x-heroicon-o-plus class="h-4 w-4" />
-                        {{ __('dashboard.calendar.create') }}
-                        <x-heroicon-m-chevron-down class="h-4 w-4 transition-transform" x-bind:class="open ? 'rotate-180' : ''" />
+                        <span class="hidden 2xl:inline">{{ __('dashboard.calendar.create') }}</span>
+                        <x-heroicon-m-chevron-down class="hidden 2xl:block h-4 w-4 transition-transform" x-bind:class="open ? 'rotate-180' : ''" />
                     </button>
                     
                     <!-- Dropdown Menu -->
