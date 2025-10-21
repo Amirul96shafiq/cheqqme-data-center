@@ -99,12 +99,14 @@
                 pickerYear: {{ $year }},
                 minYear: {{ now()->year - 5 }},
                 maxYear: {{ now()->year + 5 }},
+                currentYear: {{ now()->year }},
+                currentMonth: {{ now()->month }},
+                selectedYear: {{ $year }},
+                selectedMonth: {{ $month }},
                 togglePicker() {
                     if (this.openMonthPicker) {
                         this.openMonthPicker = false;
                     } else {
-                        // Ensure pickerYear is within allowed range
-                        this.pickerYear = Math.max(this.minYear, Math.min(this.maxYear, {{ $year }}));
                         this.openMonthPicker = true;
                         showEventPopover = false;
                         isOverPopover = false;
@@ -113,8 +115,14 @@
              }"
              x-init="
                 pickerYear = {{ $year }};
+                selectedYear = {{ $year }};
+                selectedMonth = {{ $month }};
                 $watch('$wire.year', value => {
                     pickerYear = Math.max(minYear, Math.min(maxYear, value));
+                    selectedYear = value;
+                });
+                $watch('$wire.month', value => {
+                    selectedMonth = value;
                 });
              ">
             <button @click="togglePicker()" 
@@ -156,7 +164,9 @@
                                 class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                             <x-heroicon-m-arrow-left class="h-5 w-5 text-gray-600 dark:text-gray-400" />
                         </button>
-                        <span class="text-lg font-semibold text-gray-900 dark:text-gray-100" x-text="pickerYear"></span>
+                        <span class="text-lg font-semibold transition-colors"
+                              :class="pickerYear === {{ now()->year }} ? 'text-primary-600 dark:text-primary-400' : 'text-gray-900 dark:text-gray-100'"
+                              x-text="pickerYear"></span>
                         <button type="button" 
                                 @click="pickerYear < {{ now()->year + 5 }} ? pickerYear++ : null"
                                 :disabled="pickerYear >= {{ now()->year + 5 }}"
@@ -187,18 +197,28 @@
                             ];
                         @endphp
                         @foreach($months as $monthNum => $monthLabel)
+                            @php
+                                // Determine the CSS classes based on PHP logic
+                                $isSelectedMonth = $monthNum === $month;
+                                $isCurrentMonth = $monthNum === $currentMonth && $year === $currentYear;
+                                
+                                $baseClasses = 'px-3 py-2 text-sm font-medium rounded-lg transition-colors ';
+                                
+                                if ($isSelectedMonth) {
+                                    $highlightClasses = 'bg-primary-500 text-primary-900 hover:bg-primary-400';
+                                } elseif ($isCurrentMonth) {
+                                    $highlightClasses = 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-900/50';
+                                } else {
+                                    $highlightClasses = 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50';
+                                }
+                                
+                                $allClasses = $baseClasses . $highlightClasses;
+                            @endphp
                             <button type="button"
                                     @click="pickerYear >= minYear && pickerYear <= maxYear ? $wire.call('goToMonth', {{ $monthNum }}, pickerYear) : null"
                                     :disabled="pickerYear < minYear || pickerYear > maxYear"
-                                    class="px-3 py-2 text-sm font-medium rounded-lg transition-colors"
-                                    :class="[
-                                        pickerYear < minYear || pickerYear > maxYear ? 'opacity-50 cursor-not-allowed' : '',
-                                        {
-                                            'bg-primary-500 text-primary-900 hover:bg-primary-400': {{ $monthNum }} === {{ $month }} && pickerYear === {{ $year }},
-                                            'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-900/50': {{ $monthNum }} === {{ $currentMonth }} && pickerYear === {{ $currentYear }},
-                                            'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50': !({{ $monthNum }} === {{ $month }} && pickerYear === {{ $year }}) && !({{ $monthNum }} === {{ $currentMonth }} && pickerYear === {{ $currentYear }})
-                                        }
-                                    ]">
+                                    :class="pickerYear < minYear || pickerYear > maxYear ? 'opacity-50 cursor-not-allowed' : ''"
+                                    class="{{ $allClasses }}">
                                 {{ $monthLabel }}
                             </button>
                         @endforeach
