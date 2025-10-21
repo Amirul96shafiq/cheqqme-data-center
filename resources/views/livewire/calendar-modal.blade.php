@@ -111,7 +111,7 @@
              x-init="pickerYear = {{ $year }}"
              x-effect="pickerYear = {{ $year }}">
             <button @click="togglePicker()" 
-                    class="text-xl font-semibold text-gray-900 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-2">
+                    class="text-sm 2xl:text-xl font-semibold text-gray-900 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-2">
                 <span wire:loading.remove wire:target="previousMonth,nextMonth,goToMonth">
 
                     {{-- Compact format (8/25) for small screens --}}
