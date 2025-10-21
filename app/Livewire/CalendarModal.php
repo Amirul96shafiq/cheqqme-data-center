@@ -79,6 +79,20 @@ class CalendarModal extends Component
         return $this->year === $now->year && $this->month === $now->month;
     }
 
+    public function getPreviousMonthNameProperty(): string
+    {
+        $previousMonth = Carbon::create($this->year, $this->month, 1)->subMonth();
+
+        return $previousMonth->format('F');
+    }
+
+    public function getNextMonthNameProperty(): string
+    {
+        $nextMonth = Carbon::create($this->year, $this->month, 1)->addMonth();
+
+        return $nextMonth->format('F');
+    }
+
     public function goToMonth(int $month, int $year): void
     {
         // Validate year range: -5 to +5 years from current year

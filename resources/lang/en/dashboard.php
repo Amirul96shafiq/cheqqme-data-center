@@ -122,4 +122,15 @@ return [
             'dec' => 'Dec',
         ],
     ],
+    'tooltip' => [
+        'create_event' => 'Create New Event',
+        'filter_events' => 'Filter Events',
+        'previous_month' => 'Go to :month',
+        'jump_today' => 'Jump to Today',
+        'next_month' => 'Go to :month',
+        'view_more_events' => 'View More Events',
+        'edit_task' => 'Edit Task',
+        'edit_meeting_link' => 'Edit Meeting Link',
+        'join' => 'Join Meeting',
+    ],
 ];

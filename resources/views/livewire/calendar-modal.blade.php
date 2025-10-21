@@ -235,14 +235,16 @@
 
                 {{-- Create Dropdown Button --}}
                 <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" 
-                            @click.away="open = false"
-                            class="inline-flex items-center gap-2 px-4 py-2 h-10 text-sm font-medium bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300">
-                        <x-heroicon-o-plus class="h-4 w-4" />
-                        <span class="hidden 2xl:inline">{{ __('dashboard.calendar.create') }}</span>
-                        <x-heroicon-m-chevron-down class="hidden 2xl:block h-4 w-4 transition-transform" x-bind:class="open ? 'rotate-180' : ''" />
-                    </button>
-                    
+                    <x-tooltip text="{{ __('dashboard.tooltip.create_event') }}" position="left">
+                        <button @click="open = !open" 
+                                @click.away="open = false"
+                                class="inline-flex items-center gap-2 px-4 py-2 h-10 text-sm font-medium bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300">
+                            <x-heroicon-o-plus class="h-4 w-4" />
+                            <span class="hidden 2xl:inline">{{ __('dashboard.calendar.create') }}</span>
+                            <x-heroicon-m-chevron-down class="hidden 2xl:block h-4 w-4 transition-transform" x-bind:class="open ? 'rotate-180' : ''" />
+                        </button>
+                    </x-tooltip>
+
                     <!-- Dropdown Menu -->
                     <div x-show="open" 
                         x-transition:enter="transition ease-out duration-100"
@@ -278,14 +280,16 @@
 
                 {{-- Filter Button --}}
                 <div class="relative" x-data="{ filterOpen: false }" @click.outside="filterOpen = false">
-                    <button
-                        @click="filterOpen = !filterOpen"
-                        class="flex items-center justify-center w-10 h-10 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300"
-                        title="{{ __('dashboard.calendar.filter') }}"
-                    >
-                        <x-heroicon-m-funnel class="w-4 h-4" />
-                    </button>
-                    
+                    <x-tooltip text="{{ __('dashboard.tooltip.filter_events') }}" position="left">
+                        <button
+                            @click="filterOpen = !filterOpen"
+                            class="flex items-center justify-center w-10 h-10 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300"
+                            title="{{ __('dashboard.calendar.filter') }}"
+                        >
+                            <x-heroicon-m-funnel class="w-4 h-4" />
+                        </button>
+                    </x-tooltip>
+
                     <!-- Filter Dropdown -->
                     <div 
                         x-show="filterOpen"
@@ -349,34 +353,44 @@
 
             {{-- Navigation Buttons --}}
             <div class="flex items-center gap-2">
-                <button type="button" 
-                        wire:click="previousMonth"
-                        @click="showEventPopover = false; isOverPopover = false"
-                        class="w-10 h-10 bg-primary-500/80 hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group"
-                        aria-label="{{ __('dashboard.calendar.previous_month') }}">
-                    <x-heroicon-m-arrow-left wire:loading.remove wire:target="previousMonth" class="w-5 h-5 text-primary-900 transition-colors" />
-                    <x-heroicon-o-arrow-path wire:loading wire:target="previousMonth" class="w-5 h-5 text-primary-900 animate-spin" />
-                </button>
                 
+                {{-- Previous Month Button --}}
+                <x-tooltip text="{{ __('dashboard.tooltip.previous_month', ['month' => $this->previousMonthName]) }}" position="left">
+                    <button type="button" 
+                            wire:click="previousMonth"
+                            @click="showEventPopover = false; isOverPopover = false"
+                            class="w-10 h-10 bg-primary-500/80 hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group"
+                            aria-label="{{ __('dashboard.calendar.previous_month') }}">
+                        <x-heroicon-m-arrow-left wire:loading.remove wire:target="previousMonth" class="w-5 h-5 text-primary-900 transition-colors" />
+                        <x-heroicon-o-arrow-path wire:loading wire:target="previousMonth" class="w-5 h-5 text-primary-900 animate-spin" />
+                    </button>
+                </x-tooltip>
+
                 {{-- Today Button --}}
-                <button type="button" 
-                        wire:click="today"
-                        @click="showEventPopover = false; isOverPopover = false"
-                        @disabled($this->isViewingToday)
-                        class="px-4 py-2 w-20 h-10 text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2
-                               text-primary-900 bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 {{ $this->isViewingToday ? 'cursor-not-allowed opacity-60' : '' }}">
-                    <span wire:loading.remove wire:target="today">{{ __('dashboard.calendar.today') }}</span>
-                    <x-heroicon-o-arrow-path wire:loading wire:target="today" class="w-5 h-5 text-primary-900 animate-spin" />
-                </button>
+                <x-tooltip text="{{ __('dashboard.tooltip.jump_today') }}" position="left">
+                    <button type="button" 
+                            wire:click="today"
+                            @click="showEventPopover = false; isOverPopover = false"
+                            @disabled($this->isViewingToday)
+                            class="px-4 py-2 w-20 h-10 text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2
+                                text-primary-900 bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 {{ $this->isViewingToday ? 'cursor-not-allowed opacity-60' : '' }}">
+                        <span wire:loading.remove wire:target="today">{{ __('dashboard.calendar.today') }}</span>
+                        <x-heroicon-o-arrow-path wire:loading wire:target="today" class="w-5 h-5 text-primary-900 animate-spin" />
+                    </button>
+                </x-tooltip>
                 
-                <button type="button" 
-                        wire:click="nextMonth"
-                        @click="showEventPopover = false; isOverPopover = false"
-                        class="w-10 h-10 bg-primary-500/80 hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group"
-                        aria-label="{{ __('dashboard.calendar.next_month') }}">
-                    <x-heroicon-m-arrow-right wire:loading.remove wire:target="nextMonth" class="w-5 h-5 text-primary-900 transition-colors" />
-                    <x-heroicon-o-arrow-path wire:loading wire:target="nextMonth" class="w-5 h-5 text-primary-900 animate-spin" />
-                </button>
+                {{-- Next Month Button --}}
+                <x-tooltip text="{{ __('dashboard.tooltip.next_month', ['month' => $this->nextMonthName]) }}" position="left">
+                    <button type="button" 
+                            wire:click="nextMonth"
+                            @click="showEventPopover = false; isOverPopover = false"
+                            class="w-10 h-10 bg-primary-500/80 hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group"
+                            aria-label="{{ __('dashboard.calendar.next_month') }}">
+                        <x-heroicon-m-arrow-right wire:loading.remove wire:target="nextMonth" class="w-5 h-5 text-primary-900 transition-colors" />
+                        <x-heroicon-o-arrow-path wire:loading wire:target="nextMonth" class="w-5 h-5 text-primary-900 animate-spin" />
+                    </button>
+                </x-tooltip>
+
             </div>
 
         </div>
@@ -508,7 +522,9 @@
                                                             'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values()
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
                                                 class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline font-medium transition-all">
-                                            +{{ $remainingEvents }} more
+                                            <x-tooltip text="{{ __('dashboard.tooltip.view_more_events') }}" position="right">
+                                                +{{ $remainingEvents }} more
+                                            </x-tooltip>
                                         </button>
                                     @endif
                                 </div>
@@ -567,11 +583,16 @@
                                               task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
                                               'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'"
                                       x-text="task.priority === 'high' ? 'High' : task.priority === 'medium' ? 'Medium' : 'Low'"></span>
-                                <a :href="`{{ url('admin/tasks') }}/${task.id}/edit`"
-                                   target="_blank"
-                                   class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
-                                    {{ __('dashboard.calendar.edit') }}
-                                </a>
+
+                                {{-- Edit Task Button --}}
+                                <x-tooltip text="{{ __('dashboard.tooltip.edit_task') }}" position="left">
+                                    <a :href="`{{ url('admin/tasks') }}/${task.id}/edit`"
+                                    target="_blank"
+                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                        {{ __('dashboard.calendar.edit') }}
+                                    </a>
+                                </x-tooltip>
+                                
                             </div>
                             <p class="text-sm text-gray-900 dark:text-gray-100" x-text="task.title"></p>
                         </div>
@@ -589,16 +610,25 @@
                             <div class="flex items-center justify-between mb-1">
                                 <span class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400" x-text="meeting.time"></span>
                                 <div class="flex items-center gap-1">
-                                    <a :href="`{{ url('admin/meeting-links') }}/${meeting.id}/edit`"
-                                       target="_blank"
-                                       class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
-                                        {{ __('dashboard.calendar.edit') }}
-                                    </a>
-                                    <a :href="meeting.url"
-                                       target="_blank"
-                                       class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
-                                        {{ __('dashboard.calendar.join') }}
-                                    </a>
+
+                                    {{-- Edit Meeting Link Button --}}
+                                    <x-tooltip text="{{ __('dashboard.tooltip.edit_meeting_link') }}" position="left">
+                                        <a :href="`{{ url('admin/meeting-links') }}/${meeting.id}/edit`"
+                                        target="_blank"
+                                        class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                            {{ __('dashboard.calendar.edit') }}
+                                        </a>
+                                    </x-tooltip>
+
+                                    {{-- Join Meeting Button --}}
+                                    <x-tooltip text="{{ __('dashboard.tooltip.join') }}" position="left">
+                                        <a :href="meeting.url"
+                                        target="_blank"
+                                        class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                            {{ __('dashboard.calendar.join') }}
+                                        </a>
+                                    </x-tooltip>
+
                                 </div>
                             </div>
                             <p class="text-sm text-gray-900 dark:text-gray-100" x-text="meeting.title"></p>

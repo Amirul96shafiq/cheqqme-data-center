@@ -122,4 +122,15 @@ return [
             'dec' => 'Dis',
         ],
     ],
+    'tooltip' => [
+        'create_event' => 'Cipta Acara Baru',
+        'filter_events' => 'Tapis Acara',
+        'previous_month' => 'Pergi ke :month',
+        'jump_today' => 'Lompat ke Hari Ini',
+        'next_month' => 'Pergi ke :month',
+        'view_more_events' => 'Papar Lebih Banyak Acara',
+        'edit_task' => 'Sunting Tugasan Tindakan',
+        'edit_meeting_link' => 'Sunting Pautan Mesyuarat',
+        'join' => 'Sertai Mesyuarat',
+    ],
 ];
