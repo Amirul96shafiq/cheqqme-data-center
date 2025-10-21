@@ -57,7 +57,7 @@
     
     {{-- Calendar Grid --}}
     <div class="flex-1 overflow-auto relative">
-        <div class="min-w-[700px] relative">
+        <div class="min-w-[700px] relative max-h-full">
             
             {{-- Loading State --}}
             <div wire:loading class="absolute inset-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex items-center justify-center z-20 rounded-lg">
@@ -98,15 +98,19 @@
             
             {{-- Calendar Days --}}
             <div class="border-x border-b border-gray-100 dark:border-gray-800 rounded-b-lg overflow-hidden">
+                @php
+                    $weekCount = count($weeks);
+                    $maxHeightPerWeek = $weekCount > 5 ? 'h-[calc((100vh-300px)/6)]' : 'h-[calc((100vh-300px)/5)]';
+                @endphp
                 @foreach($weeks as $weekIndex => $week)
-                    <div class="grid grid-cols-7 gap-px bg-gray-100 dark:bg-gray-800">
+                    <div class="grid grid-cols-7 gap-px bg-gray-100 dark:bg-gray-800 {{ $maxHeightPerWeek }}">
                         @foreach($week as $day)
-                            <div class="bg-white dark:bg-gray-900 min-h-[120px] p-2 flex flex-col border-b border-gray-100 dark:border-gray-800
+                            <div class="bg-white dark:bg-gray-900 p-1 flex flex-col border-b border-gray-100 dark:border-gray-800
                                         {{ !$day['is_current_month'] ? 'opacity-40' : '' }}
                                         {{ $day['is_today'] ? 'ring-2 ring-primary-500 ring-inset' : '' }}">
                                 
                                 {{-- Date Number --}}
-                                <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center justify-between mb-0.5">
                                     <span class="text-sm font-medium 
                                                  {{ $day['is_today'] ? 'flex items-center justify-center w-6 h-6 rounded-full bg-primary-500 text-primary-900' : 'text-gray-500 dark:text-gray-200' }}">
                                         {{ $day['date']->day }}
@@ -116,7 +120,7 @@
                                         @php
                                             $totalEvents = $day['tasks']->count() + $day['meetings']->count();
                                         @endphp
-                                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                                        <span class="text-[10px] text-gray-500 dark:text-gray-400">
                                             {{ $totalEvents }} {{ $totalEvents === 1 ? __('dashboard.calendar.event') : __('dashboard.calendar.events') }}
                                         </span>
                                     @endif
@@ -124,7 +128,7 @@
                                 </div>
                                 
                                 {{-- Events List --}}
-                                <div class="flex-1 space-y-1 overflow-y-auto">
+                                <div class="flex-1 space-y-0.5 overflow-y-auto min-h-0">
 
                                     {{-- Tasks --}}
                                     @foreach($day['tasks']->take(3) as $task)
@@ -134,7 +138,7 @@
                                                             'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $task->assigned_to ?? [])]],
                                                             'meetings' => []
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
-                                                class="flex items-center px-2 py-1 text-xs rounded transition-colors w-full text-left
+                                                class="flex items-center px-1 py-0.5 text-xs rounded transition-colors w-full text-left
                                                        @if(in_array(auth()->id(), $task->assigned_to ?? []))
                                                            @if($task->priority === 'high')
                                                                bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50
@@ -174,7 +178,7 @@
                                                             'tasks' => [],
                                                             'meetings' => [['id' => $meeting->id, 'title' => $meeting->title, 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $meeting->user_ids ?? [])]]
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
-                                                class="flex items-center px-2 py-1 text-xs rounded transition-colors w-full text-left
+                                                class="flex items-center px-1 py-0.5 text-xs rounded transition-colors w-full text-left
                                                        @if(in_array(auth()->id(), $meeting->user_ids ?? []))
                                                            bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50
                                                        @else
