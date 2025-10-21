@@ -851,10 +851,10 @@
                     </div>
                     <div>
                         <h2 id="calendar-heading" class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            {{ __('dashboard.calendar.title') }}
+                            {{ __('calendar.calendar.title') }}
                         </h2>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                            {{ __('dashboard.calendar.subtitle') }}
+                            {{ __('calendar.calendar.subtitle') }}
                         </p>
                     </div>
                 </div>
