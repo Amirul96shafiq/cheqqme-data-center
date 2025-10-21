@@ -96,6 +96,47 @@ class CalendarModal extends Component
         $this->year = $validatedYear;
     }
 
+    public function getTaskClasses(Task $task, bool $isAssigned): string
+    {
+        $priorityColors = [
+            'high' => [
+                'assigned' => 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50',
+                'unassigned' => 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50 text-red-600 dark:text-red-400',
+            ],
+            'medium' => [
+                'assigned' => 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:hover:bg-yellow-900/50',
+                'unassigned' => 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50 text-yellow-600 dark:text-yellow-400',
+            ],
+            'low' => [
+                'assigned' => 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50',
+                'unassigned' => 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50 text-green-600 dark:text-green-400',
+            ],
+        ];
+
+        $priority = $task->priority ?? 'low';
+        $assignmentKey = $isAssigned ? 'assigned' : 'unassigned';
+
+        return $priorityColors[$priority][$assignmentKey] ?? $priorityColors['low'][$assignmentKey];
+    }
+
+    public function getPriorityDotClass(Task $task): string
+    {
+        return match ($task->priority ?? 'low') {
+            'high' => 'bg-red-500',
+            'medium' => 'bg-yellow-500',
+            default => 'bg-green-500',
+        };
+    }
+
+    public function getMeetingClasses(MeetingLink $meeting, bool $isInvited): string
+    {
+        if ($isInvited) {
+            return 'bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50';
+        }
+
+        return 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50 text-teal-600 dark:text-teal-400';
+    }
+
     public function render()
     {
         // Get start and end dates for the calendar view

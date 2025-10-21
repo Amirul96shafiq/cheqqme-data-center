@@ -459,58 +459,34 @@
 
                                     {{-- Tasks --}}
                                     @foreach($day['tasks']->take(2) as $task)
+                                        @php
+                                            $isAssigned = in_array(auth()->id(), $task->assigned_to ?? []);
+                                        @endphp
                                         <button type="button"
                                                 @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                             'date' => $day['date']->format('l, j/n/y'),
-                                                            'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $task->assigned_to ?? [])]],
+                                                            'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'type' => 'task', 'is_assigned' => $isAssigned]],
                                                             'meetings' => []
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
-                                                class="flex items-center px-1 py-1.5 text-xs rounded transition-colors w-full text-left
-                                                       @if(in_array(auth()->id(), $task->assigned_to ?? []))
-                                                           @if($task->priority === 'high')
-                                                               bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50
-                                                           @elseif($task->priority === 'medium')
-                                                               bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:hover:bg-yellow-900/50
-                                                           @else
-                                                               bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50
-                                                           @endif
-                                                       @else
-                                                           bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50
-                                                           @if($task->priority === 'high')
-                                                               text-red-600 dark:text-red-400
-                                                           @elseif($task->priority === 'medium')
-                                                               text-yellow-600 dark:text-yellow-400
-                                                           @else
-                                                               text-green-600 dark:text-green-400
-                                                           @endif
-                                                       @endif"
+                                                class="flex items-center px-1 py-1.5 text-xs rounded transition-colors w-full text-left {{ $this->getTaskClasses($task, $isAssigned) }}"
                                                 title="{{ $task->title }}">
-                                            <span class="inline-block w-1.5 h-1.5 rounded-full mr-1.5 flex-shrink-0
-                                                        @if($task->priority === 'high')
-                                                            bg-red-500
-                                                        @elseif($task->priority === 'medium')
-                                                            bg-yellow-500
-                                                        @else
-                                                            bg-green-500
-                                                        @endif"></span>
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full mr-1.5 flex-shrink-0 {{ $this->getPriorityDotClass($task) }}"></span>
                                             <span class="truncate">{{ Str::limit($task->title, 35) }}</span>
                                         </button>
                                     @endforeach
                                     
                                     {{-- Meetings --}}
                                     @foreach($day['meetings']->take(2 - $day['tasks']->take(2)->count()) as $meeting)
+                                        @php
+                                            $isInvited = in_array(auth()->id(), $meeting->user_ids ?? []);
+                                        @endphp
                                         <button type="button"
                                                 @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                             'date' => $day['date']->format('l, j/n/y'),
                                                             'tasks' => [],
-                                                            'meetings' => [['id' => $meeting->id, 'title' => $meeting->title, 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $meeting->user_ids ?? [])]]
+                                                            'meetings' => [['id' => $meeting->id, 'title' => $meeting->title, 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting', 'is_invited' => $isInvited]]
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
-                                                class="flex items-center px-1 py-1.5 text-xs rounded transition-colors w-full text-left
-                                                       @if(in_array(auth()->id(), $meeting->user_ids ?? []))
-                                                           bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50
-                                                       @else
-                                                           bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50 text-teal-600 dark:text-teal-400
-                                                       @endif"
+                                                class="flex items-center px-1 py-1.5 text-xs rounded transition-colors w-full text-left {{ $this->getMeetingClasses($meeting, $isInvited) }}"
                                                 title="{{ $meeting->title }} - {{ $meeting->meeting_start_time->format('g:i A') }}">
                                             <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5 flex-shrink-0"></span>
                                             <span class="truncate">{{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit($meeting->title, 25) }}</span>
