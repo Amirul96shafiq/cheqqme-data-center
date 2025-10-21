@@ -72,6 +72,13 @@ class CalendarModal extends Component
         $this->month = $now->month;
     }
 
+    public function getIsViewingTodayProperty(): bool
+    {
+        $now = now();
+
+        return $this->year === $now->year && $this->month === $now->month;
+    }
+
     public function goToMonth(int $month, int $year): void
     {
         // Validate year range: -5 to +5 years from current year
