@@ -94,7 +94,7 @@
                 {{-- Today Button --}}
                 <button type="button" 
                         wire:click="today"
-                        class="px-4 py-2 w-16 h-10 text-sm font-medium text-primary-900 bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        class="px-4 py-2 w-20 h-10 text-sm font-medium text-primary-900 bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg transition-colors flex items-center justify-center gap-2">
                     <span wire:loading.remove wire:target="today">{{ __('dashboard.calendar.today') }}</span>
                     <x-heroicon-o-arrow-path wire:loading wire:target="today" class="w-5 h-5 text-primary-900 animate-spin" />
                 </button>
