@@ -256,7 +256,7 @@
                                       :class="task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 
                                               task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
                                               'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'"
-                                      x-text="task.priority"></span>
+                                      x-text="task.priority === 'high' ? 'High' : task.priority === 'medium' ? 'Medium' : 'Low'"></span>
                                 <a :href="`{{ url('admin/tasks') }}/${task.id}/edit`"
                                    target="_blank"
                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
