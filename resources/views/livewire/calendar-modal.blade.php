@@ -30,7 +30,50 @@
             </span>
         </h3>
         
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-4">
+
+            {{-- Create Dropdown Button --}}
+            <div class="relative" x-data="{ open: false }">
+                <button @click="open = !open" 
+                        @click.away="open = false"
+                        class="inline-flex items-center gap-2 px-4 py-2 h-10 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <x-heroicon-o-plus class="h-4 w-4" />
+                    {{ __('dashboard.calendar.create') }}
+                    <x-heroicon-m-chevron-down class="h-4 w-4 transition-transform" x-bind:class="open ? 'rotate-180' : ''" />
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <div x-show="open" 
+                     x-transition:enter="transition ease-out duration-100"
+                     x-transition:enter-start="transform opacity-0 scale-95"
+                     x-transition:enter-end="transform opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="transform opacity-100 scale-100"
+                     x-transition:leave-end="transform opacity-0 scale-95"
+                     class="absolute right-0 mt-2 w-52 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
+                     style="display: none;">
+
+                    <div class="py-2">
+
+                        <!-- Create Action Task Button -->
+                        <a href="{{ route('filament.admin.pages.action-board') }}?create_task=1" 
+                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors rounded-md mx-2">
+                            <x-heroicon-o-rocket-launch class="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                            {{ __('dashboard.calendar.action_task') }}
+                        </a>
+
+                        <!-- Create Meeting Link Button -->
+                        <a href="{{ route('filament.admin.resources.meeting-links.create') }}" 
+                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors rounded-md mx-2">
+                            <x-heroicon-o-video-camera class="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                            {{ __('dashboard.calendar.meeting_link') }}
+                        </a>
+
+                    </div>
+
+                </div>
+                
+            </div>
 
             {{-- Navigation Buttons --}}
             <div class="flex items-center gap-2">
