@@ -105,14 +105,14 @@
                 @foreach($weeks as $weekIndex => $week)
                     <div class="grid grid-cols-7 gap-px bg-gray-100 dark:bg-gray-800 {{ $maxHeightPerWeek }}">
                         @foreach($week as $day)
-                            <div class="bg-white dark:bg-gray-900 p-1 flex flex-col border-b border-gray-100 dark:border-gray-800
+                            <div class="bg-white dark:bg-gray-900 p-2 flex flex-col border-b border-gray-100 dark:border-gray-800
                                         {{ !$day['is_current_month'] ? 'opacity-40' : '' }}
                                         {{ $day['is_today'] ? 'ring-2 ring-primary-500 ring-inset' : '' }}">
                                 
                                 {{-- Date Number --}}
                                 <div class="flex items-center justify-between mb-0.5">
                                     <span class="text-sm font-medium 
-                                                 {{ $day['is_today'] ? 'flex items-center justify-center w-6 h-6 rounded-full bg-primary-500 text-primary-900' : 'text-gray-500 dark:text-gray-200' }}">
+                                                 {{ $day['is_today'] ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-200' }}">
                                         {{ $day['date']->day }}
                                     </span>
                                     
