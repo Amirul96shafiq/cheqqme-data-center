@@ -108,8 +108,10 @@
                     }
                 }
              }"
-             x-init="pickerYear = {{ $year }}"
-             x-effect="pickerYear = {{ $year }}">
+             x-init="
+                pickerYear = {{ $year }};
+                $watch('$wire.year', value => pickerYear = value);
+             ">
             <button @click="togglePicker()" 
                     class="text-sm 2xl:text-xl font-semibold text-gray-900 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-2">
                 <span wire:loading.remove wire:target="previousMonth,nextMonth,goToMonth">
