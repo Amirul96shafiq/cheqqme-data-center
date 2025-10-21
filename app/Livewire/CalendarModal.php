@@ -23,15 +23,29 @@ class CalendarModal extends Component
     public function previousMonth(): void
     {
         $date = Carbon::create($this->year, $this->month, 1)->subMonth();
-        $this->year = $date->year;
-        $this->month = $date->month;
+
+        // Check if the new year is within allowed range
+        $currentYear = now()->year;
+        $minYear = $currentYear - 5;
+
+        if ($date->year >= $minYear) {
+            $this->year = $date->year;
+            $this->month = $date->month;
+        }
     }
 
     public function nextMonth(): void
     {
         $date = Carbon::create($this->year, $this->month, 1)->addMonth();
-        $this->year = $date->year;
-        $this->month = $date->month;
+
+        // Check if the new year is within allowed range
+        $currentYear = now()->year;
+        $maxYear = $currentYear + 5;
+
+        if ($date->year <= $maxYear) {
+            $this->year = $date->year;
+            $this->month = $date->month;
+        }
     }
 
     public function today(): void
@@ -43,8 +57,19 @@ class CalendarModal extends Component
 
     public function goToMonth(int $month, int $year): void
     {
-        $this->month = $month;
-        $this->year = $year;
+        // Validate year range: -5 to +5 years from current year
+        $currentYear = now()->year;
+        $minYear = $currentYear - 5;
+        $maxYear = $currentYear + 5;
+
+        // Clamp year to allowed range
+        $validatedYear = max($minYear, min($maxYear, $year));
+
+        // Validate month range
+        $validatedMonth = max(1, min(12, $month));
+
+        $this->month = $validatedMonth;
+        $this->year = $validatedYear;
     }
 
     public function render()
