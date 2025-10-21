@@ -859,16 +859,25 @@
                     </div>
                 </div>
                 
-                <!-- Close Button -->
-                <button type="button" 
-                        @click="closeModal('calendar')" 
-                        class="inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900" 
-                        aria-label="Close">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
+                <div class="flex items-center gap-3">
+                    <!-- Create Meeting Link Button -->
+                    <a href="{{ route('filament.admin.resources.meeting-links.create') }}" 
+                       class="inline-flex items-center gap-2 px-4 py-2 h-10 rounded-lg text-sm font-medium text-primary-900 bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 transition-colors">
+                        <x-heroicon-o-plus class="h-4 w-4" />
+                        {{ __('dashboard.calendar.create_meeting_link') }}
+                    </a>
+                    
+                    <!-- Close Button -->
+                    <button type="button" 
+                            @click="closeModal('calendar')" 
+                            class="inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900" 
+                            aria-label="Close">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
             
             <!-- Content -->
