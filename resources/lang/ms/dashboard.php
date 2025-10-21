@@ -95,6 +95,9 @@ return [
         'meeting_link' => 'Pautan Mesyuarat',
         'create_task' => 'Cipta Tugasan Tindakan',
         'create_meeting_link' => 'Cipta Pautan Mesyuarat',
+        'filter' => 'Tapis',
+        'filter_events' => 'Tapis Acara',
+        'show_all' => 'Papar Semua',
         'days' => [
             'sun' => 'Ahd',
             'mon' => 'Isn',

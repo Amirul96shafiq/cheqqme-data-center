@@ -211,48 +211,120 @@
         </div>
         
         <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
 
-            {{-- Create Dropdown Button --}}
-            <div class="relative" x-data="{ open: false }">
-                <button @click="open = !open" 
-                        @click.away="open = false"
-                        class="inline-flex items-center gap-2 px-4 py-2 h-10 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                    <x-heroicon-o-plus class="h-4 w-4" />
-                    {{ __('dashboard.calendar.create') }}
-                    <x-heroicon-m-chevron-down class="h-4 w-4 transition-transform" x-bind:class="open ? 'rotate-180' : ''" />
-                </button>
-                
-                <!-- Dropdown Menu -->
-                <div x-show="open" 
-                     x-transition:enter="transition ease-out duration-100"
-                     x-transition:enter-start="transform opacity-0 scale-95"
-                     x-transition:enter-end="transform opacity-100 scale-100"
-                     x-transition:leave="transition ease-in duration-75"
-                     x-transition:leave-start="transform opacity-100 scale-100"
-                     x-transition:leave-end="transform opacity-0 scale-95"
-                     class="absolute right-0 mt-2 w-52 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
-                     style="display: none;">
+                {{-- Create Dropdown Button --}}
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" 
+                            @click.away="open = false"
+                            class="inline-flex items-center gap-2 px-4 py-2 h-10 text-sm font-medium bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300">
+                        <x-heroicon-o-plus class="h-4 w-4" />
+                        {{ __('dashboard.calendar.create') }}
+                        <x-heroicon-m-chevron-down class="h-4 w-4 transition-transform" x-bind:class="open ? 'rotate-180' : ''" />
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div x-show="open" 
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="transform opacity-100 scale-100"
+                        x-transition:leave-end="transform opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-52 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
+                        style="display: none;">
 
-                    <div class="py-2">
+                        <div class="py-2">
 
-                        <!-- Create Action Task Button -->
-                        <a href="{{ route('filament.admin.pages.action-board') }}?create_task=1" 
-                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors rounded-md mx-2">
-                            <x-heroicon-o-rocket-launch class="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                            {{ __('dashboard.calendar.action_task') }}
-                        </a>
+                            <!-- Create Action Task Button -->
+                            <a href="{{ route('filament.admin.pages.action-board') }}?create_task=1" 
+                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors rounded-md mx-2">
+                                <x-heroicon-o-rocket-launch class="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                {{ __('dashboard.calendar.action_task') }}
+                            </a>
 
-                        <!-- Create Meeting Link Button -->
-                        <a href="{{ route('filament.admin.resources.meeting-links.create') }}" 
-                           class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors rounded-md mx-2">
-                            <x-heroicon-o-video-camera class="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                            {{ __('dashboard.calendar.meeting_link') }}
-                        </a>
+                            <!-- Create Meeting Link Button -->
+                            <a href="{{ route('filament.admin.resources.meeting-links.create') }}" 
+                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors rounded-md mx-2">
+                                <x-heroicon-o-video-camera class="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                {{ __('dashboard.calendar.meeting_link') }}
+                            </a>
+
+                        </div>
+
+                    </div>
+                    
+                </div>
+
+                {{-- Filter Button --}}
+                <div class="relative" x-data="{ filterOpen: false }" @click.outside="filterOpen = false">
+                    <button
+                        @click="filterOpen = !filterOpen"
+                        class="flex items-center justify-center w-10 h-10 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300"
+                        title="{{ __('dashboard.calendar.filter') }}"
+                    >
+                        <x-heroicon-m-funnel class="w-4 h-4" />
+                    </button>
+                    
+                    <!-- Filter Dropdown -->
+                    <div 
+                        x-show="filterOpen"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute right-0 mt-2 w-56 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
+                        style="display: none;"
+                    >
+                        <!-- Filter Header -->
+                        <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('dashboard.calendar.filter_events') }}</h3>
+                            <button
+                                wire:click="clearTypeFilter"
+                                class="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
+                            >
+                                {{ __('dashboard.calendar.show_all') }}
+                            </button>
+                        </div>
+                        
+                        <!-- Filter Options -->
+                        <div class="p-2 space-y-2">
+                            
+                            <!-- Task Filter -->
+                            <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <input 
+                                    type="checkbox" 
+                                    value="task"
+                                    wire:model.live="typeFilter"
+                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
+                                >
+                                <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
+                                    <x-heroicon-o-rocket-launch class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
+                                    {{ __('dashboard.calendar.action_task') }}
+                                </span>
+                            </label>
+                            
+                            <!-- Meeting Filter -->
+                            <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <input 
+                                    type="checkbox" 
+                                    value="meeting"
+                                    wire:model.live="typeFilter"
+                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
+                                >
+                                <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
+                                    <x-heroicon-o-video-camera class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
+                                    {{ __('dashboard.calendar.meeting_link') }}
+                                </span>
+                            </label>
+                            
+                        </div>
 
                     </div>
 
                 </div>
-                
             </div>
 
             {{-- Navigation Buttons --}}

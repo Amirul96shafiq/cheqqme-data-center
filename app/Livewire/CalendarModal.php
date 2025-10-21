@@ -13,11 +13,28 @@ class CalendarModal extends Component
 
     public int $month;
 
+    public array $typeFilter = [];
+
     public function mount(): void
     {
         $now = now();
         $this->year = $now->year;
         $this->month = $now->month;
+        $this->typeFilter = ['task', 'meeting']; // Default: show both
+    }
+
+    public function toggleTypeFilter(string $type): void
+    {
+        if (in_array($type, $this->typeFilter)) {
+            $this->typeFilter = array_values(array_diff($this->typeFilter, [$type]));
+        } else {
+            $this->typeFilter[] = $type;
+        }
+    }
+
+    public function clearTypeFilter(): void
+    {
+        $this->typeFilter = ['task', 'meeting'];
     }
 
     public function previousMonth(): void
@@ -82,21 +99,25 @@ class CalendarModal extends Component
         $calendarStart = $startOfMonth->copy()->startOfWeek(Carbon::MONDAY);
         $calendarEnd = $endOfMonth->copy()->endOfWeek(Carbon::SUNDAY);
 
-        // Fetch tasks with due dates in the calendar range
-        $tasks = Task::query()
-            ->whereNotNull('due_date')
-            ->whereBetween('due_date', [$calendarStart, $calendarEnd])
-            ->orderBy('due_date')
-            ->get()
-            ->groupBy(fn ($task) => Carbon::parse($task->due_date)->format('Y-m-d'));
+        // Fetch tasks with due dates in the calendar range (if task filter is enabled)
+        $tasks = in_array('task', $this->typeFilter)
+            ? Task::query()
+                ->whereNotNull('due_date')
+                ->whereBetween('due_date', [$calendarStart, $calendarEnd])
+                ->orderBy('due_date')
+                ->get()
+                ->groupBy(fn ($task) => Carbon::parse($task->due_date)->format('Y-m-d'))
+            : collect();
 
-        // Fetch meetings in the calendar range
-        $meetings = MeetingLink::query()
-            ->whereNotNull('meeting_start_time')
-            ->whereBetween('meeting_start_time', [$calendarStart, $calendarEnd])
-            ->orderBy('meeting_start_time')
-            ->get()
-            ->groupBy(fn ($meeting) => Carbon::parse($meeting->meeting_start_time)->format('Y-m-d'));
+        // Fetch meetings in the calendar range (if meeting filter is enabled)
+        $meetings = in_array('meeting', $this->typeFilter)
+            ? MeetingLink::query()
+                ->whereNotNull('meeting_start_time')
+                ->whereBetween('meeting_start_time', [$calendarStart, $calendarEnd])
+                ->orderBy('meeting_start_time')
+                ->get()
+                ->groupBy(fn ($meeting) => Carbon::parse($meeting->meeting_start_time)->format('Y-m-d'))
+            : collect();
 
         // Build calendar grid
         $weeks = [];

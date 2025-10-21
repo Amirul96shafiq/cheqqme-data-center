@@ -95,6 +95,9 @@ return [
         'meeting_link' => 'Meeting Link',
         'create_task' => 'Create Action Task',
         'create_meeting_link' => 'Create Meeting Link',
+        'filter' => 'Filter',
+        'filter_events' => 'Filter Events',
+        'show_all' => 'Show All',
         'days' => [
             'sun' => 'Sun',
             'mon' => 'Mon',
