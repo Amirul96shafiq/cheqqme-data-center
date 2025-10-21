@@ -8,6 +8,7 @@
         isNavigating: false,
         lastScrollTime: 0,
         scrollDelta: 0,
+        isOverPopover: false,
         
         init() {
             // Check if screen is 2xl or larger (1536px+)
@@ -25,6 +26,9 @@
         handleScrollNavigation(event) {
             // Only proceed if scroll navigation is enabled (2xl+ screens)
             if (!this.scrollNavigationEnabled) return;
+            
+            // Don't navigate if cursor is over the popover
+            if (this.isOverPopover) return;
             
             // Prevent spam navigation - 800ms cooldown between navigations
             const currentTime = Date.now();
@@ -47,6 +51,7 @@
                 
                 // Close any open event popover before navigating
                 this.showEventPopover = false;
+                this.isOverPopover = false;
                 
                 if (this.scrollDelta > 0) {
                     // Scrolling down - next month
@@ -69,6 +74,7 @@
         closeAndOpen(eventData, position) {
             if (this.showEventPopover) {
                 this.showEventPopover = false;
+                this.isOverPopover = false;
                 setTimeout(() => {
                     this.popoverEvents = eventData;
                     this.popoverPosition = position;
@@ -148,7 +154,7 @@
             <div class="flex items-center gap-2">
                 <button type="button" 
                         wire:click="previousMonth"
-                        @click="showEventPopover = false"
+                        @click="showEventPopover = false; isOverPopover = false"
                         class="w-10 h-10 bg-primary-500/80 hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group"
                         aria-label="{{ __('dashboard.calendar.previous_month') }}">
                     <x-heroicon-m-arrow-left wire:loading.remove wire:target="previousMonth" class="w-5 h-5 text-primary-900 transition-colors" />
@@ -158,7 +164,7 @@
                 {{-- Today Button --}}
                 <button type="button" 
                         wire:click="today"
-                        @click="showEventPopover = false"
+                        @click="showEventPopover = false; isOverPopover = false"
                         class="px-4 py-2 w-20 h-10 text-sm font-medium text-primary-900 bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg transition-colors flex items-center justify-center gap-2">
                     <span wire:loading.remove wire:target="today">{{ __('dashboard.calendar.today') }}</span>
                     <x-heroicon-o-arrow-path wire:loading wire:target="today" class="w-5 h-5 text-primary-900 animate-spin" />
@@ -166,7 +172,7 @@
                 
                 <button type="button" 
                         wire:click="nextMonth"
-                        @click="showEventPopover = false"
+                        @click="showEventPopover = false; isOverPopover = false"
                         class="w-10 h-10 bg-primary-500/80 hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group"
                         aria-label="{{ __('dashboard.calendar.next_month') }}">
                     <x-heroicon-m-arrow-right wire:loading.remove wire:target="nextMonth" class="w-5 h-5 text-primary-900 transition-colors" />
@@ -344,7 +350,9 @@
     
     {{-- Event Popover Section --}}
     <div x-show="showEventPopover"
-         @click.away="showEventPopover = false"
+         @click.away="showEventPopover = false; isOverPopover = false"
+         @mouseenter="isOverPopover = true"
+         @mouseleave="isOverPopover = false"
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
@@ -358,7 +366,7 @@
         {{-- Popover Header --}}
         <div class="flex items-center justify-between mb-3">
             <h4 class="font-semibold text-gray-900 dark:text-gray-100" x-text="popoverEvents.date"></h4>
-            <button type="button" @click="showEventPopover = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+            <button type="button" @click="showEventPopover = false; isOverPopover = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                 <x-heroicon-o-x-mark class="w-5 h-5" />
             </button>
         </div>
