@@ -979,26 +979,34 @@
             window.showGlobalModal(type, id);
         });
         
-        // Listen for the custom "What's News" modal event
+        // Listen for the custom "What's New" modal event
         Livewire.on('open-whats-new-modal', () => {
             window.showGlobalModal('changelog');
         });
     });
     
-    // Handle "What's News" menu item clicks
+    // Handle "What's New" menu item clicks
     document.addEventListener('click', function(event) {
-        // Check if the clicked element contains "What's News" text
+        // console.log('Click detected on:', event.target);
+        // console.log('Click target text:', event.target.textContent);
+        
+        // Check if the clicked element contains "What's New" text
         let element = event.target;
         
         // Traverse up the DOM tree to find the menu item
         while (element) {
-            if (element.textContent && (element.textContent.includes("What's News") || element.textContent.includes('Apa Yang Baru'))) {
+            // console.log('Checking element:', element, 'Text:', element.textContent);
+            
+            if (element.textContent && (element.textContent.includes("What's New") || element.textContent.includes('Apa Yang Baru'))) {
+                // console.log('Found matching text in element:', element);
+                
                 // Make sure it's actually a menu item
                 if (element.closest('[role="menuitem"], .fi-menu-item, [data-filament-menu-item], a[href*="javascript"]')) {
                     // console.log('Found What\'s News menu item:', element);
                     event.preventDefault();
                     event.stopPropagation();
                     if (window.showGlobalModal) {
+                        // console.log('Calling showGlobalModal with changelog');
                         window.showGlobalModal('changelog');
                     } else {
                         console.error('showGlobalModal function not found');
