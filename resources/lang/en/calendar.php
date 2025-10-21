@@ -2,7 +2,7 @@
 
 return [
     'calendar' => [
-        'title' => 'Calendar',
+        'title' => 'Event Calendar',
         'subtitle' => 'View your upcoming events and schedule',
         'coming_soon' => 'Calendar Coming Soon',
         'empty_content' => 'Calendar functionality will be available soon.',

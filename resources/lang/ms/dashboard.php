@@ -8,15 +8,15 @@ return [
 
         'profile-label' => 'Profil',
         'settings-label' => 'Tetapan',
-        'whats-news-label' => 'Apa Yang Baru 🡥',
-        'calendar-label' => 'Kalendar 🡥',
+        'whats-news-label' => 'Apa Yang Baru? (Changelog) 🡥',
+        'calendar-label' => 'Kalendar Acara 🡥',
         'logout-label' => 'Log Keluar',
     ],
 
     'widgets' => [
         'welcome_back' => 'Selamat Kembali, :name',
         'dashboard_subtitle' => 'Tengoklah apa yang berlaku didalam CheQQme Data Center hari ini',
-        'view_calendar' => 'Lihat Kalendar 🡥',
+        'view_calendar' => 'Lihat Kalendar Acara 🡥',
     ],
 
     'recent_documents' => [

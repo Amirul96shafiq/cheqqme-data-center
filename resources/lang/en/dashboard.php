@@ -8,15 +8,15 @@ return [
 
         'profile-label' => 'Profile',
         'settings-label' => 'Settings',
-        'whats-news-label' => "What's News 🡥",
-        'calendar-label' => 'Calendar 🡥',
+        'whats-news-label' => "What's New? (Changelog) 🡥",
+        'calendar-label' => 'Event Calendar 🡥',
         'logout-label' => 'Logout',
     ],
 
     'widgets' => [
         'welcome_back' => 'Welcome Back, :name',
         'dashboard_subtitle' => 'Here\'s what happening with CheQQme Data Center today',
-        'view_calendar' => 'View Calendar 🡥',
+        'view_calendar' => 'View Event Calendar 🡥',
     ],
 
     'recent_documents' => [
