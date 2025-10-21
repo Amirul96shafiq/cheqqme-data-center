@@ -138,14 +138,14 @@
                                 <div class="flex-1 space-y-0.5 overflow-y-auto min-h-0">
 
                                     {{-- Tasks --}}
-                                    @foreach($day['tasks']->take(3) as $task)
+                                    @foreach($day['tasks']->take(2) as $task)
                                         <button type="button"
                                                 @click="closeAndOpen({{ json_encode([
                                                             'date' => $day['date']->format('l, j/n/y'),
                                                             'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $task->assigned_to ?? [])]],
                                                             'meetings' => []
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
-                                                class="flex items-center px-1 py-0.5 text-xs rounded transition-colors w-full text-left
+                                                class="flex items-center px-1 py-1.5 text-xs rounded transition-colors w-full text-left
                                                        @if(in_array(auth()->id(), $task->assigned_to ?? []))
                                                            @if($task->priority === 'high')
                                                                bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50
@@ -178,14 +178,14 @@
                                     @endforeach
                                     
                                     {{-- Meetings --}}
-                                    @foreach($day['meetings']->take(3 - $day['tasks']->take(3)->count()) as $meeting)
+                                    @foreach($day['meetings']->take(2 - $day['tasks']->take(2)->count()) as $meeting)
                                         <button type="button"
                                                 @click="closeAndOpen({{ json_encode([
                                                             'date' => $day['date']->format('l, j/n/y'),
                                                             'tasks' => [],
                                                             'meetings' => [['id' => $meeting->id, 'title' => $meeting->title, 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $meeting->user_ids ?? [])]]
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
-                                                class="flex items-center px-1 py-0.5 text-xs rounded transition-colors w-full text-left
+                                                class="flex items-center px-1 py-1.5 text-xs rounded transition-colors w-full text-left
                                                        @if(in_array(auth()->id(), $meeting->user_ids ?? []))
                                                            bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50
                                                        @else
@@ -200,7 +200,7 @@
                                     {{-- More Events Indicator --}}
                                     @php
                                         $totalEvents = $day['tasks']->count() + $day['meetings']->count();
-                                        $displayedEvents = min(3, $totalEvents);
+                                        $displayedEvents = min(2, $totalEvents);
                                         $remainingEvents = $totalEvents - $displayedEvents;
                                     @endphp
                                     
