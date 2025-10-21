@@ -276,7 +276,7 @@
                     <template x-for="meeting in popoverEvents.meetings" :key="meeting.id">
                         <div class="px-3 py-2 rounded-lg border-l-4 border-teal-500 bg-gray-50 dark:bg-gray-800/50">
                             <div class="flex items-center justify-between mb-1">
-                                <span class="text-xs font-medium text-teal-600 dark:text-teal-400" x-text="meeting.time"></span>
+                                <span class="text-xs px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400" x-text="meeting.time"></span>
                                 <div class="flex items-center gap-1">
                                     <a :href="`{{ url('admin/meeting-links') }}/${meeting.id}/edit`"
                                        target="_blank"
