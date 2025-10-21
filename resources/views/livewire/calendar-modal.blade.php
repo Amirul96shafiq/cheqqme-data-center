@@ -87,7 +87,7 @@
                     $currentDayName = strtolower(now()->format('D')); // Gets current day name in lowercase (e.g., 'tue')
                     $isCurrentMonth = $year === now()->year && $month === now()->month;
                 @endphp
-                @foreach(['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as $day)
+                @foreach(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as $day)
                     <div class="bg-gray-50 dark:bg-gray-800 px-3 py-2 text-center">
                         <span class="text-xs font-semibold {{ ($day === $currentDayName && $isCurrentMonth) ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300' }}">
                             {{ __("dashboard.calendar.days.{$day}") }}

@@ -48,8 +48,8 @@ class CalendarModal extends Component
         $endOfMonth = $startOfMonth->copy()->endOfMonth()->endOfDay();
 
         // Get calendar grid start (include previous month days)
-        $calendarStart = $startOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
-        $calendarEnd = $endOfMonth->copy()->endOfWeek(Carbon::SATURDAY);
+        $calendarStart = $startOfMonth->copy()->startOfWeek(Carbon::MONDAY);
+        $calendarEnd = $endOfMonth->copy()->endOfWeek(Carbon::SUNDAY);
 
         // Fetch tasks with due dates in the calendar range
         $tasks = Task::query()
