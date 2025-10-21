@@ -34,6 +34,15 @@ return [
             'fri' => 'Fri',
             'sat' => 'Sat',
         ],
+        'days_full' => [
+            'sun' => 'Sunday',
+            'mon' => 'Monday',
+            'tue' => 'Tuesday',
+            'wed' => 'Wednesday',
+            'thu' => 'Thursday',
+            'fri' => 'Friday',
+            'sat' => 'Saturday',
+        ],
         'months' => [
             'jan' => 'Jan',
             'feb' => 'Feb',
@@ -61,4 +70,10 @@ return [
         'edit_meeting_link' => 'Edit Meeting Link',
         'join' => 'Join Meeting',
     ],
+    'priority' => [
+        'high' => 'High',
+        'medium' => 'Medium',
+        'low' => 'Low',
+    ],
+    'more_events' => 'more',
 ];

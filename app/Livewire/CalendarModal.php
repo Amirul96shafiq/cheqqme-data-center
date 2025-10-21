@@ -93,6 +93,16 @@ class CalendarModal extends Component
         return $nextMonth->format('F');
     }
 
+    public function formatDateWithTranslation(Carbon $date): string
+    {
+        // Get the day name translation using full day names
+        $dayKey = strtolower($date->format('D')); // e.g., 'wed'
+        $dayName = __("calendar.calendar.days_full.{$dayKey}");
+
+        // Format: "Wednesday, 1/10/25" -> "Rabu, 1/10/25" (in Malay)
+        return $dayName.', '.$date->format('j/n/y');
+    }
+
     public function goToMonth(int $month, int $year): void
     {
         // Validate year range: -5 to +5 years from current year
@@ -212,6 +222,11 @@ class CalendarModal extends Component
         return view('livewire.calendar-modal', [
             'weeks' => $weeks,
             'monthName' => Carbon::create($this->year, $this->month, 1)->format('F Y'),
+            'priorityTranslations' => [
+                'high' => __('calendar.priority.high'),
+                'medium' => __('calendar.priority.medium'),
+                'low' => __('calendar.priority.low'),
+            ],
         ]);
     }
 }

@@ -34,6 +34,15 @@ return [
             'fri' => 'Jum',
             'sat' => 'Sab',
         ],
+        'days_full' => [
+            'sun' => 'Ahad',
+            'mon' => 'Isnin',
+            'tue' => 'Selasa',
+            'wed' => 'Rabu',
+            'thu' => 'Khamis',
+            'fri' => 'Jumaat',
+            'sat' => 'Sabtu',
+        ],
         'months' => [
             'jan' => 'Jan',
             'feb' => 'Feb',
@@ -56,9 +65,15 @@ return [
         'previous_month' => 'Pergi ke :month',
         'jump_today' => 'Lompat ke Hari Ini',
         'next_month' => 'Pergi ke :month',
-        'view_more_events' => 'Papar Lebih Banyak Acara',
+        'view_more_events' => 'Papar lagi banyak',
         'edit_task' => 'Sunting Tugasan Tindakan',
         'edit_meeting_link' => 'Sunting Pautan Mesyuarat',
         'join' => 'Sertai Mesyuarat',
     ],
+    'priority' => [
+        'high' => 'Tinggi',
+        'medium' => 'Sederhana',
+        'low' => 'Rendah',
+    ],
+    'more_events' => 'lagi',
 ];

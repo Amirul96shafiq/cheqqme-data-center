@@ -478,7 +478,7 @@
                                         @endphp
                                         <button type="button"
                                                 @click="closeAndOpen({{ \Illuminate\Support\Js::from([
-                                                            'date' => $day['date']->format('l, j/n/y'),
+                                                            'date' => $this->formatDateWithTranslation($day['date']),
                                                             'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'type' => 'task', 'is_assigned' => $isAssigned]],
                                                             'meetings' => []
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
@@ -496,7 +496,7 @@
                                         @endphp
                                         <button type="button"
                                                 @click="closeAndOpen({{ \Illuminate\Support\Js::from([
-                                                            'date' => $day['date']->format('l, j/n/y'),
+                                                            'date' => $this->formatDateWithTranslation($day['date']),
                                                             'tasks' => [],
                                                             'meetings' => [['id' => $meeting->id, 'title' => $meeting->title, 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting', 'is_invited' => $isInvited]]
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
@@ -517,13 +517,13 @@
                                     @if($remainingEvents > 0)
                                         <button type="button"
                                                 @click="closeAndOpen({{ \Illuminate\Support\Js::from([
-                                                            'date' => $day['date']->format('l, j/n/y'),
+                                                            'date' => $this->formatDateWithTranslation($day['date']),
                                                             'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
                                                             'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values()
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
                                                 class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline font-medium transition-all">
                                             <x-tooltip text="{{ __('calendar.tooltip.view_more_events') }}" position="right">
-                                                +{{ $remainingEvents }} more
+                                                +{{ $remainingEvents }} {{ __('calendar.more_events') }}
                                             </x-tooltip>
                                         </button>
                                     @endif
@@ -582,7 +582,7 @@
                                       :class="task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 
                                               task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
                                               'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'"
-                                      x-text="task.priority === 'high' ? 'High' : task.priority === 'medium' ? 'Medium' : 'Low'"></span>
+                                      x-text="task.priority === 'high' ? '{{ $priorityTranslations['high'] }}' : task.priority === 'medium' ? '{{ $priorityTranslations['medium'] }}' : '{{ $priorityTranslations['low'] }}'"></span>
 
                                 {{-- Edit Task Button --}}
                                 <x-tooltip text="{{ __('calendar.tooltip.edit_task') }}" position="left">
