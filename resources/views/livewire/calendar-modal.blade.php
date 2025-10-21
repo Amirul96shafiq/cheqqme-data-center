@@ -23,7 +23,13 @@
     <div class="flex items-center justify-between mb-6">
         <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
             <span wire:loading.remove wire:target="previousMonth,nextMonth">
-                {{ $monthName }}
+
+                {{-- Compact format (8/25) for small screens --}}
+                <span class="block 2xl:hidden">{{ $month }}/{{ substr($year, -2) }}</span>
+
+                {{-- Full format (August 2025) for 2xl+ screens --}}
+                <span class="hidden 2xl:block">{{ $monthName }}</span>
+                
             </span>
             <span wire:loading wire:target="previousMonth,nextMonth">
                 {{ __('dashboard.calendar.loading') }}
@@ -110,8 +116,8 @@
         <div class="min-w-[700px] relative max-h-full">
             
             {{-- Loading State --}}
-            <div wire:loading class="absolute inset-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex items-center justify-center z-20 rounded-lg">
-                <div class="flex flex-col items-center justify-center space-y-6 w-full h-full">
+            <div wire:loading class="absolute inset-0 p-12 2xl:p-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex items-center justify-center z-20 rounded-lg">
+                <div class="flex flex-col items-start 2xl:items-center justify-center space-y-6 w-full h-full">
 
                     {{-- Loading Spinner --}}
                     <div class="relative">
@@ -119,7 +125,7 @@
                     </div>
                     
                     {{-- Loading Text --}}
-                    <div class="text-center space-y-2">
+                    <div class="text-left 2xl:text-center space-y-2">
                         <p class="text-base font-medium text-gray-700 dark:text-gray-300">
                             {{ __('dashboard.calendar.loading') }}
                         </p>
