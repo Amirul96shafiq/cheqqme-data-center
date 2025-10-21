@@ -1,23 +1,86 @@
-<div class="w-full h-full flex flex-col" x-data="{ 
-    selectedDate: null, 
-    showEventPopover: false, 
-    popoverEvents: [], 
-    popoverPosition: { x: 0, y: 0 },
-    closeAndOpen(eventData, position) {
-        if (this.showEventPopover) {
-            this.showEventPopover = false;
-            setTimeout(() => {
+<div class="w-full h-full flex flex-col" 
+     x-data="{ 
+        selectedDate: null, 
+        showEventPopover: false, 
+        popoverEvents: [], 
+        popoverPosition: { x: 0, y: 0 },
+        scrollNavigationEnabled: false,
+        isNavigating: false,
+        lastScrollTime: 0,
+        scrollDelta: 0,
+        
+        init() {
+            // Check if screen is 2xl or larger (1536px+)
+            this.checkScreenSize();
+            window.addEventListener('resize', () => this.checkScreenSize());
+            
+            // Add wheel event listener for scroll-based navigation
+            this.$el.addEventListener('wheel', (e) => this.handleScrollNavigation(e), { passive: false });
+        },
+        
+        checkScreenSize() {
+            this.scrollNavigationEnabled = window.innerWidth >= 1536;
+        },
+        
+        handleScrollNavigation(event) {
+            // Only proceed if scroll navigation is enabled (2xl+ screens)
+            if (!this.scrollNavigationEnabled) return;
+            
+            // Prevent spam navigation - 800ms cooldown between navigations
+            const currentTime = Date.now();
+            if (this.isNavigating || (currentTime - this.lastScrollTime) < 800) {
+                event.preventDefault();
+                return;
+            }
+            
+            // Accumulate scroll delta
+            this.scrollDelta += event.deltaY;
+            
+            // Threshold: require at least 100px scroll to trigger navigation
+            const threshold = 100;
+            
+            if (Math.abs(this.scrollDelta) >= threshold) {
+                event.preventDefault();
+                
+                this.isNavigating = true;
+                this.lastScrollTime = currentTime;
+                
+                // Close any open event popover before navigating
+                this.showEventPopover = false;
+                
+                if (this.scrollDelta > 0) {
+                    // Scrolling down - next month
+                    $wire.call('nextMonth');
+                } else {
+                    // Scrolling up - previous month
+                    $wire.call('previousMonth');
+                }
+                
+                // Reset scroll delta
+                this.scrollDelta = 0;
+                
+                // Reset navigation lock after animation completes
+                setTimeout(() => {
+                    this.isNavigating = false;
+                }, 800);
+            }
+        },
+        
+        closeAndOpen(eventData, position) {
+            if (this.showEventPopover) {
+                this.showEventPopover = false;
+                setTimeout(() => {
+                    this.popoverEvents = eventData;
+                    this.popoverPosition = position;
+                    this.showEventPopover = true;
+                }, 150);
+            } else {
                 this.popoverEvents = eventData;
                 this.popoverPosition = position;
                 this.showEventPopover = true;
-            }, 150);
-        } else {
-            this.popoverEvents = eventData;
-            this.popoverPosition = position;
-            this.showEventPopover = true;
+            }
         }
-    }
-}">
+    }">
     
     {{-- Calendar Header --}}
     <div class="flex items-center justify-between mb-6">
@@ -85,6 +148,7 @@
             <div class="flex items-center gap-2">
                 <button type="button" 
                         wire:click="previousMonth"
+                        @click="showEventPopover = false"
                         class="w-10 h-10 bg-primary-500/80 hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group"
                         aria-label="{{ __('dashboard.calendar.previous_month') }}">
                     <x-heroicon-m-arrow-left wire:loading.remove wire:target="previousMonth" class="w-5 h-5 text-primary-900 transition-colors" />
@@ -94,6 +158,7 @@
                 {{-- Today Button --}}
                 <button type="button" 
                         wire:click="today"
+                        @click="showEventPopover = false"
                         class="px-4 py-2 w-20 h-10 text-sm font-medium text-primary-900 bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg transition-colors flex items-center justify-center gap-2">
                     <span wire:loading.remove wire:target="today">{{ __('dashboard.calendar.today') }}</span>
                     <x-heroicon-o-arrow-path wire:loading wire:target="today" class="w-5 h-5 text-primary-900 animate-spin" />
@@ -101,6 +166,7 @@
                 
                 <button type="button" 
                         wire:click="nextMonth"
+                        @click="showEventPopover = false"
                         class="w-10 h-10 bg-primary-500/80 hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group"
                         aria-label="{{ __('dashboard.calendar.next_month') }}">
                     <x-heroicon-m-arrow-right wire:loading.remove wire:target="nextMonth" class="w-5 h-5 text-primary-900 transition-colors" />
@@ -189,7 +255,7 @@
                                     {{-- Tasks --}}
                                     @foreach($day['tasks']->take(2) as $task)
                                         <button type="button"
-                                                @click="closeAndOpen({{ json_encode([
+                                                @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                             'date' => $day['date']->format('l, j/n/y'),
                                                             'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $task->assigned_to ?? [])]],
                                                             'meetings' => []
@@ -229,7 +295,7 @@
                                     {{-- Meetings --}}
                                     @foreach($day['meetings']->take(2 - $day['tasks']->take(2)->count()) as $meeting)
                                         <button type="button"
-                                                @click="closeAndOpen({{ json_encode([
+                                                @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                             'date' => $day['date']->format('l, j/n/y'),
                                                             'tasks' => [],
                                                             'meetings' => [['id' => $meeting->id, 'title' => $meeting->title, 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $meeting->user_ids ?? [])]]
@@ -255,7 +321,7 @@
                                     
                                     @if($remainingEvents > 0)
                                         <button type="button"
-                                                @click="closeAndOpen({{ json_encode([
+                                                @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                             'date' => $day['date']->format('l, j/n/y'),
                                                             'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
                                                             'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values()
