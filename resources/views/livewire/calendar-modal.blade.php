@@ -22,7 +22,12 @@
     {{-- Calendar Header --}}
     <div class="flex items-center justify-between mb-6">
         <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            {{ $monthName }}
+            <span wire:loading.remove wire:target="previousMonth,nextMonth">
+                {{ $monthName }}
+            </span>
+            <span wire:loading wire:target="previousMonth,nextMonth">
+                {{ __('dashboard.calendar.loading') }}
+            </span>
         </h3>
         
         <div class="flex items-center gap-2">
@@ -33,23 +38,25 @@
                         wire:click="previousMonth"
                         class="w-10 h-10 bg-primary-500/80 hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group"
                         aria-label="{{ __('dashboard.calendar.previous_month') }}">
-                    <x-heroicon-m-arrow-left class="w-5 h-5 text-primary-900 transition-colors" />
+                    <x-heroicon-m-arrow-left wire:loading.remove wire:target="previousMonth" class="w-5 h-5 text-primary-900 transition-colors" />
+                    <x-heroicon-o-arrow-path wire:loading wire:target="previousMonth" class="w-5 h-5 text-primary-900 animate-spin" />
                 </button>
                 
                 {{-- Today Button --}}
                 <button type="button" 
                         wire:click="today"
-                        class="px-4 py-2 h-10 text-sm font-medium text-primary-900 bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg transition-colors">
-                    {{ __('dashboard.calendar.today') }}
+                        class="px-4 py-2 w-16 h-10 text-sm font-medium text-primary-900 bg-primary-500/80 hover:bg-primary-400 dark:hover:bg-primary-400 rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <span wire:loading.remove wire:target="today">{{ __('dashboard.calendar.today') }}</span>
+                    <x-heroicon-o-arrow-path wire:loading wire:target="today" class="w-5 h-5 text-primary-900 animate-spin" />
                 </button>
                 
                 <button type="button" 
                         wire:click="nextMonth"
                         class="w-10 h-10 bg-primary-500/80 hover:bg-primary-400 rounded-lg flex items-center justify-center transition-all duration-300 group"
                         aria-label="{{ __('dashboard.calendar.next_month') }}">
-                    <x-heroicon-m-arrow-right class="w-5 h-5 text-primary-900 transition-colors" />
+                    <x-heroicon-m-arrow-right wire:loading.remove wire:target="nextMonth" class="w-5 h-5 text-primary-900 transition-colors" />
+                    <x-heroicon-o-arrow-path wire:loading wire:target="nextMonth" class="w-5 h-5 text-primary-900 animate-spin" />
                 </button>
-
             </div>
 
         </div>
