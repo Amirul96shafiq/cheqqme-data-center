@@ -516,15 +516,13 @@
                                     
                                     @if($remainingEvents > 0)
                                         <button type="button"
-                                                @click="closeAndOpen({{ \Illuminate\Support\Js::from([
-                                                            'date' => $this->formatDateWithTranslation($day['date']),
-                                                            'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
-                                                            'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values()
-                                                        ]) }}, { x: $event.clientX, y: $event.clientY })"
-                                                class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline font-medium transition-all">
-                                            <x-tooltip text="{{ __('calendar.tooltip.view_more_events') }}" position="right">
-                                                +{{ $remainingEvents }} {{ __('calendar.more_events') }}
-                                            </x-tooltip>
+                                            @click="closeAndOpen({{ \Illuminate\Support\Js::from([
+                                                        'date' => $this->formatDateWithTranslation($day['date']),
+                                                         'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
+                                                         'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values()
+                                                    ]) }}, { x: $event.clientX, y: $event.clientY })"
+                                            class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline font-medium transition-all">
+                                            +{{ $remainingEvents }} {{ __('calendar.more_events') }}
                                         </button>
                                     @endif
                                 </div>
