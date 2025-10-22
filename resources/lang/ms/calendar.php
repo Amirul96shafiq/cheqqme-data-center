@@ -17,6 +17,8 @@ return [
         'events' => 'Acara',
         'edit' => 'Sunting',
         'join' => 'Sertai',
+        'invited' => 'Dijemput',
+        'assigned' => 'Ditugaskan',
         'create' => 'Cipta',
         'action_task' => 'Tugasan Tindakan',
         'meeting_link' => 'Pautan Mesyuarat',

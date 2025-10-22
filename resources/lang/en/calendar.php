@@ -17,6 +17,8 @@ return [
         'events' => 'Events',
         'edit' => 'Edit',
         'join' => 'Join',
+        'invited' => 'Invited',
+        'assigned' => 'Assigned',
         'create' => 'Create',
         'action_task' => 'Action Task',
         'meeting_link' => 'Meeting Link',

@@ -576,11 +576,16 @@
                                  'border-gray-300 dark:border-gray-700': !task.is_assigned
                              }">
                             <div class="flex items-center justify-between mb-1">
-                                <span class="text-[10px] px-2 py-1 rounded-full font-medium" 
-                                      :class="task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 
-                                              task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
-                                              'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'"
-                                      x-text="task.priority === 'high' ? '{{ $priorityTranslations['high'] }}' : task.priority === 'medium' ? '{{ $priorityTranslations['medium'] }}' : '{{ $priorityTranslations['low'] }}'"></span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium" 
+                                          :class="task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 
+                                                  task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
+                                                  'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'"
+                                          x-text="task.priority === 'high' ? '{{ $priorityTranslations['high'] }}' : task.priority === 'medium' ? '{{ $priorityTranslations['medium'] }}' : '{{ $priorityTranslations['low'] }}'"></span>
+                                    <span x-show="task.is_assigned" class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">
+                                        {{ __('calendar.calendar.assigned') }}
+                                    </span>
+                                </div>
 
                                 {{-- Edit Task Button --}}
                                 <x-tooltip text="{{ __('calendar.tooltip.edit_task') }}" position="left">
@@ -606,7 +611,12 @@
                         <div class="px-3 py-2 rounded-lg border-l-4 bg-gray-50 dark:bg-gray-800/50"
                              :class="meeting.is_invited ? 'border-teal-500' : 'border-gray-300 dark:border-gray-700'">
                             <div class="flex items-center justify-between mb-1">
-                                <span class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400" x-text="meeting.time"></span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400" x-text="meeting.time"></span>
+                                    <span x-show="meeting.is_invited" class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">
+                                        {{ __('calendar.calendar.invited') }}
+                                    </span>
+                                </div>
                                 <div class="flex items-center gap-1">
 
                                     {{-- Edit Meeting Link Button --}}
