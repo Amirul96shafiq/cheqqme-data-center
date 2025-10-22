@@ -9,6 +9,7 @@ use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\Login as BaseLogin;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 
 class Login extends BaseLogin
@@ -100,6 +101,22 @@ class Login extends BaseLogin
 
     public function authenticate(): ?LoginResponse
     {
+        // SECURITY: Rate limiting per IP address
+        $ipAddress = request()->ip();
+        $rateLimitKey = 'login-attempt:'.$ipAddress;
+        $maxAttempts = 5;
+        $decaySeconds = 60; // 1 minute lockout
+
+        // Check if too many attempts from this IP
+        if (RateLimiter::tooManyAttempts($rateLimitKey, $maxAttempts)) {
+            $seconds = RateLimiter::availableIn($rateLimitKey);
+            $minutes = ceil($seconds / 60);
+
+            throw ValidationException::withMessages([
+                'data.email' => __('auth.throttle', ['seconds' => $seconds, 'minutes' => $minutes]),
+            ]);
+        }
+
         $data = $this->form->getState();
 
         // Determine login field: check if it's a phone number, email, or username
@@ -121,8 +138,13 @@ class Login extends BaseLogin
         ];
 
         if (! Auth::attempt($credentials, $data['remember'] ?? false)) {
+            // SECURITY: Increment failed attempts
+            RateLimiter::hit($rateLimitKey, $decaySeconds);
             $this->throwFailureValidationException();
         }
+
+        // SECURITY: Clear rate limit on successful login
+        RateLimiter::clear($rateLimitKey);
 
         return new class implements LoginResponse
         {
