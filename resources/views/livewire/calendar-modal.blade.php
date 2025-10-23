@@ -325,7 +325,7 @@
                                     class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
                                 >
                                 <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
-                                    <x-heroicon-m-rocket-launch class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
+                                    <x-heroicon-m-rocket-launch class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-3" />
                                     {{ __('calendar.calendar.action_task') }}
                                 </span>
                             </label>
@@ -339,7 +339,7 @@
                                     class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
                                 >
                                 <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
-                                    <x-heroicon-m-video-camera class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
+                                    <x-heroicon-m-video-camera class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-3" />
                                     {{ __('calendar.calendar.meeting_link') }}
                                 </span>
                             </label>
@@ -353,8 +353,11 @@
                                     class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
                                 >
                                 <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
-                                    <x-heroicon-m-calendar class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
-                                    {{ $countryInfo['country_code'] }} {{ __('calendar.calendar.public_holidays') }}
+                                    {{-- <x-heroicon-m-calendar class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" /> --}}
+                                    <span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-400 mr-2">
+                                        {{ $countryInfo['country_code'] }}
+                                    </span>
+                                    {{ __('calendar.calendar.public_holidays') }}
                                 </span>
                             </label>
                             
