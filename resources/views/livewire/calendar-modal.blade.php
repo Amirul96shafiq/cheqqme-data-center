@@ -526,10 +526,18 @@
                                     
                                     {{-- Holidays --}}
                                     @foreach($day['holidays']->take(2 - $day['tasks']->take(2)->count() - $day['meetings']->take(2 - $day['tasks']->take(2)->count())->count()) as $holiday)
-                                        <div class="flex items-center px-1 py-1 text-xs rounded transition-colors w-full text-left bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50">
+                                        <button type="button"
+                                            @click="closeAndOpen({{ \Illuminate\Support\Js::from([
+                                                    'date' => $this->formatDateWithTranslation($day['date']),
+                                                    'tasks' => [],
+                                                    'meetings' => [],
+                                                    'holidays' => [['name' => $holiday->name, 'type' => $holiday->type, 'date' => $holiday->date->format('Y-m-d'), 'country_code' => $holiday->country_code]]
+                                                ]) }}, { x: $event.clientX, y: $event.clientY })"
+                                            class="flex items-center px-1 py-1 text-xs rounded transition-colors w-full text-left bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50"
+                                            title="{{ $holiday->name }}">
                                             <span class="inline-block w-1.5 h-1.5 rounded-full bg-purple-500 mr-1.5 flex-shrink-0"></span>
                                             <span class="truncate">{{ $holiday->name }}</span>
-                                        </div>
+                                        </button>
                                     @endforeach
                                     
                                     {{-- More Events Indicator --}}
@@ -545,7 +553,7 @@
                                                         'date' => $this->formatDateWithTranslation($day['date']),
                                                          'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
                                                          'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values(),
-                                                         'holidays' => $day['holidays']->map(fn($h) => ['name' => $h->name, 'type' => $h->type, 'date' => $h->date->format('Y-m-d')])->values()
+                                                         'holidays' => $day['holidays']->map(fn($h) => ['name' => $h->name, 'type' => $h->type, 'date' => $h->date->format('Y-m-d'), 'country_code' => $h->country_code])->values()
                                                     ]) }}, { x: $event.clientX, y: $event.clientY })"
                                             class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline font-medium transition-all">
                                             +{{ $remainingEvents }} {{ __('calendar.more_events') }}
@@ -676,10 +684,10 @@
                 <div class="space-y-2">
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('calendar.calendar.public_holidays') }}</p>
                     <template x-for="holiday in popoverEvents.holidays" :key="holiday.name">
-                        <div class="px-3 py-2 rounded-lg border-l-4 bg-purple-50 dark:bg-purple-900/20 border-purple-500">
+                        <div class="px-3 py-2 rounded-lg border-l-4 bg-gray-50 dark:bg-gray-800/50 border-purple-500">
                             <div class="flex items-center justify-between mb-1">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" x-text="holiday.type"></span>
+                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400" x-text="holiday.country_code"></span>
                                 </div>
                             </div>
                             <p class="text-sm text-gray-900 dark:text-gray-100" x-text="holiday.name"></p>
