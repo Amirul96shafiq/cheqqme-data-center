@@ -104,21 +104,18 @@
                                 {{ $user->email }}
                             </p>
 
-                            <!-- Phone Number -->
-                            @if($user->phone)
-                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
-                                    @php
-                                        $country = $user->phone_country ?? 'MY';
-                                        $flag = match($country) {
-                                            'MY' => '🇲🇾',
-                                            'ID' => '🇮🇩',
-                                            'SG' => '🇸🇬',
-                                            'PH' => '🇵🇭',
-                                            'US' => '🇺🇸',
-                                            default => '🌐',
-                                        };
-                                    @endphp
-                                    {{ $flag }} {{ $user->phone }}
+                            <!-- Phone Number and Date of Birth -->
+                            @if($user->phone || $user->date_of_birth)
+                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1 flex items-center justify-center gap-1">
+                                    @if($user->phone)
+                                        {{ $user->getPhoneWithoutCountryCode() }}
+                                    @endif
+                                    @if($user->phone && $user->date_of_birth)
+                                        <span>|</span>
+                                    @endif
+                                    @if($user->date_of_birth)
+                                        {{ $user->date_of_birth->format('d/m/Y') }}
+                                    @endif
                                 </p>
                             @endif
                             

@@ -445,6 +445,34 @@ class User extends Authenticatable implements HasAvatar
     }
 
     /**
+     * Get phone number without country code
+     */
+    public function getPhoneWithoutCountryCode(): ?string
+    {
+        if (!$this->phone) {
+            return null;
+        }
+
+        $country = $this->phone_country ?? 'MY';
+        $dialCode = match ($country) {
+            'MY' => '60',
+            'ID' => '62',
+            'SG' => '65',
+            'PH' => '63',
+            'US' => '1',
+            default => '60',
+        };
+
+        $phone = preg_replace('/\D+/', '', $this->phone);
+        
+        if (str_starts_with($phone, $dialCode)) {
+            return substr($phone, strlen($dialCode));
+        }
+
+        return $phone;
+    }
+
+    /**
      * Get the color for the online status indicator
      */
     public function getOnlineStatusColor(): string
