@@ -60,6 +60,13 @@ return [
             'dec' => 'Dis',
         ],
         'public_holidays' => 'Cuti Umum',
+        'birthdays' => 'Hari Lahir',
+        'turns' => 'tahun',
+        'years_old' => 'tahun',
+        'your_birthday' => 'Hari Lahir Anda',
+        'hooray' => 'Yahooo!',
+        'birthday_text' => 'berusia :age tahun di sini! 🥳',
+        'birthday_badge' => ':age tahun',
     ],
     'tooltip' => [
         'close' => 'Tutup',

@@ -60,6 +60,13 @@ return [
             'dec' => 'Dec',
         ],
         'public_holidays' => 'Public Holidays',
+        'birthdays' => 'Birthdays',
+        'turns' => 'turns',
+        'years_old' => 'years old',
+        'your_birthday' => 'Your Birthday',
+        'hooray' => 'Hooray!',
+        'birthday_text' => 'turns :age y/o here! 🥳',
+        'birthday_badge' => ':age y/o',
     ],
     'tooltip' => [
         'close' => 'Close',

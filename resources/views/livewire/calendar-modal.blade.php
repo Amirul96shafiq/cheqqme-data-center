@@ -361,6 +361,20 @@
                                 </span>
                             </label>
                             
+                            <!-- Birthday Filter -->
+                            <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <input 
+                                    type="checkbox" 
+                                    value="birthday"
+                                    wire:model.live="typeFilter"
+                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
+                                >
+                                <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
+                                    <x-heroicon-m-cake class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-3" />
+                                    {{ __('calendar.calendar.birthdays') }}
+                                </span>
+                            </label>
+                            
                         </div>
 
                     </div>
@@ -474,9 +488,9 @@
                                         {{ $day['date']->day }}
                                     </span>
                                     
-                                    @if($day['tasks']->count() + $day['meetings']->count() > 0)
+                                    @if($day['tasks']->count() + $day['meetings']->count() + $day['holidays']->count() + $day['birthdays']->count() > 0)
                                         @php
-                                            $totalEvents = $day['tasks']->count() + $day['meetings']->count();
+                                            $totalEvents = $day['tasks']->count() + $day['meetings']->count() + $day['holidays']->count() + $day['birthdays']->count();
                                         @endphp
                                         <span class="text-[10px] text-gray-500 dark:text-gray-400">
                                             {{ $totalEvents }} {{ $totalEvents === 1 ? __('calendar.calendar.event') : __('calendar.calendar.events') }}
@@ -540,9 +554,30 @@
                                         </button>
                                     @endforeach
                                     
+                                    {{-- Birthdays --}}
+                                    @php
+                                        $displayedEvents = $day['tasks']->take(2)->count() + $day['meetings']->take(2 - $day['tasks']->take(2)->count())->count() + $day['holidays']->take(2 - $day['tasks']->take(2)->count() - $day['meetings']->take(2 - $day['tasks']->take(2)->count())->count())->count();
+                                        $remainingSlots = max(0, 2 - $displayedEvents);
+                                    @endphp
+                                    @foreach($day['birthdays']->take($remainingSlots) as $birthday)
+                                        <button type="button"
+                                            @click="closeAndOpen({{ \Illuminate\Support\Js::from([
+                                                    'date' => $this->formatDateWithTranslation($day['date']),
+                                                    'tasks' => [],
+                                                    'meetings' => [],
+                                                    'holidays' => [],
+                                                    'birthdays' => [['id' => $birthday->id, 'name' => $birthday->name, 'short_name' => $birthday->short_name, 'age' => $birthday->age, 'is_current_user' => $birthday->is_current_user, 'hooray_text' => __('calendar.calendar.hooray')]]
+                                                ]) }}, { x: $event.clientX, y: $event.clientY })"
+                                            class="flex items-center px-1 py-1 text-xs rounded transition-colors w-full text-left {{ $this->getBirthdayClasses($birthday) }}"
+                                            title="{{ $birthday->name }} {{ str_replace(':age', $birthday->age, __('calendar.calendar.birthday_text')) }}">
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full {{ $birthday->is_current_user ? 'bg-pink-500' : 'bg-orange-500' }} mr-1.5 flex-shrink-0"></span>
+                                            <span class="truncate">{{ $birthday->short_name }} {{ str_replace(':age', $birthday->age, __('calendar.calendar.birthday_text')) }}</span>
+                                        </button>
+                                    @endforeach
+                                    
                                     {{-- More Events Indicator --}}
                                     @php
-                                        $totalEvents = $day['tasks']->count() + $day['meetings']->count() + $day['holidays']->count();
+                                        $totalEvents = $day['tasks']->count() + $day['meetings']->count() + $day['holidays']->count() + $day['birthdays']->count();
                                         $displayedEvents = min(2, $totalEvents);
                                         $remainingEvents = $totalEvents - $displayedEvents;
                                     @endphp
@@ -553,7 +588,8 @@
                                                         'date' => $this->formatDateWithTranslation($day['date']),
                                                          'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
                                                          'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values(),
-                                                         'holidays' => $day['holidays']->map(fn($h) => ['name' => $h->name, 'type' => $h->type, 'date' => $h->date->format('Y-m-d'), 'country_code' => $h->country_code])->values()
+                                                         'holidays' => $day['holidays']->map(fn($h) => ['name' => $h->name, 'type' => $h->type, 'date' => $h->date->format('Y-m-d'), 'country_code' => $h->country_code])->values(),
+                                                         'birthdays' => $day['birthdays']->map(fn($b) => ['id' => $b->id, 'name' => $b->name, 'short_name' => $b->short_name, 'age' => $b->age, 'is_current_user' => $b->is_current_user, 'hooray_text' => __('calendar.calendar.hooray')])->values()
                                                     ]) }}, { x: $event.clientX, y: $event.clientY })"
                                             class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline font-medium transition-all">
                                             +{{ $remainingEvents }} {{ __('calendar.more_events') }}
@@ -691,6 +727,31 @@
                                 </div>
                             </div>
                             <p class="text-sm text-gray-900 dark:text-gray-100" x-text="holiday.name"></p>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            
+            {{-- Birthdays Section --}}
+            <template x-if="popoverEvents.birthdays && popoverEvents.birthdays.length > 0">
+                <div class="space-y-2">
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('calendar.calendar.birthdays') }}</p>
+                    <template x-for="birthday in popoverEvents.birthdays" :key="birthday.id">
+                        <div class="px-3 py-2 rounded-lg border-l-4 bg-gray-50 dark:bg-gray-800/50"
+                             :class="birthday.is_current_user ? 'border-pink-500' : 'border-orange-500'">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium" 
+                                          :class="birthday.is_current_user ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'"
+                                          x-text="birthday.hooray_text"></span>
+                                    <span x-show="birthday.is_current_user" class="text-[10px] px-2 py-1 rounded-full font-medium bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400">
+                                        {{ __('calendar.calendar.your_birthday') }}
+                                    </span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-900 dark:text-gray-100">
+                                <span class="inline-block">✨</span> <span x-text="birthday.name"></span> <span class="inline-block">✨</span>
+                            </p>
                         </div>
                     </template>
                 </div>

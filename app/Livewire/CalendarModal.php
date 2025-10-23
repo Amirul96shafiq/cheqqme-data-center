@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\MeetingLink;
 use App\Models\Task;
+use App\Models\User;
 use App\Services\PublicHolidayService;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -21,7 +22,7 @@ class CalendarModal extends Component
         $now = now();
         $this->year = $now->year;
         $this->month = $now->month;
-        $this->typeFilter = ['task', 'meeting', 'holiday']; // Default: show all
+        $this->typeFilter = ['task', 'meeting', 'holiday', 'birthday']; // Default: show all
     }
 
     public function toggleTypeFilter(string $type): void
@@ -35,7 +36,7 @@ class CalendarModal extends Component
 
     public function clearTypeFilter(): void
     {
-        $this->typeFilter = ['task', 'meeting', 'holiday'];
+        $this->typeFilter = ['task', 'meeting', 'holiday', 'birthday'];
     }
 
     public function previousMonth(): void
@@ -162,6 +163,15 @@ class CalendarModal extends Component
         return 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50 text-teal-600 dark:text-teal-400';
     }
 
+    public function getBirthdayClasses(object $birthday): string
+    {
+        if ($birthday->is_current_user) {
+            return 'bg-pink-100 text-pink-700 hover:bg-pink-200 dark:bg-pink-900/30 dark:text-pink-400 dark:hover:bg-pink-900/50';
+        }
+
+        return 'bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:hover:bg-orange-900/50';
+    }
+
     /**
      * Get user's country for holiday display
      * Reads from user settings, defaults to Malaysia (MY)
@@ -204,6 +214,49 @@ class CalendarModal extends Component
 
         return app(PublicHolidayService::class)
             ->getHolidaysForCountry($this->getUserCountry(), $calendarStart, $calendarEnd);
+    }
+
+    /**
+     * Get birthdays for the current month
+     */
+    public function getBirthdaysForMonth(): \Illuminate\Support\Collection
+    {
+        $startOfMonth = Carbon::create($this->year, $this->month, 1)->startOfDay();
+        $endOfMonth = $startOfMonth->copy()->endOfMonth()->endOfDay();
+
+        // Get calendar grid start and end (include previous and next month days)
+        $calendarStart = $startOfMonth->copy()->startOfWeek(Carbon::MONDAY);
+        $calendarEnd = $endOfMonth->copy()->endOfWeek(Carbon::SUNDAY);
+
+        // Get all users with birthdays in the current month
+        $users = User::query()
+            ->whereNotNull('date_of_birth')
+            ->get()
+            ->filter(function ($user) use ($calendarStart, $calendarEnd) {
+                $birthday = Carbon::parse($user->date_of_birth);
+
+                // Create birthday for current year
+                $currentYearBirthday = $birthday->copy()->year($this->year);
+
+                // Check if birthday falls within calendar range
+                return $currentYearBirthday->between($calendarStart, $calendarEnd);
+            })
+            ->map(function ($user) {
+                $birthday = Carbon::parse($user->date_of_birth);
+                $currentYearBirthday = $birthday->copy()->year($this->year);
+
+                return (object) [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'username' => $user->username,
+                    'short_name' => $user->short_name,
+                    'date' => $currentYearBirthday,
+                    'age' => $this->year - $birthday->year,
+                    'is_current_user' => $user->id === auth()->id(),
+                ];
+            });
+
+        return $users;
     }
 
     /**
@@ -273,6 +326,12 @@ class CalendarModal extends Component
                 ->groupBy(fn ($holiday) => $holiday->date->format('Y-m-d'))
             : collect();
 
+        // Get birthdays for the current month (if birthday filter is enabled)
+        $birthdays = in_array('birthday', $this->typeFilter)
+            ? $this->getBirthdaysForMonth()
+                ->groupBy(fn ($birthday) => $birthday->date->format('Y-m-d'))
+            : collect();
+
         // Get country display info
         $countryInfo = $this->getCountryDisplayInfo();
 
@@ -292,6 +351,7 @@ class CalendarModal extends Component
                     'tasks' => $tasks->get($dateKey, collect()),
                     'meetings' => $meetings->get($dateKey, collect()),
                     'holidays' => $holidays->get($dateKey, collect()),
+                    'birthdays' => $birthdays->get($dateKey, collect()),
                 ];
 
                 $currentDate->addDay();
