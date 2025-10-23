@@ -508,7 +508,7 @@ git --version     # Should show Git version
 
     **What gets created:**
 
-    - **1 Test User** (email: `test@example.com`, password: `password`)
+    - **1 Test User** (email: `test@example.com`, password: `[Check environment variables]`)
     - **5 Additional Users** with random data
     - **3 Sample Clients** with company information
     - **Multiple Projects** (1-3 per client)
@@ -546,7 +546,7 @@ git --version     # Should show Git version
 6. Access the app at [http://127.0.0.1:8000](http://127.0.0.1:8000) (Filament admin panel at /admin).
 7. **Default Login Credentials:**
     - **Email:** `test@example.com`
-    - **Password:** `password`
+    - **Password:** `[Check environment variables or contact administrator]`
 
 ---
 

@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Amirul Shafiq Harun',
                 'username' => 'Amirul Shafiq Harun',
-                'password' => bcrypt('11111'),
+                'password' => bcrypt(env('ADMIN_PASSWORD', 'ChangeThisPassword123!')),
                 'email_verified_at' => now(),
             ]
         );
@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Test User',
                 'username' => 'Test User',
-                'password' => bcrypt('password'),
+                'password' => bcrypt(env('TEST_USER_PASSWORD', 'TestPassword123!')),
                 'email_verified_at' => now(),
             ]
         );
