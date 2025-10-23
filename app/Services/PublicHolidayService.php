@@ -242,17 +242,31 @@ class PublicHolidayService
             }
 
             foreach ($allHolidays as $holiday) {
-                PublicHoliday::updateOrCreate(
-                    [
-                        'country_code' => $holiday->country_code,
-                        'name' => $holiday->name,
-                        'date' => $holiday->date->format('Y-m-d'),
-                    ],
-                    [
-                        'type' => $holiday->type,
-                        'is_recurring' => true, // Assume API holidays are recurring
-                    ]
-                );
+                try {
+                    PublicHoliday::updateOrCreate(
+                        [
+                            'country_code' => $holiday->country_code,
+                            'name' => $holiday->name,
+                            'date' => $holiday->date->format('Y-m-d'),
+                        ],
+                        [
+                            'type' => $holiday->type,
+                            'is_recurring' => true, // Assume API holidays are recurring
+                        ]
+                    );
+                } catch (\Illuminate\Database\QueryException $e) {
+                    // Handle unique constraint violations gracefully
+                    if ($e->getCode() == 23000) { // SQLite unique constraint violation
+                        Log::warning('Skipping duplicate holiday', [
+                            'country' => $holiday->country_code,
+                            'name' => $holiday->name,
+                            'date' => $holiday->date->format('Y-m-d'),
+                        ]);
+
+                        continue;
+                    }
+                    throw $e; // Re-throw if it's not a constraint violation
+                }
             }
 
             Log::info('Successfully synced holidays from API', [
