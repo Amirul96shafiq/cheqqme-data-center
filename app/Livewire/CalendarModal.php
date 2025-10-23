@@ -187,8 +187,12 @@ class CalendarModal extends Component
         $startOfMonth = Carbon::create($this->year, $this->month, 1)->startOfDay();
         $endOfMonth = $startOfMonth->copy()->endOfMonth()->endOfDay();
 
+        // Get calendar grid start and end (include previous and next month days)
+        $calendarStart = $startOfMonth->copy()->startOfWeek(Carbon::MONDAY);
+        $calendarEnd = $endOfMonth->copy()->endOfWeek(Carbon::SUNDAY);
+
         return app(PublicHolidayService::class)
-            ->getHolidaysForCountry($this->getUserCountry(), $startOfMonth, $endOfMonth);
+            ->getHolidaysForCountry($this->getUserCountry(), $calendarStart, $calendarEnd);
     }
 
     /**
