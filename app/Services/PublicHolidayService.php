@@ -25,7 +25,7 @@ class PublicHolidayService
      */
     public function getHolidaysForCountry(string $countryCode, Carbon $startDate, Carbon $endDate): Collection
     {
-        $cacheKey = "holidays_{$countryCode}_{$startDate->format('Y-m')}_{$endDate->format('Y-m')}";
+        $cacheKey = "holidays_{$countryCode}_{$startDate->format('Y-m-d')}_{$endDate->format('Y-m-d')}";
 
         return Cache::remember($cacheKey, $this->cacheTtlHours * 3600, function () use ($countryCode, $startDate, $endDate) {
             return $this->fetchHolidaysFromAPI($countryCode, $startDate, $endDate);
@@ -86,12 +86,15 @@ class PublicHolidayService
     {
         try {
             // Map country codes to Google Calendar holiday calendar IDs
+            // Only support Malaysia, Indonesia, Singapore, Philippines, Japan, and Korea
+            // Thailand removed as Google Calendar doesn't have holiday calendar for it
             $calendarIds = [
                 'MY' => 'en.malaysia#holiday@group.v.calendar.google.com',
+                'ID' => 'en.indonesian#holiday@group.v.calendar.google.com',
                 'SG' => 'en.singapore#holiday@group.v.calendar.google.com',
-                'US' => 'en.usa#holiday@group.v.calendar.google.com',
-                'GB' => 'en.uk#holiday@group.v.calendar.google.com',
-                'AU' => 'en.australian#holiday@group.v.calendar.google.com',
+                'PH' => 'en.philippines#holiday@group.v.calendar.google.com',
+                'JP' => 'en.japanese#holiday@group.v.calendar.google.com',
+                'KR' => 'en.south_korea#holiday@group.v.calendar.google.com',
             ];
 
             $calendarId = $calendarIds[$countryCode] ?? null;
@@ -144,6 +147,35 @@ class PublicHolidayService
         $holidays = $this->getHolidaysForCountry($countryCode, $date, $date);
 
         return $holidays->isNotEmpty();
+    }
+
+    /**
+     * Clear cache for a specific country
+     */
+    public function clearCacheForCountry(string $countryCode): void
+    {
+        try {
+            $currentYear = now()->year;
+            $nextYear = $currentYear + 1;
+
+            for ($year = $currentYear; $year <= $nextYear; $year++) {
+                for ($month = 1; $month <= 12; $month++) {
+                    $startDate = Carbon::create($year, $month, 1);
+                    $endDate = $startDate->copy()->endOfMonth();
+                    $cacheKey = "holidays_{$countryCode}_{$startDate->format('Y-m-d')}_{$endDate->format('Y-m-d')}";
+                    Cache::forget($cacheKey);
+                }
+            }
+
+            Log::info('Cleared holiday cache for country', [
+                'country' => $countryCode,
+                'years' => [$currentYear, $nextYear],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to clear holiday cache for country: '.$countryCode, [
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**

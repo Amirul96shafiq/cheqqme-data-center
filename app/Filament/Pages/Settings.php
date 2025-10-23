@@ -1231,6 +1231,9 @@ class Settings extends Page
             $data = $this->form->getState();
             $user = Auth::user();
 
+            // Store old country for comparison
+            $oldCountry = $user->country;
+
             // Update user data including location intent fields
             $user->update([
                 'timezone' => $data['timezone'],
@@ -1244,6 +1247,11 @@ class Settings extends Page
                 'timezone_manually_set' => $data['timezone_manually_set'] ?? false,
                 'timezone_source' => $data['timezone_source'] ?? 'auto',
             ]);
+
+            // Clear holiday cache if country changed
+            if ($oldCountry !== $data['country']) {
+                $this->clearHolidayCache($oldCountry, $data['country']);
+            }
 
             // Update API key if provided
             if (! empty($data['api_key'])) {
@@ -1266,6 +1274,57 @@ class Settings extends Page
                 ->body(__('settings.notifications.settings_save_failed_body'))
                 ->danger()
                 ->send();
+        }
+    }
+
+    // Clear holiday cache when country changes
+    private function clearHolidayCache(?string $oldCountry, string $newCountry): void
+    {
+        try {
+            // Only support Malaysia, Indonesia, Singapore, Philippines, Japan, and Korea
+            // Thailand removed as Google Calendar doesn't have holiday calendar for it
+            $supportedCountries = ['MY', 'ID', 'SG', 'PH', 'JP', 'KR'];
+
+            // Determine effective countries (default to MY for unsupported countries)
+            $effectiveOldCountry = $oldCountry && in_array($oldCountry, $supportedCountries) ? $oldCountry : 'MY';
+            $effectiveNewCountry = in_array($newCountry, $supportedCountries) ? $newCountry : 'MY';
+
+            // Clear cache for both old and new countries
+            $countries = array_filter([$effectiveOldCountry, $effectiveNewCountry]);
+
+            foreach ($countries as $country) {
+                if ($country) {
+                    // Clear cache for current year and next year
+                    $currentYear = now()->year;
+                    $nextYear = $currentYear + 1;
+
+                    for ($year = $currentYear; $year <= $nextYear; $year++) {
+                        for ($month = 1; $month <= 12; $month++) {
+                            $startDate = \Carbon\Carbon::create($year, $month, 1);
+                            $endDate = $startDate->copy()->endOfMonth();
+                            $cacheKey = "holidays_{$country}_{$startDate->format('Y-m-d')}_{$endDate->format('Y-m-d')}";
+                            \Illuminate\Support\Facades\Cache::forget($cacheKey);
+                        }
+                    }
+                }
+            }
+
+            // Show notification about holiday calendar switching
+            if ($oldCountry && $effectiveOldCountry !== $effectiveNewCountry) {
+                $oldCountryName = app(\App\Services\PublicHolidayService::class)->getCountryName($effectiveOldCountry);
+                $newCountryName = app(\App\Services\PublicHolidayService::class)->getCountryName($effectiveNewCountry);
+
+                Notification::make()
+                    ->title(__('settings.notifications.holiday_calendar_switched'))
+                    ->body(__('settings.notifications.holiday_calendar_switched_body', [
+                        'old_country' => $oldCountryName,
+                        'new_country' => $newCountryName,
+                    ]))
+                    ->info()
+                    ->send();
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to clear holiday cache: '.$e->getMessage());
         }
     }
 

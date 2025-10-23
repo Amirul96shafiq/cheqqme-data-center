@@ -171,8 +171,19 @@ class CalendarModal extends Component
         $user = auth()->user();
 
         // Priority 1: User's explicitly set country from settings
-        if ($user->country) {
-            return $user->country;
+        if ($user && $user->country) {
+            $userCountry = $user->country;
+
+            // Only support Malaysia, Indonesia, Singapore, Philippines, Japan, and Korea
+            // Thailand removed as Google Calendar doesn't have holiday calendar for it
+            $supportedCountries = ['MY', 'ID', 'SG', 'PH', 'JP', 'KR'];
+
+            if (in_array($userCountry, $supportedCountries)) {
+                return $userCountry;
+            }
+
+            // For unsupported countries, default to Malaysia
+            return 'MY';
         }
 
         // Priority 2: Default to Malaysia for all users without country info

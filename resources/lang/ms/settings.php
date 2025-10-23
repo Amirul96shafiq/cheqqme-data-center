@@ -171,6 +171,8 @@ return [
         'sessions_logged_out_body' => 'Semua sesi lain telah berjaya dilog keluar.',
         'sessions_logout_failed' => 'Log Keluar Gagal',
         'sessions_logout_failed_body' => 'Gagal log keluar sesi lain. Sila semak kata laluan anda dan cuba lagi.',
+        'holiday_calendar_switched' => 'Kalendar Cuti Ditukar',
+        'holiday_calendar_switched_body' => 'Kalendar cuti telah ditukar dari :old_country kepada :new_country. Kalendar kini akan menunjukkan cuti untuk :new_country.',
     ],
 
     // Backup-related messages

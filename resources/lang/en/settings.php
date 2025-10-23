@@ -171,6 +171,8 @@ return [
         'sessions_logged_out_body' => 'All other sessions have been logged out successfully.',
         'sessions_logout_failed' => 'Logout Failed',
         'sessions_logout_failed_body' => 'Failed to logout other sessions. Please check your password and try again.',
+        'holiday_calendar_switched' => 'Holiday Calendar Switched',
+        'holiday_calendar_switched_body' => 'Holiday calendar has been switched from :old_country to :new_country. The calendar will now show holidays for :new_country.',
     ],
 
     // Backup-related messages
