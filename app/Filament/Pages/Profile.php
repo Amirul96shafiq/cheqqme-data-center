@@ -184,6 +184,15 @@ class Profile extends EditProfile
                             })
                             ->nullable(),
 
+                        Forms\Components\DatePicker::make('date_of_birth')
+                            ->label(__('profile.form.date_of_birth'))
+                            ->placeholder(__('profile.form.date_of_birth_placeholder'))
+                            ->nullable()
+                            ->displayFormat('d/m/Y')
+                            ->native(false)
+                            ->maxDate(now()->subYears(13))
+                            ->helperText(__('profile.form.date_of_birth_helper')),
+
                         \App\Forms\Components\OnlineStatusSelect::make('online_status')
                             ->label(__('profile.form.online_status'))
                             ->default(\App\Services\OnlineStatus\StatusManager::getDefaultStatus())
