@@ -354,7 +354,7 @@
                                 >
                                 <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
                                     {{-- <x-heroicon-m-calendar class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" /> --}}
-                                    <span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-400 mr-2">
+                                    <span class="inline-flex items-center px-1 rounded text-[8px] font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 mr-2">
                                         {{ $countryInfo['country_code'] }}
                                     </span>
                                     {{ __('calendar.calendar.public_holidays') }}
@@ -687,7 +687,7 @@
                         <div class="px-3 py-2 rounded-lg border-l-4 bg-gray-50 dark:bg-gray-800/50 border-purple-500">
                             <div class="flex items-center justify-between mb-1">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400" x-text="holiday.country_code"></span>
+                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" x-text="holiday.country_code"></span>
                                 </div>
                             </div>
                             <p class="text-sm text-gray-900 dark:text-gray-100" x-text="holiday.name"></p>
