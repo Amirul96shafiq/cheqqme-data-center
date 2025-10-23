@@ -231,12 +231,28 @@ class StatusConfig
     }
 
     /**
+     * Get box shadow class for a given size to create outline effect
+     */
+    public static function getBoxShadowForSize(string $size): string
+    {
+        return match ($size) {
+            self::SIZE_XS => 'shadow-[0_0_0_1px_white] dark:shadow-[0_0_0_1px_rgb(17_24_39)]',
+            self::SIZE_SM => 'shadow-[0_0_0_2px_white] dark:shadow-[0_0_0_2px_rgb(17_24_39)]',
+            self::SIZE_MD => 'shadow-[0_0_0_2px_white] dark:shadow-[0_0_0_2px_rgb(17_24_39)]',
+            self::SIZE_LG => 'shadow-[0_0_0_2px_white] dark:shadow-[0_0_0_2px_rgb(17_24_39)]',
+            self::SIZE_XL => 'shadow-[0_0_0_5px_white] dark:shadow-[0_0_0_5px_rgb(17_24_39)]',
+            default => 'shadow-[0_0_0_2px_white] dark:shadow-[0_0_0_2px_rgb(17_24_39)]',
+        };
+    }
+
+    /**
      * Get complete status classes for display
      */
     public static function getStatusClasses(string $status, ?string $size = null): string
     {
         $size = $size ?? self::getDefaultSize();
-        $baseClasses = 'rounded-full border-2 border-white dark:border-gray-900';
+        $boxShadow = self::getBoxShadowForSize($size);
+        $baseClasses = "rounded-full {$boxShadow}";
         $color = self::getStatusColor($status);
         $sizeClasses = self::getSizeClasses($size);
 

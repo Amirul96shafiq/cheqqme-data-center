@@ -70,6 +70,13 @@ export default {
         "border-gray-300",
         "border",
         "rounded-full",
+        // Box shadow for online status indicators outline effect
+        "shadow-[0_0_0_1px_white]",
+        "shadow-[0_0_0_2px_white]",
+        "shadow-[0_0_0_5px_white]",
+        "dark:shadow-[0_0_0_1px_rgb(17_24_39)]",
+        "dark:shadow-[0_0_0_2px_rgb(17_24_39)]",
+        "dark:shadow-[0_0_0_5px_rgb(17_24_39)]",
     ],
 
     theme: {
