@@ -1,5 +1,62 @@
 ![CheQQme Data Center](public/logos/logo-dark-vertical.png)
 
+# CheQQme Data Center
+
+**Internal Knowledge & Operations Hub**
+
+[![PHP](https://img.shields.io/badge/PHP-8.2.29-777BB4?logo=php&logoColor=white)](https://php.net)
+[![Laravel](https://img.shields.io/badge/Laravel-12.31.1-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
+[![Filament](https://img.shields.io/badge/Filament-3.3.41-F59E0B?logo=filament&logoColor=white)](https://filamentphp.com)
+[![Livewire](https://img.shields.io/badge/Livewire-3.6.4-FB70A9?logo=livewire&logoColor=white)](https://livewire.laravel.com)
+
+---
+
+## Table of Contents
+
+### Getting Started
+
+-   [Overview](#overview)
+-   [Core Objectives](#core-objectives)
+-   [Tech Stack](#tech-stack)
+-   [Feature Roadmap](#feature-roadmap)
+-   [Quick Start Guide](#quick-start-guide)
+
+### Core Features
+
+-   [Major Features](#major-features-current)
+-   [Weather System](#weather-system)
+-   [Configuration & Environment Variables](#configuration--environment-variables)
+
+### Integrations & Services
+
+-   [Spotify Integration](#spotify-integration)
+-   [Online Status System](#online-status-system)
+-   [Meeting Links & Video Conferencing](#meeting-links--video-conferencing)
+-   [Event Calendar System](#event-calendar-system)
+-   [Custom User Profile Menu](#custom-user-profile-menu)
+-   [What's New (Changelog)](#whats-new-changelog-system)
+
+### Advanced Features
+
+-   [Advanced Comments System](#advanced-comments-system)
+-   [MCP Server Setup](#mcp-server-first-time-setup)
+
+### Development & Deployment
+
+-   [Project Structure](#project-structure-highlights)
+-   [API Routes](#selected-routes)
+-   [Local Development](#local-development)
+-   [Testing](#testing)
+-   [Deployment](#deployment-production)
+-   [Authentication & Security](#authentication--security)
+
+### Resources
+
+-   [References](#references)
+-   [Author](#author)
+
+---
+
 ## Overview
 
 **CheQQme Data Center** is an internal knowledge & operations hub built with Laravel + Filament, now featuring MCP server integration for AI/semantic search. It centralizes:
@@ -271,18 +328,46 @@ It improves discoverability, reduces context switching, and lays groundwork for 
     -   Responsive design with optimized dropdown positioning
 -   Consistent environment template (`.env.example`) for quick onboarding
 
-## In Progress / Planned
+---
+
+## Feature Roadmap
+
+### Completed Features ✅
+
+-   **AI-Powered Chatbot**: OpenAI integration with conversation history & backups
+-   **Spotify Integration**: Web Playback SDK + OAuth2 with real-time updates
+-   **Online Status System**: Real-time presence with Laravel Reverb
+-   **Meeting Links**: Multi-platform support (Google Meet, Zoom)
+-   **Calendar System**: Multi-type events with filtering & public holidays
+-   **Weather System**: OpenWeatherMap with smart location detection
+-   **Advanced Comments**: @mentions, reactions, threading, focus mode
+-   **Custom Profile Menu**: Rich user info with badges and integrations
+-   **What's New**: Git-based automatic changelog with pagination
+-   **Image Optimization**: Automatic thumbnails with Intervention Image
+-   **Comprehensive CRUD**: 9 Filament resources (Users, Clients, Projects, Documents, etc.)
+-   **Activity Logging**: Spatie + Filament plugin with timeline views
+-   **Internationalization**: English & Malay translations
+-   **MCP Servers**: Node.js API + Playwright browser automation
+-   **Dashboard Widgets**: Stats, recent items, board viewers
+
+### In Development 🛠
 
 -   Tagging system (polymorphic tags across Projects / Documents / Links)
 -   Advanced authorization (policies & role-based access control)
--   Full‑text / Scout based search + AI powered semantic layer (MCP integration)
+
+### Planned 🔜
+
+-   Full‑text / Scout based search + AI powered semantic layer
 -   Bulk import/export (CSV / XLSX)
 -   Background job queue (async file processing & notifications)
 -   S3 storage + signed download links
+-   Microsoft Teams integration
+-   Email notifications with rich templates
+-   Public API v2 with rate limiting
 
 ---
 
-## First-Time Setup: CheQQme Data Center
+## Quick Start Guide
 
 ### **Prerequisites (If Programming Tools Not Installed)**
 
@@ -469,75 +554,52 @@ git --version     # Should show Git version
 
 ### Overview
 
-The application includes a comprehensive weather system with intelligent location management that provides real-time weather information through a greeting modal interface.
+Comprehensive weather system with intelligent location management providing real-time weather data and 7-day forecasts through a greeting modal interface.
 
-### Location Management Logic
+### Location Management
 
-The weather system uses a smart priority system for location detection:
+**Smart Priority System**:
 
-#### 1. Manual Location Settings (Priority Mode)
+1. **Manual Location (Priority)**:
 
--   **When**: User has configured location in Settings page
--   **Behavior**: Uses saved coordinates for all weather requests
--   **Process**: No automatic geolocation detection occurs
--   **Example**: Seoul (37.5665, 126.9780) → Always shows Seoul weather
+    - User configures location in Settings page
+    - Uses saved coordinates for all weather requests
+    - No automatic geolocation detection
+    - Example: Seoul (37.5665, 126.9780) → Always shows Seoul weather
 
-#### 2. Automatic Geolocation Detection (Fallback Mode)
+2. **Auto-Detection (Fallback)**:
+    - When user hasn't configured location
+    - Automatically detects current browser location
+    - Uses browser geolocation API
+    - Example: No saved location → Detects current position
 
--   **When**: User hasn't configured location settings
--   **Behavior**: Automatically detects current browser location
--   **Process**: Uses browser geolocation API for weather requests
--   **Example**: No saved location → Detects and uses current location
-
-### Location Detection Flow
+**Location Detection Flow**:
 
 ```
-Greeting Modal Opens
-        ↓
-Check User Location API
-        ↓
-Has Saved Location?
-        ↓
-    ┌─── YES ────→ Use Saved Location
-    │
-    └─── NO ────→ Auto-detect Current Location
+Greeting Modal Opens → Check User Location API → Has Saved Location?
+    ├─ YES → Use Saved Coordinates
+    └─ NO  → Auto-detect Browser Location
 ```
 
-### Testing Different Locations
+### Key Features
 
-#### Sample Coordinates
+-   **Real-time Data**: Current weather conditions and temperature
+-   **7-Day Forecast**: Extended weather predictions
+-   **Smart Caching**: 3-hour cache to reduce API calls
+-   **Timezone Support**: Location-based sunrise/sunset times
+-   **Coordinate Validation**: Proper bounds checking for lat/long
+-   **Error Handling**: Graceful fallback when API unavailable
 
--   **Seoul, South Korea**: `37.5665, 126.9780`
--   **Tokyo, Japan**: `35.6762, 139.6503`
--   **New York, USA**: `40.7128, -74.0060`
--   **London, UK**: `51.5074, -0.1278`
-
-#### Testing Steps
-
-1. Go to Settings (`/admin/settings`)
-2. Expand "Location & Timezone" section
-3. Enter coordinates manually or use "Detect Location"
-4. Save settings
-5. Open greeting modal to see weather for configured location
-
-### Technical Implementation
-
-#### API Endpoints
+### API Endpoints
 
 -   `GET /weather/user-location` - Check if user has saved location
 -   `GET /weather/current` - Get current weather data
 -   `GET /weather/forecast` - Get 7-day weather forecast
 -   `POST /weather/location` - Update user location
 
-#### Key Features
+### Configuration
 
--   **Smart Location Detection**: Prioritizes user settings over auto-detection
--   **Timezone Support**: Location-based sunrise/sunset times
--   **3-Hour Caching**: Reduces API calls with intelligent caching
--   **Error Handling**: Graceful fallback when API unavailable
--   **Coordinate Validation**: Proper bounds checking for latitude/longitude
-
-#### Configuration
+**Environment Variables**:
 
 ```env
 OPENWEATHERMAP_API_KEY=your_api_key_here
@@ -546,9 +608,26 @@ WEATHER_DEFAULT_LATITUDE=3.1390
 WEATHER_DEFAULT_LONGITUDE=101.6869
 ```
 
+### Testing
+
+**Sample Coordinates**:
+
+-   Seoul, South Korea: `37.5665, 126.9780`
+-   Tokyo, Japan: `35.6762, 139.6503`
+-   New York, USA: `40.7128, -74.0060`
+-   London, UK: `51.5074, -0.1278`
+
+**Testing Steps**:
+
+1. Go to Settings (`/admin/settings`)
+2. Expand "Location & Timezone" section
+3. Enter coordinates or click "Detect Location"
+4. Save settings
+5. Open greeting modal to verify weather
+
 ---
 
-## Environment Variables
+## Configuration & Environment Variables
 
 ### Core Application
 
@@ -2046,259 +2125,6 @@ MENTION_DEBOUNCE_MS=300
 
 ---
 
-## Action Board (Kanban)
-
-Custom Filament Page (`admin/action-board`) powered by Flowforge. Cards display:
-
--   **Due date badges**: red (<1 day), yellow (1–6 days), gray (7–13 days), green (≥14 days)
--   **Assignee badge**: shows username/short name; highlighted when assigned to the current user
--   **Attachments**: counter badge on the form, file storage under `storage/app/tasks`
-
-Create uses a streamlined modal; edit navigates to the Task Resource edit page.
-
----
-
-## Advanced Comments System
-
-The application features a comprehensive comments system with modern, interactive capabilities:
-
-### **Core Features**
-
-#### **Rich Text Editor**
-
--   **Trix Integration**: Professional-grade rich text editor with toolbar
--   **HTML Sanitization**: Strict security with only semantic tags and links allowed
--   **Real-time Preview**: Live content rendering with proper formatting
--   **Keyboard Shortcuts**: Ctrl+Enter for quick comment submission
-
-#### **@Mentions System**
-
--   **Smart Detection**: Automatic @mention recognition with longest-prefix matching
--   **User Search**: Real-time dropdown with username, email, and full name search
--   **@Everyone Support**: Special mention for notifying all users
--   **Visual Badges**: Mentions rendered as styled inline badges
--   **Notifications**: Automatic Filament notifications with deep-links to tasks
-
-#### **Focus Mode**
-
--   **Click-to-Focus**: Distraction-free single comment viewing
--   **Full-Height View**: Scrollable full-height interface
--   **Smart UI**: Auto-hide composer and connecting lines
--   **Sticky Controls**: Persistent exit button at top
--   **Dropdown Integration**: Auto-close functionality for seamless UX
-
-#### **Emoji Reactions**
-
--   **Comprehensive Picker**: Searchable emoji library with keyword matching
--   **Recent Tracking**: Quick access to frequently used emojis
--   **Real-time Updates**: Live reaction counts and user attribution
--   **User Tooltips**: Timestamp and user information on hover
--   **Toggle Functionality**: Add/remove reactions with visual feedback
-
-#### **Threaded Replies**
-
--   **Nested Structure**: Visual hierarchy with proper indentation
--   **Reply Actions**: Edit, delete, and focus capabilities for replies
--   **Visual Indicators**: Connecting lines and avatar differentiation
--   **Independent Management**: Separate state management for replies
-
-#### **Content Management**
-
--   **Inline Editing**: Live preview with form validation
--   **Soft Delete**: Safe deletion with restoration capabilities
--   **Whitespace Control**: Prevention of leading/trailing spaces
--   **Activity Logging**: Complete audit trail for all operations
-
-### **Technical Implementation**
-
-#### **Frontend Technologies**
-
--   **Livewire v3**: Real-time component interactions
--   **Alpine.js**: Client-side reactivity and state management
--   **Trix Editor**: Rich text editing capabilities
--   **Tailwind CSS**: Responsive design and styling
-
-#### **Backend Architecture**
-
--   **Eloquent Models**: Comment, CommentReaction, CommentEmojiReaction
--   **API Endpoints**: RESTful routes for reactions and mentions
--   **Event System**: Real-time notifications and updates
--   **Activity Logging**: Spatie integration for audit trails
-
-#### **Database Schema**
-
--   **Comments Table**: Core comment data with mentions array
--   **Reactions Tables**: Separate tables for different reaction types
--   **Soft Deletes**: Safe data retention with restoration
--   **Foreign Keys**: Proper relationships and cascading rules
-
----
-
-## Testing
-
-### Test Suite
-
--   **Feature Tests**: Comment system, mentions, notifications, external integrations
--   **Livewire Tests**: Component interactions, form validation, real-time updates
--   **Unit Tests**: Service classes, helpers, utilities
--   **Integration Tests**: API endpoints, OAuth flows, WebSocket connections
-
-### Run Tests
-
-```bash
-php artisan test
-# or
-composer test
-# or
-php artisan test --watch  # Watch mode for TDD
-```
-
-### Current Test Coverage
-
--   **Advanced Comment System**:
-    -   @mentions extraction with longest-prefix matching
-    -   @Everyone special mention processing
-    -   Comment reactions and emoji functionality
-    -   Focus mode and threaded replies
-    -   Rich text editor integration and HTML sanitization
-    -   User notification system with deep-links
--   **Task Management**:
-    -   Kanban operations and card movements
-    -   Status transitions and order tracking
-    -   Attachment handling and optimization
-    -   Filter and search functionality
--   **User Authentication**:
-    -   OAuth2 flows (Spotify, Google, Zoom)
-    -   Token refresh mechanisms
-    -   Session management
-    -   Authorization checks
--   **Livewire Components**:
-    -   Real-time interactions and state management
-    -   Event broadcasting and reception
-    -   Modal interactions and form submissions
--   **Database Operations**:
-    -   Eloquent relationships and eager loading
-    -   Soft deletes and restoration
-    -   Activity logging and audit trails
-    -   Data integrity and constraints
-
-### Future Testing Goals
-
--   **E2E Testing**: Playwright MCP integration for full user journeys
--   **API Testing**: Comprehensive REST API endpoint coverage
--   **Performance Testing**: Load testing for real-time features
--   **Security Testing**: OAuth flow vulnerabilities, XSS prevention
--   **Policy Testing**: Authorization and permission checks
--   **Browser Testing**: Cross-browser compatibility
--   **Mobile Testing**: Responsive design verification
-
----
-
-## Deployment (Basic Outline)
-
-1. **Server Requirements:**
-
-    - Linux server with PHP 8.2+ and required extensions
-    - Nginx/Apache web server
-    - Database (MySQL/PostgreSQL recommended for production)
-    - Redis (optional, for caching and queues)
-
-2. **Application Setup:**
-
-    ```bash
-    git clone <repo-url>
-    cd cheqqme-data-center
-    composer install --no-dev --optimize-autoloader
-    cp .env.example .env
-    php artisan key:generate
-    ```
-
-3. **Database & Storage:**
-
-    ```bash
-    php artisan migrate --force
-    php artisan storage:link
-    php artisan config:cache
-    php artisan route:cache
-    php artisan view:cache
-    ```
-
-4. **Build Assets:**
-
-    ```bash
-    npm ci
-    npm run build
-    ```
-
-5. **Permissions & Security:**
-
-    ```bash
-    chmod -R 755 storage bootstrap/cache
-    chown -R www-data:www-data storage bootstrap/cache
-    ```
-
-6. **Production Services:**
-    - Queue worker: `php artisan queue:work --daemon`
-    - Scheduler: `* * * * * cd /path/to/app && php artisan schedule:run >> /dev/null 2>&1`
-    - Process manager: Use Supervisor for queue workers
-    - Cache: Configure Redis or file-based caching
-
----
-
-## Authentication & Security
-
--   Laravel auth scaffolding + Filament guard
--   MCP server password hashes compatible with Laravel (bcrypt `$2b$` → `$2y$`)
--   Sensitive files/folders (`.env`, `database/`, `storage/`, etc.) are ignored from git tracking
--   Next steps: add Policies (Project, Document, URL) & roles field on `users` table
--   Consider rate limiting if public endpoints added later
-
----
-
-## Roadmap (Detailed)
-
-Legend: ✅ Done · 🛠 In Progress · 🔜 Planned
-
-| Feature                      | Status | Notes                                         |
-| ---------------------------- | ------ | --------------------------------------------- |
-| **AI-Powered Chatbot**       | ✅     | OpenAI integration with conversation history  |
-| **Spotify Integration**      | ✅     | Web Playback SDK + OAuth2                     |
-| **Online Status System**     | ✅     | Real-time presence with Laravel Reverb        |
-| **Google Meet Integration**  | ✅     | OAuth2 + Calendar API + meeting generation    |
-| **Zoom Integration**         | ✅     | OAuth2 + meeting creation                     |
-| **Calendar System**          | ✅     | Multi-type events with filtering              |
-| **Weather System**           | ✅     | OpenWeatherMap with smart location            |
-| **Image Optimization**       | ✅     | Automatic thumbnails with Intervention Image  |
-| CRUD for Important URLs      | ✅     | Full resource with relationships              |
-| Projects & Clients           | ✅     | Complete with relation managers               |
-| Documents storage            | ✅     | Local disk with optimization; S3 planned      |
-| Action Board (Tasks)         | ✅     | Advanced Kanban with filtering & attachments  |
-| **Meeting Links Management** | ✅     | Multi-platform support (Google Meet, Zoom)    |
-| **Trello Board Resource**    | ✅     | External board integration                    |
-| Basic Auth (Filament)        | ✅     | Panel with real-time notifications            |
-| **Enhanced Profile Page**    | ✅     | External service connections & settings       |
-| **Internationalization**     | ✅     | English & Malay translations                  |
-| Environment template         | ✅     | Comprehensive `.env.example`                  |
-| MCP Server Integration       | ✅     | Node.js API with Laravel compatibility        |
-| Playwright MCP Server        | ✅     | Browser automation & E2E testing              |
-| Activity / Audit Log         | ✅     | Spatie + Filament plugin with timeline views  |
-| **Advanced Comments System** | ✅     | @mentions, reactions, threading, focus mode   |
-| **Public Holidays**          | ✅     | Regional holiday tracking                     |
-| **Dashboard Widgets**        | ✅     | Stats, recent items, board viewers            |
-| **What's New (Changelog)**   | ✅     | Git-based automatic changelog with pagination |
-| **Custom User Profile Menu** | ✅     | Rich user info with badges and integrations   |
-| Tagging system               | 🔜     | Polymorphic tags across entities              |
-| Role-based Policies          | 🔜     | Granular access control with permissions      |
-| Full‑text / AI Search        | 🔜     | Scout + embeddings layer                      |
-| Bulk Import / Export         | 🔜     | CSV/XLSX via Laravel Excel                    |
-| Background Queue             | 🔜     | For heavy file ops and async processing       |
-| S3 Integration               | 🔜     | Cloud storage with signed URLs                |
-| Microsoft Teams Integration  | 🔜     | Meeting link generation                       |
-| Email Notifications          | 🔜     | Rich email templates for mentions/tasks       |
-| API v2 with Rate Limiting    | 🔜     | Public API with documentation                 |
-
----
-
 ## Local Development
 
 ### Quick Start (Recommended)
@@ -2368,6 +2194,127 @@ This runs PHP server, Vite, and Reverb concurrently.
 -   **Vite**: Auto-reloads on CSS/JS changes
 -   **Laravel**: Manual refresh for PHP changes
 -   **Livewire**: Auto-reloads on component view changes (via Vite)
+
+---
+
+## Testing
+
+### Test Suite
+
+-   **Feature Tests**: Comment system, mentions, notifications, external integrations
+-   **Livewire Tests**: Component interactions, form validation, real-time updates
+-   **Unit Tests**: Service classes, helpers, utilities
+-   **Integration Tests**: API endpoints, OAuth flows, WebSocket connections
+
+### Run Tests
+
+```bash
+php artisan test
+# or
+composer test
+# or
+php artisan test --watch  # Watch mode for TDD
+```
+
+### Current Test Coverage
+
+-   **Advanced Comment System**:
+    -   @mentions extraction with longest-prefix matching
+    -   @Everyone special mention processing
+    -   Comment reactions and emoji functionality
+    -   Focus mode and threaded replies
+    -   Rich text editor integration and HTML sanitization
+    -   User notification system with deep-links
+-   **Task Management**:
+    -   Kanban operations and card movements
+    -   Status transitions and order tracking
+    -   Attachment handling and optimization
+    -   Filter and search functionality
+-   **User Authentication**:
+    -   OAuth2 flows (Spotify, Google, Zoom)
+    -   Token refresh mechanisms
+    -   Session management
+    -   Authorization checks
+-   **Livewire Components**:
+    -   Real-time interactions and state management
+    -   Event broadcasting and reception
+    -   Modal interactions and form submissions
+-   **Database Operations**:
+    -   Eloquent relationships and eager loading
+    -   Soft deletes and restoration
+    -   Activity logging and audit trails
+    -   Data integrity and constraints
+
+### Future Testing Goals
+
+-   **E2E Testing**: Playwright MCP integration for full user journeys
+-   **API Testing**: Comprehensive REST API endpoint coverage
+-   **Performance Testing**: Load testing for real-time features
+-   **Security Testing**: OAuth flow vulnerabilities, XSS prevention
+-   **Policy Testing**: Authorization and permission checks
+-   **Browser Testing**: Cross-browser compatibility
+-   **Mobile Testing**: Responsive design verification
+
+---
+
+## Deployment (Production)
+
+1. **Server Requirements:**
+
+    - Linux server with PHP 8.2+ and required extensions
+    - Nginx/Apache web server
+    - Database (MySQL/PostgreSQL recommended for production)
+    - Redis (optional, for caching and queues)
+
+2. **Application Setup:**
+
+    ```bash
+    git clone <repo-url>
+    cd cheqqme-data-center
+    composer install --no-dev --optimize-autoloader
+    cp .env.example .env
+    php artisan key:generate
+    ```
+
+3. **Database & Storage:**
+
+    ```bash
+    php artisan migrate --force
+    php artisan storage:link
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+    ```
+
+4. **Build Assets:**
+
+    ```bash
+    npm ci
+    npm run build
+    ```
+
+5. **Permissions & Security:**
+
+    ```bash
+    chmod -R 755 storage bootstrap/cache
+    chown -R www-data:www-data storage bootstrap/cache
+    ```
+
+6. **Production Services:**
+    - Queue worker: `php artisan queue:work --daemon`
+    - Scheduler: `* * * * * cd /path/to/app && php artisan schedule:run >> /dev/null 2>&1`
+    - Process manager: Use Supervisor for queue workers
+    - Cache: Configure Redis or file-based caching
+
+---
+
+## Authentication & Security
+
+-   Laravel auth scaffolding + Filament guard
+-   MCP server password hashes compatible with Laravel (bcrypt `$2b$` → `$2y$`)
+-   Sensitive files/folders (`.env`, `database/`, `storage/`, etc.) are ignored from git tracking
+-   Next steps: add Policies (Project, Document, URL) & roles field on `users` table
+-   Consider rate limiting if public endpoints added later
 
 ---
 
