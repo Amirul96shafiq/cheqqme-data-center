@@ -37,7 +37,7 @@
                         :src="$user ? filament()->getUserAvatarUrl($user) : null"
                         alt="Avatar"
                         size="w-20 h-20 md:w-24 md:h-24 lg:w-32 lg:h-32"
-                        class="mx-auto border-[6px] border-white dark:border-gray-900"
+                        class="mx-auto border-[3px] md:border-[6px] border-white dark:border-gray-900"
                     />
                     
                     <!-- Interactive Online Status Indicator -->
@@ -62,7 +62,7 @@
                         </p>
                     @endif
 
-                    {{-- Email & Phone --}}
+                    {{-- Email, Phone, Date of Birth --}}
                     <div class="space-y-0">
                         @if ($user && $user->email)
                             <p class="text-[11px] md:text-lg font-semibold text-white/80 drop-shadow">
@@ -70,22 +70,20 @@
                             </p>
                         @endif
 
-                        @if ($user && $user->phone)
-                            <p class="text-[11px] md:text-lg font-semibold text-white/80 drop-shadow">
-                                @php
-                                    $country = $user->phone_country ?? 'MY';
-                                    $flag = match($country) {
-                                        'MY' => '🇲🇾',
-                                        'ID' => '🇮🇩',
-                                        'SG' => '🇸🇬',
-                                        'PH' => '🇵🇭',
-                                        'US' => '🇺🇸',
-                                        default => '🌐',
-                                    };
-                                @endphp
-                                {{ $flag }} {{ $user->phone }}
+                        @if ($user && ($user->phone || $user->date_of_birth))
+                            <p class="text-xs font-semibold text-white/80 drop-shadow flex items-center justify-center gap-2">
+                                @if ($user->phone)
+                                    {{ $user->phone }}
+                                @endif
+                                @if ($user->phone && $user->date_of_birth)
+                                    <span>|</span>
+                                @endif
+                                @if ($user->date_of_birth)
+                                    {{ $user->date_of_birth->format('d/m/Y') }}
+                                @endif
                             </p>
                         @endif
+                        
                     </div>
 
                     {{-- Badges --}}
