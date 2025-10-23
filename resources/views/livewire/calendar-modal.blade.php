@@ -230,12 +230,6 @@
             
         </div>
         
-        {{-- Country Info Display --}}
-        <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <x-heroicon-o-calendar-days class="w-4 h-4 text-purple-500" />
-            <span>{{ $countryInfo['message'] }}</span>
-        </div>
-        
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
 
@@ -331,7 +325,7 @@
                                     class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
                                 >
                                 <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
-                                    <x-heroicon-o-rocket-launch class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
+                                    <x-heroicon-m-rocket-launch class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
                                     {{ __('calendar.calendar.action_task') }}
                                 </span>
                             </label>
@@ -345,7 +339,7 @@
                                     class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
                                 >
                                 <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
-                                    <x-heroicon-o-video-camera class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
+                                    <x-heroicon-m-video-camera class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
                                     {{ __('calendar.calendar.meeting_link') }}
                                 </span>
                             </label>
@@ -359,9 +353,8 @@
                                     class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
                                 >
                                 <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
-                                    <x-heroicon-o-calendar-days class="w-4 h-4 text-purple-500 dark:text-purple-400 mr-2" />
-                                    {{ __('calendar.calendar.public_holidays') }} 
-                                    <span class="text-xs text-gray-500 ml-1">({{ $countryInfo['country_name'] }})</span>
+                                    <x-heroicon-m-calendar class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
+                                    {{ $countryInfo['country_code'] }} {{ __('calendar.calendar.public_holidays') }}
                                 </span>
                             </label>
                             

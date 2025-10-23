@@ -59,6 +59,7 @@ return [
             'nov' => 'Nov',
             'dec' => 'Dis',
         ],
+        'public_holidays' => 'Cuti Umum',
     ],
     'tooltip' => [
         'close' => 'Tutup',
@@ -76,16 +77,6 @@ return [
         'high' => 'Tinggi',
         'medium' => 'Sederhana',
         'low' => 'Rendah',
-    ],
-    'holidays' => [
-        'public_holidays' => 'Cuti Umum',
-        'using_default_country' => 'Menunjukkan cuti untuk :country (lalai)',
-        'using_user_country' => 'Menunjukkan cuti untuk :country',
-        'holiday_type' => [
-            'national' => 'Kebangsaan',
-            'regional' => 'Wilayah',
-            'religious' => 'Agama',
-        ],
     ],
     'more_events' => 'lagi',
 ];
