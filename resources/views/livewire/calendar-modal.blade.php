@@ -230,6 +230,12 @@
             
         </div>
         
+        {{-- Country Info Display --}}
+        <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <x-heroicon-o-calendar-days class="w-4 h-4 text-purple-500" />
+            <span>{{ $countryInfo['message'] }}</span>
+        </div>
+        
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
 
@@ -341,6 +347,21 @@
                                 <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
                                     <x-heroicon-o-video-camera class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
                                     {{ __('calendar.calendar.meeting_link') }}
+                                </span>
+                            </label>
+                            
+                            <!-- Holiday Filter -->
+                            <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <input 
+                                    type="checkbox" 
+                                    value="holiday"
+                                    wire:model.live="typeFilter"
+                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
+                                >
+                                <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
+                                    <x-heroicon-o-calendar-days class="w-4 h-4 text-purple-500 dark:text-purple-400 mr-2" />
+                                    {{ __('calendar.calendar.public_holidays') }} 
+                                    <span class="text-xs text-gray-500 ml-1">({{ $countryInfo['country_name'] }})</span>
                                 </span>
                             </label>
                             
@@ -507,9 +528,17 @@
                                         </button>
                                     @endforeach
                                     
+                                    {{-- Holidays --}}
+                                    @foreach($day['holidays']->take(2 - $day['tasks']->take(2)->count() - $day['meetings']->take(2 - $day['tasks']->take(2)->count())->count()) as $holiday)
+                                        <div class="flex items-center px-1 py-1 text-xs rounded transition-colors w-full text-left bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50">
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-purple-500 mr-1.5 flex-shrink-0"></span>
+                                            <span class="truncate">{{ $holiday->name }}</span>
+                                        </div>
+                                    @endforeach
+                                    
                                     {{-- More Events Indicator --}}
                                     @php
-                                        $totalEvents = $day['tasks']->count() + $day['meetings']->count();
+                                        $totalEvents = $day['tasks']->count() + $day['meetings']->count() + $day['holidays']->count();
                                         $displayedEvents = min(2, $totalEvents);
                                         $remainingEvents = $totalEvents - $displayedEvents;
                                     @endphp
@@ -519,7 +548,8 @@
                                             @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                         'date' => $this->formatDateWithTranslation($day['date']),
                                                          'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
-                                                         'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values()
+                                                         'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values(),
+                                                         'holidays' => $day['holidays']->map(fn($h) => ['name' => $h->name, 'type' => $h->type, 'date' => $h->date->format('Y-m-d')])->values()
                                                     ]) }}, { x: $event.clientX, y: $event.clientY })"
                                             class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline font-medium transition-all">
                                             +{{ $remainingEvents }} {{ __('calendar.more_events') }}
@@ -640,6 +670,23 @@
                                 </div>
                             </div>
                             <p class="text-sm text-gray-900 dark:text-gray-100" x-text="meeting.title"></p>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            
+            {{-- Holidays Section --}}
+            <template x-if="popoverEvents.holidays && popoverEvents.holidays.length > 0">
+                <div class="space-y-2">
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('calendar.calendar.public_holidays') }}</p>
+                    <template x-for="holiday in popoverEvents.holidays" :key="holiday.name">
+                        <div class="px-3 py-2 rounded-lg border-l-4 bg-purple-50 dark:bg-purple-900/20 border-purple-500">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" x-text="holiday.type"></span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-900 dark:text-gray-100" x-text="holiday.name"></p>
                         </div>
                     </template>
                 </div>

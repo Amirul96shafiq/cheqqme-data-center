@@ -77,5 +77,15 @@ return [
         'medium' => 'Medium',
         'low' => 'Low',
     ],
+    'holidays' => [
+        'public_holidays' => 'Public Holidays',
+        'using_default_country' => 'Showing holidays for :country (default)',
+        'using_user_country' => 'Showing holidays for :country',
+        'holiday_type' => [
+            'national' => 'National',
+            'regional' => 'Regional',
+            'religious' => 'Religious',
+        ],
+    ],
     'more_events' => 'more',
 ];

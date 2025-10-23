@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\MeetingLink;
 use App\Models\Task;
+use App\Services\PublicHolidayService;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -20,7 +21,7 @@ class CalendarModal extends Component
         $now = now();
         $this->year = $now->year;
         $this->month = $now->month;
-        $this->typeFilter = ['task', 'meeting']; // Default: show both
+        $this->typeFilter = ['task', 'meeting', 'holiday']; // Default: show all
     }
 
     public function toggleTypeFilter(string $type): void
@@ -34,7 +35,7 @@ class CalendarModal extends Component
 
     public function clearTypeFilter(): void
     {
-        $this->typeFilter = ['task', 'meeting'];
+        $this->typeFilter = ['task', 'meeting', 'holiday'];
     }
 
     public function previousMonth(): void
@@ -161,6 +162,60 @@ class CalendarModal extends Component
         return 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50 text-teal-600 dark:text-teal-400';
     }
 
+    /**
+     * Get user's country for holiday display
+     * Reads from user settings, defaults to Malaysia (MY)
+     */
+    public function getUserCountry(): string
+    {
+        $user = auth()->user();
+
+        // Priority 1: User's explicitly set country from settings
+        if ($user->country) {
+            return $user->country;
+        }
+
+        // Priority 2: Default to Malaysia for all users without country info
+        return \App\Helpers\TimezoneHelper::getDefaultCountry(); // Returns "MY"
+    }
+
+    /**
+     * Get holidays for the current month based on user's country
+     */
+    public function getHolidaysForMonth(): \Illuminate\Support\Collection
+    {
+        $startOfMonth = Carbon::create($this->year, $this->month, 1)->startOfDay();
+        $endOfMonth = $startOfMonth->copy()->endOfMonth()->endOfDay();
+
+        return app(PublicHolidayService::class)
+            ->getHolidaysForCountry($this->getUserCountry(), $startOfMonth, $endOfMonth);
+    }
+
+    /**
+     * Get country display information for the user
+     */
+    public function getCountryDisplayInfo(): array
+    {
+        $user = auth()->user();
+        $selectedCountry = $this->getUserCountry();
+        $countryName = app(PublicHolidayService::class)->getCountryName($selectedCountry);
+
+        $detectionMethod = 'default';
+        $detectionMessage = __('calendar.holidays.using_default_country', ['country' => $countryName]);
+
+        if ($user->country) {
+            $detectionMethod = 'user_setting';
+            $detectionMessage = __('calendar.holidays.using_user_country', ['country' => $countryName]);
+        }
+
+        return [
+            'country_code' => $selectedCountry,
+            'country_name' => $countryName,
+            'method' => $detectionMethod,
+            'message' => $detectionMessage,
+        ];
+    }
+
     public function render()
     {
         // Get start and end dates for the calendar view
@@ -197,6 +252,15 @@ class CalendarModal extends Component
                 ->groupBy(fn ($meeting) => Carbon::parse($meeting->meeting_start_time)->format('Y-m-d'))
             : collect();
 
+        // Get holidays for the current month (if holiday filter is enabled)
+        $holidays = in_array('holiday', $this->typeFilter)
+            ? $this->getHolidaysForMonth()
+                ->groupBy(fn ($holiday) => $holiday->date->format('Y-m-d'))
+            : collect();
+
+        // Get country display info
+        $countryInfo = $this->getCountryDisplayInfo();
+
         // Build calendar grid
         $weeks = [];
         $currentDate = $calendarStart->copy();
@@ -212,6 +276,7 @@ class CalendarModal extends Component
                     'is_today' => $currentDate->isToday(),
                     'tasks' => $tasks->get($dateKey, collect()),
                     'meetings' => $meetings->get($dateKey, collect()),
+                    'holidays' => $holidays->get($dateKey, collect()),
                 ];
 
                 $currentDate->addDay();
@@ -222,6 +287,7 @@ class CalendarModal extends Component
         return view('livewire.calendar-modal', [
             'weeks' => $weeks,
             'monthName' => Carbon::create($this->year, $this->month, 1)->format('F Y'),
+            'countryInfo' => $countryInfo,
             'priorityTranslations' => [
                 'high' => __('calendar.priority.high'),
                 'medium' => __('calendar.priority.medium'),
