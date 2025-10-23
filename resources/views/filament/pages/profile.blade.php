@@ -7,7 +7,7 @@
     class="fi-resource-edit-record-page"
 >
     {{-- Cover Image Section --}}
-    <div class="relative h-[30vh] md:h-64 lg:h-80 xl:h-96 w-full overflow-visible rounded-2xl z-5">
+    <div class="relative h-[40vh] xl:h-96 w-full rounded-2xl overflow-visible z-5">
         <img
             src="{{ $user && $user->cover_image ? $user->getFilamentCoverImageUrl() : asset('storage/default-cover-img.png') }}"
             alt="Cover Image"
@@ -16,7 +16,7 @@
 
         {{-- Dark transparent background box --}}
         <div class="absolute inset-0 flex items-center justify-center">
-            <div class="w-full max-w-xl h-full bg-gradient-to-t from-black/35 to-transparent"></div>
+            <div class="w-full max-w-xl h-full bg-gradient-to-t from-black/35 to-transparent rounded-2xl md:rounded-none"></div>
         </div>
 
         {{-- Avatar, username, and email at center middle --}}
@@ -24,7 +24,7 @@
             <div class="text-center text-white relative z-10">
 
                 {{-- User ID and Avatar --}}
-                <div class="mb-4 mt-8 md:mt-0 relative inline-block">
+                <div class="mb-4 mt-2 md:mt-0 relative inline-block">
 
                     {{-- User ID above avatar --}}
                     <div class="mb-2 text-center">
@@ -48,7 +48,7 @@
                 </div>
 
                 {{-- User information --}}
-                <div class="space-y-3">
+                <div class="space-y-3 px-4 2xl:px-0">
 
                     {{-- Username --}}
                     <h1 class="text-lg md:text-2xl lg:text-3xl font-bold drop-shadow-lg">
