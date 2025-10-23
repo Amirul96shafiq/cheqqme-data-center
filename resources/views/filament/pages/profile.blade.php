@@ -36,8 +36,8 @@
                     <x-filament::avatar
                         :src="$user ? filament()->getUserAvatarUrl($user) : null"
                         alt="Avatar"
-                        size="w-20 h-20 md:w-24 md:h-24 lg:w-32 lg:h-32"
-                        class="mx-auto border-[3px] md:border-[6px] border-white dark:border-gray-900"
+                        size="w-20 h-20 w-32 h-32"
+                        class="mx-auto border-[6px] border-white dark:border-gray-900"
                     />
                     
                     <!-- Interactive Online Status Indicator -->
