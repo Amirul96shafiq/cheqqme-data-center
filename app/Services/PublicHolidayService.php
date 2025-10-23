@@ -37,11 +37,21 @@ class PublicHolidayService
      */
     protected function fetchHolidaysFromAPI(string $countryCode, Carbon $startDate, Carbon $endDate): Collection
     {
-        // Use Google Calendar API for all years
+        $allHolidays = collect();
+
+        // Use Google Calendar API for all years in the range
         if ($this->googleCalendarKey) {
-            $holidays = $this->fetchFromGoogleCalendar($countryCode, $startDate->year);
-            if ($holidays->isNotEmpty()) {
-                return $holidays->filter(function ($holiday) use ($startDate, $endDate) {
+            $startYear = $startDate->year;
+            $endYear = $endDate->year;
+
+            // Fetch holidays for each year in the range
+            for ($year = $startYear; $year <= $endYear; $year++) {
+                $yearHolidays = $this->fetchFromGoogleCalendar($countryCode, $year);
+                $allHolidays = $allHolidays->merge($yearHolidays);
+            }
+
+            if ($allHolidays->isNotEmpty()) {
+                return $allHolidays->filter(function ($holiday) use ($startDate, $endDate) {
                     return $holiday->date->between($startDate, $endDate);
                 });
             }
