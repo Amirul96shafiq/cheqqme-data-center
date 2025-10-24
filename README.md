@@ -87,6 +87,7 @@ It improves discoverability, reduces context switching, and lays groundwork for 
 -   **OpenAI Chatbot** with conversation memory, backup/restore, custom CheQQme Open AI persona
 -   **MCP Servers** (Node.js API + Playwright browser automation)
 -   **Git-based Changelog** with automatic commit parsing and pagination
+-   **What's New System** with Git integration, Gravatar avatars, expandable descriptions
 
 ### **Media & Entertainment**
 
