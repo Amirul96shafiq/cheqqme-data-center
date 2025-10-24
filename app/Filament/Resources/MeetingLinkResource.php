@@ -135,16 +135,6 @@ class MeetingLinkResource extends Resource
                                                 $component->state($generatedTitle);
                                             }
                                         })
-                                        ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
-                                            $platform = $get('meeting_platform');
-                                            $startTime = $get('meeting_start_time');
-                                            $duration = $get('meeting_duration');
-
-                                            if ($platform && $startTime && $duration) {
-                                                $generatedTitle = static::generateMeetingTitle($platform, $startTime, $duration);
-                                                $set('title', $generatedTitle);
-                                            }
-                                        })
                                         ->helperText(__('meetinglink.form.title_helper'))
                                         ->columnSpanFull(),
 
