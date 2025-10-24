@@ -1,6 +1,9 @@
 <x-filament-panels::page>
     @vite('resources/js/meeting-links.js')
     
+    {{-- Viewers banner for Meeting Link edit --}}
+    <x-viewers-banner channel="meeting-link-viewers" :id="$record->getKey()" />
+    
     @capture($form)
         <x-filament-panels::form
             id="form"

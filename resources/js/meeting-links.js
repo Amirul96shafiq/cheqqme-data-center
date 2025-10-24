@@ -1,3 +1,8 @@
+import { initViewersBanners } from "./task-viewers.js";
+
+// Initialize viewers banners for meeting link pages
+initViewersBanners();
+
 // Listen for copy-to-clipboard event
 document.addEventListener("livewire:init", () => {
     Livewire.on("copy-to-clipboard", (event) => {

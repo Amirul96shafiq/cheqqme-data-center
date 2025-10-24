@@ -109,6 +109,16 @@ Broadcast::channel('important-url-viewers.{urlId}', function (User $user, int $u
     ];
 });
 
+// Presence channel for users viewing a specific meeting link edit page
+Broadcast::channel('meeting-link-viewers.{meetingLinkId}', function (User $user, int $meetingLinkId) {
+    return [
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'avatar' => $user->getFilamentAvatarUrl(),
+    ];
+});
+
 // Presence channel for users viewing a specific phone number edit page
 Broadcast::channel('phone-number-viewers.{phoneId}', function (User $user, int $phoneId) {
     return [
