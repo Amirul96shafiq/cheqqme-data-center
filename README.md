@@ -16,6 +16,7 @@
 ### Getting Started
 
 -   [Overview](#overview)
+-   [TL;DR - Features Overview](#tldr---features-overview)
 -   [Core Objectives](#core-objectives)
 -   [Tech Stack](#tech-stack)
 -   [Feature Roadmap](#feature-roadmap)
@@ -67,6 +68,66 @@
 -   Action Tasks (Kanban style board)
 
 It improves discoverability, reduces context switching, and lays groundwork for future AI-assisted search and MCP-powered automation.
+
+---
+
+## TL;DR - Features Overview
+
+**CheQQme Data Center** is a comprehensive internal operations hub with 15+ major features:
+
+### **Core Platform**
+
+-   **Laravel 12 + Filament 3** admin panel with real-time Livewire components
+-   **SQLite database** with 16 models, 100+ migrations, comprehensive CRUD operations
+-   **Multi-language support** (English/Malay) with internationalization (Bahasa coming soon!)
+-   **Activity logging** with Spatie + Filament timeline views
+
+### **AI & Automation**
+
+-   **OpenAI Chatbot** with conversation memory, backup/restore, custom CheQQme Open AI persona
+-   **MCP Servers** (Node.js API + Playwright browser automation)
+-   **Git-based Changelog** with automatic commit parsing and pagination
+
+### **Media & Entertainment**
+
+-   **Spotify Integration** with Web Playback SDK, OAuth2, real-time "Now Playing" widgets
+-   **Image Optimization** with Intervention Image (thumbnails, medium images)
+
+### **Communication & Collaboration**
+
+-   **Advanced Comments System** with @mentions, emoji reactions, threaded replies, focus mode
+-   **Online Status System** with real-time presence (Online/Away/Do Not Distrub (DND)/Invisible)
+-   **Meeting Links Management** (Google Meet + Zoom API integration)
+-   **Custom User Profile Menu** with badges, Spotify widget, service connections
+
+### **Scheduling & Planning**
+
+-   **Event Calendar System** with multi-type events (Tasks, Meetings, Holidays, Birthdays)
+-   **Action Board (Kanban)** with Flowforge plugin, filtering, attachments, 300-task optimization
+-   **Weather System** with OpenWeatherMap API, smart location detection
+
+### **Development & Operations**
+
+-   **Comprehensive CRUD** for 9 resources (Tasks, Meeting Links, Trello Boards, and much more!)
+-   **OAuth2 / API Integrations** (Spotify, Google Calendar, Zoom, and many more!)
+-   **Real-time Features** with Laravel Reverb WebSocket communication
+-   **Testing Suite** with Feature/Livewire/Unit/Integration tests
+
+### **Data Management**
+
+-   **Entity Management** with relationships, filtering, search, pagination
+-   **File Storage** with local disk optimization (S3 planned)
+-   **Database Notifications** with 5-second polling fallback
+-   **Soft Deletes** with restoration capabilities
+
+### **Developer Experience**
+
+-   **Environment Template** with comprehensive `.env.example`
+-   **Hot Reload** with Vite development server
+-   **Code Quality** with Laravel Pint formatting
+-   **Documentation** with 30+ detailed guides
+
+---
 
 ## Core Objectives
 
