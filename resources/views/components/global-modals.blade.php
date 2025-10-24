@@ -821,70 +821,72 @@
         </div>
     </div>
 
-    <!-- Calendar Modal -->
-    <div x-show="modals.calendar.show"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
-        
-        <!-- Backdrop -->
-        <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md" 
-             @click="closeModal('calendar')" 
-             aria-hidden="true"></div>
-        
-        <!-- Modal -->
-        <div role="dialog" 
-             aria-modal="true" 
-             aria-labelledby="calendar-heading" 
-             class="relative mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900/65 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 pointer-events-auto overflow-hidden"
-             style="width: calc(100vw - 60px); height: calc(100vh - 60px);">
+    <!-- Calendar Modal - Only show for authenticated users -->
+    @auth
+        <div x-show="modals.calendar.show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
             
-            <!-- Header -->
-            <div class="flex items-center justify-between px-6 pt-6 pb-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400">
-                        <x-heroicon-o-calendar-days class="h-5 w-5" />
+            <!-- Backdrop -->
+            <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md" 
+                @click="closeModal('calendar')" 
+                aria-hidden="true"></div>
+            
+            <!-- Modal -->
+            <div role="dialog" 
+                aria-modal="true" 
+                aria-labelledby="calendar-heading" 
+                class="relative mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900/65 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 pointer-events-auto overflow-hidden"
+                style="width: calc(100vw - 60px); height: calc(100vh - 60px);">
+                
+                <!-- Header -->
+                <div class="flex items-center justify-between px-6 pt-6 pb-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400">
+                            <x-heroicon-o-calendar-days class="h-5 w-5" />
+                        </div>
+                        <div>
+                            <h2 id="calendar-heading" class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                {{ __('calendar.calendar.title') }}
+                            </h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                {{ __('calendar.calendar.subtitle') }}
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 id="calendar-heading" class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            {{ __('calendar.calendar.title') }}
-                        </h2>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                            {{ __('calendar.calendar.subtitle') }}
-                        </p>
+                    
+                    <div class="flex items-center gap-3">
+                        
+                        <!-- Close Button -->
+                        <x-tooltip :text="__('calendar.tooltip.close')" position="left">
+                            <button type="button" 
+                                    @click="closeModal('calendar')" 
+                                    class="inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900" 
+                                    aria-label="Close">
+                                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </x-tooltip>
+
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-3">
-                    
-                    <!-- Close Button -->
-                    <x-tooltip :text="__('calendar.tooltip.close')" position="left">
-                        <button type="button" 
-                                @click="closeModal('calendar')" 
-                                class="inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900" 
-                                aria-label="Close">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"/>
-                                <line x1="6" y1="6" x2="18" y2="18"/>
-                            </svg>
-                        </button>
-                    </x-tooltip>
-
+                <!-- Content -->
+                <div class="overflow-hidden px-6 py-4 flex-1">
+                    @livewire('calendar-modal')
                 </div>
-            </div>
-            
-            <!-- Content -->
-            <div class="overflow-hidden px-6 py-4 flex-1">
-                @livewire('calendar-modal')
+
             </div>
 
         </div>
-
-    </div>
+    @endauth
     
 </div>
 
