@@ -10,8 +10,9 @@ return [
 
     'form' => [
         'meeting_information' => 'Maklumat Mesyuarat',
+        'preview_meeting_title' => 'Pratonton Tajuk Mesyuarat',
         'title' => 'Tajuk Mesyuarat',
-        'title_helper' => 'Dijana secara automatik berdasarkan platform, tarikh, dan tempoh',
+        'title_helper' => 'Dijana secara automatik berdasarkan tajuk mesyuarat, platform, tarikh, dan tempoh',
         'meeting_platform' => 'Platform',
         'meeting_start_time' => 'Masa Mula Mesyuarat',
         'meeting_duration' => 'Tempoh Mesyuarat',

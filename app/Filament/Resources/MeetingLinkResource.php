@@ -80,6 +80,67 @@ class MeetingLinkResource extends Resource
         return "CheQQMeeting - {$platform} - {$formattedDate} - {$durationText}";
     }
 
+    public static function generatePreviewTitle(Forms\Get $get): string
+    {
+        $title = $get('title') ?: 'Meeting Title';
+        $platform = $get('meeting_platform') ?: 'Platform';
+        $startTime = $get('meeting_start_time');
+        $duration = $get('meeting_duration');
+
+        // Format the date/time
+        $formattedDate = 'Date & Time';
+        if ($startTime) {
+            try {
+                $date = \Carbon\Carbon::parse($startTime);
+                $formattedDate = $date->format('j/n/y - h:i A');
+            } catch (\Exception $e) {
+                $formattedDate = 'Invalid Date';
+            }
+        }
+
+        // Format the duration
+        $durationText = 'Duration';
+        if ($duration) {
+            $durationText = match ($duration) {
+                30 => '30 minutes',
+                60 => '1 hour',
+                90 => '1 hour 30 minutes',
+                120 => '2 hours',
+                default => $duration.' minutes'
+            };
+        }
+
+        return "{$title} - {$platform} - {$formattedDate} - {$durationText}";
+    }
+
+    public static function generatePreviewTitleFromValues(string $title, string $platform, string $startTime, int $duration): string
+    {
+        // Format the date/time
+        $formattedDate = 'Date & Time';
+        if ($startTime) {
+            try {
+                $date = \Carbon\Carbon::parse($startTime);
+                $formattedDate = $date->format('j/n/y - h:i A');
+            } catch (\Exception $e) {
+                $formattedDate = 'Invalid Date';
+            }
+        }
+
+        // Format the duration
+        $durationText = 'Duration';
+        if ($duration) {
+            $durationText = match ($duration) {
+                30 => '30 minutes',
+                60 => '1 hour',
+                90 => '1 hour 30 minutes',
+                120 => '2 hours',
+                default => $duration.' minutes'
+            };
+        }
+
+        return "{$title} - {$platform} - {$formattedDate} - {$durationText}";
+    }
+
     protected static function getMeetingTextForCopy($record): string
     {
         $meetingUrl = $record->meeting_url ?? 'TBD';
@@ -117,25 +178,39 @@ class MeetingLinkResource extends Resource
                             // -----------------------------
                             // Meeting Information Section (60% - 3 columns)
                             // -----------------------------
-                            Forms\Components\Section::make(__('meetinglink.form.meeting_information'))
+                            Forms\Components\Section::make(__('meetinglink.form.meeting_settings'))
                                 ->schema([
+                                    Forms\Components\TextInput::make('preview_meeting_title')
+                                        ->label(__('meetinglink.form.preview_meeting_title'))
+                                        ->disabled()
+                                        ->dehydrated(false)
+                                        ->live()
+                                        ->afterStateHydrated(function (Forms\Components\TextInput $component, Forms\Get $get) {
+                                            // Ensure we have default values for preview
+                                            $title = $get('title') ?: 'CheQQMeeting';
+                                            $platform = $get('meeting_platform') ?: 'Google Meet';
+                                            $startTime = $get('meeting_start_time') ?: now()->format('Y-m-d H:i:s');
+                                            $duration = $get('meeting_duration') ?: 60;
+
+                                            // Generate preview with current/default values
+                                            $preview = static::generatePreviewTitleFromValues($title, $platform, $startTime, $duration);
+                                            $component->state($preview);
+                                        })
+                                        ->afterStateUpdated(function (Forms\Components\TextInput $component, Forms\Get $get) {
+                                            $component->state(static::generatePreviewTitle($get));
+                                        })
+                                        ->helperText(__('meetinglink.form.title_helper'))
+                                        ->columnSpanFull(),
+
                                     Forms\Components\TextInput::make('title')
                                         ->label(__('meetinglink.form.title'))
                                         ->required()
                                         ->maxLength(255)
                                         ->live(onBlur: true)
-                                        ->afterStateHydrated(function (Forms\Components\TextInput $component, Forms\Get $get, Forms\Set $set) {
-                                            // Generate title on form load if title is empty
-                                            if (empty($component->getState())) {
-                                                $platform = $get('meeting_platform') ?: 'Google Meet';
-                                                $startTime = $get('meeting_start_time') ?: now()->format('Y-m-d H:i:s');
-                                                $duration = $get('meeting_duration') ?: 60;
-
-                                                $generatedTitle = static::generateMeetingTitle($platform, $startTime, $duration);
-                                                $component->state($generatedTitle);
-                                            }
+                                        ->default('CheQQMeeting')
+                                        ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                                            $set('preview_meeting_title', static::generatePreviewTitle($get));
                                         })
-                                        ->helperText(__('meetinglink.form.title_helper'))
                                         ->columnSpanFull(),
 
                                     Forms\Components\Grid::make(3)
@@ -152,14 +227,7 @@ class MeetingLinkResource extends Resource
                                                 ->searchable()
                                                 ->default('Google Meet')
                                                 ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
-                                                    $platform = $get('meeting_platform');
-                                                    $startTime = $get('meeting_start_time');
-                                                    $duration = $get('meeting_duration');
-
-                                                    if ($platform && $startTime && $duration) {
-                                                        $generatedTitle = static::generateMeetingTitle($platform, $startTime, $duration);
-                                                        $set('title', $generatedTitle);
-                                                    }
+                                                    $set('preview_meeting_title', static::generatePreviewTitle($get));
                                                 })
                                                 ->columnSpan(1),
 
@@ -167,20 +235,13 @@ class MeetingLinkResource extends Resource
                                                 ->label(__('meetinglink.form.meeting_start_time'))
                                                 ->seconds(false)
                                                 ->native(false)
-                                                ->minutesStep(5)
                                                 ->displayFormat('j/n/y, h:i A')
                                                 ->default(now())
                                                 ->required()
                                                 ->live()
+                                                ->extraInputAttributes(['formnovalidate' => true])
                                                 ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
-                                                    $platform = $get('meeting_platform');
-                                                    $startTime = $get('meeting_start_time');
-                                                    $duration = $get('meeting_duration');
-
-                                                    if ($platform && $startTime && $duration) {
-                                                        $generatedTitle = static::generateMeetingTitle($platform, $startTime, $duration);
-                                                        $set('title', $generatedTitle);
-                                                    }
+                                                    $set('preview_meeting_title', static::generatePreviewTitle($get));
                                                 })
                                                 ->visible(fn (Forms\Get $get) => in_array($get('meeting_platform'), ['Google Meet', 'Zoom Meeting']))
                                                 ->columnSpan(1),
@@ -198,19 +259,30 @@ class MeetingLinkResource extends Resource
                                                 ->required()
                                                 ->live()
                                                 ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
-                                                    $platform = $get('meeting_platform');
-                                                    $startTime = $get('meeting_start_time');
-                                                    $duration = $get('meeting_duration');
-
-                                                    if ($platform && $startTime && $duration) {
-                                                        $generatedTitle = static::generateMeetingTitle($platform, $startTime, $duration);
-                                                        $set('title', $generatedTitle);
-                                                    }
+                                                    $set('preview_meeting_title', static::generatePreviewTitle($get));
                                                 })
                                                 ->visible(fn (Forms\Get $get) => in_array($get('meeting_platform'), ['Google Meet', 'Zoom Meeting']))
                                                 ->columnSpan(1),
                                         ])
                                         ->columns(3),
+
+                                    Forms\Components\Select::make('user_ids')
+                                        ->label(__('meetinglink.form.users'))
+                                        ->options(function () {
+                                            return \App\Models\User::withTrashed()
+                                                ->orderBy('username')
+                                                ->get()
+                                                ->mapWithKeys(fn ($u) => [
+                                                    $u->id => ($u->username ?: 'User #'.$u->id).($u->deleted_at ? ' (deleted)' : ''),
+                                                ])
+                                                ->toArray();
+                                        })
+                                        ->searchable()
+                                        ->preload()
+                                        ->native(false)
+                                        ->nullable()
+                                        ->multiple()
+                                        ->columnSpanFull(),
 
                                     Forms\Components\Grid::make(2)
                                         ->schema([
@@ -489,26 +561,8 @@ class MeetingLinkResource extends Resource
                             // -----------------------------
                             // Meeting Settings Section (40% - 2 columns)
                             // -----------------------------
-                            Forms\Components\Section::make(__('meetinglink.form.meeting_settings'))
+                            Forms\Components\Section::make(__('meetinglink.form.meeting_information'))
                                 ->schema([
-                                    Forms\Components\Select::make('user_ids')
-                                        ->label(__('meetinglink.form.users'))
-                                        ->options(function () {
-                                            return \App\Models\User::withTrashed()
-                                                ->orderBy('username')
-                                                ->get()
-                                                ->mapWithKeys(fn ($u) => [
-                                                    $u->id => ($u->username ?: 'User #'.$u->id).($u->deleted_at ? ' (deleted)' : ''),
-                                                ])
-                                                ->toArray();
-                                        })
-                                        ->searchable()
-                                        ->preload()
-                                        ->native(false)
-                                        ->nullable()
-                                        ->multiple()
-                                        ->columnSpanFull(),
-
                                     Forms\Components\TextInput::make('meeting_id')
                                         ->label(__('meetinglink.form.meeting_id'))
                                         ->disabled()
@@ -526,7 +580,6 @@ class MeetingLinkResource extends Resource
 
                                     Forms\Components\Section::make(__('meetinglink.form.google_meet_guide'))
                                         ->collapsible()
-                                        ->collapsed()
                                         ->schema([
                                             Forms\Components\Placeholder::make('google_meet_guide_content')
                                                 ->label('')
@@ -555,7 +608,6 @@ class MeetingLinkResource extends Resource
 
                                     Forms\Components\Section::make(__('meetinglink.form.zoom_meeting_guide'))
                                         ->collapsible()
-                                        ->collapsed()
                                         ->schema([
                                             Forms\Components\Placeholder::make('zoom_meeting_guide_content')
                                                 ->label('')
@@ -921,8 +973,19 @@ class MeetingLinkResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->label(__('meetinglink.table.title'))
                     ->searchable()
-                    ->limit(30)
-                    ->tooltip(fn ($record) => $record->title),
+                    ->limit(50)
+                    ->formatStateUsing(fn ($record) => static::generatePreviewTitleFromValues(
+                        $record->title ?: 'CheQQMeeting',
+                        $record->meeting_platform ?: 'Google Meet',
+                        $record->meeting_start_time ? $record->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
+                        $record->meeting_duration ?: 60
+                    ))
+                    ->tooltip(fn ($record) => static::generatePreviewTitleFromValues(
+                        $record->title ?: 'CheQQMeeting',
+                        $record->meeting_platform ?: 'Google Meet',
+                        $record->meeting_start_time ? $record->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
+                        $record->meeting_duration ?: 60
+                    )),
 
                 Tables\Columns\TextColumn::make('meeting_platform')
                     ->label(__('meetinglink.table.platform'))

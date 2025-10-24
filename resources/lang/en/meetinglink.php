@@ -10,8 +10,9 @@ return [
 
     'form' => [
         'meeting_information' => 'Meeting Information',
+        'preview_meeting_title' => 'Preview Meeting Title',
         'title' => 'Meeting Title',
-        'title_helper' => 'Auto-generated based on platform, date, and duration',
+        'title_helper' => 'Auto-generated based on meeting title, platform, date, and duration',
         'meeting_platform' => 'Platform',
         'meeting_start_time' => 'Meeting Start Time',
         'meeting_duration' => 'Meeting Duration',
