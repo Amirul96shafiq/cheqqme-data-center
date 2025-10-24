@@ -529,12 +529,12 @@
                                                 @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                             'date' => $this->formatDateWithTranslation($day['date']),
                                                             'tasks' => [],
-                                                            'meetings' => [['id' => $meeting->id, 'title' => $meeting->title, 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting', 'is_invited' => $isInvited]]
+                                                            'meetings' => [['id' => $meeting->id, 'title' => \App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($meeting->title ?: 'CheQQMeeting', $meeting->meeting_platform ?: 'Google Meet', $meeting->meeting_start_time ? $meeting->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $meeting->meeting_duration ?: 60), 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting', 'is_invited' => $isInvited]]
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
                                                 class="flex items-center px-1 py-1.5 text-xs rounded transition-colors w-full text-left {{ $this->getMeetingClasses($meeting, $isInvited) }}"
-                                                title="{{ $meeting->title }} - {{ $meeting->meeting_start_time->format('g:i A') }}">
+                                                title="{{ \App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($meeting->title ?: 'CheQQMeeting', $meeting->meeting_platform ?: 'Google Meet', $meeting->meeting_start_time ? $meeting->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $meeting->meeting_duration ?: 60) }}">
                                             <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5 flex-shrink-0"></span>
-                                            <span class="truncate">{{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit($meeting->title, 25) }}</span>
+                                            <span class="truncate">{{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit(\App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($meeting->title ?: 'CheQQMeeting', $meeting->meeting_platform ?: 'Google Meet', $meeting->meeting_start_time ? $meeting->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $meeting->meeting_duration ?: 60), 25) }}</span>
                                         </button>
                                     @endforeach
                                     
@@ -587,7 +587,7 @@
                                             @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                         'date' => $this->formatDateWithTranslation($day['date']),
                                                          'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
-                                                         'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => $m->title, 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values(),
+                                                         'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => \App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($m->title ?: 'CheQQMeeting', $m->meeting_platform ?: 'Google Meet', $m->meeting_start_time ? $m->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $m->meeting_duration ?: 60), 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values(),
                                                          'holidays' => $day['holidays']->map(fn($h) => ['name' => $h->name, 'type' => $h->type, 'date' => $h->date->format('Y-m-d'), 'country_code' => $h->country_code])->values(),
                                                          'birthdays' => $day['birthdays']->map(fn($b) => ['id' => $b->id, 'name' => $b->name, 'short_name' => $b->short_name, 'age' => $b->age, 'is_current_user' => $b->is_current_user, 'hooray_text' => __('calendar.calendar.hooray')])->values()
                                                     ]) }}, { x: $event.clientX, y: $event.clientY })"
