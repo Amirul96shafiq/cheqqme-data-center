@@ -21,6 +21,13 @@ export default {
         "text-danger-600",
         "text-danger-500",
         "hover:text-danger-600",
+        // Warning color classes for viewers banner (using amber colors)
+        "bg-amber-50",
+        "bg-amber-500",
+        "text-amber-700",
+        "text-amber-300",
+        "ring-amber-200",
+        "ring-amber-400",
         // Legacy direct red usage fallback
         "bg-red-50",
         "bg-red-100",

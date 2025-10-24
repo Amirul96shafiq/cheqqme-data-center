@@ -1,7 +1,7 @@
 <div
     id="task-viewers-banner"
     data-task-id="{{ (int) ($taskId ?? ($record->id ?? $record->getKey() ?? 0)) }}"
-    class="mb-3 hidden items-center gap-2 rounded-md bg-warning-50 px-3 py-2 text-warning-700 ring-1 ring-warning-200 dark:bg-warning-500/10 dark:text-warning-300 dark:ring-warning-400/20"
+    class="mb-3 hidden items-center gap-2 rounded-md bg-amber-50 px-3 py-2 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:ring-amber-400/20"
 >
     <div class="flex flex-wrap items-center gap-2 text-sm">
         <span class="font-medium">Currently viewing:</span>
