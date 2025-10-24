@@ -303,7 +303,8 @@ class UserResource extends Resource
 
                 TextColumn::make('created_at')
                     ->label(__('user.table.created_at'))
-                    ->dateTime('j/n/y, h:i A')
+                    ->since()
+                    ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
                     ->sortable(),
 
                 // TextColumn::make('updated_at')

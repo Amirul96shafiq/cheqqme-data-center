@@ -78,7 +78,8 @@ class ImportantUrlsRelationManager extends RelationManager
                     }),
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))
-                    ->dateTime('j/n/y, h:i A')
+                    ->since()
+                    ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
                     ->sortable(),
                 TextColumn::make('updated_at')
                     ->label(__('importanturl.table.updated_at_by'))

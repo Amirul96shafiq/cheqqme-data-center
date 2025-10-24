@@ -997,7 +997,8 @@ class MeetingLinkResource extends Resource
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('meetinglink.table.created_at'))
-                    ->dateTime('j/n/y, h:i A')
+                    ->since()
+                    ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\ViewColumn::make('updated_by')

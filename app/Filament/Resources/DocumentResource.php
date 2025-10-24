@@ -383,7 +383,9 @@ class DocumentResource extends Resource
                     ->toggleable(),
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))
-                    ->dateTime('j/n/y, h:i A')->sortable(),
+                    ->since()
+                    ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
+                    ->sortable(),
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('document.table.updated_at_by'))
                     ->view('filament.resources.document-resource.updated-by-column')

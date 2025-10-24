@@ -102,7 +102,9 @@ class DocumentsRelationManager extends RelationManager
                     }),
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))
-                    ->dateTime('j/n/y, h:i A')->sortable(),
+                    ->since()
+                    ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->label(__('document.table.updated_at_by'))
                     ->formatStateUsing(function ($state, $record) {

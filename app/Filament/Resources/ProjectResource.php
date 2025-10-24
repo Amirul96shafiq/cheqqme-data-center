@@ -332,7 +332,8 @@ class ProjectResource extends Resource
                     ->toggleable(),
                 TextColumn::make(__('created_at'))
                     ->label(__('project.table.created_at'))
-                    ->dateTime('j/n/y, h:i A')
+                    ->since()
+                    ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
                     ->sortable(),
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('project.table.updated_at_by'))
