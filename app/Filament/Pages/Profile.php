@@ -12,6 +12,8 @@ use Filament\Pages\Auth\EditProfile;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
@@ -245,6 +247,9 @@ class Profile extends EditProfile
                                         if ($oldCoverImage && Storage::exists($oldCoverImage)) {
                                             Storage::delete($oldCoverImage);
                                         }
+
+                                        // Auto-resize image to 1600px width with auto height
+                                        $this->resizeCoverImage($state);
                                     })
                                     ->uploadingMessage(__('profile.form.uploading'))
                                     ->uploadProgressIndicatorPosition('right')
@@ -1166,5 +1171,37 @@ class Profile extends EditProfile
                 }
             }, 1000);
         ');
+    }
+
+    /**
+     * Resize cover image to 1600px width with auto height maintaining aspect ratio
+     */
+    private function resizeCoverImage(TemporaryUploadedFile $file): void
+    {
+        try {
+            // Create image manager instance
+            $manager = new ImageManager(new Driver);
+
+            // Read the uploaded file
+            $image = $manager->read($file->getRealPath());
+
+            // Get current dimensions
+            $currentWidth = $image->width();
+            $currentHeight = $image->height();
+
+            // Calculate new height maintaining aspect ratio
+            $newWidth = 1600;
+            $newHeight = (int) round(($currentHeight / $currentWidth) * $newWidth);
+
+            // Resize image to 1600px width with auto height
+            $image->resize($newWidth, $newHeight);
+
+            // Save the resized image back to the temporary file
+            $image->save($file->getRealPath(), 90); // 90% quality
+
+        } catch (\Exception $e) {
+            // Log error but don't break the upload process
+            \Log::error('Failed to resize cover image: '.$e->getMessage());
+        }
     }
 }
