@@ -60,14 +60,15 @@
 
 ## Overview
 
-**CheQQme Data Center** is an internal knowledge & operations hub built with Laravel + Filament, now featuring MCP server integration for AI/semantic search. It centralizes:
+**CheQQme Data Center** is a comprehensive internal operations hub built with Laravel 12 + Filament 3, featuring real-time collaboration, AI-powered assistance, and multi-platform integrations. It centralizes:
 
--   Important / frequently used URLs (SharePoint, tools, internal dashboards)
--   Client & project records
--   Internal documents & reference files
--   Action Tasks (Kanban style board)
+-   **Knowledge Management**: Client records, project documentation, important URLs, and contact directories
+-   **Task Management**: Advanced Kanban board with filtering, attachments, and real-time comments with @mentions
+-   **Communication**: Online status system, meeting links (Google Meet/Zoom), and threaded discussions
+-   **AI Integration**: OpenAI chatbot with conversation memory and MCP server automation
+-   **Media & Productivity**: Spotify integration, weather system, calendar events, and changelog tracking
 
-It improves discoverability, reduces context switching, and lays groundwork for future AI-assisted search and MCP-powered automation.
+The platform improves team collaboration, reduces context switching, and provides intelligent automation through AI and browser automation capabilities.
 
 ---
 
