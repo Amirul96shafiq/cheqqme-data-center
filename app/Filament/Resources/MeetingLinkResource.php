@@ -64,22 +64,6 @@ class MeetingLinkResource extends Resource
         ];
     }
 
-    protected static function generateMeetingTitle(string $platform, string $startTime, int $duration): string
-    {
-        $date = \Carbon\Carbon::parse($startTime);
-        $formattedDate = $date->format('j/n/y - h:i A');
-
-        $durationText = match ($duration) {
-            30 => '30 minutes',
-            60 => '1 hour',
-            90 => '1 hour 30 minutes',
-            120 => '2 hours',
-            default => $duration.' minutes'
-        };
-
-        return "CheQQMeeting - {$platform} - {$formattedDate} - {$durationText}";
-    }
-
     public static function generatePreviewTitle(Forms\Get $get): string
     {
         $title = $get('title') ?: 'Meeting Title';
