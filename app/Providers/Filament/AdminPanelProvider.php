@@ -177,6 +177,16 @@ class AdminPanelProvider extends PanelProvider
             ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
+            // ->spa() // SPA mode disabled - rendering issues with complex components
+            // ->spaUrlExceptions([
+            //     // Exclude OAuth callback routes from SPA navigation
+            //     '*/auth/google/*',
+            //     '*/auth/spotify/*',
+            //     '*/auth/zoom/*',
+            //     // Exclude login/logout routes
+            //     '*/admin/login',
+            //     '*/logout',
+            // ])
             ->favicon(asset('images/favicon.png'))
             ->brandLogo($currentLogo)
             ->darkModeBrandLogo($currentDarkLogo)
@@ -211,6 +221,8 @@ class AdminPanelProvider extends PanelProvider
                 'resources/js/chatbot.js',
                 'resources/js/app-custom.js',
                 'resources/js/drag-drop-upload.js',
+                'resources/js/service-worker-register.js',
+                'resources/js/spa-loading-indicator.js',
             ])
             ->pages([
                 \App\Filament\Pages\Dashboard::class,
@@ -342,9 +354,26 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 function () {
-                    // Preload Spotify SDK for faster initialization
-                    return '<link rel="preload" href="https://sdk.scdn.co/spotify-player.js" as="script" crossorigin="anonymous">'.
-                           '<script src="https://sdk.scdn.co/spotify-player.js" async crossorigin="anonymous"></script>';
+                    // Performance optimizations: Resource hints for external domains
+                    $resourceHints = [
+                        // DNS prefetch for external domains
+                        '<link rel="dns-prefetch" href="https://sdk.scdn.co">',
+                        '<link rel="dns-prefetch" href="https://fonts.googleapis.com">',
+                        '<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">',
+
+                        // Preconnect for critical external resources
+                        '<link rel="preconnect" href="https://sdk.scdn.co" crossorigin>',
+
+                        // Preload critical Spotify SDK
+                        '<link rel="preload" href="https://sdk.scdn.co/spotify-player.js" as="script" crossorigin="anonymous">',
+                        '<script src="https://sdk.scdn.co/spotify-player.js" async crossorigin="anonymous"></script>',
+
+                        // Prefetch fonts for faster subsequent page loads
+                        '<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>',
+                        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
+                    ];
+
+                    return implode("\n", $resourceHints);
                 },
             )
             ->renderHook(

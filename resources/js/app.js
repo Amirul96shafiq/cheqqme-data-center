@@ -1,3 +1,4 @@
+// Import all modules
 import "./bootstrap";
 import "./app-custom";
 import "./presence-status";

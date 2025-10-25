@@ -620,7 +620,8 @@ window.toggleDataManagementVideo = function() {
 };
 
 // Weather API Integration Functions
-const weatherIconMap = {
+// Use window object to avoid redeclaration errors during SPA navigation
+window.weatherIconMap = window.weatherIconMap || {
     'sunny': { icon: 'heroicon-o-sun', color: 'text-primary-500' },
     'clear': { icon: 'heroicon-o-sun', color: 'text-primary-500' },
     'cloud': { icon: 'heroicon-o-cloud', color: 'text-gray-500' },
@@ -645,7 +646,7 @@ function getWeatherIcon(condition) {
     
     const conditionLower = condition.toLowerCase();
     
-    for (const [key, value] of Object.entries(weatherIconMap)) {
+    for (const [key, value] of Object.entries(window.weatherIconMap)) {
         if (conditionLower.includes(key)) {
             return value;
         }

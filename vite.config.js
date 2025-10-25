@@ -22,6 +22,8 @@ export default defineConfig({
                 "resources/js/drag-to-scroll.js",
                 "resources/js/meeting-links.js",
                 "resources/js/smart-tooltip.js",
+                "resources/js/service-worker-register.js",
+                "resources/js/spa-loading-indicator.js",
             ],
             refresh: true,
         }),
@@ -36,16 +38,20 @@ export default defineConfig({
             output: {
                 manualChunks: (id) => {
                     if (id.includes("node_modules")) {
+                        // Core dependencies - loaded on every page
                         if (
                             id.includes("axios") ||
-                            id.includes("laravel-echo")
+                            id.includes("laravel-echo") ||
+                            id.includes("pusher-js")
                         ) {
-                            return "vendor";
+                            return "vendor-core";
                         }
+                        // UI libraries - larger, less frequently used
                         if (id.includes("emoji-picker-element")) {
-                            return "ui";
+                            return "vendor-ui";
                         }
-                        return "vendor";
+                        // Alpine.js and Livewire are already bundled by Filament
+                        return "vendor-core";
                     }
                 },
                 assetFileNames: (assetInfo) => {
@@ -63,6 +69,10 @@ export default defineConfig({
         cssCodeSplit: true,
         sourcemap: false,
         minify: "esbuild",
+        // Enable better tree-shaking
+        target: "es2020",
+        // Set chunk size limits for better caching
+        chunkSizeWarningLimit: 600,
     },
     optimizeDeps: {
         include: ["axios", "laravel-echo", "emoji-picker-element"],

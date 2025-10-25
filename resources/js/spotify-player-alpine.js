@@ -39,9 +39,6 @@ document.addEventListener("alpine:init", () => {
                 // Listen to Spotify Web Playback SDK events for real-time updates
                 this.setupSDKEventListeners();
 
-                // Detect user actions for instant UI updates
-                this.detectUserActions();
-
                 // Start progress tracking (SDK events handle track updates)
                 this.startProgressTracking();
 

@@ -51,8 +51,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/user/auto-invisible', [UserStatusController::class, 'setInvisibleDueToTabBlur'])->name('api.user.auto-invisible');
     Route::post('/user/restore-auto-status', [UserStatusController::class, 'restoreFromAutoStatus'])->name('api.user.restore-auto-status');
 
-    // Multiple user statuses endpoint
-    Route::post('/user/statuses', [UserStatusController::class, 'getMultipleUserStatuses'])->name('api.user.statuses');
+    // Multiple user statuses endpoint (batch request)
+    Route::post('/user/statuses', [UserStatusController::class, 'getMultipleUserStatuses'])->name('api.user.statuses.batch');
 
     // Playwright MCP integration endpoints
     Route::prefix('playwright')->group(function () {

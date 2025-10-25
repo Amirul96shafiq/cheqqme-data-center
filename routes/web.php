@@ -190,7 +190,7 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
     return back()->withErrors([
         'email' => trans('auth.locked_out'),
     ])->onlyInput('email');
-})->name('admin.login');
+})->middleware('web');
 
 // Google OAuth routes
 Route::get('/auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
