@@ -1057,10 +1057,12 @@ class MeetingLinkResource extends Resource
                     ->form([
                         Forms\Components\DatePicker::make('start_date_from')
                             ->label(__('meetinglink.filters.start_date_from'))
+                            ->placeholder('DD/MM/YYYY')
                             ->native(false)
                             ->displayFormat('j/n/y'),
                         Forms\Components\DatePicker::make('start_date_until')
                             ->label(__('meetinglink.filters.start_date_until'))
+                            ->placeholder('DD/MM/YYYY')
                             ->native(false)
                             ->displayFormat('j/n/y'),
                     ])
@@ -1068,11 +1070,11 @@ class MeetingLinkResource extends Resource
                         return $query
                             ->when(
                                 $data['start_date_from'] ?? null,
-                                fn ($query, $date) => $query->whereDate('meeting_start_time', '>=', $date)
+                                fn ($query, $date) => $query->whereDate('meeting_start_time', '>=', \Carbon\Carbon::parse($date)->format('Y-m-d'))
                             )
                             ->when(
                                 $data['start_date_until'] ?? null,
-                                fn ($query, $date) => $query->whereDate('meeting_start_time', '<=', $date)
+                                fn ($query, $date) => $query->whereDate('meeting_start_time', '<=', \Carbon\Carbon::parse($date)->format('Y-m-d'))
                             );
                     }),
 
