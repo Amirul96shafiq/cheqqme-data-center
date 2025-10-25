@@ -43,6 +43,7 @@
                 <img 
                     :src="track ? track.album_art : ''" 
                     :alt="track ? track.album_name + ' cover' : ''"
+                    :title="track ? track.track_name + ' by ' + track.artist_name + ' on ' + track.album_name : ''"
                     class="w-20 h-20 rounded-md object-cover"
                     draggable="false"
                     {{-- onerror="this.style.display='none'" --}} {{-- this is causing the image to not load --}}
