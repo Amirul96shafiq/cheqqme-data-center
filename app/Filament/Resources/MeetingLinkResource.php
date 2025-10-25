@@ -957,7 +957,7 @@ class MeetingLinkResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->label(__('meetinglink.table.title'))
                     ->searchable()
-                    ->limit(50)
+                    ->limit(30)
                     ->formatStateUsing(fn ($record) => static::generatePreviewTitleFromValues(
                         $record->title ?: 'CheQQMeeting',
                         $record->meeting_platform ?: 'Google Meet',
