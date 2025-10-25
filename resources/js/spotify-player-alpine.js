@@ -356,14 +356,14 @@ document.addEventListener("alpine:init", () => {
                     clearTimeout(this.pollingTimeoutId);
                 }
 
-                // Only poll when modal is closed (SDK handles real-time when modal is open)
-                if (this.isModalVisible && context === "modal") {
-                    return; // SDK events handle real-time updates when modal is open
+                // For modal context: Don't poll at all - SDK events handle everything
+                if (context === "modal") {
+                    return; // No polling for modal context
                 }
 
-                // Minimal polling every 10 seconds as fallback
+                // Only poll for non-modal contexts (like dropdown)
                 const poll = () => {
-                    if (!this.isModalVisible && context === "modal") {
+                    if (context !== "modal") {
                         this.fetchTrack();
                         this.pollingTimeoutId = setTimeout(poll, 10000); // 10 seconds
                     }
@@ -502,7 +502,7 @@ document.addEventListener("alpine:init", () => {
 
             onModalHide() {
                 this.isModalVisible = false;
-                // console.log('🎵 Modal hidden - switching to minimal polling');
+                // console.log('🎵 Modal hidden - stopping all polling');
 
                 // Stop progress tracking
                 if (this.progressInterval) {
@@ -510,8 +510,11 @@ document.addEventListener("alpine:init", () => {
                     this.progressInterval = null;
                 }
 
-                // Start minimal polling as fallback
-                this.startMinimalPolling();
+                // Stop all polling when modal is closed
+                if (this.pollingTimeoutId) {
+                    clearTimeout(this.pollingTimeoutId);
+                    this.pollingTimeoutId = null;
+                }
             },
 
             // Handle immediate polling when changes are detected
