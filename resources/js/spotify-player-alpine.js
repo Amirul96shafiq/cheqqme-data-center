@@ -15,9 +15,7 @@ document.addEventListener("alpine:init", () => {
             progressPercentage: 0,
 
             // Intervals
-            pollingInterval: null,
             progressInterval: null,
-            pollingTimeoutId: null,
 
             // Tracking
             lastSyncTime: null,
@@ -27,7 +25,7 @@ document.addEventListener("alpine:init", () => {
             lastIsPlaying: null,
             changeDetectionEnabled: true,
 
-            // Initialize the player
+            // Initialize the player - 100% SDK dependent
             async initPlayer() {
                 // console.log("🎵 Alpine Spotify Player: Initializing...", {
                 //     context,
@@ -41,22 +39,14 @@ document.addEventListener("alpine:init", () => {
                 // Listen to Spotify Web Playback SDK events for real-time updates
                 this.setupSDKEventListeners();
 
-                // Only start polling if modal is visible or context is not modal
-                if (this.isModalVisible || context !== "modal") {
-                    // Initial fetch
-                    await this.fetchTrack();
+                // Detect user actions for instant UI updates
+                this.detectUserActions();
 
-                    // Start minimal polling as fallback (only when modal is closed)
-                    if (!this.isModalVisible && context === "modal") {
-                        this.startMinimalPolling();
-                    }
+                // Start progress tracking (SDK events handle track updates)
+                this.startProgressTracking();
 
-                    // Start progress tracking
-                    this.startProgressTracking();
-                } else {
-                    // If modal is not visible, just set loading to false
-                    this.isLoading = false;
-                }
+                // Set loading to false - SDK will provide track data via events
+                this.isLoading = false;
             },
 
             // Initialize Spotify Web Playback SDK
@@ -296,83 +286,7 @@ document.addEventListener("alpine:init", () => {
                 });
             },
 
-            // Fetch current track from API
-            async fetchTrack() {
-                try {
-                    const response = await fetch("/api/spotify/current-track", {
-                        headers: {
-                            Accept: "application/json",
-                            "X-Requested-With": "XMLHttpRequest",
-                        },
-                    });
-
-                    if (!response.ok) {
-                        this.hasError = true;
-                        this.isLoading = false;
-                        return;
-                    }
-
-                    const data = await response.json();
-
-                    if (data.connected && data.track) {
-                        const wasPlaying = this.track?.is_playing;
-                        const wasTrackId = this.track?.track_id;
-
-                        this.track = data.track;
-                        this.trackPosition = data.track.progress_ms || 0;
-                        this.isPlaying = data.track.is_playing || false;
-                        this.lastSyncTime = Date.now();
-                        this.hasError = false;
-
-                        // Update change tracking
-                        this.lastTrackId = this.track.track_id;
-                        this.lastIsPlaying = this.track.is_playing;
-
-                        // Calculate initial progress percentage
-                        if (this.track.duration_ms > 0) {
-                            this.progressPercentage =
-                                (this.trackPosition / this.track.duration_ms) *
-                                100;
-                        }
-                    } else {
-                        this.track = null;
-                        this.trackPosition = 0;
-                        this.progressPercentage = 0;
-                        this.lastTrackId = null;
-                        this.lastIsPlaying = null;
-                    }
-                } catch (error) {
-                    console.error("🎵 Alpine Spotify fetch error:", error);
-                    this.hasError = true;
-                    this.track = null;
-                } finally {
-                    this.isLoading = false;
-                }
-            },
-
-            // Start minimal polling as fallback (only when SDK events are not available)
-            startMinimalPolling() {
-                if (this.pollingTimeoutId) {
-                    clearTimeout(this.pollingTimeoutId);
-                }
-
-                // For modal context: Don't poll at all - SDK events handle everything
-                if (context === "modal") {
-                    return; // No polling for modal context
-                }
-
-                // Only poll for non-modal contexts (like dropdown)
-                const poll = () => {
-                    if (context !== "modal") {
-                        this.fetchTrack();
-                        this.pollingTimeoutId = setTimeout(poll, 10000); // 10 seconds
-                    }
-                };
-
-                poll();
-            },
-
-            // Start smooth progress tracking
+            // Start smooth progress tracking with instant updates
             startProgressTracking() {
                 if (this.progressInterval) {
                     clearInterval(this.progressInterval);
@@ -493,65 +407,24 @@ document.addEventListener("alpine:init", () => {
                 this.isModalVisible = true;
                 // console.log('🎵 Modal shown - SDK events will handle real-time updates');
 
-                // Fetch current track immediately for instant response
-                this.fetchTrack().then(() => {
-                    // Start progress tracking (SDK events handle track updates)
-                    this.startProgressTracking();
-                });
+                // Start progress tracking (SDK events handle track updates)
+                this.startProgressTracking();
             },
 
             onModalHide() {
                 this.isModalVisible = false;
-                // console.log('🎵 Modal hidden - stopping all polling');
+                // console.log('🎵 Modal hidden - stopping progress tracking');
 
                 // Stop progress tracking
                 if (this.progressInterval) {
                     clearInterval(this.progressInterval);
                     this.progressInterval = null;
                 }
-
-                // Stop all polling when modal is closed
-                if (this.pollingTimeoutId) {
-                    clearTimeout(this.pollingTimeoutId);
-                    this.pollingTimeoutId = null;
-                }
-            },
-
-            // Handle immediate polling when changes are detected
-            pollImmediately() {
-                if (this.pollingTimeoutId) {
-                    clearTimeout(this.pollingTimeoutId);
-                    this.pollingTimeoutId = null;
-                }
-
-                // Poll immediately
-                this.fetchTrack();
-            },
-
-            // Adjust polling interval dynamically based on track state
-            adjustPollingInterval() {
-                if (
-                    this.pollingInterval &&
-                    (this.isModalVisible || context !== "modal")
-                ) {
-                    // Restart polling with new interval
-                    this.startPolling();
-                }
             },
 
             // Cleanup on component destroy
             destroy() {
                 // console.log('🧹 Cleaning up Alpine Spotify player...');
-
-                if (this.pollingInterval) {
-                    clearInterval(this.pollingInterval);
-                    this.pollingInterval = null;
-                }
-
-                if (this.pollingTimeoutId) {
-                    clearTimeout(this.pollingTimeoutId);
-                    this.pollingTimeoutId = null;
-                }
 
                 if (this.progressInterval) {
                     clearInterval(this.progressInterval);
