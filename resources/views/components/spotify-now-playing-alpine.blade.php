@@ -3,8 +3,12 @@
 @if($user->hasSpotifyAuth())
 <div 
     class="spotify-now-playing-alpine"
-    x-data="spotifyPlayerAlpine('{{ $context }}', {{ $user->id }})"
+    x-data="spotifyPlayerAlpine('{{ $context }}', {{ $user->id }}, @if($context === 'modal') false @else true @endif)"
     x-init="initPlayer()"
+    @if($context === 'modal')
+        @modal-show.window="onModalShow()"
+        @modal-hide.window="onModalHide()"
+    @endif
 >
     <!-- Loading State -->
     <div x-show="isLoading" class="flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400 h-32">

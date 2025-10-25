@@ -18,6 +18,9 @@
             let targetY = clickY + 10; // offset below
 
             this.showModal = true;
+            
+            // Dispatch modal show event
+            this.$dispatch('modal-show');
 
             // Wait for next tick to measure modal size
             this.$nextTick(() => {
@@ -52,6 +55,9 @@
         },
         closeModal() {
             this.showModal = false;
+            
+            // Dispatch modal hide event
+            this.$dispatch('modal-hide');
         }
     }"
     @click.prevent="openModal($event)"
