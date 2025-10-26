@@ -351,7 +351,6 @@ class UserResource extends Resource
 
                 if ($coverImageUrl) {
                     $classes[] = 'cover-image-row';
-                    $classes[] = 'optimized-image-row'; // Add performance class
                 }
 
                 return implode(' ', $classes);
