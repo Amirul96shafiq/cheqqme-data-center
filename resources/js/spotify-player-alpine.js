@@ -24,6 +24,7 @@ document.addEventListener("alpine:init", () => {
             lastTrackId: null,
             lastIsPlaying: null,
             changeDetectionEnabled: true,
+            initialized: false, // Track if already initialized
 
             // Initialize the player - 100% SDK dependent
             async initPlayer() {

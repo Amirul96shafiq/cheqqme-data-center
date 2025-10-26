@@ -5,17 +5,24 @@
     class="spotify-now-playing-alpine"
     x-data="spotifyPlayerAlpine('{{ $context }}', {{ $user->id }}, @if($context === 'modal') false @else true @endif)"
     x-init="
-        // Lazy initialize: wait until page is fully loaded
-        if (document.readyState === 'complete') {
-            initPlayer();
-        } else {
-            window.addEventListener('load', () => {
-                setTimeout(() => initPlayer(), 1000); // Wait 1 second after page load
-            });
-        }
+        // Only initialize for non-modal contexts immediately
+        @if($context !== 'modal')
+        setTimeout(() => {
+            if (typeof initPlayer === 'function') {
+                initPlayer();
+            }
+        }, 2000); // Wait 2 seconds after page load
+        @endif
     "
     @if($context === 'modal')
-        @modal-show.window="onModalShow()"
+        @modal-show.window="
+            if (typeof initPlayer === 'function' && !initialized) {
+                console.log('🎵 Initializing Spotify player on modal open');
+                initPlayer();
+                initialized = true;
+            }
+            onModalShow();
+        "
         @modal-hide.window="onModalHide()"
     @endif
 >
