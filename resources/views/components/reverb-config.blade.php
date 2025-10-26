@@ -14,6 +14,7 @@
 
     // Make current user available to frontend JavaScript
     @auth
+        window.currentUserId = {{ auth()->id() }};
         window.currentUser = {
             id: {{ auth()->id() }},
             name: '{{ auth()->user()->name }}',

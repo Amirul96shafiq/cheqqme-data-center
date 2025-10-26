@@ -4,26 +4,22 @@
 <div 
     class="spotify-now-playing-alpine"
     x-data="spotifyPlayerAlpine('{{ $context }}', {{ $user->id }}, @if($context === 'modal') false @else true @endif)"
-    x-init="
-        // Only initialize for non-modal contexts immediately
-        @if($context !== 'modal')
-        setTimeout(() => {
-            if (typeof initPlayer === 'function') {
-                initPlayer();
-            }
-        }, 2000); // Wait 2 seconds after page load
-        @endif
-    "
     @if($context === 'modal')
         @modal-show.window="
             if (typeof initPlayer === 'function' && !initialized) {
-                console.log('🎵 Initializing Spotify player on modal open');
+                {{-- console.log('🎵 Initializing Spotify player on modal open'); --}}
                 initPlayer();
                 initialized = true;
             }
             onModalShow();
         "
         @modal-hide.window="onModalHide()"
+    @else
+        x-init="setTimeout(() => {
+            if (typeof initPlayer === 'function') {
+                initPlayer();
+            }
+        }, 2000);"
     @endif
 >
     <!-- Loading State -->

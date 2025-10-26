@@ -122,4 +122,36 @@ class SpotifyPlayerController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get currently playing track for any user (for viewing other users' Spotify)
+     */
+    public function getUserTrack(Request $request, $userId)
+    {
+        $user = \App\Models\User::findOrFail($userId);
+
+        if (! $user || ! $user->hasSpotifyAuth()) {
+            return response()->json([
+                'connected' => false,
+                'track' => null,
+            ]);
+        }
+
+        try {
+            $track = $this->spotifyService->getCurrentlyPlaying($user);
+
+            return response()->json([
+                'connected' => true,
+                'track' => $track,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Spotify getUserTrack error: '.$e->getMessage());
+
+            return response()->json([
+                'connected' => true,
+                'track' => null,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

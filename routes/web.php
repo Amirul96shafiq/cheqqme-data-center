@@ -232,6 +232,7 @@ Route::post('/auth/spotify/clear-session', [\App\Http\Controllers\Auth\SpotifyAu
 Route::middleware('auth')->group(function () {
     Route::get('/api/spotify/token', [\App\Http\Controllers\SpotifyPlayerController::class, 'getToken'])->name('spotify.token');
     Route::get('/api/spotify/current-track', [\App\Http\Controllers\SpotifyPlayerController::class, 'getCurrentTrack'])->name('spotify.current-track');
+    Route::get('/api/spotify/user/{user}/current-track', [\App\Http\Controllers\SpotifyPlayerController::class, 'getUserTrack'])->name('spotify.user-track');
     Route::post('/api/spotify/transfer-playback', [\App\Http\Controllers\SpotifyPlayerController::class, 'transferPlayback'])->name('spotify.transfer-playback');
 });
 
