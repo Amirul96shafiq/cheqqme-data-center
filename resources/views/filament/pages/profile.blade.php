@@ -12,8 +12,9 @@
             src="{{ $user && $user->cover_image ? $user->getFilamentCoverImageUrl() : asset('storage/default-cover-img.png') }}"
             alt="Cover Image"
             class="w-full h-full object-cover rounded-2xl"
-            loading="lazy"
+            loading="eager"
             fetchpriority="high"
+            decoding="async"
         >
 
         {{-- Dark transparent background box --}}
@@ -40,6 +41,8 @@
                         alt="Avatar"
                         size="w-20 h-20 w-32 h-32"
                         class="mx-auto border-[6px] border-white dark:border-gray-900"
+                        loading="eager"
+                        fetchpriority="high"
                     />
                     
                     <!-- Interactive Online Status Indicator -->
