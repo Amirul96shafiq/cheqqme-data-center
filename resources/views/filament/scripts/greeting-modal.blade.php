@@ -1,4 +1,17 @@
 <script>
+// Preload greeting modal background images when page loads
+(function() {
+    const lightImg = new Image();
+    const darkImg = new Image();
+    
+    lightImg.src = '{{ asset("images/greeting-light.png") }}';
+    darkImg.src = '{{ asset("images/greeting-dark.png") }}';
+    
+    // Store references globally for potential reuse
+    window.greetingLightImg = lightImg;
+    window.greetingDarkImg = darkImg;
+})();
+
 function openGreetingModal(forceOpen = false) {
     // Check if user has enabled 'no show greeting today' for today
     // Skip this check if forceOpen is true (manual click)
