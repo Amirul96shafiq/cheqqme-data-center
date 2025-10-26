@@ -385,6 +385,8 @@
                 src="{{ asset('images/chat.png') }}"
                 alt="Chat with Arem"
                 onclick="toggleChatbot()"
+                loading="lazy"
+                fetchpriority="low"
                 class="w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg opacity-80 hover:opacity-100 bounce-bounce"
                 draggable="false"
             >
@@ -415,7 +417,7 @@
                 
                 <!-- Arem AI Logo -->
                 <div class="flex-shrink-0">
-                    <img src="{{ asset('images/arem01.png') }}" alt="Arem AI" class="w-20 h-20" draggable="false">
+                    <img src="{{ asset('images/arem01.png') }}" alt="Arem AI" class="w-20 h-20" loading="lazy" fetchpriority="low" draggable="false">
                 </div>
 
                 <!-- Arem AI Text -->
@@ -527,7 +529,7 @@
 <!-- Custom Notification System -->
 @vite('resources/js/custom-notifications.js')
 
-<!-- Chatbot JavaScript -->
+<!-- Chatbot JavaScript - Deferred loading for performance -->
 @vite('resources/js/chatbot.js')
 
 <!-- Chatbot-specific implementation -->

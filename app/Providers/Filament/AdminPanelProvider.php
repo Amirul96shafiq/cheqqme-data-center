@@ -191,7 +191,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo($currentLogo)
             ->darkModeBrandLogo($currentDarkLogo)
             ->brandLogoHeight($currentLogoHeight)
-            ->font('Roboto')
+            // System font stack configured in CSS for better performance (removes 879KB blocking Google Fonts)
             ->login(null)
             ->profile(Profile::class, isSimple: false)
             ->databaseNotifications(true, false)
@@ -218,7 +218,7 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme([
                 'resources/css/filament/admin/theme.css',
                 'resources/css/app.css',
-                'resources/js/chatbot.js',
+                // chatbot.js is now loaded lazily via @vite directive in chatbot partial
                 'resources/js/app-custom.js',
                 'resources/js/drag-drop-upload.js',
                 'resources/js/service-worker-register.js',
@@ -355,22 +355,10 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::HEAD_END,
                 function () {
                     // Performance optimizations: Resource hints for external domains
+                    // Removed Google Fonts and Spotify SDK preload/prefetch for faster initial load
                     $resourceHints = [
-                        // DNS prefetch for external domains
-                        '<link rel="dns-prefetch" href="https://sdk.scdn.co">',
-                        '<link rel="dns-prefetch" href="https://fonts.googleapis.com">',
+                        // DNS prefetch for external domains (non-blocking)
                         '<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">',
-
-                        // Preconnect for critical external resources
-                        '<link rel="preconnect" href="https://sdk.scdn.co" crossorigin>',
-
-                        // Preload critical Spotify SDK
-                        '<link rel="preload" href="https://sdk.scdn.co/spotify-player.js" as="script" crossorigin="anonymous">',
-                        '<script src="https://sdk.scdn.co/spotify-player.js" async crossorigin="anonymous"></script>',
-
-                        // Prefetch fonts for faster subsequent page loads
-                        '<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>',
-                        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>',
                     ];
 
                     return implode("\n", $resourceHints);
@@ -387,9 +375,13 @@ class AdminPanelProvider extends PanelProvider
                         'scheme' => config('broadcasting.connections.reverb.options.scheme'),
                     ];
 
+                    // Load Spotify SDK with defer to prevent render blocking
+                    $spotifyScript = '<script src="https://sdk.scdn.co/spotify-player.js" defer crossorigin="anonymous"></script>';
+
                     return view('filament.scripts.greeting-modal').
                         view('components.drag-drop-lang').
-                        '<script>window.reverbConfig = '.json_encode($reverbConfig).';</script>';
+                        '<script>window.reverbConfig = '.json_encode($reverbConfig).';</script>'.
+                        $spotifyScript;
                 },
             )
             ->renderHook(

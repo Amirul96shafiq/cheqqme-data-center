@@ -53,6 +53,16 @@ export default defineConfig({
                         // Alpine.js and Livewire are already bundled by Filament
                         return "vendor-core";
                     }
+                    // Split local JavaScript files for better caching
+                    if (id.includes("chatbot.js")) {
+                        return "chatbot";
+                    }
+                    if (id.includes("spotify-player")) {
+                        return "spotify";
+                    }
+                    if (id.includes("presence-status")) {
+                        return "presence";
+                    }
                 },
                 assetFileNames: (assetInfo) => {
                     const info = assetInfo.name.split(".");
@@ -73,6 +83,8 @@ export default defineConfig({
         target: "es2020",
         // Set chunk size limits for better caching
         chunkSizeWarningLimit: 600,
+        // Enable compression
+        reportCompressedSize: true,
     },
     optimizeDeps: {
         include: ["axios", "laravel-echo", "emoji-picker-element"],

@@ -2,6 +2,13 @@
 
 @config 'tailwind.config.js';
 
+/* Performance: System font stack for faster loading (replaces Google Fonts) */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto,
+        "Helvetica Neue", Arial, sans-serif !important;
+    font-display: swap;
+}
+
 @layer utilities {
     /* Custom max content width - 90% instead of full width */
     .fi-main.max-w-full {

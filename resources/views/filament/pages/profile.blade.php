@@ -12,6 +12,8 @@
             src="{{ $user && $user->cover_image ? $user->getFilamentCoverImageUrl() : asset('storage/default-cover-img.png') }}"
             alt="Cover Image"
             class="w-full h-full object-cover rounded-2xl"
+            loading="lazy"
+            fetchpriority="high"
         >
 
         {{-- Dark transparent background box --}}

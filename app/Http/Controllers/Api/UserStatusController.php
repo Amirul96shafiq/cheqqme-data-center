@@ -12,6 +12,17 @@ use Illuminate\Validation\ValidationException;
 class UserStatusController extends Controller
 {
     /**
+     * Set response caching headers for better performance
+     */
+    protected function setCacheHeaders(JsonResponse $response, int $maxAge = 300): JsonResponse
+    {
+        return $response
+            ->header('Cache-Control', "public, max-age={$maxAge}, must-revalidate")
+            ->header('X-Content-Type-Options', 'nosniff')
+            ->header('X-Frame-Options', 'DENY');
+    }
+
+    /**
      * Update user's online status
      */
     public function updateStatus(Request $request): JsonResponse
@@ -70,7 +81,7 @@ class UserStatusController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return response()->json([
+        $response = response()->json([
             'success' => true,
             'user' => [
                 'id' => $user->id,
@@ -81,6 +92,9 @@ class UserStatusController extends Controller
                 'last_seen' => now()->toISOString(),
             ],
         ]);
+
+        // Cache status for 1 minute
+        return $this->setCacheHeaders($response, 60);
     }
 
     /**
@@ -98,11 +112,14 @@ class UserStatusController extends Controller
         // But we can provide a fallback for debugging
         $onlineUsers = PresenceStatusManager::getOnlineUsers();
 
-        return response()->json([
+        $response = response()->json([
             'success' => true,
             'online_users' => $onlineUsers,
             'count' => count($onlineUsers),
         ]);
+
+        // Cache online users list for 30 seconds
+        return $this->setCacheHeaders($response, 30);
     }
 
     /**
