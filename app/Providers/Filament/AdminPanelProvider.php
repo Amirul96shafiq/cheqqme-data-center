@@ -376,12 +376,24 @@ class AdminPanelProvider extends PanelProvider
                     ];
 
                     // Load Spotify SDK with defer to prevent render blocking
-                    $spotifyScript = '<script src="https://sdk.scdn.co/spotify-player.js" defer crossorigin="anonymous"></script>';
+                    // Also add loading="lazy" to defer even more until needed
+                    $spotifyScript = '<script src="https://sdk.scdn.co/spotify-player.js" defer crossorigin="anonymous" async></script>';
 
                     return view('filament.scripts.greeting-modal').
                         view('components.drag-drop-lang').
                         '<script>window.reverbConfig = '.json_encode($reverbConfig).';</script>'.
-                        $spotifyScript;
+                        $spotifyScript.
+                        '<script>
+                            // Lazy load Spotify player components only after page is interactive
+                            window.addEventListener("load", function() {
+                                setTimeout(function() {
+                                    if (typeof Alpine !== "undefined" && !window.spotifyPlayerLoaded) {
+                                        // Mark as loaded to prevent duplicate loading
+                                        window.spotifyPlayerLoaded = true;
+                                    }
+                                }, 2000); // Wait 2 seconds after page load before initializing
+                            });
+                        </script>';
                 },
             )
             ->renderHook(

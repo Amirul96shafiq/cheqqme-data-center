@@ -315,14 +315,23 @@ Route::middleware('auth')->group(function () {
     // Fallback polling endpoint (kept for compatibility, will be removed after WebSocket migration)
     Route::get('/action-board/assigned-active-count', function () {
         if (! auth()->check()) {
-            return response()->json(['count' => 0]);
+            return response()->json(['count' => 0])
+                ->header('Cache-Control', 'private, max-age=0, must-revalidate');
         }
-        $count = \App\Models\Task::query()
-            ->where('assigned_to', 'like', '%'.auth()->id().'%')
-            ->whereIn('status', ['todo', 'in_progress', 'toreview'])
-            ->count();
 
-        return response()->json(['count' => $count]);
+        $userId = auth()->id();
+
+        // Cache the count for 5 seconds to reduce database queries
+        $count = cache()->remember("assigned-active-count-{$userId}", 5, function () use ($userId) {
+            return \App\Models\Task::query()
+                ->where('assigned_to', 'like', '%'.$userId.'%')
+                ->whereIn('status', ['todo', 'in_progress', 'toreview'])
+                ->count();
+        });
+
+        return response()->json(['count' => $count])
+            ->header('Cache-Control', 'private, max-age=5, must-revalidate')
+            ->header('X-Content-Type-Options', 'nosniff');
     })->name('action-board.assigned-active-count');
 
     // Online status update route (now uses presence channels)
@@ -343,6 +352,20 @@ Route::middleware('auth')->group(function () {
 
     // User activity tracking route (now uses presence channels)
     Route::post('/admin/profile/track-activity', function (Request $request) {
+        // Cache activity tracking for 2 seconds to avoid duplicate requests
+        $userId = auth()->id();
+        $cacheKey = "track-activity-{$userId}";
+
+        if (cache()->has($cacheKey)) {
+            $user = auth()->user();
+
+            return response()->json([
+                'success' => true,
+                'status' => $user->fresh()->online_status,
+                'cached' => true,
+            ]);
+        }
+
         $user = auth()->user();
 
         // With presence channels, we don't need complex activity tracking
@@ -357,10 +380,14 @@ Route::middleware('auth')->group(function () {
             }
         }
 
+        // Cache the activity response for 2 seconds to avoid duplicate processing
+        cache()->put($cacheKey, true, 2);
+
         return response()->json([
             'success' => true,
             'status' => $user->fresh()->online_status,
-        ]);
+        ])->header('Cache-Control', 'private, max-age=0, must-revalidate')
+            ->header('X-Content-Type-Options', 'nosniff');
     })->name('profile.track-activity');
 
     // Auto-away functionality is now handled by presence channels

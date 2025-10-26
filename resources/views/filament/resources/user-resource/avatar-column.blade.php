@@ -8,5 +8,5 @@
     size="lg" 
     :cover-image-border="(bool) $coverImageUrl"
     :show-status="true"
-    :lazy-load="false"
+    :lazy-load="true"
 />

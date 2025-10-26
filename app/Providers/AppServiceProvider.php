@@ -193,8 +193,9 @@ class AppServiceProvider extends ServiceProvider
                             // Initial poll
                             pollForUpdates();
                             
-                            // Set up polling interval (every 3 seconds)
-                            pollingInterval = setInterval(pollForUpdates, 3000);
+                            // Set up polling interval (every 10 seconds for better performance)
+                            // Cache on server reduces need for frequent polling
+                            pollingInterval = setInterval(pollForUpdates, 10000);
                             
                             // Listen for task events to trigger immediate refresh
                             ['task-created','task-updated','task-moved','task-status-updated'].forEach(ev=>{

@@ -397,6 +397,27 @@ document.addEventListener("livewire:init", function () {
 (function () {
     let periodicCheckInterval;
 
+    // Cache for preloaded images to avoid re-requesting
+    const imageCache = new Map();
+
+    function preloadImage(url) {
+        // Return cached promise if already loading
+        if (imageCache.has(url)) {
+            return imageCache.get(url);
+        }
+
+        const promise = new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = "anonymous"; // Enable CORS for external images
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = url;
+        });
+
+        imageCache.set(url, promise);
+        return promise;
+    }
+
     function applyCoverImages() {
         // Find all table cells with cover image data
         const coverImageCells = document.querySelectorAll(
@@ -404,6 +425,7 @@ document.addEventListener("livewire:init", function () {
         );
 
         let appliedCount = 0;
+
         coverImageCells.forEach((cell) => {
             const coverImageUrl = cell.getAttribute("data-cover-image-url");
             if (coverImageUrl) {
@@ -418,13 +440,16 @@ document.addEventListener("livewire:init", function () {
                         ? `linear-gradient(to right, rgba(24,24,27,0.3) 0%, rgba(24,24,27,0.7) 20%, rgba(24,24,27,0.9) 70%, rgba(24,24,27,1) 100%)`
                         : `linear-gradient(to right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 20%, rgba(255,255,255,0.9) 70%, rgba(255,255,255,1) 100%)`;
 
-                    // Force reapplication by clearing and re-setting
+                    // Apply immediately without waiting for image to load
+                    // This uses native browser image caching
                     tableRow.style.backgroundImage = `${gradient}, url('${coverImageUrl}')`;
-                    // tableRow.style.backgroundSize = "contain";
-                    // tableRow.style.backgroundPosition = "center";
-                    // tableRow.style.backgroundRepeat = "no-repeat";
                     tableRow.classList.add("cover-image-row");
                     appliedCount++;
+
+                    // Preload image in background for next render (non-blocking)
+                    preloadImage(coverImageUrl).catch(() => {
+                        // Silently handle failed loads
+                    });
                 }
             }
         });

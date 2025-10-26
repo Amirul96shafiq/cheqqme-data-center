@@ -1552,7 +1552,7 @@ window.trackUserActivity = function() {
         window.autoAwayTimeout = null;
     }
     
-    // Debounce activity tracking to avoid excessive requests
+    // Debounce activity tracking to avoid excessive requests (increased to 2 seconds)
     window.userActivityTimeout = setTimeout(() => {
         fetch('/admin/profile/track-activity', {
             method: 'POST',
@@ -1577,7 +1577,7 @@ window.trackUserActivity = function() {
         }).catch(error => {
             // console.log('Activity tracking failed:', error);
         });
-    }, 500); // Reduced debounce for more responsive behavior
+    }, 2000); // Increased debounce to 2 seconds to reduce server load
 };
 
 // Auto-Away Timer - Set to 10 seconds (for testing) | 5 minutes (300000ms) - for production

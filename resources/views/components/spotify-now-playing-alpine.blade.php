@@ -4,7 +4,16 @@
 <div 
     class="spotify-now-playing-alpine"
     x-data="spotifyPlayerAlpine('{{ $context }}', {{ $user->id }}, @if($context === 'modal') false @else true @endif)"
-    x-init="initPlayer()"
+    x-init="
+        // Lazy initialize: wait until page is fully loaded
+        if (document.readyState === 'complete') {
+            initPlayer();
+        } else {
+            window.addEventListener('load', () => {
+                setTimeout(() => initPlayer(), 1000); // Wait 1 second after page load
+            });
+        }
+    "
     @if($context === 'modal')
         @modal-show.window="onModalShow()"
         @modal-hide.window="onModalHide()"

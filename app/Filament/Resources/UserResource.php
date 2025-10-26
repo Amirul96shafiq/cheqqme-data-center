@@ -231,6 +231,8 @@ class UserResource extends Resource
                         if ($coverImageUrl) {
                             return [
                                 'data-cover-image-url' => $coverImageUrl,
+                                'loading' => 'lazy', // Lazy load cover images
+                                'fetchpriority' => 'low', // Low priority for decorative images
                             ];
                         }
 
@@ -240,7 +242,22 @@ class UserResource extends Resource
                 ViewColumn::make('avatar')
                     ->label(__('user.table.avatar'))
                     ->view('filament.resources.user-resource.avatar-column')
-                    ->alignCenter(),
+                    ->alignCenter()
+                    ->extraCellAttributes(function ($record) {
+                        // Add loading="lazy" attribute to avatar column for image lazy loading
+                        $coverImageUrl = $record->getFilamentCoverImageUrl();
+                        if ($coverImageUrl) {
+                            return [
+                                'loading' => 'lazy',
+                                'decoding' => 'async',
+                            ];
+                        }
+
+                        return [
+                            'loading' => 'lazy',
+                            'decoding' => 'async',
+                        ];
+                    }),
 
                 TextColumn::make('username')
                     ->label(__('user.table.username'))
@@ -334,6 +351,7 @@ class UserResource extends Resource
 
                 if ($coverImageUrl) {
                     $classes[] = 'cover-image-row';
+                    $classes[] = 'optimized-image-row'; // Add performance class
                 }
 
                 return implode(' ', $classes);
