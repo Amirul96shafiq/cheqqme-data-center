@@ -49,6 +49,7 @@ return [
     'table' => [
         'id' => 'ID',
         'pic_name' => 'Client Name (Company)',
+        'country' => 'Country',
         'pic_contact_number' => 'Contact Number',
         'project_count' => 'Projects',
         'important_url_count' => 'Important URLs',
@@ -68,5 +69,6 @@ return [
 
     'filter' => [
         'trashed' => 'Trashed',
+        'country_code' => 'Country Code',
     ],
 ];

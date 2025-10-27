@@ -21,6 +21,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
@@ -341,6 +342,33 @@ class ClientResource extends Resource
                     ->tooltip(function ($record) {
                         return __('client.table.tooltip.full_name').": {$record->pic_name}".', '.__('client.table.tooltip.company').": {$record->company_name}";
                     }),
+                TextColumn::make('country_from_phone')
+                    ->label(__('client.table.country'))
+                    ->getStateUsing(function ($record) {
+                        $phone = $record->pic_contact_number ?? '';
+                        $digits = preg_replace('/\D+/', '', $phone);
+
+                        // Extract country code and determine country
+                        if (str_starts_with($digits, '60')) {
+                            return 'MY';
+                        } elseif (str_starts_with($digits, '65')) {
+                            return 'SG';
+                        } elseif (str_starts_with($digits, '62')) {
+                            return 'ID';
+                        } elseif (str_starts_with($digits, '63')) {
+                            return 'PH';
+                        } elseif (str_starts_with($digits, '1')) {
+                            return 'US';
+                        }
+
+                        return 'Unknown';
+                    })
+                    ->badge()
+                    ->color('primary')
+                    ->alignCenter()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
                 TextColumn::make('pic_contact_number')
                     ->label(__('client.table.pic_contact_number'))
                     ->searchable()
@@ -366,6 +394,77 @@ class ClientResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                Filter::make('country_code')
+                    ->label(__('client.filter.country_code'))
+                    ->form([
+                        \Filament\Forms\Components\Select::make('country_code')
+                            ->label(__('client.filter.country_code'))
+                            ->multiple()
+                            ->options(function () {
+                                // Get distinct country codes from existing phone numbers
+                                $phoneNumbers = Client::whereNotNull('pic_contact_number')
+                                    ->where('pic_contact_number', '!=', '')
+                                    ->pluck('pic_contact_number')
+                                    ->unique();
+
+                                $countryCodes = [];
+                                $countryMapping = [
+                                    '60' => 'Malaysia',
+                                    '62' => 'Indonesia',
+                                    '65' => 'Singapore',
+                                ];
+
+                                foreach ($phoneNumbers as $phone) {
+                                    // Extract digits only (handles both +60 and 60 formats)
+                                    $digitsOnly = preg_replace('/\D+/', '', $phone);
+
+                                    if (empty($digitsOnly)) {
+                                        continue;
+                                    }
+
+                                    // Try 2-digit country code first
+                                    $firstTwo = substr($digitsOnly, 0, 2);
+                                    if (isset($countryMapping[$firstTwo])) {
+                                        $countryCode = $firstTwo;
+                                        $countryName = $countryMapping[$firstTwo];
+                                    } else {
+                                        continue;
+                                    }
+
+                                    if (! isset($countryCodes[$countryCode])) {
+                                        $countryCodes[$countryCode] = "{$countryName} (+{$countryCode})";
+                                    }
+                                }
+
+                                // Sort by country code
+                                ksort($countryCodes);
+
+                                return $countryCodes;
+                            }),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if (empty($data['country_code'])) {
+                            return $query;
+                        }
+
+                        $selectedCodes = is_array($data['country_code']) ? $data['country_code'] : [$data['country_code']];
+
+                        return $query->where(function ($q) use ($selectedCodes) {
+                            foreach ($selectedCodes as $index => $code) {
+                                $condition = function ($subQuery) use ($code) {
+                                    $subQuery->where('pic_contact_number', 'like', "+{$code}%")
+                                        ->orWhere('pic_contact_number', 'like', "{$code}%");
+                                };
+
+                                if ($index === 0) {
+                                    $q->where($condition);
+                                } else {
+                                    $q->orWhere($condition);
+                                }
+                            }
+                        });
+                    }),
+
                 TrashedFilter::make()
                     ->label(__('client.filter.trashed'))
                     ->searchable(), // To show trashed or only active

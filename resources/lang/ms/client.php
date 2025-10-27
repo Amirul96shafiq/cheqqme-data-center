@@ -49,6 +49,7 @@ return [
     'table' => [
         'id' => 'ID',
         'pic_name' => 'Nama Pelanggan (Syarikat)',
+        'country' => 'Negara',
         'pic_contact_number' => 'Nombor Telefon PIC',
         'project_count' => 'Projek',
         'important_url_count' => 'URL Penting',
@@ -68,5 +69,6 @@ return [
 
     'filter' => [
         'trashed' => 'Dihapus',
+        'country_code' => 'Kod Negara',
     ],
 ];
