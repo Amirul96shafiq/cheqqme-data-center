@@ -52,5 +52,6 @@ return [
 
     'filter' => [
         'trashed' => 'Dihapus',
+        'country_code' => 'Kod Negara',
     ],
 ];

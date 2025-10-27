@@ -18,6 +18,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
@@ -304,9 +305,12 @@ class PhoneNumberResource extends Resource
 
                         return 'Unknown';
                     })
+                    ->badge()
+                    ->color('primary')
+                    ->alignCenter()
                     ->searchable()
                     ->sortable()
-                    ->limit(20),
+                    ->toggleable(),
                 TextColumn::make('phone')
                     ->label(__('phonenumber.table.phone_number'))
                     ->searchable(),
@@ -321,6 +325,84 @@ class PhoneNumberResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                Filter::make('country_code')
+                    ->label(__('phonenumber.filter.country_code'))
+                    ->form([
+                        \Filament\Forms\Components\Select::make('country_code')
+                            ->label(__('phonenumber.filter.country_code'))
+                            ->multiple()
+                            ->options(function () {
+                                // Get distinct country codes from existing phone numbers
+                                $phoneNumbers = PhoneNumber::whereNotNull('phone')
+                                    ->where('phone', '!=', '')
+                                    ->pluck('phone')
+                                    ->unique();
+
+                                $countryCodes = [];
+                                $countryMapping = [
+                                    '60' => 'Malaysia',
+                                    '62' => 'Indonesia',
+                                    '65' => 'Singapore',
+                                    '63' => 'Philippines',
+                                    '1' => 'United States',
+                                ];
+
+                                foreach ($phoneNumbers as $phone) {
+                                    // Extract digits only (handles both +60 and 60 formats)
+                                    $digitsOnly = preg_replace('/\D+/', '', $phone);
+
+                                    if (empty($digitsOnly)) {
+                                        continue;
+                                    }
+
+                                    // Try different length country codes
+                                    $firstTwo = substr($digitsOnly, 0, 2);
+                                    $firstOne = substr($digitsOnly, 0, 1);
+
+                                    if (isset($countryMapping[$firstTwo])) {
+                                        $countryCode = $firstTwo;
+                                        $countryName = $countryMapping[$firstTwo];
+                                    } elseif (isset($countryMapping[$firstOne])) {
+                                        $countryCode = $firstOne;
+                                        $countryName = $countryMapping[$firstOne];
+                                    } else {
+                                        continue;
+                                    }
+
+                                    if (! isset($countryCodes[$countryCode])) {
+                                        $countryCodes[$countryCode] = "{$countryName} (+{$countryCode})";
+                                    }
+                                }
+
+                                // Sort by country code
+                                ksort($countryCodes);
+
+                                return $countryCodes;
+                            }),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if (empty($data['country_code'])) {
+                            return $query;
+                        }
+
+                        $selectedCodes = is_array($data['country_code']) ? $data['country_code'] : [$data['country_code']];
+
+                        return $query->where(function ($q) use ($selectedCodes) {
+                            foreach ($selectedCodes as $index => $code) {
+                                $condition = function ($subQuery) use ($code) {
+                                    $subQuery->where('phone', 'like', "+{$code}%")
+                                        ->orWhere('phone', 'like', "{$code}%");
+                                };
+
+                                if ($index === 0) {
+                                    $q->where($condition);
+                                } else {
+                                    $q->orWhere($condition);
+                                }
+                            }
+                        });
+                    }),
+
                 TrashedFilter::make()
                     ->label(__('phonenumber.filter.trashed'))
                     ->searchable(), // To show trashed or only active

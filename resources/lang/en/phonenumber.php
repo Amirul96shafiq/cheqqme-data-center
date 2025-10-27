@@ -52,5 +52,6 @@ return [
 
     'filter' => [
         'trashed' => 'Trashed',
+        'country_code' => 'Country Code',
     ],
 ];
