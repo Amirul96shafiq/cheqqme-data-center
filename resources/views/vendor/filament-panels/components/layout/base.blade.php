@@ -325,13 +325,15 @@
                     }
 
                     // Optional: initialize earlier on first user interaction
+                    var supportsTouch = ('ontouchstart' in window) || (navigator && (navigator.maxTouchPoints || navigator.msMaxTouchPoints))
+                    var interactionEvents = supportsTouch ? ['click','keydown','mousemove','touchstart'] : ['click','keydown','mousemove']
                     var first = function () {
                         initEcho()
-                        ['click','keydown','mousemove','touchstart'].forEach(function (e) {
+                        interactionEvents.forEach(function (e) {
                             window.removeEventListener(e, first, true)
                         })
                     }
-                    ;['click','keydown','mousemove','touchstart'].forEach(function (e) {
+                    ;interactionEvents.forEach(function (e) {
                         window.addEventListener(e, first, true)
                     })
                 })();

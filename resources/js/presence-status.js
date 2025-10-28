@@ -753,13 +753,19 @@ function initPresenceOnUserInteraction() {
 }
 
 // Listen for first user interaction
-["click", "keydown", "mousemove", "touchstart"].forEach((event) => {
+var presenceSupportsTouch =
+    "ontouchstart" in window ||
+    (navigator && (navigator.maxTouchPoints || navigator.msMaxTouchPoints));
+var presenceInteractionEvents = presenceSupportsTouch
+    ? ["click", "keydown", "mousemove", "touchstart"]
+    : ["click", "keydown", "mousemove"];
+presenceInteractionEvents.forEach((event) => {
     document.addEventListener(
         event,
         function firstInteraction() {
             initPresenceOnUserInteraction();
             // Remove listeners after first interaction
-            ["click", "keydown", "mousemove", "touchstart"].forEach((evt) => {
+            presenceInteractionEvents.forEach((evt) => {
                 document.removeEventListener(evt, firstInteraction, true);
             });
         },
