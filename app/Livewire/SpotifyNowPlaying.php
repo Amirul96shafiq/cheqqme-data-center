@@ -10,7 +10,7 @@ class SpotifyNowPlaying extends Component
 {
     public $track = null;
 
-    public $isLoading = true;
+    public $isLoading = false;
 
     public $hasError = false;
 
@@ -20,12 +20,27 @@ class SpotifyNowPlaying extends Component
 
     public $context = 'dropdown'; // 'dropdown' or 'modal'
 
+    public $shouldLoad = false; // Track if component should load
+
     public function mount($context = 'dropdown')
     {
         $this->context = $context;
 
-        // Always load track immediately for instant display
-        // SDK will override if it connects and has playback
+        // Don't load immediately - wait for lazy trigger
+        // Loading is triggered when dropdown opens via Alpine.js
+    }
+
+    /**
+     * Method to initialize and load the track data
+     * Called via Alpine.js when dropdown panel opens
+     */
+    public function lazyLoad()
+    {
+        if ($this->shouldLoad) {
+            return; // Already loading or loaded
+        }
+
+        $this->shouldLoad = true;
         $this->loadCurrentTrack();
     }
 

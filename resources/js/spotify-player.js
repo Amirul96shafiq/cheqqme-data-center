@@ -71,19 +71,25 @@ document.addEventListener("alpine:init", () => {
             }
 
             // Set up the callback FIRST before any timeouts
-            if (!window.onSpotifyWebPlaybackSDKReady) {
-                window.onSpotifyWebPlaybackSDKReady = () => {
-                    // console.log('🎵 Spotify Web Playback SDK: Ready');
-                    this.isSDKReady = true;
+            // Always overwrite the callback to ensure we handle SDK ready events
+            const originalCallback = window.onSpotifyWebPlaybackSDKReady;
+            window.onSpotifyWebPlaybackSDKReady = () => {
+                // console.log('🎵 Spotify Web Playback SDK: Ready');
+                this.isSDKReady = true;
 
-                    // Clear any pending timeout checks
-                    if (this.sdkCheckTimeout)
-                        clearTimeout(this.sdkCheckTimeout);
-                    if (this.sdkFallbackTimeout)
-                        clearTimeout(this.sdkFallbackTimeout);
+                // Clear any pending timeout checks
+                if (this.sdkCheckTimeout) clearTimeout(this.sdkCheckTimeout);
+                if (this.sdkFallbackTimeout)
+                    clearTimeout(this.sdkFallbackTimeout);
 
-                    this.initializePlayer();
-                };
+                this.initializePlayer();
+            };
+
+            // Check if SDK was already ready (loaded before this component initialized)
+            if (window.Spotify && !this.isSDKReady) {
+                // SDK is already loaded, trigger initialization
+                this.isSDKReady = true;
+                this.initializePlayer();
             }
 
             // Wait for SDK to load (preloaded in head, should be quick)

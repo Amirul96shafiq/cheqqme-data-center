@@ -1,22 +1,27 @@
 <div 
     class="spotify-now-playing"
     x-data="spotifyPlayer"
-    x-init="initPlayer()"
+    x-intersect.once="
+        if (@js(!$shouldLoad)) {
+            @this.call('lazyLoad');
+        }
+        initPlayer();
+    "
     @spotify-refresh-requested.window="refreshPlayer()"
     @track-updated.window="scheduleNextPollingUpdate()"
     wire:ignore.self
 >
     <!-- Loading State -->
-    @if($isLoading)
+    @if($isLoading && $shouldLoad)
         <div class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
             </svg>
             <span class="text-xs">{{ __('spotify.status.loading') }}</span>
         </div>
-    @elseif($notConnected)
+    @elseif($shouldLoad && $notConnected)
         {{-- User not connected to Spotify - don't show anything --}}
-    @elseif($hasError)
+    @elseif($shouldLoad && $hasError)
 
         <!-- Error State -->
         <div class="flex items-center gap-2 text-gray-400 dark:text-gray-500">
@@ -26,7 +31,7 @@
             <span class="text-xs">{{ __('spotify.status.spotify_unavailable') }}</span>
         </div>
 
-    @elseif($track)
+    @elseif($shouldLoad && $track)
 
         <!-- Playing Track -->
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
@@ -115,6 +120,9 @@
 
             
         </div>
+    @elseif(!$shouldLoad)
+
+        {{-- Don't show anything until dropdown is opened --}}
     @else
 
         <!-- No Track Playing -->

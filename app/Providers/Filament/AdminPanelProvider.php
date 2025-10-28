@@ -383,9 +383,21 @@ class AdminPanelProvider extends PanelProvider
                     // Also add loading="lazy" to defer even more until needed
                     $spotifyScript = '<script src="https://sdk.scdn.co/spotify-player.js" defer crossorigin="anonymous" async></script>';
 
+                    // Define the callback function BEFORE loading the SDK to prevent errors
+                    $spotifyCallbackDef = '<script>
+                        // Define global callback to prevent "onSpotifyWebPlaybackSDKReady is not defined" error
+                        if (!window.onSpotifyWebPlaybackSDKReady) {
+                            window.onSpotifyWebPlaybackSDKReady = function() {
+                                // console.log("🎵 Spotify SDK ready callback invoked");
+                                // The actual implementation will be set by Alpine.js components when they initialize
+                            };
+                        }
+                    </script>';
+
                     return view('filament.scripts.greeting-modal').
                         view('components.drag-drop-lang').
                         '<script>window.reverbConfig = '.json_encode($reverbConfig).';</script>'.
+                        $spotifyCallbackDef.
                         $spotifyScript.
                         '<script>
                             // Lazy load Spotify player components only after page is interactive
