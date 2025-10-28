@@ -144,6 +144,7 @@ return [
 
     // Filters
     'filter' => [
+        'country_code' => 'Kod Negara',
         'has_cover_image' => 'Ada Gambar Cover',
         'timezone' => 'Zon Waktu',
         'trashed' => 'Dihapus',

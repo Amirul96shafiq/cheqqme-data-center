@@ -145,6 +145,7 @@ return [
 
     // Filters
     'filter' => [
+        'country_code' => 'Country Code',
         'has_cover_image' => 'Has Cover Image',
         'timezone' => 'Timezone',
         'trashed' => 'Trashed',

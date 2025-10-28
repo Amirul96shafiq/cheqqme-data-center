@@ -274,6 +274,34 @@ class UserResource extends Resource
                         return strlen($record->email) > 40 ? substr($record->email, 0, length: 40).'...' : $record->email;
                     }),
 
+                TextColumn::make('country_from_phone')
+                    ->label(__('user.table.country'))
+                    ->getStateUsing(function ($record) {
+                        $phone = $record->phone ?? '';
+                        $digits = preg_replace('/\D+/', '', $phone);
+
+                        // Extract country code and determine country
+                        if (str_starts_with($digits, '60')) {
+                            return 'MY';
+                        } elseif (str_starts_with($digits, '65')) {
+                            return 'SG';
+                        } elseif (str_starts_with($digits, '62')) {
+                            return 'ID';
+                        } elseif (str_starts_with($digits, '63')) {
+                            return 'PH';
+                        } elseif (str_starts_with($digits, '1')) {
+                            return 'US';
+                        }
+
+                        return 'Unknown';
+                    })
+                    ->badge()
+                    ->color('primary')
+                    ->alignCenter()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+
                 TextColumn::make('phone')
                     ->label(__('user.table.phone_number'))
                     ->searchable()
@@ -281,35 +309,8 @@ class UserResource extends Resource
                     ->getStateUsing(function ($record) {
                         return $record->phone ?? '-';
                     })
-                    ->formatStateUsing(function ($state, $record) {
-                        if (! $record->phone) {
-                            return '-';
-                        }
-
-                        // Format phone number for display
-                        $phone = $record->phone;
-                        $country = $record->phone_country ?? 'MY';
-
-                        // Add country flag emoji
-                        $flag = match ($country) {
-                            'MY' => '🇲🇾',
-                            'ID' => '🇮🇩',
-                            'SG' => '🇸🇬',
-                            'PH' => '🇵🇭',
-                            'US' => '🇺🇸',
-                            default => '🌐',
-                        };
-
-                        return $flag.' '.$phone;
-                    })
                     ->limit(20)
-                    ->tooltip(function ($record) {
-                        if (! $record->phone) {
-                            return null;
-                        }
-
-                        return $record->phone;
-                    }),
+                    ->toggleable(),
 
                 TextColumn::make('timezone')
                     ->label(__('user.table.timezone'))
@@ -362,6 +363,84 @@ class UserResource extends Resource
                 Filter::make('has_cover_image')
                     ->label(__('user.filter.has_cover_image'))
                     ->query(fn (Builder $query) => $query->whereNotNull('cover_image')),
+
+                Filter::make('country_code')
+                    ->label(__('user.filter.country_code'))
+                    ->form([
+                        \Filament\Forms\Components\Select::make('country_code')
+                            ->label(__('user.filter.country_code'))
+                            ->multiple()
+                            ->options(function () {
+                                // Get distinct country codes from existing phone numbers
+                                $phoneNumbers = User::whereNotNull('phone')
+                                    ->where('phone', '!=', '')
+                                    ->pluck('phone')
+                                    ->unique();
+
+                                $countryCodes = [];
+                                $countryMapping = [
+                                    '60' => 'Malaysia',
+                                    '62' => 'Indonesia',
+                                    '65' => 'Singapore',
+                                    '63' => 'Philippines',
+                                    '1' => 'United States',
+                                ];
+
+                                foreach ($phoneNumbers as $phone) {
+                                    // Extract digits only (handles both +60 and 60 formats)
+                                    $digitsOnly = preg_replace('/\D+/', '', $phone);
+
+                                    if (empty($digitsOnly)) {
+                                        continue;
+                                    }
+
+                                    // Try different length country codes
+                                    $firstTwo = substr($digitsOnly, 0, 2);
+                                    $firstOne = substr($digitsOnly, 0, 1);
+
+                                    if (isset($countryMapping[$firstTwo])) {
+                                        $countryCode = $firstTwo;
+                                        $countryName = $countryMapping[$firstTwo];
+                                    } elseif (isset($countryMapping[$firstOne])) {
+                                        $countryCode = $firstOne;
+                                        $countryName = $countryMapping[$firstOne];
+                                    } else {
+                                        continue;
+                                    }
+
+                                    if (! isset($countryCodes[$countryCode])) {
+                                        $countryCodes[$countryCode] = "{$countryName} (+{$countryCode})";
+                                    }
+                                }
+
+                                // Sort by country code
+                                ksort($countryCodes);
+
+                                return $countryCodes;
+                            }),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if (empty($data['country_code'])) {
+                            return $query;
+                        }
+
+                        $selectedCodes = is_array($data['country_code']) ? $data['country_code'] : [$data['country_code']];
+
+                        return $query->where(function ($q) use ($selectedCodes) {
+                            foreach ($selectedCodes as $index => $code) {
+                                $condition = function ($subQuery) use ($code) {
+                                    $subQuery->where('phone', 'like', "+{$code}%")
+                                        ->orWhere('phone', 'like', "{$code}%");
+                                };
+
+                                if ($index === 0) {
+                                    $q->where($condition);
+                                } else {
+                                    $q->orWhere($condition);
+                                }
+                            }
+                        });
+                    }),
 
                 SelectFilter::make('timezone')
                     ->label(__('user.filter.timezone'))
