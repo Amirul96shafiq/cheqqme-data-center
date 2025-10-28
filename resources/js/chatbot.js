@@ -205,18 +205,46 @@
 
     // Initialize chatbot state when the DOM is ready
     onDocumentReady(() => {
-        initializeSession(); // Fetch session info on document ready
+        // Delay chatbot initialization until AFTER window.load event completes
+        // This ensures the page loads faster by prioritizing critical content
+        const initializeChatbot = () => {
+            initializeSession(); // Fetch session info
 
-        // Use a small delay to ensure DOM elements are ready
-        setTimeout(() => {
-            initializeChatbotState(); // Initialize state first
-            applyChatbotStateIfElementsPresent(); // Apply saved state from localStorage as fallback
-
-            // Initialize emoji picker after a short delay to ensure the element is loaded
+            // Use a small delay to ensure DOM elements are ready
             setTimeout(() => {
-                initializeEmojiPicker();
-            }, 500);
-        }, 100);
+                initializeChatbotState(); // Initialize state first
+                applyChatbotStateIfElementsPresent(); // Apply saved state from localStorage as fallback
+
+                // Initialize emoji picker after a short delay to ensure the element is loaded
+                setTimeout(() => {
+                    initializeEmojiPicker();
+                }, 500);
+            }, 100);
+        };
+
+        // Wait for window load event to ensure all critical resources are loaded first
+        // Use requestIdleCallback with a significant delay for optimal performance
+        const initAfterLoad = () => {
+            if ("requestIdleCallback" in window) {
+                // Wait for browser idle time with a minimum delay of 2 seconds
+                requestIdleCallback(
+                    initializeChatbot,
+                    { timeout: 5000 } // Wait up to 5 seconds for idle time
+                );
+            } else {
+                // Fallback: use setTimeout with a minimum delay
+                setTimeout(initializeChatbot, 2000);
+            }
+        };
+
+        // Always wait for window load event before initializing
+        if (document.readyState === "complete") {
+            // Page already loaded, initialize with delay
+            initAfterLoad();
+        } else {
+            // Wait for load event
+            window.addEventListener("load", initAfterLoad);
+        }
     });
 
     // Observe DOM changes to re-apply state when chat elements are inserted dynamically
