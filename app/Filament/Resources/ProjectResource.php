@@ -312,12 +312,8 @@ class ProjectResource extends Resource
                     ->toggleable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Planning' => 'primary',
-                        'In Progress' => 'info',
-                        'Completed' => 'success',
-                        default => 'secondary',
-                    })
+                    ->color('primary')
+                    ->alignCenter()
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'Planning' => __('project.table.planning'),
                         'In Progress' => __('project.table.in_progress'),
