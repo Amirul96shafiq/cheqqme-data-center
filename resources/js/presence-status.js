@@ -361,7 +361,7 @@ class PresenceStatusManager {
                 if (user) {
                     // Use the actual status from the presence channel data
                     this.updateStatusIndicatorElement(element, user.status);
-
+                    
                 } else {
                     // If user is not in onlineUsers, check server-side status
                     const serverStatus = element.getAttribute(

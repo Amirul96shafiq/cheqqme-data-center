@@ -300,9 +300,41 @@
 
         @if (filament()->hasBroadcasting() && config('filament.broadcasting.echo'))
             <script data-navigate-once>
-                window.Echo = new window.EchoFactory(@js(config('filament.broadcasting.echo')))
+                (function () {
+                    function initEcho() {
+                        if (window.Echo) return;
+                        window.Echo = new window.EchoFactory(@js(config('filament.broadcasting.echo')))
+                        window.dispatchEvent(new CustomEvent('EchoLoaded'))
+                    }
 
-                window.dispatchEvent(new CustomEvent('EchoLoaded'))
+                    // Expose manual trigger so pages/widgets can opt-in earlier
+                    window.initRealtime = initEcho
+
+                    function scheduleInit() {
+                        if ('requestIdleCallback' in window) {
+                            requestIdleCallback(initEcho, { timeout: 3000 })
+                        } else {
+                            setTimeout(initEcho, 1500)
+                        }
+                    }
+
+                    if (document.readyState === 'complete') {
+                        scheduleInit()
+                    } else {
+                        window.addEventListener('load', scheduleInit, { once: true })
+                    }
+
+                    // Optional: initialize earlier on first user interaction
+                    var first = function () {
+                        initEcho()
+                        ['click','keydown','mousemove','touchstart'].forEach(function (e) {
+                            window.removeEventListener(e, first, true)
+                        })
+                    }
+                    ;['click','keydown','mousemove','touchstart'].forEach(function (e) {
+                        window.addEventListener(e, first, true)
+                    })
+                })();
             </script>
         @endif
 
