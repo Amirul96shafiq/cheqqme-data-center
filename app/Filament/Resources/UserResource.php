@@ -226,6 +226,8 @@ class UserResource extends Resource
                 TextColumn::make('id')
                     ->label(__('user.table.id'))
                     ->sortable()
+                    ->badge()
+                    ->color('gray')
                     ->extraAttributes(function ($record) {
                         $coverImageUrl = $record->getFilamentCoverImageUrl();
                         if ($coverImageUrl) {
