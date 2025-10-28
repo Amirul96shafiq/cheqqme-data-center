@@ -15,11 +15,35 @@
         "
         @modal-hide.window="onModalHide()"
     @else
-        x-init="setTimeout(() => {
-            if (typeof initPlayer === 'function') {
-                initPlayer();
+        x-init="
+            // Lazy-init only when the widget is actually needed
+            const el = $el;
+            let _initialized = false;
+            const initIfNeeded = () => {
+                if (_initialized) return;
+                if (typeof initPlayer === 'function') {
+                    initPlayer();
+                    _initialized = true;
+                }
+            };
+
+            // Prefer viewport visibility via IntersectionObserver
+            if ('IntersectionObserver' in window) {
+                const io = new IntersectionObserver((entries) => {
+                    entries.forEach((e) => {
+                        if (e.isIntersecting) {
+                            initIfNeeded();
+                            io.disconnect();
+                        }
+                    });
+                }, { rootMargin: '0px 0px 200px 0px' });
+                io.observe(el);
             }
-        }, 2000);"
+
+            // Fallback triggers: user interaction
+            el.addEventListener('mouseenter', initIfNeeded, { once: true });
+            el.addEventListener('click', initIfNeeded, { once: true });
+        "
     @endif
 >
     <!-- Loading State -->

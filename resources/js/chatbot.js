@@ -80,13 +80,8 @@
                 //     window.chatbotUserId
                 // );
 
-                // Load the history automatically after getting session info
-                // Add a small delay to ensure the conversation ID is properly set
-                setTimeout(() => {
-                    // Reset conversation loaded flag to ensure fresh loading
-                    conversationLoaded = false;
-                    loadConversationHistory();
-                }, 200);
+                // DON'T load conversation history automatically - only load when user opens chatbot
+                // This reduces initial page load by avoiding unnecessary network requests
             } else {
                 console.error(
                     "Failed to initialize chatbot session",
@@ -117,9 +112,10 @@
         // Use the centralized visibility setter for consistency
         setChatVisibility(shouldBeOpen);
 
-        // Always try to load conversation history if we have a conversation ID
-        // This ensures conversations load properly after page refresh
-        if (conversationId) {
+        // Only load conversation history if chatbot should be open on page load
+        // DON'T load automatically - only when user actually opens chatbot interface
+        // This reduces initial page load by avoiding unnecessary network requests
+        if (shouldBeOpen && conversationId && !conversationLoaded) {
             setTimeout(() => {
                 loadConversationHistory();
             }, 300);
