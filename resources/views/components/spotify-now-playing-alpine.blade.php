@@ -16,7 +16,7 @@
         @modal-hide.window="onModalHide()"
     @else
         x-init="
-            // Lazy-init only when the widget is actually needed
+            // Lazy-init only when user explicitly clicks on the widget
             const el = $el;
             let _initialized = false;
             const initIfNeeded = () => {
@@ -27,22 +27,11 @@
                 }
             };
 
-            // Prefer viewport visibility via IntersectionObserver
-            if ('IntersectionObserver' in window) {
-                const io = new IntersectionObserver((entries) => {
-                    entries.forEach((e) => {
-                        if (e.isIntersecting) {
-                            initIfNeeded();
-                            io.disconnect();
-                        }
-                    });
-                }, { rootMargin: '0px 0px 200px 0px' });
-                io.observe(el);
-            }
-
-            // Fallback triggers: user interaction
-            el.addEventListener('mouseenter', initIfNeeded, { once: true });
+            // Require explicit user click to initialize
             el.addEventListener('click', initIfNeeded, { once: true });
+            
+            // Also listen for mouseenter as a less strict trigger (optional)
+            el.addEventListener('mouseenter', initIfNeeded, { once: true });
         "
     @endif
 >
