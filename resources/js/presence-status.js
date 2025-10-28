@@ -361,7 +361,6 @@ class PresenceStatusManager {
                 if (user) {
                     // Use the actual status from the presence channel data
                     this.updateStatusIndicatorElement(element, user.status);
-                    
                 } else {
                     // If user is not in onlineUsers, check server-side status
                     const serverStatus = element.getAttribute(
@@ -711,7 +710,7 @@ function initializeStatusIndicators() {
     });
 }
 
-// Initialize status indicators immediately on page load
+// Initialize status indicators on page load but defer presence tracking until user interaction
 document.addEventListener("DOMContentLoaded", function () {
     // console.log("DOM Content Loaded - Initializing status indicators");
     // Add a small delay to ensure Livewire components are rendered
@@ -730,21 +729,43 @@ document.addEventListener("livewire:navigated", function () {
     setTimeout(initializeStatusIndicators, 100);
 });
 
-// Wait for Echo to be loaded
-if (window.Echo) {
-    // Echo is already available
-    initializePresenceStatusManager();
-} else {
-    // Wait for Echo to be loaded
-    window.addEventListener("EchoLoaded", initializePresenceStatusManager);
+// Defer presence tracking until first user interaction for better page load performance
+let presenceInitialized = false;
+function initPresenceOnUserInteraction() {
+    if (presenceInitialized) return;
+    presenceInitialized = true;
 
-    // Fallback: try to initialize after a delay
-    setTimeout(() => {
-        if (!window.presenceStatusManager && window.Echo) {
-            initializePresenceStatusManager();
-        }
-    }, 1000);
+    // Wait for Echo to be loaded
+    if (window.Echo) {
+        // Echo is already available
+        initializePresenceStatusManager();
+    } else {
+        // Wait for Echo to be loaded
+        window.addEventListener("EchoLoaded", initializePresenceStatusManager);
+
+        // Fallback: try to initialize after a delay
+        setTimeout(() => {
+            if (!window.presenceStatusManager && window.Echo) {
+                initializePresenceStatusManager();
+            }
+        }, 500);
+    }
 }
+
+// Listen for first user interaction
+["click", "keydown", "mousemove", "touchstart"].forEach((event) => {
+    document.addEventListener(
+        event,
+        function firstInteraction() {
+            initPresenceOnUserInteraction();
+            // Remove listeners after first interaction
+            ["click", "keydown", "mousemove", "touchstart"].forEach((evt) => {
+                document.removeEventListener(evt, firstInteraction, true);
+            });
+        },
+        { once: true, capture: true }
+    );
+});
 
 // Global debugging function
 window.debugGretaStatus = function () {
