@@ -1659,26 +1659,43 @@ window.stopStatusPolling = function() {
 
 // Track user activity on various events
 document.addEventListener('DOMContentLoaded', function() {
-    // Track activity on user interactions
-    ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'].forEach(event => {
-        document.addEventListener(event, window.trackUserActivity, true);
-    });
-    
-    // Track activity when page becomes visible
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
-            window.trackUserActivity();
+    // Defer non-critical presence tracking until after window load/idle
+    const initPresenceNonCritical = () => {
+        // Track activity on user interactions
+        ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'].forEach(event => {
+            document.addEventListener(event, window.trackUserActivity, true);
+        });
+        
+        // Track activity when page becomes visible
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                window.trackUserActivity();
+            }
+        });
+        
+        // Track activity when window gains focus
+        window.addEventListener('focus', window.trackUserActivity);
+        
+        // Fallback polling for status updates when real-time is not available
+        // Check if presence status manager is available and working
+        if (typeof window.presenceStatusManager === 'undefined' || !window.presenceStatusManager.isInitialized) {
+            // console.log('🔄 Real-time updates not available, starting polling fallback...');
+            window.startStatusPolling();
         }
-    });
-    
-    // Track activity when window gains focus
-    window.addEventListener('focus', window.trackUserActivity);
-    
-    // Fallback polling for status updates when real-time is not available
-    // Check if presence status manager is available and working
-    if (typeof window.presenceStatusManager === 'undefined' || !window.presenceStatusManager.isInitialized) {
-        // console.log('🔄 Real-time updates not available, starting polling fallback...');
-        window.startStatusPolling();
+    };
+
+    const scheduleInit = () => {
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(initPresenceNonCritical, { timeout: 3000 });
+        } else {
+            setTimeout(initPresenceNonCritical, 1500);
+        }
+    };
+
+    if (document.readyState === 'complete') {
+        scheduleInit();
+    } else {
+        window.addEventListener('load', scheduleInit);
     }
     
     // Handle browser tab close - set user to invisible
