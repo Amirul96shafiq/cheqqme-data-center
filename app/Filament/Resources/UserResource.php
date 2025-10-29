@@ -227,7 +227,7 @@ class UserResource extends Resource
                     ->label(__('user.table.id'))
                     ->sortable()
                     ->badge()
-                    ->color('gray')
+                    ->color('primary')
                     ->extraAttributes(function ($record) {
                         $coverImageUrl = $record->getFilamentCoverImageUrl();
                         if ($coverImageUrl) {
