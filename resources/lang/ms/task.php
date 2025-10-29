@@ -30,6 +30,7 @@ return [
         'extra_information_warning' => 'Maklumat tambahan tidak boleh melebihi 500 aksara yang boleh dibaca.',
         'enable_attachments' => 'Aktifkan Lampiran',
         'enable_task_resources' => 'Aktifkan Sumber Tugasan',
+        'enable_additional_information' => 'Aktifkan Maklumat Tambahan',
         'attachments' => 'Lampiran',
         'attachments_helper' => 'Lampirkan fail (PDF, gambar, video) - maksimum 20MB setiap satu',
         'selected_projects' => 'Projek Dipilih',

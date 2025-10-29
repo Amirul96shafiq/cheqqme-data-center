@@ -96,86 +96,116 @@ return false;
                                                 ->visible(false),
 
                                             Forms\Components\Fieldset::make('')
-                                            ->schema([
-                                                
-                                                Forms\Components\Grid::make(2)
-                                                    ->schema([
-                                                        // Attachments Toggle
-                                                        Forms\Components\Toggle::make('enable_attachments')
-                                                            ->label(__('task.form.enable_attachments'))
-                                                            ->default(function (?Task $record) {
-                                                                // Enable if record has attachments (already cast to array)
-                                                                if ($record && $record->attachments) {
-                                                                    $attachments = is_array($record->attachments) ? $record->attachments : [];
+                                                ->schema([
 
-                                                                    return ! empty($attachments);
-                                                                }
+                                                    Forms\Components\Grid::make(3)
+                                                        ->schema([
+                                                            // Attachments Toggle
+                                                            Forms\Components\Toggle::make('enable_attachments')
+                                                                ->label(__('task.form.enable_attachments'))
+                                                                ->default(function (?Task $record) {
+                                                                    // Enable if record has attachments (already cast to array)
+                                                                    if ($record && $record->attachments) {
+                                                                        $attachments = is_array($record->attachments) ? $record->attachments : [];
 
-                                                                return false;
-                                                            })
-                                                            ->live()
-                                                            ->dehydrated(false)
-                                                            ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
-                                                                // Double-check attachments on hydration and enable toggle if needed
-                                                                if ($record && $record->attachments) {
-                                                                    $attachments = is_array($record->attachments) ? $record->attachments : [];
-                                                                    if (! empty($attachments)) {
-                                                                        $set('enable_attachments', true);
+                                                                        return ! empty($attachments);
                                                                     }
-                                                                }
-                                                            })
-                                                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                                // When toggle is disabled, clear all attachments
-                                                                if (! $state) {
-                                                                    $set('attachments', []);
-                                                                }
-                                                            }),
-                                                         
-                                                        // Task Resources Tab Toggle
-                                                        Forms\Components\Toggle::make('enable_task_resources')
-                                                            ->label(__('task.form.enable_task_resources'))
-                                                            ->default(function (?Task $record) {
-                                                                // Enable if record has any resources
-                                                                if ($record) {
-                                                                    $hasClient = ! empty($record->client);
-                                                                    $hasProject = ! empty($record->project) && is_array($record->project);
-                                                                    $hasDocument = ! empty($record->document) && is_array($record->document);
-                                                                    $hasImportantUrl = ! empty($record->important_url) && is_array($record->important_url);
 
-                                                                     return $hasClient || $hasProject || $hasDocument || $hasImportantUrl;
-                                                                }
-
-                                                                 return false;
-                                                            })
-                                                            ->live()
-                                                            ->dehydrated(false)
-                                                            ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
-                                                                // Double-check resources on hydration and enable toggle if needed
-                                                                if ($record) {
-                                                                    $hasClient = ! empty($record->client);
-                                                                    $hasProject = ! empty($record->project) && is_array($record->project);
-                                                                    $hasDocument = ! empty($record->document) && is_array($record->document);
-                                                                    $hasImportantUrl = ! empty($record->important_url) && is_array($record->important_url);
-
-                                                                    if ($hasClient || $hasProject || $hasDocument || $hasImportantUrl) {
-                                                                        $set('enable_task_resources', true);
+                                                                    return false;
+                                                                })
+                                                                ->live()
+                                                                ->dehydrated(false)
+                                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
+                                                                    // Double-check attachments on hydration and enable toggle if needed
+                                                                    if ($record && $record->attachments) {
+                                                                        $attachments = is_array($record->attachments) ? $record->attachments : [];
+                                                                        if (! empty($attachments)) {
+                                                                            $set('enable_attachments', true);
+                                                                        }
                                                                     }
-                                                                }
-                                                            })
-                                                            ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                                                // When toggle is disabled, clear all resources
-                                                                if (! $state) {
-                                                                    $set('client', null);
-                                                                    $set('project', []);
-                                                                    $set('document', []);
-                                                                    $set('important_url', []);
-                                                                }
-                                                            }),
+                                                                })
+                                                                ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                                    // When toggle is disabled, clear all attachments
+                                                                    if (! $state) {
+                                                                        $set('attachments', []);
+                                                                    }
+                                                                }),
 
-                                                    ]),
+                                                            // Task Resources Tab Toggle
+                                                            Forms\Components\Toggle::make('enable_task_resources')
+                                                                ->label(__('task.form.enable_task_resources'))
+                                                                ->default(function (?Task $record) {
+                                                                    // Enable if record has any resources
+                                                                    if ($record) {
+                                                                        $hasClient = ! empty($record->client);
+                                                                        $hasProject = ! empty($record->project) && is_array($record->project);
+                                                                        $hasDocument = ! empty($record->document) && is_array($record->document);
+                                                                        $hasImportantUrl = ! empty($record->important_url) && is_array($record->important_url);
 
-                                            ])
-                                            ->columnSpanFull(),
+                                                                        return $hasClient || $hasProject || $hasDocument || $hasImportantUrl;
+                                                                    }
+
+                                                                    return false;
+                                                                })
+                                                                ->live()
+                                                                ->dehydrated(false)
+                                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
+                                                                    // Double-check resources on hydration and enable toggle if needed
+                                                                    if ($record) {
+                                                                        $hasClient = ! empty($record->client);
+                                                                        $hasProject = ! empty($record->project) && is_array($record->project);
+                                                                        $hasDocument = ! empty($record->document) && is_array($record->document);
+                                                                        $hasImportantUrl = ! empty($record->important_url) && is_array($record->important_url);
+
+                                                                        if ($hasClient || $hasProject || $hasDocument || $hasImportantUrl) {
+                                                                            $set('enable_task_resources', true);
+                                                                        }
+                                                                    }
+                                                                })
+                                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                                    // When toggle is disabled, clear all resources
+                                                                    if (! $state) {
+                                                                        $set('client', null);
+                                                                        $set('project', []);
+                                                                        $set('document', []);
+                                                                        $set('important_url', []);
+                                                                    }
+                                                                }),
+                                                            // Additional Information Toggle
+                                                            Forms\Components\Toggle::make('enable_additional_information')
+                                                                ->label(__('task.form.enable_additional_information'))
+                                                                ->default(function (?Task $record) {
+                                                                    // Enable if record has extra_information
+                                                                    if ($record && $record->extra_information) {
+                                                                        $extraInfo = is_array($record->extra_information) ? $record->extra_information : [];
+
+                                                                        return ! empty($extraInfo);
+                                                                    }
+
+                                                                    return false;
+                                                                })
+                                                                ->live()
+                                                                ->dehydrated(false)
+                                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
+                                                                    // Double-check extra_information on hydration and enable toggle if needed
+                                                                    if ($record && $record->extra_information) {
+                                                                        $extraInfo = is_array($record->extra_information) ? $record->extra_information : [];
+                                                                        if (! empty($extraInfo)) {
+                                                                            $set('enable_additional_information', true);
+                                                                        }
+                                                                    }
+                                                                })
+                                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                                    // When toggle is disabled, clear all extra_information
+                                                                    if (! $state) {
+                                                                        $set('extra_information', []);
+                                                                    }
+                                                                }),
+
+                                                        ]),
+
+                                                ])
+                                                ->columnSpanFull(),
 
                                             Forms\Components\Select::make('assigned_to')
                                                 ->label(__('task.form.assign_to'))
@@ -646,6 +676,7 @@ return false;
 
                                             return count($extraInfo) ?: null;
                                         })
+                                        ->visible(fn (Forms\Get $get) => (bool) $get('enable_additional_information'))
                                         ->schema([
 
                                             Forms\Components\Repeater::make('extra_information')
@@ -698,7 +729,16 @@ return false;
                                                 ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
                                                 ->live()
                                                 ->columnSpanFull()
-                                                ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                                                ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
+                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // Automatically enable toggle when extra_information items are added
+                                                    if (! empty($state) && is_array($state)) {
+                                                        $set('enable_additional_information', true);
+                                                    } elseif (empty($state)) {
+                                                        // Disable toggle when all items are removed
+                                                        $set('enable_additional_information', false);
+                                                    }
+                                                }),
                                         ]),
 
                                     // -----------------------------

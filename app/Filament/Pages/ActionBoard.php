@@ -166,44 +166,57 @@ class ActionBoard extends KanbanBoardPage
                                                 ->visible(false),
 
                                             Forms\Components\Fieldset::make('')
-                                            ->schema([
+                                                ->schema([
 
-                                                Forms\Components\Grid::make(2)
-                                                    ->schema([
+                                                    Forms\Components\Grid::make(3)
+                                                        ->schema([
 
-                                                        // Attachments Toggle
-                                                        Forms\Components\Toggle::make('enable_attachments')
-                                                            ->label(__('task.form.enable_attachments'))
-                                                            ->default(false)
-                                                            ->live()
-                                                            ->dehydrated(false)
-                                                            ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                                                // When toggle is disabled, clear all attachments
-                                                                if (! $state) {
-                                                                    $set('attachments', []);
-                                                                }
-                                                            }),
+                                                            // Attachments Toggle
+                                                            Forms\Components\Toggle::make('enable_attachments')
+                                                                ->label(__('task.form.enable_attachments'))
+                                                                ->default(false)
+                                                                ->live()
+                                                                ->dehydrated(false)
+                                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                                    // When toggle is disabled, clear all attachments
+                                                                    if (! $state) {
+                                                                        $set('attachments', []);
+                                                                    }
+                                                                }),
 
-                                                        // Task Resources Tab Toggle
-                                                        Forms\Components\Toggle::make('enable_task_resources')
-                                                            ->label(__('task.form.enable_task_resources'))
-                                                            ->default(false)
-                                                            ->live()
-                                                            ->dehydrated(false)
-                                                            ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                                                // When toggle is disabled, clear all resources
-                                                                if (! $state) {
-                                                                    $set('client', null);
-                                                                    $set('project', []);
-                                                                    $set('document', []);
-                                                                    $set('important_url', []);
-                                                                }
-                                                            }),
-                                                            
-                                                    ]),
+                                                            // Task Resources Tab Toggle
+                                                            Forms\Components\Toggle::make('enable_task_resources')
+                                                                ->label(__('task.form.enable_task_resources'))
+                                                                ->default(false)
+                                                                ->live()
+                                                                ->dehydrated(false)
+                                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                                    // When toggle is disabled, clear all resources
+                                                                    if (! $state) {
+                                                                        $set('client', null);
+                                                                        $set('project', []);
+                                                                        $set('document', []);
+                                                                        $set('important_url', []);
+                                                                    }
+                                                                }),
 
-                                            ])
-                                            ->columnSpanFull(),
+                                                            // Additional Information Toggle
+                                                            Forms\Components\Toggle::make('enable_additional_information')
+                                                                ->label(__('task.form.enable_additional_information'))
+                                                                ->default(false)
+                                                                ->live()
+                                                                ->dehydrated(false)
+                                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                                    // When toggle is disabled, clear all extra_information
+                                                                    if (! $state) {
+                                                                        $set('extra_information', []);
+                                                                    }
+                                                                }),
+
+                                                        ]),
+
+                                                ])
+                                                ->columnSpanFull(),
 
                                             Forms\Components\Select::make('assigned_to')
                                                 ->label(__('task.form.assign_to'))
@@ -669,6 +682,7 @@ class ActionBoard extends KanbanBoardPage
 
                                             return count($extraInfo) ?: null;
                                         })
+                                        ->visible(fn (Forms\Get $get) => (bool) $get('enable_additional_information'))
                                         ->schema([
 
                                             Forms\Components\Repeater::make('extra_information')
@@ -722,7 +736,16 @@ class ActionBoard extends KanbanBoardPage
                                                 ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
                                                 ->live()
                                                 ->columnSpanFull()
-                                                ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                                                ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
+                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // Automatically enable toggle when extra_information items are added
+                                                    if (! empty($state) && is_array($state)) {
+                                                        $set('enable_additional_information', true);
+                                                    } elseif (empty($state)) {
+                                                        // Disable toggle when all items are removed
+                                                        $set('enable_additional_information', false);
+                                                    }
+                                                }),
 
                                         ]),
 
