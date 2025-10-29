@@ -4,12 +4,19 @@
  */
 
 document.addEventListener("alpine:init", () => {
+    // Global tracking to prevent duplicate SDK connections
+    window.spotifyPlayerConnections =
+        window.spotifyPlayerConnections || new Set();
+
+    // Global flag to track if SDK event listeners have been set up
+    window.spotifySDKListenersSetup = window.spotifySDKListenersSetup || false;
+
     Alpine.data(
         "spotifyPlayerAlpine",
         (context, userId, isModalVisible = false) => ({
             // State
             track: null,
-            isLoading: true,
+            isLoading: false,
             hasError: false,
             trackPosition: 0,
             progressPercentage: 0,
@@ -17,6 +24,7 @@ document.addEventListener("alpine:init", () => {
             // Intervals
             progressInterval: null,
             userPollInterval: null,
+            playbackPollInterval: null,
 
             // Tracking
             lastSyncTime: null,
@@ -29,20 +37,56 @@ document.addEventListener("alpine:init", () => {
 
             // Initialize the player - 100% SDK dependent
             async initPlayer() {
+                // Prevent multiple initializations
+                if (this.initialized) {
+                    // console.log("🎵 Already initialized, skipping");
+                    return;
+                }
+
                 // console.log("🎵 Alpine Spotify Player: Initializing...", {
                 //     context,
                 //     userId,
                 //     isModalVisible,
+                //     currentUserId: window.currentUserId,
+                //     userIdType: typeof userId,
+                //     currentUserIdType: typeof window.currentUserId,
                 // });
 
                 // Check if viewing another user's Spotify
-                const isCurrentUser = userId === window.currentUserId;
+                const isCurrentUser = userId == window.currentUserId; // Using == for loose comparison
+
+                // console.log("🎵 Is current user?", isCurrentUser);
+                // console.log(
+                //     "🎵 About to:",
+                //     isCurrentUser ? "Initialize SDK" : "Start polling"
+                // );
 
                 if (isCurrentUser) {
+                    // Check if SDK connection already exists
+                    const connectionKey = `sdk-${userId}-${context}`;
+                    if (window.spotifyPlayerConnections.has(connectionKey)) {
+                        // console.log(
+                        //     "🎵 SDK connection already exists for this user/context"
+                        // );
+                        // Just set up event listeners, don't reconnect
+                        this.setupSDKEventListeners();
+                        this.isLoading = false;
+                        this.initialized = true;
+                        return;
+                    }
+
+                    // Mark as connecting immediately to prevent race conditions
+                    window.spotifyPlayerConnections.add(connectionKey);
+                    // console.log("🎵 Added to connections set");
+
                     // Initialize Spotify Web Playback SDK for current user
                     await this.initializeSpotifySDK();
-                    // Listen to Spotify Web Playback SDK events for real-time updates
+
+                    // Set up global SDK event listeners (only once)
                     this.setupSDKEventListeners();
+
+                    // Set up local event listeners for this component instance
+                    this.setupLocalEventListeners();
                 } else {
                     // For other users, use API polling only
                     this.startPollingForUser(userId);
@@ -51,12 +95,35 @@ document.addEventListener("alpine:init", () => {
                 // Start progress tracking (SDK events handle track updates)
                 this.startProgressTracking();
 
+                // Start polling for playback state changes if modal is visible
+                if (isCurrentUser && isModalVisible) {
+                    this.startPlaybackPolling();
+                }
+
                 // Set loading to false - SDK will provide track data via events
                 this.isLoading = false;
+                this.initialized = true;
             },
 
             // Initialize Spotify Web Playback SDK
             async initializeSpotifySDK() {
+                // Verify this is for the current user
+                const isCurrentUser = userId == window.currentUserId;
+
+                // console.log("🎵 SDK initialize check:", {
+                //     userId,
+                //     currentUserId: window.currentUserId,
+                //     isCurrentUser,
+                // });
+
+                if (!isCurrentUser || !window.currentUserId) {
+                    console.warn(
+                        "⚠️ Cannot initialize SDK for another user's Spotify or currentUserId not set"
+                    );
+                    this.startPollingForUser(userId);
+                    return;
+                }
+
                 // console.log("🎵 Initializing Spotify Web Playback SDK...");
 
                 // Load SDK script if not already loaded
@@ -114,6 +181,8 @@ document.addEventListener("alpine:init", () => {
             // Create Spotify player instance
             async createSpotifyPlayer() {
                 try {
+                    // console.log("🎵 Creating Spotify player instance...");
+
                     // Get access token
                     const tokenResponse = await fetch("/api/spotify/token", {
                         headers: {
@@ -122,15 +191,24 @@ document.addEventListener("alpine:init", () => {
                         },
                     });
 
+                    // console.log(
+                    //     "🎵 Token response status:",
+                    //     tokenResponse.status
+                    // );
+
                     if (!tokenResponse.ok) {
                         console.error(
                             "❌ Failed to get Spotify token:",
                             tokenResponse.status
                         );
+                        this.hasError = true;
+                        this.isLoading = false;
                         return;
                     }
 
                     const { access_token } = await tokenResponse.json();
+
+                    // console.log("🎵 Got access token, creating player...");
 
                     // Create player
                     const player = new Spotify.Player({
@@ -145,30 +223,96 @@ document.addEventListener("alpine:init", () => {
                     this.setupPlayerEventListeners(player);
 
                     // Connect to player
+                    // console.log("🎵 Attempting to connect to Spotify SDK...");
                     const connected = await player.connect();
                     if (connected) {
                         // console.log(
                         //     "✅ Spotify Web Playback SDK: Connected successfully"
                         // );
+                        this.hasError = false;
                     } else {
                         console.error("❌ Failed to connect to Spotify");
+                        this.hasError = true;
+                        this.isLoading = false;
                     }
                 } catch (error) {
                     console.error(
                         "❌ Spotify SDK initialization error:",
                         error
                     );
+                    this.hasError = true;
+                    this.isLoading = false;
                 }
             },
 
             // Setup player event listeners
             setupPlayerEventListeners(player) {
                 // Ready event
-                player.addListener("ready", ({ device_id }) => {
+                player.addListener("ready", async ({ device_id }) => {
                     // console.log(
                     //     "✅ Spotify Player Ready with Device ID:",
                     //     device_id
                     // );
+
+                    // Fetch current state immediately
+                    const state = await player.getCurrentState();
+                    // console.log("🎵 Current player state:", state);
+
+                    if (state) {
+                        this.handlePlayerState(state);
+                    } else {
+                        // console.log(
+                        //     "⚠️ No current state - trying to fetch via API"
+                        // );
+                        // If no state from SDK, try to fetch via API
+                        try {
+                            const trackResponse = await fetch(
+                                "/api/spotify/current-track",
+                                {
+                                    headers: {
+                                        Accept: "application/json",
+                                        "X-Requested-With": "XMLHttpRequest",
+                                    },
+                                }
+                            );
+
+                            // console.log(
+                            //     "🎵 API currently-playing response:",
+                            //     trackResponse.status
+                            // );
+
+                            if (
+                                trackResponse.ok &&
+                                trackResponse.status !== 204
+                            ) {
+                                const data = await trackResponse.json();
+                                // console.log("🎵 API returned track:", data);
+
+                                if (data && data.track) {
+                                    // console.log(
+                                    //     "🎵 Dispatching spotify-track-loaded event"
+                                    // );
+                                    window.dispatchEvent(
+                                        new CustomEvent(
+                                            "spotify-track-loaded",
+                                            {
+                                                detail: { track: data.track },
+                                            }
+                                        )
+                                    );
+                                }
+                            } else {
+                                // console.log(
+                                //     "🎵 No track currently playing via API"
+                                // );
+                            }
+                        } catch (error) {
+                            console.error(
+                                "❌ Error fetching current track:",
+                                error
+                            );
+                        }
+                    }
                 });
 
                 // Not Ready
@@ -179,45 +323,7 @@ document.addEventListener("alpine:init", () => {
                 // Player state changed - REAL-TIME UPDATES!
                 player.addListener("player_state_changed", (state) => {
                     // console.log("🎵 Player state changed:", state);
-
-                    if (!state) {
-                        // console.log("🔇 No playback detected");
-                        window.dispatchEvent(
-                            new CustomEvent("spotify-no-track")
-                        );
-                        return;
-                    }
-
-                    // Extract track info from SDK state
-                    const track =
-                        state["track_window"]["current_track"] ?? null;
-                    if (!track) {
-                        window.dispatchEvent(
-                            new CustomEvent("spotify-no-track")
-                        );
-                        return;
-                    }
-
-                    const trackData = {
-                        track_name: track["name"] ?? "Unknown Track",
-                        artist_name: this.extractArtistNames(
-                            track["artists"] ?? []
-                        ),
-                        album_name: track["album"]["name"] ?? "Unknown Album",
-                        album_art: track["album"]["images"][0]["url"] ?? null,
-                        progress_ms: state["position"] ?? 0,
-                        duration_ms: state["duration"] ?? 0,
-                        is_playing: !state["paused"],
-                        spotify_url: track["uri"] ?? null,
-                        track_id: track["id"] ?? null,
-                    };
-
-                    // Dispatch event for Alpine component to listen to
-                    window.dispatchEvent(
-                        new CustomEvent("spotify-track-updated", {
-                            detail: { track: trackData },
-                        })
-                    );
+                    this.handlePlayerState(state);
                 });
 
                 // Initialization error
@@ -228,11 +334,19 @@ document.addEventListener("alpine:init", () => {
                 // Authentication error
                 player.addListener("authentication_error", ({ message }) => {
                     console.error("❌ Authentication Error:", message);
+                    this.hasError = true;
+                    this.isLoading = false;
+                    // Fall back to polling
+                    this.startPollingForUser(userId);
                 });
 
                 // Account error
                 player.addListener("account_error", ({ message }) => {
                     console.error("❌ Account Error:", message);
+                    this.hasError = true;
+                    this.isLoading = false;
+                    // Fall back to polling
+                    this.startPollingForUser(userId);
                 });
 
                 // Playback error
@@ -246,72 +360,199 @@ document.addEventListener("alpine:init", () => {
                 return artists.map((artist) => artist.name).join(", ");
             },
 
+            // Handle player state changes
+            handlePlayerState(state) {
+                if (!state) {
+                    // console.log("🔇 No playback detected");
+                    window.dispatchEvent(new CustomEvent("spotify-no-track"));
+                    return;
+                }
+
+                // Extract track info from SDK state
+                const track = state["track_window"]["current_track"] ?? null;
+                if (!track) {
+                    // console.log("🔇 No track in state");
+                    window.dispatchEvent(new CustomEvent("spotify-no-track"));
+                    return;
+                }
+
+                const trackData = {
+                    track_name: track["name"] ?? "Unknown Track",
+                    artist_name: this.extractArtistNames(
+                        track["artists"] ?? []
+                    ),
+                    album_name: track["album"]["name"] ?? "Unknown Album",
+                    album_art: track["album"]["images"][0]["url"] ?? null,
+                    progress_ms: state["position"] ?? 0,
+                    duration_ms: state["duration"] ?? 0,
+                    is_playing: !state["paused"],
+                    spotify_url: track["uri"] ?? null,
+                    track_id: track["id"] ?? null,
+                };
+
+                // console.log("🎵 Track data extracted:", trackData);
+
+                // Dispatch event for Alpine component to listen to
+                window.dispatchEvent(
+                    new CustomEvent("spotify-track-updated", {
+                        detail: { track: trackData },
+                    })
+                );
+            },
+
             // Setup Spotify Web Playback SDK event listeners for real-time updates
             setupSDKEventListeners() {
-                // console.log("🎵 Setting up SDK event listeners...");
-
-                // Listen for track updates from the Web Playback SDK
-                window.addEventListener("spotify-track-updated", (event) => {
-                    const trackData = event.detail.track;
+                // Set up global listeners only once
+                if (!window.spotifySDKListenersSetup) {
                     // console.log(
-                    //     "🎵 Real-time track update from SDK:",
-                    //     trackData
+                    //     "🎵 Setting up SDK event listeners (global)..."
                     // );
+                    window.spotifySDKListenersSetup = true;
 
-                    // Update track data immediately
-                    this.track = trackData;
-                    this.trackPosition = trackData.progress_ms || 0;
-                    this.isPlaying = trackData.is_playing || false;
-                    this.lastSyncTime = Date.now();
-                    this.hasError = false;
-                    this.isLoading = false;
+                    // Listen for track updates from the Web Playback SDK - only add listener once globally
+                    if (!window._spotifyTrackUpdatedHandler) {
+                        window._spotifyTrackUpdatedHandler = (event) => {
+                            const trackData = event.detail.track;
+                            // console.log(
+                            //     "🎵 Real-time track update from SDK:",
+                            //     trackData
+                            // );
 
-                    // Update change tracking
-                    this.lastTrackId = trackData.track_id;
-                    this.lastIsPlaying = trackData.is_playing;
+                            // Dispatch to all Alpine components via custom event
+                            window.dispatchEvent(
+                                new CustomEvent("spotify-track-updated-local", {
+                                    detail: { track: trackData },
+                                })
+                            );
+                        };
 
-                    // Calculate progress percentage
-                    if (trackData.duration_ms > 0) {
-                        this.progressPercentage =
-                            (trackData.progress_ms / trackData.duration_ms) *
-                            100;
+                        window.addEventListener(
+                            "spotify-track-updated",
+                            window._spotifyTrackUpdatedHandler
+                        );
                     }
-                });
 
-                // Listen for track loaded events
-                window.addEventListener("spotify-track-loaded", (event) => {
+                    // Listen for track loaded events - only add listener once globally
+                    if (!window._spotifyTrackLoadedHandler) {
+                        window._spotifyTrackLoadedHandler = (event) => {
+                            const trackData = event.detail.track;
+                            // console.log("🎵 Track loaded from SDK:", trackData);
+
+                            // Dispatch to all Alpine components via custom event
+                            window.dispatchEvent(
+                                new CustomEvent("spotify-track-loaded-local", {
+                                    detail: { track: trackData },
+                                })
+                            );
+                        };
+
+                        window.addEventListener(
+                            "spotify-track-loaded",
+                            window._spotifyTrackLoadedHandler
+                        );
+                    }
+
+                    // Listen for no track events - only add listener once globally
+                    if (!window._spotifyNoTrackHandler) {
+                        window._spotifyNoTrackHandler = () => {
+                            // console.log("💤 No track playing (from SDK)");
+
+                            // Dispatch to all Alpine components via custom event
+                            window.dispatchEvent(
+                                new CustomEvent("spotify-no-track-local")
+                            );
+                        };
+
+                        window.addEventListener(
+                            "spotify-no-track",
+                            window._spotifyNoTrackHandler
+                        );
+                    }
+                }
+            },
+
+            // Set up local event listeners for THIS component
+            setupLocalEventListeners() {
+                if (this._localListenersSetup) {
+                    return;
+                }
+
+                // console.log(
+                //     "🎵 Setting up local listeners for component",
+                //     userId
+                // );
+                this._localListenersSetup = true;
+
+                this._handleTrackUpdated = (event) => {
                     const trackData = event.detail.track;
-                    // console.log("🎵 Track loaded from SDK:", trackData);
+                    // console.log("🎵 Local track updated", trackData);
 
-                    this.track = trackData;
-                    this.trackPosition = trackData.progress_ms || 0;
-                    this.isPlaying = trackData.is_playing || false;
-                    this.lastSyncTime = Date.now();
-                    this.hasError = false;
-                    this.isLoading = false;
+                    if (trackData && userId == window.currentUserId) {
+                        this.track = trackData;
+                        this.trackPosition = trackData.progress_ms || 0;
+                        this.isPlaying = trackData.is_playing || false;
+                        this.lastSyncTime = Date.now();
+                        this.hasError = false;
+                        this.isLoading = false;
 
-                    // Update change tracking
-                    this.lastTrackId = trackData.track_id;
-                    this.lastIsPlaying = trackData.is_playing;
+                        this.lastTrackId = trackData.track_id;
+                        this.lastIsPlaying = trackData.is_playing;
 
-                    // Calculate progress percentage
-                    if (trackData.duration_ms > 0) {
-                        this.progressPercentage =
-                            (trackData.progress_ms / trackData.duration_ms) *
-                            100;
+                        if (trackData.duration_ms > 0) {
+                            this.progressPercentage =
+                                (trackData.progress_ms /
+                                    trackData.duration_ms) *
+                                100;
+                        }
                     }
-                });
+                };
 
-                // Listen for no track events
-                window.addEventListener("spotify-no-track", () => {
-                    // console.log("💤 No track playing (from SDK)");
+                this._handleTrackLoaded = (event) => {
+                    const trackData = event.detail.track;
+                    // console.log("🎵 Local track loaded", trackData);
+
+                    if (trackData && userId == window.currentUserId) {
+                        this.track = trackData;
+                        this.trackPosition = trackData.progress_ms || 0;
+                        this.isPlaying = trackData.is_playing || false;
+                        this.lastSyncTime = Date.now();
+                        this.hasError = false;
+                        this.isLoading = false;
+
+                        this.lastTrackId = trackData.track_id;
+                        this.lastIsPlaying = trackData.is_playing;
+
+                        if (trackData.duration_ms > 0) {
+                            this.progressPercentage =
+                                (trackData.progress_ms /
+                                    trackData.duration_ms) *
+                                100;
+                        }
+                    }
+                };
+
+                this._handleNoTrack = () => {
+                    // console.log("🎵 Local no-track");
                     this.track = null;
                     this.trackPosition = 0;
                     this.progressPercentage = 0;
                     this.lastTrackId = null;
                     this.lastIsPlaying = null;
                     this.isLoading = false;
-                });
+                };
+
+                window.addEventListener(
+                    "spotify-track-updated-local",
+                    this._handleTrackUpdated
+                );
+                window.addEventListener(
+                    "spotify-track-loaded-local",
+                    this._handleTrackLoaded
+                );
+                window.addEventListener(
+                    "spotify-no-track-local",
+                    this._handleNoTrack
+                );
             },
 
             // Start smooth progress tracking with instant updates
@@ -433,25 +674,38 @@ document.addEventListener("alpine:init", () => {
             // Handle modal visibility changes
             onModalShow() {
                 this.isModalVisible = true;
-                // console.log('🎵 Modal shown - SDK events will handle real-time updates');
+                // console.log("🎵 Modal shown - starting playback polling");
 
                 // Start progress tracking (SDK events handle track updates)
                 this.startProgressTracking();
+
+                // Start polling for playback state changes
+                if (userId === window.currentUserId) {
+                    this.startPlaybackPolling();
+                }
             },
 
             onModalHide() {
                 this.isModalVisible = false;
-                // console.log('🎵 Modal hidden - stopping progress tracking');
+                // console.log("🎵 Modal hidden - stopping polling");
 
                 // Stop progress tracking
                 if (this.progressInterval) {
                     clearInterval(this.progressInterval);
                     this.progressInterval = null;
                 }
+
+                // Stop playback polling
+                if (this.playbackPollInterval) {
+                    clearInterval(this.playbackPollInterval);
+                    this.playbackPollInterval = null;
+                }
             },
 
             // Start polling for another user's Spotify track
             startPollingForUser(userId) {
+                // console.log("🎵 Starting polling for user:", userId);
+
                 // Initial fetch
                 this.fetchUserTrack(userId);
 
@@ -464,6 +718,8 @@ document.addEventListener("alpine:init", () => {
             // Fetch track for a specific user
             async fetchUserTrack(userId) {
                 try {
+                    // console.log("🎵 Fetching track for user:", userId);
+
                     const response = await fetch(
                         `/api/spotify/user/${userId}/current-track`,
                         {
@@ -473,6 +729,11 @@ document.addEventListener("alpine:init", () => {
                             },
                         }
                     );
+
+                    // console.log(
+                    //     "🎵 Track fetch response status:",
+                    //     response.status
+                    // );
 
                     if (!response.ok) {
                         this.hasError = true;
@@ -510,6 +771,71 @@ document.addEventListener("alpine:init", () => {
                 }
             },
 
+            // Start polling for playback state changes (for detecting play/pause/next/previous in user's Spotify client)
+            startPlaybackPolling() {
+                // Initial fetch
+                this.fetchCurrentPlayback();
+
+                // Poll every 2 seconds to detect state changes
+                this.playbackPollInterval = setInterval(() => {
+                    this.fetchCurrentPlayback();
+                }, 2000);
+            },
+
+            // Fetch current playback state from Spotify API
+            async fetchCurrentPlayback() {
+                try {
+                    const response = await fetch("/api/spotify/current-track", {
+                        headers: {
+                            Accept: "application/json",
+                            "X-Requested-With": "XMLHttpRequest",
+                        },
+                    });
+
+                    if (response.ok && response.status !== 204) {
+                        const data = await response.json();
+
+                        if (data && data.track) {
+                            const trackData = data.track;
+
+                            // Check if track changed
+                            const trackChanged =
+                                !this.track ||
+                                this.track.track_id !== trackData.track_id;
+
+                            // Update track data
+                            this.track = trackData;
+                            this.trackPosition = trackData.progress_ms || 0;
+                            this.isPlaying = trackData.is_playing || false;
+                            this.lastSyncTime = Date.now();
+                            this.hasError = false;
+                            this.isLoading = false;
+
+                            if (trackData.duration_ms > 0) {
+                                this.progressPercentage =
+                                    (trackData.progress_ms /
+                                        trackData.duration_ms) *
+                                    100;
+                            }
+
+                            if (trackChanged) {
+                                // console.log(
+                                //     "🎵 Track changed:",
+                                //     trackData.track_name
+                                // );
+                            }
+                        } else if (!data.track) {
+                            // No track playing
+                            this.track = null;
+                            this.trackPosition = 0;
+                            this.progressPercentage = 0;
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error fetching current playback:", error);
+                }
+            },
+
             // Cleanup on component destroy
             destroy() {
                 // console.log('🧹 Cleaning up Alpine Spotify player...');
@@ -522,6 +848,11 @@ document.addEventListener("alpine:init", () => {
                 if (this.userPollInterval) {
                     clearInterval(this.userPollInterval);
                     this.userPollInterval = null;
+                }
+
+                if (this.playbackPollInterval) {
+                    clearInterval(this.playbackPollInterval);
+                    this.playbackPollInterval = null;
                 }
             },
         })
