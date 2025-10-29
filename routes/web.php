@@ -10,6 +10,8 @@ use App\Http\Controllers\WeatherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
@@ -167,7 +169,7 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
     $rememberMe = $request->boolean('remember');
 
     // Debug: Log the remember value from request
-    \Log::info('POST /admin/login - remember me value', [
+    Log::info('POST /admin/login - remember me value', [
         'remember_raw' => $request->input('remember'),
         'remember_boolean' => $rememberMe,
         'all_inputs' => $request->except(['password', '_token']),
@@ -185,26 +187,26 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
         // This ensures old remember sessions are invalidated
         if (! $rememberMe) {
             if ($user) {
-                \Log::info('Custom login route - clearing remember token', [
+                Log::info('Custom login route - clearing remember token', [
                     'user_id' => $user->id,
                     'remember_me' => $rememberMe,
                     'old_token' => $user->remember_token,
                 ]);
 
                 // Use direct update since remember_token is not in fillable
-                \DB::table('users')
+                DB::table('users')
                     ->where('id', $user->id)
                     ->update(['remember_token' => null]);
 
                 // Verify it was cleared
                 $user->refresh();
-                \Log::info('After clearing - new token', [
+                Log::info('After clearing - new token', [
                     'user_id' => $user->id,
                     'new_token' => $user->remember_token,
                 ]);
             }
         } else {
-            \Log::info('Custom login route - remember me is ENABLED', [
+            Log::info('Custom login route - remember me is ENABLED', [
                 'user_id' => $user->id,
                 'remember_me' => $rememberMe,
                 'token_after_login' => $user->remember_token,

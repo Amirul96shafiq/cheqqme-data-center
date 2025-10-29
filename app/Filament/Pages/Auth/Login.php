@@ -146,36 +146,6 @@ class Login extends BaseLogin
         // SECURITY: Clear rate limit on successful login
         RateLimiter::clear($rateLimitKey);
 
-        // SECURITY: Explicitly clear remember_token if remember me is OFF
-        // This ensures old remember sessions are invalidated
-        $user = Auth::user();
-        if ($user) {
-            // Get remember value from form data (checkbox: 0 = unchecked, 1 = checked, null = not sent)
-            $rememberValue = $data['remember'] ?? false;
-
-            // Log for debugging
-            \Log::info('Login remember token handling', [
-                'user_id' => $user->id,
-                'remember_value' => $rememberValue,
-                'remember_type' => gettype($rememberValue),
-            ]);
-
-            // If remember me is NOT checked (false, 0, or null), clear the token
-            if (! $rememberValue) {
-                $oldToken = $user->remember_token;
-
-                // Use direct update since remember_token is not in fillable
-                \DB::table('users')
-                    ->where('id', $user->id)
-                    ->update(['remember_token' => null]);
-
-                \Log::info('Remember token cleared', [
-                    'user_id' => $user->id,
-                    'old_token' => $oldToken,
-                ]);
-            }
-        }
-
         return new class implements LoginResponse
         {
             public function toResponse($request)
