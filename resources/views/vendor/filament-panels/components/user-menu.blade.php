@@ -202,15 +202,49 @@
             </x-filament::dropdown.list.item>
         @endforeach
 
-        <x-filament::dropdown.list.item
-            :action="$logoutItem?->getUrl() ?? filament()->getLogoutUrl()"
-            :color="$logoutItem?->getColor()"
-            :icon="$logoutItem?->getIcon() ?? \Filament\Support\Facades\FilamentIcon::resolve('panels::user-menu.logout-button') ?? 'heroicon-m-arrow-left-on-rectangle'"
+        <form
+            action="{{ $logoutItem?->getUrl() ?? filament()->getLogoutUrl() }}"
             method="post"
-            tag="form"
+            id="logout-form"
+            x-data="{ loggingOut: false }"
+            x-init="
+                $el.addEventListener('submit', function() {
+                    loggingOut = true;
+                });
+            "
         >
-            {{ $logoutItem?->getLabel() ?? __('filament-panels::layout.actions.logout.label') }}
-        </x-filament::dropdown.list.item>
+            @csrf
+            
+            <button
+                type="submit"
+                class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70 fi-color-danger hover:bg-danger-50 focus-visible:bg-danger-50 dark:hover:bg-danger-400/10 dark:focus-visible:bg-danger-400/10"
+                x-bind:disabled="loggingOut"
+                x-bind:class="{ 'opacity-70 cursor-wait': loggingOut }"
+            >
+
+                <!-- Original icon - hidden when logging out -->
+                <x-filament::icon
+                    icon="heroicon-o-arrow-left-on-rectangle"
+                    x-show="!loggingOut"
+                    class="fi-dropdown-list-item-icon h-5 w-5 text-danger-500 dark:text-danger-400"
+                />
+                
+                <!-- Loading spinner - shown when logging out -->
+                <x-filament::loading-indicator
+                    x-cloak
+                    x-show="loggingOut"
+                    class="fi-dropdown-list-item-icon h-5 w-5 text-danger-500 dark:text-danger-400"
+                />
+
+                <!-- Logout label -->
+                <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-danger-600 dark:text-danger-400">
+                    {{ $logoutItem?->getLabel() ?? __('filament-panels::layout.actions.logout.label') }}
+                </span>
+
+            </button>
+
+        </form>
+
     </x-filament::dropdown.list>
     
 </x-filament::dropdown>
