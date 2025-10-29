@@ -1,13 +1,15 @@
 @props(['user'])
 
 @php
-    $modalId = 'user-modal-' . $user->id;
+    // Generate unique modal ID for this specific instance
+    $modalId = 'user-modal-' . $user->id . '-' . uniqid();
 @endphp
 
 <div 
     x-data="{ 
         showModal: false,
         modalPosition: { x: 0, y: 0 },
+        modalId: '{{ $modalId }}',
         openModal(event) {
             // Base position from click
             const clickX = event.clientX;
@@ -19,8 +21,8 @@
 
             this.showModal = true;
             
-            // Dispatch modal show event
-            this.$dispatch('modal-show');
+            // Dispatch modal show event with user ID and unique modal ID
+            this.$dispatch('modal-show', { userId: {{ $user->id }}, modalId: this.modalId });
 
             // Wait for next tick to measure modal size
             this.$nextTick(() => {
@@ -56,8 +58,8 @@
         closeModal() {
             this.showModal = false;
             
-            // Dispatch modal hide event
-            this.$dispatch('modal-hide');
+            // Dispatch modal hide event with user ID and unique modal ID
+            this.$dispatch('modal-hide', { userId: {{ $user->id }}, modalId: this.modalId });
         }
     }"
     @click.prevent="openModal($event)"
@@ -73,5 +75,5 @@
     {{ $slot }}
 
     <!-- Unified User Profile Modal -->
-    <x-user-profile-modal :user="$user" />
+    <x-user-profile-modal :user="$user" :modal-id="$modalId" />
 </div>

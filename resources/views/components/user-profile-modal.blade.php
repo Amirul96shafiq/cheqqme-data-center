@@ -1,4 +1,4 @@
-@props(['user'])
+@props(['user', 'modalId'])
 
 @if($user)
     <!-- User Profile Modal - Shared across the entire application -->
@@ -128,7 +128,7 @@
                             <!-- Pure Alpine.js component - No Livewire to avoid snapshot conflicts -->
                             @if($user->hasSpotifyAuth())
                                 <div class="my-3">
-                                    <x-spotify-now-playing-alpine :user="$user" context="modal" />
+                                    <x-spotify-now-playing-alpine :user="$user" context="modal" :modal-id="$modalId" />
                                 </div>
                             @endif
                         </div>

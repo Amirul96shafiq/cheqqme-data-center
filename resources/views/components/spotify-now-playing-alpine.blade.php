@@ -1,24 +1,47 @@
-@props(['user', 'context' => 'modal'])
+@props(['user', 'context' => 'modal', 'modalId' => null])
 
 @if($user->hasSpotifyAuth())
 <div 
     class="spotify-now-playing-alpine"
-    x-data="spotifyPlayerAlpine('{{ $context }}', {{ $user->id }}, @if($context === 'modal') false @else true @endif)"
+    x-data="spotifyPlayerAlpine('{{ $context }}', {{ $user->id }}, @if($context === 'modal') false @else true @endif, '{{ $modalId }}')"
     @if($context === 'modal')
         @modal-show.window="
-            if (typeof initPlayer === 'function' && !initialized) {
-                {{-- console.log('🎵 Initializing Spotify player on modal open'); --}}
-                initPlayer();
-                initialized = true;
+            const eventModalId = $event.detail.modalId;
+            const matchesModal = eventModalId === componentModalId;
+            {{-- console.log('🎵 Modal show event check', { 
+                userId: {{ $user->id }}, 
+                eventUserId: $event.detail.userId,
+                eventModalId,
+                componentModalId,
+                matchesModal
+            }); --}}
+            if ($event.detail.userId === {{ $user->id }} && matchesModal) {
+                {{-- console.log('🎵 ✅ This is MY modal, initializing player'); --}}
+                if (typeof initPlayer === 'function' && !initialized) {
+                    initPlayer();
+                    initialized = true;
+                }
+                onModalShow();
             }
-            onModalShow();
         "
-        @modal-hide.window="onModalHide()"
+        @modal-hide.window="
+            if ($event.detail.userId === {{ $user->id }} && $event.detail.modalId === componentModalId) {
+                onModalHide();
+            }
+        "
     @else
         x-intersect="(function(){ if (typeof initPlayer==='function' && !initialized){ initPlayer(); initialized=true; } else if (typeof resumePolling==='function'){ resumePolling(); } })()"
         x-intersect.leave="(function(){ if (typeof pausePolling==='function'){ pausePolling(); } })()"
-        @modal-show.window="pausePolling()"
-        @modal-hide.window="resumePolling()"
+        @modal-show.window="
+            if ($event.detail.userId === {{ $user->id }}) {
+                pausePolling();
+            }
+        "
+        @modal-hide.window="
+            if ($event.detail.userId === {{ $user->id }}) {
+                resumePolling();
+            }
+        "
     @endif
 >
     <!-- Loading State -->

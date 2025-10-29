@@ -16,7 +16,7 @@ document.addEventListener("alpine:init", () => {
 
     Alpine.data(
         "spotifyPlayerAlpine",
-        (context, userId, isModalVisible = false) => ({
+        (context, userId, isModalVisible = false, modalId = null) => ({
             // State
             track: null,
             isLoading: false,
@@ -37,12 +37,16 @@ document.addEventListener("alpine:init", () => {
             lastIsPlaying: null,
             changeDetectionEnabled: true,
             initialized: false, // Track if already initialized
+            componentModalId: modalId, // Unique modal ID for this component instance
 
             // Initialize the player - 100% SDK dependent
             async initPlayer() {
                 // Prevent multiple initializations
                 if (this.initialized) {
-                    // console.log("🎵 Already initialized, skipping");
+                    // console.log("🎵 Already initialized, skipping", {
+                    //     userId,
+                    //     context,
+                    // });
                     return;
                 }
 
@@ -50,6 +54,8 @@ document.addEventListener("alpine:init", () => {
                 //     context,
                 //     userId,
                 //     isModalVisible,
+                //     modalId,
+                //     componentModalId: this.componentModalId,
                 //     currentUserId: window.currentUserId,
                 //     userIdType: typeof userId,
                 //     currentUserIdType: typeof window.currentUserId,
@@ -69,12 +75,25 @@ document.addEventListener("alpine:init", () => {
                     const connectionKey = `sdk-${userId}-${context}`;
                     if (window.spotifyPlayerConnections.has(connectionKey)) {
                         // console.log(
-                        //     "🎵 SDK connection already exists for this user/context"
+                        //     "🎵 SDK connection already exists for this user/context",
+                        //     { userId, context, connectionKey }
                         // );
                         // Just set up event listeners, don't reconnect
                         this.setupSDKEventListeners();
+
+                        // IMPORTANT: Set up local event listeners for THIS component instance
+                        // This ensures each modal/dropdown instance can receive track updates
+                        this.setupLocalEventListeners();
+
                         this.isLoading = false;
                         this.initialized = true;
+
+                        // console.log("🎵 Component initialized (reusing SDK)", {
+                        //     userId,
+                        //     context,
+                        //     isLoading: this.isLoading,
+                        //     initialized: this.initialized,
+                        // });
                         return;
                     }
 
@@ -478,18 +497,27 @@ document.addEventListener("alpine:init", () => {
             // Set up local event listeners for THIS component
             setupLocalEventListeners() {
                 if (this._localListenersSetup) {
+                    // console.log(
+                    //     "🎵 Local listeners already set up for component",
+                    //     { userId, context }
+                    // );
                     return;
                 }
 
-                // console.log(
-                //     "🎵 Setting up local listeners for component",
-                //     userId
-                // );
+                // console.log("🎵 Setting up local listeners for component", {
+                //     userId,
+                //     context,
+                // });
                 this._localListenersSetup = true;
 
                 this._handleTrackUpdated = (event) => {
                     const trackData = event.detail.track;
-                    // console.log("🎵 Local track updated", trackData);
+                    // console.log("🎵 Local track updated", {
+                    //     userId,
+                    //     context,
+                    //     trackData,
+                    //     isCurrentUser: userId == window.currentUserId,
+                    // });
 
                     if (trackData && userId == window.currentUserId) {
                         this.track = trackData;
@@ -508,6 +536,13 @@ document.addEventListener("alpine:init", () => {
                                     trackData.duration_ms) *
                                 100;
                         }
+
+                        // console.log("🎵 Track state updated", {
+                        //     userId,
+                        //     context,
+                        //     hasTrack: !!this.track,
+                        //     isLoading: this.isLoading,
+                        // });
                     }
                 };
 
@@ -848,6 +883,10 @@ document.addEventListener("alpine:init", () => {
             // Fetch current playback state from Spotify API
             async fetchCurrentPlayback() {
                 try {
+                    // console.log("🎵 Fetching current playback", {
+                    //     userId,
+                    //     context,
+                    // });
                     const response = await fetch("/api/spotify/current-track", {
                         headers: {
                             Accept: "application/json",
@@ -855,8 +894,20 @@ document.addEventListener("alpine:init", () => {
                         },
                     });
 
+                    // console.log("🎵 Playback response", {
+                    //     userId,
+                    //     context,
+                    //     status: response.status,
+                    // });
+
                     if (response.ok && response.status !== 204) {
                         const data = await response.json();
+
+                        // console.log("🎵 Playback data", {
+                        //     userId,
+                        //     context,
+                        //     hasTrack: !!data?.track,
+                        // });
 
                         if (data && data.track) {
                             const trackData = data.track;
@@ -880,6 +931,15 @@ document.addEventListener("alpine:init", () => {
                                         trackData.duration_ms) *
                                     100;
                             }
+
+                            // console.log("🎵 Track data set via polling", {
+                            //     userId,
+                            //     context,
+                            //     trackName: trackData.track_name,
+                            //     hasTrack: !!this.track,
+                            //     isLoading: this.isLoading,
+                            //     trackChanged,
+                            // });
 
                             if (trackChanged) {
                                 // console.log(
