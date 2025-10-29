@@ -11,6 +11,9 @@ document.addEventListener("alpine:init", () => {
     // Global flag to track if SDK event listeners have been set up
     window.spotifySDKListenersSetup = window.spotifySDKListenersSetup || false;
 
+    // Global tracking for playback polling to prevent multiple intervals
+    window.spotifyPlaybackPolling = window.spotifyPlaybackPolling || new Map();
+
     Alpine.data(
         "spotifyPlayerAlpine",
         (context, userId, isModalVisible = false) => ({
@@ -695,11 +698,17 @@ document.addEventListener("alpine:init", () => {
                     this.progressInterval = null;
                 }
 
-                // Stop playback polling
-                if (this.playbackPollInterval) {
+                // Stop playback polling only if it's our interval
+                if (
+                    this.playbackPollInterval &&
+                    window.spotifyPlaybackPolling.get(userId) ===
+                        this.playbackPollInterval
+                ) {
                     clearInterval(this.playbackPollInterval);
-                    this.playbackPollInterval = null;
+                    window.spotifyPlaybackPolling.delete(userId);
+                    // console.log("🎵 Stopped playback polling for user", userId);
                 }
+                this.playbackPollInterval = null;
             },
 
             // Start polling for another user's Spotify track
@@ -773,13 +782,28 @@ document.addEventListener("alpine:init", () => {
 
             // Start polling for playback state changes (for detecting play/pause/next/previous in user's Spotify client)
             startPlaybackPolling() {
+                // Check if polling already exists for this user
+                if (window.spotifyPlaybackPolling.has(userId)) {
+                    const existingInterval =
+                        window.spotifyPlaybackPolling.get(userId);
+                    this.playbackPollInterval = existingInterval;
+                    // console.log("🎵 Using existing polling for user", userId);
+                    return;
+                }
+
                 // Initial fetch
                 this.fetchCurrentPlayback();
 
                 // Poll every 2 seconds to detect state changes
-                this.playbackPollInterval = setInterval(() => {
+                const intervalId = setInterval(() => {
                     this.fetchCurrentPlayback();
                 }, 2000);
+
+                // Store interval ID globally
+                window.spotifyPlaybackPolling.set(userId, intervalId);
+                this.playbackPollInterval = intervalId;
+
+                // console.log("🎵 Started playback polling for user", userId);
             },
 
             // Fetch current playback state from Spotify API
@@ -850,10 +874,17 @@ document.addEventListener("alpine:init", () => {
                     this.userPollInterval = null;
                 }
 
-                if (this.playbackPollInterval) {
+                // Only clear playback polling if we own it
+                if (
+                    this.playbackPollInterval &&
+                    window.spotifyPlaybackPolling.get(userId) ===
+                        this.playbackPollInterval
+                ) {
                     clearInterval(this.playbackPollInterval);
-                    this.playbackPollInterval = null;
+                    window.spotifyPlaybackPolling.delete(userId);
+                    // console.log("🧹 Cleaned up playback polling for user", userId);
                 }
+                this.playbackPollInterval = null;
             },
         })
     );
