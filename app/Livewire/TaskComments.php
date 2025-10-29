@@ -809,18 +809,16 @@ class TaskComments extends Component implements HasForms
     public function getCommentsProperty()
     {
         return $this->task->comments()
-            ->where('status', '!=', 'deleted')
             ->whereNull('parent_id') // Only top-level comments
             ->with([
                 // Ensure modal has full user info (email, country, timezone, cover_image, online_status, spotify_id)
                 'user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id,phone,phone_country',
                 'reactions.user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id',
                 'replies' => function ($query) {
-                    $query->where('status', '!=', 'deleted')
-                        ->with([
-                            'user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id,phone,phone_country',
-                            'reactions.user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id',
-                        ]);
+                    $query->with([
+                        'user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id,phone,phone_country',
+                        'reactions.user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id',
+                    ]);
                 },
             ])
             ->orderByDesc('created_at')
@@ -833,7 +831,6 @@ class TaskComments extends Component implements HasForms
     {
         if ($this->cachedTotalComments === null) {
             $this->cachedTotalComments = $this->task->comments()
-                ->where('status', '!=', 'deleted')
                 ->whereNull('parent_id')
                 ->count();
         }
