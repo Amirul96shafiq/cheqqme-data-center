@@ -78,4 +78,8 @@
             @endif
         </x-filament-panels::resources.relation-managers>
     @endif
+
+    {{-- Unsaved Changes Alert --}}
+    <x-filament-panels::page.unsaved-data-changes-alert />
+    
 </x-filament-panels::page>

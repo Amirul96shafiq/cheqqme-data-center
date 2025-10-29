@@ -10,4 +10,12 @@ abstract class BaseEditRecord extends EditRecord
     {
         return static::getResource()::getUrl('index');
     }
+
+    /**
+     * Enable unsaved changes alert for this page
+     */
+    protected function hasUnsavedDataChangesAlert(): bool
+    {
+        return true;
+    }
 }

@@ -110,4 +110,12 @@ class EditTask extends EditRecord
                 ),
         ];
     }
+
+    /**
+     * Enable unsaved changes alert for this page
+     */
+    protected function hasUnsavedDataChangesAlert(): bool
+    {
+        return true;
+    }
 }

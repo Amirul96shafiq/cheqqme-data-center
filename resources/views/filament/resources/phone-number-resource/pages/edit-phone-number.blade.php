@@ -24,6 +24,10 @@
     @endcapture
 
     {{ $form() }}
+
+    {{-- Unsaved Changes Alert --}}
+    <x-filament-panels::page.unsaved-data-changes-alert />
+    
 </x-filament-panels::page>
 
 
