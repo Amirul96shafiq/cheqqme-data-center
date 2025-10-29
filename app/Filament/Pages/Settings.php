@@ -36,6 +36,14 @@ class Settings extends Page
         return false;
     }
 
+    /**
+     * Enable unsaved changes alert for this page
+     */
+    protected function hasUnsavedDataChangesAlert(): bool
+    {
+        return true;
+    }
+
     // Get navigation label and title
     public static function getNavigationLabel(): string
     {

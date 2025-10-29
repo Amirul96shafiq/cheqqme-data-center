@@ -23,6 +23,14 @@ class Profile extends EditProfile
 
     public string $old_password = ''; // For old password input
 
+    /**
+     * Enable unsaved changes alert for this page
+     */
+    protected function hasUnsavedDataChangesAlert(): bool
+    {
+        return true;
+    }
+
     public function mount(): void
     {
         parent::mount();
