@@ -591,7 +591,6 @@
                 '<div class="' +
                 contentClass +
                 '">' +
-                normalizeContent(marked.parse(processTranslation(content))) +
                 "</div>" +
                 '<div class="' +
                 timeClass +
@@ -604,6 +603,31 @@
                     })) +
                 "</div>" +
                 "</div>";
+
+            // Get the content div and add animated emoji
+            const contentDiv = messageDiv.querySelector(
+                "." + contentClass.split(" ")[0]
+            );
+            if (contentDiv) {
+                if (
+                    window.NotoEmojiAnimation &&
+                    window.NotoEmojiAnimation.createAnimatedEmoji
+                ) {
+                    // Extract emoji from content (remove any HTML tags)
+                    const cleanContent = content.replace(/<[^>]*>/g, "").trim();
+                    const animatedEmoji =
+                        window.NotoEmojiAnimation.createAnimatedEmoji(
+                            cleanContent,
+                            "4.5rem"
+                        );
+                    contentDiv.appendChild(animatedEmoji);
+                } else {
+                    // Fallback to static emoji
+                    contentDiv.innerHTML = normalizeContent(
+                        marked.parse(processTranslation(content))
+                    );
+                }
+            }
         } else {
             // For regular messages, use bubble styling
             messageDiv.innerHTML =
@@ -631,6 +655,22 @@
                     })) +
                 "</div>" +
                 "</div>";
+
+            // Replace emojis in regular messages with animated versions
+            if (
+                window.NotoEmojiAnimation &&
+                window.NotoEmojiAnimation.replaceEmojisInElement
+            ) {
+                const contentDiv = messageDiv.querySelector(
+                    "." + contentClass.split(" ")[0]
+                );
+                if (contentDiv) {
+                    // Process the content to replace emojis with animations
+                    window.NotoEmojiAnimation.replaceEmojisInElement(
+                        contentDiv
+                    );
+                }
+            }
         }
 
         // Apply animation delay if specified

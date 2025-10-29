@@ -511,6 +511,9 @@
 <!-- Marked.js for Markdown rendering -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
+<!-- Lottie Web for animated emojis -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js" integrity="sha512-jEnuDt6jfecCjthQAJ+ed0MTVA++5ZKmlUcmDGBv2vUI/REn6FuIdixLNnQT+vKusE2hhTk2is3cFvv5wA+Sgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <!-- Emoji Picker Element -->
 <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 
@@ -528,6 +531,9 @@
 
 <!-- Custom Notification System -->
 @vite('resources/js/custom-notifications.js')
+
+<!-- Noto Emoji Animation integration -->
+@vite('resources/js/noto-emoji-animation.js')
 
 <!-- Chatbot JavaScript - Deferred loading for performance -->
 @vite('resources/js/chatbot.js')
