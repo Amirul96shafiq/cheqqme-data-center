@@ -164,11 +164,52 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
         'password' => $credentials['password'],
     ];
 
-    if (Auth::attempt($attemptCredentials, $request->boolean('remember'))) {
+    $rememberMe = $request->boolean('remember');
+
+    // Debug: Log the remember value from request
+    \Log::info('POST /admin/login - remember me value', [
+        'remember_raw' => $request->input('remember'),
+        'remember_boolean' => $rememberMe,
+        'all_inputs' => $request->except(['password', '_token']),
+    ]);
+
+    if (Auth::attempt($attemptCredentials, $rememberMe)) {
         $request->session()->regenerate();
 
         // Clear rate limit on successful login
         RateLimiter::clear($rateLimitKey);
+
+        $user = Auth::user();
+
+        // SECURITY: Explicitly clear remember_token if remember me is OFF
+        // This ensures old remember sessions are invalidated
+        if (! $rememberMe) {
+            if ($user) {
+                \Log::info('Custom login route - clearing remember token', [
+                    'user_id' => $user->id,
+                    'remember_me' => $rememberMe,
+                    'old_token' => $user->remember_token,
+                ]);
+
+                // Use direct update since remember_token is not in fillable
+                \DB::table('users')
+                    ->where('id', $user->id)
+                    ->update(['remember_token' => null]);
+
+                // Verify it was cleared
+                $user->refresh();
+                \Log::info('After clearing - new token', [
+                    'user_id' => $user->id,
+                    'new_token' => $user->remember_token,
+                ]);
+            }
+        } else {
+            \Log::info('Custom login route - remember me is ENABLED', [
+                'user_id' => $user->id,
+                'remember_me' => $rememberMe,
+                'token_after_login' => $user->remember_token,
+            ]);
+        }
 
         // Redirect to Filament admin dashboard
         return redirect()->route('filament.admin.pages.dashboard');
