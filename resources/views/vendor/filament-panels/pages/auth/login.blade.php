@@ -128,11 +128,11 @@
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 <label for="remember" class="flex items-center cursor-pointer">
-                                    <div class="relative" role="switch" aria-checked="{{ old('remember') ? 'true' : 'false' }}">
+                                    <div class="relative" role="switch" aria-checked="{{ old('remember', true) ? 'true' : 'false' }}">
                                         <input id="remember" 
                                             type="checkbox" 
                                             name="remember" 
-                                            {{ old('remember') ? 'checked' : '' }}
+                                            {{ old('remember', true) ? 'checked' : '' }}
                                             class="sr-only"
                                             aria-describedby="remember-description">
                                         <div class="w-11 h-6 bg-gray-200 dark:bg-gray-600 rounded-full shadow-inner transition-colors duration-200 ease-in-out"></div>
