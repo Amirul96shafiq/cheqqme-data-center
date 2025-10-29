@@ -98,12 +98,13 @@ document.addEventListener("alpine:init", () => {
                 // Start progress tracking (SDK events handle track updates)
                 this.startProgressTracking();
 
-                // Start polling for playback state changes if modal is visible
-                if (isCurrentUser && isModalVisible) {
+                // Start polling for playback state changes for current user
+                // This works for both modal and dropdown contexts
+                if (isCurrentUser) {
                     this.startPlaybackPolling();
                 }
 
-                // Set loading to false - SDK will provide track data via events
+                // Set loading to false - SDK will provide track data from events/polling
                 this.isLoading = false;
                 this.initialized = true;
             },
@@ -709,6 +710,44 @@ document.addEventListener("alpine:init", () => {
                     // console.log("🎵 Stopped playback polling for user", userId);
                 }
                 this.playbackPollInterval = null;
+            },
+
+            // Pause/resume polling for dropdown when modal opens/closes
+            pausePolling() {
+                // Only for dropdown context
+                if (context === "dropdown" && this.playbackPollInterval) {
+                    const intervalId = this.playbackPollInterval;
+
+                    // Check if we own this interval
+                    if (
+                        window.spotifyPlaybackPolling.get(userId) === intervalId
+                    ) {
+                        clearInterval(intervalId);
+                        window.spotifyPlaybackPolling.delete(userId);
+                    }
+
+                    // Mark that we paused for modal
+                    this._wasPausedForModal = true;
+                    this.playbackPollInterval = null;
+
+                    // console.log("🎵 Dropdown: Paused polling for modal");
+                }
+            },
+
+            resumePolling() {
+                // Only for dropdown context
+                if (context === "dropdown") {
+                    // console.log("🎵 Dropdown: Resuming/Initializing polling");
+
+                    // Reset the flag if it was set
+                    this._wasPausedForModal = false;
+
+                    // Always start polling - will reuse existing if present
+                    this.startPlaybackPolling();
+
+                    // Also trigger a fresh fetch immediately
+                    this.fetchCurrentPlayback();
+                }
             },
 
             // Start polling for another user's Spotify track

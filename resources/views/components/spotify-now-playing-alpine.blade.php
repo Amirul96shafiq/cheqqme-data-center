@@ -15,24 +15,10 @@
         "
         @modal-hide.window="onModalHide()"
     @else
-        x-init="
-            // Lazy-init only when user explicitly clicks on the widget
-            const el = $el;
-            let _initialized = false;
-            const initIfNeeded = () => {
-                if (_initialized) return;
-                if (typeof initPlayer === 'function') {
-                    initPlayer();
-                    _initialized = true;
-                }
-            };
-
-            // Require explicit user click to initialize
-            el.addEventListener('click', initIfNeeded, { once: true });
-            
-            // Also listen for mouseenter as a less strict trigger (optional)
-            el.addEventListener('mouseenter', initIfNeeded, { once: true });
-        "
+        x-intersect="(function(){ if (typeof initPlayer==='function' && !initialized){ initPlayer(); initialized=true; } else if (typeof resumePolling==='function'){ resumePolling(); } })()"
+        x-intersect.leave="(function(){ if (typeof pausePolling==='function'){ pausePolling(); } })()"
+        @modal-show.window="pausePolling()"
+        @modal-hide.window="resumePolling()"
     @endif
 >
     <!-- Loading State -->

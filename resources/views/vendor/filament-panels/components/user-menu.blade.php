@@ -131,7 +131,7 @@
                 <!-- Spotify Now Playing -->
                 @if($user->hasSpotifyAuth())
                     <div class="my-3">
-                        @livewire('spotify-now-playing')
+                        <x-spotify-now-playing-alpine :user="$user" context="dropdown" />
                     </div>
                 @endif
             </div>
