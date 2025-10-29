@@ -76,19 +76,107 @@ return false;
                 '2xl' => 5,
             ])
                 ->schema([
+
                     // Main content (left side) - spans 2 columns
                     Forms\Components\Grid::make(1)
                         ->schema([
+
+                            // Task Tabs
                             Forms\Components\Tabs::make('taskTabs')
                                 ->tabs([
+
                                     // -----------------------------
                                     // Task Information
                                     // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.task_information'))
                                         ->schema([
+
                                             Forms\Components\Hidden::make('id')
                                                 ->disabled()
                                                 ->visible(false),
+
+                                            Forms\Components\Fieldset::make('')
+                                            ->schema([
+                                                
+                                                Forms\Components\Grid::make(2)
+                                                    ->schema([
+                                                        // Attachments Toggle
+                                                        Forms\Components\Toggle::make('enable_attachments')
+                                                            ->label(__('task.form.enable_attachments'))
+                                                            ->default(function (?Task $record) {
+                                                                // Enable if record has attachments (already cast to array)
+                                                                if ($record && $record->attachments) {
+                                                                    $attachments = is_array($record->attachments) ? $record->attachments : [];
+
+                                                                    return ! empty($attachments);
+                                                                }
+
+                                                                return false;
+                                                            })
+                                                            ->live()
+                                                            ->dehydrated(false)
+                                                            ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
+                                                                // Double-check attachments on hydration and enable toggle if needed
+                                                                if ($record && $record->attachments) {
+                                                                    $attachments = is_array($record->attachments) ? $record->attachments : [];
+                                                                    if (! empty($attachments)) {
+                                                                        $set('enable_attachments', true);
+                                                                    }
+                                                                }
+                                                            })
+                                                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                                // When toggle is disabled, clear all attachments
+                                                                if (! $state) {
+                                                                    $set('attachments', []);
+                                                                }
+                                                            }),
+                                                         
+                                                        // Task Resources Tab Toggle
+                                                        Forms\Components\Toggle::make('enable_task_resources')
+                                                            ->label(__('task.form.enable_task_resources'))
+                                                            ->default(function (?Task $record) {
+                                                                // Enable if record has any resources
+                                                                if ($record) {
+                                                                    $hasClient = ! empty($record->client);
+                                                                    $hasProject = ! empty($record->project) && is_array($record->project);
+                                                                    $hasDocument = ! empty($record->document) && is_array($record->document);
+                                                                    $hasImportantUrl = ! empty($record->important_url) && is_array($record->important_url);
+
+                                                                     return $hasClient || $hasProject || $hasDocument || $hasImportantUrl;
+                                                                }
+
+                                                                 return false;
+                                                            })
+                                                            ->live()
+                                                            ->dehydrated(false)
+                                                            ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
+                                                                // Double-check resources on hydration and enable toggle if needed
+                                                                if ($record) {
+                                                                    $hasClient = ! empty($record->client);
+                                                                    $hasProject = ! empty($record->project) && is_array($record->project);
+                                                                    $hasDocument = ! empty($record->document) && is_array($record->document);
+                                                                    $hasImportantUrl = ! empty($record->important_url) && is_array($record->important_url);
+
+                                                                    if ($hasClient || $hasProject || $hasDocument || $hasImportantUrl) {
+                                                                        $set('enable_task_resources', true);
+                                                                    }
+                                                                }
+                                                            })
+                                                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                                // When toggle is disabled, clear all resources
+                                                                if (! $state) {
+                                                                    $set('client', null);
+                                                                    $set('project', []);
+                                                                    $set('document', []);
+                                                                    $set('important_url', []);
+                                                                }
+                                                            }),
+
+                                                    ]),
+
+                                            ])
+                                            ->columnSpanFull(),
+
                                             Forms\Components\Select::make('assigned_to')
                                                 ->label(__('task.form.assign_to'))
                                                 ->options(function () {
@@ -108,18 +196,22 @@ return false;
                                                 ->formatStateUsing(fn ($state, ?Task $record) => $record?->assigned_to)
                                                 ->default(fn (?Task $record) => $record?->assigned_to)
                                                 ->dehydrated(),
+
                                             Forms\Components\TextInput::make('title')
                                                 ->label(__('task.form.title'))
                                                 ->required()
                                                 ->placeholder(__('task.form.title_placeholder'))
                                                 ->columnSpanFull(),
+
                                             Forms\Components\Grid::make(3)
                                                 ->schema([
+
                                                     Forms\Components\DatePicker::make('due_date')
                                                         ->label(__('task.form.due_date'))
                                                         ->placeholder('dd/mm/yyyy')
                                                         ->native(false)
                                                         ->displayFormat('j/n/y'),
+
                                                     Forms\Components\Select::make('status')
                                                         ->label(__('task.form.status'))
                                                         ->options([
@@ -130,6 +222,7 @@ return false;
                                                             'archived' => __('task.status.archived'),
                                                         ])
                                                         ->searchable(),
+
                                                     Forms\Components\Select::make('priority')
                                                         ->label(__('task.form.priority'))
                                                         ->options([
@@ -139,7 +232,9 @@ return false;
                                                         ])
                                                         ->default('medium')
                                                         ->searchable(),
+
                                                 ]),
+
                                             Forms\Components\RichEditor::make('description')
                                                 ->label(__('task.form.description'))
                                                 ->toolbarButtons([
@@ -171,36 +266,7 @@ return false;
                                                 })
                                                 ->nullable()
                                                 ->columnSpanFull(),
-                                            Forms\Components\Toggle::make('enable_attachments')
-                                                ->label(__('task.form.enable_attachments'))
-                                                ->default(function (?Task $record) {
-                                                    // Enable if record has attachments (already cast to array)
-                                                    if ($record && $record->attachments) {
-                                                        $attachments = is_array($record->attachments) ? $record->attachments : [];
 
-                                                        return ! empty($attachments);
-                                                    }
-
-                                                    return false;
-                                                })
-                                                ->live()
-                                                ->dehydrated(false)
-                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
-                                                    // Double-check attachments on hydration and enable toggle if needed
-                                                    if ($record && $record->attachments) {
-                                                        $attachments = is_array($record->attachments) ? $record->attachments : [];
-                                                        if (! empty($attachments)) {
-                                                            $set('enable_attachments', true);
-                                                        }
-                                                    }
-                                                })
-                                                ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                    // When toggle is disabled, clear all attachments
-                                                    if (! $state) {
-                                                        $set('attachments', []);
-                                                    }
-                                                })
-                                                ->columnSpanFull(),
                                             Forms\Components\FileUpload::make('attachments')
                                                 ->label(function (Forms\Get $get) {
                                                     $attachments = $get('attachments') ?? [];
@@ -249,46 +315,6 @@ return false;
                                                 })
                                                 ->visible(fn (Forms\Get $get) => (bool) $get('enable_attachments'))
                                                 ->columnSpanFull(),
-                                            Forms\Components\Toggle::make('enable_task_resources')
-                                                ->label(__('task.form.enable_task_resources'))
-                                                ->default(function (?Task $record) {
-                                                    // Enable if record has any resources
-                                                    if ($record) {
-                                                        $hasClient = ! empty($record->client);
-                                                        $hasProject = ! empty($record->project) && is_array($record->project);
-                                                        $hasDocument = ! empty($record->document) && is_array($record->document);
-                                                        $hasImportantUrl = ! empty($record->important_url) && is_array($record->important_url);
-
-                                                        return $hasClient || $hasProject || $hasDocument || $hasImportantUrl;
-                                                    }
-
-                                                    return false;
-                                                })
-                                                ->live()
-                                                ->dehydrated(false)
-                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
-                                                    // Double-check resources on hydration and enable toggle if needed
-                                                    if ($record) {
-                                                        $hasClient = ! empty($record->client);
-                                                        $hasProject = ! empty($record->project) && is_array($record->project);
-                                                        $hasDocument = ! empty($record->document) && is_array($record->document);
-                                                        $hasImportantUrl = ! empty($record->important_url) && is_array($record->important_url);
-
-                                                        if ($hasClient || $hasProject || $hasDocument || $hasImportantUrl) {
-                                                            $set('enable_task_resources', true);
-                                                        }
-                                                    }
-                                                })
-                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                                    // When toggle is disabled, clear all resources
-                                                    if (! $state) {
-                                                        $set('client', null);
-                                                        $set('project', []);
-                                                        $set('document', []);
-                                                        $set('important_url', []);
-                                                    }
-                                                })
-                                                ->columnSpanFull(),
                                         ]),
 
                                     // -----------------------------
@@ -307,6 +333,7 @@ return false;
                                         })
                                         ->visible(fn (Forms\Get $get) => (bool) $get('enable_task_resources'))
                                         ->schema([
+
                                             // Client
                                             Forms\Components\Select::make('client')
                                                 ->label(__('task.form.client'))
@@ -396,6 +423,7 @@ return false;
                                                         $set('important_url', []);
                                                     }
                                                 }),
+
                                             // Projects
                                             Forms\Components\Grid::make(1)
                                                 ->schema([
@@ -470,6 +498,7 @@ return false;
                                                             // Set the documents
                                                             $set('document', $finalDocuments);
                                                         }),
+
                                                     // Documents
                                                     Forms\Components\Select::make('document')
                                                         ->label(__('task.form.document'))
@@ -532,6 +561,7 @@ return false;
                                                             }
                                                         })
                                                         ->helperText(__('task.form.document_helper')),
+
                                                     // Important URLs
                                                     Forms\Components\Select::make('important_url')
                                                         ->label(__('task.form.important_url'))
@@ -617,13 +647,16 @@ return false;
                                             return count($extraInfo) ?: null;
                                         })
                                         ->schema([
+
                                             Forms\Components\Repeater::make('extra_information')
                                                 ->label(__('task.form.extra_information'))
                                                 ->schema([
+
                                                     Forms\Components\TextInput::make('title')
                                                         ->label(__('task.form.title'))
                                                         ->maxLength(100)
                                                         ->columnSpanFull(),
+
                                                     Forms\Components\RichEditor::make('value')
                                                         ->label(__('task.form.value'))
                                                         ->toolbarButtons([
@@ -685,6 +718,7 @@ return false;
                                             return $activityCount ?: null;
                                         })
                                         ->schema([
+
                                             // Activity log entries in a compact list
                                             Forms\Components\ViewField::make('activity_log_entries')
                                                 ->view('filament.components.task-activity-log')
@@ -717,9 +751,11 @@ return false;
                                                     'style' => 'max-height: 600px; overflow-y: auto; padding: 1rem;',
                                                 ])
                                                 ->dehydrated(false),
+
                                         ]),
 
                                 ]),
+
                         ])
                         ->columnSpan([
                             'default' => 1,
@@ -733,6 +769,7 @@ return false;
                     // Comments sidebar (right side) - spans 1 column
                     Forms\Components\Section::make(__('task.form.comments'))
                         ->schema([
+
                             Forms\Components\ViewField::make('task_comments')
                                 ->view('filament.components.comments-sidebar-livewire-wrapper')
                                 ->viewData(function ($get, $record) {
@@ -758,6 +795,7 @@ return false;
                             'xl' => 1,
                             '2xl' => 2,
                         ]),
+
                 ]),
         ]);
     }

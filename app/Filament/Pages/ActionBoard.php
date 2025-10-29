@@ -143,21 +143,68 @@ class ActionBoard extends KanbanBoardPage
     {
         // Only allow create flow in Action Board as requested; hide edit-specific UI.
         return $form->schema([
+
             // Create mode, reuse the Tabs layout without the comments section
             Forms\Components\Grid::make(5)
                 ->schema([
+
                     Forms\Components\Grid::make(1)
                         ->schema([
+
+                            // Task Tabs
                             Forms\Components\Tabs::make('taskTabs')
                                 ->tabs([
+
                                     // -----------------------------
                                     // Task Information
                                     // -----------------------------
                                     Forms\Components\Tabs\Tab::make(__('task.form.task_information'))
                                         ->schema([
+
                                             Forms\Components\Hidden::make('id')
                                                 ->disabled()
                                                 ->visible(false),
+
+                                            Forms\Components\Fieldset::make('')
+                                            ->schema([
+
+                                                Forms\Components\Grid::make(2)
+                                                    ->schema([
+
+                                                        // Attachments Toggle
+                                                        Forms\Components\Toggle::make('enable_attachments')
+                                                            ->label(__('task.form.enable_attachments'))
+                                                            ->default(false)
+                                                            ->live()
+                                                            ->dehydrated(false)
+                                                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                                // When toggle is disabled, clear all attachments
+                                                                if (! $state) {
+                                                                    $set('attachments', []);
+                                                                }
+                                                            }),
+
+                                                        // Task Resources Tab Toggle
+                                                        Forms\Components\Toggle::make('enable_task_resources')
+                                                            ->label(__('task.form.enable_task_resources'))
+                                                            ->default(false)
+                                                            ->live()
+                                                            ->dehydrated(false)
+                                                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                                // When toggle is disabled, clear all resources
+                                                                if (! $state) {
+                                                                    $set('client', null);
+                                                                    $set('project', []);
+                                                                    $set('document', []);
+                                                                    $set('important_url', []);
+                                                                }
+                                                            }),
+                                                            
+                                                    ]),
+
+                                            ])
+                                            ->columnSpanFull(),
+
                                             Forms\Components\Select::make('assigned_to')
                                                 ->label(__('task.form.assign_to'))
                                                 ->options(function () {
@@ -177,13 +224,16 @@ class ActionBoard extends KanbanBoardPage
                                                 ->formatStateUsing(fn ($state, ?Task $record) => $record?->assigned_to)
                                                 ->default(fn (?Task $record) => $record?->assigned_to)
                                                 ->dehydrated(),
+
                                             Forms\Components\TextInput::make('title')
                                                 ->label(__('task.form.title'))
                                                 ->required()
                                                 ->placeholder(__('task.form.title_placeholder'))
                                                 ->columnSpanFull(),
+
                                             Forms\Components\Grid::make(3)
                                                 ->schema([
+
                                                     Forms\Components\DatePicker::make('due_date')
                                                         ->label(__('task.form.due_date'))
                                                         ->placeholder('dd/mm/yyyy')
@@ -191,6 +241,7 @@ class ActionBoard extends KanbanBoardPage
                                                         ->displayFormat('j/n/y')
                                                         ->default(now()->toDateString())
                                                         ->nullable(),
+
                                                     Forms\Components\Select::make('status')
                                                         ->label(__('task.form.status'))
                                                         ->options([
@@ -203,6 +254,7 @@ class ActionBoard extends KanbanBoardPage
                                                         ->searchable()
                                                         ->default($defaultStatus)
                                                         ->required(),
+
                                                     Forms\Components\Select::make('priority')
                                                         ->label(__('task.form.priority'))
                                                         ->options([
@@ -214,6 +266,7 @@ class ActionBoard extends KanbanBoardPage
                                                         ->searchable()
                                                         ->nullable(),
                                                 ]),
+
                                             Forms\Components\RichEditor::make('description')
                                                 ->label(__('task.form.description'))
                                                 ->toolbarButtons([
@@ -245,18 +298,7 @@ class ActionBoard extends KanbanBoardPage
                                                 })
                                                 ->nullable()
                                                 ->columnSpanFull(),
-                                            Forms\Components\Toggle::make('enable_attachments')
-                                                ->label(__('task.form.enable_attachments'))
-                                                ->default(false)
-                                                ->live()
-                                                ->dehydrated(false)
-                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                                    // When toggle is disabled, clear all attachments
-                                                    if (! $state) {
-                                                        $set('attachments', []);
-                                                    }
-                                                })
-                                                ->columnSpanFull(),
+
                                             Forms\Components\FileUpload::make('attachments')
                                                 ->label(function (Forms\Get $get) {
                                                     $attachments = $get('attachments') ?? [];
@@ -297,21 +339,6 @@ class ActionBoard extends KanbanBoardPage
                                                 })
                                                 ->visible(fn (Forms\Get $get) => (bool) $get('enable_attachments'))
                                                 ->columnSpanFull(),
-                                            Forms\Components\Toggle::make('enable_task_resources')
-                                                ->label(__('task.form.enable_task_resources'))
-                                                ->default(false)
-                                                ->live()
-                                                ->dehydrated(false)
-                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                                    // When toggle is disabled, clear all resources
-                                                    if (! $state) {
-                                                        $set('client', null);
-                                                        $set('project', []);
-                                                        $set('document', []);
-                                                        $set('important_url', []);
-                                                    }
-                                                })
-                                                ->columnSpanFull(),
                                         ]),
 
                                     // -----------------------------
@@ -330,6 +357,7 @@ class ActionBoard extends KanbanBoardPage
                                         })
                                         ->visible(fn (Forms\Get $get) => (bool) $get('enable_task_resources'))
                                         ->schema([
+
                                             // Client
                                             Forms\Components\Select::make('client')
                                                 ->label(__('task.form.client'))
@@ -419,9 +447,11 @@ class ActionBoard extends KanbanBoardPage
                                                         $set('important_url', []);
                                                     }
                                                 }),
+
                                             // Projects
                                             Forms\Components\Grid::make(1)
                                                 ->schema([
+
                                                     Forms\Components\Select::make('project')
                                                         ->label(__('task.form.project'))
                                                         ->helperText(__('task.form.project_helper'))
@@ -492,6 +522,7 @@ class ActionBoard extends KanbanBoardPage
                                                             // Set the documents
                                                             $set('document', $finalDocuments);
                                                         }),
+
                                                     // Documents
                                                     Forms\Components\Select::make('document')
                                                         ->label(__('task.form.document'))
@@ -553,6 +584,7 @@ class ActionBoard extends KanbanBoardPage
                                                             }
                                                         })
                                                         ->helperText(__('task.form.document_helper')),
+
                                                     // Important URLs
                                                     Forms\Components\Select::make('important_url')
                                                         ->label(__('task.form.important_url'))
@@ -623,6 +655,7 @@ class ActionBoard extends KanbanBoardPage
                                                         )
                                                         ->live()
                                                         ->columnSpanFull(),
+
                                                 ]),
 
                                         ]),
@@ -637,13 +670,16 @@ class ActionBoard extends KanbanBoardPage
                                             return count($extraInfo) ?: null;
                                         })
                                         ->schema([
+
                                             Forms\Components\Repeater::make('extra_information')
                                                 ->label(__('task.form.extra_information'))
                                                 ->schema([
+
                                                     Forms\Components\TextInput::make('title')
                                                         ->label(__('task.form.title'))
                                                         ->maxLength(100)
                                                         ->columnSpanFull(),
+
                                                     Forms\Components\RichEditor::make('value')
                                                         ->label(__('task.form.value'))
                                                         ->toolbarButtons([
@@ -674,6 +710,7 @@ class ActionBoard extends KanbanBoardPage
                                                             };
                                                         })
                                                         ->columnSpanFull(),
+
                                                 ])
                                                 ->defaultItems(1)
                                                 ->addActionLabel(__('task.form.add_extra_info'))
@@ -686,12 +723,18 @@ class ActionBoard extends KanbanBoardPage
                                                 ->live()
                                                 ->columnSpanFull()
                                                 ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+
                                         ]),
+
                                 ]),
+
                         ]),
+
                 ])
                 ->visible($mode === 'create'),
+
         ]);
+
     }
 
     /**
