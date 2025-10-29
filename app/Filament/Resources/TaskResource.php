@@ -249,6 +249,46 @@ return false;
                                                 })
                                                 ->visible(fn (Forms\Get $get) => (bool) $get('enable_attachments'))
                                                 ->columnSpanFull(),
+                                            Forms\Components\Toggle::make('enable_task_resources')
+                                                ->label(__('task.form.enable_task_resources'))
+                                                ->default(function (?Task $record) {
+                                                    // Enable if record has any resources
+                                                    if ($record) {
+                                                        $hasClient = ! empty($record->client);
+                                                        $hasProject = ! empty($record->project) && is_array($record->project);
+                                                        $hasDocument = ! empty($record->document) && is_array($record->document);
+                                                        $hasImportantUrl = ! empty($record->important_url) && is_array($record->important_url);
+
+                                                        return $hasClient || $hasProject || $hasDocument || $hasImportantUrl;
+                                                    }
+
+                                                    return false;
+                                                })
+                                                ->live()
+                                                ->dehydrated(false)
+                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
+                                                    // Double-check resources on hydration and enable toggle if needed
+                                                    if ($record) {
+                                                        $hasClient = ! empty($record->client);
+                                                        $hasProject = ! empty($record->project) && is_array($record->project);
+                                                        $hasDocument = ! empty($record->document) && is_array($record->document);
+                                                        $hasImportantUrl = ! empty($record->important_url) && is_array($record->important_url);
+
+                                                        if ($hasClient || $hasProject || $hasDocument || $hasImportantUrl) {
+                                                            $set('enable_task_resources', true);
+                                                        }
+                                                    }
+                                                })
+                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // When toggle is disabled, clear all resources
+                                                    if (! $state) {
+                                                        $set('client', null);
+                                                        $set('project', []);
+                                                        $set('document', []);
+                                                        $set('important_url', []);
+                                                    }
+                                                })
+                                                ->columnSpanFull(),
                                         ]),
 
                                     // -----------------------------
@@ -265,6 +305,7 @@ return false;
 
                                             return $client + count($project) + count($document) + count($importantUrl) ?: null;
                                         })
+                                        ->visible(fn (Forms\Get $get) => (bool) $get('enable_task_resources'))
                                         ->schema([
                                             // Client
                                             Forms\Components\Select::make('client')
@@ -309,6 +350,11 @@ return false;
                                                         ->label(__('task.form.create_client'))
                                                 )
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // Automatically enable toggle when client is selected
+                                                    if ($state) {
+                                                        $set('enable_task_resources', true);
+                                                    }
+
                                                     // If a client is selected, get all projects, documents, and important URLs for selected client
                                                     if ($state) {
                                                         // Get projects for selected client
@@ -390,8 +436,13 @@ return false;
                                                                 ->label(__('task.form.create_project'))
                                                         )
                                                         ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                            // If no projects are selected, clear all documents
+                                                            // Automatically enable toggle when projects are selected
                                                             $selectedProjects = $state ?? [];
+                                                            if (! empty($selectedProjects)) {
+                                                                $set('enable_task_resources', true);
+                                                            }
+
+                                                            // If no projects are selected, clear all documents
                                                             $currentDocuments = $get('document') ?? [];
 
                                                             if (empty($selectedProjects)) {
@@ -473,6 +524,13 @@ return false;
                                                                 ->openUrlInNewTab()
                                                                 ->label(__('task.form.create_document'))
                                                         )
+                                                        ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                            // Automatically enable toggle when documents are selected
+                                                            $selectedDocuments = $state ?? [];
+                                                            if (! empty($selectedDocuments) && is_array($selectedDocuments)) {
+                                                                $set('enable_task_resources', true);
+                                                            }
+                                                        })
                                                         ->helperText(__('task.form.document_helper')),
                                                     // Important URLs
                                                     Forms\Components\Select::make('important_url')
@@ -513,6 +571,13 @@ return false;
                                                                 ->openUrlInNewTab()
                                                                 ->label(__('task.form.create_important_url'))
                                                         )
+                                                        ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                            // Automatically enable toggle when important URLs are selected
+                                                            $selectedUrls = $state ?? [];
+                                                            if (! empty($selectedUrls) && is_array($selectedUrls)) {
+                                                                $set('enable_task_resources', true);
+                                                            }
+                                                        })
                                                         ->helperText(__('task.form.important_url_helper')),
 
                                                     // Display selected items with clickable links

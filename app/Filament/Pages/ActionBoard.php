@@ -297,6 +297,21 @@ class ActionBoard extends KanbanBoardPage
                                                 })
                                                 ->visible(fn (Forms\Get $get) => (bool) $get('enable_attachments'))
                                                 ->columnSpanFull(),
+                                            Forms\Components\Toggle::make('enable_task_resources')
+                                                ->label(__('task.form.enable_task_resources'))
+                                                ->default(false)
+                                                ->live()
+                                                ->dehydrated(false)
+                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // When toggle is disabled, clear all resources
+                                                    if (! $state) {
+                                                        $set('client', null);
+                                                        $set('project', []);
+                                                        $set('document', []);
+                                                        $set('important_url', []);
+                                                    }
+                                                })
+                                                ->columnSpanFull(),
                                         ]),
 
                                     // -----------------------------
@@ -313,6 +328,7 @@ class ActionBoard extends KanbanBoardPage
 
                                             return $client + count($project) + count($document) + count($importantUrl) ?: null;
                                         })
+                                        ->visible(fn (Forms\Get $get) => (bool) $get('enable_task_resources'))
                                         ->schema([
                                             // Client
                                             Forms\Components\Select::make('client')
@@ -357,6 +373,11 @@ class ActionBoard extends KanbanBoardPage
                                                         ->label(__('task.form.create_client'))
                                                 )
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // Automatically enable toggle when client is selected
+                                                    if ($state) {
+                                                        $set('enable_task_resources', true);
+                                                    }
+
                                                     // If a client is selected, get all projects, documents, and important URLs for selected client
                                                     if ($state) {
                                                         // Get projects for selected client
@@ -437,8 +458,13 @@ class ActionBoard extends KanbanBoardPage
                                                                 ->label(__('task.form.create_project'))
                                                         )
                                                         ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                                            // If no projects are selected, clear all documents
+                                                            // Automatically enable toggle when projects are selected
                                                             $selectedProjects = $state ?? [];
+                                                            if (! empty($selectedProjects)) {
+                                                                $set('enable_task_resources', true);
+                                                            }
+
+                                                            // If no projects are selected, clear all documents
                                                             $currentDocuments = $get('document') ?? [];
 
                                                             if (empty($selectedProjects)) {
@@ -519,6 +545,13 @@ class ActionBoard extends KanbanBoardPage
                                                                 ->openUrlInNewTab()
                                                                 ->label(__('task.form.create_document'))
                                                         )
+                                                        ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                            // Automatically enable toggle when documents are selected
+                                                            $selectedDocuments = $state ?? [];
+                                                            if (! empty($selectedDocuments) && is_array($selectedDocuments)) {
+                                                                $set('enable_task_resources', true);
+                                                            }
+                                                        })
                                                         ->helperText(__('task.form.document_helper')),
                                                     // Important URLs
                                                     Forms\Components\Select::make('important_url')
@@ -558,6 +591,13 @@ class ActionBoard extends KanbanBoardPage
                                                                 ->openUrlInNewTab()
                                                                 ->label(__('task.form.create_important_url'))
                                                         )
+                                                        ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                            // Automatically enable toggle when important URLs are selected
+                                                            $selectedUrls = $state ?? [];
+                                                            if (! empty($selectedUrls) && is_array($selectedUrls)) {
+                                                                $set('enable_task_resources', true);
+                                                            }
+                                                        })
                                                         ->helperText(__('task.form.important_url_helper')),
 
                                                     // Display selected items with clickable links

@@ -29,6 +29,7 @@ return [
         'extra_information_helper' => 'You have :count characters remaining',
         'extra_information_warning' => 'Extra information must be less than 500 characters',
         'enable_attachments' => 'Enable Attachments',
+        'enable_task_resources' => 'Enable Task Resources',
         'attachments' => 'Attachments',
         'attachments_helper' => 'Attach multiple files (PDF, images, videos) - max 20MB each',
         'selected_projects' => 'Selected Projects',
