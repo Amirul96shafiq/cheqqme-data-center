@@ -141,18 +141,19 @@ class ChatbotHistory extends Page implements HasTable
                     ->searchable(),
             ])
             ->actions([
-                ActionGroup::make([
-                    TableAction::make('download')
-                        ->label(__('chatbot.actions.download'))
-                        ->icon('heroicon-o-arrow-down-tray')
-                        ->color('gray')
-                        ->requiresConfirmation()
-                        ->modalHeading(__('chatbot.confirm.backup_download'))
-                        ->modalDescription(__('chatbot.confirm.backup_download_description'))
-                        ->action(function (ChatbotBackup $record) {
-                            $this->downloadBackup($record->id);
-                        }),
+                TableAction::make('download')
+                    ->label('')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('primary')
+                    ->tooltip(__('chatbot.actions.download'))
+                    ->requiresConfirmation()
+                    ->modalHeading(__('chatbot.confirm.backup_download'))
+                    ->modalDescription(__('chatbot.confirm.backup_download_description'))
+                    ->action(function (ChatbotBackup $record) {
+                        $this->downloadBackup($record->id);
+                    }),
 
+                ActionGroup::make([
                     TableAction::make('restore')
                         ->label(__('chatbot.actions.restore'))
                         ->icon('heroicon-o-arrow-path')
