@@ -171,6 +171,36 @@ return false;
                                                 })
                                                 ->nullable()
                                                 ->columnSpanFull(),
+                                            Forms\Components\Toggle::make('enable_attachments')
+                                                ->label(__('task.form.enable_attachments'))
+                                                ->default(function (?Task $record) {
+                                                    // Enable if record has attachments (already cast to array)
+                                                    if ($record && $record->attachments) {
+                                                        $attachments = is_array($record->attachments) ? $record->attachments : [];
+
+                                                        return ! empty($attachments);
+                                                    }
+
+                                                    return false;
+                                                })
+                                                ->live()
+                                                ->dehydrated(false)
+                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
+                                                    // Double-check attachments on hydration and enable toggle if needed
+                                                    if ($record && $record->attachments) {
+                                                        $attachments = is_array($record->attachments) ? $record->attachments : [];
+                                                        if (! empty($attachments)) {
+                                                            $set('enable_attachments', true);
+                                                        }
+                                                    }
+                                                })
+                                                ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                    // When toggle is disabled, clear all attachments
+                                                    if (! $state) {
+                                                        $set('attachments', []);
+                                                    }
+                                                })
+                                                ->columnSpanFull(),
                                             Forms\Components\FileUpload::make('attachments')
                                                 ->label(function (Forms\Get $get) {
                                                     $attachments = $get('attachments') ?? [];
@@ -199,7 +229,26 @@ return false;
                                                 ->preserveFilenames()
                                                 ->moveFiles()
                                                 ->live()
-                                                ->nullable(),
+                                                ->nullable()
+                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // Automatically enable toggle when files are uploaded
+                                                    if (! empty($state) && is_array($state)) {
+                                                        $set('enable_attachments', true);
+                                                    } elseif (empty($state)) {
+                                                        // Disable toggle when all files are removed
+                                                        $set('enable_attachments', false);
+                                                    }
+                                                })
+                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
+                                                    // Enable toggle when form loads with existing attachments
+                                                    if (! empty($state) && is_array($state)) {
+                                                        $set('enable_attachments', true);
+                                                    } elseif ($record && $record->attachments && is_array($record->attachments) && ! empty($record->attachments)) {
+                                                        $set('enable_attachments', true);
+                                                    }
+                                                })
+                                                ->visible(fn (Forms\Get $get) => (bool) $get('enable_attachments'))
+                                                ->columnSpanFull(),
                                         ]),
 
                                     // -----------------------------

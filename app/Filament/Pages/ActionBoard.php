@@ -245,6 +245,18 @@ class ActionBoard extends KanbanBoardPage
                                                 })
                                                 ->nullable()
                                                 ->columnSpanFull(),
+                                            Forms\Components\Toggle::make('enable_attachments')
+                                                ->label(__('task.form.enable_attachments'))
+                                                ->default(false)
+                                                ->live()
+                                                ->dehydrated(false)
+                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // When toggle is disabled, clear all attachments
+                                                    if (! $state) {
+                                                        $set('attachments', []);
+                                                    }
+                                                })
+                                                ->columnSpanFull(),
                                             Forms\Components\FileUpload::make('attachments')
                                                 ->label(function (Forms\Get $get) {
                                                     $attachments = $get('attachments') ?? [];
@@ -273,7 +285,18 @@ class ActionBoard extends KanbanBoardPage
                                                 ->preserveFilenames()
                                                 ->moveFiles()
                                                 ->live()
-                                                ->nullable(),
+                                                ->nullable()
+                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // Automatically enable toggle when files are uploaded
+                                                    if (! empty($state) && is_array($state)) {
+                                                        $set('enable_attachments', true);
+                                                    } elseif (empty($state)) {
+                                                        // Disable toggle when all files are removed
+                                                        $set('enable_attachments', false);
+                                                    }
+                                                })
+                                                ->visible(fn (Forms\Get $get) => (bool) $get('enable_attachments'))
+                                                ->columnSpanFull(),
                                         ]),
 
                                     // -----------------------------
