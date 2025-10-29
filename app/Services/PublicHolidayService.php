@@ -21,14 +21,53 @@ class PublicHolidayService
     }
 
     /**
-     * Get holidays for a specific country and date range
+     * Get holidays for a specific country and date range.
+     *
+     * Combines external API holidays (if configured) with locally stored
+     * custom/public holidays from the database. Results are cached.
      */
     public function getHolidaysForCountry(string $countryCode, Carbon $startDate, Carbon $endDate): Collection
     {
         $cacheKey = "holidays_{$countryCode}_{$startDate->format('Y-m-d')}_{$endDate->format('Y-m-d')}";
 
         return Cache::remember($cacheKey, $this->cacheTtlHours * 3600, function () use ($countryCode, $startDate, $endDate) {
-            return $this->fetchHolidaysFromAPI($countryCode, $startDate, $endDate);
+            $apiHolidays = collect();
+            if ($this->googleCalendarKey) {
+                $apiHolidays = $this->fetchHolidaysFromAPIOnly($countryCode, $startDate, $endDate);
+            }
+
+            $dbHolidays = $this->getHolidaysFromDatabase($countryCode, $startDate, $endDate);
+
+            // Merge and unique by name+date to avoid duplicates when names match
+            $merged = $apiHolidays->merge($dbHolidays)
+                ->unique(function ($h) {
+                    return ($h->name ?? '').'|'.(($h->date instanceof Carbon) ? $h->date->toDateString() : (string) $h->date);
+                })
+                ->sortBy('date')
+                ->values();
+
+            return $merged;
+        });
+    }
+
+    /**
+     * Fetch only API holidays within a date range (no DB fallback),
+     * filtering by the provided start/end dates.
+     */
+    protected function fetchHolidaysFromAPIOnly(string $countryCode, Carbon $startDate, Carbon $endDate): Collection
+    {
+        $allHolidays = collect();
+
+        $startYear = $startDate->year;
+        $endYear = $endDate->year;
+
+        for ($year = $startYear; $year <= $endYear; $year++) {
+            $yearHolidays = $this->fetchFromGoogleCalendar($countryCode, $year);
+            $allHolidays = $allHolidays->merge($yearHolidays);
+        }
+
+        return $allHolidays->filter(function ($holiday) use ($startDate, $endDate) {
+            return $holiday->date->between($startDate, $endDate);
         });
     }
 
@@ -50,14 +89,23 @@ class PublicHolidayService
                 $allHolidays = $allHolidays->merge($yearHolidays);
             }
 
-            if ($allHolidays->isNotEmpty()) {
-                return $allHolidays->filter(function ($holiday) use ($startDate, $endDate) {
-                    return $holiday->date->between($startDate, $endDate);
-                });
-            }
+            // Filter by range
+            $apiRange = $allHolidays->filter(function ($holiday) use ($startDate, $endDate) {
+                return $holiday->date->between($startDate, $endDate);
+            });
+
+            // Merge with DB instead of replacing, to include custom holidays
+            $dbHolidays = $this->getHolidaysFromDatabase($countryCode, $startDate, $endDate);
+
+            return $apiRange->merge($dbHolidays)
+                ->unique(function ($h) {
+                    return ($h->name ?? '').'|'.(($h->date instanceof Carbon) ? $h->date->toDateString() : (string) $h->date);
+                })
+                ->sortBy('date')
+                ->values();
         }
 
-        // Fallback to local database
+        // No API key: return only DB holidays
         return $this->getHolidaysFromDatabase($countryCode, $startDate, $endDate);
     }
 
