@@ -276,14 +276,10 @@ class PhoneNumberResource extends Resource
                 TextColumn::make('id')
                     ->label(__('phonenumber.table.id'))
                     ->sortable(),
-                TextColumn::make('title')
+                Tables\Columns\ViewColumn::make('title')
                     ->label(__('phonenumber.table.title'))
-                    ->searchable()
-                    ->sortable()
-                    ->limit(20)
-                    ->tooltip(function ($record) {
-                        return $record->title;
-                    }),
+                    ->view('filament.resources.phone-number-resource.title-column')
+                    ->sortable(),
                 TextColumn::make('country_from_phone')
                     ->label(__('phonenumber.table.country'))
                     ->getStateUsing(function ($record) {

@@ -954,22 +954,10 @@ class MeetingLinkResource extends Resource
                 Tables\Columns\TextColumn::make('id')
                     ->label(__('meetinglink.table.id')),
 
-                Tables\Columns\TextColumn::make('title')
+                Tables\Columns\ViewColumn::make('title')
                     ->label(__('meetinglink.table.title'))
-                    ->searchable()
-                    ->limit(30)
-                    ->formatStateUsing(fn ($record) => static::generatePreviewTitleFromValues(
-                        $record->title ?: 'CheQQMeeting',
-                        $record->meeting_platform ?: 'Google Meet',
-                        $record->meeting_start_time ? $record->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-                        $record->meeting_duration ?: 60
-                    ))
-                    ->tooltip(fn ($record) => static::generatePreviewTitleFromValues(
-                        $record->title ?: 'CheQQMeeting',
-                        $record->meeting_platform ?: 'Google Meet',
-                        $record->meeting_start_time ? $record->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-                        $record->meeting_duration ?: 60
-                    )),
+                    ->view('filament.resources.meeting-link-resource.title-column')
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('meeting_platform')
                     ->label(__('meetinglink.table.platform'))
