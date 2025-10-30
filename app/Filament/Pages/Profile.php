@@ -215,6 +215,10 @@ class Profile extends EditProfile
                                     ->image()
                                     ->imageEditor()
                                     ->circleCropper()
+                                    ->imageResizeMode('cover')
+                                    ->imageCropAspectRatio('1:1')
+                                    ->imageResizeTargetWidth('128')
+                                    ->imageResizeTargetHeight('128')
                                     ->directory('avatars')
                                     ->moveFiles()
                                     ->columnSpanFull()
@@ -229,6 +233,9 @@ class Profile extends EditProfile
                                         if ($oldAvatar && Storage::exists($oldAvatar)) {
                                             Storage::delete($oldAvatar);
                                         }
+
+                                        // Server-side ensure 128x128 crop & resize
+                                        $this->resizeAvatar($state);
                                     }),
 
                                 Forms\Components\FileUpload::make('cover_image')
@@ -1210,6 +1217,37 @@ class Profile extends EditProfile
         } catch (\Exception $e) {
             // Log error but don't break the upload process
             \Log::error('Failed to resize cover image: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Crop center-square and resize avatar to exactly 128x128.
+     */
+    private function resizeAvatar(TemporaryUploadedFile $file): void
+    {
+        try {
+            $manager = new ImageManager(new Driver);
+
+            $image = $manager->read($file->getRealPath());
+
+            $width = $image->width();
+            $height = $image->height();
+
+            // Crop to center square first to avoid distortion
+            $square = min($width, $height);
+            $x = (int) max(0, floor(($width - $square) / 2));
+            $y = (int) max(0, floor(($height - $square) / 2));
+            if ($square > 0) {
+                $image->crop($square, $square, $x, $y);
+            }
+
+            // Resize to 128x128
+            $image->resize(128, 128);
+
+            // Save optimized avatar (90% quality)
+            $image->save($file->getRealPath(), 90);
+        } catch (\Exception $e) {
+            \Log::error('Failed to resize avatar: '.$e->getMessage());
         }
     }
 }
