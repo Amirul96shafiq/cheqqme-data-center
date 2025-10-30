@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers;
 use App\Filament\Resources\ClientResource\RelationManagers\ClientActivityLogRelationManager;
-use App\Helpers\ClientFormatter;
 use App\Models\Client;
 use Closure;
 use Filament\Forms\Components\Grid;
@@ -43,9 +42,9 @@ class ClientResource extends Resource
     public static function getGlobalSearchResultDetails($record): array // This method defines the details shown in global search results
     {
         return [
-            __('client.search.pic_email') => $record->pic_email,
-            __('client.search.pic_contact_number') => $record->pic_contact_number,
-            __('client.search.company_name') => $record->company_name,
+            __('client.search.pic_email') => $record->pic_email ?? '-',
+            __('client.search.pic_contact_number') => $record->pic_contact_number ?? '-',
+            __('client.search.company_name') => $record->company_name ?? '-',
         ];
     }
 
@@ -79,11 +78,6 @@ class ClientResource extends Resource
                                         ",
                                 ])
                                 ->extraAlpineAttributes(['x-ref' => 'picName']),
-
-                            TextInput::make('pic_email')
-                                ->label(__('client.form.pic_email'))
-                                ->email()
-                                ->required(),
 
                             PhoneInput::make('pic_contact_number')
                                 ->label(__('client.form.pic_contact_number'))
@@ -146,6 +140,11 @@ class ClientResource extends Resource
 
                                     return $digits;
                                 }),
+
+                            TextInput::make('pic_email')
+                                ->label(__('client.form.pic_email'))
+                                ->email()
+                                ->nullable(),
                         ]),
                     ]),
 
@@ -332,16 +331,12 @@ class ClientResource extends Resource
                 TextColumn::make('id')
                     ->label(__('client.table.id'))
                     ->sortable(),
-                TextColumn::make('pic_name')
+
+                Tables\Columns\ViewColumn::make('pic_name')
                     ->label(__('client.table.pic_name'))
-                    ->searchable()
-                    ->sortable()
-                    ->formatStateUsing(function ($state, $record) {
-                        return ClientFormatter::formatClientDisplay($state, $record->company_name);
-                    })
-                    ->tooltip(function ($record) {
-                        return __('client.table.tooltip.full_name').": {$record->pic_name}".', '.__('client.table.tooltip.company').": {$record->company_name}";
-                    }),
+                    ->view('filament.resources.client-resource.pic-name-column')
+                    ->sortable(),
+
                 TextColumn::make('country_from_phone')
                     ->label(__('client.table.country'))
                     ->getStateUsing(function ($record) {
@@ -369,25 +364,30 @@ class ClientResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
+
                 TextColumn::make('pic_contact_number')
                     ->label(__('client.table.pic_contact_number'))
                     ->searchable()
                     ->toggleable(),
+
                 TextColumn::make('project_count')
                     ->label(__('client.table.project_count'))
                     ->badge()
                     ->alignCenter()
                     ->toggleable(),
+
                 TextColumn::make('important_url_count')
                     ->label(__('client.table.important_url_count'))
                     ->badge()
                     ->alignCenter()
                     ->toggleable(),
+
                 TextColumn::make('created_at')
                     ->label(__('client.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
                     ->sortable(),
+
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('client.table.updated_at_by'))
                     ->view('filament.resources.client-resource.updated-by-column')
