@@ -147,7 +147,6 @@ class DocumentResource extends Resource
                                         'internal' => __('document.form.internal'),
                                     ])
                                     ->searchable()
-                                    ->required()
                                     ->default('internal')
                                     ->live(),
                             ]),
@@ -345,14 +344,12 @@ class DocumentResource extends Resource
                 TextColumn::make('id')
                     ->label('ID')
                     ->sortable(),
-                TextColumn::make('title')
+
+                Tables\Columns\ViewColumn::make('title')
                     ->label(__('document.table.title'))
-                    ->sortable()
-                    ->searchable()
-                    ->limit(20)
-                    ->tooltip(function ($record) {
-                        return $record->title;
-                    }),
+                    ->view('filament.resources.document-resource.title-column')
+                    ->sortable(),
+
                 TextColumn::make('type')
                     ->label(__('document.table.type'))
                     ->badge()
@@ -361,31 +358,18 @@ class DocumentResource extends Resource
                         'external' => __('document.table.external'),
                         default => ucfirst($state),
                     }),
-                TextColumn::make('project.title')
-                    ->label(__('document.table.project'))
-                    ->sortable()
-                    ->searchable()
-                    ->limit(20)
-                    ->tooltip(function ($record) {
-                        return $record->project?->title ?? '';
-                    })
-                    ->url(function ($record) {
-                        if ($record->project_id) {
-                            return ProjectResource::getUrl('edit', ['record' => $record->project_id]);
-                        }
 
-                        return null;
-                    })
-                    ->color(function ($record) {
-                        return $record->project_id ? 'primary' : 'default';
-                    })
-                    ->openUrlInNewTab()
-                    ->toggleable(),
+                Tables\Columns\ViewColumn::make('project_id')
+                    ->label(__('document.table.project'))
+                    ->view('filament.resources.document-resource.project-column')
+                    ->sortable(),
+
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
                     ->sortable(),
+
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('document.table.updated_at_by'))
                     ->view('filament.resources.document-resource.updated-by-column')
@@ -398,6 +382,7 @@ class DocumentResource extends Resource
                     ->preload()
                     ->searchable()
                     ->multiple(),
+
                 SelectFilter::make('type')
                     ->label(__('document.table.type'))
                     ->options([
@@ -407,6 +392,7 @@ class DocumentResource extends Resource
                     ->multiple()
                     ->preload()
                     ->searchable(),
+
                 TrashedFilter::make()
                     ->label(__('document.filter.trashed'))
                     ->searchable(), // To show trashed or only active
@@ -443,8 +429,11 @@ class DocumentResource extends Resource
                         return ($record->type === 'internal' && $record->file_path) ||
                             ($record->type === 'external' && $record->url);
                     }),
+
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
+
+                Tables\Actions\EditAction::make()
+                    ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
