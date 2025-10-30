@@ -51,7 +51,7 @@ class ProjectResource extends Resource
         return [
             __('project.search.title') => $record->title,
             __('project.search.client') => optional($record->client)->company_name,
-            __('project.search.status') => $record->status,
+            __('project.search.status') => $record->status ?? '-',
         ];
     }
 
@@ -113,9 +113,8 @@ class ProjectResource extends Resource
                                 Select::make('status')
                                     ->label(__('project.form.project_status'))
                                     ->options(['Planning' => __('project.form.planning'), 'In Progress' => __('project.form.in_progress'), 'Completed' => __('project.form.completed')])
-                                    ->default('Planning')
                                     ->searchable()
-                                    ->required(),
+                                    ->nullable(),
                             ]),
 
                         TextInput::make('project_url')
@@ -288,38 +287,13 @@ class ProjectResource extends Resource
                     ->tooltip(function ($record) {
                         return $record->title;
                     }),
-                TextColumn::make('client.pic_name')
+                Tables\Columns\ViewColumn::make('client_id')
                     ->label(__('project.table.client'))
-                    ->sortable()
-                    ->searchable()
-                    ->formatStateUsing(function ($state, $record) {
-                        return ClientFormatter::formatClientDisplay($state, $record->client->company_name);
-                    })
-                    ->tooltip(function ($record) {
-                        return __('project.table.tooltip.full_name').": {$record->client->pic_name}".', '.__('project.table.tooltip.company').": {$record->client->company_name}";
-                    })
-                    ->url(function ($record) {
-                        if ($record->client_id) {
-                            return ClientResource::getUrl('edit', ['record' => $record->client_id]);
-                        }
-
-                        return null;
-                    })
-                    ->color(function ($record) {
-                        return $record->client_id ? 'primary' : 'default';
-                    })
-                    ->openUrlInNewTab()
-                    ->toggleable(),
-                TextColumn::make('status')
-                    ->badge()
-                    ->color('primary')
-                    ->alignCenter()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'Planning' => __('project.table.planning'),
-                        'In Progress' => __('project.table.in_progress'),
-                        'Completed' => __('project.table.completed'),
-                        default => $state,
-                    })
+                    ->view('filament.resources.project-resource.client-column')
+                    ->sortable(),
+                Tables\Columns\ViewColumn::make('status')
+                    ->label(__('project.table.status'))
+                    ->view('filament.resources.project-resource.status-column')
                     ->sortable(),
                 TextColumn::make('document_count')
                     ->label(__('project.table.document_count'))
