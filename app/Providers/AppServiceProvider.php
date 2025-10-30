@@ -240,9 +240,14 @@ class AppServiceProvider extends ServiceProvider
                             }, 100);
                         }
                         
-                        // Initialize when DOM is ready
-                        document.addEventListener('DOMContentLoaded', function() {
-                            startPolling();
+                        // Initialize after full page load to avoid competing with critical assets
+                        window.addEventListener('load', function() {
+                            // Use requestIdleCallback when available for extra deferment
+                            if (window.requestIdleCallback) {
+                                window.requestIdleCallback(() => startPolling());
+                            } else {
+                                startPolling();
+                            }
                             
                             // Force refresh function for manual updates
                             window.forceActionBoardBadgeRefresh = function() {
