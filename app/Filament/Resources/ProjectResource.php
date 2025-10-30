@@ -279,14 +279,10 @@ class ProjectResource extends Resource
                 TextColumn::make('id')
                     ->label(__('project.table.id'))
                     ->sortable(),
-                TextColumn::make('title')
+                Tables\Columns\ViewColumn::make('title')
                     ->label(__('project.table.title'))
-                    ->searchable()
-                    ->sortable()
-                    ->limit(20)
-                    ->tooltip(function ($record) {
-                        return $record->title;
-                    }),
+                    ->view('filament.resources.project-resource.title-column')
+                    ->sortable(),
                 Tables\Columns\ViewColumn::make('client_id')
                     ->label(__('project.table.client'))
                     ->view('filament.resources.project-resource.client-column')
