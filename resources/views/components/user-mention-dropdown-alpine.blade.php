@@ -143,10 +143,10 @@ function userMentionDropdown() {
         selectionLock: false,
         allUsers: [], // Cache for all users
         keydownHandler: null,
+        isLoadingAllUsers: false,
         
         init() {
-            // Load all users once on initialization
-            this.loadAllUsers();
+            // Do not fetch on load. We'll fetch on-demand when the dropdown opens.
             
             // Listen for global events
             window.addEventListener('showMentionDropdown', (e) => {
@@ -156,6 +156,10 @@ function userMentionDropdown() {
                 this.dropdownX = e.detail.x || 0;
                 this.dropdownY = e.detail.y || 0;
                 this.selectedIndex = 0;
+                // On-demand load if users not yet cached (extra safety)
+                if (!this.allUsers.length && !this.isLoadingAllUsers) {
+                    this.loadAllUsers().then(() => this.searchUsers());
+                }
                 if (e.detail.hasExtraAt) {
                     this.extraAtActive = true;
                     this.errorMessage = "{{ __('comments.mentions.@_not_allowed') }}";
@@ -181,6 +185,7 @@ function userMentionDropdown() {
         
         async loadAllUsers() {
             try {
+                this.isLoadingAllUsers = true;
                 const response = await fetch('/api/users/mention-search');
                 if (response.ok) {
                     const data = await response.json();
@@ -189,6 +194,9 @@ function userMentionDropdown() {
             } catch (error) {
                 console.error('Failed to load users for mentions:', error);
                 this.allUsers = [];
+            }
+            finally {
+                this.isLoadingAllUsers = false;
             }
         },
         
