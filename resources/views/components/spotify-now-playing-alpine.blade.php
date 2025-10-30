@@ -1,6 +1,6 @@
 @props(['user', 'context' => 'modal', 'modalId' => null])
 
-@if($user->hasSpotifyAuth())
+@if($user->hasSpotifyAuth() && ((($user->online_status ?? null) !== \App\Services\OnlineStatus\StatusConfig::INVISIBLE) || (auth()->id() === $user->id)))
 <div 
     class="spotify-now-playing-alpine"
     x-data="spotifyPlayerAlpine('{{ $context }}', {{ $user->id }}, @if($context === 'modal') false @else true @endif, '{{ $modalId }}')"
