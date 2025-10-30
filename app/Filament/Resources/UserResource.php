@@ -305,7 +305,9 @@ class UserResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->getStateUsing(function ($record) {
-                        return $record->phone ?? '-';
+                        $phone = $record->phone;
+
+                        return filled($phone) ? $phone : '-';
                     })
                     ->limit(20)
                     ->toggleable(),
