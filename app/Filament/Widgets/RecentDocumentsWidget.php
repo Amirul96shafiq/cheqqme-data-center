@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Document;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -22,18 +23,12 @@ class RecentDocumentsWidget extends TableWidget
                 ->label(__('dashboard.recent_documents.id'))
                 ->sortable()
                 ->url(fn ($record) => route('filament.admin.resources.documents.edit', $record)),
-            TextColumn::make('title')
+            ViewColumn::make('title')
                 ->label(__('dashboard.recent_documents.document_title'))
-                ->limit(10)
-                ->tooltip(function ($record) {
-                    return $record->title;
-                }),
-            TextColumn::make('project.title')
+                ->view('filament.widgets.recent-documents-title-column'),
+            ViewColumn::make('project_id')
                 ->label(__('dashboard.recent_documents.project_title'))
-                ->limit(10)
-                ->tooltip(function ($record) {
-                    return $record->project->title;
-                }),
+                ->view('filament.widgets.recent-documents-project-column'),
             TextColumn::make('created_at')
                 ->label(__('dashboard.recent_documents.created_at'))
                 ->dateTime('j/n/y, h:i A')

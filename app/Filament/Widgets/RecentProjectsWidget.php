@@ -6,6 +6,7 @@ use App\Models\Project;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -23,25 +24,12 @@ class RecentProjectsWidget extends TableWidget
                 ->label(__('dashboard.recent_projects.id'))
                 ->sortable()
                 ->url(fn ($record) => route('filament.admin.resources.projects.edit', $record)),
-            TextColumn::make('title')
+            ViewColumn::make('title')
                 ->label(__('dashboard.recent_projects.project_title'))
-                ->limit(10)
-                ->tooltip(function ($record) {
-                    return $record->title;
-                }),
-            TextColumn::make('status')
-                ->badge()
-                ->colors([
-                    'primary' => 'Planning',
-                    'info' => 'In Progress',
-                    'success' => 'Completed',
-                ])
-                ->formatStateUsing(fn (string $state): string => match ($state) {
-                    'Planning' => __('dashboard.recent_projects.planning'),
-                    'In Progress' => __('dashboard.recent_projects.in_progress'),
-                    'Completed' => __('dashboard.recent_projects.completed'),
-                    default => $state,
-                }),
+                ->view('filament.widgets.recent-projects-title-column'),
+            ViewColumn::make('status')
+                ->label(__('dashboard.recent_projects.status'))
+                ->view('filament.widgets.recent-projects-status-column'),
             TextColumn::make('created_at')
                 ->label(__('dashboard.recent_projects.created_at'))
                 ->dateTime('j/n/y, h:i A')
