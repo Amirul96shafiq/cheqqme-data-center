@@ -267,14 +267,10 @@ class UserResource extends Resource
                     ->sortable()
                     ->limit(30),
 
-                TextColumn::make('email')
+                Tables\Columns\ViewColumn::make('email')
                     ->label(__('user.table.email'))
-                    ->searchable()
-                    ->sortable()
-                    ->limit(30)
-                    ->tooltip(function ($record) {
-                        return strlen($record->email) > 40 ? substr($record->email, 0, length: 40).'...' : $record->email;
-                    }),
+                    ->view('filament.resources.user-resource.email-column')
+                    ->sortable(),
 
                 TextColumn::make('country_from_phone')
                     ->label(__('user.table.country'))
