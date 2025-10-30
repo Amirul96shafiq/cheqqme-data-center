@@ -302,61 +302,20 @@ class ImportantUrlResource extends Resource
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
                     ->sortable(),
-                TextColumn::make('title')
+                Tables\Columns\ViewColumn::make('title')
                     ->label(__('importanturl.table.title'))
-                    ->sortable()
-                    ->searchable()
-                    ->limit(15)
-                    ->tooltip(function ($record) {
-                        return $record->title;
-                    }),
+                    ->view('filament.resources.important-url-resource.title-column')
+                    ->sortable(),
 
-                TextColumn::make('client.pic_name')
+                Tables\Columns\ViewColumn::make('client_id')
                     ->label(__('importanturl.table.client'))
-                    ->searchable()
-                    ->sortable()
-                    ->formatStateUsing(function ($state, $record) {
-                        return ClientFormatter::formatClientDisplay($state, $record->client?->company_name);
-                    })
-                    ->tooltip(function ($record) {
-                        return __('importanturl.table.tooltip.full_name').": {$record->client->pic_name}".', '.__('importanturl.table.tooltip.company').": {$record->client->company_name}";
-                    })
-                    ->url(function ($record) {
-                        if ($record->client_id) {
-                            return ClientResource::getUrl('edit', ['record' => $record->client_id]);
-                        }
+                    ->view('filament.resources.important-url-resource.client-column')
+                    ->sortable(),
 
-                        return null;
-                    })
-                    ->color(function ($record) {
-                        return $record->client_id ? 'primary' : 'default';
-                    })
-                    ->openUrlInNewTab()
-                    ->toggleable(),
-
-                TextColumn::make('project.title')
+                Tables\Columns\ViewColumn::make('project_id')
                     ->label(__('importanturl.table.project'))
-                    ->sortable()
-                    ->searchable()
-                    ->limit(15)
-                    ->getStateUsing(function ($record) {
-                        return $record->project?->title ?? '-';
-                    })
-                    ->tooltip(function ($record) {
-                        return $record->project?->title ?? '';
-                    })
-                    ->url(function ($record) {
-                        if ($record->project_id) {
-                            return ProjectResource::getUrl('edit', ['record' => $record->project_id]);
-                        }
-
-                        return null;
-                    })
-                    ->color(function ($record) {
-                        return $record->project_id ? 'primary' : 'default';
-                    })
-                    ->openUrlInNewTab()
-                    ->toggleable(),
+                    ->view('filament.resources.important-url-resource.project-column')
+                    ->sortable(),
 
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))
