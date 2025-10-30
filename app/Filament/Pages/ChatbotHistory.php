@@ -13,6 +13,7 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
@@ -61,12 +62,10 @@ class ChatbotHistory extends Page implements HasTable
                 TextColumn::make('id')
                     ->label(__('chatbot.table.backup_id')),
 
-                TextColumn::make('backup_name')
+                ViewColumn::make('backup_name')
                     ->label(__('chatbot.table.backup_name'))
-                    ->sortable()
-                    ->searchable()
-                    ->limit(20)
-                    ->tooltip(fn ($record) => $record->backup_name),
+                    ->view('filament.pages.backup-name-column')
+                    ->sortable(),
 
                 TextColumn::make('backup_type')
                     ->label(__('chatbot.table.backup_type'))
