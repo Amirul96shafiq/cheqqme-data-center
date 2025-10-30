@@ -279,28 +279,34 @@ class ProjectResource extends Resource
                 TextColumn::make('id')
                     ->label(__('project.table.id'))
                     ->sortable(),
+
                 Tables\Columns\ViewColumn::make('title')
                     ->label(__('project.table.title'))
                     ->view('filament.resources.project-resource.title-column')
                     ->sortable(),
+
                 Tables\Columns\ViewColumn::make('client_id')
                     ->label(__('project.table.client'))
                     ->view('filament.resources.project-resource.client-column')
                     ->sortable(),
+
                 Tables\Columns\ViewColumn::make('status')
                     ->label(__('project.table.status'))
                     ->view('filament.resources.project-resource.status-column')
                     ->sortable(),
+
                 TextColumn::make('document_count')
                     ->label(__('project.table.document_count'))
                     ->badge()
                     ->alignCenter()
                     ->toggleable(),
+
                 TextColumn::make(__('created_at'))
                     ->label(__('project.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
                     ->sortable(),
+
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('project.table.updated_at_by'))
                     ->view('filament.resources.project-resource.updated-by-column')
@@ -316,6 +322,7 @@ class ProjectResource extends Resource
                     ->preload()
                     ->searchable()
                     ->multiple(),
+
                 SelectFilter::make(__('project.filter.status'))
                     ->options([
                         'Planning' => __('project.filter.planning'),
@@ -325,6 +332,7 @@ class ProjectResource extends Resource
                     ->multiple()
                     ->preload()
                     ->searchable(),
+                    
                 TrashedFilter::make()
                     ->label(__('project.filter.trashed'))
                     ->searchable(), // To show trashed or only active
