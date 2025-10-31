@@ -241,17 +241,51 @@
                         {{-- Assigned badge --}}
                         <div class="w-fit flex gap-1 items-center" 
                              data-assigned-user-ids="{{ implode(',', $assignedUserIds) }}">
-                            <x-flowforge::card-badge
-                                :label="$assignedBadge['label']"
-                                :value="$assignedBadge['value']"
-                                :color="$assignedBadge['color'] ?? 'default'"
-                                :icon="$assignedBadge['icon'] ?? null"
-                                :type="$assignedBadge['type'] ?? null"
-                                :badge="$assignedBadge['badge'] ?? null"
-                                :rounded="$assignedBadge['rounded'] ?? 'md'"
-                                :size="$assignedBadge['size'] ?? 'md'"
-                                :tooltip="$attributes['assigned_to_full_username']['value'] ?? null"
-                            />
+                            @php
+                                // Get the main assigned user from the Task model's first_assigned_user attribute
+                                // This ensures we get the correct user that matches the badge display
+                                $mainAssignedUser = null;
+                                if (!empty($record['id'])) {
+                                    $task = \App\Models\Task::withTrashed()->find($record['id']);
+                                    if ($task) {
+                                        $mainAssignedUser = $task->first_assigned_user;
+                                    }
+                                }
+                                
+                                // Fallback to array lookup if Task model lookup fails
+                                if (!$mainAssignedUser && !empty($assignedUserIds)) {
+                                    $firstAssignedUserId = $assignedUserIds[0];
+                                    $mainAssignedUser = \App\Models\User::withTrashed()->find($firstAssignedUserId);
+                                }
+                            @endphp
+
+                            @if($mainAssignedUser)
+                                <x-clickable-avatar-wrapper :user="$mainAssignedUser">
+                                    <x-flowforge::card-badge
+                                        :label="$assignedBadge['label']"
+                                        :value="$assignedBadge['value']"
+                                        :color="$assignedBadge['color'] ?? 'default'"
+                                        :icon="$assignedBadge['icon'] ?? null"
+                                        :type="$assignedBadge['type'] ?? null"
+                                        :badge="$assignedBadge['badge'] ?? null"
+                                        :rounded="$assignedBadge['rounded'] ?? 'md'"
+                                        :size="$assignedBadge['size'] ?? 'md'"
+                                        :tooltip="$attributes['assigned_to_full_username']['value'] ?? null"
+                                    />
+                                </x-clickable-avatar-wrapper>
+                            @else
+                                <x-flowforge::card-badge
+                                    :label="$assignedBadge['label']"
+                                    :value="$assignedBadge['value']"
+                                    :color="$assignedBadge['color'] ?? 'default'"
+                                    :icon="$assignedBadge['icon'] ?? null"
+                                    :type="$assignedBadge['type'] ?? null"
+                                    :badge="$assignedBadge['badge'] ?? null"
+                                    :rounded="$assignedBadge['rounded'] ?? 'md'"
+                                    :size="$assignedBadge['size'] ?? 'md'"
+                                    :tooltip="$attributes['assigned_to_full_username']['value'] ?? null"
+                                />
+                            @endif
                             @if($extraAssignedBadge)
                                 <x-flowforge::card-badge
                                     :label="$extraAssignedBadge['label']"

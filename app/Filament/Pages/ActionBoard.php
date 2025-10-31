@@ -836,6 +836,7 @@ class ActionBoard extends KanbanBoardPage
                 ->modalHeading(__('action.modal.create_title'))
                 ->modalWidth('5xl')
                 ->form(function (Forms\Form $form) {
+                
                     // Use database default status 'todo'
                     $col = 'todo';
 

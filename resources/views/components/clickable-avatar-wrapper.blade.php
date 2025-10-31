@@ -62,7 +62,7 @@
             this.$dispatch('modal-hide', { userId: {{ $user->id }}, modalId: this.modalId });
         }
     }"
-    @click.prevent="openModal($event)"
+    @click.stop.prevent="openModal($event)"
     class="cursor-pointer"
     x-init="$watch('showModal', value => {
         if (value) {
