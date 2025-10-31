@@ -40,6 +40,9 @@ mcp-server/node_modules/
 .DS_Store
 Thumbs.db
 
+#Notepads
+_notepads
+
 # Misc
 *.log
 .phpactor.json
