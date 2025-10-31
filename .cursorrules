@@ -57,88 +57,17 @@ npx @playwright/mcp --browser chrome --viewport-size "1920,1080"
 npx @playwright/mcp --device "iPhone 15"
 ```
 
-## Laravel Development Guidelines
+## Laravel Development
 
-### Code Standards
+See `.cursor/rules/laravel-conventions.mdc` and `.cursor/rules/coding-standards.mdc` for detailed guidelines.
 
--   **Functions**: Use verbs; variables use nouns. Avoid abbreviations
--   **Types**: Annotate function signatures and exported APIs in TypeScript
--   **Control Flow**: Use guard clauses and early returns; avoid deep nesting
--   **Comments**: Only for complex logic; explain why, not how
--   **Formatting**: Match existing style; don't reformat unrelated code
+**Key Points:**
 
-### Laravel Best Practices
-
--   **Eloquent**: Use relationships and eager loading; avoid raw `DB::` unless necessary
--   **Validation**: Create Form Requests for validation; avoid inline controller validation
--   **Routing**: Use named routes and `route()` for URL generation
--   **Jobs**: Use queued jobs for slow tasks
--   **Testing**: Prefer feature tests; use model factories
-
-### Filament Development
-
--   **Generators**: Use Filament Artisan generators with `--no-interaction`
--   **SDUI Patterns**: Configure Forms, Tables, Actions declaratively
--   **Relationships**: Use `relationship()` method on form components
--   **Resources**: Place in `app/Filament/Resources/`
--   **Notifications**: Use for user feedback within actions
-
-### Testing Guidelines
-
--   **Feature Tests**: Prefer over unit tests for business logic
--   **Factories**: Use model factories in tests
--   **Filament Testing**: Authenticate and set current panel when required
--   **Livewire Testing**: Use `Livewire::test()` for component interactions
-
-## File Organization
-
--   **Filament Resources**: `app/Filament/Resources/`
--   **Livewire Components**: `app/Livewire/` with `App\Livewire` namespace
--   **Blade Components**: `resources/views/components/`
--   **Models**: `app/Models/`
--   **Controllers**: `app/Http/Controllers/`
-
-## Development Workflow
-
--   **Artisan Commands**: Always pass `--no-interaction`
--   **Code Formatting**: Run `vendor/bin/pint --dirty` after edits
--   **Testing**: Run `php artisan test` before committing
--   **Documentation**: Use Boost tools for Laravel-specific queries
-
-## Error Handling
-
--   **Early Returns**: Handle edge cases first
--   **Guard Clauses**: Avoid deep nesting
--   **Type Hints**: Add proper type hints to function signatures
--   **Exception Handling**: Don't swallow exceptions silently
-
-## Performance Considerations
-
--   **Eager Loading**: Prevent N+1 query problems
--   **Caching**: Use appropriate caching strategies
--   **Queue Jobs**: Use for time-consuming operations
--   **Database Indexes**: Add for frequently queried columns
-
-## Security Best Practices
-
--   **Validation**: Always validate input data
--   **Authorization**: Use Laravel's built-in auth features
--   **CSRF Protection**: Ensure forms have CSRF tokens
--   **Environment Variables**: Use in config files, not directly with `env()`
-
-## Integration Guidelines
-
--   **APIs**: Use Eloquent API Resources for consistent responses
--   **External Services**: Use proper error handling and timeouts
--   **File Uploads**: Validate file types and sizes
--   **Background Jobs**: Use queues for heavy processing
-
-## Debugging
-
--   **Logs**: Use `mcp_laravel-boost_read-log-entries` for backend errors
--   **Browser Logs**: Use `mcp_laravel-boost_browser-logs` for frontend errors
--   **Tinker**: Use `mcp_laravel-boost_tinker` for PHP evaluation
--   **Database**: Use `mcp_laravel-boost_database-query` for read-only queries
+-   Always use `--no-interaction` with Artisan commands
+-   Run `vendor/bin/pint --dirty` after code changes
+-   Use Form Requests for validation
+-   Prefer Eloquent relationships over raw queries
+-   Use Laravel Boost tools for debugging and documentation
 
 ## Laravel Boost + Playwright MCP Integration
 
@@ -158,14 +87,7 @@ When debugging issues that span both backend and frontend:
     - Screenshot capture for visual debugging
     - E2E testing of complete user journeys
 
-### Integration Points
-
--   **Browser Logs**: Laravel Boost captures browser errors, Playwright MCP can trigger and validate fixes
--   **Database State**: Laravel Boost queries data, Playwright MCP validates UI representation
--   **API Testing**: Laravel Boost tests endpoints, Playwright MCP tests frontend consumption
--   **Error Handling**: Combined approach for full-stack debugging
-
-### Best Practices for Combined Usage
+### Best Practices
 
 1. Start with Laravel Boost for backend investigation
 2. Use Playwright MCP to reproduce and validate frontend issues
@@ -174,7 +96,6 @@ When debugging issues that span both backend and frontend:
 
 ## Documentation
 
--   **Boost Tools**: Use `mcp_laravel-boost_search-docs` for Laravel ecosystem docs
--   **Version Specific**: Always use version-specific documentation
--   **Code Comments**: Keep minimal and focused on business logic
--   **README Updates**: Keep project documentation current
+-   Use `mcp_laravel-boost_search-docs` for Laravel ecosystem docs
+-   Always use version-specific documentation
+-   See `.cursor/rules/laravel-boost.mdc` for detailed Boost usage
