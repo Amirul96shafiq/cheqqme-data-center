@@ -381,7 +381,61 @@ class Profile extends EditProfile
                     ->icon('heroicon-m-link')
                     ->description(__('profile.section.connection_settings_description'))
                     ->schema([
-                        // Google connection fieldset
+
+                        // Microsoft OAuth Connection
+                        Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
+                            '<div class="flex items-center gap-2">
+                                <img src="'.asset('images/microsoft-icon.svg').'" alt="Microsoft" class="w-5 h-5">
+                                <span>'.__('profile.form.microsoft_connection').'</span>
+                            </div>'
+                        ))
+                            ->schema([
+                                Forms\Components\Placeholder::make('microsoft_status')
+                                    ->label(__('profile.form.connection_status'))
+                                    ->helperText(new \Illuminate\Support\HtmlString('<span class="text-xs">'.__('profile.fieldset.description.microsoft_text').'</span>'))
+                                    ->content(function () {
+                                        $icons = $this->getStatusIcons();
+
+                                        return new \Illuminate\Support\HtmlString(
+                                            '<div class="flex items-center gap-2">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400">
+                                                        '.$icons['warning'].'
+                                                        '.__('profile.form.microsoft_coming_soon').'
+                                                    </span>
+                                                </div>'
+                                        );
+                                    })
+                                    ->columnSpan(['default' => 'full', 'lg' => 4]),
+
+                                Forms\Components\Actions::make([
+                                    Forms\Components\Actions\Action::make('connect_microsoft')
+                                        ->label(__('profile.form.connect_microsoft'))
+                                        ->color('gray')
+                                        ->outlined()
+                                        ->icon('heroicon-o-link')
+                                        ->disabled()
+                                        ->requiresConfirmation(false)
+                                        ->extraAttributes(['class' => 'w-full']),
+                                    // ->modalIcon('heroicon-o-link')
+                                    // ->modalHeading(__('profile.form.microsoft_coming_soon'))
+                                    // ->modalDescription(__('profile.form.microsoft_coming_soon_description'))
+                                    // ->modalSubmitActionLabel(__('profile.form.connect_microsoft'))
+                                    // ->modalCancelActionLabel(__('profile.form.cancel'))
+                                    // ->modalWidth('md')
+                                    // ->action(function () {
+                                    //     // Coming soon functionality
+                                    // }),
+                                ])
+                                    ->columnSpan(['default' => 'full', 'lg' => 1])
+                                    ->alignment(Alignment::End)
+                                    ->extraAttributes([
+                                        'class' => 'lg:-mt-2.5 mt-0',
+                                    ]),
+                            ])
+                            ->columns(['lg' => 5])
+                            ->columnSpanFull(),
+
+                        // Google OAuth Connection
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
                                 <img src="'.asset('images/google-icon.svg').'" alt="Google" class="w-5 h-5">
@@ -465,6 +519,7 @@ class Profile extends EditProfile
                             ->columns(['lg' => 5])
                             ->columnSpanFull(),
 
+                        // Google Calendar Connection
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
                                 <img src="'.asset('images/google-calendar.svg').'" alt="Google Calendar" class="w-5 h-5">
@@ -635,58 +690,7 @@ class Profile extends EditProfile
                             ->columns(['lg' => 5])
                             ->columnSpanFull(),
 
-                        Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
-                            '<div class="flex items-center gap-2">
-                                <img src="'.asset('images/microsoft-icon.svg').'" alt="Microsoft" class="w-5 h-5">
-                                <span>'.__('profile.form.microsoft_connection').'</span>
-                            </div>'
-                        ))
-                            ->schema([
-                                Forms\Components\Placeholder::make('microsoft_status')
-                                    ->label(__('profile.form.connection_status'))
-                                    ->helperText(new \Illuminate\Support\HtmlString('<span class="text-xs">'.__('profile.fieldset.description.microsoft_text').'</span>'))
-                                    ->content(function () {
-                                        $icons = $this->getStatusIcons();
-
-                                        return new \Illuminate\Support\HtmlString(
-                                            '<div class="flex items-center gap-2">
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400">
-                                                        '.$icons['warning'].'
-                                                        '.__('profile.form.microsoft_coming_soon').'
-                                                    </span>
-                                                </div>'
-                                        );
-                                    })
-                                    ->columnSpan(['default' => 'full', 'lg' => 4]),
-
-                                Forms\Components\Actions::make([
-                                    Forms\Components\Actions\Action::make('connect_microsoft')
-                                        ->label(__('profile.form.connect_microsoft'))
-                                        ->color('gray')
-                                        ->outlined()
-                                        ->icon('heroicon-o-link')
-                                        ->disabled()
-                                        ->requiresConfirmation(false)
-                                        ->extraAttributes(['class' => 'w-full']),
-                                    // ->modalIcon('heroicon-o-link')
-                                    // ->modalHeading(__('profile.form.microsoft_coming_soon'))
-                                    // ->modalDescription(__('profile.form.microsoft_coming_soon_description'))
-                                    // ->modalSubmitActionLabel(__('profile.form.connect_microsoft'))
-                                    // ->modalCancelActionLabel(__('profile.form.cancel'))
-                                    // ->modalWidth('md')
-                                    // ->action(function () {
-                                    //     // Coming soon functionality
-                                    // }),
-                                ])
-                                    ->columnSpan(['default' => 'full', 'lg' => 1])
-                                    ->alignment(Alignment::End)
-                                    ->extraAttributes([
-                                        'class' => 'lg:-mt-2.5 mt-0',
-                                    ]),
-                            ])
-                            ->columns(['lg' => 5])
-                            ->columnSpanFull(),
-
+                        // Spotify Connection
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
                                 <img src="'.asset('images/spotify-icon-green.svg').'" alt="Spotify" class="w-5 h-5">
