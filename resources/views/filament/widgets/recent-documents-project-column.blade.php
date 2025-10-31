@@ -10,7 +10,7 @@
         $projectTitle = $project->title;
         $displayTitle = \Illuminate\Support\Str::limit($projectTitle, 10, '...');
     @endphp
-    <span title="{{ $projectTitle }}">
+    <span class="text-sm text-gray-900 dark:text-white" title="{{ $projectTitle }}">
         {{ $displayTitle }}
     </span>
 @endif
