@@ -358,11 +358,11 @@ class AdminPanelProvider extends PanelProvider
                         // DNS prefetch for external domains
                         '<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">',
                         // Preload greeting modal background images
-                        '<link rel="preload" href="'.asset('images/greeting-light.png').'" as="image" fetchpriority="high">',
-                        '<link rel="preload" href="'.asset('images/greeting-dark.png').'" as="image" fetchpriority="high">',
+                        '<link rel="preload" href="'.\App\Services\ImageOptimizationService::getCachedPublicImageUrl('images/greeting-light.png').'" as="image" fetchpriority="high">',
+                        '<link rel="preload" href="'.\App\Services\ImageOptimizationService::getCachedPublicImageUrl('images/greeting-dark.png').'" as="image" fetchpriority="high">',
                         // Hidden img elements for aggressive preloading
-                        '<img src="'.asset('images/greeting-light.png').'" style="display: none;" width="1" height="1" alt="" loading="eager" fetchpriority="high">',
-                        '<img src="'.asset('images/greeting-dark.png').'" style="display: none;" width="1" height="1" alt="" loading="eager" fetchpriority="high">',
+                        '<img src="'.\App\Services\ImageOptimizationService::getCachedPublicImageUrl('images/greeting-light.png').'" style="display: none;" width="1" height="1" alt="" loading="eager" fetchpriority="high">',
+                        '<img src="'.\App\Services\ImageOptimizationService::getCachedPublicImageUrl('images/greeting-dark.png').'" style="display: none;" width="1" height="1" alt="" loading="eager" fetchpriority="high">',
                     ];
 
                     return implode("\n", $resourceHints);

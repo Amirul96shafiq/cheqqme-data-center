@@ -84,7 +84,7 @@
             @if($backgroundEnabled)
                 .fi-body {
                     position: relative;
-                    background-image: url('{{ asset('images/bg-light.png') }}');
+                    background-image: url('{{ \App\Services\ImageOptimizationService::getCachedPublicImageUrl('images/bg-light.png') }}');
                     background-size: cover;
                     background-position: bottom left;
                     background-repeat: no-repeat;
@@ -119,7 +119,7 @@
 
                 /* Dark theme background */
                 .dark .fi-body {
-                    background-image: url('{{ asset('images/bg-dark.png') }}');
+                    background-image: url('{{ \App\Services\ImageOptimizationService::getCachedPublicImageUrl('images/bg-dark.png') }}');
                 }
 
                 .dark .fi-body::before {

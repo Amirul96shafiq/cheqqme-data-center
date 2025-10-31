@@ -4,8 +4,8 @@
     const lightImg = new Image();
     const darkImg = new Image();
     
-    lightImg.src = '{{ asset("images/greeting-light.png") }}';
-    darkImg.src = '{{ asset("images/greeting-dark.png") }}';
+    lightImg.src = '{{ \App\Services\ImageOptimizationService::getCachedPublicImageUrl("images/greeting-light.png") }}';
+    darkImg.src = '{{ \App\Services\ImageOptimizationService::getCachedPublicImageUrl("images/greeting-dark.png") }}';
     
     // Store references globally for potential reuse
     window.greetingLightImg = lightImg;
@@ -214,9 +214,9 @@ function openGreetingModal(forceOpen = false) {
                 
                 <!-- Greeting Section (60% width on desktop, 100% on mobile) - Order 1 on small devices, Order 2 on large devices -->
                 <div class="p-6 flex flex-col justify-end bg-cover bg-center bg-no-repeat w-full lg:w-3/5 order-1 lg:order-2" 
-                     style="background-image: url('/images/greeting-light.png'); background-position: top center; background-size: contain;" 
-                     data-bg-light="/images/greeting-light.png" 
-                     data-bg-dark="/images/greeting-dark.png">            
+                     style="background-image: url('{{ \App\Services\ImageOptimizationService::getCachedPublicImageUrl("images/greeting-light.png") }}'); background-position: top center; background-size: contain;" 
+                     data-bg-light="{{ \App\Services\ImageOptimizationService::getCachedPublicImageUrl('images/greeting-light.png') }}" 
+                     data-bg-dark="{{ \App\Services\ImageOptimizationService::getCachedPublicImageUrl('images/greeting-dark.png') }}">            
                     
                     <!-- Weather Scroll Button - Only visible on small devices -->
                     <div class="lg:hidden mb-4 flex justify-end">

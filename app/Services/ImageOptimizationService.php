@@ -89,6 +89,7 @@ class ImageOptimizationService
 
     /**
      * Get optimized image URL, generating thumbnail if needed
+     * Includes version parameter based on file modification time for cache invalidation
      */
     public function getOptimizedImageUrl(string $imagePath, string $size = 'kanban'): ?string
     {
@@ -113,10 +114,65 @@ class ImageOptimizationService
                 }
                 break;
             default:
-                return asset('storage/'.$imagePath);
+                return $this->getCachedImageUrl($imagePath);
         }
 
-        return $thumbnailPath ? asset('storage/'.$thumbnailPath) : asset('storage/'.$imagePath);
+        $finalPath = $thumbnailPath ?: $imagePath;
+
+        return $this->getCachedImageUrl($finalPath);
+    }
+
+    /**
+     * Get image URL with cache version parameter based on file modification time
+     */
+    protected function getCachedImageUrl(string $imagePath): string
+    {
+        $url = asset('storage/'.$imagePath);
+
+        // Add version parameter based on file modification time for cache invalidation
+        if (Storage::disk('public')->exists($imagePath)) {
+            try {
+                $lastModified = Storage::disk('public')->lastModified($imagePath);
+                if ($lastModified) {
+                    $url .= '?v='.$lastModified;
+                }
+            } catch (\Exception $e) {
+                // If we can't get modification time, use current timestamp as fallback
+                $url .= '?v='.time();
+            }
+        }
+
+        return $url;
+    }
+
+    /**
+     * Get cached URL for public images (in public/images/ directory)
+     * Automatically adds version parameter based on file modification time for cache invalidation
+     *
+     * @param  string  $imagePath  Path relative to public directory (e.g., 'images/bg-light.png')
+     * @return string URL with version parameter
+     */
+    public static function getCachedPublicImageUrl(string $imagePath): string
+    {
+        $url = asset($imagePath);
+
+        // Get file path relative to public directory
+        $publicPath = public_path($imagePath);
+
+        // Add version parameter based on file modification time for cache invalidation
+        if (file_exists($publicPath)) {
+            try {
+                $lastModified = filemtime($publicPath);
+                if ($lastModified) {
+                    $url .= '?v='.$lastModified;
+                }
+            } catch (\Exception $e) {
+                // If we can't get modification time, use current timestamp as fallback
+                $url .= '?v='.time();
+            }
+        }
+
+        return $url;
     }
 
     /**

@@ -58,10 +58,22 @@
 
 # Security and performance headers
 <IfModule mod_headers.c>
-    # Cache control for static assets
+    # Cache control for static assets (including storage directory)
     <FilesMatch "\.(jpg|jpeg|png|gif|png|svg|gif|webp|woff|woff2|ttf|otf|css|js)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
+    
+    # Cache control specifically for storage directory images
+    <LocationMatch "^/storage/.*\.(jpg|jpeg|png|gif|webp|svg)$">
+        Header set Cache-Control "public, max-age=31536000"
+        Header set Expires "access plus 1 year"
+    </LocationMatch>
+    
+    # Cache control specifically for images directory (bg-light.png, bg-dark.png, greeting-light.png, greeting-dark.png, etc.)
+    <LocationMatch "^/images/.*\.(jpg|jpeg|png|gif|webp|svg)$">
+        Header set Cache-Control "public, max-age=31536000"
+        Header set Expires "access plus 1 year"
+    </LocationMatch>
     
     # Security headers
     Header set X-Content-Type-Options "nosniff"
