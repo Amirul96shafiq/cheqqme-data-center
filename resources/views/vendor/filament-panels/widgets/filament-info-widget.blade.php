@@ -57,7 +57,7 @@
                 </x-filament::link>
                 
                 <x-filament::link
-                    color="primary"
+                    color="gray"
                     class="cursor-pointer hover:cursor-pointer"
                     icon="heroicon-m-code-bracket"
                     icon-alias="panels::widgets.filament-info.open-changelog-button"
