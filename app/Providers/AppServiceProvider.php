@@ -314,7 +314,7 @@ class AppServiceProvider extends ServiceProvider
             $gitVersion = GitHelper::getVersionString();
 
             return <<<HTML
-                <div class="flex items-center justify-center h-9 px-3 text-xs font-mono bg-white dark:bg-[rgb(255_255_255_/_0.05)] border border-[rgb(3_7_18_/_0.1)] dark:border-[rgb(255_255_255_/_0.2)] rounded-lg transition text-gray-300 dark:text-gray-600">
+                <div class="hidden sm:flex items-center justify-center h-9 px-3 text-xs font-mono bg-white dark:bg-[rgb(255_255_255_/_0.05)] border border-[rgb(3_7_18_/_0.1)] dark:border-[rgb(255_255_255_/_0.2)] rounded-lg transition text-gray-300 dark:text-gray-600">
                     <span class="sm:hidden">_local</span>
                     <span class="hidden sm:inline">{$gitVersion}</span>
                 </div>
