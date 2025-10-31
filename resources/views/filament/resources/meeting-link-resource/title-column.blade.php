@@ -34,7 +34,7 @@
 @if (empty($fullTitle))
     <span class="text-sm text-gray-900 dark:text-white" title="-">-</span>
 @else
-    <span title="{{ $fullTitle }}">
+    <span class="text-sm text-gray-900 dark:text-white" title="{{ $fullTitle }}">
         {{ $displayTitle }}
     </span>
 @endif

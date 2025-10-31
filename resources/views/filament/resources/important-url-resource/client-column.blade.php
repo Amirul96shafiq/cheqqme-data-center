@@ -19,12 +19,12 @@
         @if($clientUrl)
             <a href="{{ $clientUrl }}" 
                target="_blank" 
-               class="text-primary-600 dark:text-primary-400 hover:underline"
+               class="text-sm text-primary-600 dark:text-primary-400 hover:underline"
                title="{{ $tooltipText }}">
                 {{ $formattedName }}
             </a>
         @else
-            <span title="{{ $tooltipText }}">
+            <span class="text-sm text-gray-900 dark:text-white" title="{{ $tooltipText }}">
                 {{ $formattedName }}
             </span>
         @endif

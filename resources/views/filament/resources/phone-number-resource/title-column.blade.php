@@ -9,7 +9,7 @@
     @php
         $displayTitle = \Illuminate\Support\Str::limit($title, 20, '...');
     @endphp
-    <span title="{{ $title }}">
+    <span class="text-sm text-gray-900 dark:text-white" title="{{ $title }}">
         {{ $displayTitle }}
     </span>
 @endif

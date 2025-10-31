@@ -9,7 +9,7 @@
     @php
         $displayEmail = \Illuminate\Support\Str::limit($email, 30, '...');
     @endphp
-    <span title="{{ $email }}">
+    <span class="text-sm text-gray-900 dark:text-white" title="{{ $email }}">
         {{ $displayEmail }}
     </span>
 @endif

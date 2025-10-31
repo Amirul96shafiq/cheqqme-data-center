@@ -17,12 +17,12 @@
         @if($clientUrl)
             <a href="{{ $clientUrl }}" 
                target="_blank" 
-               class="text-primary-600 dark:text-primary-400 hover:underline"
+               class="text-sm text-primary-600 dark:text-primary-400 hover:underline"
                title="{{ $tooltipText }}">
                 {{ \App\Helpers\ClientFormatter::formatClientDisplay($picName, $companyName) }}
             </a>
         @else
-            <span>
+            <span class="text-sm text-gray-900 dark:text-white">
                 {{ \App\Helpers\ClientFormatter::formatClientDisplay($picName, $companyName) }}
             </span>
         @endif

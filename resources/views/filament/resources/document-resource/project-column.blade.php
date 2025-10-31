@@ -17,12 +17,12 @@
         @if($projectUrl)
             <a href="{{ $projectUrl }}" 
                target="_blank" 
-               class="text-primary-600 dark:text-primary-400 hover:underline"
+               class="text-sm text-primary-600 dark:text-primary-400 hover:underline"
                title="{{ $projectTitle }}">
                 {{ $displayTitle }}
             </a>
         @else
-            <span title="{{ $projectTitle }}">
+            <span class="text-sm text-gray-900 dark:text-white" title="{{ $projectTitle }}">
                 {{ $displayTitle }}
             </span>
         @endif
