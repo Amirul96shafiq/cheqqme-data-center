@@ -73,12 +73,35 @@
     }
 
     /* Mobile view */
-    @media (max-width: 420px) {
+    @media (max-width: 768px) {
+        /* Make chatbot interface fixed to viewport on mobile for proper centering */
         #chatbot-interface {
-            width: calc(100vw - 20px);
-            left: 10px;
-            right: 10px;
-            height: auto;
+            position: fixed !important;
+            width: 95vw !important;
+            height: 80vh !important;
+            max-height: 80vh !important;
+            left: 50% !important;
+            right: auto !important;
+            transform: translateX(-50%) translateY(20px) !important;
+            bottom: 80px !important;
+            top: auto !important;
+            margin: 0 !important;
+            z-index: 50 !important;
+        }
+        
+        /* Ensure parent container doesn't limit stacking on mobile */
+        .fixed.bottom-4.right-4 {
+            z-index: 50 !important;
+        }
+        
+        /* Ensure close button appears above chatbot interface */
+        #close-icon {
+            z-index: 51 !important;
+        }
+        
+        /* Ensure emoji picker appears above chatbot interface on mobile */
+        #emoji-picker-container {
+            z-index: 51 !important;
         }
     }
     
@@ -87,6 +110,17 @@
         transform: translateY(0);
         opacity: 1;
         animation: chatEntrance 260ms ease;
+    }
+    
+    /* Mobile open state - maintain centering */
+    @media (max-width: 768px) {
+        #chatbot-interface.open {
+            transform: translateX(-50%) translateY(0) !important;
+        }
+        
+        #chatbot-interface.closing {
+            transform: translateX(-50%) translateY(15px) !important;
+        }
     }
 
     /* Closing animation */
