@@ -368,8 +368,8 @@
                 },
                 
                 move(direction) {
-                    console.log('move() called with direction:', direction);
-                    console.log('selectedColumn:', this.selectedColumn);
+                    // console.log('move() called with direction:', direction);
+                    //console.log('selectedColumn:', this.selectedColumn);
 
                     if (!this.taskId) {
                         console.warn('No task ID available for move operation');
@@ -399,7 +399,7 @@
                         }
                     }
 
-                    console.log('Target column ID:', targetColumnId);
+                    //console.log('Target column ID:', targetColumnId);
 
                     if (!targetColumnId) {
                         console.error('No target column found');
@@ -474,14 +474,14 @@
                         })
                     })
                     .then(response => {
-                        console.log('Move API response status:', response.status);
+                        //console.log('Move API response status:', response.status);
                         if (!response.ok) {
                             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                         }
                         return response.json();
                     })
                     .then(data => {
-                        console.log('Move API response data:', data);
+                        //console.log('Move API response data:', data);
                         if (data.success) {
                             console.log('Move successful, refreshing page');
                             // Simple and reliable: refresh the entire page
