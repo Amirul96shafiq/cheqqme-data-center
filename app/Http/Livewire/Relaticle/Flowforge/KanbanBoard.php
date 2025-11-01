@@ -60,6 +60,7 @@ class KanbanBoard extends BaseKanbanBoard
      */
     public function optimizedRefreshBoard(): void
     {
+        logger('KanbanBoard: optimizedRefreshBoard called');
         // Clear user cache to get fresh data
         Cache::forget('kanban_users_cache');
         $this->preloadUserCache();

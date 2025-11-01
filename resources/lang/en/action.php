@@ -26,6 +26,20 @@ return [
     'notifications' => [
         'created' => 'Task created successfully',
         'updated' => 'Task updated successfully',
+        'moved_to_top' => 'Task moved to top',
+        'moved_to_bottom' => 'Task moved to bottom',
+        'moved_up' => 'Task moved up',
+        'moved_down' => 'Task moved down',
+        'move_failed' => 'Move operation failed',
+        'invalid_task_id' => 'Invalid task ID provided',
+    ],
+
+    'move' => [
+        'title' => 'Move Task',
+        'to_top' => 'Move to Most Top',
+        'to_bottom' => 'Move to Most Bottom',
+        'up_one' => 'Move to Top 1 Time',
+        'down_one' => 'Move to Bottom 1 Time',
     ],
 
     'form' => [

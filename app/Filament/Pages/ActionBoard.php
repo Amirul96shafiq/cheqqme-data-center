@@ -12,6 +12,7 @@ use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Relaticle\Flowforge\Filament\Pages\KanbanBoardPage;
 
 class ActionBoard extends KanbanBoardPage
@@ -836,7 +837,7 @@ class ActionBoard extends KanbanBoardPage
                 ->modalHeading(__('action.modal.create_title'))
                 ->modalWidth('5xl')
                 ->form(function (Forms\Form $form) {
-                
+
                     // Use database default status 'todo'
                     $col = 'todo';
 
@@ -940,5 +941,190 @@ class ActionBoard extends KanbanBoardPage
             ],
             priority: $this->priorityFilter
         );
+    }
+
+    /**
+     * Move task to the top of its column
+     */
+    public function moveToTop(int $taskId): void
+    {
+        if ($taskId <= 0) {
+            Notification::make()
+                ->title(__('action.notifications.move_failed'))
+                ->body(__('action.notifications.invalid_task_id'))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        $task = Task::findOrFail($taskId);
+        $status = $task->status;
+
+        // Get all tasks in the same column ordered by order_column
+        $tasksInColumn = Task::where('status', $status)
+            ->where('id', '!=', $taskId)
+            ->orderBy('order_column')
+            ->get();
+
+        // Set this task's order to 0, then shift all others up by 1
+        DB::transaction(function () use ($task, $tasksInColumn) {
+            $task->update(['order_column' => 0]);
+
+            foreach ($tasksInColumn as $otherTask) {
+                $otherTask->increment('order_column');
+            }
+        });
+
+        // Reorder to ensure clean sequential numbering
+        $this->normalizeOrderColumn($status);
+
+        Notification::make()
+            ->title(__('action.notifications.moved_to_top'))
+            ->success()
+            ->send();
+
+        // Only dispatch refreshBoard - task-moved is redundant and causes double refresh
+        $this->dispatch('refreshBoard');
+    }
+
+    /**
+     * Move task to the bottom of its column
+     */
+    public function moveToBottom(int $taskId): void
+    {
+        if ($taskId <= 0) {
+            Notification::make()
+                ->title(__('action.notifications.move_failed'))
+                ->body(__('action.notifications.invalid_task_id'))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        $task = Task::findOrFail($taskId);
+        $status = $task->status;
+
+        // Get all tasks in the same column ordered by order_column
+        $tasksInColumn = Task::where('status', $status)
+            ->where('id', '!=', $taskId)
+            ->orderBy('order_column')
+            ->get();
+
+        // Set this task's order to max + 1
+        DB::transaction(function () use ($task, $tasksInColumn) {
+            $maxOrder = $tasksInColumn->max('order_column') ?? 0;
+            $task->update(['order_column' => $maxOrder + 1]);
+        });
+
+        // Reorder to ensure clean sequential numbering
+        $this->normalizeOrderColumn($status);
+
+        Notification::make()
+            ->title(__('action.notifications.moved_to_bottom'))
+            ->success()
+            ->send();
+
+        // Only dispatch refreshBoard - task-moved is redundant and causes double refresh
+        $this->dispatch('refreshBoard');
+    }
+
+    /**
+     * Move task up by one position
+     */
+    public function moveUpOne(int $taskId): void
+    {
+        if ($taskId <= 0) {
+            Notification::make()
+                ->title(__('action.notifications.move_failed'))
+                ->body(__('action.notifications.invalid_task_id'))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        $task = Task::findOrFail($taskId);
+        $status = $task->status;
+        $currentOrder = $task->order_column;
+
+        // Find the task immediately above this one
+        $taskAbove = Task::where('status', $status)
+            ->where('order_column', '<', $currentOrder)
+            ->orderByDesc('order_column')
+            ->first();
+
+        if ($taskAbove) {
+            DB::transaction(function () use ($task, $taskAbove) {
+                $tempOrder = $taskAbove->order_column;
+                $taskAbove->update(['order_column' => $task->order_column]);
+                $task->update(['order_column' => $tempOrder]);
+            });
+
+            Notification::make()
+                ->title(__('action.notifications.moved_up'))
+                ->success()
+                ->send();
+
+            // Only dispatch refreshBoard - task-moved is redundant and causes double refresh
+            $this->dispatch('refreshBoard');
+        }
+    }
+
+    /**
+     * Move task down by one position
+     */
+    public function moveDownOne(int $taskId): void
+    {
+        if ($taskId <= 0) {
+            Notification::make()
+                ->title(__('action.notifications.move_failed'))
+                ->body(__('action.notifications.invalid_task_id'))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        $task = Task::findOrFail($taskId);
+        $status = $task->status;
+        $currentOrder = $task->order_column;
+
+        // Find the task immediately below this one
+        $taskBelow = Task::where('status', $status)
+            ->where('order_column', '>', $currentOrder)
+            ->orderBy('order_column')
+            ->first();
+
+        if ($taskBelow) {
+            DB::transaction(function () use ($task, $taskBelow) {
+                $tempOrder = $taskBelow->order_column;
+                $taskBelow->update(['order_column' => $task->order_column]);
+                $task->update(['order_column' => $tempOrder]);
+            });
+
+            Notification::make()
+                ->title(__('action.notifications.moved_down'))
+                ->success()
+                ->send();
+
+            // Only dispatch refreshBoard - task-moved is redundant and causes double refresh
+            $this->dispatch('refreshBoard');
+        }
+    }
+
+    /**
+     * Normalize order_column values to be sequential (1, 2, 3, ...)
+     */
+    private function normalizeOrderColumn(string $status): void
+    {
+        $tasks = Task::where('status', $status)
+            ->orderBy('order_column')
+            ->get();
+
+        foreach ($tasks as $index => $task) {
+            $task->update(['order_column' => $index + 1]);
+        }
     }
 }

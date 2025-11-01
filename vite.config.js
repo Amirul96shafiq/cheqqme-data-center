@@ -16,6 +16,7 @@ export default defineConfig({
                 "resources/css/task-comments.css",
                 "resources/js/presence-status.js",
                 "resources/js/kanban-alpine.js",
+                "resources/js/kanban-mobile-move.js",
                 "resources/css/kanban-drag-drop.css",
                 "resources/js/spotify-player.js",
                 "resources/js/marquee-animation.js",

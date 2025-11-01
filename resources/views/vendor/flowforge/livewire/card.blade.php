@@ -54,6 +54,7 @@
     x-on:dragend="filterActive && $event.preventDefault()"
     x-on:drop="filterActive && $event.preventDefault()"
     @if(!empty($normalizedDueDate)) data-due-date="{{ $normalizedDueDate }}" @endif
+    data-task-id="{{ $record['id'] }}"
     @if($this->editAction() &&  ($this->editAction)(['record' => $record['id']])->isVisible())
         wire:click="mountAction('edit', {record: '{{ $record['id'] }}'})"
     @endif
