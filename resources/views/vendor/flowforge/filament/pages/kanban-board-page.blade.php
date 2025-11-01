@@ -16,6 +16,7 @@
     />
     
     <div class="h-[calc(100vh-16rem)] min-h-[400px] pb-8 md:pb-0">
+
         {{-- No Results Component (initially hidden) --}}
         <div id="no-results-component" class="hidden">
             <x-no-results-found 
@@ -33,6 +34,7 @@
                 'pageClass' => $this::class
             ])
         </div>
+
     </div>
 
     @vite(['resources/js/kanban-alpine.js', 'resources/js/kanban-mobile-move.js', 'resources/css/kanban-drag-drop.css'])
@@ -80,8 +82,38 @@
             
             {{-- Modal Content --}}
             <div class="flex-1 overflow-y-auto p-4">
-                <div class="space-y-2">
-                    {{-- Move to Top --}}
+                <div class="space-y-4">
+
+                    {{-- Column Selector --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            {{ __('action.move.to_column') }}
+                        </label>
+                        <div class="flex gap-1 overflow-x-auto pb-2 scrollbar-hide"
+                             style="scrollbar-width: none; -ms-overflow-style: none;">
+                            <style>
+                                .scrollbar-hide::-webkit-scrollbar {
+                                    display: none;
+                                }
+                            </style>
+                            <template x-for="column in availableColumns" :key="column.id">
+                                <button
+                                    type="button"
+                                    :class="selectedColumn === column.id
+                                        ? 'bg-primary-500 text-primary-900 border-primary-500'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'"
+                                    @click="selectColumn(column.id)"
+                                    class="flex-shrink-0 px-2.5 py-1.5 text-xs font-medium rounded-full border transition-colors whitespace-nowrap">
+                                    <span x-text="column.label"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    {{-- Move Options --}}
+                    <div class="space-y-2">
+
+                        {{-- Move to Top --}}
                     <button type="button"
                             @click="move('top')"
                             class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors">
@@ -90,18 +122,6 @@
                         </svg>
                         <span class="text-base font-medium text-gray-900 dark:text-gray-100">
                             {{ __('action.move.to_top') }}
-                        </span>
-                    </button>
-                    
-                    {{-- Move to Bottom --}}
-                    <button type="button"
-                            @click="move('bottom')"
-                            class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors">
-                        <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                        </svg>
-                        <span class="text-base font-medium text-gray-900 dark:text-gray-100">
-                            {{ __('action.move.to_bottom') }}
                         </span>
                     </button>
                     
@@ -128,9 +148,25 @@
                             {{ __('action.move.down_one') }}
                         </span>
                     </button>
+
+                    {{-- Move to Bottom --}}
+                    <button type="button"
+                            @click="move('bottom')"
+                            class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors">
+                        <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                        </svg>
+                        <span class="text-base font-medium text-gray-900 dark:text-gray-100">
+                            {{ __('action.move.to_bottom') }}
+                        </span>
+                    </button>
+
+                    </div>
                 </div>
             </div>
+
         </div>
+        
     </div>
     
     <script>
@@ -138,30 +174,163 @@
             return {
                 isOpen: false,
                 taskId: null,
-                
+                selectedColumn: null,
+                originalColumn: null,
+                availableColumns: [],
+
                 init() {
                     // Listen for the event on window
                     window.addEventListener('kanban-show-move-modal', (e) => {
-                        console.log('Received kanban-show-move-modal event:', e.detail);
                         if (e.detail && e.detail.taskId) {
                             this.open(e.detail.taskId);
                         }
                     });
                 },
-                
+
                 open(taskId) {
-                    console.log('Opening modal with taskId:', taskId);
                     this.taskId = taskId;
+
+                    // Get available columns from the board
+                    this.availableColumns = this.getAvailableColumns();
+
+                    // Set original and selected column (current column)
+                    this.originalColumn = this.getCurrentColumn(taskId);
+                    this.selectedColumn = this.originalColumn;
+
                     this.isOpen = true;
                     // Prevent body scroll when modal is open
                     document.body.style.overflow = 'hidden';
                 },
-                
+
                 close() {
                     this.isOpen = false;
                     this.taskId = null;
+                    this.selectedColumn = null;
+                    this.originalColumn = null;
+                    this.availableColumns = [];
                     // Restore body scroll
                     document.body.style.overflow = '';
+                },
+
+                getAvailableColumns() {
+                    // Get all columns from the board
+                    const columns = [];
+                    const columnElements = document.querySelectorAll('.ff-column__content[data-column-id]');
+
+                    columnElements.forEach(columnElement => {
+                        const columnId = columnElement.getAttribute('data-column-id');
+                        const columnTitle = columnElement.closest('.ff-column').querySelector('.ff-column__title')?.textContent?.trim();
+
+                        if (columnId && columnTitle) {
+                            columns.push({
+                                id: columnId,
+                                label: columnTitle
+                            });
+                        }
+                    });
+
+                    return columns;
+                },
+
+                getCurrentColumn(taskId) {
+                    // Find which column the card is currently in
+                    const cardElement = document.querySelector(`[data-task-id="${taskId}"], [x-sortable-item="${taskId}"]`);
+                    if (cardElement) {
+                        const columnElement = cardElement.closest('.ff-column__content[data-column-id]');
+                        if (columnElement) {
+                            return columnElement.getAttribute('data-column-id');
+                        }
+                    }
+                    return null;
+                },
+
+                selectColumn(columnId) {
+                    // Set the selected column
+                    this.selectedColumn = columnId;
+
+                    // If it's a different column, move immediately
+                    if (columnId !== this.originalColumn) {
+                        this.moveToColumn(columnId);
+                    }
+                },
+
+                moveToColumn(targetColumnId) {
+                    if (!this.taskId) {
+                        return;
+                    }
+
+                    const taskIdToMove = parseInt(this.taskId, 10);
+                    if (isNaN(taskIdToMove)) {
+                        return;
+                    }
+
+                    // Close modal immediately
+                    this.close();
+
+                    // Find the card element
+                    const cardElement = document.querySelector(`[data-task-id="${taskIdToMove}"], [x-sortable-item="${taskIdToMove}"]`);
+                    if (!cardElement) {
+                        return;
+                    }
+
+                    // Get target column element
+                    const targetColumnElement = document.querySelector(`.ff-column__content[data-column-id="${targetColumnId}"]`);
+                    if (!targetColumnElement) {
+                        return;
+                    }
+
+                    // Get all cards in target column and add the moved card at the bottom
+                    const targetCards = Array.from(targetColumnElement.querySelectorAll('[data-task-id], [x-sortable-item]'));
+                    const seenIds = new Map();
+                    const targetOrder = [];
+
+                    targetCards.forEach((card) => {
+                        const id = card.getAttribute('data-task-id') || card.getAttribute('x-sortable-item');
+                        const taskId = parseInt(id, 10);
+
+                        if (!isNaN(taskId) && !seenIds.has(taskId)) {
+                            seenIds.set(taskId, true);
+                            targetOrder.push(taskId);
+                        }
+                    });
+
+                    // Add the moved card at the end of the target column
+                    const newOrder = [...targetOrder, taskIdToMove];
+
+                    // Call the API to move the card
+                    fetch('/api/kanban/update-order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({
+                            columnId: targetColumnId,
+                            cardIds: newOrder
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            // Refresh the entire page immediately
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 100);
+                        } else {
+                            throw new Error(data.message || 'Server update failed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error moving card to column:', error);
+                    });
                 },
                 
                 move(direction) {
@@ -169,82 +338,114 @@
                         console.warn('No task ID available for move operation');
                         return;
                     }
-                    
+
                     const taskIdToMove = parseInt(this.taskId, 10);
                     if (isNaN(taskIdToMove)) {
                         console.error('Invalid task ID:', this.taskId);
                         return;
                     }
-                    
+
                     // Close modal immediately
                     this.close();
-                    
-                    // Find the card element to get its column
+
+                    // Find the card element to get its current column
                     const cardElement = document.querySelector(`[data-task-id="${taskIdToMove}"], [x-sortable-item="${taskIdToMove}"]`);
                     if (!cardElement) {
                         console.error('Card element not found for task ID:', taskIdToMove);
                         return;
                     }
-                    
-                    // Get the column ID from the card's parent column
-                    const columnElement = cardElement.closest('.ff-column__content');
-                    if (!columnElement) {
+
+                    // Get the current column ID
+                    const currentColumnElement = cardElement.closest('.ff-column__content');
+                    if (!currentColumnElement) {
                         console.error('Column element not found for card');
                         return;
                     }
-                    
-                    const columnId = columnElement.getAttribute('data-column-id');
-                    if (!columnId) {
+
+                    const currentColumnId = currentColumnElement.getAttribute('data-column-id');
+                    if (!currentColumnId) {
                         console.error('Column ID not found');
                         return;
                     }
-                    
-                    // Get all card IDs in the current column (in their current order)
-                    // Remove duplicates by using a Map to track first occurrence
-                    const allCardsInColumn = Array.from(columnElement.querySelectorAll('[data-task-id], [x-sortable-item]'));
-                    const seenIds = new Map();
-                    const currentOrder = [];
-                    
-                    allCardsInColumn.forEach((card, index) => {
-                        const id = card.getAttribute('data-task-id') || card.getAttribute('x-sortable-item');
-                        const taskId = parseInt(id, 10);
-                        
-                        if (!isNaN(taskId)) {
-                            // Only add if we haven't seen this ID before, or keep the first occurrence
-                            if (!seenIds.has(taskId)) {
-                                seenIds.set(taskId, index);
+
+                    // Determine target column (use selectedColumn if different from current)
+                    const targetColumnId = this.selectedColumn || currentColumnId;
+
+                    // Check if we're moving to a different column
+                    const isColumnChange = targetColumnId !== currentColumnId;
+
+                    let newOrder = [];
+                    let targetColumnElement;
+
+                    if (isColumnChange) {
+                        // Moving to a different column - get cards from target column
+                        targetColumnElement = document.querySelector(`.ff-column__content[data-column-id="${targetColumnId}"]`);
+                        if (!targetColumnElement) {
+                            console.error('Target column not found:', targetColumnId);
+                            return;
+                        }
+
+                        // Get all cards in target column and add the moved card at the bottom
+                        const targetCards = Array.from(targetColumnElement.querySelectorAll('[data-task-id], [x-sortable-item]'));
+                        const seenIds = new Map();
+                        const targetOrder = [];
+
+                        targetCards.forEach((card) => {
+                            const id = card.getAttribute('data-task-id') || card.getAttribute('x-sortable-item');
+                            const taskId = parseInt(id, 10);
+
+                            if (!isNaN(taskId) && !seenIds.has(taskId)) {
+                                seenIds.set(taskId, true);
+                                targetOrder.push(taskId);
+                            }
+                        });
+
+                        // Add the moved card at the end of the target column
+                        newOrder = [...targetOrder, taskIdToMove];
+                    } else {
+                        // Moving within the same column - get cards from current column
+                        const allCardsInColumn = Array.from(currentColumnElement.querySelectorAll('[data-task-id], [x-sortable-item]'));
+                        const seenIds = new Map();
+                        const currentOrder = [];
+
+                        allCardsInColumn.forEach((card) => {
+                            const id = card.getAttribute('data-task-id') || card.getAttribute('x-sortable-item');
+                            const taskId = parseInt(id, 10);
+
+                            if (!isNaN(taskId) && !seenIds.has(taskId)) {
+                                seenIds.set(taskId, true);
                                 currentOrder.push(taskId);
                             }
+                        });
+
+                        // Find the index of the card to move
+                        const currentIndex = currentOrder.indexOf(taskIdToMove);
+                        if (currentIndex === -1) {
+                            console.error('Task not found in column order');
+                            return;
                         }
-                    });
-                    
-                    // Find the index of the card to move
-                    const currentIndex = currentOrder.indexOf(taskIdToMove);
-                    if (currentIndex === -1) {
-                        console.error('Task not found in column order');
-                        return;
-                    }
-                    
-                    // Rearrange the array based on direction
-                    let newOrder = [...currentOrder];
-                    
-                    if (direction === 'top') {
-                        // Move to most top: remove from current position and add at start
-                        newOrder.splice(currentIndex, 1);
-                        newOrder.unshift(taskIdToMove);
-                    } else if (direction === 'bottom') {
-                        // Move to most bottom: remove from current position and add at end
-                        newOrder.splice(currentIndex, 1);
-                        newOrder.push(taskIdToMove);
-                    } else if (direction === 'up') {
-                        // Move up 1 position: swap with previous
-                        if (currentIndex > 0) {
-                            [newOrder[currentIndex - 1], newOrder[currentIndex]] = [newOrder[currentIndex], newOrder[currentIndex - 1]];
-                        }
-                    } else if (direction === 'down') {
-                        // Move down 1 position: swap with next
-                        if (currentIndex < newOrder.length - 1) {
-                            [newOrder[currentIndex], newOrder[currentIndex + 1]] = [newOrder[currentIndex + 1], newOrder[currentIndex]];
+
+                        // Rearrange the array based on direction
+                        newOrder = [...currentOrder];
+
+                        if (direction === 'top') {
+                            // Move to most top: remove from current position and add at start
+                            newOrder.splice(currentIndex, 1);
+                            newOrder.unshift(taskIdToMove);
+                        } else if (direction === 'bottom') {
+                            // Move to most bottom: remove from current position and add at end
+                            newOrder.splice(currentIndex, 1);
+                            newOrder.push(taskIdToMove);
+                        } else if (direction === 'up') {
+                            // Move up 1 position: swap with previous
+                            if (currentIndex > 0) {
+                                [newOrder[currentIndex - 1], newOrder[currentIndex]] = [newOrder[currentIndex], newOrder[currentIndex - 1]];
+                            }
+                        } else if (direction === 'down') {
+                            // Move down 1 position: swap with next
+                            if (currentIndex < newOrder.length - 1) {
+                                [newOrder[currentIndex], newOrder[currentIndex + 1]] = [newOrder[currentIndex + 1], newOrder[currentIndex]];
+                            }
                         }
                     }
                     

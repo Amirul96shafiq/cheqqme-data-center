@@ -36,6 +36,7 @@ return [
 
     'move' => [
         'title' => 'Move Task',
+        'to_column' => 'Move to Column',
         'to_top' => 'Move to Most Top',
         'to_bottom' => 'Move to Most Bottom',
         'up_one' => 'Move to Top 1 Time',
