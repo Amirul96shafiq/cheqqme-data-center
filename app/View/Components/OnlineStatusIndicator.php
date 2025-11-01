@@ -22,7 +22,7 @@ class OnlineStatusIndicator extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(User $user, ?string $size = null, bool $showTooltip = true)
+    public function __construct(User $user, ?string $size = null, bool $showTooltip = false)
     {
         $this->user = $user;
         $this->size = $size ?? StatusConfig::getDefaultSize();

@@ -16,7 +16,7 @@
     />
     
     <!-- Online Status Indicator -->
-    <div class="absolute -bottom-0.5 -right-0.5">
+    <div class="absolute -bottom-1.5 -right-0.5">
         <x-online-status-indicator :user="$user" size="md" />
     </div>
 </div>

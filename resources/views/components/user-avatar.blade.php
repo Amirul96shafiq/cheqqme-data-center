@@ -30,10 +30,10 @@
     // Status indicator positioning based on avatar size
     $statusPositions = [
         'xs' => 'absolute bottom-0 -right-0.5',
-        'sm' => 'absolute bottom-0 -right-0.5',
-        'md' => 'absolute bottom-1 -right-0.5',
-        'lg' => 'absolute bottom-1 -right-0.5',
-        'xl' => 'absolute bottom-1 -right-1',
+        'sm' => 'absolute -bottom-1 -right-0.5',
+        'md' => 'absolute -bottom-1 -right-0.5',
+        'lg' => 'absolute -bottom-1 -right-0.5',
+        'xl' => 'absolute -bottom-1 -right-1',
     ];
     
     // Auto-determine status size based on avatar size if not specified
