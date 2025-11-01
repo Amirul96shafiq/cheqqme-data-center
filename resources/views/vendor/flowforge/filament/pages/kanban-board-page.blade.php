@@ -368,6 +368,9 @@
                 },
                 
                 move(direction) {
+                    console.log('move() called with direction:', direction);
+                    console.log('selectedColumn:', this.selectedColumn);
+
                     if (!this.taskId) {
                         console.warn('No task ID available for move operation');
                         return;
@@ -382,104 +385,76 @@
                     // Close modal immediately
                     this.close();
 
-                    // Find the card element to get its current column
-                    const cardElement = document.querySelector(`[data-task-id="${taskIdToMove}"], [x-sortable-item="${taskIdToMove}"]`);
-                    if (!cardElement) {
-                        console.error('Card element not found for task ID:', taskIdToMove);
-                        return;
-                    }
+                    // Use the selected column (defaults to current column if not changed)
+                    let targetColumnId = this.selectedColumn;
 
-                    // Get the current column ID
-                    const currentColumnElement = cardElement.closest('.ff-column__content');
-                    if (!currentColumnElement) {
-                        console.error('Column element not found for card');
-                        return;
-                    }
-
-                    const currentColumnId = currentColumnElement.getAttribute('data-column-id');
-                    if (!currentColumnId) {
-                        console.error('Column ID not found');
-                        return;
-                    }
-
-                    // Determine target column (use selectedColumn if different from current)
-                    const targetColumnId = this.selectedColumn || currentColumnId;
-
-                    // Check if we're moving to a different column
-                    const isColumnChange = targetColumnId !== currentColumnId;
-
-                    let newOrder = [];
-                    let targetColumnElement;
-
-                    if (isColumnChange) {
-                        // Moving to a different column - get cards from target column
-                        targetColumnElement = document.querySelector(`.ff-column__content[data-column-id="${targetColumnId}"]`);
-                        if (!targetColumnElement) {
-                            console.error('Target column not found:', targetColumnId);
-                            return;
+                    // If no column is selected, get the current column
+                    if (!targetColumnId) {
+                        const cardElement = document.querySelector(`[data-task-id="${taskIdToMove}"], [x-sortable-item="${taskIdToMove}"]`);
+                        if (cardElement) {
+                            const columnElement = cardElement.closest('.ff-column__content[data-column-id]');
+                            if (columnElement) {
+                                targetColumnId = columnElement.getAttribute('data-column-id');
+                            }
                         }
+                    }
 
-                        // Get all cards in target column and add the moved card at the bottom
-                        const targetCards = Array.from(targetColumnElement.querySelectorAll('[data-task-id], [x-sortable-item]'));
-                        const seenIds = new Map();
-                        const targetOrder = [];
+                    console.log('Target column ID:', targetColumnId);
 
-                        targetCards.forEach((card) => {
-                            const id = card.getAttribute('data-task-id') || card.getAttribute('x-sortable-item');
-                            const taskId = parseInt(id, 10);
+                    if (!targetColumnId) {
+                        console.error('No target column found');
+                        return;
+                    }
 
-                            if (!isNaN(taskId) && !seenIds.has(taskId)) {
-                                seenIds.set(taskId, true);
-                                targetOrder.push(taskId);
-                            }
-                        });
+                    // Get the target column element
+                    const targetColumnElement = document.querySelector(`.ff-column__content[data-column-id="${targetColumnId}"]`);
+                    if (!targetColumnElement) {
+                        console.error('Target column not found:', targetColumnId);
+                        return;
+                    }
 
-                        // Add the moved card at the end of the target column
-                        newOrder = [...targetOrder, taskIdToMove];
-                    } else {
-                        // Moving within the same column - get cards from current column
-                        const allCardsInColumn = Array.from(currentColumnElement.querySelectorAll('[data-task-id], [x-sortable-item]'));
-                        const seenIds = new Map();
-                        const currentOrder = [];
+                    // Get all cards in the target column
+                    const allCardsInColumn = Array.from(targetColumnElement.querySelectorAll('[data-task-id], [x-sortable-item]'));
+                    const seenIds = new Map();
+                    const currentOrder = [];
 
-                        allCardsInColumn.forEach((card) => {
-                            const id = card.getAttribute('data-task-id') || card.getAttribute('x-sortable-item');
-                            const taskId = parseInt(id, 10);
+                    allCardsInColumn.forEach((card) => {
+                        const id = card.getAttribute('data-task-id') || card.getAttribute('x-sortable-item');
+                        const taskId = parseInt(id, 10);
 
-                            if (!isNaN(taskId) && !seenIds.has(taskId)) {
-                                seenIds.set(taskId, true);
-                                currentOrder.push(taskId);
-                            }
-                        });
-
-                        // Find the index of the card to move
-                        const currentIndex = currentOrder.indexOf(taskIdToMove);
-                        if (currentIndex === -1) {
-                            console.error('Task not found in column order');
-                            return;
+                        if (!isNaN(taskId) && !seenIds.has(taskId)) {
+                            seenIds.set(taskId, true);
+                            currentOrder.push(taskId);
                         }
+                    });
 
-                        // Rearrange the array based on direction
-                        newOrder = [...currentOrder];
+                    // Find the index of the card to move
+                    const currentIndex = currentOrder.indexOf(taskIdToMove);
+                    if (currentIndex === -1) {
+                        console.error('Task not found in column order');
+                        return;
+                    }
 
-                        if (direction === 'top') {
-                            // Move to most top: remove from current position and add at start
-                            newOrder.splice(currentIndex, 1);
-                            newOrder.unshift(taskIdToMove);
-                        } else if (direction === 'bottom') {
-                            // Move to most bottom: remove from current position and add at end
-                            newOrder.splice(currentIndex, 1);
-                            newOrder.push(taskIdToMove);
-                        } else if (direction === 'up') {
-                            // Move up 1 position: swap with previous
-                            if (currentIndex > 0) {
-                                [newOrder[currentIndex - 1], newOrder[currentIndex]] = [newOrder[currentIndex], newOrder[currentIndex - 1]];
-                            }
-                        } else if (direction === 'down') {
-                            // Move down 1 position: swap with next
-                            if (currentIndex < newOrder.length - 1) {
-                                [newOrder[currentIndex], newOrder[currentIndex + 1]] = [newOrder[currentIndex + 1], newOrder[currentIndex]];
-                            }
+                    // Rearrange the array based on direction
+                    let newOrder = [...currentOrder];
+
+                    if (direction === 'top') {
+                        // Move to most top: remove from current position and add at start
+                        newOrder.splice(currentIndex, 1);
+                        newOrder.unshift(taskIdToMove);
+                    } else if (direction === 'bottom') {
+                        // Move to most bottom: remove from current position and add at end
+                        newOrder.splice(currentIndex, 1);
+                        newOrder.push(taskIdToMove);
+                    } else if (direction === 'up') {
+                        // Move up 1 position: swap with previous
+                        if (currentIndex > 0) {
+                            [newOrder[currentIndex - 1], newOrder[currentIndex]] = [newOrder[currentIndex], newOrder[currentIndex - 1]];
+                        }
+                    } else if (direction === 'down') {
+                        // Move down 1 position: swap with next
+                        if (currentIndex < newOrder.length - 1) {
+                            [newOrder[currentIndex], newOrder[currentIndex + 1]] = [newOrder[currentIndex + 1], newOrder[currentIndex]];
                         }
                     }
                     
@@ -494,18 +469,21 @@
                         },
                         credentials: 'same-origin',
                         body: JSON.stringify({
-                            columnId: columnId,
+                            columnId: targetColumnId,
                             cardIds: newOrder
                         })
                     })
                     .then(response => {
+                        console.log('Move API response status:', response.status);
                         if (!response.ok) {
                             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                         }
                         return response.json();
                     })
                     .then(data => {
+                        console.log('Move API response data:', data);
                         if (data.success) {
+                            console.log('Move successful, refreshing page');
                             // Simple and reliable: refresh the entire page
                             // This guarantees no duplicates and works on all devices
                             setTimeout(() => {
