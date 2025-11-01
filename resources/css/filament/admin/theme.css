@@ -240,6 +240,31 @@ body {
         max-height: 90% !important;
     }
 
+    /* Mobile responsive: add bottom padding to column content to prevent card cut-off */
+    @media (hover: none) and (pointer: coarse), (max-width: 768px) {
+        .fi-page .ff-column__content {
+            padding-bottom: 1.5rem !important;
+        }
+
+        .fi-page .ff-board__content {
+            padding-bottom: 1rem !important;
+        }
+
+        .fi-page .ff-board__columns {
+            padding-bottom: 1rem !important;
+        }
+
+        /* Adjust board height calculation for mobile viewports */
+        .fi-page .ff-board {
+            height: calc(100vh - 20rem) !important;
+        }
+
+        /* Ensure columns have enough space on mobile */
+        .fi-page .ff-column {
+            max-height: calc(100vh - 16rem) !important;
+        }
+    }
+
     /* Action Board: remove vertical scrolling on the page when Flowforge board is present */
     .fi-main:has(.ff-board),
     .fi-page:has(.ff-board) {

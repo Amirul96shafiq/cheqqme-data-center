@@ -15,7 +15,7 @@
         :priority-filter="$priorityFilter"
     />
     
-    <div class="h-[calc(100vh-16rem)]">
+    <div class="h-[calc(100vh-16rem)] min-h-[400px] pb-8 md:pb-0">
         {{-- No Results Component (initially hidden) --}}
         <div id="no-results-component" class="hidden">
             <x-no-results-found 
@@ -27,7 +27,7 @@
         </div>
         
         {{-- Kanban Board --}}
-        <div id="kanban-board-container">
+        <div id="kanban-board-container" class="h-full">
             @livewire('relaticle.flowforge.kanban-board', [
                 'adapter' => $this->getAdapter(),
                 'pageClass' => $this::class

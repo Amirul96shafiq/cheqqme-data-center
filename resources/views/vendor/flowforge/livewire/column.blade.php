@@ -44,7 +44,7 @@
         x-on:dragend="filterActive && $event.preventDefault()"
         x-on:drop="filterActive && $event.preventDefault()"
         class="ff-column__content overflow-y-auto"
-        style="max-height: calc(100vh - 13rem); min-height: 60px;"
+        style="max-height: calc(100vh - 13rem); min-height: 60px; padding-bottom: 1.5rem;"
     >
         @if (isset($column['items']) && count($column['items']) > 0)
             @foreach ($column['items'] as $record)
@@ -86,6 +86,8 @@
                     </div>
                 </div>
             @endif
+            {{-- Bottom spacer to ensure last card is fully visible on mobile --}}
+            <div class="h-6"></div>
         @else
             <x-flowforge::empty-column
                 :columnId="$columnId"
