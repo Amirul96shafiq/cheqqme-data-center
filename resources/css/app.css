@@ -119,6 +119,23 @@ select {
     transform: translateX(-50%) translateY(4px);
 }
 
+/* Hide tooltips on mobile/touch devices */
+@media (hover: none) and (pointer: coarse) {
+    /* Hide custom tooltips */
+    .tooltip-container:hover .tooltip,
+    .tooltip-container:hover .tooltip-top,
+    .tooltip-container:hover .tooltip-bottom {
+        opacity: 0 !important;
+        visibility: hidden !important;
+    }
+
+    /* Hide Filament/Tippy.js tooltips */
+    [data-tippy-root],
+    .tippy-box {
+        display: none !important;
+    }
+}
+
 /* Global: Reusable bounce animation */
 @keyframes bounce-up-down {
     0%,

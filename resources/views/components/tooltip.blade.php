@@ -37,8 +37,8 @@
 <div class="relative tooltip-container" 
      data-tooltip-key="{{ $key }}"
      x-data="tooltipSmartPositioning()"
-     @mouseenter="positionTooltip($el)"
-     @mouseleave="resetTooltip($el)">
+     @mouseenter="if (!('ontouchstart' in window) || ('ontouchstart' in window && matchMedia('(hover: hover)').matches)) { positionTooltip($el); }"
+     @mouseleave="if (!('ontouchstart' in window) || ('ontouchstart' in window && matchMedia('(hover: hover)').matches)) { resetTooltip($el); }">
     {{ $slot }}
     
     {{-- Tooltip --}}
