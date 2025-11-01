@@ -55,9 +55,18 @@
         overflow-x: hidden !important;
     }
 
-    /* Board columns container: allow horizontal scrolling */
+    /* Board columns container: enable horizontal snap scrolling */
     .ff-board__columns {
         touch-action: pan-x pan-y !important;
+        scroll-snap-type: x mandatory;
+        -webkit-scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+    }
+
+    /* Each column: snap to start position */
+    .kanban-column {
+        scroll-snap-align: start;
+        -webkit-scroll-snap-align: start;
     }
 
     /* Kanban board container: allow all scrolling */
