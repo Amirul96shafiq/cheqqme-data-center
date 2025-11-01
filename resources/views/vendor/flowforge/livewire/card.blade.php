@@ -68,9 +68,11 @@
                 
                 {{-- Share button for cards with featured image --}}
                 <button
-                    class="ff-card__share-btn absolute top-[15px] right-[15px] z-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-md px-2 py-[3px] shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700 opacity-0 group-hover:opacity-100"
+                    class="ff-card__share-btn absolute top-[15px] right-[15px] z-20 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-md px-2 py-[3px] shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700 md:opacity-0 md:group-hover:opacity-100"
                     onclick="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
+                    ontouchstart="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
                     title="Share Task"
+                    type="button"
                 >
                     @svg('heroicon-o-share', 'w-3 h-3 text-gray-600 dark:text-gray-300')
                 </button>
@@ -98,13 +100,15 @@
                 <h4 class="ff-card__title m-0">{{ Str::limit($record['title'], 60) }}</h4>
 
                 {{-- Share button --}}
-                <span
-                    class="ff-card__badge inline-flex items-center px-2 py-[3px] rounded-md bg-white/90 dark:bg-gray-800/90 hover:bg-white  dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 hover:border-gray-300 text-xs cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                <button
+                    class="ff-card__badge inline-flex items-center px-2 py-[3px] rounded-md bg-white/90 dark:bg-gray-800/90 hover:bg-white  dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 hover:border-gray-300 text-xs cursor-pointer md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 touch-manipulation"
                     onclick="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
+                    ontouchstart="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
                     title="Share Task"
+                    type="button"
                 >
                     @svg('heroicon-o-share', 'w-3 h-3 text-gray-600 dark:text-gray-300')
-                </span>
+                </button>
 
             </div>
         @else
