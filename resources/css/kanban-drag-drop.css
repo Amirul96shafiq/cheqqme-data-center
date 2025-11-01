@@ -37,3 +37,42 @@
 .drag-disabled [x-sortable-handle]:hover {
     cursor: pointer !important;
 }
+
+/* Smooth transitions for mobile interactions */
+@media (hover: none) and (pointer: coarse) {
+    /* On mobile: disable drag and drop entirely, allow full scrolling */
+
+    /* Cards: allow all scrolling */
+    .ff-card {
+        touch-action: pan-x pan-y !important;
+        -webkit-touch-callout: none;
+    }
+
+    /* Columns: allow all scrolling */
+    .ff-column__content {
+        touch-action: pan-x pan-y !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Board columns container: allow horizontal scrolling */
+    .ff-board__columns {
+        touch-action: pan-x pan-y !important;
+    }
+
+    /* Kanban board container: allow all scrolling */
+    .kanban-board {
+        touch-action: pan-x pan-y !important;
+    }
+
+    /* Board content: ensure scrolling works */
+    .ff-board__content {
+        touch-action: pan-x pan-y !important;
+    }
+
+    /* Entire board wrapper: allow all scrolling */
+    #action-board-wrapper,
+    .ff-board-wrapper {
+        touch-action: pan-x pan-y !important;
+    }
+}

@@ -7,3 +7,4 @@ import "./task-viewers";
 import "./meeting-links";
 import "./spotify-player-alpine";
 import "./smart-tooltip";
+import "./kanban-mobile-drag";
