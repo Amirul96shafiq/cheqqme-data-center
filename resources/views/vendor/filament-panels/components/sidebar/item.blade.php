@@ -167,15 +167,14 @@
     @if ($hasDropdown && $sidebarCollapsible)
         <!-- Dropdown Menu -->
         <div
-            x-show="showDropdown"
+            x-show="$store.sidebar.isOpen && showDropdown && window.matchMedia('(min-width: 1024px)').matches"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
-            x-show="$store.sidebar.isOpen && showDropdown"
-            class="fixed z-[9999] ml-2 p-1 w-52 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none"
+            class="hidden lg:block fixed z-[9999] ml-2 p-1 w-52 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none"
             style="display: none;"
             x-ref="dropdown"
             x-init="
