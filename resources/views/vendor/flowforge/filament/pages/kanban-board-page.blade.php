@@ -119,7 +119,11 @@
                         {{-- Move to Top --}}
                     <button type="button"
                             @click="move('top')"
-                            class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors">
+                            :disabled="isAtTop()"
+                            :class="isAtTop()
+                                ? 'opacity-25 cursor-not-allowed bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600'
+                                : 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                            class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
                         <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                         </svg>
@@ -127,11 +131,15 @@
                             {{ __('action.move.to_top') }}
                         </span>
                     </button>
-                    
+
                     {{-- Move Up One --}}
                     <button type="button"
                             @click="move('up')"
-                            class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors">
+                            :disabled="isAtTop()"
+                            :class="isAtTop()
+                                ? 'opacity-25 cursor-not-allowed bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600'
+                                : 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                            class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
                         <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
                         </svg>
@@ -143,7 +151,11 @@
                     {{-- Move Down One --}}
                     <button type="button"
                             @click="move('down')"
-                            class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors">
+                            :disabled="isAtBottom()"
+                            :class="isAtBottom()
+                                ? 'opacity-25 cursor-not-allowed bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600'
+                                : 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                            class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
                         <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
@@ -155,7 +167,11 @@
                     {{-- Move to Bottom --}}
                     <button type="button"
                             @click="move('bottom')"
-                            class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors">
+                            :disabled="isAtBottom()"
+                            :class="isAtBottom()
+                                ? 'opacity-25 cursor-not-allowed bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600'
+                                : 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                            class="w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
                         <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                         </svg>
@@ -366,10 +382,66 @@
                         console.error('Error moving card to column:', error);
                     });
                 },
+
+                isAtTop() {
+                    if (!this.taskId || !this.selectedColumn) {
+                        return false;
+                    }
+
+                    const taskIdToCheck = parseInt(this.taskId, 10);
+                    if (isNaN(taskIdToCheck)) {
+                        return false;
+                    }
+
+                    // Get the target column element
+                    const targetColumnElement = document.querySelector(`.ff-column__content[data-column-id="${this.selectedColumn}"]`);
+                    if (!targetColumnElement) {
+                        return false;
+                    }
+
+                    // Get all cards in the target column
+                    const allCardsInColumn = Array.from(targetColumnElement.querySelectorAll('[data-task-id], [x-sortable-item]'));
+                    if (allCardsInColumn.length === 0) {
+                        return false;
+                    }
+
+                    // Find the first card (top position)
+                    const firstCard = allCardsInColumn[0];
+                    const firstCardId = firstCard.getAttribute('data-task-id') || firstCard.getAttribute('x-sortable-item');
+
+                    return parseInt(firstCardId, 10) === taskIdToCheck;
+                },
+
+                isAtBottom() {
+                    if (!this.taskId || !this.selectedColumn) {
+                        return false;
+                    }
+
+                    const taskIdToCheck = parseInt(this.taskId, 10);
+                    if (isNaN(taskIdToCheck)) {
+                        return false;
+                    }
+
+                    // Get the target column element
+                    const targetColumnElement = document.querySelector(`.ff-column__content[data-column-id="${this.selectedColumn}"]`);
+                    if (!targetColumnElement) {
+                        return false;
+                    }
+
+                    // Get all cards in the target column
+                    const allCardsInColumn = Array.from(targetColumnElement.querySelectorAll('[data-task-id], [x-sortable-item]'));
+                    if (allCardsInColumn.length === 0) {
+                        return false;
+                    }
+
+                    // Find the last card (bottom position)
+                    const lastCard = allCardsInColumn[allCardsInColumn.length - 1];
+                    const lastCardId = lastCard.getAttribute('data-task-id') || lastCard.getAttribute('x-sortable-item');
+
+                    return parseInt(lastCardId, 10) === taskIdToCheck;
+                },
                 
                 move(direction) {
-                    // console.log('move() called with direction:', direction);
-                    //console.log('selectedColumn:', this.selectedColumn);
 
                     if (!this.taskId) {
                         console.warn('No task ID available for move operation');
@@ -399,17 +471,13 @@
                         }
                     }
 
-                    //console.log('Target column ID:', targetColumnId);
-
                     if (!targetColumnId) {
-                        console.error('No target column found');
                         return;
                     }
 
                     // Get the target column element
                     const targetColumnElement = document.querySelector(`.ff-column__content[data-column-id="${targetColumnId}"]`);
                     if (!targetColumnElement) {
-                        console.error('Target column not found:', targetColumnId);
                         return;
                     }
 
@@ -431,7 +499,6 @@
                     // Find the index of the card to move
                     const currentIndex = currentOrder.indexOf(taskIdToMove);
                     if (currentIndex === -1) {
-                        console.error('Task not found in column order');
                         return;
                     }
 
@@ -495,7 +562,6 @@
                     })
                     .catch(error => {
                         console.error('Error moving card:', error);
-                        // Could show error notification here if needed
                     });
                 }
             }
