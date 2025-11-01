@@ -68,9 +68,12 @@
             
             {{-- Modal Header --}}
             <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {{ __('action.move.title') }}
-                </h3>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        {{ __('action.move.title') }}
+                    </h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1" x-text="getTaskTitle()"></p>
+                </div>
                 <button type="button"
                         @click="close()"
                         class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 rounded-md p-1">
@@ -242,6 +245,37 @@
                         }
                     }
                     return null;
+                },
+
+                getTaskTitle() {
+                    if (!this.taskId) {
+                        return '';
+                    }
+
+                    // Find the card element and get its title
+                    const cardElement = document.querySelector(`[data-task-id="${this.taskId}"], [x-sortable-item="${this.taskId}"]`);
+                    if (cardElement) {
+                        // Look for the title in the card content (h4 with ff-card__title class)
+                        const titleElement = cardElement.querySelector('h4.ff-card__title');
+                        if (titleElement) {
+                            const title = titleElement.textContent?.trim() || '';
+                            // Limit to 30 characters and add ellipsis if needed
+                            return title.length > 30 ? title.substring(0, 30) + '...' : title;
+                        }
+
+                        // Fallback: look for any h4 element
+                        const fallbackTitle = cardElement.querySelector('h4');
+                        if (fallbackTitle) {
+                            const title = fallbackTitle.textContent?.trim() || '';
+                            return title.length > 30 ? title.substring(0, 30) + '...' : title;
+                        }
+
+                        // Last fallback: get text content from the card
+                        const cardText = cardElement.textContent?.trim() || '';
+                        return cardText.length > 30 ? cardText.substring(0, 30) + '...' : cardText;
+                    }
+
+                    return '';
                 },
 
                 selectColumn(columnId) {
