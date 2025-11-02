@@ -411,6 +411,136 @@
                 });
             };
 
+            // Mobile-specific task sharing functionality
+            window.shareTaskUrlMobile = function(event, taskId, buttonElement) {
+                // Prevent default touch behavior and stop propagation
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
+                }
+
+                // Use Filament's proper URL generation instead of hardcoded path
+                const editUrl = @js(\App\Filament\Resources\TaskResource::getUrl('edit', ['record' => 'PLACEHOLDER']));
+                const fullUrl = editUrl.replace('PLACEHOLDER', taskId);
+
+                // Helper function to copy to clipboard with fallback
+                const copyToClipboard = function(text) {
+                    return new Promise(function(resolve, reject) {
+                        // Try modern clipboard API first
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(text)
+                                .then(resolve)
+                                .catch(function(err) {
+                                    // Fallback to execCommand for older browsers/mobile
+                                    const textarea = document.createElement('textarea');
+                                    textarea.value = text;
+                                    textarea.style.position = 'fixed';
+                                    textarea.style.opacity = '0';
+                                    textarea.style.left = '-999999px';
+                                    textarea.style.top = '-999999px';
+                                    document.body.appendChild(textarea);
+                                    textarea.focus();
+                                    textarea.select();
+                                    
+                                    try {
+                                        const successful = document.execCommand('copy');
+                                        document.body.removeChild(textarea);
+                                        if (successful) {
+                                            resolve();
+                                        } else {
+                                            reject(new Error('execCommand copy failed'));
+                                        }
+                                    } catch (err) {
+                                        document.body.removeChild(textarea);
+                                        reject(err);
+                                    }
+                                });
+                        } else {
+                            // Fallback to execCommand if clipboard API not available
+                            const textarea = document.createElement('textarea');
+                            textarea.value = text;
+                            textarea.style.position = 'fixed';
+                            textarea.style.opacity = '0';
+                            textarea.style.left = '-999999px';
+                            textarea.style.top = '-999999px';
+                            document.body.appendChild(textarea);
+                            textarea.focus();
+                            textarea.select();
+                            
+                            try {
+                                const successful = document.execCommand('copy');
+                                document.body.removeChild(textarea);
+                                if (successful) {
+                                    resolve();
+                                } else {
+                                    reject(new Error('execCommand copy failed'));
+                                }
+                            } catch (err) {
+                                document.body.removeChild(textarea);
+                                reject(err);
+                            }
+                        }
+                    });
+                };
+
+                // Try Web Share API first (better UX on mobile)
+                if (navigator.share) {
+                    try {
+                        const shareData = {
+                            title: 'Task',
+                            url: fullUrl
+                        };
+                        
+                        // Try sharing
+                        navigator.share(shareData)
+                            .then(function() {
+                                // Show success bubble
+                                if (buttonElement && typeof showCopiedBubble === 'function') {
+                                    showCopiedBubble(buttonElement);
+                                }
+                            })
+                            .catch(function(err) {
+                                // User cancelled or share failed, fall back to clipboard
+                                if (err.name !== 'AbortError') {
+                                    copyToClipboard(fullUrl)
+                                        .then(function() {
+                                            if (buttonElement && typeof showCopiedBubble === 'function') {
+                                                showCopiedBubble(buttonElement);
+                                            }
+                                        })
+                                        .catch(function(err) {
+                                            // Silently fail - could log here if needed
+                                            console.error('Failed to copy to clipboard:', err);
+                                        });
+                                }
+                            });
+                    } catch (err) {
+                        // Fall back to clipboard if Web Share API fails
+                        copyToClipboard(fullUrl)
+                            .then(function() {
+                                if (buttonElement && typeof showCopiedBubble === 'function') {
+                                    showCopiedBubble(buttonElement);
+                                }
+                            })
+                            .catch(function(err) {
+                                console.error('Failed to copy to clipboard:', err);
+                            });
+                    }
+                } else {
+                    // Fall back to clipboard API if Web Share API is not available
+                    copyToClipboard(fullUrl)
+                        .then(function() {
+                            if (buttonElement && typeof showCopiedBubble === 'function') {
+                                showCopiedBubble(buttonElement);
+                            }
+                        })
+                        .catch(function(err) {
+                            console.error('Failed to copy to clipboard:', err);
+                        });
+                }
+            };
+
             // Hide empty columns when cards are dragged over them
             document.addEventListener('DOMContentLoaded', function() {
                 // Add CSS for sortable drag behavior

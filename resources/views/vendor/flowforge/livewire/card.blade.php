@@ -69,8 +69,9 @@
                 {{-- Share button for cards with featured image --}}
                 <button
                     class="ff-card__share-btn absolute top-[15px] right-[15px] z-20 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 rounded-md px-2 py-[3px] shadow-md hover:shadow-lg transition-all duration-200 border border-gray-200 dark:border-gray-700 md:opacity-0 md:group-hover:opacity-100"
-                    onclick="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
-                    ontouchstart="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
+                    onclick="if (!this.dataset.touched) { shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this); }"
+                    ontouchstart="this.dataset.touched = '1';"
+                    ontouchend="this.dataset.touched = '1'; shareTaskUrlMobile(event, '{{ $record['id'] }}', this); setTimeout(() => delete this.dataset.touched, 300);"
                     title="Share Task"
                     type="button"
                 >
@@ -102,8 +103,9 @@
                 {{-- Share button --}}
                 <button
                     class="ff-card__badge inline-flex items-center px-2 py-[3px] rounded-md bg-white/90 dark:bg-gray-800/90 hover:bg-white  dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 hover:border-gray-300 text-xs cursor-pointer md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 touch-manipulation"
-                    onclick="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
-                    ontouchstart="shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this);"
+                    onclick="if (!this.dataset.touched) { shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this); }"
+                    ontouchstart="this.dataset.touched = '1';"
+                    ontouchend="this.dataset.touched = '1'; shareTaskUrlMobile(event, '{{ $record['id'] }}', this); setTimeout(() => delete this.dataset.touched, 300);"
                     title="Share Task"
                     type="button"
                 >
