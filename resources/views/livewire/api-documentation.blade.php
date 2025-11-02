@@ -2,14 +2,14 @@
     <div class="space-y-4">
         <!-- Base URL -->
         <div class="flex items-center justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">
-            <div class="flex-1">
+            <div class="flex-1 min-w-0 overflow-x-auto">
                 <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('settings.api.documentation_content.base_url') }}:</p>
-                <code class="text-sm text-gray-600 dark:text-gray-400">{{ $baseUrl }}</code>
+                <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ $baseUrl }}</code>
             </div>
             <button 
                 type="button"
                 wire:click="copyToClipboard('{{ $baseUrl }}')"
-                class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                class="ml-3 flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                 x-data="{ copied: false }"
                 x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
             >
@@ -22,14 +22,14 @@
 
         <!-- API Header -->
         <div class="flex items-center justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">
-            <div class="flex-1">
+            <div class="flex-1 min-w-0 overflow-x-auto">
                 <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('settings.api.documentation_content.api_header') }}:</p>
-                <code class="text-sm text-gray-600 dark:text-gray-400">Accept: application/json</code>
+                <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">Accept: application/json</code>
             </div>
             <button 
                 type="button"
                 wire:click="copyToClipboard('Accept: application/json')"
-                class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                class="ml-3 flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                 x-data="{ copied: false }"
                 x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
             >
@@ -42,14 +42,14 @@
 
         <!-- Authentication -->
         <div class="flex items-center justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">
-            <div class="flex-1">
+            <div class="flex-1 min-w-0 overflow-x-auto">
                 <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('settings.api.documentation_content.authentication') }}:</p>
-                <code class="text-sm text-gray-600 dark:text-gray-400">Authorization: Bearer {{ $maskedApiKey }}</code>
+                <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">Authorization: Bearer {{ $maskedApiKey }}</code>
             </div>
             <button 
                 type="button"
                 wire:click="copyToClipboard('Authorization: Bearer {{ $apiKey }}')"
-                class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                class="ml-3 flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                 x-data="{ copied: false }"
                 x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
             >
@@ -61,19 +61,19 @@
         </div>
 
         <!-- Example Request -->
-        <div class="flex items-center justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">
-            <div class="flex-1">
+        <div class="flex items-start justify-between bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">
+            <div class="flex-1 min-w-0 overflow-x-auto">
                 <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('settings.api.documentation_content.example_request') }}:</p>
-                <code class="text-sm text-gray-600 dark:text-gray-400">
-                    GET {{ $baseUrl }}/clients<br>
-                    Accept: application/json<br>
-                    Authorization: Bearer {{ $maskedApiKey }}
+                <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre">
+GET {{ $baseUrl }}/clients
+Accept: application/json
+Authorization: Bearer {{ $maskedApiKey }}
                 </code>
             </div>
             <button 
                 type="button"
                 wire:click="copyToClipboard('GET {{ $baseUrl }}/clients\nAccept: application/json\nAuthorization: Bearer {{ $apiKey }}')"
-                class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                class="ml-3 flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                 x-data="{ copied: false }"
                 x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
             >
@@ -87,9 +87,11 @@
         <!-- Sample Screenshot -->
         <div class="bg-white dark:bg-gray-900 border rounded-lg border-gray-300 dark:border-white/10 py-2 px-4">
             <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('settings.api.documentation_content.sample_screenshot') }}:</p>
-            <a href="/images/api-sample-screenshot.png" target="_blank" class="block">
-                <img src="/images/api-sample-screenshot.png" alt="API Documentation: Sample Screenshot" class="w-full h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity">
-            </a>
+            <div class="overflow-x-auto">
+                <a href="/images/api-sample-screenshot.png" target="_blank" class="block min-w-max">
+                    <img src="/images/api-sample-screenshot.png" alt="API Documentation: Sample Screenshot" class="max-w-full h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity">
+                </a>
+            </div>
         </div>
 
         <!-- List of Supported API -->
@@ -100,12 +102,14 @@
             <div class="space-y-2 mb-4">
                 <h4 class="text-[10px] font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">User Endpoints</h4>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/profile</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/profile</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/profile')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
@@ -116,12 +120,14 @@
                     </button>
                 </div>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/api-key-info</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/api-key-info</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/api-key-info')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
@@ -137,12 +143,14 @@
             <div class="space-y-2 mb-4">
                 <h4 class="text-[10px] font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Resource Endpoints</h4>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/clients</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/clients</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/clients')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
@@ -153,12 +161,14 @@
                     </button>
                 </div>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/projects</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/projects</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/projects')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
@@ -169,12 +179,14 @@
                     </button>
                 </div>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/documents</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/documents</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/documents')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
@@ -185,12 +197,14 @@
                     </button>
                 </div>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/important-urls</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/important-urls</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/important-urls')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
@@ -201,12 +215,14 @@
                     </button>
                 </div>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/phone-numbers</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/phone-numbers</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/phone-numbers')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
@@ -217,12 +233,14 @@
                     </button>
                 </div>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/users</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/users</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/users')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
@@ -233,12 +251,14 @@
                     </button>
                 </div>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/tasks</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/tasks</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/tasks')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
@@ -249,12 +269,14 @@
                     </button>
                 </div>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/comments</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/comments</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/comments')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
@@ -265,12 +287,14 @@
                     </button>
                 </div>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/comments/{comment}</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/comments/{comment}</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/comments/{comment}')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
@@ -281,12 +305,14 @@
                     </button>
                 </div>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/trello-boards</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/trello-boards</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/trello-boards')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
@@ -297,12 +323,14 @@
                     </button>
                 </div>
                 
-                <div class="flex items-center justify-between">
-                    <code class="text-sm text-gray-600 dark:text-gray-400">GET {{ $baseUrl }}/openai-logs</code>
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex-1 min-w-0 overflow-x-auto">
+                        <code class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">GET {{ $baseUrl }}/openai-logs</code>
+                    </div>
                     <button 
                         type="button"
                         wire:click="copyToClipboard('GET {{ $baseUrl }}/openai-logs')"
-                        class="ml-3 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                        class="flex-shrink-0 inline-flex items-center p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                         x-data="{ copied: false }"
                         x-on:click="copied = true; setTimeout(() => copied = false, 2000)"
                     >
