@@ -398,8 +398,11 @@
 
             // Task sharing functionality (no notifications)
             window.shareTaskUrl = function(event, taskId) {
-                event.preventDefault();
-                event.stopPropagation();
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
+                }
 
                 // Use Filament's proper URL generation instead of hardcoded path
                 // This matches the same URL structure used by the share task button in EditTask.php
