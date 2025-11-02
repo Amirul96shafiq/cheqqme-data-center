@@ -613,7 +613,8 @@
         {{-- Backdrop --}}
         <div class="absolute inset-0 bg-gray-950/50 dark:bg-gray-950/75 backdrop-blur-md" 
              @click="closeModal('changelog')" 
-             aria-hidden="true"></div>
+             aria-hidden="true">
+        </div>
         
         {{-- Modal --}}
         <div role="dialog" 
@@ -692,6 +693,7 @@
 
                                     {{-- Tag Badges and Commit Hash --}}
                                     <div class="mb-2 flex flex-wrap gap-1.5">
+
                                         {{-- Tag Badges --}}
                                         <template x-for="tag in commit.tags" :key="tag">
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200"
@@ -703,6 +705,7 @@
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200"
                                               x-text="commit.short_hash">
                                         </span>
+                                        
                                     </div>
 
                                     {{-- Commit Message --}}
@@ -712,15 +715,25 @@
                                     </div>
                                     
                                     {{-- Author & Time --}}
-                                    <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                                        <span class="font-medium text-gray-700 dark:text-gray-300" x-text="commit.author_name">
-                                        </span>
-                                        <span>Committed</span>
-                                        <time :datetime="commit.date" :title="commit.date_formatted">
-                                            <span x-text="commit.date_relative"></span>
-                                            <span> • </span>
-                                            <span x-text="new Date(commit.date).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '').toUpperCase()"></span>
-                                        </time>
+                                    <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 md:gap-1">
+
+                                        {{-- Mobile: 50/50 layout --}}
+                                        <div class="w-1/2 text-start md:w-auto md:text-inherit">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300" x-text="commit.author_name">
+                                            </span>
+                                        </div>
+
+                                        {{-- Desktop: Show "Committed" text --}}
+                                        <span class="hidden md:inline">Committed</span>
+
+                                        <div class="w-1/2 text-end md:w-auto md:text-inherit">
+                                            <time :datetime="commit.date" :title="commit.date_formatted">
+                                                <span x-text="commit.date_relative"></span>
+                                                <span> • </span>
+                                                <span x-text="new Date(commit.date).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '').toUpperCase()"></span>
+                                            </time>
+                                        </div>
+
                                     </div>
 
                                 </div>

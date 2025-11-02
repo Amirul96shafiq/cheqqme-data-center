@@ -551,12 +551,21 @@ Route::get('/changelog', function () {
 
         // Format commits for JSON response
         $commits = $changelog->map(function ($commit) {
+            // Get relative date and shorten time units
+            $dateRelative = $commit['date']->diffForHumans();
+            $dateRelative = str_replace([' seconds', ' minutes', ' hours'], [' secs', ' mins', ' hrs'], $dateRelative);
+            // Also handle singular forms
+            $dateRelative = str_replace([' second', ' minute', ' hour'], [' sec', ' min', ' hr'], $dateRelative);
+            // Handle other time units that might exist
+            $dateRelative = str_replace([' days', ' weeks', ' months', ' years'], [' days', ' wks', ' mths', ' yrs'], $dateRelative);
+            $dateRelative = str_replace([' day', ' week', ' month', ' year'], [' day', ' wk', ' mth', ' yr'], $dateRelative);
+
             return [
                 'short_hash' => $commit['short_hash'],
                 'full_hash' => $commit['full_hash'],
                 'date' => $commit['date']->toISOString(),
                 'date_formatted' => $commit['date']->format('M j, Y g:i A'),
-                'date_relative' => $commit['date']->diffForHumans(),
+                'date_relative' => $dateRelative,
                 'author_name' => $commit['author_name'],
                 'author_email' => $commit['author_email'],
                 'author_avatar' => $commit['author_avatar'],
