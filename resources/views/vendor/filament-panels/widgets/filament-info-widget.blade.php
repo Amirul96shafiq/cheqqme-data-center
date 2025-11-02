@@ -63,7 +63,7 @@
                     icon-alias="panels::widgets.filament-info.open-changelog-button"
                     onclick="if (window.showGlobalModal) { window.showGlobalModal('changelog'); }"
                 >
-                    View What's new? (Changelog) 🡥
+                    <span class="hidden sm:inline">{{ __('dashboard.widgets.view_changelog') }}</span>
                 </x-filament::link>
                 
             </div>
