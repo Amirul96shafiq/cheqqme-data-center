@@ -1070,6 +1070,7 @@ class MeetingLinkResource extends Resource
                     ->searchable(),
             ])
             ->actions([
+
                 Tables\Actions\Action::make('open_url')
                     ->label('')
                     ->icon('heroicon-o-link')
@@ -1077,13 +1078,16 @@ class MeetingLinkResource extends Resource
                     ->url(fn ($record) => $record->meeting_url)
                     ->openUrlInNewTab()
                     ->visible(fn ($record) => ! empty($record->meeting_url)),
+
                 Tables\Actions\ViewAction::make()
                     ->label(__('meetinglink.actions.view')),
+
                 Tables\Actions\EditAction::make()
                     ->label(__('meetinglink.actions.edit'))
                     ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
+
                     Tables\Actions\Action::make('share_meeting_link')
                         ->label(__('meetinglink.actions.share_meeting_link'))
                         ->icon('heroicon-o-share')
@@ -1112,8 +1116,15 @@ class MeetingLinkResource extends Resource
                         ->modalSubmitAction(false)
                         ->modalCancelAction(false)
                         ->extraModalFooterActions(function ($record, $livewire) {
-                            return [
-                                Tables\Actions\Action::make('copy_to_clipboard')
+                            $actions = [];
+
+                            // Detect mobile device and hide copy button on mobile
+                            $userAgent = request()->userAgent() ?? '';
+                            $isMobile = preg_match('/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $userAgent);
+
+                            // Only show copy button on desktop, hide on mobile so users can manually copy from preview
+                            if (! $isMobile) {
+                                $actions[] = Tables\Actions\Action::make('copy_to_clipboard')
                                     ->label(__('meetinglink.actions.copy_to_clipboard'))
                                     ->icon('heroicon-o-clipboard-document')
                                     ->color('primary')
@@ -1126,23 +1137,31 @@ class MeetingLinkResource extends Resource
 
                                         // Dispatch browser event with the text to copy and success callback
                                         $livewire->dispatch('copy-to-clipboard-with-callback', text: $meetingText);
-                                    }),
-                                Tables\Actions\Action::make('edit_meeting_link')
-                                    ->label(__('meetinglink.actions.edit_meeting_link'))
-                                    ->icon('heroicon-o-pencil-square')
-                                    ->color('gray')
-                                    ->url(fn ($record) => self::getUrl('edit', ['record' => $record->id]))
-                                    ->close(),
-                            ];
+                                    });
+                            }
+
+                            $actions[] = Tables\Actions\Action::make('edit_meeting_link')
+                                ->label(__('meetinglink.actions.edit_meeting_link'))
+                                ->icon('heroicon-o-pencil-square')
+                                ->color('gray')
+                                ->url(fn ($record) => self::getUrl('edit', ['record' => $record->id]))
+                                ->close();
+
+                            return $actions;
                         }),
+
                     ActivityLogTimelineTableAction::make(__('meetinglink.actions.activity_log'))
                         ->label(__('meetinglink.actions.activity_log')),
+
                     Tables\Actions\DeleteAction::make()
                         ->label(__('meetinglink.actions.delete')),
+
                     Tables\Actions\RestoreAction::make()
                         ->label(__('meetinglink.actions.restore')),
+
                     Tables\Actions\ForceDeleteAction::make()
                         ->label(__('meetinglink.actions.force_delete')),
+                        
                 ]),
             ])
             ->bulkActions([

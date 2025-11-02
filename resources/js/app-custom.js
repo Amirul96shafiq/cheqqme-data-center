@@ -363,7 +363,7 @@ document.addEventListener("livewire:init", function () {
         copyToClipboard(text, message);
     });
 
-    // Copy with success callback for meeting links
+    // Copy with success callback for meeting links (desktop only)
     Livewire.on("copy-to-clipboard-with-callback", function (data) {
         const { text } = data;
 
