@@ -341,23 +341,32 @@ class Settings extends Page
     // Get copy API key action
     private function getCopyApiKeyAction(): \Filament\Forms\Components\Actions\Action
     {
+        $user = auth()->user();
+        $apiKey = $user->hasApiKey() ? $user->api_key : null;
+
         return \Filament\Forms\Components\Actions\Action::make('copy_api_key')
             ->label(__('settings.api.copy'))
             ->icon('heroicon-o-square-2-stack')
             ->color('gray')
             ->size('sm')
-            ->visible(fn () => auth()->user()->hasApiKey())
+            ->visible(fn () => $user->hasApiKey())
+            ->extraAttributes(function () use ($apiKey) {
+                // Store API key in data attribute for immediate client-side access
+                // This ensures clipboard works on mobile devices where gesture context is required
+                // Using data attribute to avoid HTML escaping issues with x-data
+                return [
+                    'data-api-key' => $apiKey,
+                    'x-on:click' => 'window.copyApiKeyImmediate($event, $el.dataset.apiKey)',
+                ];
+            })
             ->action(function () {
                 $user = auth()->user();
 
-                // Dispatch browser event to copy API key to clipboard
-                $this->dispatch('copy-api-key', apiKey: $user->api_key);
-
                 // Show notification that copy operation was initiated
                 Notification::make()
-                    ->title(__('settings.notifications.api_key_copying'))
-                    ->body(__('settings.notifications.api_key_copying_body'))
-                    ->info()
+                    ->title(__('settings.notifications.api_key_copied'))
+                    ->body(__('settings.notifications.api_key_copied_body'))
+                    ->success()
                     ->send();
             });
     }

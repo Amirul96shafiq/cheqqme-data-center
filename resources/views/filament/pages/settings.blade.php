@@ -21,6 +21,75 @@
         </div>
     </form>
 
+    <!-- Copy API Key Immediate Function -->
+    <script>
+        // Copy API key immediately on click for mobile compatibility
+        // This function executes synchronously within the user gesture context
+        window.copyApiKeyImmediate = function(event, apiKey) {
+            if (!apiKey) {
+                console.error('No API key provided');
+                return; // Let Livewire action proceed normally
+            }
+
+            // Copy immediately using clipboard API with mobile fallback
+            const copyToClipboard = async (text) => {
+                // Try modern clipboard API first
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        return true;
+                    } catch (err) {
+                        console.warn('Clipboard API failed, trying fallback:', err);
+                    }
+                }
+
+                // Fallback for mobile browsers
+                try {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-9999px';
+                    textArea.style.top = '-9999px';
+                    textArea.style.opacity = '0';
+                    textArea.setAttribute('readonly', '');
+                    document.body.appendChild(textArea);
+
+                    // For iOS Safari
+                    if (navigator.userAgent.match(/ipad|iphone/i)) {
+                        const range = document.createRange();
+                        range.selectNodeContents(textArea);
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                        textArea.setSelectionRange(0, 999999);
+                    } else {
+                        textArea.select();
+                        textArea.setSelectionRange(0, 99999); // For mobile devices
+                    }
+
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+
+                    if (successful) {
+                        return true;
+                    }
+                } catch (err) {
+                    console.error('Fallback copy failed:', err);
+                }
+
+                return false;
+            };
+
+            // Execute copy immediately (don't await to keep it synchronous)
+            copyToClipboard(apiKey).catch(err => {
+                console.error('Copy failed:', err);
+            });
+
+            // Don't prevent default - let Livewire action proceed for notification
+            // The copy happens immediately, preserving the user gesture context
+        };
+    </script>
+
     <!-- Location Detection Script -->
     <script>
         document.addEventListener('livewire:init', function () {
