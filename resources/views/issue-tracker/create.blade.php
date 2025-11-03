@@ -23,7 +23,7 @@
                     Submit an Issue / Bug
                 </h1>
                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    Project: <span class="font-semibold">{{ $project->title }}</span>
+                    Project: <span class="font-semibold text-primary-500">{{ $project->title }}</span>
                 </p>
             </div>
 
@@ -46,7 +46,7 @@
             @endif
 
             {{-- Form --}}
-            <form method="POST" action="{{ route('issue-tracker.store') }}" enctype="multipart/form-data" class="m-8 space-y-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+            <form method="POST" action="{{ route('issue-tracker.store') }}" enctype="multipart/form-data" class="mt-6 space-y-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
                 @csrf
 
                 {{-- Hidden Project ID --}}
@@ -159,7 +159,7 @@
             </form>
 
             {{-- Footer --}}
-            <div class="text-center">
+            <div class="text-center mt-8">
                 <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto dark:hidden">
                 <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto hidden dark:inline-block">
             </div>
