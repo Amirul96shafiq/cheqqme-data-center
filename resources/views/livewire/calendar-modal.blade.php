@@ -483,7 +483,7 @@
                                 
                                 {{-- Date Number --}}
                                 <div class="flex items-center justify-between mb-0.5">
-                                    <span class="text-sm font-medium 
+                                    <span class="text-[8px] sm:text-sm font-medium 
                                                  {{ $day['is_today'] ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-200' }}">
                                         {{ $day['date']->day }}
                                     </span>
