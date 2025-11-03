@@ -16,6 +16,7 @@
 <body class="h-full antialiased font-sans bg-gray-50 dark:bg-gray-900">
     <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full space-y-8">
+
             {{-- Header --}}
             <div class="text-center">
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
@@ -45,7 +46,7 @@
             @endif
 
             {{-- Form --}}
-            <form method="POST" action="{{ route('issue-tracker.store') }}" enctype="multipart/form-data" class="mt-8 space-y-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+            <form method="POST" action="{{ route('issue-tracker.store') }}" enctype="multipart/form-data" class="m-8 space-y-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
                 @csrf
 
                 {{-- Hidden Project ID --}}
@@ -83,7 +84,7 @@
                     </label>
                     <input id="name" type="text" name="name" value="{{ old('name') }}"
                         required autofocus
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
                 </div>
 
                 {{-- Email Field --}}
@@ -93,7 +94,7 @@
                     </label>
                     <input id="email" type="email" name="email" value="{{ old('email') }}"
                         required autocomplete="email"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
                 </div>
 
                 {{-- Title Field --}}
@@ -103,7 +104,7 @@
                     </label>
                     <input id="title" type="text" name="title" value="{{ old('title') }}"
                         required placeholder="Brief description of the issue"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
                 </div>
 
                 {{-- Description Field --}}
@@ -112,10 +113,10 @@
                         Description
                         <span class="text-xs text-gray-500 dark:text-gray-400">(Optional, max 500 characters)</span>
                     </label>
-                    <textarea id="description" name="description" rows="4"
+                    <textarea id="description" name="description" rows="10"
                         placeholder="Provide more details about the issue..."
                         maxlength="500"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white resize-y">{{ old('description') }}</textarea>
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm resize-y">{{ old('description', "Steps to Reproduce:-\n1-\n\nExpected Result\n- \n\nActual Result\n- ") }}</textarea>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                         <span id="char-count">0</span> / 500 characters
                     </p>
@@ -154,12 +155,15 @@
                         Submit Issue
                     </button>
                 </div>
+
             </form>
 
             {{-- Footer --}}
-            <div class="text-center text-sm text-gray-500 dark:text-gray-400">
-                <p>Powered by {{ config('app.name') }}</p>
+            <div class="text-center">
+                <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto dark:hidden">
+                <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto hidden dark:inline-block">
             </div>
+            
         </div>
     </div>
 
