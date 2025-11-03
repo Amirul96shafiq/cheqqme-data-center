@@ -9,11 +9,17 @@
         lastScrollTime: 0,
         scrollDelta: 0,
         isOverPopover: false,
+        isMobile: false,
         
         init() {
             // Check if screen is 2xl or larger (1536px+)
             this.checkScreenSize();
-            window.addEventListener('resize', () => this.checkScreenSize());
+            // Check if screen is mobile (< 640px)
+            this.checkMobileSize();
+            window.addEventListener('resize', () => {
+                this.checkScreenSize();
+                this.checkMobileSize();
+            });
             
             // Add wheel event listener for scroll-based navigation
             this.$el.addEventListener('wheel', (e) => this.handleScrollNavigation(e), { passive: false });
@@ -21,6 +27,10 @@
         
         checkScreenSize() {
             this.scrollNavigationEnabled = window.innerWidth >= 1536;
+        },
+        
+        checkMobileSize() {
+            this.isMobile = window.innerWidth < 640;
         },
         
         handleScrollNavigation(event) {
@@ -299,7 +309,7 @@
                         x-transition:leave="transition ease-in duration-150"
                         x-transition:leave-start="opacity-100 scale-100"
                         x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute left-0 2xl:right-0 mt-2 w-56 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
+                        class="absolute left-1/2 -translate-x-1/2 mt-2 w-56 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
                         style="display: none;"
                     >
                         <!-- Filter Header -->
@@ -618,8 +628,10 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
-         class="fixed z-50 w-80 bg-white dark:bg-gray-900 rounded-lg shadow-xl ring-1 ring-gray-100 dark:ring-gray-800 p-4 max-h-[80vh]"
-         :style="`left: ${Math.max(20, Math.min(popoverPosition.x, window.innerWidth - 340))}px; top: ${Math.min(popoverPosition.y + 10, window.innerHeight - 400)}px; transform: translateX(${popoverPosition.x < 180 ? '0%' : '-50%'});`"
+         class="fixed z-50 w-[calc(100vw-2rem)] sm:w-80 bg-white dark:bg-gray-900 rounded-lg shadow-xl ring-1 ring-gray-100 dark:ring-gray-800 p-4 max-h-[80vh]"
+         :style="isMobile ? 
+            `left: 50%; top: 50%; transform: translate(-50%, -50%);` : 
+            `left: ${Math.max(20, Math.min(popoverPosition.x, window.innerWidth - 340))}px; top: ${Math.min(popoverPosition.y + 10, window.innerHeight - 400)}px; transform: translateX(${popoverPosition.x < 180 ? '0%' : '-50%'});`"
          x-cloak>
         
         {{-- Popover Header --}}
