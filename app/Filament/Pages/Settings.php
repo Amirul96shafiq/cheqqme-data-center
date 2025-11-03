@@ -966,9 +966,11 @@ class Settings extends Page
                                     $currentUser = Auth::user();
                                     $userName = $currentUser ? $currentUser->name : 'System User';
 
-                                    $html = '<div class="grid grid-cols-2 gap-6">';
+                                    // Mobile: Vertical layout (top to bottom)
+                                    // Desktop: Horizontal layout (side by side)
+                                    $html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-6">';
 
-                                    // Current time - Left side
+                                    // Current time - Left side (top on mobile)
                                     $html .= '<div class="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-lg">';
                                     $html .= '<h4 class="font-medium text-teal-900 dark:text-teal-100 mb-3">'.__('settings.timezone.current_time').'</h4>';
                                     $html .= '<div class="text-center">';
@@ -978,7 +980,7 @@ class Settings extends Page
                                     $html .= '</div>';
                                     $html .= '</div>';
 
-                                    // Timezone information - Right side
+                                    // Timezone information - Right side (bottom on mobile)
                                     $html .= '<div class="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">';
                                     $html .= '<h4 class="font-medium text-amber-900 dark:text-amber-100 mb-3">'.__('settings.timezone.information').'</h4>';
                                     $html .= '<div class="space-y-2 text-sm">';
