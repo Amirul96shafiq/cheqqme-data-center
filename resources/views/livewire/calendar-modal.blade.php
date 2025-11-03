@@ -99,10 +99,12 @@
     }">
     
     {{-- Calendar Header --}}
-    <div class="flex items-center justify-between mb-6">
+    <div class="relative"></div>
+        <div class="overflow-x-auto sm:overflow-x-visible [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] sm:[&::-webkit-scrollbar]:block sm:[-ms-overflow-style:auto] sm:[scrollbar-width:auto]">
+            <div class="flex items-center justify-between min-w-max sm:min-w-0 gap-4">
 
         {{-- Month Picker --}}
-        <div class="relative" 
+        <div class="relative flex-shrink-0" 
              @click.away="openMonthPicker = false"
              x-data="{ 
                 openMonthPicker: false,
@@ -160,7 +162,7 @@
                  x-transition:leave="transition ease-in duration-75"
                  x-transition:leave-start="transform opacity-100 scale-100"
                  x-transition:leave-end="transform opacity-0 scale-95"
-                 class="absolute left-0 mt-4 w-72 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
+                 class="fixed sm:absolute left-1/2 sm:left-0 -translate-x-1/2 sm:translate-x-0 top-1/2 sm:top-auto -translate-y-1/2 sm:translate-y-0 sm:mt-4 w-[calc(100vw-2rem)] sm:w-72 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
                  style="display: none;">
 
                 <div class="p-4 space-y-4">
@@ -240,7 +242,7 @@
             
         </div>
         
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4 flex-shrink-0">
             <div class="flex items-center gap-2">
 
                 {{-- Create Dropdown Button --}}
@@ -263,7 +265,7 @@
                         x-transition:leave="transition ease-in duration-75"
                         x-transition:leave-start="transform opacity-100 scale-100"
                         x-transition:leave-end="transform opacity-0 scale-95"
-                        class="absolute left-0 2xl:right-0 mt-2 w-52 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
+                        class="fixed sm:absolute left-1/2 sm:left-0 -translate-x-1/2 sm:translate-x-0 top-1/2 sm:top-auto -translate-y-1/2 sm:translate-y-0 sm:mt-2 w-[calc(100vw-2rem)] sm:w-52 2xl:right-0 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
                         style="display: none;">
 
                         <div class="py-2">
@@ -309,7 +311,7 @@
                         x-transition:leave="transition ease-in duration-150"
                         x-transition:leave-start="opacity-100 scale-100"
                         x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute left-1/2 -translate-x-1/2 mt-2 w-56 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
+                        class="fixed sm:absolute left-1/2 sm:left-0 -translate-x-1/2 sm:translate-x-0 top-1/2 sm:top-auto -translate-y-1/2 sm:translate-y-0 sm:mt-2 w-[calc(100vw-2rem)] sm:w-56 rounded-lg shadow-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none z-50"
                         style="display: none;"
                     >
                         <!-- Filter Header -->
@@ -435,10 +437,9 @@
             </div>
 
         </div>
-    </div>
-    
-    {{-- Calendar Grid --}}
-    <div class="flex-1 overflow-auto relative">
+        </div>
+    </div>{{-- Calendar Grid --}}
+    <div class="flex-1 overflow-auto relative mt-2">
         <div class="min-w-[700px] relative max-h-full">
             
             {{-- Loading State --}}
@@ -774,3 +775,4 @@
     </div>
     
 </div>
+
