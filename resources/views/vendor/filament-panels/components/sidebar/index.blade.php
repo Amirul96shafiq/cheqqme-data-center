@@ -52,7 +52,37 @@
 
 {{-- format-ignore-start --}}
 <aside
-    x-data="{}"
+    x-data="{ 
+        isFading: false,
+        triggerFade() {
+            if (this.isFading) return;
+            this.isFading = true;
+            // Fade out content (300ms)
+            setTimeout(() => {
+                // Collapse sidebar (stays collapsed)
+                $store.sidebar.close();
+                // Keep content hidden - don't reset isFading until sidebar is fully collapsed
+                // This prevents any visual flash during collapse transition
+                setTimeout(() => {
+                    this.isFading = false;
+                }, 300);
+            }, 300);
+        },
+        triggerFadeIn() {
+            if (this.isFading) return;
+            // Keep content hidden initially
+            this.isFading = true;
+            // Expand sidebar first
+            $store.sidebar.open();
+            // Wait for sidebar to expand, then fade in content (300ms)
+            // Add extra delay to ensure sidebar expansion completes
+            setTimeout(() => {
+                this.isFading = false;
+            }, 400);
+        }
+    }"
+    @trigger-sidebar-fade.window="triggerFade()"
+    @trigger-sidebar-fade-in.window="triggerFadeIn()"
     @if (filament()->isSidebarCollapsibleOnDesktop() && (! filament()->hasTopNavigation()))
         x-cloak
         x-bind:class="
@@ -90,10 +120,13 @@
         >
             <div
                 @if (filament()->isSidebarCollapsibleOnDesktop())
-                    x-show="$store.sidebar.isOpen"
-                    x-transition:enter="lg:transition lg:delay-100"
+                    x-show="$store.sidebar.isOpen && !isFading"
+                    x-transition:enter="transition ease-out duration-300"
                     x-transition:enter-start="opacity-0"
                     x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-300"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
                 @endif
             >
                 @if ($homeUrl = filament()->getHomeUrl())
@@ -127,7 +160,7 @@
                         icon-size="sm"
                         :label="__('filament-panels::layout.actions.sidebar.expand.label')"
                         x-data="{}"
-                        x-on:click="$store.sidebar.open()"
+                        x-on:click="$dispatch('trigger-sidebar-fade-in')"
                         class="mx-auto"
                     />
                 </div>
@@ -152,6 +185,13 @@
     </div>
 
     <nav
+        @if (filament()->isSidebarCollapsibleOnDesktop() || filament()->isSidebarFullyCollapsibleOnDesktop())
+            :class="{
+                'opacity-0 pointer-events-none': isFading,
+                'opacity-100': !isFading && $store.sidebar.isOpen,
+                'transition-opacity duration-300': true
+            }"
+        @endif
         class="fi-sidebar-nav flex-grow flex flex-col gap-y-7 overflow-y-auto overflow-x-hidden px-6 py-8"
         style="scrollbar-gutter: stable; margin-right: -18px;"
     >
