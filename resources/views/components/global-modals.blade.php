@@ -675,68 +675,15 @@
                 {{-- Commits List --}}
                 <div x-show="!loading && commits.length > 0" class="space-y-0">
                     <template x-for="commit in commits" :key="commit.short_hash">
-                        <div class="group border-b border-gray-100 dark:border-gray-800 last:border-b-0 py-4 -mx-6 px-6 transition-colors">
+                        <div class="group border-b border-gray-100 dark:border-gray-800 last:border-b-0 py-4 transition-colors">
                             
-                            {{-- Commit Header (Clickable) --}}
-                            <div @click="commit.description && commit.description.length > 0 ? toggleCommitDescription(commit.short_hash) : null"
-                                 :class="commit.description && commit.description.length > 0 ? 'cursor-pointer' : ''"
-                                 class="flex items-start gap-3 -mx-6 px-6 py-0">
-
+                            {{-- Avatar and Actions Row --}}
+                            <div class="flex items-start justify-between gap-3 mb-2">
                                 {{-- Author Avatar --}}
                                 <img :src="commit.author_avatar" 
                                      :alt="commit.author_name"
                                      class="w-6 h-6 rounded-full flex-shrink-0"
                                      draggable="false">
-                                
-                                {{-- Commit Info --}}
-                                <div class="flex-1 min-w-0">
-
-                                    {{-- Tag Badges and Commit Hash --}}
-                                    <div class="mb-2 flex flex-wrap gap-1.5">
-
-                                        {{-- Tag Badges --}}
-                                        <template x-for="tag in commit.tags" :key="tag">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200"
-                                                  x-text="tag">
-                                            </span>
-                                        </template>
-                                        
-                                        {{-- Commit Hash Badge --}}
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200"
-                                              x-text="commit.short_hash">
-                                        </span>
-                                        
-                                    </div>
-
-                                    {{-- Commit Message --}}
-                                    <div class="mb-2 flex items-start gap-2">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100 leading-relaxed flex-1" x-text="commit.message">
-                                        </p>
-                                    </div>
-                                    
-                                    {{-- Author & Time --}}
-                                    <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 md:gap-1">
-
-                                        {{-- Mobile: 50/50 layout --}}
-                                        <div class="w-1/2 text-start md:w-auto md:text-inherit">
-                                            <span class="font-medium text-gray-700 dark:text-gray-300" x-text="commit.author_name">
-                                            </span>
-                                        </div>
-
-                                        {{-- Desktop: Show "Committed" text --}}
-                                        <span class="hidden md:inline">Committed</span>
-
-                                        <div class="w-1/2 text-end md:w-auto md:text-inherit">
-                                            <time :datetime="commit.date" :title="commit.date_formatted">
-                                                <span x-text="commit.date_relative"></span>
-                                                <span> • </span>
-                                                <span x-text="new Date(commit.date).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '').toUpperCase()"></span>
-                                            </time>
-                                        </div>
-
-                                    </div>
-
-                                </div>
                                 
                                 {{-- Actions --}}
                                 <div class="flex items-center gap-2 flex-shrink-0">
@@ -762,6 +709,57 @@
                                     </x-tooltip>
 
                                 </div>
+                            </div>
+
+                            {{-- Commit Content (Full Width) --}}
+                            <div @click="commit.description && commit.description.length > 0 ? toggleCommitDescription(commit.short_hash) : null"
+                                 :class="commit.description && commit.description.length > 0 ? 'cursor-pointer' : ''"
+                                 class="w-full">
+
+                                {{-- Tag Badges and Commit Hash --}}
+                                <div class="mb-2 flex flex-wrap gap-1.5">
+
+                                    {{-- Tag Badges --}}
+                                    <template x-for="tag in commit.tags" :key="tag">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200"
+                                              x-text="tag">
+                                        </span>
+                                    </template>
+                                    
+                                    {{-- Commit Hash Badge --}}
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-normal bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200"
+                                          x-text="commit.short_hash">
+                                    </span>
+                                    
+                                </div>
+
+                                {{-- Commit Message (Full Width) --}}
+                                <div class="mb-2 w-full">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100 leading-relaxed" x-text="commit.message">
+                                    </p>
+                                </div>
+                                
+                                {{-- Author & Time (Full Width) --}}
+                                <div class="flex items-center gap-2 text-[9px] md:text-xs text-gray-500 dark:text-gray-400 md:gap-1 w-full">
+
+                                    {{-- Mobile: 50/50 layout --}}
+                                    <div class="w-1/2 text-start md:w-auto md:text-inherit">
+                                        <span class="font-medium text-gray-700 dark:text-gray-300" x-text="commit.author_name">
+                                        </span>
+                                    </div>
+
+                                    {{-- Desktop: Show "Committed" text --}}
+                                    <span class="hidden md:inline">Committed</span>
+
+                                    <div class="w-1/2 text-end md:w-auto md:text-inherit">
+                                        <time :datetime="commit.date" :title="commit.date_formatted">
+                                            <span x-text="commit.date_relative"></span>
+                                            <span> • </span>
+                                            <span x-text="new Date(commit.date).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', '').toUpperCase()"></span>
+                                        </time>
+                                    </div>
+
+                                </div>
 
                             </div>
 
@@ -773,7 +771,7 @@
                                  x-transition:leave="transition ease-in duration-150"
                                  x-transition:leave-start="opacity-100 translate-y-0"
                                  x-transition:leave-end="opacity-0 -translate-y-2"
-                                 class="mt-3 pl-9 pr-6">
+                                 class="mt-3 w-full">
                                 <div class="py-2">
                                     <p class="font-mono text-xs text-gray-500 dark:text-gray-400 leading-relaxed whitespace-pre-wrap" x-text="commit.description"></p>
                                 </div>
