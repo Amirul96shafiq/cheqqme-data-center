@@ -109,13 +109,14 @@
 
                 {{-- Description Field --}}
                 <div>
-                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Description
-                        <span class="text-xs text-gray-500 dark:text-gray-400">(Optional, max 500 characters)</span>
+                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Description <span class="text-red-500">*</span>
                     </label>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Be concise and to the point</p>
                     <textarea id="description" name="description" rows="10"
                         placeholder="Provide more details about the issue..."
                         maxlength="500"
+                        required
                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm resize-y">{{ old('description', "Steps to Reproduce:-\n1-\n\nExpected Result\n- \n\nActual Result\n- ") }}</textarea>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                         <span id="char-count">0</span> / 500 characters
@@ -124,10 +125,10 @@
 
                 {{-- Attachments Field --}}
                 <div>
-                    <label for="attachments" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Attachments
-                        <span class="text-xs text-gray-500 dark:text-gray-400">(Optional, max 5 files, 20MB each)</span>
+                    <label for="attachments" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Attachments <span class="text-red-500">*</span>
                     </label>
+                    <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">Proof of issues or bugs - screenshots, videos, etc.</p>
                     <div class="mt-1 flex items-center justify-center px-6 py-8 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-md hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
                         <div class="space-y-1 text-center w-full flex flex-col items-center">
                             <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
@@ -136,7 +137,7 @@
                             <div class="flex gap-2 text-sm text-gray-600 dark:text-gray-400">
                                 <label for="attachments" class="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
                                     <span>Upload files</span>
-                                    <input id="attachments" name="attachments[]" type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.mp4" class="sr-only">
+                                    <input id="attachments" name="attachments[]" type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.mp4" class="sr-only" required>
                                 </label>
                                 <p>or drag and drop</p>
                             </div>

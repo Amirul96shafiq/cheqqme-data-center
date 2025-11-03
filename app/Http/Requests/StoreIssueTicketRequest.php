@@ -26,9 +26,9 @@ class StoreIssueTicketRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:500'],
+            'description' => ['required', 'string', 'max:500'],
             'project_id' => ['required', 'integer', 'exists:projects,id'],
-            'attachments' => ['nullable', 'array', 'max:5'],
+            'attachments' => ['required', 'array', 'min:1', 'max:5'],
             'attachments.*' => [
                 'file',
                 'max:20480', // 20MB in kilobytes
@@ -51,6 +51,9 @@ class StoreIssueTicketRequest extends FormRequest
             'title.required' => 'Please provide a title for the issue.',
             'project_id.required' => 'Project is required.',
             'project_id.exists' => 'The selected project does not exist.',
+            'description.required' => 'Description is required.',
+            'attachments.required' => 'Please attach at least one file.',
+            'attachments.min' => 'Please attach at least one file.',
             'attachments.max' => 'You can upload a maximum of 5 files.',
             'attachments.*.max' => 'Each file must not exceed 20MB.',
             'attachments.*.mimes' => 'Only JPG, JPEG, PNG, PDF, and MP4 files are allowed.',
