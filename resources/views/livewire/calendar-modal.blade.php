@@ -513,7 +513,7 @@
                                                             'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'type' => 'task', 'is_assigned' => $isAssigned]],
                                                             'meetings' => []
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
-                                                class="flex items-center px-1 py-1.5 text-xs rounded transition-colors w-full text-left {{ $this->getTaskClasses($task, $isAssigned) }}"
+                                                class="flex items-center px-0.5 py-0.5 sm:px-1 sm:py-1.5 text-[10px] sm:text-xs rounded transition-colors w-full text-left {{ $this->getTaskClasses($task, $isAssigned) }}"
                                                 title="{{ $task->title }}">
                                             <span class="inline-block w-1.5 h-1.5 rounded-full mr-1.5 flex-shrink-0 {{ $this->getPriorityDotClass($task) }}"></span>
                                             <span class="truncate">{{ Str::limit($task->title, 35) }}</span>
@@ -531,7 +531,7 @@
                                                             'tasks' => [],
                                                             'meetings' => [['id' => $meeting->id, 'title' => \App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($meeting->title ?: 'CheQQMeeting', $meeting->meeting_platform ?: 'Google Meet', $meeting->meeting_start_time ? $meeting->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $meeting->meeting_duration ?: 60), 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting', 'is_invited' => $isInvited]]
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
-                                                class="flex items-center px-1 py-1.5 text-xs rounded transition-colors w-full text-left {{ $this->getMeetingClasses($meeting, $isInvited) }}"
+                                                class="flex items-center px-0.5 py-0.5 sm:px-1 sm:py-1.5 text-[10px] sm:text-xs rounded transition-colors w-full text-left {{ $this->getMeetingClasses($meeting, $isInvited) }}"
                                                 title="{{ \App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($meeting->title ?: 'CheQQMeeting', $meeting->meeting_platform ?: 'Google Meet', $meeting->meeting_start_time ? $meeting->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $meeting->meeting_duration ?: 60) }}">
                                             <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5 flex-shrink-0"></span>
                                             <span class="truncate">{{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit(\App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($meeting->title ?: 'CheQQMeeting', $meeting->meeting_platform ?: 'Google Meet', $meeting->meeting_start_time ? $meeting->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $meeting->meeting_duration ?: 60), 25) }}</span>
@@ -547,7 +547,7 @@
                                                     'meetings' => [],
                                                     'holidays' => [['name' => $holiday->name, 'type' => $holiday->type, 'date' => $holiday->date->format('Y-m-d'), 'country_code' => $holiday->country_code]]
                                                 ]) }}, { x: $event.clientX, y: $event.clientY })"
-                                            class="flex items-center px-1 py-1 text-xs rounded transition-colors w-full text-left bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50"
+                                            class="flex items-center px-0.5 py-0.5 sm:px-1 sm:py-1 text-[10px] sm:text-xs rounded transition-colors w-full text-left bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50"
                                             title="{{ $holiday->name }}">
                                             <span class="inline-block w-1.5 h-1.5 rounded-full bg-purple-500 mr-1.5 flex-shrink-0"></span>
                                             <span class="truncate">{{ $holiday->name }}</span>
@@ -568,7 +568,7 @@
                                                     'holidays' => [],
                                                     'birthdays' => [['id' => $birthday->id, 'name' => $birthday->name, 'short_name' => $birthday->short_name, 'age' => $birthday->age, 'is_current_user' => $birthday->is_current_user, 'hooray_text' => __('calendar.calendar.hooray')]]
                                                 ]) }}, { x: $event.clientX, y: $event.clientY })"
-                                            class="flex items-center px-1 py-1 text-xs rounded transition-colors w-full text-left {{ $this->getBirthdayClasses($birthday) }}"
+                                            class="flex items-center px-0.5 py-0.5 sm:px-1 sm:py-1 text-[10px] sm:text-xs rounded transition-colors w-full text-left {{ $this->getBirthdayClasses($birthday) }}"
                                             title="{{ $birthday->name }} {{ str_replace(':age', $birthday->age, __('calendar.calendar.birthday_text')) }}">
                                             <span class="inline-block w-1.5 h-1.5 rounded-full {{ $birthday->is_current_user ? 'bg-pink-500' : 'bg-orange-500' }} mr-1.5 flex-shrink-0"></span>
                                             <span class="truncate">{{ $birthday->short_name }} {{ str_replace(':age', $birthday->age, __('calendar.calendar.birthday_text')) }}</span>
