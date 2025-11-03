@@ -789,25 +789,28 @@ class Settings extends Page
                                     $location = $weatherData['location'];
 
                                     $html = '<div class="bg-gradient-to-r from-teal-50 to-teal-100 dark:from-teal-900/20 dark:to-teal-800/20 p-6 rounded-lg text-teal-700 dark:text-teal-100">';
-                                    $html .= '<div class="flex items-center justify-between">';
+                                    $html .= '<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">';
 
-                                    // Left side - Weather icon and condition
-                                    $html .= '<div class="flex items-center space-x-4">';
-                                    $html .= '<div class="flex-shrink-0">';
+                                    // Mobile: Vertical layout (top to bottom)
+                                    // Desktop: Horizontal layout (icon + condition on left, temperature on right)
+
+                                    // Left side - Weather icon and condition (side by side on desktop, stacked on mobile)
+                                    $html .= '<div class="flex flex-col md:flex-row md:items-center gap-4 md:space-x-4">';
+                                    $html .= '<div class="flex justify-center md:justify-start flex-shrink-0">';
                                     $html .= '<div class="w-16 h-16 bg-gray-100 dark:bg-gray-700/30 rounded-full flex items-center justify-center">';
                                     $html .= '<svg class="w-8 h-8 text-gray-500 dark:text-white" fill="currentColor" viewBox="0 0 20 20">';
                                     $html .= '<path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z" />';
                                     $html .= '</svg>';
                                     $html .= '</div>';
                                     $html .= '</div>';
-                                    $html .= '<div>';
+                                    $html .= '<div class="text-center md:text-left">';
                                     $html .= '<h3 class="text-lg font-semibold">'.ucfirst($current['condition']).'</h3>';
                                     $html .= '<p class="text-gray-600 dark:text-gray-400 text-sm">'.ucfirst($current['description']).'</p>';
                                     $html .= '</div>';
                                     $html .= '</div>';
 
-                                    // Right side - Temperature and location
-                                    $html .= '<div class="text-right">';
+                                    // Right side - Temperature and location (centered on mobile, right-aligned on desktop)
+                                    $html .= '<div class="text-center md:text-right">';
                                     $html .= '<div class="text-3xl font-bold">'.$current['temperature'].'°C</div>';
                                     $html .= '<div class="text-gray-600 dark:text-gray-400 text-sm">'.__('settings.weather.feels_like').' '.$current['feels_like'].'°C</div>';
                                     $html .= '<div class="text-gray-600 dark:text-gray-400 text-sm mt-1">'.$location['city'].', '.$location['country'].'</div>';
