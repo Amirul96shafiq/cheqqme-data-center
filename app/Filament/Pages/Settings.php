@@ -1110,10 +1110,12 @@ class Settings extends Page
             // Session card
             $html .= '<div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6">';
 
-            $html .= '<div class="flex items-start justify-between gap-4">';
+            // Mobile: Vertical layout (top to bottom)
+            // Desktop: Horizontal layout (icon + details on left)
+            $html .= '<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">';
 
-            // Left side - Device icon and info
-            $html .= '<div class="flex items-start gap-4 flex-1">';
+            // Left side - Device icon and info (stacked on mobile, side-by-side on desktop)
+            $html .= '<div class="flex flex-col md:flex-row items-start gap-4 flex-1">';
 
             // Device icon
             $html .= '<div class="flex-shrink-0">';
@@ -1133,7 +1135,7 @@ class Settings extends Page
             $html .= '</div>';
 
             // Session details
-            $html .= '<div class="flex-1 min-w-0">';
+            $html .= '<div class="flex-1 min-w-0 w-full">';
 
             // Browser and device
             $html .= '<div class="flex items-center gap-2 flex-wrap">';
@@ -1160,8 +1162,8 @@ class Settings extends Page
             $html .= ' • '.htmlspecialchars($sessionData['device']);
             $html .= '</div>';
 
-            // Location and IP
-            $html .= '<div class="flex items-center gap-4 mt-2 text-sm text-gray-600 dark:text-gray-400">';
+            // Location and IP (stacked on mobile, side-by-side on desktop)
+            $html .= '<div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mt-2 text-sm text-gray-600 dark:text-gray-400">';
             $html .= '<div class="flex items-center gap-1">';
             $html .= '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">';
             $html .= '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />';
