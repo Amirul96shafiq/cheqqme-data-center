@@ -23,6 +23,7 @@ class Project extends Model
         'notes',
         'updated_by',
         'extra_information',
+        'issue_tracker_code',
     ];
 
     public function getActivityLogOptions(): LogOptions
@@ -70,5 +71,52 @@ class Project extends Model
     public function getDocumentCountAttribute()
     {
         return $this->documents()->count();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($project) {
+            if (empty($project->issue_tracker_code)) {
+                $project->issue_tracker_code = static::generateIssueTrackerCode();
+            }
+        });
+
+        static::updating(function ($project) {
+            if (empty($project->issue_tracker_code)) {
+                $project->issue_tracker_code = static::generateIssueTrackerCode();
+            }
+        });
+    }
+
+    /**
+     * Generate a unique 6-character issue tracker code.
+     * Format: 3 uppercase letters + 3 digits, randomly arranged.
+     */
+    public static function generateIssueTrackerCode(): string
+    {
+        do {
+            // Generate 3 random uppercase letters
+            $letters = '';
+            for ($i = 0; $i < 3; $i++) {
+                $letters .= chr(65 + random_int(0, 25)); // A-Z
+            }
+
+            // Generate 3 random digits
+            $digits = '';
+            for ($i = 0; $i < 3; $i++) {
+                $digits .= random_int(0, 9);
+            }
+
+            // Combine and shuffle
+            $characters = str_split($letters.$digits);
+            shuffle($characters);
+            $code = implode('', $characters);
+
+            // Check uniqueness
+        } while (static::where('issue_tracker_code', $code)->exists());
+
+        return $code;
     }
 }

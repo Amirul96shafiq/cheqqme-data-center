@@ -50,6 +50,7 @@ return false;
         })->join(', ');
 
         $statusLabels = [
+            'issue_tracker' => __('action.status.issue_tracker'),
             'todo' => __('task.status.todo'),
             'in_progress' => __('task.status.in_progress'),
             'toreview' => __('task.status.toreview'),
@@ -245,6 +246,7 @@ return false;
                                                     Forms\Components\Select::make('status')
                                                         ->label(__('task.form.status'))
                                                         ->options([
+                                                            'issue_tracker' => __('action.status.issue_tracker'),
                                                             'todo' => __('task.status.todo'),
                                                             'in_progress' => __('task.status.in_progress'),
                                                             'toreview' => __('task.status.toreview'),

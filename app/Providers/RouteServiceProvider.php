@@ -18,7 +18,5 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         parent::boot();
-
-        // Optional: You can define route groups or bindings here if needed
     }
 }

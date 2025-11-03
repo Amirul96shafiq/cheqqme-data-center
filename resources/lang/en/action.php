@@ -11,6 +11,7 @@ return [
     'card_label_plural' => 'Action Tasks',
 
     'status' => [
+        'issue_tracker' => 'Issue Tracker',
         'todo' => 'To Do',
         'in_progress' => 'In Progress',
         'toreview' => 'To Review',

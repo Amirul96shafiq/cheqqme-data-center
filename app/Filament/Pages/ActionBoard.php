@@ -106,6 +106,7 @@ class ActionBoard extends KanbanBoardPage
                 'resource_count' => 'heroicon-o-folder',
             ])
             ->columns([
+                'issue_tracker' => __('action.status.issue_tracker'),
                 'todo' => __('action.status.todo'),
                 'in_progress' => __('action.status.in_progress'),
                 'toreview' => __('action.status.toreview'),
@@ -113,7 +114,7 @@ class ActionBoard extends KanbanBoardPage
                 'archived' => __('action.status.archived'),
             ])
             ->columnColors([
-                'todo', 'in_progress', 'toreview', 'completed', 'archived' => 'gray',
+                'issue_tracker', 'todo', 'in_progress', 'toreview', 'completed', 'archived' => 'gray',
             ])
             ->cardLabel(__('action.card_label'))
             ->pluralCardLabel(__('action.card_label_plural'));
@@ -259,6 +260,7 @@ class ActionBoard extends KanbanBoardPage
                                                     Forms\Components\Select::make('status')
                                                         ->label(__('task.form.status'))
                                                         ->options([
+                                                            'issue_tracker' => __('action.status.issue_tracker'),
                                                             'todo' => __('task.status.todo'),
                                                             'in_progress' => __('task.status.in_progress'),
                                                             'toreview' => __('task.status.toreview'),
@@ -768,7 +770,7 @@ class ActionBoard extends KanbanBoardPage
      */
     protected function detectCreateColumn(): ?string
     {
-        $valid = ['todo', 'in_progress', 'toreview', 'completed', 'archived'];
+        $valid = ['issue_tracker', 'todo', 'in_progress', 'toreview', 'completed', 'archived'];
         $calls = request()->input('components.0.calls');
         if (is_array($calls)) {
             foreach (array_reverse($calls) as $call) {
