@@ -35,42 +35,107 @@
         {{-- Status Card --}}
         <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 space-y-6">
           
-          {{-- Status Badge --}}
-          <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
-            <div>
-              <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">Current Status</h2>
-              <div class="mt-2">
-                @php
-                  $statusLabels = [
-                    'issue_tracker' => 'Issue Tracker',
-                    'todo' => 'To Do',
-                    'in_progress' => 'In Progress',
-                    'toreview' => 'To Review',
-                    'completed' => 'Completed',
-                    'archived' => 'Archived',
-                  ];
+          {{-- Status Roadmap --}}
+          <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+            <div class="text-center space-y-4">
+              {{-- Heading --}}
+              <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">Status Roadmap</h2>
+              
+              {{-- Roadmap badges --}}
+              @php
+                $statusOrder = [
+                  'issue_tracker' => 1,
+                  'todo' => 2,
+                  'in_progress' => 3,
+                  'toreview' => 4,
+                  'completed' => 5,
+                  'archived' => 6,
+                ];
+                
+                $statusLabels = [
+                  'issue_tracker' => 'Issue Tracker',
+                  'todo' => 'To Do',
+                  'in_progress' => 'In Progress',
+                  'toreview' => 'To Review',
+                  'completed' => 'Completed',
+                  'archived' => 'Archived',
+                ];
+                
+                $currentStatusOrder = $statusOrder[$task->status] ?? 1;
+                
+                // Show all statuses with their type (previous, current, upcoming)
+                $statusesToShow = [];
+                foreach ($statusOrder as $status => $order) {
+                  $statusType = 'upcoming';
+                  if ($order < $currentStatusOrder) {
+                    $statusType = 'previous';
+                  } elseif ($order === $currentStatusOrder) {
+                    $statusType = 'current';
+                  }
                   
-                  $statusColors = [
-                    'issue_tracker' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
-                    'todo' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-                    'in_progress' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-                    'toreview' => 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-                    'completed' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-                    'archived' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+                  $statusesToShow[] = [
+                    'key' => $status,
+                    'label' => $statusLabels[$status],
+                    'type' => $statusType,
+                    'isCurrent' => $order === $currentStatusOrder,
                   ];
-                  
-                  $statusLabel = $statusLabels[$task->status] ?? $task->status;
-                  $statusColor = $statusColors[$task->status] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
-                @endphp
-                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold {{ $statusColor }}">
-                  {{ $statusLabel }}
-                </span>
+                }
+              @endphp
+              <div class="flex items-center justify-center gap-2 flex-wrap">
+                @foreach ($statusesToShow as $index => $status)
+                  <div class="flex items-center {{ $index > 0 ? 'gap-2' : '' }}">
+                    @if ($index > 0)
+                      {{-- Connector arrow --}}
+                      @php
+                        // Arrow opacity based on status type
+                        if ($status['type'] === 'current') {
+                          $arrowOpacity = '';
+                        } elseif ($status['type'] === 'previous') {
+                          $arrowOpacity = 'opacity-50';
+                        } else {
+                          $arrowOpacity = 'opacity-30';
+                        }
+                      @endphp
+                      <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 {{ $arrowOpacity }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    @endif
+                    {{-- Status badge --}}
+                    @php
+                      // Badge color: primary for current, gray for non-active
+                      if ($status['isCurrent']) {
+                        $badgeColor = 'bg-primary-500 text-primary-900';
+                      } else {
+                        $badgeColor = 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+                      }
+                      
+                      // Badge opacity and styling based on status type
+                      if ($status['type'] === 'current') {
+                        $badgeOpacity = '';
+                        $badgeStyle = '';
+                      } elseif ($status['type'] === 'previous') {
+                        $badgeOpacity = 'opacity-50';
+                        $badgeStyle = '';
+                      } else {
+                        // Upcoming statuses: more faded with border
+                        $badgeOpacity = 'opacity-30';
+                        $badgeStyle = 'border border-gray-300 dark:border-gray-600 border-dashed';
+                      }
+                    @endphp
+                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold {{ $badgeColor }} {{ $badgeOpacity }} {{ $badgeStyle }}">
+                      {{ $status['label'] }}
+                    </span>
+                  </div>
+                @endforeach
               </div>
-            </div>
-            <div class="text-right">
-              <p class="text-sm text-gray-500 dark:text-gray-400">Submitted on</p>
-              <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $task->created_at->format('M d, Y') }}</p>
-              <p class="text-xs text-gray-400 dark:text-gray-500">{{ $task->created_at->format('g:i A') }}</p>
+              
+              {{-- Submitted on --}}
+              <div class="pt-2">
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Submitted on</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                  {{ $task->created_at->format('j/n/y') }} . {{ $task->created_at->format('h:i A') }}
+                </p>
+              </div>
             </div>
           </div>
 
