@@ -16,6 +16,11 @@ return [
 
     'actions' => [
         'create' => 'Tambah Projek',
+        'share_issue_tracker_link' => 'Kongsi Pautan Penjejak Isu',
+        'share_issue_tracker_link_description' => 'Pratonton dan kongsi butiran pautan penjejak isu',
+        'issue_tracker_preview' => 'Pratonton Pautan Penjejak Isu',
+        'copy_to_clipboard' => 'Salin ke Papan Klip',
+        'edit_project' => 'Kemaskini Projek',
     ],
 
     'section' => [
