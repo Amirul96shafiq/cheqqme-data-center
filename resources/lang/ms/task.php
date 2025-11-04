@@ -49,6 +49,7 @@ return [
         'create_important_url' => 'Tambah URL Penting',
         'issue_tracker_code' => 'Kod Penjejak Isu',
         'open_issue_tracker' => 'Buka Penjejak Isu',
+        'view_issue_status' => 'Lihat Status Isu',
     ],
     'search' => [
         'status' => 'Status',

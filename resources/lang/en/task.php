@@ -49,6 +49,7 @@ return [
         'create_important_url' => 'Create Important URL',
         'issue_tracker_code' => 'Issue Tracker Code',
         'open_issue_tracker' => 'Open Issue Tracker',
+        'view_issue_status' => 'View Issue Status',
     ],
     'search' => [
         'status' => 'Status',

@@ -270,49 +270,108 @@ return false;
                                             // Issue Tracker Code Display
                                             // Show if task was created from issue tracker submission (has tracking_token)
                                             // This persists even when task is moved to other columns
-                                            Forms\Components\ViewField::make('issue_tracker_info')
-                                                ->view('filament.components.issue-tracker-info')
-                                                ->viewData(function (?Task $record) {
-                                                    // Check if task was created from issue tracker submission
-                                                    // Use tracking_token as indicator (persists even when status changes)
+                                            Forms\Components\TextInput::make('issue_tracker_code_display')
+                                                ->label(__('task.form.issue_tracker_code'))
+                                                ->default(function (?Task $record) {
                                                     if (! $record || ! $record->tracking_token) {
-                                                        return [
-                                                            'issueTrackerCode' => null,
-                                                            'issueTrackerUrl' => null,
-                                                        ];
+                                                        return null;
                                                     }
 
                                                     // Get project from task's project array
                                                     $projectIds = $record->project ?? [];
                                                     if (empty($projectIds) || ! is_array($projectIds)) {
-                                                        return [
-                                                            'issueTrackerCode' => null,
-                                                            'issueTrackerUrl' => null,
-                                                        ];
+                                                        return null;
                                                     }
 
-                                                    // Get the first project
                                                     $projectId = $projectIds[0] ?? null;
                                                     if (! $projectId) {
-                                                        return [
-                                                            'issueTrackerCode' => null,
-                                                            'issueTrackerUrl' => null,
-                                                        ];
+                                                        return null;
                                                     }
 
                                                     $project = \App\Models\Project::find($projectId);
-                                                    if (! $project || ! $project->issue_tracker_code) {
-                                                        return [
-                                                            'issueTrackerCode' => null,
-                                                            'issueTrackerUrl' => null,
-                                                        ];
-                                                    }
 
-                                                    return [
-                                                        'issueTrackerCode' => $project->issue_tracker_code,
-                                                        'issueTrackerUrl' => route('issue-tracker.show', ['project' => $project->issue_tracker_code]),
-                                                    ];
+                                                    return $project && $project->issue_tracker_code ? $project->issue_tracker_code : null;
                                                 })
+                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
+                                                    // Ensure value is set even if default didn't work
+                                                    if (empty($state) && $record && $record->tracking_token) {
+                                                        $projectIds = $record->project ?? [];
+                                                        if (! empty($projectIds) && is_array($projectIds)) {
+                                                            $projectId = $projectIds[0] ?? null;
+                                                            if ($projectId) {
+                                                                $project = \App\Models\Project::find($projectId);
+                                                                if ($project && $project->issue_tracker_code) {
+                                                                    $set('issue_tracker_code_display', $project->issue_tracker_code);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                })
+                                                ->disabled()
+                                                ->dehydrated(false)
+                                                ->extraAttributes([
+                                                    'class' => 'font-mono',
+                                                ])
+                                                ->prefixAction(
+                                                    Forms\Components\Actions\Action::make('openIssueTracker')
+                                                        ->icon('heroicon-o-arrow-top-right-on-square')
+                                                        ->label(__('task.form.open_issue_tracker'))
+                                                        ->url(function (?Task $record) {
+                                                            if (! $record) {
+                                                                return null;
+                                                            }
+
+                                                            $projectIds = $record->project ?? [];
+                                                            if (empty($projectIds) || ! is_array($projectIds)) {
+                                                                return null;
+                                                            }
+
+                                                            $projectId = $projectIds[0] ?? null;
+                                                            if (! $projectId) {
+                                                                return null;
+                                                            }
+
+                                                            $project = \App\Models\Project::find($projectId);
+
+                                                            return $project && $project->issue_tracker_code
+                                                                ? route('issue-tracker.show', ['project' => $project->issue_tracker_code])
+                                                                : null;
+                                                        })
+                                                        ->openUrlInNewTab()
+                                                        ->visible(function (?Task $record) {
+                                                            if (! $record) {
+                                                                return false;
+                                                            }
+
+                                                            $projectIds = $record->project ?? [];
+                                                            if (empty($projectIds) || ! is_array($projectIds)) {
+                                                                return false;
+                                                            }
+
+                                                            $projectId = $projectIds[0] ?? null;
+                                                            if (! $projectId) {
+                                                                return false;
+                                                            }
+
+                                                            $project = \App\Models\Project::find($projectId);
+
+                                                            return $project && $project->issue_tracker_code;
+                                                        })
+                                                )
+                                                ->suffixAction(
+                                                    Forms\Components\Actions\Action::make('viewStatus')
+                                                        ->icon('heroicon-o-eye')
+                                                        ->label(__('task.form.view_issue_status'))
+                                                        ->url(function (?Task $record) {
+                                                            if (! $record || ! $record->tracking_token) {
+                                                                return null;
+                                                            }
+
+                                                            return route('issue-tracker.status', ['token' => $record->tracking_token]);
+                                                        })
+                                                        ->openUrlInNewTab()
+                                                        ->visible(fn (?Task $record) => $record && $record->tracking_token)
+                                                )
                                                 ->visible(function (?Task $record) {
                                                     // Show if task has tracking_token (created from issue tracker)
                                                     // This way it persists even when task is moved to other columns
@@ -334,7 +393,6 @@ return false;
 
                                                     return $project && $project->issue_tracker_code;
                                                 })
-                                                ->dehydrated(false)
                                                 ->columnSpanFull(),
 
                                             Forms\Components\RichEditor::make('description')
