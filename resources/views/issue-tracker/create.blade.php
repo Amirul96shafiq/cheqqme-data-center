@@ -32,48 +32,46 @@
           </p>
         </div>
 
-        {{-- Success Message --}}
+                {{-- Success Message --}}
         @if (session('success'))
-          <div class="rounded-md bg-green-50 dark:bg-green-900/20 p-4 border border-green-200 dark:border-green-800">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                </svg>
+          <div class="rounded-md bg-teal-50 dark:bg-teal-900/20 p-4 border border-teal-200 dark:border-teal-800 mb-6">
+            <div class="flex flex-col items-center">
+              <div class="mb-3">
+                <x-heroicon-s-check-circle class="h-20 w-20 text-teal-400" />
               </div>
-              <div class="ml-3 flex-1">
-                <p class="text-sm font-medium text-green-800 dark:text-green-200 mb-3">
+              <div class="w-full">
+                <p class="text-sm font-medium text-teal-800 dark:text-teal-200 mb-3 text-center">
                   {{ session('success') }}
                 </p>
-                
+
                 @if (session('tracking_token'))
                   <div class="mt-3 space-y-3">
                     <div>
-                      <p class="text-xs font-medium text-green-700 dark:text-green-300 mb-1">Tracking Code:</p>
+                      <p class="text-xs font-medium text-teal-700 dark:text-teal-300 mb-1">Tracking Code:</p>
                       <div class="flex items-center space-x-2">
-                        <code class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-green-200 dark:border-green-700 rounded-md text-sm font-mono text-green-900 dark:text-green-100">
+                        <code class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-teal-200 dark:border-teal-700 rounded-md text-sm font-mono text-teal-900 dark:text-teal-100">
                           {{ session('tracking_token') }}
                         </code>
                       </div>
                     </div>
                     <div>
-                      <p class="text-xs font-medium text-green-700 dark:text-green-300 mb-1">View Status:</p>
+                      <p class="text-xs font-medium text-teal-700 dark:text-teal-300 mb-1">View Status:</p>
                       <div class="flex items-center space-x-2">
-                        <input type="text" 
-                               id="tracking-url" 
-                               value="{{ route('issue-tracker.status', ['token' => session('tracking_token')]) }}" 
+                        <input type="text"
+                               id="tracking-url"
+                               value="{{ route('issue-tracker.status', ['token' => session('tracking_token')]) }}"
                                readonly
-                               class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-green-200 dark:border-green-700 rounded-md text-sm text-green-900 dark:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <button type="button" 
+                               class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-teal-200 dark:border-teal-700 rounded-md text-sm text-teal-900 dark:text-teal-100 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <button type="button"
                                 id="copy-tracking-link"
-                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-900 bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
                           <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                           </svg>
                           Copy Link
                         </button>
                       </div>
-                      <p id="copy-success" class="mt-2 text-xs text-green-600 dark:text-green-400 hidden">Link copied to clipboard!</p>
+                      <p id="copy-success" class="mt-2 text-xs text-teal-600 dark:text-teal-400 hidden">Link copied to clipboard!</p>
                     </div>
                   </div>
                 @endif
