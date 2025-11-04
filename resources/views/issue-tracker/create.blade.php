@@ -14,12 +14,11 @@
   @vite(['resources/css/app.css'])
 </head>
 <body class="antialiased font-sans bg-auto bg-no-repeat m-0 p-0" style="height: 100vh; margin: 0; padding: 0; background-image: url('{{ asset('images/issue-tracker-bg.png') }}'); background-position: top center; display: flex; flex-direction: column;">
-
-  {{-- Top spacer: 20% of viewport height --}}
-  <div style="height: 20vh; flex-shrink: 0; min-height: 20vh;"></div>
     
-  {{-- Content area: 80% of viewport height --}}
-  <div style="flex: 1; overflow-y: auto; min-height: 80vh;">
+  {{-- Content area --}}
+  <div style="flex: 1; overflow-y: auto; min-height: 100vh;">
+    {{-- Top spacer: 20% of viewport height --}}
+    <div style="height: 20vh; flex-shrink: 0; min-height: 20vh;"></div>
     <div class="flex items-center justify-center min-h-full py-12 px-4 sm:px-6 lg:px-8">
       <div class="max-w-md w-full space-y-8">
 
@@ -142,9 +141,7 @@
                 </p>
                 <div class="mt-1 flex items-center justify-center px-6 py-8 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-md hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
                   <div class="space-y-1 text-center w-full flex flex-col items-center">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                      <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
+                    <x-heroicon-o-arrow-up-tray class="mx-auto h-8 w-8 text-gray-400" />
                     <div class="flex gap-2 text-sm text-gray-600 dark:text-gray-400">
                       <label for="attachments" class="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
                         <span>Upload files</span>
@@ -153,7 +150,7 @@
                       <p>or drag and drop</p>
                     </div>
                     <p class="text-xs text-gray-500 dark:text-gray-400">
-                      JPG, JPEG, PNG, PDF, MP4 up to 20MB each
+                      JPG, JPEG, PNG, PDF, MP4 (max 20MB each)
                     </p>
                   </div>
                 </div>
@@ -171,7 +168,8 @@
             </form>
 
             {{-- Footer --}}
-            <div class="text-center mt-8">
+            <div class="text-center">
+              <span class="block mb-4 text-xs text-gray-500 dark:text-gray-400">Powered by:</span>
               <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto dark:hidden">
               <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto hidden dark:inline-block">
             </div>
