@@ -26,7 +26,7 @@ class StoreIssueTicketRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string', 'max:500'],
+            'description' => ['required', 'string', 'max:700'],
             'project_id' => ['required', 'integer', 'exists:projects,id'],
             'attachments' => ['required', 'array', 'min:1', 'max:5'],
             'attachments.*' => [

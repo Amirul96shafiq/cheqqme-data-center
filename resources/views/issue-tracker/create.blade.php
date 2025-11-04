@@ -122,12 +122,12 @@
                 </p>
                 <textarea id="description" name="description" rows="10"
                   placeholder="Provide more details about the issue..."
-                  maxlength="500"
+                  maxlength="700"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm resize-y">{{ old('description', "Steps to Reproduce:-\n1-\n\nExpected Result\n- \n\nActual Result\n- ") }}
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm resize-y">{{ old('description', "Steps to Reproduce:-\n1- \n\nExpected Result\n- \n\nActual Result\n- ") }}
                 </textarea>
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  <span id="char-count">0</span> / 500 characters
+                  <span id="char-count">0</span> / 700 characters
                 </p>
               </div>
 
@@ -187,7 +187,7 @@
         function updateCharCount() {
             const length = descriptionField.value.length;
             charCount.textContent = length;
-            if (length > 450) {
+            if (length > 630) {
                 charCount.classList.add('text-yellow-600', 'dark:text-yellow-400');
                 charCount.classList.remove('text-gray-500', 'dark:text-gray-400');
             } else {
@@ -198,6 +198,68 @@
 
         descriptionField.addEventListener('input', updateCharCount);
         updateCharCount(); // Initial count
+
+        // Auto-populate description with reporter info
+        const nameField = document.getElementById('name');
+        const emailField = document.getElementById('email');
+        const defaultTemplate = "Steps to Reproduce:-\n1- \n\nExpected Result\n- \n\nActual Result\n- ";
+
+        function updateDescriptionWithReporter() {
+            const name = nameField.value.trim();
+            const email = emailField.value.trim();
+            const currentDescription = descriptionField.value;
+
+            // Check if description already has reporter info (case-insensitive check)
+            const hasReporterInfo = currentDescription.toLowerCase().startsWith('reported by:');
+
+            if (name || email) {
+                // Build reporter section
+                let reporterSection = '';
+                if (name) {
+                    reporterSection += `reported by: ${name}`;
+                }
+                if (email) {
+                    if (reporterSection) reporterSection += '\n';
+                    reporterSection += `email: ${email}`;
+                }
+                reporterSection += '\n\n---\n\n';
+
+                // If description already has reporter info, update it
+                if (hasReporterInfo) {
+                    // Find where the --- separator is and replace everything before it
+                    const separatorIndex = currentDescription.indexOf('\n---\n');
+                    if (separatorIndex !== -1) {
+                        // Keep content after the separator
+                        const contentAfterSeparator = currentDescription.substring(separatorIndex + 5).trim();
+                        descriptionField.value = reporterSection + (contentAfterSeparator || defaultTemplate);
+                    } else {
+                        // If no separator found, just prepend the reporter info
+                        descriptionField.value = reporterSection + defaultTemplate;
+                    }
+                } else {
+                    // If no reporter info exists, check if it's the default template or empty
+                    const isDefaultTemplate = currentDescription === defaultTemplate || currentDescription.trim() === '';
+                    if (isDefaultTemplate) {
+                        descriptionField.value = reporterSection + defaultTemplate;
+                    } else {
+                        // User has typed custom content, prepend reporter info
+                        descriptionField.value = reporterSection + currentDescription;
+                    }
+                }
+                updateCharCount();
+            } else if (hasReporterInfo && !name && !email) {
+                // If both name and email are cleared, remove reporter info
+                const separatorIndex = currentDescription.indexOf('\n---\n');
+                if (separatorIndex !== -1) {
+                    const contentAfterSeparator = currentDescription.substring(separatorIndex + 5).trim();
+                    descriptionField.value = contentAfterSeparator || defaultTemplate;
+                    updateCharCount();
+                }
+            }
+        }
+
+        nameField.addEventListener('input', updateDescriptionWithReporter);
+        emailField.addEventListener('input', updateDescriptionWithReporter);
 
         // File upload handling
         const fileInput = document.getElementById('attachments');
