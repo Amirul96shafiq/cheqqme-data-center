@@ -329,7 +329,7 @@
           <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
             @if($project)
             <a href="{{ route('issue-tracker.show', ['project' => $project->issue_tracker_code]) }}" 
-               class="inline-flex items-center justify-center w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+               class="inline-flex items-center justify-center w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-900 bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
               Submit Another Issue
             </a>
             @endif
