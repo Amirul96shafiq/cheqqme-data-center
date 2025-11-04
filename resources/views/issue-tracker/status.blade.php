@@ -278,8 +278,31 @@
               {{-- Submitted on --}}
               <div class="pt-2">
                 <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">Submitted on</h2>
+                @php
+                  $submittedOn = null;
+                  if (!empty($task->extra_information) && is_array($task->extra_information)) {
+                    foreach ($task->extra_information as $item) {
+                      if (is_array($item)) {
+                        $title = $item['title'] ?? '';
+                        $value = $item['value'] ?? '';
+                        
+                        if (stripos($title, 'Submitted on') !== false) {
+                          $cleanValue = strip_tags($value);
+                          $cleanValue = html_entity_decode($cleanValue, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                          $submittedOn = trim($cleanValue);
+                          break;
+                        }
+                      }
+                    }
+                  }
+                  
+                  // Fallback to created_at if not found in extra_information
+                  if (!$submittedOn) {
+                    $submittedOn = $task->created_at->format('j/n/y').', '.$task->created_at->format('h:i A');
+                  }
+                @endphp
                 <p class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ $task->created_at->format('j/n/y') }}, {{ $task->created_at->format('h:i A') }}
+                  {{ $submittedOn }}
                 </p>
               </div>
               

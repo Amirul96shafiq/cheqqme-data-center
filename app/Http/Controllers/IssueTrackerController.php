@@ -58,6 +58,10 @@ class IssueTrackerController extends Controller
                     'title' => 'Reporter Email',
                     'value' => $validated['email'],
                 ],
+                [
+                    'title' => 'Submitted on',
+                    'value' => now()->format('j/n/y, h:i A'),
+                ],
             ],
         ]);
 
