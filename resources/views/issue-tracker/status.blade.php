@@ -293,6 +293,32 @@
             </div>
           </div>
 
+          {{-- First Attachment Image Preview --}}
+          @php
+            $firstImageAttachment = null;
+            if (!empty($task->attachments) && is_array($task->attachments)) {
+              $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+              foreach ($task->attachments as $attachment) {
+                if (is_string($attachment)) {
+                  $extension = strtolower(pathinfo($attachment, PATHINFO_EXTENSION));
+                  if (in_array($extension, $imageExtensions)) {
+                    $firstImageAttachment = $attachment;
+                    break;
+                  }
+                }
+              }
+            }
+          @endphp
+          @if($firstImageAttachment)
+          <div>
+            <div class="rounded-lg overflow-hidden">
+              <img src="{{ asset('storage/'.$firstImageAttachment) }}" 
+                   alt="Attachment preview" 
+                   class="w-full h-auto max-h-32 object-cover bg-gray-50">
+            </div>
+          </div>
+          @endif
+
           {{-- Reporter Information --}}
           <div>
             <h3 class="text-sm font-medium text-gray-700 mb-3">Reporter Information</h3>
