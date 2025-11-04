@@ -12,8 +12,14 @@
   <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
   @vite(['resources/css/app.css'])
+
+  {{-- Alpine.js --}}
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="antialiased font-sans bg-auto bg-no-repeat m-0 p-0" style="height: 100vh; margin: 0; padding: 0; background-image: url('{{ asset('images/issue-tracker-bg.png') }}'); background-position: top center; display: flex; flex-direction: column;">
+  
+  {{-- Loading Transition --}}
+  <x-auth-loading />
     
   {{-- Content area --}}
   <div style="flex: 1; overflow-y: auto; min-height: 100vh;">
