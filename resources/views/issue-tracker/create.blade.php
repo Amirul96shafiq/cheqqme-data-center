@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" style="height: 100%;">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" style="height: 100vh; max-height: 100vh; overflow: hidden; margin: 0; padding: 0; box-sizing: border-box;">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
