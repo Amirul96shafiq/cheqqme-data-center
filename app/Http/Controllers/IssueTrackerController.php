@@ -41,12 +41,32 @@ class IssueTrackerController extends Controller
         // Get the maximum order_column value and add 1 for the new task
         $maxOrder = Task::max('order_column') ?? 0;
 
+        $project = Project::findOrFail($validated['project_id']);
+
+        // Auto-populate resources from project
+        $clientId = $project->client_id;
+
+        // Get all documents for the project
+        $documents = \App\Models\Document::where('project_id', $project->id)
+            ->withTrashed()
+            ->pluck('id')
+            ->toArray();
+
+        // Get all important URLs for the project
+        $importantUrls = \App\Models\ImportantUrl::where('project_id', $project->id)
+            ->withTrashed()
+            ->pluck('id')
+            ->toArray();
+
         // Create the task with issue_tracker status
         $task = Task::create([
             'title' => $validated['title'],
             'description' => $validated['description'],
             'status' => 'issue_tracker',
             'project' => [$validated['project_id']], // Task model expects project as array
+            'client' => $clientId, // Auto-populate client from project
+            'document' => ! empty($documents) ? $documents : null, // Auto-populate documents from project
+            'important_url' => ! empty($importantUrls) ? $importantUrls : null, // Auto-populate important URLs from project
             'order_column' => $maxOrder + 1,
             'attachments' => ! empty($attachments) ? $attachments : null,
             'extra_information' => [
@@ -64,8 +84,6 @@ class IssueTrackerController extends Controller
                 ],
             ],
         ]);
-
-        $project = Project::findOrFail($validated['project_id']);
 
         // Refresh task to get the generated tracking token
         $task->refresh();

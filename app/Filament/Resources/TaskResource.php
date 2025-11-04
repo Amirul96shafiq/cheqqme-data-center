@@ -525,6 +525,13 @@ return false;
                                             // Client
                                             Forms\Components\Select::make('client')
                                                 ->label(__('task.form.client'))
+                                                ->helperText(function (?Task $record) {
+                                                    if ($record && $record->tracking_token) {
+                                                        return __('task.form.client_helper_issue_tracker');
+                                                    }
+
+                                                    return __('task.form.client_helper');
+                                                })
                                                 ->options(function () {
                                                     return \App\Models\Client::withTrashed()
                                                         ->orderBy('company_name')
@@ -542,6 +549,7 @@ return false;
                                                 ->dehydrated()
                                                 ->live()
                                                 ->reactive()
+                                                ->disabled(fn (?Task $record) => $record && $record->tracking_token)
                                                 ->prefixAction(
                                                     // Open the client in a new tab
                                                     Forms\Components\Actions\Action::make('openClient')
@@ -563,8 +571,33 @@ return false;
                                                         ->url(\App\Filament\Resources\ClientResource::getUrl('create'))
                                                         ->openUrlInNewTab()
                                                         ->label(__('task.form.create_client'))
+                                                        ->visible(fn (?Task $record) => ! ($record && $record->tracking_token))
                                                 )
+                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
+                                                    // Auto-populate client from project for issue tracker tasks
+                                                    if ($record && $record->tracking_token) {
+                                                        $projectIds = $record->project ?? [];
+                                                        if (! empty($projectIds) && is_array($projectIds)) {
+                                                            $projectId = $projectIds[0] ?? null;
+                                                            if ($projectId) {
+                                                                $project = \App\Models\Project::find($projectId);
+                                                                if ($project && $project->client_id) {
+                                                                    $set('client', $project->client_id);
+                                                                    $set('enable_task_resources', true);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                })
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // Skip auto-population for issue tracker tasks
+                                                    if (request()->route('record')) {
+                                                        $task = Task::find(request()->route('record'));
+                                                        if ($task && $task->tracking_token) {
+                                                            return;
+                                                        }
+                                                    }
+
                                                     // Automatically enable toggle when client is selected
                                                     if ($state) {
                                                         $set('enable_task_resources', true);
@@ -617,8 +650,29 @@ return false;
                                                 ->schema([
                                                     Forms\Components\Select::make('project')
                                                         ->label(__('task.form.project'))
-                                                        ->helperText(__('task.form.project_helper'))
-                                                        ->options(function (Forms\Get $get) {
+                                                        ->helperText(function (?Task $record) {
+                                                            if ($record && $record->tracking_token) {
+                                                                return __('task.form.project_helper_issue_tracker');
+                                                            }
+
+                                                            return __('task.form.project_helper');
+                                                        })
+                                                        ->options(function (Forms\Get $get, $record) {
+                                                            // For issue tracker tasks, show the project even without client
+                                                            if ($record && $record->tracking_token) {
+                                                                $projectIds = $record->project ?? [];
+                                                                if (! empty($projectIds) && is_array($projectIds)) {
+                                                                    return \App\Models\Project::whereIn('id', $projectIds)
+                                                                        ->withTrashed()
+                                                                        ->orderBy('title')
+                                                                        ->get()
+                                                                        ->mapWithKeys(fn ($p) => [
+                                                                            $p->id => str($p->title)->limit(20).($p->deleted_at ? ' (deleted)' : ''),
+                                                                        ])
+                                                                        ->toArray();
+                                                                }
+                                                            }
+
                                                             // If no client is selected, return an empty array
                                                             $clientId = $get('client');
                                                             if (! $clientId) {
@@ -634,7 +688,6 @@ return false;
                                                                 ])
                                                                 ->toArray();
                                                         })
-                                                        ->helperText(__('task.form.project_helper'))
                                                         ->searchable()
                                                         ->preload()
                                                         ->native(false)
@@ -644,14 +697,69 @@ return false;
                                                         ->dehydrated()
                                                         ->live()
                                                         ->reactive()
+                                                        ->disabled(fn (?Task $record) => $record && $record->tracking_token)
                                                         ->suffixAction(
                                                             Forms\Components\Actions\Action::make('createProject')
                                                                 ->icon('heroicon-o-plus')
                                                                 ->url(\App\Filament\Resources\ProjectResource::getUrl('create'))
                                                                 ->openUrlInNewTab()
                                                                 ->label(__('task.form.create_project'))
+                                                                ->visible(fn (?Task $record) => ! ($record && $record->tracking_token))
                                                         )
+                                                        ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
+                                                            // Auto-populate client and resources from project for issue tracker tasks
+                                                            if ($record && $record->tracking_token) {
+                                                                $projectIds = $state ?? $record->project ?? [];
+                                                                if (! empty($projectIds) && is_array($projectIds)) {
+                                                                    $projectId = $projectIds[0] ?? null;
+                                                                    if ($projectId) {
+                                                                        $project = \App\Models\Project::find($projectId);
+                                                                        if ($project) {
+                                                                            // Set client from project
+                                                                            if ($project->client_id) {
+                                                                                $set('client', $project->client_id);
+                                                                            }
+
+                                                                            // Get all documents for the project
+                                                                            $documents = \App\Models\Document::where('project_id', $projectId)
+                                                                                ->withTrashed()
+                                                                                ->orderBy('title')
+                                                                                ->pluck('id')
+                                                                                ->toArray();
+
+                                                                            // Get all important URLs for the project
+                                                                            $importantUrls = \App\Models\ImportantUrl::where('project_id', $projectId)
+                                                                                ->withTrashed()
+                                                                                ->orderBy('title')
+                                                                                ->pluck('id')
+                                                                                ->toArray();
+
+                                                                            // Auto-populate documents and important URLs
+                                                                            if (! empty($documents)) {
+                                                                                $set('document', $documents);
+                                                                            }
+                                                                            if (! empty($importantUrls)) {
+                                                                                $set('important_url', $importantUrls);
+                                                                            }
+
+                                                                            // Enable task resources toggle if any resources exist
+                                                                            if ($project->client_id || ! empty($documents) || ! empty($importantUrls)) {
+                                                                                $set('enable_task_resources', true);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        })
                                                         ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
+                                                            // Skip auto-population for issue tracker tasks
+                                                            if (request()->route('record')) {
+                                                                $task = Task::find(request()->route('record'));
+                                                                if ($task && $task->tracking_token) {
+                                                                    return;
+                                                                }
+                                                            }
+
                                                             // Automatically enable toggle when projects are selected
                                                             $selectedProjects = $state ?? [];
                                                             if (! empty($selectedProjects)) {
@@ -690,10 +798,23 @@ return false;
                                                     // Documents
                                                     Forms\Components\Select::make('document')
                                                         ->label(__('task.form.document'))
-                                                        ->helperText(__('task.form.document_helper'))
-                                                        ->options(function (Forms\Get $get) {
-                                                            // If no projects are selected, return an empty array
+                                                        ->helperText(function (?Task $record) {
+                                                            if ($record && $record->tracking_token) {
+                                                                return __('task.form.document_helper_issue_tracker');
+                                                            }
+
+                                                            return __('task.form.document_helper');
+                                                        })
+                                                        ->options(function (Forms\Get $get, $record) {
                                                             $selectedProjects = $get('project') ?? [];
+
+                                                            // For issue tracker tasks, use project from record if available
+                                                            if ($record && $record->tracking_token && empty($selectedProjects)) {
+                                                                $projectIds = $record->project ?? [];
+                                                                if (! empty($projectIds) && is_array($projectIds)) {
+                                                                    $selectedProjects = $projectIds;
+                                                                }
+                                                            }
 
                                                             if (empty($selectedProjects)) {
                                                                 // If no projects are selected, get all documents for the client
@@ -740,6 +861,7 @@ return false;
                                                                 ->url(\App\Filament\Resources\DocumentResource::getUrl('create'))
                                                                 ->openUrlInNewTab()
                                                                 ->label(__('task.form.create_document'))
+                                                                ->visible(fn (?Task $record) => ! ($record && $record->tracking_token))
                                                         )
                                                         ->afterStateUpdated(function ($state, Forms\Set $set) {
                                                             // Automatically enable toggle when documents are selected
@@ -747,24 +869,49 @@ return false;
                                                             if (! empty($selectedDocuments) && is_array($selectedDocuments)) {
                                                                 $set('enable_task_resources', true);
                                                             }
-                                                        })
-                                                        ->helperText(__('task.form.document_helper')),
+                                                        }),
 
                                                     // Important URLs
                                                     Forms\Components\Select::make('important_url')
                                                         ->label(__('task.form.important_url'))
-                                                        ->helperText(__('task.form.important_url_helper'))
-                                                        ->options(function (Forms\Get $get) {
-                                                            // If no client is selected, return an empty array
-                                                            return \App\Models\ImportantUrl::whereHas('project', function ($query) use ($get) {
-                                                                $clientId = $get('client');
-                                                                if (! $clientId) {
-                                                                    return $query;
-                                                                }
+                                                        ->helperText(function (?Task $record) {
+                                                            if ($record && $record->tracking_token) {
+                                                                return __('task.form.important_url_helper_issue_tracker');
+                                                            }
 
-                                                                // Get all important URLs for the client
-                                                                return $query->where('client_id', $clientId);
-                                                            })
+                                                            return __('task.form.important_url_helper');
+                                                        })
+                                                        ->options(function (Forms\Get $get, $record) {
+                                                            $selectedProjects = $get('project') ?? [];
+                                                            $clientId = $get('client');
+
+                                                            // For issue tracker tasks, use project from record if available
+                                                            if ($record && $record->tracking_token && empty($selectedProjects)) {
+                                                                $projectIds = $record->project ?? [];
+                                                                if (! empty($projectIds) && is_array($projectIds)) {
+                                                                    $selectedProjects = $projectIds;
+                                                                }
+                                                            }
+
+                                                            // If projects are selected, get important URLs for those projects
+                                                            if (! empty($selectedProjects)) {
+                                                                return \App\Models\ImportantUrl::whereIn('project_id', $selectedProjects)
+                                                                    ->withTrashed()
+                                                                    ->orderBy('title')
+                                                                    ->get()
+                                                                    ->mapWithKeys(fn ($i) => [
+                                                                        $i->id => str($i->title)->limit(20).($i->deleted_at ? ' (deleted)' : ''),
+                                                                    ])
+                                                                    ->toArray();
+                                                            }
+
+                                                            // If no client is selected, return an empty array
+                                                            if (! $clientId) {
+                                                                return [];
+                                                            }
+
+                                                            // Get all important URLs for the client
+                                                            return \App\Models\ImportantUrl::where('client_id', $clientId)
                                                                 ->withTrashed()
                                                                 ->orderBy('title')
                                                                 ->get()
@@ -788,6 +935,7 @@ return false;
                                                                 ->url(\App\Filament\Resources\ImportantUrlResource::getUrl('create'))
                                                                 ->openUrlInNewTab()
                                                                 ->label(__('task.form.create_important_url'))
+                                                                ->visible(fn (?Task $record) => ! ($record && $record->tracking_token))
                                                         )
                                                         ->afterStateUpdated(function ($state, Forms\Set $set) {
                                                             // Automatically enable toggle when important URLs are selected
@@ -795,8 +943,7 @@ return false;
                                                             if (! empty($selectedUrls) && is_array($selectedUrls)) {
                                                                 $set('enable_task_resources', true);
                                                             }
-                                                        })
-                                                        ->helperText(__('task.form.important_url_helper')),
+                                                        }),
 
                                                     // Display selected items with clickable links
                                                     Forms\Components\ViewField::make('selected_items_links')
