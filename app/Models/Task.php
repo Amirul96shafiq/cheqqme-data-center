@@ -30,6 +30,7 @@ class Task extends Model
         'updated_by',
         'extra_information',
         'attachments',
+        'tracking_token',
     ];
 
     public function getActivityLogOptions(): LogOptions
@@ -646,5 +647,49 @@ class Task extends Model
             default:
                 return 'Task '.$eventName;
         }
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($task) {
+            if ($task->status === 'issue_tracker' && empty($task->tracking_token)) {
+                $task->tracking_token = static::generateTrackingToken();
+            }
+        });
+    }
+
+    /**
+     * Generate a unique tracking token for issue tracker submissions.
+     * Format: CHEQQ-TRK-{6 alphanumeric characters}
+     */
+    public static function generateTrackingToken(): string
+    {
+        do {
+            // Generate 3 random uppercase letters
+            $letters = '';
+            for ($i = 0; $i < 3; $i++) {
+                $letters .= chr(65 + random_int(0, 25)); // A-Z
+            }
+
+            // Generate 3 random digits
+            $digits = '';
+            for ($i = 0; $i < 3; $i++) {
+                $digits .= random_int(0, 9);
+            }
+
+            // Combine and shuffle
+            $characters = str_split($letters.$digits);
+            shuffle($characters);
+            $code = implode('', $characters);
+
+            // Format as CHEQQ-TRK-{code}
+            $token = 'CHEQQ-TRK-'.$code;
+
+            // Check uniqueness
+        } while (static::where('tracking_token', $token)->exists());
+
+        return $token;
     }
 }

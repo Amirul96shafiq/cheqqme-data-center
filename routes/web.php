@@ -615,3 +615,6 @@ Route::get('/issue-tracker/{project}', [\App\Http\Controllers\IssueTrackerContro
     ->name('issue-tracker.show');
 Route::post('/issue-tracker', [\App\Http\Controllers\IssueTrackerController::class, 'store'])
     ->name('issue-tracker.store');
+Route::get('/issue-tracker/status/{token}', [\App\Http\Controllers\IssueTrackerController::class, 'status'])
+    ->where('token', 'CHEQQ-TRK-[A-Z0-9]{6}') // Match tracking token format
+    ->name('issue-tracker.status');

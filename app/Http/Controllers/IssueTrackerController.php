@@ -57,8 +57,31 @@ class IssueTrackerController extends Controller
 
         $project = Project::findOrFail($validated['project_id']);
 
+        // Refresh task to get the generated tracking token
+        $task->refresh();
+
         return redirect()
             ->route('issue-tracker.show', ['project' => $project->issue_tracker_code])
-            ->with('success', 'Your issue has been submitted successfully. Thank you!');
+            ->with('success', 'Your issue has been submitted successfully. Thank you!')
+            ->with('tracking_token', $task->tracking_token);
+    }
+
+    /**
+     * Display the status of an issue ticket by tracking token.
+     */
+    public function status(string $token)
+    {
+        $task = Task::where('tracking_token', $token)->firstOrFail();
+
+        // Get project information
+        $project = null;
+        if (! empty($task->project) && is_array($task->project) && ! empty($task->project[0])) {
+            $project = Project::find($task->project[0]);
+        }
+
+        return view('issue-tracker.status', [
+            'task' => $task,
+            'project' => $project,
+        ]);
     }
 }

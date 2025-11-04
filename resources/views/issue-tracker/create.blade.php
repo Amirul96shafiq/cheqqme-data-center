@@ -41,10 +41,42 @@
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
               </div>
-              <div class="ml-3">
-                <p class="text-sm font-medium text-green-800 dark:text-green-200">
+              <div class="ml-3 flex-1">
+                <p class="text-sm font-medium text-green-800 dark:text-green-200 mb-3">
                   {{ session('success') }}
                 </p>
+                
+                @if (session('tracking_token'))
+                  <div class="mt-3 space-y-3">
+                    <div>
+                      <p class="text-xs font-medium text-green-700 dark:text-green-300 mb-1">Tracking Code:</p>
+                      <div class="flex items-center space-x-2">
+                        <code class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-green-200 dark:border-green-700 rounded-md text-sm font-mono text-green-900 dark:text-green-100">
+                          {{ session('tracking_token') }}
+                        </code>
+                      </div>
+                    </div>
+                    <div>
+                      <p class="text-xs font-medium text-green-700 dark:text-green-300 mb-1">View Status:</p>
+                      <div class="flex items-center space-x-2">
+                        <input type="text" 
+                               id="tracking-url" 
+                               value="{{ route('issue-tracker.status', ['token' => session('tracking_token')]) }}" 
+                               readonly
+                               class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-green-200 dark:border-green-700 rounded-md text-sm text-green-900 dark:text-green-100 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <button type="button" 
+                                id="copy-tracking-link"
+                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+                          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                          Copy Link
+                        </button>
+                      </div>
+                      <p id="copy-success" class="mt-2 text-xs text-green-600 dark:text-green-400 hidden">Link copied to clipboard!</p>
+                    </div>
+                  </div>
+                @endif
               </div>
             </div>
           </div>
@@ -372,6 +404,48 @@
             files.forEach(file => dataTransfer.items.add(file));
             fileInput.files = dataTransfer.files;
             fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+        }
+
+        // Copy tracking link functionality
+        const copyTrackingLinkBtn = document.getElementById('copy-tracking-link');
+        const trackingUrlInput = document.getElementById('tracking-url');
+        const copySuccessMessage = document.getElementById('copy-success');
+
+        if (copyTrackingLinkBtn && trackingUrlInput) {
+          copyTrackingLinkBtn.addEventListener('click', function() {
+            trackingUrlInput.select();
+            trackingUrlInput.setSelectionRange(0, 99999); // For mobile devices
+
+            try {
+              navigator.clipboard.writeText(trackingUrlInput.value).then(function() {
+                // Show success message
+                if (copySuccessMessage) {
+                  copySuccessMessage.classList.remove('hidden');
+                  setTimeout(function() {
+                    copySuccessMessage.classList.add('hidden');
+                  }, 3000);
+                }
+              }).catch(function(err) {
+                // Fallback for older browsers
+                document.execCommand('copy');
+                if (copySuccessMessage) {
+                  copySuccessMessage.classList.remove('hidden');
+                  setTimeout(function() {
+                    copySuccessMessage.classList.add('hidden');
+                  }, 3000);
+                }
+              });
+            } catch (err) {
+              // Fallback for older browsers
+              document.execCommand('copy');
+              if (copySuccessMessage) {
+                copySuccessMessage.classList.remove('hidden');
+                setTimeout(function() {
+                  copySuccessMessage.classList.add('hidden');
+                }, 3000);
+              }
+            }
           });
         }
         });
