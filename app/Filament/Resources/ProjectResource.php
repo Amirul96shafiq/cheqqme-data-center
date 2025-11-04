@@ -292,6 +292,16 @@ class ProjectResource extends Resource
                     ->sortable()
                     ->searchable(),
 
+                Tables\Columns\TextColumn::make('issue_tracker_code')
+                    ->label(__('project.table.issue_tracker_code'))
+                    ->searchable()
+                    ->copyable()
+                    ->copyableState(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
+                    ->color('primary')
+                    ->url(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
+                    ->toggleable()
+                    ->alignCenter(),
+
                 Tables\Columns\ViewColumn::make('status')
                     ->label(__('project.table.status'))
                     ->view('filament.resources.project-resource.status-column')

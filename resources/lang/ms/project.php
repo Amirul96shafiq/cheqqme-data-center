@@ -50,6 +50,7 @@ return [
         'title' => 'Tajuk',
         'client' => 'Pelanggan',
         'description' => 'Deskripsi',
+        'issue_tracker_code' => 'Kod Penjejak Isu',
         'status' => 'Status',
         'document_count' => 'Dokumen',
         'planning' => 'Perancangan',
@@ -62,6 +63,10 @@ return [
             'full_name' => 'Nama Penuh',
             'company' => 'Syarikat',
         ],
+        'copy_link_tooltip' => 'Klik untuk menyalin pautan penjejak isu',
+        'copy_success' => 'Pautan penjejak isu disalin ke papan klip!',
+        'copy_failed' => 'Gagal menyalin pautan',
+        'copied' => 'Disalin!',
     ],
 
     'filter' => [

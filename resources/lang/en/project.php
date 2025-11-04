@@ -51,6 +51,7 @@ return [
         'title' => 'Title',
         'description' => 'Description',
         'client' => 'Client',
+        'issue_tracker_code' => 'Issue Tracker Code',
         'status' => 'Status',
         'document_count' => 'Documents',
         'planning' => 'Planning',
@@ -63,6 +64,10 @@ return [
             'full_name' => 'Full Name',
             'company' => 'Company',
         ],
+        'copy_link_tooltip' => 'Click to copy issue tracker link',
+        'copy_success' => 'Issue tracker link copied to clipboard!',
+        'copy_failed' => 'Failed to copy link',
+        'copied' => 'Copied!',
     ],
 
     'filter' => [
