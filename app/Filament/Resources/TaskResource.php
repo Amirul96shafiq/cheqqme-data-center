@@ -280,6 +280,27 @@ return false;
                                                 ])
                                                 ->extraAttributes(['style' => 'resize: vertical;'])
                                                 ->reactive()
+                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
+                                                    // Convert plain text with \n to HTML if description is plain text
+                                                    if ($state && ! preg_match('/<[^>]+>/', $state)) {
+                                                        // It's plain text, convert \n to <br> and wrap in <p>
+                                                        $html = nl2br(e($state));
+                                                        $set('description', $html);
+                                                    }
+                                                })
+                                                ->dehydrateStateUsing(function ($state) {
+                                                    // Ensure HTML is properly formatted when saving
+                                                    if (empty($state)) {
+                                                        return $state;
+                                                    }
+
+                                                    // If it's plain text (no HTML tags), convert to HTML
+                                                    if (! preg_match('/<[^>]+>/', $state)) {
+                                                        return nl2br(e($state));
+                                                    }
+
+                                                    return $state;
+                                                })
                                                 ->helperText(function (Forms\Get $get) {
                                                     $raw = $get('description') ?? '';
                                                     $noHtml = strip_tags($raw);

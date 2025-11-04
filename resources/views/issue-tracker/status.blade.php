@@ -319,7 +319,17 @@
           <div>
             <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Description</h3>
             <div class="bg-gray-50 dark:bg-gray-900 rounded-md p-4">
-              <p class="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">{{ $task->description }}</p>
+              <div class="text-sm text-gray-900 dark:text-white prose prose-sm dark:prose-invert max-w-none">
+                @php
+                  // Check if description contains HTML tags
+                  $description = $task->description ?? '';
+                  if (!empty($description) && !preg_match('/<[^>]+>/', $description)) {
+                    // Plain text - convert \n to <br> and preserve spaces
+                    $description = nl2br(e($description));
+                  }
+                @endphp
+                {!! $description !!}
+              </div>
             </div>
           </div>
 
