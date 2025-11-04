@@ -290,13 +290,38 @@
           <div>
             <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Reporter Information</h3>
             <div class="space-y-2">
+              @php
+                $reporterName = 'N/A';
+                $reporterEmail = 'N/A';
+                
+                if (!empty($task->extra_information) && is_array($task->extra_information)) {
+                  foreach ($task->extra_information as $item) {
+                    if (is_array($item)) {
+                      $title = $item['title'] ?? '';
+                      $value = $item['value'] ?? '';
+                      
+                      // Strip HTML tags from value (RichEditor stores HTML)
+                      $cleanValue = strip_tags($value);
+                      $cleanValue = html_entity_decode($cleanValue, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                      $cleanValue = trim($cleanValue);
+                      
+                      if (stripos($title, 'Reporter Name') !== false || stripos($title, 'name') !== false) {
+                        $reporterName = $cleanValue ?: 'N/A';
+                      }
+                      if (stripos($title, 'Reporter Email') !== false || stripos($title, 'email') !== false) {
+                        $reporterEmail = $cleanValue ?: 'N/A';
+                      }
+                    }
+                  }
+                }
+              @endphp
               <div>
                 <p class="text-xs text-gray-500 dark:text-gray-400">Name</p>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $task->extra_information['reporter_name'] ?? 'N/A' }}</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $reporterName }}</p>
               </div>
               <div>
                 <p class="text-xs text-gray-500 dark:text-gray-400">Email</p>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $task->extra_information['reporter_email'] ?? 'N/A' }}</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $reporterEmail }}</p>
               </div>
             </div>
           </div>

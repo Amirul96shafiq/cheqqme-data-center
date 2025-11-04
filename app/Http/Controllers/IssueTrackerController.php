@@ -50,8 +50,14 @@ class IssueTrackerController extends Controller
             'order_column' => $maxOrder + 1,
             'attachments' => ! empty($attachments) ? $attachments : null,
             'extra_information' => [
-                'reporter_name' => $validated['name'],
-                'reporter_email' => $validated['email'],
+                [
+                    'title' => 'Reporter Name',
+                    'value' => $validated['name'],
+                ],
+                [
+                    'title' => 'Reporter Email',
+                    'value' => $validated['email'],
+                ],
             ],
         ]);
 
