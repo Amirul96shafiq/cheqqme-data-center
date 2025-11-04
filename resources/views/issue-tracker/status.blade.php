@@ -34,7 +34,7 @@
             Issue Tracker Status
           </h1>
           <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Tracking Code: <span class="font-mono font-semibold text-primary-500">{{ $task->tracking_token }}</span>
+            Tracking Code: <span class="inline-block px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full font-mono font-semibold text-primary-500">{{ $task->tracking_token }}</span>
           </p>
         </div>
 

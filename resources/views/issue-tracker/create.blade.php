@@ -33,7 +33,7 @@
             Submit an Issue / Bug
           </h1>
           <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Project: <span class="font-semibold text-primary-500">{{ $project->title }}</span>
+            Project: <span class="inline-block px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full font-semibold text-primary-500">{{ $project->title }}</span>
           </p>
         </div>
 
