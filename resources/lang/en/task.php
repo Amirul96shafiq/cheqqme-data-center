@@ -47,6 +47,8 @@ return [
         'create_project' => 'Create Project',
         'create_document' => 'Create Document',
         'create_important_url' => 'Create Important URL',
+        'issue_tracker_code' => 'Issue Tracker Code',
+        'open_issue_tracker' => 'Open Issue Tracker',
     ],
     'search' => [
         'status' => 'Status',

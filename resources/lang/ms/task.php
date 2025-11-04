@@ -47,6 +47,8 @@ return [
         'create_project' => 'Tambah Projek',
         'create_document' => 'Tambah Dokumen',
         'create_important_url' => 'Tambah URL Penting',
+        'issue_tracker_code' => 'Kod Penjejak Isu',
+        'open_issue_tracker' => 'Buka Penjejak Isu',
     ],
     'search' => [
         'status' => 'Status',
