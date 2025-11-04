@@ -12,42 +12,20 @@
   <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
   @vite(['resources/css/app.css'])
-  
-  <style>
-    /* Mobile responsive background: 300px height, auto width */
-    @media (max-width: 640px) {
-      body {
-        background-size: auto 300px !important;
-      }
-      
-      .top-spacer {
-        height: 10vh !important;
-        min-height: 10vh !important;
-      }
-    }
-    
-    /* Other breakpoints: keep default behavior */
-    @media (min-width: 641px) {
-      body {
-        background-size: cover;
-      }
-    }
-  </style>
 </head>
 <body class="antialiased font-sans bg-auto bg-no-repeat m-0 p-0" style="height: 100vh; margin: 0; padding: 0; background-image: url('{{ asset('images/issue-tracker-bg.png') }}'); background-position: top center; display: flex; flex-direction: column;">
     
   {{-- Content area --}}
   <div style="flex: 1; overflow-y: auto; min-height: 100vh;">
 
-    {{-- Top spacer: 20% of viewport height (15% on mobile) --}}
-    <div class="top-spacer" style="height: 20vh; flex-shrink-0; min-height: 20vh;"></div>
     <div class="flex items-center justify-center min-h-full py-12 px-4 sm:px-6 lg:px-8">
       <div class="max-w-md w-full space-y-8">
 
         {{-- Header --}}
         <div class="text-center">
+          <img src="{{ asset('logos/logo-light.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-32 w-auto mb-8">
           <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-            ISSUE TRACKER STATUS
+            Issue Tracker Status
           </h1>
           <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
             Tracking Code: <span class="font-mono font-semibold text-primary-500">{{ $task->tracking_token }}</span>

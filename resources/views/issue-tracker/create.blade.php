@@ -17,15 +17,14 @@
     
   {{-- Content area --}}
   <div style="flex: 1; overflow-y: auto; min-height: 100vh;">
-    {{-- Top spacer: 20% of viewport height --}}
-    <div style="height: 20vh; flex-shrink: 0; min-height: 20vh;"></div>
     <div class="flex items-center justify-center min-h-full py-12 px-4 sm:px-6 lg:px-8">
       <div class="max-w-md w-full space-y-8">
 
         {{-- Header --}}
         <div class="text-center">
+          <img src="{{ asset('logos/logo-light.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-32 w-auto mb-8">
           <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-            SUBMIT AN ISSUE / BUG
+            Submit an Issue / Bug
           </h1>
           <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
             Project: <span class="font-semibold text-primary-500">{{ $project->title }}</span>
