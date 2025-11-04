@@ -83,7 +83,7 @@
                   ];
                 }
               @endphp
-              <div class="relative w-full overflow-x-auto scroll-smooth" id="status-roadmap-container" style="scrollbar-width: thin; scrollbar-color: rgba(156, 163, 175, 0.5) transparent;">
+              <div class="relative w-full overflow-x-auto scroll-smooth" id="status-roadmap-container" style="scrollbar-width: none; -ms-overflow-style: none;">
                 <div id="status-roadmap" class="flex items-center gap-2 flex-nowrap">
                   @foreach ($statusesToShow as $index => $status)
                     <div class="flex items-center flex-shrink-0 {{ $index > 0 ? 'gap-2' : '' }}"@if($status['isCurrent']) id="current-status"@endif>
@@ -223,26 +223,14 @@
               </script>
               
               <style>
-                /* Hide scrollbar for Chrome, Safari and Opera */
+                /* Hide scrollbar for all browsers */
                 #status-roadmap-container::-webkit-scrollbar {
-                  height: 6px;
+                  display: none;
                 }
                 
-                #status-roadmap-container::-webkit-scrollbar-track {
-                  background: transparent;
-                }
-                
-                #status-roadmap-container::-webkit-scrollbar-thumb {
-                  background-color: rgba(156, 163, 175, 0.5);
-                  border-radius: 3px;
-                }
-                
-                #status-roadmap-container::-webkit-scrollbar-thumb:hover {
-                  background-color: rgba(156, 163, 175, 0.7);
-                }
-                
-                /* Smooth scrolling */
                 #status-roadmap-container {
+                  -ms-overflow-style: none;
+                  scrollbar-width: none;
                   -webkit-overflow-scrolling: touch;
                 }
               </style>
