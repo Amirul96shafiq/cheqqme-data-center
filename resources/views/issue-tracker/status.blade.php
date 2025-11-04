@@ -88,8 +88,10 @@
                   @foreach ($statusesToShow as $index => $status)
                     <div class="flex items-center flex-shrink-0 {{ $index > 0 ? 'gap-2' : '' }}"@if($status['isCurrent']) id="current-status"@endif>
                       @if ($index > 0)
+
                         {{-- Connector arrow --}}
                         @php
+
                           // Arrow opacity based on status type
                           if ($status['type'] === 'current') {
                             $arrowOpacity = '';
@@ -98,18 +100,26 @@
                           } else {
                             $arrowOpacity = 'opacity-30';
                           }
+
                         @endphp
+
                         <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 {{ $arrowOpacity }} flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
                       @endif
+
                       {{-- Status badge --}}
                       @php
+
                         // Badge color: primary for current, gray for non-active
                         if ($status['isCurrent']) {
                           $badgeColor = 'bg-primary-500 text-primary-900';
+                          $badgeFontSize = 'text-sm';
+                          $badgeFontWeight = 'font-bold';
                         } else {
                           $badgeColor = 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+                          $badgeFontSize = 'text-xs';
+                          $badgeFontWeight = 'font-semibold';
                         }
                         
                         // Badge opacity and styling based on status type
@@ -120,12 +130,16 @@
                           $badgeOpacity = 'opacity-50';
                           $badgeStyle = '';
                         } else {
+
                           // Upcoming statuses: more faded with border
                           $badgeOpacity = 'opacity-30';
                           $badgeStyle = 'border border-gray-300 dark:border-gray-600 border-dashed';
+
                         }
+
                       @endphp
-                      <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold flex-shrink-0 {{ $badgeColor }} {{ $badgeOpacity }} {{ $badgeStyle }}">
+
+                      <span class="inline-flex items-center px-3 py-1.5 rounded-full {{ $badgeFontSize }} {{ $badgeFontWeight }} flex-shrink-0 {{ $badgeColor }} {{ $badgeOpacity }} {{ $badgeStyle }}">
                         {{ $status['label'] }}
                       </span>
                     </div>
@@ -179,13 +193,16 @@
                         }, 600);
                       });
                     });
+
                   }
                   
                   // Initialize when DOM is ready
                   function init() {
                     scrollToCurrentStatus();
+
                     // Retry once after a delay to ensure layout is complete
                     setTimeout(scrollToCurrentStatus, 300);
+
                   }
                   
                   if (document.readyState === 'loading') {
@@ -223,6 +240,7 @@
               </script>
               
               <style>
+                
                 /* Hide scrollbar for all browsers */
                 #status-roadmap-container::-webkit-scrollbar {
                   display: none;
