@@ -41,7 +41,11 @@
                     <div class="flex items-center justify-between">
                         <!-- Activity Causer -->
                         <p class="text-xs font-medium {{ $activity['causer_id'] === auth()->id() ? 'text-primary-600 dark:text-primary-300' : 'text-gray-900 dark:text-white' }}">
-                            {{ $activity['causer_id'] === auth()->id() ? __('task.activity_log.you') : $activity['causer_name'] }}
+                            @if(isset($activity['is_issue_tracker']) && $activity['is_issue_tracker'])
+                                {{ $activity['reporter_name'] ?? 'Unknown' }}@if($activity['reporter_email'] ?? null) ({{ $activity['reporter_email'] }})@endif
+                            @else
+                                {{ $activity['causer_id'] === auth()->id() ? __('task.activity_log.you') : $activity['causer_name'] }}
+                            @endif
                         </p>
                         <!-- Activity Timestamp -->
                         <div class="flex flex-col items-end justify-center text-[11px] text-gray-500 dark:text-gray-400 leading-tight">
@@ -51,42 +55,79 @@
                     </div>
                     <!-- Activity Description -->
                     <p class="text-xs text-gray-700 dark:text-gray-300 mt-[-5px]">
-                        @if(\Illuminate\Support\Facades\Lang::has("task.activity_log.{$descKey}"))
-                            {{ __("task.activity_log.{$descKey}") }}
-                        @else
-                            {{ ucfirst($activity['description']) }}
-                        @endif
-                        <!-- Activity Changes -->
-                        @if($activity['properties'] && $activity['properties']->count() > 0)
+                        @if(isset($activity['is_issue_tracker']) && $activity['is_issue_tracker'])
+                            {{ __('task.activity_log.activity_issue_tracker_created') }}
                             <span class="text-xs text-gray-500 dark:text-gray-400">
-                                @php
-                                    // Get the changes from the activity properties
-                                    $changes = [];
-                                    if ($activity['properties']->has('old')) {
-                                        $old = $activity['properties']->get('old');
-                                        if (is_array($old)) {
-                                            foreach ($old as $key => $value) {
-                                                $changes[] = $key;
-                                            }
-                                        }
-                                    }
-                                    // Get the new values from the activity properties
-                                    if ($activity['properties']->has('attributes')) {
-                                        $new = $activity['properties']->get('attributes');
-                                        if (is_array($new)) {
-                                            foreach ($new as $key => $value) {
-                                                if (!in_array($key, $changes)) {
+                                (@if($activity['issue_tracker_code'] ?? null){{ $activity['issue_tracker_code'] }}, @endif{{ $activity['tracking_token'] ?? '' }})
+                            </span>
+                        @elseif(\Illuminate\Support\Facades\Lang::has("task.activity_log.{$descKey}"))
+                            {{ __("task.activity_log.{$descKey}") }}
+                            <!-- Activity Changes -->
+                            @if($activity['properties'] && $activity['properties']->count() > 0)
+                                <span class="text-xs text-gray-500 dark:text-gray-400">
+                                    @php
+                                        // Get the changes from the activity properties
+                                        $changes = [];
+                                        if ($activity['properties']->has('old')) {
+                                            $old = $activity['properties']->get('old');
+                                            if (is_array($old)) {
+                                                foreach ($old as $key => $value) {
                                                     $changes[] = $key;
                                                 }
                                             }
                                         }
-                                    }
-                                    // Display the changes
-                                    if (!empty($changes)) {
-                                        echo '(' . implode(', ', array_slice($changes, 0, 3)) . (count($changes) > 3 ? '...' : '') . ')';
-                                    }
-                                @endphp
-                            </span>
+                                        // Get the new values from the activity properties
+                                        if ($activity['properties']->has('attributes')) {
+                                            $new = $activity['properties']->get('attributes');
+                                            if (is_array($new)) {
+                                                foreach ($new as $key => $value) {
+                                                    if (!in_array($key, $changes)) {
+                                                        $changes[] = $key;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        // Display the changes
+                                        if (!empty($changes)) {
+                                            echo '(' . implode(', ', array_slice($changes, 0, 3)) . (count($changes) > 3 ? '...' : '') . ')';
+                                        }
+                                    @endphp
+                                </span>
+                            @endif
+                        @else
+                            {{ ucfirst($activity['description']) }}
+                            <!-- Activity Changes -->
+                            @if($activity['properties'] && $activity['properties']->count() > 0)
+                                <span class="text-xs text-gray-500 dark:text-gray-400">
+                                    @php
+                                        // Get the changes from the activity properties
+                                        $changes = [];
+                                        if ($activity['properties']->has('old')) {
+                                            $old = $activity['properties']->get('old');
+                                            if (is_array($old)) {
+                                                foreach ($old as $key => $value) {
+                                                    $changes[] = $key;
+                                                }
+                                            }
+                                        }
+                                        // Get the new values from the activity properties
+                                        if ($activity['properties']->has('attributes')) {
+                                            $new = $activity['properties']->get('attributes');
+                                            if (is_array($new)) {
+                                                foreach ($new as $key => $value) {
+                                                    if (!in_array($key, $changes)) {
+                                                        $changes[] = $key;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        // Display the changes
+                                        if (!empty($changes)) {
+                                            echo '(' . implode(', ', array_slice($changes, 0, 3)) . (count($changes) > 3 ? '...' : '') . ')';
+                                        }
+                                    @endphp
+                                </span>
+                            @endif
                         @endif
                     </p>
                 </div>

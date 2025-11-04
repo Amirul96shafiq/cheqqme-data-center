@@ -116,5 +116,6 @@ return [
         'activity_mentioned' => 'Dinyatakan',
         'activity_deleted' => 'Dihapus',
         'activity_task_moved' => 'Tugasan Dipindahkan',
+        'activity_issue_tracker_created' => 'Penjejak Isu dicipta',
     ],
 ];

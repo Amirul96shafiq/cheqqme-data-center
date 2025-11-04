@@ -1079,8 +1079,8 @@ return false;
                                                         ->where('log_name', 'Tasks')
                                                         ->orderBy('created_at', 'desc')
                                                         ->get()
-                                                        ->map(function ($activity) {
-                                                            return [
+                                                        ->map(function ($activity) use ($record) {
+                                                            $activityData = [
                                                                 'id' => $activity->id,
                                                                 'description' => $activity->description,
                                                                 'properties' => $activity->properties,
@@ -1088,6 +1088,53 @@ return false;
                                                                 'causer_name' => $activity->causer?->username ?? $activity->causer?->name ?? 'System',
                                                                 'causer_id' => $activity->causer_id,
                                                             ];
+
+                                                            // For 'created' or 'Task created' activities, check if it's an issue tracker creation
+                                                            if ($activity->description === 'created' || $activity->description === 'Task created') {
+                                                                $attributes = $activity->properties->get('attributes', []);
+                                                                $status = $attributes['status'] ?? null;
+
+                                                                // Check the actual task record for tracking_token since it might not be in activity log
+                                                                $trackingToken = $record->tracking_token ?? null;
+                                                                $extraInformation = $attributes['extra_information'] ?? [];
+                                                                $projectIds = $attributes['project'] ?? [];
+
+                                                                // Check if this is an issue tracker creation
+                                                                // Use task record status and tracking_token since activity log might not have tracking_token
+                                                                if (($status === 'issue_tracker' || $record->status === 'issue_tracker') && ! empty($trackingToken)) {
+                                                                    // Extract reporter information from extra_information
+                                                                    $reporterName = null;
+                                                                    $reporterEmail = null;
+                                                                    if (is_array($extraInformation)) {
+                                                                        foreach ($extraInformation as $item) {
+                                                                            if (isset($item['title']) && isset($item['value'])) {
+                                                                                if ($item['title'] === 'Reporter Name') {
+                                                                                    $reporterName = $item['value'];
+                                                                                } elseif ($item['title'] === 'Reporter Email') {
+                                                                                    $reporterEmail = $item['value'];
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                    // Get issue tracker code from project
+                                                                    $issueTrackerCode = null;
+                                                                    if (! empty($projectIds) && is_array($projectIds) && ! empty($projectIds[0])) {
+                                                                        $project = \App\Models\Project::find($projectIds[0]);
+                                                                        if ($project) {
+                                                                            $issueTrackerCode = $project->issue_tracker_code;
+                                                                        }
+                                                                    }
+
+                                                                    $activityData['is_issue_tracker'] = true;
+                                                                    $activityData['reporter_name'] = $reporterName;
+                                                                    $activityData['reporter_email'] = $reporterEmail;
+                                                                    $activityData['issue_tracker_code'] = $issueTrackerCode;
+                                                                    $activityData['tracking_token'] = $trackingToken;
+                                                                }
+                                                            }
+
+                                                            return $activityData;
                                                         });
 
                                                     return ['activities' => $activities];

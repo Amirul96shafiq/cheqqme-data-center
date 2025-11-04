@@ -115,5 +115,6 @@ return [
         'activity_mentioned' => 'Mentioned',
         'activity_deleted' => 'Deleted',
         'activity_task_moved' => 'Task Moved',
+        'activity_issue_tracker_created' => 'Issue Tracker created',
     ],
 ];
