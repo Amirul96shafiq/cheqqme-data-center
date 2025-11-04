@@ -277,7 +277,7 @@
               
               {{-- Submitted on --}}
               <div class="pt-2">
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Submitted on</p>
+                <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">Submitted on</h2>
                 <p class="text-sm font-medium text-gray-900 dark:text-white">
                   {{ $task->created_at->format('j/n/y') }}, {{ $task->created_at->format('h:i A') }}
                 </p>
