@@ -12,14 +12,35 @@
   <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
   @vite(['resources/css/app.css'])
+  
+  <style>
+    /* Mobile responsive background: 300px height, auto width */
+    @media (max-width: 640px) {
+      body {
+        background-size: auto 300px !important;
+      }
+      
+      .top-spacer {
+        height: 10vh !important;
+        min-height: 10vh !important;
+      }
+    }
+    
+    /* Other breakpoints: keep default behavior */
+    @media (min-width: 641px) {
+      body {
+        background-size: cover;
+      }
+    }
+  </style>
 </head>
 <body class="antialiased font-sans bg-auto bg-no-repeat m-0 p-0" style="height: 100vh; margin: 0; padding: 0; background-image: url('{{ asset('images/issue-tracker-bg.png') }}'); background-position: top center; display: flex; flex-direction: column;">
     
   {{-- Content area --}}
   <div style="flex: 1; overflow-y: auto; min-height: 100vh;">
 
-    {{-- Top spacer: 20% of viewport height --}}
-    <div style="height: 20vh; flex-shrink-0; min-height: 20vh;"></div>
+    {{-- Top spacer: 20% of viewport height (15% on mobile) --}}
+    <div class="top-spacer" style="height: 20vh; flex-shrink-0; min-height: 20vh;"></div>
     <div class="flex items-center justify-center min-h-full py-12 px-4 sm:px-6 lg:px-8">
       <div class="max-w-md w-full space-y-8">
 
@@ -103,8 +124,9 @@
 
                         @endphp
 
-                        <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 {{ $arrowOpacity }} flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        {{-- Heroicon: arrow-long-right --}}
+                        <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 {{ $arrowOpacity }} flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H3m15 0l-3.75-3.75M18 12l-3.75 3.75" />
                         </svg>
                       @endif
 
@@ -257,7 +279,7 @@
               <div class="pt-2">
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Submitted on</p>
                 <p class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ $task->created_at->format('j/n/y') }} . {{ $task->created_at->format('h:i A') }}
+                  {{ $task->created_at->format('j/n/y') }}, {{ $task->created_at->format('h:i A') }}
                 </p>
               </div>
               
