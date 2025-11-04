@@ -159,8 +159,7 @@
                   placeholder="Provide more details about the issue..."
                   maxlength="700"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm resize-y">{{ old('description', "Steps to Reproduce:-\n1- \n\nExpected Result\n- \n\nActual Result\n- ") }}
-                </textarea>
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm resize-y">{{ old('description', "Steps to Reproduce\n1- \n\nExpected Result:\n- \n\nActual Result:\n- ") }}</textarea>
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   <span id="char-count">0</span> / 700 characters
                 </p>
