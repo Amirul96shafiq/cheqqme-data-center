@@ -29,44 +29,44 @@
         {{-- Header --}}
         <div class="text-center">
           <img src="{{ asset('logos/logo-light.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-32 w-auto mb-8">
-          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 class="text-3xl font-bold text-gray-900">
             Submit an Issue / Bug
           </h1>
-          <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Project: <span class="inline-block px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full font-semibold text-primary-500">{{ $project->title }}</span>
+          <p class="mt-2 text-sm text-gray-600">
+            Project: <span class="inline-block px-3 py-1.5 bg-white rounded-full font-semibold text-primary-500">{{ $project->title }}</span>
           </p>
         </div>
 
                 {{-- Success Message --}}
         @if (session('success'))
-          <div class="rounded-md bg-teal-50 dark:bg-teal-900/20 p-4 border border-teal-200 dark:border-teal-800 mb-6">
+          <div class="rounded-md bg-teal-50 p-4 border border-teal-200 mb-6">
             <div class="flex flex-col items-center">
               <div class="mb-3">
                 <x-heroicon-s-check-circle class="h-20 w-20 text-teal-400" />
               </div>
               <div class="w-full">
-                <p class="text-sm font-medium text-teal-800 dark:text-teal-200 mb-3 text-center">
+                <p class="text-sm font-medium text-teal-800 mb-3 text-center">
                   {{ session('success') }}
                 </p>
 
                 @if (session('tracking_token'))
                   <div class="mt-3 space-y-3">
                     <div>
-                      <p class="text-xs font-medium text-teal-700 dark:text-teal-300 mb-1">Tracking Code:</p>
+                      <p class="text-xs font-medium text-teal-700 mb-1">Tracking Code:</p>
                       <div class="flex items-center space-x-2">
-                        <code class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-teal-200 dark:border-teal-700 rounded-md text-sm font-mono text-teal-900 dark:text-teal-100">
+                        <code class="flex-1 px-3 py-2 bg-white border border-teal-200 rounded-md text-sm font-mono text-teal-900">
                           {{ session('tracking_token') }}
                         </code>
                       </div>
                     </div>
                     <div>
-                      <p class="text-xs font-medium text-teal-700 dark:text-teal-300 mb-1">View Status:</p>
+                      <p class="text-xs font-medium text-teal-700 mb-1">View Status:</p>
                       <div class="flex items-center space-x-2">
                         <input type="text"
                                id="tracking-url"
                                value="{{ route('issue-tracker.status', ['token' => session('tracking_token')]) }}"
                                readonly
-                               class="flex-1 px-3 py-2 bg-white dark:bg-gray-800 border border-teal-200 dark:border-teal-700 rounded-md text-sm text-teal-900 dark:text-teal-100 focus:outline-none focus:ring-2 focus:ring-teal-500">
+                               class="flex-1 px-3 py-2 bg-white border border-teal-200 rounded-md text-sm text-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
                         <button type="button"
                                 id="copy-tracking-link"
                                 class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-900 bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
@@ -76,7 +76,7 @@
                           Copy Link
                         </button>
                       </div>
-                      <p id="copy-success" class="mt-2 text-xs text-teal-600 dark:text-teal-400 hidden">Link copied to clipboard!</p>
+                      <p id="copy-success" class="mt-2 text-xs text-teal-600 hidden">Link copied to clipboard!</p>
                     </div>
                   </div>
                 @endif
@@ -86,7 +86,7 @@
         @endif
 
         {{-- Form --}}
-        <form method="POST" action="{{ route('issue-tracker.store') }}" enctype="multipart/form-data" class="mt-6 space-y-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+        <form method="POST" action="{{ route('issue-tracker.store') }}" enctype="multipart/form-data" class="mt-6 space-y-6 bg-white shadow-lg rounded-lg p-6">
           @csrf
 
             {{-- Hidden Project ID --}}
@@ -94,7 +94,7 @@
 
             {{-- Error Messages --}}
             @if ($errors->any())
-              <div class="rounded-md bg-red-50 dark:bg-red-900/20 p-4 border border-red-200 dark:border-red-800">
+              <div class="rounded-md bg-red-50 p-4 border border-red-200">
                 <div class="flex">
                   <div class="flex-shrink-0">
                     <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -102,10 +102,10 @@
                     </svg>
                   </div>
                   <div class="ml-3">
-                    <h3 class="text-sm font-medium text-red-800 dark:text-red-200">
+                    <h3 class="text-sm font-medium text-red-800">
                       Please correct the following errors:
                     </h3>
-                    <div class="mt-2 text-sm text-red-700 dark:text-red-300">
+                    <div class="mt-2 text-sm text-red-700">
                       <ul class="list-disc pl-5 space-y-1">
                         @foreach ($errors->all() as $error)
                           <li>{{ $error }}</li>
@@ -119,71 +119,71 @@
 
               {{-- Name Field --}}
               <div>
-                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
                   Your Name <span class="text-red-500">*</span>
                 </label>
                 <input id="name" type="text" name="name" value="{{ old('name') }}"
                   required autofocus
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm">
               </div>
 
               {{-- Email Field --}}
               <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
                   Your Email <span class="text-red-500">*</span>
                 </label>
                 <input id="email" type="email" name="email" value="{{ old('email') }}"
                       required autocomplete="email"
-                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm">
               </div>
 
               {{-- Title Field --}}
               <div>
-                <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                   Issue Title <span class="text-red-500">*</span>
                 </label>
                 <input id="title" type="text" name="title" value="{{ old('title') }}"
                   required placeholder="Brief description of the issue"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm">
               </div>
 
               {{-- Description Field --}}
               <div>
-                <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="description" class="block text-sm font-medium text-gray-700">
                     Description <span class="text-red-500">*</span>
                 </label>
-                <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                <p class="mb-2 text-xs text-gray-500">
                   Be concise and to the point
                 </p>
                 <textarea id="description" name="description" rows="10"
                   placeholder="Provide more details about the issue..."
                   maxlength="700"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm resize-y">{{ old('description', "Steps to Reproduce\n1- \n\nExpected Result:\n- \n\nActual Result:\n- ") }}</textarea>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm resize-y">{{ old('description', "Steps to Reproduce\n1- \n\nExpected Result:\n- \n\nActual Result:\n- ") }}</textarea>
+                <p class="mt-1 text-xs text-gray-500">
                   <span id="char-count">0</span> / 700 characters
                 </p>
               </div>
 
               {{-- Attachments Field --}}
               <div>
-                <label for="attachments" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="attachments" class="block text-sm font-medium text-gray-700">
                   Attachments <span class="text-red-500">*</span>
                 </label>
-                <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                <p class="mb-2 text-xs text-gray-500">
                   Proof of issues or bugs - screenshots, videos, etc.
                 </p>
-                <div class="mt-1 flex items-center justify-center px-6 py-8 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-md hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
+                <div class="mt-1 flex items-center justify-center px-6 py-8 border-2 border-gray-300 border-dashed rounded-md hover:border-primary-400 transition-colors">
                   <div class="space-y-1 text-center w-full flex flex-col items-center">
                     <x-heroicon-o-arrow-up-tray class="mx-auto h-8 w-8 text-gray-400" />
-                    <div class="flex gap-2 text-sm text-gray-600 dark:text-gray-400">
-                      <label for="attachments" class="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
+                    <div class="flex gap-2 text-sm text-gray-600">
+                      <label for="attachments" class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
                         <span>Upload files</span>
                         <input id="attachments" name="attachments[]" type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.mp4" class="sr-only" required>
                       </label>
                       <p>or drag and drop</p>
                     </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                    <p class="text-xs text-gray-500">
                       JPG, JPEG, PNG, PDF, MP4 (max 20MB each)
                     </p>
                   </div>
@@ -201,9 +201,8 @@
 
             {{-- Footer --}}
             <div class="text-center">
-              <span class="block mb-4 text-xs text-gray-500 dark:text-gray-400">Powered by:</span>
-              <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto dark:hidden">
-              <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto hidden dark:inline-block">
+              <span class="block mb-4 text-xs text-gray-500">Powered by:</span>
+              <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto">
             </div>
                     
       </div>
@@ -220,11 +219,11 @@
             const length = descriptionField.value.length;
             charCount.textContent = length;
             if (length > 630) {
-                charCount.classList.add('text-yellow-600', 'dark:text-yellow-400');
-                charCount.classList.remove('text-gray-500', 'dark:text-gray-400');
+                charCount.classList.add('text-yellow-600');
+                charCount.classList.remove('text-gray-500');
             } else {
-                charCount.classList.remove('text-yellow-600', 'dark:text-yellow-400');
-                charCount.classList.add('text-gray-500', 'dark:text-gray-400');
+                charCount.classList.remove('text-yellow-600');
+                charCount.classList.add('text-gray-500');
             }
         }
 
@@ -251,18 +250,18 @@
           fileList.innerHTML = '';
           selectedFiles.forEach((file, index) => {
               const fileItem = document.createElement('div');
-              fileItem.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-md';
+              fileItem.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-md';
               fileItem.innerHTML = `
                 <div class="flex items-center space-x-3 flex-1 min-w-0">
                   <svg class="h-5 w-5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate">${file.name}</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">${formatFileSize(file.size)}</p>
+                    <p class="text-sm font-medium text-gray-900 truncate">${file.name}</p>
+                    <p class="text-xs text-gray-500">${formatFileSize(file.size)}</p>
                   </div>
                 </div>
-                  <button type="button" onclick="removeFile(${index})" class="ml-3 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
+                  <button type="button" onclick="removeFile(${index})" class="ml-3 text-red-600 hover:text-red-800">
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -326,13 +325,13 @@
 
         ['dragenter', 'dragover'].forEach(eventName => {
           dropZone.addEventListener(eventName, () => {
-            dropZone.classList.add('border-primary-500', 'bg-primary-50', 'dark:bg-primary-900/20');
+            dropZone.classList.add('border-primary-500', 'bg-primary-50');
           }, false);
         });
 
         ['dragleave', 'drop'].forEach(eventName => {
           dropZone.addEventListener(eventName, () => {
-            dropZone.classList.remove('border-primary-500', 'bg-primary-50', 'dark:bg-primary-900/20');
+            dropZone.classList.remove('border-primary-500', 'bg-primary-50');
           }, false);
         });
 

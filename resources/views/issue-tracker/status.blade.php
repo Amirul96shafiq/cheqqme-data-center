@@ -30,23 +30,23 @@
         {{-- Header --}}
         <div class="text-center">
           <img src="{{ asset('logos/logo-light.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-32 w-auto mb-8">
-          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 class="text-3xl font-bold text-gray-900">
             Issue Tracker Status
           </h1>
-          <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Tracking Code: <span class="inline-block px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full font-mono font-semibold text-primary-500">{{ $task->tracking_token }}</span>
+          <p class="mt-2 text-sm text-gray-600">
+            Tracking Code: <span class="inline-block px-3 py-1.5 bg-white rounded-full font-mono font-semibold text-primary-500">{{ $task->tracking_token }}</span>
           </p>
         </div>
 
         {{-- Status Card --}}
-        <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 space-y-6">
+        <div class="bg-white shadow-lg rounded-lg p-6 space-y-6">
           
           {{-- Status Roadmap --}}
-          <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+          <div class="border-b border-gray-200 pb-4">
             <div class="text-center space-y-4">
               
               {{-- Heading --}}
-              <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">Status Roadmap</h2>
+              <h2 class="text-sm font-medium text-gray-500">Status Roadmap</h2>
               
               {{-- Roadmap badges --}}
               @php
@@ -109,7 +109,7 @@
                         @endphp
 
                         {{-- Heroicon: arrow-long-right --}}
-                        <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 {{ $arrowOpacity }} flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <svg class="w-4 h-4 text-gray-300 {{ $arrowOpacity }} flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H3m15 0l-3.75-3.75M18 12l-3.75 3.75" />
                         </svg>
                       @endif
@@ -123,7 +123,7 @@
                           $badgeFontSize = 'text-sm';
                           $badgeFontWeight = 'font-bold';
                         } else {
-                          $badgeColor = 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+                          $badgeColor = 'bg-gray-100 text-gray-800';
                           $badgeFontSize = 'text-xs';
                           $badgeFontWeight = 'font-semibold';
                         }
@@ -139,7 +139,7 @@
 
                           // Upcoming statuses: more faded with border
                           $badgeOpacity = 'opacity-30';
-                          $badgeStyle = 'border border-gray-300 dark:border-gray-600 border-dashed';
+                          $badgeStyle = 'border border-gray-300 border-dashed';
 
                         }
 
@@ -261,7 +261,7 @@
               
               {{-- Submitted on --}}
               <div class="pt-2">
-                <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">Submitted on</h2>
+                <h2 class="text-sm font-medium text-gray-500">Submitted on</h2>
                 @php
                   $submittedOn = null;
                   if (!empty($task->extra_information) && is_array($task->extra_information)) {
@@ -285,7 +285,7 @@
                     $submittedOn = $task->created_at->format('j/n/y').', '.$task->created_at->format('h:i A');
                   }
                 @endphp
-                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                <p class="text-sm font-medium text-gray-900">
                   {{ $submittedOn }}
                 </p>
               </div>
@@ -295,7 +295,7 @@
 
           {{-- Reporter Information --}}
           <div>
-            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Reporter Information</h3>
+            <h3 class="text-sm font-medium text-gray-700 mb-3">Reporter Information</h3>
             <div class="space-y-2">
               @php
                 $reporterName = 'N/A';
@@ -323,12 +323,12 @@
                 }
               @endphp
               <div>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Name</p>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $reporterName }}</p>
+                <p class="text-xs text-gray-500">Name</p>
+                <p class="text-sm font-medium text-gray-900">{{ $reporterName }}</p>
               </div>
               <div>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Email</p>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $reporterEmail }}</p>
+                <p class="text-xs text-gray-500">Email</p>
+                <p class="text-sm font-medium text-gray-900">{{ $reporterEmail }}</p>
               </div>
             </div>
           </div>
@@ -336,22 +336,22 @@
           {{-- Project Information --}}
           @if($project)
           <div>
-            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Project</h3>
-            <p class="text-sm text-gray-900 dark:text-white">{{ $project->title }}</p>
+            <h3 class="text-sm font-medium text-gray-700 mb-3">Project</h3>
+            <p class="text-sm text-gray-900">{{ $project->title }}</p>
           </div>
           @endif
 
           {{-- Issue Title --}}
           <div>
-            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Issue Title</h3>
-            <p class="text-sm text-gray-900 dark:text-white">{{ $task->title }}</p>
+            <h3 class="text-sm font-medium text-gray-700 mb-3">Issue Title</h3>
+            <p class="text-sm text-gray-900">{{ $task->title }}</p>
           </div>
 
           {{-- Description --}}
           <div>
-            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Description</h3>
-            <div class="bg-gray-50 dark:bg-gray-900 rounded-md p-4">
-              <div class="text-sm text-gray-900 dark:text-white prose prose-sm dark:prose-invert max-w-none">
+            <h3 class="text-sm font-medium text-gray-700 mb-3">Description</h3>
+            <div class="bg-gray-50 rounded-md p-4">
+              <div class="text-sm text-gray-900 prose prose-sm max-w-none">
                 @php
                   // Check if description contains HTML tags
                   $description = $task->description ?? '';
@@ -368,19 +368,19 @@
           {{-- Attachments --}}
           @if(!empty($task->attachments) && is_array($task->attachments))
           <div>
-            <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Attachments</h3>
+            <h3 class="text-sm font-medium text-gray-700 mb-3">Attachments</h3>
             <div class="space-y-2">
               @foreach($task->attachments as $attachment)
-                <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-md">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
                   <div class="flex items-center space-x-3 flex-1 min-w-0">
                     <svg class="h-5 w-5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     <div class="flex-1 min-w-0">
-                      <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ basename($attachment) }}</p>
+                      <p class="text-sm font-medium text-gray-900 truncate">{{ basename($attachment) }}</p>
                     </div>
                   </div>
-                  <a href="{{ asset('storage/'.$attachment) }}" target="_blank" class="ml-3 text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 text-sm font-medium">
+                  <a href="{{ asset('storage/'.$attachment) }}" target="_blank" class="ml-3 text-primary-600 hover:text-primary-800 text-sm font-medium">
                     View
                   </a>
                 </div>
@@ -390,7 +390,7 @@
           @endif
 
           {{-- Actions --}}
-          <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div class="pt-4 border-t border-gray-200">
             @if($project)
             <a href="{{ route('issue-tracker.show', ['project' => $project->issue_tracker_code]) }}" 
                class="inline-flex items-center justify-center w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-900 bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
@@ -399,7 +399,7 @@
             @endif
 
             <button id="bookmark-btn" type="button"
-              class="mt-3 inline-flex items-center justify-center w-full py-2 px-4 rounded-md text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+              class="mt-3 inline-flex items-center justify-center w-full py-2 px-4 rounded-md text-sm font-medium border border-gray-300 text-gray-800 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
               Bookmark this page
             </button>
           </div>
@@ -408,9 +408,8 @@
 
         {{-- Footer --}}
         <div class="text-center">
-          <span class="block mb-4 text-xs text-gray-500 dark:text-gray-400">Powered by:</span>
-          <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto dark:hidden">
-          <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto hidden dark:inline-block">
+          <span class="block mb-4 text-xs text-gray-500">Powered by:</span>
+          <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto">
         </div>
 
       </div>
