@@ -47,7 +47,7 @@ return [
         'create_project' => 'Create Project',
         'create_document' => 'Create Document',
         'create_important_url' => 'Create Important URL',
-        'issue_tracker_code' => 'Issue Tracker Code',
+        'issue_tracker_code' => 'Issue Tracker Code / Tracking Token',
         'open_issue_tracker' => 'Open Issue Tracker',
         'view_issue_status' => 'View Issue Status',
     ],

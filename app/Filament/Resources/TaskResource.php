@@ -270,6 +270,7 @@ return false;
                                             // Issue Tracker Code Display
                                             // Show if task was created from issue tracker submission (has tracking_token)
                                             // This persists even when task is moved to other columns
+                                            // Displays both: Issue Tracker Code (project) and Tracking Token (task)
                                             Forms\Components\TextInput::make('issue_tracker_code_display')
                                                 ->label(__('task.form.issue_tracker_code'))
                                                 ->default(function (?Task $record) {
@@ -277,33 +278,51 @@ return false;
                                                         return null;
                                                     }
 
-                                                    // Get project from task's project array
+                                                    $parts = [];
+
+                                                    // Get project issue tracker code
                                                     $projectIds = $record->project ?? [];
-                                                    if (empty($projectIds) || ! is_array($projectIds)) {
-                                                        return null;
+                                                    if (! empty($projectIds) && is_array($projectIds)) {
+                                                        $projectId = $projectIds[0] ?? null;
+                                                        if ($projectId) {
+                                                            $project = \App\Models\Project::find($projectId);
+                                                            if ($project && $project->issue_tracker_code) {
+                                                                $parts[] = $project->issue_tracker_code;
+                                                            }
+                                                        }
                                                     }
 
-                                                    $projectId = $projectIds[0] ?? null;
-                                                    if (! $projectId) {
-                                                        return null;
+                                                    // Get task tracking token
+                                                    if ($record->tracking_token) {
+                                                        $parts[] = $record->tracking_token;
                                                     }
 
-                                                    $project = \App\Models\Project::find($projectId);
-
-                                                    return $project && $project->issue_tracker_code ? $project->issue_tracker_code : null;
+                                                    return ! empty($parts) ? implode(' / ', $parts) : null;
                                                 })
                                                 ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
                                                     // Ensure value is set even if default didn't work
                                                     if (empty($state) && $record && $record->tracking_token) {
+                                                        $parts = [];
+
+                                                        // Get project issue tracker code
                                                         $projectIds = $record->project ?? [];
                                                         if (! empty($projectIds) && is_array($projectIds)) {
                                                             $projectId = $projectIds[0] ?? null;
                                                             if ($projectId) {
                                                                 $project = \App\Models\Project::find($projectId);
                                                                 if ($project && $project->issue_tracker_code) {
-                                                                    $set('issue_tracker_code_display', $project->issue_tracker_code);
+                                                                    $parts[] = $project->issue_tracker_code;
                                                                 }
                                                             }
+                                                        }
+
+                                                        // Get task tracking token
+                                                        if ($record->tracking_token) {
+                                                            $parts[] = $record->tracking_token;
+                                                        }
+
+                                                        if (! empty($parts)) {
+                                                            $set('issue_tracker_code_display', implode(' / ', $parts));
                                                         }
                                                     }
                                                 })
@@ -379,19 +398,7 @@ return false;
                                                         return false;
                                                     }
 
-                                                    $projectIds = $record->project ?? [];
-                                                    if (empty($projectIds) || ! is_array($projectIds)) {
-                                                        return false;
-                                                    }
-
-                                                    $projectId = $projectIds[0] ?? null;
-                                                    if (! $projectId) {
-                                                        return false;
-                                                    }
-
-                                                    $project = \App\Models\Project::find($projectId);
-
-                                                    return $project && $project->issue_tracker_code;
+                                                    return true; // Show if tracking_token exists, even without project
                                                 })
                                                 ->columnSpanFull(),
 
