@@ -91,7 +91,7 @@
               <div class="relative w-full overflow-x-auto scroll-smooth" id="status-roadmap-container" style="scrollbar-width: none; -ms-overflow-style: none;">
                 <div id="status-roadmap" class="flex items-center gap-2 flex-nowrap">
                   @foreach ($statusesToShow as $index => $status)
-                    <div class="flex items-center flex-shrink-0 {{ $index > 0 ? 'gap-2' : '' }}"@if($status['isCurrent']) id="current-status"@endif>
+                    <div class="flex items-center flex-shrink-0 {{ $index > 0 ? 'gap-2' : '' }}">
                       @if ($index > 0)
 
                         {{-- Connector arrow --}}
@@ -145,7 +145,7 @@
 
                       @endphp
 
-                      <span class="inline-flex items-center px-3 py-1.5 rounded-full {{ $badgeFontSize }} {{ $badgeFontWeight }} flex-shrink-0 {{ $badgeColor }} {{ $badgeOpacity }} {{ $badgeStyle }}">
+                      <span @if($status['isCurrent']) id="current-status-badge"@endif class="inline-flex items-center px-3 py-1.5 rounded-full {{ $badgeFontSize }} {{ $badgeFontWeight }} flex-shrink-0 {{ $badgeColor }} {{ $badgeOpacity }} {{ $badgeStyle }}">
                         {{ $status['label'] }}
                       </span>
                     </div>
@@ -161,9 +161,9 @@
                   
                   function scrollToCurrentStatus() {
                     const container = document.getElementById('status-roadmap-container');
-                    const currentStatus = document.getElementById('current-status');
+                    const currentStatusBadge = document.getElementById('current-status-badge');
                     
-                    if (!container || !currentStatus || isScrolling) {
+                    if (!container || !currentStatusBadge || isScrolling) {
                       return;
                     }
                     
@@ -171,19 +171,19 @@
                     
                     // Force layout recalculation
                     void container.offsetWidth;
-                    void currentStatus.offsetWidth;
+                    void currentStatusBadge.offsetWidth;
                     
                     // Use requestAnimationFrame to ensure layout is stable
                     requestAnimationFrame(function() {
                       requestAnimationFrame(function() {
                         const containerWidth = container.clientWidth;
                         const containerScrollWidth = container.scrollWidth;
-                        const statusOffsetLeft = currentStatus.offsetLeft;
-                        const statusWidth = currentStatus.offsetWidth;
-                        const statusCenter = statusOffsetLeft + (statusWidth / 2);
+                        const badgeOffsetLeft = currentStatusBadge.offsetLeft;
+                        const badgeWidth = currentStatusBadge.offsetWidth;
+                        const badgeCenter = badgeOffsetLeft + (badgeWidth / 2);
                         
-                        // Calculate scroll position to center the status
-                        const scrollLeft = statusCenter - (containerWidth / 2);
+                        // Calculate scroll position to center the badge (not including arrow)
+                        const scrollLeft = badgeCenter - (containerWidth / 2);
                         const maxScroll = Math.max(0, containerScrollWidth - containerWidth);
                         const finalScrollLeft = Math.max(0, Math.min(scrollLeft, maxScroll));
                         
