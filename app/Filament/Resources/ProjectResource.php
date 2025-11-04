@@ -283,12 +283,14 @@ class ProjectResource extends Resource
                 Tables\Columns\ViewColumn::make('title')
                     ->label(__('project.table.title'))
                     ->view('filament.resources.project-resource.title-column')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 Tables\Columns\ViewColumn::make('client_id')
                     ->label(__('project.table.client'))
                     ->view('filament.resources.project-resource.client-column')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 Tables\Columns\ViewColumn::make('status')
                     ->label(__('project.table.status'))
@@ -332,7 +334,7 @@ class ProjectResource extends Resource
                     ->multiple()
                     ->preload()
                     ->searchable(),
-                    
+
                 TrashedFilter::make()
                     ->label(__('project.filter.trashed'))
                     ->searchable(), // To show trashed or only active
