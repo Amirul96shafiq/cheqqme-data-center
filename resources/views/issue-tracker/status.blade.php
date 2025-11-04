@@ -89,66 +89,62 @@
                 }
               @endphp
               <div class="relative w-full overflow-x-auto scroll-smooth" id="status-roadmap-container" style="scrollbar-width: none; -ms-overflow-style: none;">
-                <div id="status-roadmap" class="flex items-center gap-2 flex-nowrap">
+                <div id="status-roadmap" class="flex items-center flex-nowrap">
                   @foreach ($statusesToShow as $index => $status)
-                    <div class="flex items-center flex-shrink-0 {{ $index > 0 ? 'gap-2' : '' }}">
-                      @if ($index > 0)
-
-                        {{-- Connector arrow --}}
-                        @php
-
-                          // Arrow opacity based on status type
-                          if ($status['type'] === 'current') {
-                            $arrowOpacity = '';
-                          } elseif ($status['type'] === 'previous') {
-                            $arrowOpacity = 'opacity-50';
-                          } else {
-                            $arrowOpacity = 'opacity-30';
-                          }
-
-                        @endphp
-
-                        {{-- Heroicon: arrow-long-right --}}
-                        <svg class="w-4 h-4 text-gray-300 {{ $arrowOpacity }} flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H3m15 0l-3.75-3.75M18 12l-3.75 3.75" />
-                        </svg>
-                      @endif
-
-                      {{-- Status badge --}}
+                    @if ($index > 0)
+                      {{-- Connector line --}}
                       @php
 
-                        // Badge color: primary for current, gray for non-active
-                        if ($status['isCurrent']) {
-                          $badgeColor = 'bg-primary-500 text-primary-900';
-                          $badgeFontSize = 'text-sm';
-                          $badgeFontWeight = 'font-bold';
+                        // Line opacity based on previous status type (line connects from previous to current)
+                        $previousStatus = $statusesToShow[$index - 1];
+                        if ($previousStatus['type'] === 'current' || $status['type'] === 'current') {
+                          $lineOpacity = '';
+                        } elseif ($previousStatus['type'] === 'previous') {
+                          $lineOpacity = 'opacity-50';
                         } else {
-                          $badgeColor = 'bg-gray-100 text-gray-800';
-                          $badgeFontSize = 'text-xs';
-                          $badgeFontWeight = 'font-semibold';
-                        }
-                        
-                        // Badge opacity and styling based on status type
-                        if ($status['type'] === 'current') {
-                          $badgeOpacity = '';
-                          $badgeStyle = '';
-                        } elseif ($status['type'] === 'previous') {
-                          $badgeOpacity = 'opacity-50';
-                          $badgeStyle = '';
-                        } else {
-
-                          // Upcoming statuses: more faded with border
-                          $badgeOpacity = 'opacity-30';
-                          $badgeStyle = 'border border-gray-300 border-dashed';
-
+                          $lineOpacity = 'opacity-30';
                         }
 
                       @endphp
 
-                      <span @if($status['isCurrent']) id="current-status-badge"@endif class="inline-flex items-center px-3 py-1.5 rounded-full {{ $badgeFontSize }} {{ $badgeFontWeight }} flex-shrink-0 {{ $badgeColor }} {{ $badgeOpacity }} {{ $badgeStyle }}">
-                        {{ $status['label'] }}
-                      </span>
-                    </div>
+                      {{-- Connection line --}}
+                      <div class="h-[1px] flex-1 min-w-[2rem] bg-gray-300 {{ $lineOpacity }} flex-shrink-0"></div>
+                    @endif
+
+                    {{-- Status badge --}}
+                    @php
+
+                      // Badge color: primary for current, gray for non-active
+                      if ($status['isCurrent']) {
+                        $badgeColor = 'bg-primary-500 text-primary-900';
+                        $badgeFontSize = 'text-sm';
+                        $badgeFontWeight = 'font-bold';
+                      } else {
+                        $badgeColor = 'bg-gray-100 text-gray-800';
+                        $badgeFontSize = 'text-xs';
+                        $badgeFontWeight = 'font-semibold';
+                      }
+                      
+                      // Badge opacity and styling based on status type
+                      if ($status['type'] === 'current') {
+                        $badgeOpacity = '';
+                        $badgeStyle = '';
+                      } elseif ($status['type'] === 'previous') {
+                        $badgeOpacity = 'opacity-50';
+                        $badgeStyle = '';
+                      } else {
+
+                        // Upcoming statuses: more faded with border
+                        $badgeOpacity = 'opacity-30';
+                        $badgeStyle = 'border border-gray-300 border-dashed';
+
+                      }
+
+                    @endphp
+
+                    <span @if($status['isCurrent']) id="current-status-badge"@endif class="inline-flex items-center px-3 py-1.5 rounded-full {{ $badgeFontSize }} {{ $badgeFontWeight }} flex-shrink-0 {{ $badgeColor }} {{ $badgeOpacity }} {{ $badgeStyle }}">
+                      {{ $status['label'] }}
+                    </span>
                   @endforeach
                 </div>
               </div>
