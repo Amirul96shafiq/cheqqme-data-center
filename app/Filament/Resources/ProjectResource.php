@@ -350,6 +350,21 @@ class ProjectResource extends Resource
                     ->searchable(), // To show trashed or only active
             ])
             ->actions([
+                Tables\Actions\Action::make('open_issue_tracker')
+                    ->label('')
+                    ->icon('heroicon-o-link')
+                    ->color('primary')
+                    ->url(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
+                    ->openUrlInNewTab()
+                    ->tooltip(function ($record) {
+                        if (! $record->issue_tracker_code) {
+                            return null;
+                        }
+                        $url = route('issue-tracker.show', ['project' => $record->issue_tracker_code]);
+
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
+                    })
+                    ->visible(fn ($record) => ! empty($record->issue_tracker_code)),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
