@@ -11,7 +11,7 @@
   <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
   <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
 
-  @vite(['resources/css/app.css'])
+  @vite(['resources/css/app.css', 'resources/js/custom-notifications.js'])
 </head>
 <body class="antialiased font-sans bg-auto bg-no-repeat m-0 p-0" style="height: 100vh; margin: 0; padding: 0; background-image: url('{{ asset('images/issue-tracker-bg.png') }}'); background-position: top center; display: flex; flex-direction: column;">
     
@@ -391,6 +391,11 @@
               Submit Another Issue
             </a>
             @endif
+
+            <button id="bookmark-btn" type="button"
+              class="mt-3 inline-flex items-center justify-center w-full py-2 px-4 rounded-md text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+              Bookmark this page
+            </button>
           </div>
 
         </div>
@@ -406,6 +411,88 @@
     </div>
 
   </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      async function copyToClipboard(text) {
+        try {
+          await navigator.clipboard?.writeText(text);
+          return true;
+        } catch (_) {
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            ta.remove();
+            return true;
+          } catch (_) {
+            return false;
+          }
+        }
+      }
+
+      function attemptNativeBookmark(title, url) {
+        if (window.sidebar && typeof window.sidebar.addPanel === 'function') {
+          try { window.sidebar.addPanel(title, url, ''); return true; } catch (_) {}
+        }
+        if (window.external && 'AddFavorite' in window.external) {
+          try { window.external.AddFavorite(url, title); return true; } catch (_) {}
+        }
+        return false;
+      }
+
+      function platformShortcut() {
+        const isMac = navigator.platform?.toUpperCase().includes('MAC');
+        return isMac ? 'Cmd + D' : 'Ctrl + D';
+      }
+
+      function showNotification(message, type) {
+        if (typeof window.showNotification === 'function') {
+          window.showNotification(type, message);
+        } else if (typeof window.showSuccessNotification === 'function' && type === 'success') {
+          window.showSuccessNotification(message);
+        } else if (typeof window.showInfoNotification === 'function' && type === 'info') {
+          window.showInfoNotification(message);
+        } else {
+          console.log(message);
+        }
+      }
+
+      function onBookmarkClick() {
+        const url = window.location.href;
+        const title = document.title;
+
+        const usedNative = attemptNativeBookmark(title, url);
+        copyToClipboard(url);
+
+        if (usedNative) {
+          showNotification('Bookmark dialog opened. URL copied to clipboard.', 'success');
+          return;
+        }
+
+        showNotification('Press ' + platformShortcut() + ' to bookmark. URL copied.', 'info');
+      }
+
+      function init() {
+        const btn = document.getElementById('bookmark-btn');
+        if (btn) {
+          btn.addEventListener('click', onBookmarkClick);
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
 
 </body>
 </html>
