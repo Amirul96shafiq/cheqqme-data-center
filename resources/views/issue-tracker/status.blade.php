@@ -17,10 +17,11 @@
     
   {{-- Content area --}}
   <div style="flex: 1; overflow-y: auto; min-height: 100vh;">
+
     {{-- Top spacer: 20% of viewport height --}}
     <div style="height: 20vh; flex-shrink-0; min-height: 20vh;"></div>
     <div class="flex items-center justify-center min-h-full py-12 px-4 sm:px-6 lg:px-8">
-      <div class="max-w-2xl w-full space-y-8">
+      <div class="max-w-md w-full space-y-8">
 
         {{-- Header --}}
         <div class="text-center">
@@ -38,6 +39,7 @@
           {{-- Status Roadmap --}}
           <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
             <div class="text-center space-y-4">
+              
               {{-- Heading --}}
               <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400">Status Roadmap</h2>
               
@@ -81,53 +83,169 @@
                   ];
                 }
               @endphp
-              <div class="flex items-center justify-center gap-2 flex-wrap">
-                @foreach ($statusesToShow as $index => $status)
-                  <div class="flex items-center {{ $index > 0 ? 'gap-2' : '' }}">
-                    @if ($index > 0)
-                      {{-- Connector arrow --}}
+              <div class="relative w-full overflow-x-auto scroll-smooth" id="status-roadmap-container" style="scrollbar-width: thin; scrollbar-color: rgba(156, 163, 175, 0.5) transparent;">
+                <div id="status-roadmap" class="flex items-center gap-2 flex-nowrap">
+                  @foreach ($statusesToShow as $index => $status)
+                    <div class="flex items-center flex-shrink-0 {{ $index > 0 ? 'gap-2' : '' }}"@if($status['isCurrent']) id="current-status"@endif>
+                      @if ($index > 0)
+                        {{-- Connector arrow --}}
+                        @php
+                          // Arrow opacity based on status type
+                          if ($status['type'] === 'current') {
+                            $arrowOpacity = '';
+                          } elseif ($status['type'] === 'previous') {
+                            $arrowOpacity = 'opacity-50';
+                          } else {
+                            $arrowOpacity = 'opacity-30';
+                          }
+                        @endphp
+                        <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 {{ $arrowOpacity }} flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      @endif
+                      {{-- Status badge --}}
                       @php
-                        // Arrow opacity based on status type
-                        if ($status['type'] === 'current') {
-                          $arrowOpacity = '';
-                        } elseif ($status['type'] === 'previous') {
-                          $arrowOpacity = 'opacity-50';
+                        // Badge color: primary for current, gray for non-active
+                        if ($status['isCurrent']) {
+                          $badgeColor = 'bg-primary-500 text-primary-900';
                         } else {
-                          $arrowOpacity = 'opacity-30';
+                          $badgeColor = 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+                        }
+                        
+                        // Badge opacity and styling based on status type
+                        if ($status['type'] === 'current') {
+                          $badgeOpacity = '';
+                          $badgeStyle = '';
+                        } elseif ($status['type'] === 'previous') {
+                          $badgeOpacity = 'opacity-50';
+                          $badgeStyle = '';
+                        } else {
+                          // Upcoming statuses: more faded with border
+                          $badgeOpacity = 'opacity-30';
+                          $badgeStyle = 'border border-gray-300 dark:border-gray-600 border-dashed';
                         }
                       @endphp
-                      <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 {{ $arrowOpacity }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    @endif
-                    {{-- Status badge --}}
-                    @php
-                      // Badge color: primary for current, gray for non-active
-                      if ($status['isCurrent']) {
-                        $badgeColor = 'bg-primary-500 text-primary-900';
-                      } else {
-                        $badgeColor = 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
-                      }
-                      
-                      // Badge opacity and styling based on status type
-                      if ($status['type'] === 'current') {
-                        $badgeOpacity = '';
-                        $badgeStyle = '';
-                      } elseif ($status['type'] === 'previous') {
-                        $badgeOpacity = 'opacity-50';
-                        $badgeStyle = '';
-                      } else {
-                        // Upcoming statuses: more faded with border
-                        $badgeOpacity = 'opacity-30';
-                        $badgeStyle = 'border border-gray-300 dark:border-gray-600 border-dashed';
-                      }
-                    @endphp
-                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold {{ $badgeColor }} {{ $badgeOpacity }} {{ $badgeStyle }}">
-                      {{ $status['label'] }}
-                    </span>
-                  </div>
-                @endforeach
+                      <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold flex-shrink-0 {{ $badgeColor }} {{ $badgeOpacity }} {{ $badgeStyle }}">
+                        {{ $status['label'] }}
+                      </span>
+                    </div>
+                  @endforeach
+                </div>
               </div>
+              
+              <script>
+                (function() {
+                  'use strict';
+                  
+                  let isScrolling = false;
+                  
+                  function scrollToCurrentStatus() {
+                    const container = document.getElementById('status-roadmap-container');
+                    const currentStatus = document.getElementById('current-status');
+                    
+                    if (!container || !currentStatus || isScrolling) {
+                      return;
+                    }
+                    
+                    isScrolling = true;
+                    
+                    // Force layout recalculation
+                    void container.offsetWidth;
+                    void currentStatus.offsetWidth;
+                    
+                    // Use requestAnimationFrame to ensure layout is stable
+                    requestAnimationFrame(function() {
+                      requestAnimationFrame(function() {
+                        const containerWidth = container.clientWidth;
+                        const containerScrollWidth = container.scrollWidth;
+                        const statusOffsetLeft = currentStatus.offsetLeft;
+                        const statusWidth = currentStatus.offsetWidth;
+                        const statusCenter = statusOffsetLeft + (statusWidth / 2);
+                        
+                        // Calculate scroll position to center the status
+                        const scrollLeft = statusCenter - (containerWidth / 2);
+                        const maxScroll = Math.max(0, containerScrollWidth - containerWidth);
+                        const finalScrollLeft = Math.max(0, Math.min(scrollLeft, maxScroll));
+                        
+                        // Smooth scroll to center
+                        container.scrollTo({
+                          left: finalScrollLeft,
+                          behavior: 'smooth'
+                        });
+                        
+                        // Reset flag after scroll completes
+                        setTimeout(function() {
+                          isScrolling = false;
+                        }, 600);
+                      });
+                    });
+                  }
+                  
+                  // Initialize when DOM is ready
+                  function init() {
+                    scrollToCurrentStatus();
+                    // Retry once after a delay to ensure layout is complete
+                    setTimeout(scrollToCurrentStatus, 300);
+                  }
+                  
+                  if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', init);
+                  } else {
+                    init();
+                  }
+                  
+                  // Re-scroll on window resize
+                  let resizeTimer;
+                  window.addEventListener('resize', function() {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(scrollToCurrentStatus, 200);
+                  });
+                  
+                  // Watch for DOM changes (in case status changes)
+                  const observer = new MutationObserver(function() {
+                    if (!isScrolling) {
+                      setTimeout(scrollToCurrentStatus, 100);
+                    }
+                  });
+                  
+                  setTimeout(function() {
+                    const roadmap = document.getElementById('status-roadmap');
+                    if (roadmap) {
+                      observer.observe(roadmap, {
+                        attributes: true,
+                        attributeFilter: ['id'],
+                        childList: true,
+                        subtree: true
+                      });
+                    }
+                  }, 500);
+                })();
+              </script>
+              
+              <style>
+                /* Hide scrollbar for Chrome, Safari and Opera */
+                #status-roadmap-container::-webkit-scrollbar {
+                  height: 6px;
+                }
+                
+                #status-roadmap-container::-webkit-scrollbar-track {
+                  background: transparent;
+                }
+                
+                #status-roadmap-container::-webkit-scrollbar-thumb {
+                  background-color: rgba(156, 163, 175, 0.5);
+                  border-radius: 3px;
+                }
+                
+                #status-roadmap-container::-webkit-scrollbar-thumb:hover {
+                  background-color: rgba(156, 163, 175, 0.7);
+                }
+                
+                /* Smooth scrolling */
+                #status-roadmap-container {
+                  -webkit-overflow-scrolling: touch;
+                }
+              </style>
               
               {{-- Submitted on --}}
               <div class="pt-2">
@@ -136,6 +254,7 @@
                   {{ $task->created_at->format('j/n/y') }} . {{ $task->created_at->format('h:i A') }}
                 </p>
               </div>
+              
             </div>
           </div>
 
@@ -221,6 +340,7 @@
 
       </div>
     </div>
+
   </div>
 
 </body>
