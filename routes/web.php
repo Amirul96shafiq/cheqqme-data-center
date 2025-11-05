@@ -610,6 +610,9 @@ Route::get('/microsoft/coming-soon', function (Illuminate\Http\Request $request)
 })->name('microsoft.coming-soon');
 
 // Issue Tracker - Public routes (no authentication required)
+Route::get('/issue-tracker', function () {
+    abort(404);
+})->name('issue-tracker.index');
 Route::get('/issue-tracker/{project}', [\App\Http\Controllers\IssueTrackerController::class, 'show'])
     ->where('project', '[A-Z0-9]{6}') // Ensure the parameter matches the code format
     ->name('issue-tracker.show');
