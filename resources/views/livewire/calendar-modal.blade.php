@@ -95,6 +95,20 @@
                 this.popoverPosition = position;
                 this.showEventPopover = true;
             }
+        },
+        
+        isIssueTracker(task) {
+            return task && (task.status === 'issue_tracker' || task.tracking_token);
+        },
+        
+        getRegularTasks() {
+            if (!this.popoverEvents.tasks || !Array.isArray(this.popoverEvents.tasks)) return [];
+            return this.popoverEvents.tasks.filter(t => t && !this.isIssueTracker(t));
+        },
+        
+        getIssueTrackerTasks() {
+            if (!this.popoverEvents.tasks || !Array.isArray(this.popoverEvents.tasks)) return [];
+            return this.popoverEvents.tasks.filter(t => t && this.isIssueTracker(t));
         }
     }">
     
@@ -521,7 +535,7 @@
                                         <button type="button"
                                                 @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                             'date' => $this->formatDateWithTranslation($day['date']),
-                                                            'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'type' => 'task', 'is_assigned' => $isAssigned]],
+                                                            'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'status' => $task->status, 'tracking_token' => $task->tracking_token, 'type' => 'task', 'is_assigned' => $isAssigned]],
                                                             'meetings' => []
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
                                                 class="flex items-center px-0.5 py-0.5 sm:px-1 sm:py-1.5 text-[10px] sm:text-xs rounded transition-colors w-full text-left {{ $this->getTaskClasses($task, $isAssigned) }}"
@@ -597,7 +611,7 @@
                                         <button type="button"
                                             @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                         'date' => $this->formatDateWithTranslation($day['date']),
-                                                         'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
+                                                         'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'status' => $t->status, 'tracking_token' => $t->tracking_token, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
                                                          'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => \App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($m->title ?: 'CheQQMeeting', $m->meeting_platform ?: 'Google Meet', $m->meeting_start_time ? $m->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $m->meeting_duration ?: 60), 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values(),
                                                          'holidays' => $day['holidays']->map(fn($h) => ['name' => $h->name, 'type' => $h->type, 'date' => $h->date->format('Y-m-d'), 'country_code' => $h->country_code])->values(),
                                                          'birthdays' => $day['birthdays']->map(fn($b) => ['id' => $b->id, 'name' => $b->name, 'short_name' => $b->short_name, 'age' => $b->age, 'is_current_user' => $b->is_current_user, 'hooray_text' => __('calendar.calendar.hooray')])->values()
@@ -646,11 +660,11 @@
         {{-- Popover Content --}}
         <div class="space-y-3 max-h-64 overflow-y-auto">
 
-            {{-- Tasks Section --}}
-            <template x-if="popoverEvents.tasks && popoverEvents.tasks.length > 0">
+            {{-- Regular Tasks Section --}}
+            <template x-if="getRegularTasks().length > 0">
                 <div class="space-y-2">
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('calendar.calendar.tasks') }}</p>
-                    <template x-for="task in popoverEvents.tasks" :key="task.id">
+                    <template x-for="task in getRegularTasks()" :key="task.id">
                         <div class="px-3 py-2 rounded-lg border-l-4 bg-gray-50 dark:bg-gray-800/50"
                              :class="{
                                  'border-red-500': task.priority === 'high' && task.is_assigned,
@@ -670,14 +684,71 @@
                                     </span>
                                 </div>
 
-                                {{-- Edit Task Button --}}
-                                <x-tooltip text="{{ __('calendar.tooltip.edit_task') }}" position="left">
-                                    <a :href="`{{ url('admin/tasks') }}/${task.id}/edit`"
-                                    target="_blank"
-                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
-                                        {{ __('calendar.calendar.edit') }}
-                                    </a>
-                                </x-tooltip>
+                                <div class="flex items-center gap-1">
+                                    {{-- Edit Task Button --}}
+                                    <x-tooltip text="{{ __('calendar.tooltip.edit_task') }}" position="left">
+                                        <a :href="`{{ url('admin/tasks') }}/${task.id}/edit`"
+                                        target="_blank"
+                                        class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                            {{ __('calendar.calendar.edit') }}
+                                        </a>
+                                    </x-tooltip>
+                                </div>
+                                
+                            </div>
+                            <p class="text-sm text-gray-900 dark:text-gray-100" x-text="task.title"></p>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            {{-- Issue Trackers Section --}}
+            <template x-if="getIssueTrackerTasks().length > 0">
+                <div class="space-y-2">
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('calendar.calendar.issue_trackers') }}</p>
+                    <template x-for="task in getIssueTrackerTasks()" :key="task.id">
+                        <div class="px-3 py-2 rounded-lg border-l-4 bg-gray-50 dark:bg-gray-800/50"
+                             :class="{
+                                 'border-red-500': task.priority === 'high' && task.is_assigned,
+                                 'border-yellow-500': task.priority === 'medium' && task.is_assigned,
+                                 'border-green-500': task.priority === 'low' && task.is_assigned,
+                                 'border-gray-300 dark:border-gray-700': !task.is_assigned
+                             }">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium" 
+                                          :class="task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 
+                                                  task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
+                                                  'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'"
+                                          x-text="task.priority === 'high' ? '{{ $priorityTranslations['high'] }}' : task.priority === 'medium' ? '{{ $priorityTranslations['medium'] }}' : '{{ $priorityTranslations['low'] }}'"></span>
+                                    <span x-show="task.is_assigned" class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">
+                                        {{ __('calendar.calendar.assigned') }}
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center gap-1">
+                                    {{-- Status Button for Issue Tracker Tasks --}}
+                                    <template x-if="task.tracking_token">
+                                        <div>
+                                            <x-tooltip text="{{ __('calendar.tooltip.view_status') }}" position="left">
+                                                <a :href="`{{ url('issue-tracker/status') }}/${task.tracking_token}`"
+                                                target="_blank"
+                                                class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                                    {{ __('calendar.calendar.status') }}
+                                                </a>
+                                            </x-tooltip>
+                                        </div>
+                                    </template>
+
+                                    {{-- Edit Task Button --}}
+                                    <x-tooltip text="{{ __('calendar.tooltip.edit_task') }}" position="left">
+                                        <a :href="`{{ url('admin/tasks') }}/${task.id}/edit`"
+                                        target="_blank"
+                                        class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                            {{ __('calendar.calendar.edit') }}
+                                        </a>
+                                    </x-tooltip>
+                                </div>
                                 
                             </div>
                             <p class="text-sm text-gray-900 dark:text-gray-100" x-text="task.title"></p>
