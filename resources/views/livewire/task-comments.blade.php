@@ -115,14 +115,14 @@
                  $wire.showMore().then(() => {
                      // Loading state will be managed by Livewire's re-render
                      this.isLoadingMore = false;
-                 }).catch((error) => {
-                     console.error('Error loading more comments:', error);
-                     this.isLoadingMore = false;
-                 });
-             } catch (error) {
-                 console.error('Error calling showMore:', error);
-                 this.isLoadingMore = false;
-             }
+                }).catch((error) => {
+                    // console.error('Error loading more comments:', error);
+                    this.isLoadingMore = false;
+                });
+            } catch (error) {
+                // console.error('Error calling showMore:', error);
+                this.isLoadingMore = false;
+            }
          }
      }"
     x-init="init()"
@@ -758,7 +758,7 @@
             const emojiPicker = document.getElementById("livewire-comments-emoji-picker");
             
             if (!emojiPickerContainer || !emojiPicker) {
-                console.error('Livewire comments emoji picker elements not found');
+                // console.error('Livewire comments emoji picker elements not found');
                 return;
             }
             
@@ -854,11 +854,11 @@
         
         function addLivewireEmojiReaction(emoji) {
             if (!currentLivewireCommentId) {
-                console.error('No comment ID set for Livewire emoji reaction');
+                // console.error('No comment ID set for Livewire emoji reaction');
                 return;
             }
             
-            console.log('Adding Livewire emoji reaction:', emoji, 'to comment:', currentLivewireCommentId);
+            // console.log('Adding Livewire emoji reaction:', emoji, 'to comment:', currentLivewireCommentId);
             
             // Capture the comment ID before making the request
             const commentId = currentLivewireCommentId;
@@ -914,12 +914,12 @@
                         }
                     }
                 } else {
-                    console.error('Failed to save Livewire emoji reaction:', data.message);
+                    // console.error('Failed to save Livewire emoji reaction:', data.message);
                     alert('Failed to save emoji reaction: ' + data.message);
                 }
             })
             .catch(error => {
-                console.error('Error saving Livewire emoji reaction:', error);
+                // console.error('Error saving Livewire emoji reaction:', error);
                 alert('Error saving emoji reaction: ' + error.message);
             });
             
@@ -939,8 +939,8 @@
         }
         
         function removeLivewireEmojiReaction(commentId) {
-            console.log('removeLivewireEmojiReaction called with commentId:', commentId);
-            console.log('Current Livewire emoji states:', livewireCommentEmojiStates);
+            // console.log('removeLivewireEmojiReaction called with commentId:', commentId);
+            // console.log('Current Livewire emoji states:', livewireCommentEmojiStates);
             
             // Send remove request to server
             const csrfToken = document.querySelector('[data-csrf-token]')?.getAttribute('data-csrf-token') || 
@@ -964,11 +964,11 @@
                     
                     // Find the comment element and restore the picker button
                     const commentElement = document.querySelector(`[wire\\:key="comment-${commentId}"]`);
-                    console.log('Found Livewire comment element:', commentElement);
+                    // console.log('Found Livewire comment element:', commentElement);
                     
                     if (commentElement) {
                         const emojiContainer = commentElement.querySelector('.emoji-container-livewire');
-                        console.log('Found Livewire emoji container:', emojiContainer);
+                        // console.log('Found Livewire emoji container:', emojiContainer);
                         
                         if (emojiContainer) {
                             // Restore the original picker button
@@ -984,16 +984,16 @@
                                     </svg>
                                 </button>
                             `;
-                            console.log('Restored Livewire picker button for comment:', commentId);
+                            // console.log('Restored Livewire picker button for comment:', commentId);
                         }
                     }
                 } else {
-                    console.error('Failed to remove Livewire emoji reaction:', data.message);
+                    // console.error('Failed to remove Livewire emoji reaction:', data.message);
                     alert('Failed to remove emoji reaction: ' + data.message);
                 }
             })
             .catch(error => {
-                console.error('Error removing Livewire emoji reaction:', error);
+                // console.error('Error removing Livewire emoji reaction:', error);
                 alert('Error removing emoji reaction: ' + error.message);
             });
         }
@@ -1017,18 +1017,18 @@
             }).filter(id => id !== null);
             
             if (commentIds.length === 0) {
-                console.log('No visible Livewire comments found to load emoji reactions for');
+                // console.log('No visible Livewire comments found to load emoji reactions for');
                 return;
             }
             
-            console.log('[TaskComments] Loading emoji reactions for visible comments:', commentIds.length, 'comments', commentIds);
+            // console.log('[TaskComments] Loading emoji reactions for visible comments:', commentIds.length, 'comments', commentIds);
             
             // Send batch request to get emoji reactions
             const csrfToken = document.querySelector('[data-csrf-token]')?.getAttribute('data-csrf-token') || 
                              document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
                              document.querySelector('input[name="_token"]')?.value || '';
             
-            console.log('[TaskComments] Making batch request to /comments/emoji/batch with comment IDs:', commentIds);
+            // console.log('[TaskComments] Making batch request to /comments/emoji/batch with comment IDs:', commentIds);
             fetch('/comments/emoji/batch', {
                 method: 'POST',
                 headers: {
@@ -1041,9 +1041,9 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log('[TaskComments] Batch reaction response received:', data);
+                // console.log('[TaskComments] Batch reaction response received:', data);
                 if (data.success) {
-                    console.log('[TaskComments] Processing', Object.keys(data.reactions).length, 'reactions from batch response');
+                    // console.log('[TaskComments] Processing', Object.keys(data.reactions).length, 'reactions from batch response');
                     // Update UI for each comment with an emoji reaction
                     Object.keys(data.reactions).forEach(commentId => {
                         const reactionData = data.reactions[commentId];
@@ -1083,11 +1083,11 @@
                         }
                     });
                 } else {
-                    console.error('Failed to load Livewire emoji reactions:', data.message);
+                    // console.error('Failed to load Livewire emoji reactions:', data.message);
                 }
             })
             .catch(error => {
-                console.error('Error loading Livewire emoji reactions:', error);
+                // console.error('Error loading Livewire emoji reactions:', error);
             });
         }
         
@@ -1099,7 +1099,7 @@
         function loadReactionsForNewComments() {
             // Prevent duplicate calls
             if (isLoadingReactionsForNewComments) {
-                console.log('[TaskComments] Already loading reactions for new comments, skipping');
+                // console.log('[TaskComments] Already loading reactions for new comments, skipping');
                 return;
             }
             
@@ -1135,14 +1135,14 @@
             // Set loading flag
             isLoadingReactionsForNewComments = true;
             
-            console.log('[TaskComments] Loading emoji reactions for newly visible comments:', commentIds.length, 'comments', commentIds);
+            // console.log('[TaskComments] Loading emoji reactions for newly visible comments:', commentIds.length, 'comments', commentIds);
             
             // Use the same batch loading function
             const csrfToken = document.querySelector('[data-csrf-token]')?.getAttribute('data-csrf-token') || 
                              document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
                              document.querySelector('input[name="_token"]')?.value || '';
             
-            console.log('[TaskComments] Making batch request for new comments to /comments/emoji/batch with comment IDs:', commentIds);
+            // console.log('[TaskComments] Making batch request for new comments to /comments/emoji/batch with comment IDs:', commentIds);
             fetch('/comments/emoji/batch', {
                 method: 'POST',
                 headers: {
@@ -1195,7 +1195,7 @@
                 isLoadingReactionsForNewComments = false;
             })
             .catch(error => {
-                console.error('Error loading reactions for new comments:', error);
+                // console.error('Error loading reactions for new comments:', error);
                 // Reset loading flag on error
                 isLoadingReactionsForNewComments = false;
             });
@@ -1217,23 +1217,23 @@
         
         // Initialize Livewire emoji picker when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('[TaskComments] DOMContentLoaded - initializing emoji picker and loading reactions');
+            // console.log('[TaskComments] DOMContentLoaded - initializing emoji picker and loading reactions');
             initializeLivewireEmojiPicker();
             // Load existing emoji reactions after a short delay to ensure DOM is fully loaded
             setTimeout(() => {
-                console.log('[TaskComments] Calling loadExistingLivewireEmojiReactions');
+                // console.log('[TaskComments] Calling loadExistingLivewireEmojiReactions');
                 loadExistingLivewireEmojiReactions();
             }, 100);
         });
         
         // Listen for Livewire updates to load reactions for newly visible comments
         document.addEventListener('livewire:init', function() {
-            console.log('[TaskComments] Setting up Livewire hooks');
+            // console.log('[TaskComments] Setting up Livewire hooks');
             
             // Listen for the component's specific update event (fired when showMore is called)
             // This is much more efficient than morph.updated which fires for every DOM element
             Livewire.on('comments-show-more', () => {
-                console.log('[TaskComments] comments-show-more event received, loading reactions for new comments');
+                // console.log('[TaskComments] comments-show-more event received, loading reactions for new comments');
                 // Small delay to ensure DOM is updated
                 setTimeout(() => {
                     loadReactionsForNewComments();
@@ -1252,7 +1252,7 @@
                 // This prevents excessive calls during initial page load
                 if (now - lastMorphUpdateTime > 2000) {
                     lastMorphUpdateTime = now;
-                    console.log('[TaskComments] morph.updated hook fired (fallback), debouncing loadReactionsForNewComments');
+                    // console.log('[TaskComments] morph.updated hook fired (fallback), debouncing loadReactionsForNewComments');
                     debouncedLoadReactionsForNewComments();
                 }
             });
