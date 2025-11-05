@@ -148,6 +148,95 @@ class ClientResource extends Resource
                         ]),
                     ]),
 
+                Section::make(__('client.section.staff_info'))
+                    ->schema([
+                        Repeater::make('staff_information')
+                            ->label(__('client.form.staff_information'))
+                            ->schema([
+                                Grid::make(2)
+                                    ->schema([
+                                        TextInput::make('staff_name')
+                                            ->label(__('client.form.staff_name'))
+                                            ->maxLength(255)
+                                            ->live(onBlur: true)
+                                            ->columnSpan(1),
+
+                                        PhoneInput::make('staff_contact_number')
+                                            ->label(__('client.form.staff_contact_number'))
+                                            ->countryStatePath('staff_contact_number_country')
+                                            ->initialCountry('MY')
+                                            ->countryOrder(['MY', 'ID', 'SG', 'PH', 'US'])
+                                            ->onlyCountries(['MY', 'ID', 'SG', 'PH', 'US'])
+                                            ->countrySearch(false)
+                                            ->dropdownContainer(false)
+                                            ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
+                                                $digits = preg_replace('/\D+/', '', (string) $state);
+                                                if ($digits === '') {
+                                                    $set('staff_contact_number', '');
+
+                                                    return;
+                                                }
+
+                                                $country = $get('staff_contact_number_country') ?: 'MY';
+                                                $dialCode = match ($country) {
+                                                    'MY' => '60',
+                                                    'ID' => '62',
+                                                    'SG' => '65',
+                                                    'PH' => '63',
+                                                    'US' => '1',
+                                                    default => '60',
+                                                };
+
+                                                if (! str_starts_with($digits, $dialCode)) {
+                                                    $digits = ltrim($digits, '0');
+                                                    if (! str_starts_with($digits, $dialCode)) {
+                                                        $digits = $dialCode.$digits;
+                                                    }
+                                                }
+
+                                                $set('staff_contact_number', $digits);
+                                            })
+                                            ->dehydrateStateUsing(function (?string $state, Get $get): string {
+                                                $digits = preg_replace('/\D+/', '', (string) $state);
+                                                if ($digits === '') {
+                                                    return '';
+                                                }
+
+                                                $country = $get('staff_contact_number_country') ?: 'MY';
+                                                $dialCode = match ($country) {
+                                                    'MY' => '60',
+                                                    'ID' => '62',
+                                                    'SG' => '65',
+                                                    'PH' => '63',
+                                                    'US' => '1',
+                                                    default => '60',
+                                                };
+
+                                                if (! str_starts_with($digits, $dialCode)) {
+                                                    $digits = ltrim($digits, '0');
+                                                    if (! str_starts_with($digits, $dialCode)) {
+                                                        $digits = $dialCode.$digits;
+                                                    }
+                                                }
+
+                                                return $digits;
+                                            })
+                                            ->columnSpan(1),
+                                    ]),
+                            ])
+                            ->columns(2)
+                            ->defaultItems(0)
+                            ->addActionLabel(__('client.form.add_staff'))
+                            ->addActionAlignment(Alignment::Start)
+                            ->cloneable()
+                            ->reorderable()
+                            ->collapsible(true)
+                            ->collapsed()
+                            ->itemLabel(fn (array $state): string => ! empty($state['staff_name']) ? $state['staff_name'] : __('client.form.staff_placeholder'))
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible(),
+
                 Section::make(__('client.section.company_info'))
                     ->schema([
                         Grid::make([

@@ -19,6 +19,7 @@ class Client extends Model
         'pic_name',
         'pic_email',
         'pic_contact_number',
+        'staff_information',
         'company_name',
         'company_email',
         'company_address',
@@ -35,6 +36,7 @@ class Client extends Model
                 'pic_name',
                 'pic_email',
                 'pic_contact_number',
+                'staff_information',
                 'company_name',
                 'company_email',
                 'company_address',
@@ -50,6 +52,7 @@ class Client extends Model
 
     protected $casts = [
         'extra_information' => 'array',
+        'staff_information' => 'array',
     ];
 
     protected static function booted()
@@ -85,14 +88,14 @@ class Client extends Model
     public function projectCount(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->projects->count(),
+            get: fn () => $this->projects->count(),
         );
     }
 
     public function importantUrlCount(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->importantUrls->count(),
+            get: fn () => $this->importantUrls->count(),
         );
     }
 }

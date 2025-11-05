@@ -19,7 +19,8 @@ return [
     ],
 
     'section' => [
-        'client_info' => 'Client Information',
+        'client_info' => 'Person In Charge Information',
+        'staff_info' => 'Staff Information',
         'company_info' => 'Client Company Information',
         'company_projects' => 'Client Projects',
         'extra_info' => 'Client Additional Information',
@@ -31,6 +32,11 @@ return [
         'pic_name' => 'PIC Name',
         'pic_email' => 'PIC Email',
         'pic_contact_number' => 'PIC Contact Number',
+        'staff_information' => 'Staff Information',
+        'staff_name' => 'Staff Name',
+        'staff_contact_number' => 'Staff Contact Number',
+        'add_staff' => '+ Add Staff',
+        'staff_placeholder' => 'Staff Name',
         'company_name' => 'Company Name',
         'company_email' => 'Company Email',
         'company_address' => 'Company Address',

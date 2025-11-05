@@ -19,7 +19,8 @@ return [
     ],
 
     'section' => [
-        'client_info' => 'Maklumat Pelanggan',
+        'client_info' => 'Maklumat Pengurus',
+        'staff_info' => 'Maklumat Kakitangan',
         'company_info' => 'Maklumat Syarikat Pelanggan',
         'company_projects' => 'Projek Syarikat Pelanggan',
         'extra_info' => 'Maklumat Tambahan Pelanggan',
@@ -31,6 +32,11 @@ return [
         'pic_name' => 'Nama PIC',
         'pic_email' => 'Emel PIC',
         'pic_contact_number' => 'Nombor Telefon PIC',
+        'staff_information' => 'Maklumat Kakitangan',
+        'staff_name' => 'Nama Kakitangan',
+        'staff_contact_number' => 'Nombor Telefon Kakitangan',
+        'add_staff' => '+ Tambah Kakitangan',
+        'staff_placeholder' => 'Nama Kakitangan',
         'company_name' => 'Nama Syarikat',
         'company_email' => 'Emel Syarikat',
         'company_address' => 'Alamat Syarikat',
