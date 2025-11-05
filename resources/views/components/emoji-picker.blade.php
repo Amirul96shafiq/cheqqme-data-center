@@ -127,12 +127,16 @@ function emojiPicker(commentId) {
 
         init() {
             this.initializeEmojis();
-            this.loadUserReactions();
+            // Delay loading user reactions until picker is opened to optimize initial page load
+            // this.loadUserReactions(); // Removed from init - will load when picker opens
             this.loadRecentEmojis();
             
             // Listen for Livewire updates to refresh component state
             this.$watch('commentId', () => {
-                this.loadUserReactions();
+                // Only reload if picker is open
+                if (this.open) {
+                    this.loadUserReactions();
+                }
             });
         },
 
@@ -140,6 +144,10 @@ function emojiPicker(commentId) {
         toggle() {
             if (!this.open) {
                 this.calculateCenterPosition();
+                // Lazy load user reactions only when picker is opened for the first time
+                if (this.userReactions.length === 0) {
+                    this.loadUserReactions();
+                }
             }
             
             this.open = !this.open;
@@ -306,6 +314,7 @@ function emojiPicker(commentId) {
 
 
         async loadUserReactions() {
+            console.log('[EmojiPicker] loadUserReactions called for comment:', this.commentId);
             try {
                 const response = await fetch(`/api/comments/${this.commentId}/reactions`, {
                     headers: {
@@ -320,9 +329,10 @@ function emojiPicker(commentId) {
                     this.userReactions = data.data
                         .filter(reaction => reaction.user_reacted)
                         .map(reaction => reaction.emoji);
+                    console.log('[EmojiPicker] Loaded user reactions for comment', this.commentId, ':', this.userReactions);
                 }
             } catch (error) {
-                console.error('Failed to load user reactions:', error);
+                console.error('[EmojiPicker] Failed to load user reactions for comment', this.commentId, ':', error);
             }
         },
 

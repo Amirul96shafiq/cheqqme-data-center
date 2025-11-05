@@ -813,11 +813,11 @@ class TaskComments extends Component implements HasForms
             ->with([
                 // Ensure modal has full user info (email, country, timezone, cover_image, online_status, spotify_id)
                 'user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id,phone,phone_country',
-                'reactions.user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id',
+                // Reactions are loaded lazily via API to optimize initial page load
                 'replies' => function ($query) {
                     $query->with([
                         'user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id,phone,phone_country',
-                        'reactions.user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id',
+                        // Reactions for replies are also loaded lazily via API
                     ]);
                 },
             ])

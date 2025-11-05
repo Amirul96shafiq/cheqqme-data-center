@@ -998,25 +998,37 @@
             });
         }
         
-        // Load existing emoji reactions for all Livewire comments
+        // Load existing emoji reactions for visible Livewire comments only (optimized for initial load)
         function loadExistingLivewireEmojiReactions() {
-            // Get all comment IDs from the page
-            const commentElements = document.querySelectorAll('[wire\\:key^="comment-"]');
-            const commentIds = Array.from(commentElements).map(el => {
+            // Get only visible comment elements (not hidden by focus mode or other conditions)
+            // Limit to first 5 comments for initial load optimization
+            const allCommentElements = document.querySelectorAll('[wire\\:key^="comment-"]');
+            const visibleCommentElements = Array.from(allCommentElements)
+                .filter(el => {
+                    // Check if element is visible (not hidden by Alpine.js or CSS)
+                    const style = window.getComputedStyle(el);
+                    return style.display !== 'none' && style.visibility !== 'hidden' && el.offsetParent !== null;
+                })
+                .slice(0, 5); // Limit to first 5 visible comments for initial load
+            
+            const commentIds = visibleCommentElements.map(el => {
                 const wireKey = el.getAttribute('wire:key');
                 return wireKey ? wireKey.replace('comment-', '') : null;
             }).filter(id => id !== null);
             
             if (commentIds.length === 0) {
-                console.log('No Livewire comments found to load emoji reactions for');
+                console.log('No visible Livewire comments found to load emoji reactions for');
                 return;
             }
+            
+            console.log('[TaskComments] Loading emoji reactions for visible comments:', commentIds.length, 'comments', commentIds);
             
             // Send batch request to get emoji reactions
             const csrfToken = document.querySelector('[data-csrf-token]')?.getAttribute('data-csrf-token') || 
                              document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
                              document.querySelector('input[name="_token"]')?.value || '';
             
+            console.log('[TaskComments] Making batch request to /comments/emoji/batch with comment IDs:', commentIds);
             fetch('/comments/emoji/batch', {
                 method: 'POST',
                 headers: {
@@ -1029,7 +1041,9 @@
             })
             .then(response => response.json())
             .then(data => {
+                console.log('[TaskComments] Batch reaction response received:', data);
                 if (data.success) {
+                    console.log('[TaskComments] Processing', Object.keys(data.reactions).length, 'reactions from batch response');
                     // Update UI for each comment with an emoji reaction
                     Object.keys(data.reactions).forEach(commentId => {
                         const reactionData = data.reactions[commentId];
@@ -1077,11 +1091,171 @@
             });
         }
         
+        // Track if we're currently loading reactions to prevent duplicate calls
+        let isLoadingReactionsForNewComments = false;
+        let loadReactionsTimeout = null;
+        
+        // Load reactions for newly visible comments (called after showMore)
+        function loadReactionsForNewComments() {
+            // Prevent duplicate calls
+            if (isLoadingReactionsForNewComments) {
+                console.log('[TaskComments] Already loading reactions for new comments, skipping');
+                return;
+            }
+            
+            // Get all comment elements
+            const allCommentElements = document.querySelectorAll('[wire\\:key^="comment-"]');
+            const visibleCommentElements = Array.from(allCommentElements)
+                .filter(el => {
+                    const style = window.getComputedStyle(el);
+                    return style.display !== 'none' && style.visibility !== 'hidden' && el.offsetParent !== null;
+                });
+            
+            // Get comment IDs that don't have reactions loaded yet
+            const commentIds = visibleCommentElements
+                .map(el => {
+                    const wireKey = el.getAttribute('wire:key');
+                    const commentId = wireKey ? wireKey.replace('comment-', '') : null;
+                    // Check if reactions are already loaded (check for emoji container or reaction data)
+                    if (commentId && !livewireCommentEmojiStates[commentId]) {
+                        const emojiContainer = el.querySelector('.emoji-container-livewire');
+                        // Only load if container exists and doesn't have emoji yet
+                        if (emojiContainer && !emojiContainer.querySelector('.emoji-display-btn-livewire')) {
+                            return commentId;
+                        }
+                    }
+                    return null;
+                })
+                .filter(id => id !== null);
+            
+            if (commentIds.length === 0) {
+                return; // No new comments to load reactions for
+            }
+            
+            // Set loading flag
+            isLoadingReactionsForNewComments = true;
+            
+            console.log('[TaskComments] Loading emoji reactions for newly visible comments:', commentIds.length, 'comments', commentIds);
+            
+            // Use the same batch loading function
+            const csrfToken = document.querySelector('[data-csrf-token]')?.getAttribute('data-csrf-token') || 
+                             document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+                             document.querySelector('input[name="_token"]')?.value || '';
+            
+            console.log('[TaskComments] Making batch request for new comments to /comments/emoji/batch with comment IDs:', commentIds);
+            fetch('/comments/emoji/batch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ comment_ids: commentIds })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Object.keys(data.reactions).forEach(commentId => {
+                        const reactionData = data.reactions[commentId];
+                        if (reactionData) {
+                            livewireCommentEmojiStates[commentId] = {
+                                emoji: reactionData.emoji,
+                                username: reactionData.username,
+                                created_at: reactionData.created_at
+                            };
+                            
+                            const commentElement = document.querySelector(`[wire\\:key="comment-${commentId}"]`);
+                            if (commentElement) {
+                                const emojiContainer = commentElement.querySelector('.emoji-container-livewire');
+                                if (emojiContainer && !emojiContainer.querySelector('.emoji-display-btn-livewire')) {
+                                    emojiContainer.innerHTML = `
+                                        <button 
+                                            type="button"
+                                            class="emoji-display-btn-livewire p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900/20 focus:outline-none focus:ring-1 focus:ring-gray-500/40 transition-all duration-200"
+                                            data-comment-id="${commentId}"
+                                            title="${reactionData.username} - ${reactionData.created_at}"
+                                        >
+                                            <span class="text-lg">${reactionData.emoji}</span>
+                                        </button>
+                                    `;
+                                    
+                                    const emojiDisplayBtn = emojiContainer.querySelector('.emoji-display-btn-livewire');
+                                    const commentIdToRemove = commentId;
+                                    emojiDisplayBtn.addEventListener('click', function() {
+                                        removeLivewireEmojiReaction(commentIdToRemove);
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Reset loading flag after completion
+                isLoadingReactionsForNewComments = false;
+            })
+            .catch(error => {
+                console.error('Error loading reactions for new comments:', error);
+                // Reset loading flag on error
+                isLoadingReactionsForNewComments = false;
+            });
+        }
+        
+        // Debounced version of loadReactionsForNewComments
+        function debouncedLoadReactionsForNewComments() {
+            // Clear any existing timeout
+            if (loadReactionsTimeout) {
+                clearTimeout(loadReactionsTimeout);
+            }
+            
+            // Set a new timeout (debounce for 500ms)
+            loadReactionsTimeout = setTimeout(() => {
+                loadReactionsForNewComments();
+                loadReactionsTimeout = null;
+            }, 500);
+        }
+        
         // Initialize Livewire emoji picker when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('[TaskComments] DOMContentLoaded - initializing emoji picker and loading reactions');
             initializeLivewireEmojiPicker();
             // Load existing emoji reactions after a short delay to ensure DOM is fully loaded
-            setTimeout(loadExistingLivewireEmojiReactions, 100);
+            setTimeout(() => {
+                console.log('[TaskComments] Calling loadExistingLivewireEmojiReactions');
+                loadExistingLivewireEmojiReactions();
+            }, 100);
+        });
+        
+        // Listen for Livewire updates to load reactions for newly visible comments
+        document.addEventListener('livewire:init', function() {
+            console.log('[TaskComments] Setting up Livewire hooks');
+            
+            // Listen for the component's specific update event (fired when showMore is called)
+            // This is much more efficient than morph.updated which fires for every DOM element
+            Livewire.on('comments-show-more', () => {
+                console.log('[TaskComments] comments-show-more event received, loading reactions for new comments');
+                // Small delay to ensure DOM is updated
+                setTimeout(() => {
+                    loadReactionsForNewComments();
+                }, 300);
+            });
+            
+            // Only use morph.updated as a fallback with heavy debouncing for edge cases
+            // This should rarely trigger since we use the specific event above
+            let morphUpdateCount = 0;
+            let lastMorphUpdateTime = 0;
+            Livewire.hook('morph.updated', ({ el, component }) => {
+                morphUpdateCount++;
+                const now = Date.now();
+                
+                // Only process if it's been more than 2 seconds since last check
+                // This prevents excessive calls during initial page load
+                if (now - lastMorphUpdateTime > 2000) {
+                    lastMorphUpdateTime = now;
+                    console.log('[TaskComments] morph.updated hook fired (fallback), debouncing loadReactionsForNewComments');
+                    debouncedLoadReactionsForNewComments();
+                }
+            });
         });
         
         // Handle Livewire emoji reaction button clicks
