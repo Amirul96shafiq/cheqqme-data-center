@@ -25,6 +25,7 @@ return [
 
     'section' => [
         'project_info' => 'Maklumat Projek',
+        'issue_tracker_info' => 'Maklumat Penjejak Isu',
         'extra_info' => 'Maklumat Tambahan Projek',
         'project_documents' => 'Dokumen Projek',
         'important_urls' => 'URL Penting Projek',
@@ -48,6 +49,16 @@ return [
         'extra_value' => 'Nilai',
         'add_extra_info' => '+ Tambah Maklumat Tambahan',
         'title_placeholder_short' => 'Tajuk di sini',
+        'issue_tracker_code' => 'Kod Penjejak Isu',
+        'issue_tracker_code_helper' => 'URL Penjejak Isu: :url',
+        'issue_tracker_code_helper_new' => 'Kod Penjejak Isu akan dijana secara automatik apabila anda menyimpan projek ini.',
+        'tracking_tokens' => 'Token Penjejakan',
+        'tracking_token' => 'Token Penjejakan',
+        'task_status' => 'Status',
+        'edit_task' => 'Edit Tugasan',
+        'view_status' => 'Halaman Status',
+        'open_edit_task' => 'Buka Edit Tugasan',
+        'open_status_page' => 'Buka Halaman Status',
     ],
 
     'table' => [

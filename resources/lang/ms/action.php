@@ -11,6 +11,7 @@ return [
     'card_label_plural' => 'Tugasan Tindakan',
 
     'status' => [
+        'issue_tracker' => 'Penjejak Isu',
         'todo' => 'Untuk Dilakukan',
         'in_progress' => 'Sedang Berjalan',
         'toreview' => 'Untuk Semakan',

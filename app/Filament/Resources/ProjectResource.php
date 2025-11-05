@@ -138,6 +138,83 @@ class ProjectResource extends Resource
                             ->maxLength(200),
                     ]),
 
+                Section::make(__('project.section.issue_tracker_info'))
+                    ->schema([
+                        TextInput::make('issue_tracker_code')
+                            ->label(__('project.form.issue_tracker_code'))
+                            ->maxLength(6)
+                            ->disabled(fn ($record) => $record !== null)
+                            ->helperText(fn ($record) => $record && $record->issue_tracker_code
+                                ? __('project.form.issue_tracker_code_helper', ['url' => route('issue-tracker.show', ['project' => $record->issue_tracker_code])])
+                                : __('project.form.issue_tracker_code_helper_new'))
+                            ->nullable(),
+
+                        Repeater::make('tracking_tokens')
+                            ->label(__('project.form.tracking_tokens'))
+                            ->schema([
+                                Grid::make(4)
+                                    ->schema([
+                                        TextInput::make('token')
+                                            ->label(__('project.form.tracking_token'))
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->columnSpan(1),
+
+                                        Forms\Components\Select::make('status')
+                                            ->label(__('project.form.task_status'))
+                                            ->options([
+                                                'issue_tracker' => __('action.status.issue_tracker'),
+                                                'todo' => __('action.status.todo'),
+                                                'in_progress' => __('action.status.in_progress'),
+                                                'toreview' => __('action.status.toreview'),
+                                                'completed' => __('action.status.completed'),
+                                                'archived' => __('action.status.archived'),
+                                            ])
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->columnSpan(1),
+
+                                        Forms\Components\TextInput::make('edit_url')
+                                            ->label(__('project.form.edit_task'))
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->suffixAction(
+                                                Forms\Components\Actions\Action::make('openEditTask')
+                                                    ->icon('heroicon-o-arrow-top-right-on-square')
+                                                    ->url(fn (Get $get) => $get('edit_url'))
+                                                    ->openUrlInNewTab()
+                                                    ->tooltip(__('project.form.open_edit_task'))
+                                            )
+                                            ->columnSpan(1),
+
+                                        Forms\Components\TextInput::make('status_url')
+                                            ->label(__('project.form.view_status'))
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->suffixAction(
+                                                Forms\Components\Actions\Action::make('openStatusPage')
+                                                    ->icon('heroicon-o-arrow-top-right-on-square')
+                                                    ->url(fn (Get $get) => $get('status_url'))
+                                                    ->openUrlInNewTab()
+                                                    ->tooltip(__('project.form.open_status_page'))
+                                            )
+                                            ->columnSpan(1),
+                                    ]),
+                            ])
+                            ->default([])
+                            ->disabled()
+                            ->deletable(false)
+                            ->addable(false)
+                            ->reorderable(false)
+                            ->collapsible(true)
+                            ->collapsed()
+                            ->itemLabel(fn (array $state): string => $state['token'] ?? __('project.form.tracking_token'))
+                            ->columns(1)
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible(true)
+                    ->collapsed(),
+
                 Section::make()
                     ->heading(function (Get $get) {
                         $count = 0;

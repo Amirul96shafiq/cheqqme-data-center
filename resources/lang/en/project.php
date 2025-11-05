@@ -25,6 +25,7 @@ return [
 
     'section' => [
         'project_info' => 'Project Information',
+        'issue_tracker_info' => 'Issue Tracker Information',
         'extra_info' => 'Project Extra Information',
         'project_documents' => 'Project Documents',
         'important_urls' => 'Project Important URLs',
@@ -49,6 +50,16 @@ return [
         'add_extra_info' => '+ Add Extra Information',
         'title_placeholder_short' => 'Title goes here',
         'create_client' => 'Create Client',
+        'issue_tracker_code' => 'Issue Tracker Code',
+        'issue_tracker_code_helper' => 'Issue Tracker URL: :url',
+        'issue_tracker_code_helper_new' => 'Issue Tracker Code will be auto-generated when you save this project.',
+        'tracking_tokens' => 'Tracking Tokens',
+        'tracking_token' => 'Tracking Token',
+        'task_status' => 'Status',
+        'edit_task' => 'Edit Task',
+        'view_status' => 'Status Page',
+        'open_edit_task' => 'Open Edit Task',
+        'open_status_page' => 'Open Status Page',
     ],
 
     'table' => [
