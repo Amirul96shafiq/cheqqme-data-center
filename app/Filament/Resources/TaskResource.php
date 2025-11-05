@@ -1067,6 +1067,22 @@ return false;
                                                 ->addActionAlignment(Alignment::Start)
                                                 ->cloneable()
                                                 ->reorderable()
+                                                ->cloneAction(function (\Filament\Forms\Components\Actions\Action $action, \Filament\Forms\Components\Repeater $component) {
+                                                    $lockedTitles = [
+                                                        'Reporter Name',
+                                                        'Communication Preference',
+                                                        'Reporter Email',
+                                                        'Reporter WhatsApp',
+                                                        'Submitted on',
+                                                    ];
+
+                                                    return $action->visible(function (array $arguments) use ($component, $lockedTitles) {
+                                                        $itemData = (array) $component->getRawItemState($arguments['item']);
+                                                        $title = (string) ($itemData['title'] ?? '');
+
+                                                        return ! in_array($title, $lockedTitles, true);
+                                                    });
+                                                })
                                                 ->deleteAction(function (\Filament\Forms\Components\Actions\Action $action, \Filament\Forms\Components\Repeater $component) {
                                                     $lockedTitles = [
                                                         'Reporter Name',
