@@ -128,23 +128,28 @@
               </div>
 
               {{-- Communication Preference --}}
-              <div x-data="{ communicationPreference: '{{ old('communication_preference', 'email') }}' }">
+              <div x-data="{ communicationPreference: '{{ old('communication_preference', 'whatsapp') }}' }">
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                   Preferred Communication Method <span class="text-red-500">*</span>
                 </label>
                 <div class="flex gap-6">
-                  <label class="flex items-center space-x-2 cursor-pointer">
-                    <input type="radio" name="communication_preference" value="email" 
-                           x-model="communicationPreference"
-                           class="cursor-pointer">
-                    <span class="text-sm text-gray-700">Email</span>
-                  </label>
+                  
+                  {{-- WhatsApp Radio Button --}}
                   <label class="flex items-center space-x-2 cursor-pointer">
                     <input type="radio" name="communication_preference" value="whatsapp"
                            x-model="communicationPreference"
                            class="cursor-pointer">
                     <span class="text-sm text-gray-700">WhatsApp</span>
                   </label>
+                  
+                  {{-- Email Radio Button --}}
+                  <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="radio" name="communication_preference" value="email" 
+                           x-model="communicationPreference"
+                           class="cursor-pointer">
+                    <span class="text-sm text-gray-700">Email</span>
+                  </label>
+
                 </div>
 
                 {{-- Email Field (conditional) --}}
@@ -166,6 +171,10 @@
                   </label>
                   <input id="whatsapp_number" type="tel" name="whatsapp_number" value="{{ old('whatsapp_number') }}"
                         x-bind:required="communicationPreference === 'whatsapp'"
+                        pattern="^\+[1-9]\d{7,14}$"
+                        title="Enter a valid WhatsApp number with + and country code, e.g. +60123456789"
+                        autocomplete="tel"
+                        inputmode="tel"
                         placeholder="e.g., +60123456789"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm">
                   <p class="mt-1 text-xs text-gray-500">

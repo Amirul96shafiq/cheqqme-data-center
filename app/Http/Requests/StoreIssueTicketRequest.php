@@ -40,7 +40,11 @@ class StoreIssueTicketRequest extends FormRequest
         if ($this->input('communication_preference') === 'email') {
             $rules['email'] = ['required', 'email', 'max:255'];
         } elseif ($this->input('communication_preference') === 'whatsapp') {
-            $rules['whatsapp_number'] = ['required', 'string', 'max:20'];
+            $rules['whatsapp_number'] = [
+                'required',
+                'string',
+                'regex:/^\+[1-9]\d{7,14}$/', // E.164 style: + and 8-15 digits total
+            ];
         }
 
         return $rules;
@@ -60,7 +64,7 @@ class StoreIssueTicketRequest extends FormRequest
             'email.required' => 'Please provide your email address.',
             'email.email' => 'Please provide a valid email address.',
             'whatsapp_number.required' => 'Please provide your WhatsApp number.',
-            'whatsapp_number.max' => 'WhatsApp number must not exceed 20 characters.',
+            'whatsapp_number.regex' => 'Enter a valid WhatsApp number with + and country code (e.g., +60123456789).',
             'title.required' => 'Please provide a title for the issue.',
             'project_id.required' => 'Project is required.',
             'project_id.exists' => 'The selected project does not exist.',
