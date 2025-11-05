@@ -23,9 +23,68 @@
     
     // Check if this item has a dropdown
     $hasDropdown = !empty($dropdownItems);
+    
+    // Generate a unique ID for this dropdown item
+    $dropdownId = $hasDropdown ? 'dropdown-' . md5($url . ($dropdownTitle ?? '') . serialize($dropdownItems)) : null;
 @endphp
 
+@once
+<script>
+    // Initialize global dropdown store if it doesn't exist
+    if (typeof window.sidebarDropdownStoreInitialized === 'undefined') {
+        window.sidebarDropdownStoreInitialized = true;
+        document.addEventListener('alpine:init', () => {
+            if (!Alpine.store('sidebarDropdowns')) {
+                Alpine.store('sidebarDropdowns', {
+                    activeId: null,
+                    timeout: null,
+                    setActive(id) {
+                        // Clear any pending timeout
+                        if (this.timeout) {
+                            clearTimeout(this.timeout);
+                        }
+                        // Immediately close previous dropdown
+                        this.activeId = null;
+                        // Small delay to ensure smooth transition
+                        setTimeout(() => {
+                            this.activeId = id;
+                        }, 10);
+                    },
+                    close() {
+                        if (this.timeout) {
+                            clearTimeout(this.timeout);
+                        }
+                        this.timeout = setTimeout(() => {
+                            this.activeId = null;
+                        }, 150);
+                    },
+                    clearTimeout() {
+                        if (this.timeout) {
+                            clearTimeout(this.timeout);
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>
+@endonce
+
 <li
+    @if ($hasDropdown && $sidebarCollapsible)
+        x-data="{
+            dropdownId: @js($dropdownId),
+            get isActive() {
+                return $store.sidebarDropdowns.activeId === this.dropdownId;
+            },
+            enter() {
+                $store.sidebarDropdowns.setActive(this.dropdownId);
+            },
+            leave() {
+                $store.sidebarDropdowns.close();
+            }
+        }"
+    @endif
     {{
         $attributes->class([
             'fi-sidebar-item',
@@ -37,15 +96,6 @@
     >
     <div
         @if ($hasDropdown && $sidebarCollapsible)
-            x-data="{
-                showDropdown: false,
-                enter() {
-                    this.showDropdown = true;
-                },
-                leave() {
-                    this.showDropdown = false;
-                }
-            }"
             @mouseenter="enter()"
             @mouseleave="leave()"
             class="relative"
@@ -167,22 +217,24 @@
     @if ($hasDropdown && $sidebarCollapsible)
         <!-- Dropdown Menu -->
         <div
-            x-show="$store.sidebar.isOpen && showDropdown && window.matchMedia('(min-width: 1024px)').matches"
+            x-show="isActive && window.matchMedia('(min-width: 1024px)').matches"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
-            class="hidden lg:block fixed z-[9999] ml-2 p-1 w-52 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none"
+            @mouseenter="$store.sidebarDropdowns.clearTimeout()"
+            @mouseleave="leave()"
+            class="hidden lg:block fixed z-[9999] ml-2 p-1 w-52 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:outline-none shadow-lg"
             style="display: none;"
             x-ref="dropdown"
             x-init="
-                $watch('showDropdown', value => {
+                $watch('isActive', value => {
                     if (value) {
                         const rect = $el.parentElement.getBoundingClientRect();
                         const sidebarOpen = $store.sidebar.isOpen;
-                        $el.style.left = (rect.right + (sidebarOpen ? -20 : 0)) + 'px';
+                        $el.style.left = (rect.right + (sidebarOpen ? -20 : 8)) + 'px';
                         $el.style.top = rect.top + 'px';
                     }
                 })
