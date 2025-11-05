@@ -921,7 +921,7 @@ class MeetingLinkResource extends Resource
                                         ->collapsible(true)
                                         ->collapsed()
                                         ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('meetinglink.form.extra_information'))
-                                        ->live()
+                                        ->live(onBlur: true)
                                         ->columnSpanFull()
                                         ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
                                 ])

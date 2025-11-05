@@ -1102,7 +1102,7 @@ return false;
                                                 ->collapsible(true)
                                                 ->collapsed()
                                                 ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
-                                                ->live()
+                                                ->live(onBlur: true)
                                                 ->columnSpanFull()
                                                 ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
