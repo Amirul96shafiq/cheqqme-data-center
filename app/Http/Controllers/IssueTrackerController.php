@@ -75,8 +75,14 @@ class IssueTrackerController extends Controller
                     'value' => $validated['name'],
                 ],
                 [
-                    'title' => 'Reporter Email',
-                    'value' => $validated['email'],
+                    'title' => 'Communication Preference',
+                    'value' => $validated['communication_preference'] === 'email' ? 'Email' : 'WhatsApp',
+                ],
+                [
+                    'title' => $validated['communication_preference'] === 'email' ? 'Reporter Email' : 'Reporter WhatsApp',
+                    'value' => $validated['communication_preference'] === 'email'
+                        ? ($validated['email'] ?? '')
+                        : ($validated['whatsapp_number'] ?? ''),
                 ],
                 [
                     'title' => 'Submitted on',

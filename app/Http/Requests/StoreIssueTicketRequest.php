@@ -22,9 +22,9 @@ class StoreIssueTicketRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
+            'communication_preference' => ['required', 'string', 'in:email,whatsapp'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:700'],
             'project_id' => ['required', 'integer', 'exists:projects,id'],
@@ -35,6 +35,15 @@ class StoreIssueTicketRequest extends FormRequest
                 'mimes:jpg,jpeg,png,pdf,mp4',
             ],
         ];
+
+        // Conditional validation based on communication preference
+        if ($this->input('communication_preference') === 'email') {
+            $rules['email'] = ['required', 'email', 'max:255'];
+        } elseif ($this->input('communication_preference') === 'whatsapp') {
+            $rules['whatsapp_number'] = ['required', 'string', 'max:20'];
+        }
+
+        return $rules;
     }
 
     /**
@@ -46,8 +55,12 @@ class StoreIssueTicketRequest extends FormRequest
     {
         return [
             'name.required' => 'Please provide your name.',
+            'communication_preference.required' => 'Please select your preferred communication method.',
+            'communication_preference.in' => 'Please select either Email or WhatsApp.',
             'email.required' => 'Please provide your email address.',
             'email.email' => 'Please provide a valid email address.',
+            'whatsapp_number.required' => 'Please provide your WhatsApp number.',
+            'whatsapp_number.max' => 'WhatsApp number must not exceed 20 characters.',
             'title.required' => 'Please provide a title for the issue.',
             'project_id.required' => 'Project is required.',
             'project_id.exists' => 'The selected project does not exist.',

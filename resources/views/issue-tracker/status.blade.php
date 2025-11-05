@@ -322,6 +322,8 @@
               @php
                 $reporterName = 'N/A';
                 $reporterEmail = 'N/A';
+                $reporterWhatsApp = 'N/A';
+                $communicationPreference = 'N/A';
                 
                 if (!empty($task->extra_information) && is_array($task->extra_information)) {
                   foreach ($task->extra_information as $item) {
@@ -340,6 +342,12 @@
                       if (stripos($title, 'Reporter Email') !== false || stripos($title, 'email') !== false) {
                         $reporterEmail = $cleanValue ?: 'N/A';
                       }
+                      if (stripos($title, 'Reporter WhatsApp') !== false || stripos($title, 'whatsapp') !== false) {
+                        $reporterWhatsApp = $cleanValue ?: 'N/A';
+                      }
+                      if (stripos($title, 'Communication Preference') !== false || stripos($title, 'preference') !== false) {
+                        $communicationPreference = $cleanValue ?: 'N/A';
+                      }
                     }
                   }
                 }
@@ -349,9 +357,21 @@
                 <p class="text-sm font-medium text-gray-900">{{ $reporterName }}</p>
               </div>
               <div>
+                <p class="text-xs text-gray-500">Preferred Communication Method</p>
+                <p class="text-sm font-medium text-gray-900">{{ $communicationPreference }}</p>
+              </div>
+              @if($communicationPreference === 'Email' && $reporterEmail !== 'N/A')
+              <div>
                 <p class="text-xs text-gray-500">Email</p>
                 <p class="text-sm font-medium text-gray-900">{{ $reporterEmail }}</p>
               </div>
+              @endif
+              @if($communicationPreference === 'WhatsApp' && $reporterWhatsApp !== 'N/A')
+              <div>
+                <p class="text-xs text-gray-500">WhatsApp Number</p>
+                <p class="text-sm font-medium text-gray-900">{{ $reporterWhatsApp }}</p>
+              </div>
+              @endif
             </div>
           </div>
 
