@@ -149,6 +149,7 @@ class ClientResource extends Resource
                     ]),
 
                 Section::make(__('client.section.staff_info'))
+                    ->description(__('client.section.staff_info_description'))
                     ->schema([
                         Repeater::make('staff_information')
                             ->label(__('client.form.staff_information'))

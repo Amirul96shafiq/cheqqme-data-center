@@ -21,6 +21,7 @@ return [
     'section' => [
         'client_info' => 'Maklumat Pengurus',
         'staff_info' => 'Maklumat Kakitangan',
+        'staff_info_description' => 'Tambah secara manual atau Tambah secara automatik dari Issue Tracker',
         'company_info' => 'Maklumat Syarikat Pelanggan',
         'company_projects' => 'Projek Syarikat Pelanggan',
         'extra_info' => 'Maklumat Tambahan Pelanggan',
