@@ -140,14 +140,54 @@ class ProjectResource extends Resource
 
                 Section::make(__('project.section.issue_tracker_info'))
                     ->schema([
-                        TextInput::make('issue_tracker_code')
-                            ->label(__('project.form.issue_tracker_code'))
-                            ->maxLength(6)
-                            ->disabled(fn ($record) => $record !== null)
-                            ->helperText(fn ($record) => $record && $record->issue_tracker_code
-                                ? __('project.form.issue_tracker_code_helper', ['url' => route('issue-tracker.show', ['project' => $record->issue_tracker_code])])
-                                : __('project.form.issue_tracker_code_helper_new'))
-                            ->nullable(),
+                        Repeater::make('issue_tracker_info')
+                            ->label('')
+                            ->schema([
+                                Grid::make(2)
+                                    ->schema([
+                                        TextInput::make('code')
+                                            ->label(__('project.form.issue_tracker_code'))
+                                            ->disabled(fn ($record) => $record !== null)
+                                            ->maxLength(6)
+                                            ->helperText(fn ($record) => $record && $record->issue_tracker_code
+                                                ? __('project.form.issue_tracker_code_helper_new')
+                                                : __('project.form.issue_tracker_code_helper_new'))
+                                            ->columnSpan(1)
+                                            ->dehydrated(false),
+
+                                        TextInput::make('url')
+                                            ->label(__('project.form.issue_tracker_url'))
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->suffixAction(
+                                                Forms\Components\Actions\Action::make('openIssueTracker')
+                                                    ->icon('heroicon-o-arrow-top-right-on-square')
+                                                    ->url(fn (Get $get) => $get('url'))
+                                                    ->openUrlInNewTab()
+                                                    ->tooltip(__('project.form.open_issue_tracker'))
+                                                    ->visible(fn (Get $get) => ! empty($get('url')))
+                                            )
+                                            ->columnSpan(1),
+                                    ]),
+                            ])
+                            ->default(function ($record) {
+                                if (! $record || ! $record->issue_tracker_code) {
+                                    return [];
+                                }
+
+                                return [[
+                                    'code' => $record->issue_tracker_code,
+                                    'url' => route('issue-tracker.show', ['project' => $record->issue_tracker_code]),
+                                ]];
+                            })
+                            ->disabled()
+                            ->deletable(false)
+                            ->addable(false)
+                            ->reorderable(false)
+                            ->collapsible(false)
+                            ->itemLabel('')
+                            ->columns(1)
+                            ->columnSpanFull(),
 
                         Repeater::make('tracking_tokens')
                             ->label(__('project.form.tracking_tokens'))

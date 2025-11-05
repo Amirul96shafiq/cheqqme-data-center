@@ -23,9 +23,19 @@ class EditProject extends BaseEditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        // Populate tracking tokens from related tasks
         $record = $this->record;
 
+        // Populate issue tracker info
+        if ($record && $record->issue_tracker_code) {
+            $data['issue_tracker_info'] = [[
+                'code' => $record->issue_tracker_code,
+                'url' => route('issue-tracker.show', ['project' => $record->issue_tracker_code]),
+            ]];
+        } else {
+            $data['issue_tracker_info'] = [];
+        }
+
+        // Populate tracking tokens from related tasks
         if ($record && $record->id) {
             $tasks = \App\Models\Task::whereNotNull('tracking_token')
                 ->whereJsonContains('project', (string) $record->id)
