@@ -1067,6 +1067,22 @@ return false;
                                                 ->addActionAlignment(Alignment::Start)
                                                 ->cloneable()
                                                 ->reorderable()
+                                                ->deleteAction(function (\Filament\Forms\Components\Actions\Action $action, \Filament\Forms\Components\Repeater $component) {
+                                                    $lockedTitles = [
+                                                        'Reporter Name',
+                                                        'Communication Preference',
+                                                        'Reporter Email',
+                                                        'Reporter WhatsApp',
+                                                        'Submitted on',
+                                                    ];
+
+                                                    return $action->visible(function (array $arguments) use ($component, $lockedTitles) {
+                                                        $itemData = (array) $component->getRawItemState($arguments['item']);
+                                                        $title = (string) ($itemData['title'] ?? '');
+
+                                                        return ! in_array($title, $lockedTitles, true);
+                                                    });
+                                                })
                                                 ->collapsible(true)
                                                 ->collapsed()
                                                 ->itemLabel(fn (array $state): string => ! empty($state['title']) ? $state['title'] : __('task.form.title_placeholder_short'))
