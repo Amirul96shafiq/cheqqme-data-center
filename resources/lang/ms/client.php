@@ -35,6 +35,7 @@ return [
         'staff_information' => 'Maklumat Kakitangan',
         'staff_name' => 'Nama Kakitangan',
         'staff_contact_number' => 'Nombor Telefon Kakitangan',
+        'staff_email' => 'Emel Kakitangan',
         'add_staff' => '+ Tambah Kakitangan',
         'staff_placeholder' => 'Nama Kakitangan',
         'company_name' => 'Nama Syarikat',

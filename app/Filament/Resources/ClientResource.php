@@ -153,7 +153,7 @@ class ClientResource extends Resource
                         Repeater::make('staff_information')
                             ->label(__('client.form.staff_information'))
                             ->schema([
-                                Grid::make(2)
+                                Grid::make(3)
                                     ->schema([
                                         TextInput::make('staff_name')
                                             ->label(__('client.form.staff_name'))
@@ -222,9 +222,15 @@ class ClientResource extends Resource
                                                 return $digits;
                                             })
                                             ->columnSpan(1),
+
+                                        TextInput::make('staff_email')
+                                            ->label(__('client.form.staff_email'))
+                                            ->email()
+                                            ->maxLength(255)
+                                            ->columnSpan(1),
                                     ]),
                             ])
-                            ->columns(2)
+                            ->columns(3)
                             ->defaultItems(0)
                             ->addActionLabel(__('client.form.add_staff'))
                             ->addActionAlignment(Alignment::Start)

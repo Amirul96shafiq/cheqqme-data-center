@@ -35,6 +35,7 @@ return [
         'staff_information' => 'Staff Information',
         'staff_name' => 'Staff Name',
         'staff_contact_number' => 'Staff Contact Number',
+        'staff_email' => 'Staff Email',
         'add_staff' => '+ Add Staff',
         'staff_placeholder' => 'Staff Name',
         'company_name' => 'Company Name',
