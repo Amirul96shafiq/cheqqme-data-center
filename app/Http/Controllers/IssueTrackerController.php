@@ -94,6 +94,50 @@ class IssueTrackerController extends Controller
         // Refresh task to get the generated tracking token
         $task->refresh();
 
+        // Auto-transfer reporter information to client's staff_information
+        $client = $project->client;
+        if ($client) {
+            $reporterName = $validated['name'];
+            $reporterEmail = ($validated['communication_preference'] === 'email')
+                ? ($validated['email'] ?? null)
+                : null;
+            $reporterWhatsapp = ($validated['communication_preference'] === 'whatsapp')
+                ? ($validated['whatsapp_number'] ?? null)
+                : null;
+
+            // Normalize phone number to +country_code format
+            $normalizedWhatsapp = static::normalizePhoneNumber($reporterWhatsapp);
+
+            // Check for duplicates (based on normalized phone number only)
+            $existingStaff = $client->staff_information ?? [];
+            $isDuplicate = false;
+
+            if ($normalizedWhatsapp) {
+                foreach ($existingStaff as $staff) {
+                    $existingContact = $staff['staff_contact_number'] ?? null;
+                    if ($existingContact) {
+                        $normalizedExisting = static::normalizePhoneNumber($existingContact);
+                        if ($normalizedExisting === $normalizedWhatsapp) {
+                            $isDuplicate = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Add if not duplicate
+            if (! $isDuplicate) {
+                $existingStaff[] = [
+                    'staff_name' => $reporterName,
+                    'staff_email' => $reporterEmail,
+                    'staff_contact_number' => $normalizedWhatsapp,
+                ];
+
+                $client->staff_information = $existingStaff;
+                $client->save();
+            }
+        }
+
         return redirect()
             ->route('issue-tracker.show', ['project' => $project->issue_tracker_code])
             ->with('success', 'Your issue has been submitted successfully. Thank you!')
@@ -117,5 +161,48 @@ class IssueTrackerController extends Controller
             'task' => $task,
             'project' => $project,
         ]);
+    }
+
+    /**
+     * Normalize phone number to +country_code format (e.g., +60123456789)
+     */
+    private static function normalizePhoneNumber(?string $phone): ?string
+    {
+        if (empty($phone)) {
+            return null;
+        }
+
+        // Extract digits only
+        $digits = preg_replace('/\D+/', '', $phone);
+
+        if (empty($digits)) {
+            return null;
+        }
+
+        // Detect country code and normalize
+        $countryCodes = [
+            '60' => 'MY', // Malaysia
+            '62' => 'ID', // Indonesia
+            '65' => 'SG', // Singapore
+            '63' => 'PH', // Philippines
+            '1' => 'US',  // USA
+        ];
+
+        // Check if already starts with country code
+        foreach ($countryCodes as $code => $country) {
+            if (str_starts_with($digits, $code)) {
+                return '+'.$digits;
+            }
+        }
+
+        // If starts with 0, remove it and add default country code (60 for MY)
+        if (str_starts_with($digits, '0')) {
+            $digits = ltrim($digits, '0');
+
+            return '+60'.$digits;
+        }
+
+        // Default to Malaysia country code if no match
+        return '+60'.$digits;
     }
 }
