@@ -96,11 +96,16 @@ return false;
                                                 ->disabled()
                                                 ->visible(false),
 
+                                            // Enable/Disable Attachments, Resources, Additional Information
                                             Forms\Components\Fieldset::make('')
+                                                ->label(function (?Task $record) {
+                                                    return ! empty($record?->tracking_token) ? 'Disabled for Issue Tracker' : '';
+                                                })
                                                 ->schema([
 
                                                     Forms\Components\Grid::make(3)
                                                         ->schema([
+
                                                             // Attachments Toggle
                                                             Forms\Components\Toggle::make('enable_attachments')
                                                                 ->label(__('task.form.enable_attachments'))
@@ -124,6 +129,9 @@ return false;
                                                                             $set('enable_attachments', true);
                                                                         }
                                                                     }
+                                                                })
+                                                                ->disabled(function (?Task $record) {
+                                                                    return ! empty($record?->tracking_token);
                                                                 })
                                                                 ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                                                     // When toggle is disabled, clear all attachments
@@ -163,6 +171,9 @@ return false;
                                                                         }
                                                                     }
                                                                 })
+                                                                ->disabled(function (?Task $record) {
+                                                                    return ! empty($record?->tracking_token);
+                                                                })
                                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
                                                                     // When toggle is disabled, clear all resources
                                                                     if (! $state) {
@@ -195,6 +206,9 @@ return false;
                                                                             $set('enable_additional_information', true);
                                                                         }
                                                                     }
+                                                                })
+                                                                ->disabled(function (?Task $record) {
+                                                                    return ! empty($record?->tracking_token);
                                                                 })
                                                                 ->afterStateUpdated(function ($state, Forms\Set $set) {
                                                                     // When toggle is disabled, clear all extra_information
