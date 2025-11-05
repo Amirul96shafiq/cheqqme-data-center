@@ -1005,7 +1005,19 @@ return false;
                                                     Forms\Components\TextInput::make('title')
                                                         ->label(__('task.form.title'))
                                                         ->maxLength(100)
-                                                        ->columnSpanFull(),
+                                                        ->columnSpanFull()
+                                                        ->disabled(function (Forms\Get $get) {
+                                                            $title = (string) ($get('title') ?? '');
+                                                            $lockedTitles = [
+                                                                'Reporter Name',
+                                                                'Communication Preference',
+                                                                'Reporter Email',
+                                                                'Reporter WhatsApp',
+                                                                'Submitted on',
+                                                            ];
+
+                                                            return in_array($title, $lockedTitles, true);
+                                                        }),
 
                                                     Forms\Components\RichEditor::make('value')
                                                         ->label(__('task.form.value'))
@@ -1020,6 +1032,18 @@ return false;
                                                         ])
                                                         ->extraAttributes(['style' => 'resize: vertical;'])
                                                         ->reactive()
+                                                        ->disabled(function (Forms\Get $get) {
+                                                            $title = (string) ($get('title') ?? '');
+                                                            $lockedTitles = [
+                                                                'Reporter Name',
+                                                                'Communication Preference',
+                                                                'Reporter Email',
+                                                                'Reporter WhatsApp',
+                                                                'Submitted on',
+                                                            ];
+
+                                                            return in_array($title, $lockedTitles, true);
+                                                        })
                                                         ->helperText(function (Forms\Get $get) {
                                                             $raw = $get('value') ?? '';
                                                             $noHtml = strip_tags($raw);
