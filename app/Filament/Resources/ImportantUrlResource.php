@@ -299,23 +299,39 @@ class ImportantUrlResource extends Resource
             ->recordUrl(null)
             ->recordAction(null)
             ->columns([
+
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
                     ->sortable(),
+
                 Tables\Columns\ViewColumn::make('title')
                     ->label(__('importanturl.table.title'))
                     ->view('filament.resources.important-url-resource.title-column')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 Tables\Columns\ViewColumn::make('client_id')
                     ->label(__('importanturl.table.client'))
                     ->view('filament.resources.important-url-resource.client-column')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 Tables\Columns\ViewColumn::make('project_id')
                     ->label(__('importanturl.table.project'))
                     ->view('filament.resources.important-url-resource.project-column')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('important_url')
+                    ->label(__('importanturl.table.important_url'))
+                    ->state(function ($record) {
+                        return $record->url ?: '-';
+                    })
+                    ->copyable()
+                    ->limit(30)
+                    ->tooltip(function ($record) {
+                        return $record->url ?: '';
+                    }),
 
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))
@@ -327,6 +343,7 @@ class ImportantUrlResource extends Resource
                     ->label(__('importanturl.table.updated_at_by'))
                     ->view('filament.resources.important-url-resource.updated-by-column')
                     ->sortable(),
+
             ])
             ->filters([
                 SelectFilter::make('client_id')
