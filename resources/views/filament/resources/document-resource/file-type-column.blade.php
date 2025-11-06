@@ -9,6 +9,14 @@
             'jpg', 'jpeg' => 'JPG',
             'png' => 'PNG',
             'pdf' => 'PDF',
+            'docx' => 'DOCX',
+            'doc' => 'DOC',
+            'xlsx' => 'XLSX',
+            'xls' => 'XLS',
+            'pptx' => 'PPTX',
+            'ppt' => 'PPT',
+            'csv' => 'CSV',
+            'mp4' => 'MP4',
             default => strtoupper($extension),
         };
     } elseif ($record->type === 'external') {

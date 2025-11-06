@@ -24,6 +24,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 class DocumentResource extends Resource
@@ -395,6 +396,77 @@ class DocumentResource extends Resource
                         'internal' => __('document.table.internal'),
                         'external' => __('document.table.external'),
                     ])
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
+
+                SelectFilter::make('file_type')
+                    ->label(__('document.table.file_type'))
+                    ->options([
+                        'jpg' => 'JPG',
+                        'png' => 'PNG',
+                        'pdf' => 'PDF',
+                        'docx' => 'DOCX',
+                        'doc' => 'DOC',
+                        'xlsx' => 'XLSX',
+                        'xls' => 'XLS',
+                        'pptx' => 'PPTX',
+                        'ppt' => 'PPT',
+                        'csv' => 'CSV',
+                        'mp4' => 'MP4',
+                        'url' => 'URL',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (! filled($data['values'])) {
+                            return $query;
+                        }
+
+                        return $query->where(function (Builder $query) use ($data) {
+                            $conditions = [];
+
+                            foreach ($data['values'] as $fileType) {
+                                if ($fileType === 'url') {
+                                    $conditions[] = fn (Builder $q) => $q->where('type', 'external');
+                                } else {
+                                    $extensions = match ($fileType) {
+                                        'jpg' => ['jpg', 'jpeg'],
+                                        'png' => ['png'],
+                                        'pdf' => ['pdf'],
+                                        'docx' => ['docx'],
+                                        'doc' => ['doc'],
+                                        'xlsx' => ['xlsx'],
+                                        'xls' => ['xls'],
+                                        'pptx' => ['pptx'],
+                                        'ppt' => ['ppt'],
+                                        'csv' => ['csv'],
+                                        'mp4' => ['mp4'],
+                                        default => [$fileType],
+                                    };
+
+                                    $conditions[] = function (Builder $q) use ($extensions) {
+                                        $q->where('type', 'internal')
+                                            ->where(function (Builder $subQuery) use ($extensions) {
+                                                foreach ($extensions as $index => $ext) {
+                                                    if ($index === 0) {
+                                                        $subQuery->where('file_path', 'LIKE', '%.'.$ext);
+                                                    } else {
+                                                        $subQuery->orWhere('file_path', 'LIKE', '%.'.$ext);
+                                                    }
+                                                }
+                                            });
+                                    };
+                                }
+                            }
+
+                            foreach ($conditions as $index => $condition) {
+                                if ($index === 0) {
+                                    $query->where($condition);
+                                } else {
+                                    $query->orWhere($condition);
+                                }
+                            }
+                        });
+                    })
                     ->multiple()
                     ->preload()
                     ->searchable(),
