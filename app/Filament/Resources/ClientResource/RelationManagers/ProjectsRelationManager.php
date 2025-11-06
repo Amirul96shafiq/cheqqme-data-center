@@ -47,9 +47,11 @@ class ProjectsRelationManager extends RelationManager
                     ->with('updatedBy');
             })
             ->columns([
+
                 TextColumn::make('id')
                     ->label(__('project.table.id'))
                     ->sortable(),
+
                 TextColumn::make('title')
                     ->label(__('project.table.title'))
                     ->searchable()
@@ -58,11 +60,23 @@ class ProjectsRelationManager extends RelationManager
                     ->tooltip(function ($record) {
                         return $record->title;
                     }),
+
                 TextColumn::make('description')
                     ->label(__('project.table.description'))
                     ->searchable()
-                    ->sortable()
                     ->limit(50),
+
+                TextColumn::make('issue_tracker_code')
+                    ->label(__('project.table.issue_tracker_code'))
+                    ->searchable()
+                    ->copyable()
+                    ->copyableState(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
+                    ->color('primary')
+                    ->url(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
+                    ->toggleable()
+                    ->searchable()
+                    ->alignCenter(),
+
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -72,28 +86,23 @@ class ProjectsRelationManager extends RelationManager
                         default => 'secondary',
                     })
                     ->sortable(),
+
                 TextColumn::make('documents_count')
                     ->label(__('project.table.document_count'))
                     ->badge()
                     ->alignCenter(),
-                TextColumn::make('created_at')
+
+                TextColumn::make(__('created_at'))
                     ->label(__('project.table.created_at'))
-                    ->dateTime('j/n/y, h:i A')
+                    ->since()
+                    ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
                     ->sortable(),
-                TextColumn::make('updated_at')
+
+                Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('project.table.updated_at_by'))
-                    ->formatStateUsing(function ($state, $record) {
-                        if (! $record->updated_by || $record->updated_at?->eq($record->created_at)) {
-                            return '-';
-                        }
+                    ->view('filament.resources.project-resource.updated-by-column')
+                    ->sortable(),
 
-                        $user = $record->updatedBy;
-                        $formattedName = $user ? $user->short_name : 'Unknown';
-
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
-                    })
-                    ->sortable()
-                    ->limit(30),
             ])
             ->filters([
                 SelectFilter::make(__('project.filter.status'))
@@ -110,8 +119,26 @@ class ProjectsRelationManager extends RelationManager
                 // Intentionally empty to avoid creating from here unless needed
             ])
             ->actions([
+                
+                Tables\Actions\Action::make('open_issue_tracker')
+                    ->label('')
+                    ->icon('heroicon-o-link')
+                    ->color('primary')
+                    ->url(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
+                    ->openUrlInNewTab()
+                    ->tooltip(function ($record) {
+                        if (! $record->issue_tracker_code) {
+                            return null;
+                        }
+                        $url = route('issue-tracker.show', ['project' => $record->issue_tracker_code]);
+
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
+                    })
+                    ->visible(fn ($record) => ! empty($record->issue_tracker_code)),
+
                 /*Tables\Actions\ViewAction::make()
               ->url(fn($record) => ProjectResource::getUrl('view', ['record' => $record])),*/
+
                 Tables\Actions\EditAction::make()
                     ->url(fn ($record) => ProjectResource::getUrl('edit', ['record' => $record]))
                     ->hidden(fn ($record) => $record->trashed()),
@@ -120,6 +147,7 @@ class ProjectsRelationManager extends RelationManager
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\DeleteAction::make(),
                 ]),
+
             ])
             ->bulkActions([
                 // None for now
