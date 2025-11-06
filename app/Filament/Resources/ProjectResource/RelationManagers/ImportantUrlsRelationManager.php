@@ -7,6 +7,7 @@ use App\Helpers\ClientFormatter;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -45,27 +46,23 @@ class ImportantUrlsRelationManager extends RelationManager
             ->recordAction(null)
             ->modifyQueryUsing(fn ($query) => $query->with('client'))
             ->columns([
+
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
                     ->sortable(),
-                TextColumn::make('title')
+
+                ViewColumn::make('title')
                     ->label(__('importanturl.table.title'))
-                    ->searchable()
+                    ->view('filament.resources.important-url-resource.title-column')
                     ->sortable()
-                    ->limit(20)
-                    ->tooltip(function ($record) {
-                        return $record->title;
-                    }),
-                TextColumn::make('client.pic_name')
+                    ->searchable(),
+
+                ViewColumn::make('client_id')
                     ->label(__('importanturl.table.client'))
-                    ->searchable()
+                    ->view('filament.resources.important-url-resource.client-column')
                     ->sortable()
-                    ->formatStateUsing(function ($state, $record) {
-                        return ClientFormatter::formatClientDisplay($state, $record->client?->company_name);
-                    })
-                    ->tooltip(function ($record) {
-                        return __('importanturl.table.tooltip.full_name').": {$record->client->pic_name}".', '.__('importanturl.table.tooltip.company').": {$record->client->company_name}";
-                    }),
+                    ->searchable(),
+
                 TextColumn::make('url')
                     ->label(__('importanturl.table.important_url'))
                     ->state(function ($record) {
@@ -77,25 +74,17 @@ class ImportantUrlsRelationManager extends RelationManager
                         return $record->url ?: '';
                     })
                     ->searchable(),
+
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
                     ->sortable(),
-                TextColumn::make('updated_at')
+
+                ViewColumn::make('updated_at')
                     ->label(__('importanturl.table.updated_at_by'))
-                    ->formatStateUsing(function ($state, $record) {
-                        if (! $record->updated_by || $record->updated_at?->eq($record->created_at)) {
-                            return '-';
-                        }
-
-                        $user = $record->updatedBy;
-                        $formattedName = $user ? $user->short_name : 'Unknown';
-
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
-                    })
-                    ->sortable()
-                    ->limit(30),
+                    ->view('filament.resources.important-url-resource.updated-by-column')
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('client_id')
@@ -112,6 +101,7 @@ class ImportantUrlsRelationManager extends RelationManager
                 // Intentionally empty to avoid creating from here unless needed
             ])
             ->actions([
+
                 Tables\Actions\Action::make('open_url')
                     ->label('')
                     ->icon('heroicon-o-link')
@@ -123,6 +113,7 @@ class ImportantUrlsRelationManager extends RelationManager
 
                         return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     }),
+
                 Tables\Actions\EditAction::make()
                     ->url(fn ($record) => ImportantUrlResource::getUrl('edit', ['record' => $record]))
                     ->hidden(fn ($record) => $record->trashed()),
@@ -131,6 +122,7 @@ class ImportantUrlsRelationManager extends RelationManager
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\DeleteAction::make(),
                 ]),
+
             ])
             ->bulkActions([
                 // None for now

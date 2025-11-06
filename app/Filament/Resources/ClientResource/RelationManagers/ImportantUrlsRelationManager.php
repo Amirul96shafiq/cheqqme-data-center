@@ -6,6 +6,7 @@ use App\Filament\Resources\ImportantUrlResource;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -42,28 +43,23 @@ class ImportantUrlsRelationManager extends RelationManager
             ->recordUrl(null)
             ->recordAction(null)
             ->columns([
+
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
                     ->sortable(),
-                TextColumn::make('title')
+
+                ViewColumn::make('title')
                     ->label(__('importanturl.table.title'))
-                    ->searchable()
+                    ->view('filament.resources.important-url-resource.title-column')
                     ->sortable()
-                    ->limit(30)
-                    ->tooltip(function ($record) {
-                        return $record->title;
-                    }),
-                TextColumn::make('project.title')
+                    ->searchable(),
+
+                ViewColumn::make('project_id')
                     ->label(__('importanturl.table.project'))
+                    ->view('filament.resources.important-url-resource.project-column')
                     ->sortable()
-                    ->searchable()
-                    ->limit(20)
-                    ->getStateUsing(function ($record) {
-                        return $record->project?->title ?? '-';
-                    })
-                    ->tooltip(function ($record) {
-                        return $record->project?->title ?? '';
-                    }),
+                    ->searchable(),
+
                 TextColumn::make('url')
                     ->label(__('importanturl.table.important_url'))
                     ->state(function ($record) {
@@ -75,37 +71,18 @@ class ImportantUrlsRelationManager extends RelationManager
                         return $record->url ?: '';
                     })
                     ->searchable(),
+
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
                     ->sortable(),
-                TextColumn::make('updated_at')
+
+                ViewColumn::make('updated_at')
                     ->label(__('importanturl.table.updated_at_by'))
-                    ->formatStateUsing(function ($state, $record) {
-                        return null;
-                    })
-                    ->openUrlInNewTab()
-                    ->limit(40),
-                TextColumn::make('created_at')
-                    ->label(__('importanturl.table.created_at'))
-                    ->since()
-                    ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
+                    ->view('filament.resources.important-url-resource.updated-by-column')
                     ->sortable(),
-                TextColumn::make('updated_at')
-                    ->label(__('importanturl.table.updated_at_by'))
-                    ->formatStateUsing(function ($state, $record) {
-                        if (! $record->updated_by || $record->updated_at?->eq($record->created_at)) {
-                            return '-';
-                        }
 
-                        $user = $record->updatedBy;
-                        $formattedName = $user ? $user->short_name : 'Unknown';
-
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
-                    })
-                    ->sortable()
-                    ->limit(30),
             ])
             ->filters([
                 SelectFilter::make('project_id')
@@ -117,6 +94,7 @@ class ImportantUrlsRelationManager extends RelationManager
             ])
             ->headerActions([])
             ->actions([
+
                 Tables\Actions\Action::make('open_url')
                     ->label('')
                     ->icon('heroicon-o-link')
@@ -128,6 +106,7 @@ class ImportantUrlsRelationManager extends RelationManager
 
                         return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     }),
+
                 Tables\Actions\EditAction::make()
                     ->url(fn ($record) => ImportantUrlResource::getUrl('edit', ['record' => $record]))
                     ->hidden(fn ($record) => $record->trashed()),
@@ -135,6 +114,7 @@ class ImportantUrlsRelationManager extends RelationManager
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\DeleteAction::make(),
+
                 ]),
             ])
             ->bulkActions([])
