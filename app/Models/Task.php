@@ -658,6 +658,13 @@ class Task extends Model
                 $task->tracking_token = static::generateTrackingToken();
             }
         });
+
+        static::updating(function ($task) {
+            // Automatically set updated_by when task is updated, if not already set
+            if (auth()->check() && ! $task->isDirty('updated_by')) {
+                $task->updated_by = auth()->id();
+            }
+        });
     }
 
     /**

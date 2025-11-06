@@ -118,4 +118,11 @@ class EditTask extends EditRecord
     {
         return true;
     }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['updated_by'] = auth()->id();
+
+        return $data;
+    }
 }

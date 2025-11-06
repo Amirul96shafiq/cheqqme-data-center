@@ -52,6 +52,7 @@ class KanbanController extends Controller
                     Task::where('id', $taskId)->update([
                         'order_column' => $order + 1,
                         'status' => $columnId,
+                        'updated_by' => Auth::id(),
                         'updated_at' => now(),
                     ]);
                 }
