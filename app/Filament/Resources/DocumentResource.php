@@ -348,7 +348,8 @@ class DocumentResource extends Resource
                 Tables\Columns\ViewColumn::make('title')
                     ->label(__('document.table.title'))
                     ->view('filament.resources.document-resource.title-column')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('type')
                     ->label(__('document.table.type'))
@@ -359,10 +360,15 @@ class DocumentResource extends Resource
                         default => ucfirst($state),
                     }),
 
+                Tables\Columns\ViewColumn::make('file_type')
+                    ->label(__('document.table.file_type'))
+                    ->view('filament.resources.document-resource.file-type-column'),
+
                 Tables\Columns\ViewColumn::make('project_id')
                     ->label(__('document.table.project'))
                     ->view('filament.resources.document-resource.project-column')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))

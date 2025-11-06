@@ -53,6 +53,7 @@ return [
         'id' => 'ID',
         'title' => 'Tajuk',
         'type' => 'Jenis',
+        'file_type' => 'Jenis Fail',
         'project' => 'Projek',
         'created_at' => 'Dicipta Pada',
         'updated_at_by' => 'Dikemaskini Pada (oleh)',

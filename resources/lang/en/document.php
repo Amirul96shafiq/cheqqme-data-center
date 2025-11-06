@@ -52,6 +52,7 @@ return [
         'id' => 'ID',
         'title' => 'Title',
         'type' => 'Type',
+        'file_type' => 'File Type',
         'project' => 'Project',
         'created_at' => 'Created At',
         'updated_at_by' => 'Updated At (by)',
