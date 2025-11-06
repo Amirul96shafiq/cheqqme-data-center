@@ -359,11 +359,13 @@ class DocumentResource extends Resource
                         'internal' => __('document.table.internal'),
                         'external' => __('document.table.external'),
                         default => ucfirst($state),
-                    }),
+                    })
+                    ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('file_type')
                     ->label(__('document.table.file_type'))
-                    ->view('filament.resources.document-resource.file-type-column'),
+                    ->view('filament.resources.document-resource.file-type-column')
+                    ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('project_id')
                     ->label(__('document.table.project'))
