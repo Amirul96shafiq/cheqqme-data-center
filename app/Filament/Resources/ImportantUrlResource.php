@@ -322,7 +322,7 @@ class ImportantUrlResource extends Resource
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('important_url')
+                TextColumn::make('url')
                     ->label(__('importanturl.table.important_url'))
                     ->state(function ($record) {
                         return $record->url ?: '-';
