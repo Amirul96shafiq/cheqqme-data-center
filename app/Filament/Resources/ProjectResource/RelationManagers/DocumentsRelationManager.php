@@ -71,7 +71,7 @@ class DocumentsRelationManager extends RelationManager
                     ->view('filament.resources.document-resource.file-type-column')
                     ->toggleable(),
 
-                TextColumn::make('document_url')
+                TextColumn::make('url')
                     ->label(__('document.table.document_url'))
                     ->state(function ($record) {
                         if ($record->type === 'external') {
@@ -109,7 +109,13 @@ class DocumentsRelationManager extends RelationManager
 
                         return __('document.tooltip.unknown_type');
                     })
-                    ->searchable(),
+                    ->searchable(query: function ($query, string $search) {
+                        // Search both url (for external) and file_path (for internal) columns
+                        return $query->where(function ($q) use ($search) {
+                            $q->where('url', 'like', "%{$search}%")
+                                ->orWhere('file_path', 'like', "%{$search}%");
+                        });
+                    }),
 
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))

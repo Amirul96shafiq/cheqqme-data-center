@@ -64,7 +64,7 @@ class ImportantUrlsRelationManager extends RelationManager
                     ->tooltip(function ($record) {
                         return $record->project?->title ?? '';
                     }),
-                TextColumn::make('important_url')
+                TextColumn::make('url')
                     ->label(__('importanturl.table.important_url'))
                     ->state(function ($record) {
                         return $record->url ?: '-';
@@ -73,7 +73,8 @@ class ImportantUrlsRelationManager extends RelationManager
                     ->limit(40)
                     ->tooltip(function ($record) {
                         return $record->url ?: '';
-                    }),
+                    })
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))
                     ->since()

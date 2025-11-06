@@ -66,7 +66,7 @@ class ImportantUrlsRelationManager extends RelationManager
                     ->tooltip(function ($record) {
                         return __('importanturl.table.tooltip.full_name').": {$record->client->pic_name}".', '.__('importanturl.table.tooltip.company').": {$record->client->company_name}";
                     }),
-                TextColumn::make('important_url')
+                TextColumn::make('url')
                     ->label(__('importanturl.table.important_url'))
                     ->state(function ($record) {
                         return $record->url ?: '-';
@@ -75,7 +75,8 @@ class ImportantUrlsRelationManager extends RelationManager
                     ->limit(30)
                     ->tooltip(function ($record) {
                         return $record->url ?: '';
-                    }),
+                    })
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))
                     ->since()
