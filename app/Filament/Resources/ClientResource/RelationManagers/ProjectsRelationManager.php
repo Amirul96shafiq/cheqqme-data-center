@@ -42,6 +42,10 @@ class ProjectsRelationManager extends RelationManager
         return $table
             ->recordUrl(null)
             ->recordAction(null)
+            ->modifyQueryUsing(function ($query) {
+                return $query->withCount('documents')
+                    ->with('updatedBy');
+            })
             ->columns([
                 TextColumn::make('id')
                     ->label(__('project.table.id'))
@@ -68,7 +72,7 @@ class ProjectsRelationManager extends RelationManager
                         default => 'secondary',
                     })
                     ->sortable(),
-                TextColumn::make('document_count')
+                TextColumn::make('documents_count')
                     ->label(__('project.table.document_count'))
                     ->badge()
                     ->alignCenter(),
