@@ -6,8 +6,10 @@ use App\Filament\Resources\DocumentResource;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 
@@ -43,17 +45,17 @@ class DocumentsRelationManager extends RelationManager
             ->recordUrl(null)
             ->recordAction(null)
             ->columns([
+
                 TextColumn::make('id')
                     ->label(__('document.table.id'))
                     ->sortable(),
-                TextColumn::make('title')
+
+                ViewColumn::make('title')
                     ->label(__('document.table.title'))
+                    ->view('filament.resources.document-resource.title-column')
                     ->sortable()
-                    ->searchable()
-                    ->limit(20)
-                    ->tooltip(function ($record) {
-                        return $record->title;
-                    }),
+                    ->searchable(),
+
                 TextColumn::make('type')
                     ->label(__('document.table.type'))
                     ->badge()
@@ -61,7 +63,14 @@ class DocumentsRelationManager extends RelationManager
                         'internal' => __('document.table.internal'),
                         'external' => __('document.table.external'),
                         default => ucfirst($state),
-                    }),
+                    })
+                    ->toggleable(),
+
+                ViewColumn::make('file_type')
+                    ->label(__('document.table.file_type'))
+                    ->view('filament.resources.document-resource.file-type-column')
+                    ->toggleable(),
+
                 TextColumn::make('document_url')
                     ->label(__('document.table.document_url'))
                     ->state(function ($record) {
@@ -99,34 +108,19 @@ class DocumentsRelationManager extends RelationManager
                         }
 
                         return __('document.tooltip.unknown_type');
-                    }),
+                    })
+                    ->searchable(),
+
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
                     ->sortable(),
-                TextColumn::make('updated_at')
+
+                ViewColumn::make('updated_at')
                     ->label(__('document.table.updated_at_by'))
-                    ->formatStateUsing(function ($state, $record) {
-                        // Show '-' if there's no update or updated_by
-                        if (
-                            ! $record->updated_by ||
-                            $record->updated_at?->eq($record->created_at)
-                        ) {
-                            return '-';
-                        }
-
-                        $user = $record->updatedBy;
-                        $formattedName = 'Unknown';
-
-                        if ($user) {
-                            $formattedName = $user->short_name;
-                        }
-
-                        return $state?->format('j/n/y, h:i A')." ({$formattedName})";
-                    })
-                    ->sortable()
-                    ->limit(30),
+                    ->view('filament.resources.document-resource.updated-by-column')
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('type')
@@ -138,11 +132,83 @@ class DocumentsRelationManager extends RelationManager
                     ->multiple()
                     ->preload()
                     ->searchable(),
+
+                SelectFilter::make('file_type')
+                    ->label(__('document.table.file_type'))
+                    ->options([
+                        'jpg' => 'JPG',
+                        'png' => 'PNG',
+                        'pdf' => 'PDF',
+                        'docx' => 'DOCX',
+                        'doc' => 'DOC',
+                        'xlsx' => 'XLSX',
+                        'xls' => 'XLS',
+                        'pptx' => 'PPTX',
+                        'ppt' => 'PPT',
+                        'csv' => 'CSV',
+                        'mp4' => 'MP4',
+                        'url' => 'URL',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (! filled($data['values'])) {
+                            return $query;
+                        }
+
+                        return $query->where(function (Builder $query) use ($data) {
+                            $conditions = [];
+
+                            foreach ($data['values'] as $fileType) {
+                                if ($fileType === 'url') {
+                                    $conditions[] = fn (Builder $q) => $q->where('type', 'external');
+                                } else {
+                                    $extensions = match ($fileType) {
+                                        'jpg' => ['jpg', 'jpeg'],
+                                        'png' => ['png'],
+                                        'pdf' => ['pdf'],
+                                        'docx' => ['docx'],
+                                        'doc' => ['doc'],
+                                        'xlsx' => ['xlsx'],
+                                        'xls' => ['xls'],
+                                        'pptx' => ['pptx'],
+                                        'ppt' => ['ppt'],
+                                        'csv' => ['csv'],
+                                        'mp4' => ['mp4'],
+                                        default => [$fileType],
+                                    };
+
+                                    $conditions[] = function (Builder $q) use ($extensions) {
+                                        $q->where('type', 'internal')
+                                            ->where(function (Builder $subQuery) use ($extensions) {
+                                                foreach ($extensions as $index => $ext) {
+                                                    if ($index === 0) {
+                                                        $subQuery->where('file_path', 'LIKE', '%.'.$ext);
+                                                    } else {
+                                                        $subQuery->orWhere('file_path', 'LIKE', '%.'.$ext);
+                                                    }
+                                                }
+                                            });
+                                    };
+                                }
+                            }
+
+                            foreach ($conditions as $index => $condition) {
+                                if ($index === 0) {
+                                    $query->where($condition);
+                                } else {
+                                    $query->orWhere($condition);
+                                }
+                            }
+                        });
+                    })
+                    ->multiple()
+                    ->preload()
+                    ->searchable(),
             ])
             ->headerActions([
                 // Intentionally empty to avoid creating from here unless needed
             ])
             ->actions([
+
                 Tables\Actions\Action::make('open_url')
                     ->label('')
                     ->icon('heroicon-o-link')
@@ -174,6 +240,7 @@ class DocumentsRelationManager extends RelationManager
                         return ($record->type === 'internal' && $record->file_path) ||
                             ($record->type === 'external' && $record->url);
                     }),
+
                 Tables\Actions\EditAction::make()
                     ->url(fn ($record) => DocumentResource::getUrl('edit', ['record' => $record]))
                     ->hidden(fn ($record) => $record->trashed()),
