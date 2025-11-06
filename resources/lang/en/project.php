@@ -72,6 +72,7 @@ return [
         'issue_tracker_code' => 'Issue Tracker Code',
         'status' => 'Status',
         'document_count' => 'Documents',
+        'important_url_count' => 'Important URLs',
         'planning' => 'Planning',
         'in_progress' => 'In Progress',
         'completed' => 'Completed',

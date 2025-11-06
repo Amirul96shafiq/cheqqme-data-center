@@ -71,6 +71,7 @@ return [
         'issue_tracker_code' => 'Kod Penjejak Isu',
         'status' => 'Status',
         'document_count' => 'Dokumen',
+        'important_url_count' => 'URL Penting',
         'planning' => 'Perancangan',
         'in_progress' => 'Sedang Berjalan',
         'completed' => 'Selesai',

@@ -439,6 +439,12 @@ class ProjectResource extends Resource
                     ->alignCenter()
                     ->toggleable(),
 
+                TextColumn::make('important_url_count')
+                    ->label(__('project.table.important_url_count'))
+                    ->badge()
+                    ->alignCenter()
+                    ->toggleable(),
+
                 TextColumn::make(__('created_at'))
                     ->label(__('project.table.created_at'))
                     ->since()

@@ -73,6 +73,11 @@ class Project extends Model
         return $this->documents()->count();
     }
 
+    public function getImportantUrlCountAttribute()
+    {
+        return $this->importantUrls()->count();
+    }
+
     protected static function boot()
     {
         parent::boot();
