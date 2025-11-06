@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProjectResource\Pages;
 use App\Filament\Resources\ProjectResource\RelationManagers;
 use App\Filament\Resources\ProjectResource\RelationManagers\ProjectActivityLogRelationManager;
+use App\Filament\Resources\ProjectResource\RelationManagers\TrackingTokensRelationManager;
 use App\Helpers\ClientFormatter;
 use App\Models\Project;
 use Closure;
@@ -189,71 +190,8 @@ class ProjectResource extends Resource
                             ->columns(1)
                             ->columnSpanFull(),
 
-                        Repeater::make('tracking_tokens')
-                            ->label(__('project.form.tracking_tokens'))
-                            ->schema([
-                                Grid::make(4)
-                                    ->schema([
-                                        TextInput::make('token')
-                                            ->label(__('project.form.tracking_token'))
-                                            ->disabled()
-                                            ->dehydrated(false)
-                                            ->columnSpan(1),
-
-                                        Forms\Components\Select::make('status')
-                                            ->label(__('project.form.task_status'))
-                                            ->options([
-                                                'issue_tracker' => __('action.status.issue_tracker'),
-                                                'todo' => __('action.status.todo'),
-                                                'in_progress' => __('action.status.in_progress'),
-                                                'toreview' => __('action.status.toreview'),
-                                                'completed' => __('action.status.completed'),
-                                                'archived' => __('action.status.archived'),
-                                            ])
-                                            ->disabled()
-                                            ->dehydrated(false)
-                                            ->columnSpan(1),
-
-                                        Forms\Components\TextInput::make('edit_url')
-                                            ->label(__('project.form.edit_task'))
-                                            ->disabled()
-                                            ->dehydrated(false)
-                                            ->suffixAction(
-                                                Forms\Components\Actions\Action::make('openEditTask')
-                                                    ->icon('heroicon-o-arrow-top-right-on-square')
-                                                    ->url(fn (Get $get) => $get('edit_url'))
-                                                    ->openUrlInNewTab()
-                                                    ->tooltip(__('project.form.open_edit_task'))
-                                            )
-                                            ->columnSpan(1),
-
-                                        Forms\Components\TextInput::make('status_url')
-                                            ->label(__('project.form.view_status'))
-                                            ->disabled()
-                                            ->dehydrated(false)
-                                            ->suffixAction(
-                                                Forms\Components\Actions\Action::make('openStatusPage')
-                                                    ->icon('heroicon-o-arrow-top-right-on-square')
-                                                    ->url(fn (Get $get) => $get('status_url'))
-                                                    ->openUrlInNewTab()
-                                                    ->tooltip(__('project.form.open_status_page'))
-                                            )
-                                            ->columnSpan(1),
-                                    ]),
-                            ])
-                            ->default([])
-                            ->disabled()
-                            ->deletable(false)
-                            ->addable(false)
-                            ->reorderable(false)
-                            ->collapsible(true)
-                            ->collapsed()
-                            ->itemLabel(fn (array $state): string => $state['token'] ?? __('project.form.tracking_token'))
-                            ->columns(1)
-                            ->columnSpanFull(),
                     ])
-                    ->collapsible(true)
-                    ->collapsed(),
+                    ->collapsible(true),
 
                 Section::make()
                     ->heading(function (Get $get) {
@@ -580,6 +518,7 @@ class ProjectResource extends Resource
     public static function getRelations(): array
     {
         return [
+            TrackingTokensRelationManager::class,
             RelationManagers\DocumentsRelationManager::class,
             RelationManagers\ImportantUrlsRelationManager::class,
             ProjectActivityLogRelationManager::class,

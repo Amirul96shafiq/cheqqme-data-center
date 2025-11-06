@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -61,6 +62,14 @@ class Project extends Model
     public function importantUrls(): HasMany
     {
         return $this->hasMany(ImportantUrl::class);
+    }
+
+    public function trackingTokens(): Relation
+    {
+        // Return a HasMany relationship as a placeholder for Filament RelationManager
+        // The actual query is overridden in TrackingTokensRelationManager::getTableQuery()
+        // This is needed because Filament RelationManagers require a relationship property
+        return $this->hasMany(Task::class);
     }
 
     public function updatedBy()

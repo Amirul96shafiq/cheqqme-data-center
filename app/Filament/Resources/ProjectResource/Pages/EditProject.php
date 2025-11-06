@@ -35,25 +35,6 @@ class EditProject extends BaseEditRecord
             $data['issue_tracker_info'] = [];
         }
 
-        // Populate tracking tokens from related tasks
-        if ($record && $record->id) {
-            $tasks = \App\Models\Task::whereNotNull('tracking_token')
-                ->whereJsonContains('project', (string) $record->id)
-                ->get(['id', 'tracking_token', 'status']);
-
-            $data['tracking_tokens'] = $tasks->map(function ($task) {
-                return [
-                    'task_id' => $task->id,
-                    'token' => $task->tracking_token,
-                    'status' => $task->status,
-                    'edit_url' => \App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $task->id]),
-                    'status_url' => route('issue-tracker.status', ['token' => $task->tracking_token]),
-                ];
-            })->toArray();
-        } else {
-            $data['tracking_tokens'] = [];
-        }
-
         return $data;
     }
 
