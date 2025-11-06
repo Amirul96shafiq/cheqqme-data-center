@@ -331,7 +331,9 @@ class ImportantUrlResource extends Resource
                     ->limit(30)
                     ->tooltip(function ($record) {
                         return $record->url ?: '';
-                    }),
+                    })
+                    ->toggleable()
+                    ->searchable(),
 
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at'))
