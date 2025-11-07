@@ -3,7 +3,7 @@
     $status = $record->status;
 @endphp
 
-<div class="text-center">
+<div class="px-4 py-3 text-center">
     @if (empty($status))
         <span class="text-sm text-gray-900 dark:text-white">-</span>
     @else

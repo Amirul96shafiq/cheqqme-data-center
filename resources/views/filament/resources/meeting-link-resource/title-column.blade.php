@@ -31,11 +31,13 @@
     $displayTitle = \Illuminate\Support\Str::limit($fullTitle, 30, '...');
 @endphp
 
-@if (empty($fullTitle))
-    <span class="text-sm text-gray-900 dark:text-white" title="-">-</span>
-@else
-    <span class="text-sm text-gray-900 dark:text-white" title="{{ $fullTitle }}">
-        {{ $displayTitle }}
-    </span>
-@endif
+<div class="px-4 py-3">
+    @if (empty($fullTitle))
+        <span class="text-sm text-gray-900 dark:text-white" title="-">-</span>
+    @else
+        <span class="text-sm text-gray-900 dark:text-white" title="{{ $fullTitle }}">
+            {{ $displayTitle }}
+        </span>
+    @endif
+</div>
 

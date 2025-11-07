@@ -4,15 +4,17 @@
     $companyName = $record->company_name;
 @endphp
 
-@if (empty($picName))
-    <span class="text-sm text-gray-900 dark:text-white" title="-">-</span>
-@else
-    @php
-        $formattedName = \App\Helpers\ClientFormatter::formatClientDisplay($picName, $companyName);
-        $tooltipText = __('client.table.tooltip.full_name').": {$picName}".', '.__('client.table.tooltip.company').": {$companyName}";
-    @endphp
-    <span class="text-sm text-gray-900 dark:text-white" title="{{ $tooltipText }}">
-        {{ $formattedName }}
-    </span>
-@endif
+<div class="px-4 py-3">
+    @if (empty($picName))
+        <span class="text-sm text-gray-900 dark:text-white" title="-">-</span>
+    @else
+        @php
+            $formattedName = \App\Helpers\ClientFormatter::formatClientDisplay($picName, $companyName);
+            $tooltipText = __('client.table.tooltip.full_name').": {$picName}".', '. __('client.table.tooltip.company').": {$companyName}";
+        @endphp
+        <span class="text-sm text-gray-900 dark:text-white" title="{{ $tooltipText }}">
+            {{ $formattedName }}
+        </span>
+    @endif
+</div>
 

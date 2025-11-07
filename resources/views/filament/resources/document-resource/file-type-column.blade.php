@@ -24,11 +24,13 @@
     }
 @endphp
 
-@if($fileType !== '-')
-    <x-filament::badge color="primary">
-        {{ $fileType }}
-    </x-filament::badge>
-@else
-    <span class="text-sm text-gray-400 dark:text-gray-500">-</span>
-@endif
+<div class="px-4 py-3">
+    @if($fileType !== '-')
+        <x-filament::badge color="primary">
+            {{ $fileType }}
+        </x-filament::badge>
+    @else
+        <span class="text-sm text-gray-400 dark:text-gray-500">-</span>
+    @endif
+</div>
 
