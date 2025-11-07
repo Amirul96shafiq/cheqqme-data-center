@@ -11,6 +11,7 @@ const getHeroicon = (name, classes = "w-6 h-6") => {
             "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
         "check-circle": "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
         "magnifying-glass": "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
+        tag: "M7 7h.01M5 2.5A2.5 2.5 0 012.5 5v6.586a1 1 0 00.293.707l7.414 7.414a1 1 0 001.414 0l6.586-6.586a1 1 0 000-1.414L12.414 2.793A1 1 0 0011.707 2.5H5z",
     };
 
     const path = icons[name] || icons["magnifying-glass"];
@@ -28,6 +29,7 @@ window.globalKanbanFilter = function () {
         assignedDropdownOpen: false,
         dueDateDropdownOpen: false,
         priorityDropdownOpen: false,
+        cardTypeDropdownOpen: false,
         assignedToFilter: [],
         users: {},
         // Due date filter state
@@ -36,6 +38,8 @@ window.globalKanbanFilter = function () {
         dueDateTo: null, // 'YYYY-MM-DD' | null
         // Priority filter state
         priorityFilter: [], // ['high', 'medium', 'low']
+        // Card type filter state
+        cardTypeFilter: "all", // 'all' | 'tasks' | 'issue_trackers'
 
         init() {
             // Get initial data from data attributes
@@ -53,6 +57,12 @@ window.globalKanbanFilter = function () {
                 this.priorityFilter = JSON.parse(
                     element.dataset.initialPriorityFilter || "[]"
                 );
+                const initialCardType =
+                    element.dataset.initialCardType || "all";
+                this.cardTypeFilter =
+                    initialCardType && initialCardType !== ""
+                        ? initialCardType
+                        : "all";
             }
 
             // Initialize global search state
@@ -70,6 +80,9 @@ window.globalKanbanFilter = function () {
 
             // Initialize global priority filter state
             window.currentPriorityFilter = this.priorityFilter;
+
+            // Initialize global card type filter state
+            window.currentCardTypeFilter = this.cardTypeFilter;
         },
 
         // Search methods
@@ -188,10 +201,51 @@ window.globalKanbanFilter = function () {
             return labels[priority] || priority;
         },
 
+        // Card type filter methods
+        handleCardTypeFilterChange(value) {
+            // Single-select behavior: clicking a checked item unchecks it (sets to 'all')
+            // Otherwise, set to the selected value
+            if (this.cardTypeFilter === value) {
+                this.cardTypeFilter = "all";
+            } else {
+                this.cardTypeFilter = value;
+            }
+            window.currentCardTypeFilter = this.cardTypeFilter;
+            this.dispatchFilterEvent();
+        },
+
+        setCardTypeFilter(value) {
+            if (!value) {
+                value = "all";
+            }
+            this.cardTypeFilter = value;
+            window.currentCardTypeFilter = value;
+            this.dispatchFilterEvent();
+        },
+
+        clearCardTypeFilter() {
+            this.cardTypeFilter = "all";
+            window.currentCardTypeFilter = "all";
+            this.dispatchFilterEvent();
+        },
+
+        getCardTypeLabel(value) {
+            const translations =
+                window.kanbanTranslations?.cardTypeLabels || {};
+            const labels = {
+                all: translations.all || "All cards",
+                tasks: translations.tasks || "Tasks",
+                issue_trackers: translations.issue_trackers || "Issue trackers",
+            };
+
+            return labels[value] || labels.all;
+        },
+
         clearFilters() {
             this.clearAssignedFilter();
             this.clearDueDateFilter();
             this.clearPriorityFilter();
+            this.clearCardTypeFilter();
         },
 
         removeAssignedUser(userId) {
@@ -246,6 +300,7 @@ window.globalKanbanFilter = function () {
                     to: this.dueDateTo,
                 },
                 priority: this.priorityFilter,
+                cardType: this.cardTypeFilter,
             };
 
             const event = new CustomEvent("action-board-unified-filter", {
@@ -270,13 +325,15 @@ window.columnDragDrop = function (columnId) {
                 const assignedTo = e?.detail?.assignedTo || [];
                 const dueDate = e?.detail?.dueDate || {};
                 const priority = e?.detail?.priority || [];
+                const cardType = e?.detail?.cardType || "all";
                 this.filterActive =
                     search.length > 0 ||
                     assignedTo.length > 0 ||
                     dueDate.preset ||
                     dueDate.from ||
                     dueDate.to ||
-                    priority.length > 0;
+                    priority.length > 0 ||
+                    cardType !== "all";
             });
         },
 
@@ -483,6 +540,7 @@ document.addEventListener("DOMContentLoaded", function () {
             from: null,
             to: null,
         };
+        var cardType = e?.detail?.cardType || "all";
 
         // Set global states for Alpine.js
         window.searchActive = search.length > 0;
@@ -492,7 +550,8 @@ document.addEventListener("DOMContentLoaded", function () {
             !!dueDate.preset ||
             !!dueDate.from ||
             !!dueDate.to ||
-            priority.length > 0;
+            priority.length > 0 ||
+            cardType !== "all";
 
         // Wait a bit for DOM to update, then filter cards
         setTimeout(function () {
@@ -507,6 +566,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     let matchesSearch = true;
                     let matchesAssignedFilter = true;
                     let matchesDueDate = true;
+                    let matchesCardType = true;
 
                     // Check search filter
                     if (search.length > 0) {
@@ -701,12 +761,30 @@ document.addEventListener("DOMContentLoaded", function () {
                         });
                     }
 
+                    // Check card type filter
+                    const cardTypeFilter = e?.detail?.cardType || "all";
+                    if (cardTypeFilter !== "all") {
+                        const cardTypeValue =
+                            card.getAttribute("data-card-type") || "tasks";
+
+                        if (cardTypeFilter === "tasks") {
+                            // Show tasks (cards without tracking_token)
+                            matchesCardType =
+                                cardTypeValue !== "issue_trackers";
+                        } else if (cardTypeFilter === "issue_trackers") {
+                            // Show only issue trackers (cards with tracking_token or status 'issue_tracker')
+                            matchesCardType =
+                                cardTypeValue === "issue_trackers";
+                        }
+                    }
+
                     // Card must match ALL active filters
                     const matchesAllFilters =
                         matchesSearch &&
                         matchesAssignedFilter &&
                         matchesDueDate &&
-                        matchesPriority;
+                        matchesPriority &&
+                        matchesCardType;
 
                     card.style.display = matchesAllFilters ? "" : "none";
                     if (matchesAllFilters) visible++;
@@ -724,7 +802,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     !!dueDate.preset ||
                     !!dueDate.from ||
                     !!dueDate.to ||
-                    priority.length > 0;
+                    priority.length > 0 ||
+                    cardType !== "all";
                 if (hasActiveFilters && visible === 0) {
                     col.style.display = "none";
                     // Hide create button when column is hidden
@@ -761,7 +840,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 !!dueDate.preset ||
                 !!dueDate.from ||
                 !!dueDate.to ||
-                priority.length > 0;
+                priority.length > 0 ||
+                cardType !== "all";
 
             if (hasActiveFilters && totalVisibleCards === 0) {
                 // Update no-results component content based on active filter
@@ -812,6 +892,19 @@ document.addEventListener("DOMContentLoaded", function () {
                             "w-14 h-14 mx-auto text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-500/20 rounded-full p-4"
                         );
                         iconEl.innerHTML = getHeroicon("check-circle");
+                    } else if (cardType !== "all") {
+                        // Card type filter is active
+                        headingEl.textContent =
+                            translations.cardType?.title ||
+                            "No tasks found for selected card type";
+                        descriptionEl.textContent =
+                            translations.cardType?.description ||
+                            "Try adjusting your card type filter or clear the filter to see all tasks.";
+                        iconEl.setAttribute(
+                            "class",
+                            "w-14 h-14 mx-auto text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-500/20 rounded-full p-4"
+                        );
+                        iconEl.innerHTML = getHeroicon("tag");
                     } else {
                         // Search filter is active
                         headingEl.textContent =

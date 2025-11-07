@@ -31,6 +31,8 @@ class ActionBoard extends KanbanBoardPage
 
     public array $priorityFilter = [];
 
+    public string $cardTypeFilter = 'all';
+
     public function getSubject(): Builder
     {
         $query = Task::query()
@@ -42,7 +44,7 @@ class ActionBoard extends KanbanBoardPage
             ->select([
                 'id', 'title', 'description', 'status', 'priority', 'order_column',
                 'due_date', 'assigned_to', 'client', 'project', 'document',
-                'important_url', 'attachments', 'extra_information', 'created_at', 'updated_at',
+                'important_url', 'attachments', 'extra_information', 'tracking_token', 'created_at', 'updated_at',
             ])
             ->orderBy('order_column')
             ->limit(300); // Limit initial load to 300 tasks (Trello approach)
@@ -905,6 +907,11 @@ class ActionBoard extends KanbanBoardPage
         $this->dispatchUnifiedFilter();
     }
 
+    public function updatedCardTypeFilter(): void
+    {
+        $this->dispatchUnifiedFilter();
+    }
+
     public function clearFilter(): void
     {
         $this->assignedToFilter = [];
@@ -912,6 +919,7 @@ class ActionBoard extends KanbanBoardPage
         $this->dueDateFrom = null;
         $this->dueDateTo = null;
         $this->priorityFilter = [];
+        $this->cardTypeFilter = 'all';
         $this->dispatchUnifiedFilter();
     }
 
@@ -941,7 +949,8 @@ class ActionBoard extends KanbanBoardPage
                 'from' => $this->dueDateFrom,
                 'to' => $this->dueDateTo,
             ],
-            priority: $this->priorityFilter
+            priority: $this->priorityFilter,
+            cardType: $this->cardTypeFilter
         );
     }
 

@@ -109,6 +109,13 @@ return [
         'custom_range' => 'Custom Range',
         'from_date' => 'From Date',
         'to_date' => 'To Date',
+        'card_type' => 'Card Type',
+        'select_card_type' => 'Select card type filter',
+        'card_type_all' => 'All cards',
+        'card_type_tasks' => 'Tasks',
+        'card_type_issue_trackers' => 'Issue Trackers',
+        'selected_card_type' => 'Selected Card Type',
+        'selected_label' => 'Selected',
     ],
 
     'no_results' => [
@@ -130,6 +137,10 @@ return [
         'priority' => [
             'title' => 'No tasks found for selected priority',
             'description' => 'Try adjusting your priority filter or clear the filter to see all tasks.',
+        ],
+        'card_type' => [
+            'title' => 'No tasks found for selected card type',
+            'description' => 'Try adjusting your card type filter or clear the filter to see all tasks.',
         ],
     ],
 ];

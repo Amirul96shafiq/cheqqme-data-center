@@ -664,6 +664,11 @@ class Task extends Model
             if (auth()->check() && ! $task->isDirty('updated_by')) {
                 $task->updated_by = auth()->id();
             }
+
+            // Auto-generate tracking_token if status is changed to 'issue_tracker' and token is missing
+            if ($task->isDirty('status') && $task->status === 'issue_tracker' && empty($task->tracking_token)) {
+                $task->tracking_token = static::generateTrackingToken();
+            }
         });
     }
 

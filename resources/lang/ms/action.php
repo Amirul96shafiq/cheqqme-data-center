@@ -75,6 +75,13 @@ return [
         'select_users' => 'Pilih pengguna untuk menapis',
         'selected_users' => 'Pengguna Terpilih',
         'users_selected' => 'pengguna dipilih',
+        'card_type' => 'Jenis Kad',
+        'select_card_type' => 'Pilih penapis jenis kad',
+        'card_type_all' => 'Semua kad',
+        'card_type_tasks' => 'Tugasan',
+        'card_type_issue_trackers' => 'Penjejak Isu',
+        'selected_card_type' => 'Jenis Kad Terpilih',
+        'selected_label' => 'Terpilih',
         'due_date' => 'Tarikh Akhir',
         'due_today' => 'Tarikh akhir hari ini',
         'due_this_week' => 'Tarikh akhir minggu ini',
@@ -115,6 +122,10 @@ return [
         'priority' => [
             'title' => 'Tiada tugasan dijumpai untuk keutamaan terpilih',
             'description' => 'Cuba sesuaikan penapis keutamaan anda atau kosongkan penapis untuk melihat semua tugasan.',
+        ],
+        'card_type' => [
+            'title' => 'Tiada tugasan dijumpai untuk jenis kad terpilih',
+            'description' => 'Cuba ubah penapis jenis kad anda atau kosongkan penapis untuk melihat semua tugasan.',
         ],
     ],
 ];

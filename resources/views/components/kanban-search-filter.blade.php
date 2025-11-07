@@ -10,6 +10,7 @@
     'dueDateFrom' => null,
     'dueDateTo' => null,
     'priorityFilter' => [],
+    'cardTypeFilter' => 'all',
 ])
 
 @php
@@ -25,7 +26,8 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
      data-initial-due-date-preset="{{ $dueDatePreset }}"
      data-initial-due-date-from="{{ $dueDateFrom }}"
      data-initial-due-date-to="{{ $dueDateTo }}"
-     data-initial-priority-filter="{{ json_encode($priorityFilter) }}">
+     data-initial-priority-filter="{{ json_encode($priorityFilter) }}"
+     data-initial-card-type="{{ $cardTypeFilter }}">
     <div class="flex items-center justify-start sm:justify-end gap-4">
         
         {{-- Board viewers beside search (unified component, full width) --}}
@@ -210,6 +212,98 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
 
                             </div>
 
+                        </div>
+
+                        <!-- Card Type Filter -->
+                        <div class="p-6 border-t border-gray-200 dark:border-gray-700">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                {{ __('action.filter.card_type') }}
+                            </label>
+                            
+                            <!-- Custom Dropdown -->
+                            <div class="relative" @click.outside="cardTypeDropdownOpen = false">
+                                <button
+                                    @click="cardTypeDropdownOpen = !cardTypeDropdownOpen"
+                                    type="button"
+                                    class="relative w-full cursor-default rounded-lg bg-white dark:bg-gray-800 py-2 pl-3 pr-10 text-left ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm"
+                                >
+                                    <span class="block truncate text-gray-900 dark:text-white">
+                                        <span x-show="cardTypeFilter === 'all'" class="text-gray-500 dark:text-gray-400">{{ __('action.filter.select_card_type') }}</span>
+                                        <span x-show="cardTypeFilter === 'tasks'" x-text="'{{ __('action.filter.card_type_tasks') }}'"></span>
+                                        <span x-show="cardTypeFilter === 'issue_trackers'" x-text="'{{ __('action.filter.card_type_issue_trackers') }}'"></span>
+                                    </span>
+                                    <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                                        <x-heroicon-m-chevron-down 
+                                            class="h-5 w-5 text-gray-400 transition-transform duration-200" 
+                                            ::class="{ 'rotate-180': cardTypeDropdownOpen }"
+                                        />
+                                    </span>
+                                </button>
+                                
+                                <x-dropdown-panel is-open="cardTypeDropdownOpen">
+                                    <!-- Card Type List Section -->
+                                    <div class="p-4">
+                                        <div class="max-h-48 overflow-y-auto space-y-1">
+                                            <!-- All Cards -->
+                                            <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input 
+                                                    type="checkbox" 
+                                                    value="all"
+                                                    :checked="cardTypeFilter === 'all'"
+                                                    @change="handleCardTypeFilterChange('all')"
+                                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
+                                                >
+                                                <span class="text-gray-700 dark:text-gray-300 flex-1">
+                                                    {{ __('action.filter.card_type_all') }}
+                                                </span>
+                                            </label>
+                                            
+                                            <!-- Tasks Only -->
+                                            <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input 
+                                                    type="checkbox" 
+                                                    value="tasks"
+                                                    :checked="cardTypeFilter === 'tasks'"
+                                                    @change="handleCardTypeFilterChange('tasks')"
+                                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
+                                                >
+                                                <span class="text-gray-700 dark:text-gray-300 flex-1">
+                                                    {{ __('action.filter.card_type_tasks') }}
+                                                </span>
+                                            </label>
+                                            
+                                            <!-- Issue Trackers -->
+                                            <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                <input 
+                                                    type="checkbox" 
+                                                    value="issue_trackers"
+                                                    :checked="cardTypeFilter === 'issue_trackers'"
+                                                    @change="handleCardTypeFilterChange('issue_trackers')"
+                                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
+                                                >
+                                                <span class="text-gray-700 dark:text-gray-300 flex-1">
+                                                    {{ __('action.filter.card_type_issue_trackers') }}
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </x-dropdown-panel>
+                            </div>
+                            
+                            <!-- Selected Card Type Display -->
+                            <div x-show="cardTypeFilter !== 'all'" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ __('action.filter.selected_card_type') }}</div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 rounded-md">
+                                        <span x-text="getCardTypeLabel(cardTypeFilter)"></span>
+                                        <button @click="clearCardTypeFilter()" class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Due Date Filter -->

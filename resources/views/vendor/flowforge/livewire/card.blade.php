@@ -26,6 +26,37 @@
     }
 @endphp
 
+@php
+    // Determine card type: issue_trackers if task has tracking_token OR status is 'issue_tracker'
+    $cardType = 'tasks'; // Default to tasks
+    
+    // Check status first (most reliable, always in record)
+    $status = $record['status'] ?? null;
+    if ($status === 'issue_tracker') {
+        $cardType = 'issue_trackers';
+    } else {
+        // Check for tracking_token if status is not 'issue_tracker'
+        $trackingToken = $record['tracking_token'] 
+            ?? $record['attributes']['tracking_token']['value'] 
+            ?? null;
+        
+        // Only query database if tracking_token not found and we have an ID
+        if (empty($trackingToken) && isset($record['id'])) {
+            try {
+                $task = \App\Models\Task::select('tracking_token')->find($record['id']);
+                $trackingToken = $task->tracking_token ?? null;
+            } catch (\Throwable $e) {
+                // Ignore errors, default to tasks
+            }
+        }
+        
+        // Set to issue_trackers if tracking_token exists
+        if (!empty($trackingToken) && trim($trackingToken) !== '') {
+            $cardType = 'issue_trackers';
+        }
+    }
+@endphp
+
 {{-- Card container with interactive/non-interactive classes and sortable attributes --}}
 <div
     @class([
@@ -40,7 +71,8 @@
             const search = e?.detail?.search || '';
             const assignedTo = e?.detail?.assignedTo || [];
             const dueDate = e?.detail?.dueDate || { preset: null, from: null, to: null };
-            filterActive = search.length > 0 || assignedTo.length > 0 || !!dueDate.preset || !!dueDate.from || !!dueDate.to;
+            const cardType = e?.detail?.cardType || 'all';
+            filterActive = search.length > 0 || assignedTo.length > 0 || !!dueDate.preset || !!dueDate.from || !!dueDate.to || cardType !== 'all';
         });
     "
     x-sortable-handle
@@ -58,6 +90,7 @@
     @if($this->editAction() &&  ($this->editAction)(['record' => $record['id']])->isVisible())
         wire:click="mountAction('edit', {record: '{{ $record['id'] }}'})"
     @endif
+    data-card-type="{{ $cardType }}"
     @if(method_exists($this, 'isTaskHighlighted') && $this->isTaskHighlighted((object) ['id' => $record['id']])) data-highlighted="true" @endif
 >
     <div class="ff-card__content">

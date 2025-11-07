@@ -13,6 +13,7 @@
         :due-date-from="$dueDateFrom"
         :due-date-to="$dueDateTo"
         :priority-filter="$priorityFilter"
+        :card-type-filter="$cardTypeFilter"
     />
     
     <div class="h-[calc(100vh-16rem)] min-h-[400px] pb-8 md:pb-0">
@@ -588,7 +589,20 @@
                     dueDate: {
                         title: '{{ __("action.no_results.due_date.title") }}',
                         description: '{{ __("action.no_results.due_date.description") }}'
+                    },
+                    priority: {
+                        title: '{{ __("action.no_results.priority.title") }}',
+                        description: '{{ __("action.no_results.priority.description") }}'
+                    },
+                    cardType: {
+                        title: '{{ __("action.no_results.card_type.title") }}',
+                        description: '{{ __("action.no_results.card_type.description") }}'
                     }
+                },
+                cardTypeLabels: {
+                    all: '{{ __("action.filter.card_type_all") }}',
+                    tasks: '{{ __("action.filter.card_type_tasks") }}',
+                    issue_trackers: '{{ __("action.filter.card_type_issue_trackers") }}'
                 }
             };
             
