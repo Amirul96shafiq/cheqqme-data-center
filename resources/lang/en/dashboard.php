@@ -60,8 +60,21 @@ return [
         'description' => 'View all :total tasks →',
     ],
 
+    'your_meeting_links' => [
+        'title' => 'Your Meeting Links',
+        'description' => 'View all :total meeting links →',
+    ],
+
     'total_trello_boards' => [
         'title' => 'Total Trello Boards',
+    ],
+
+    'total_important_urls' => [
+        'title' => 'Total Important URLs',
+    ],
+
+    'total_phone_numbers' => [
+        'title' => 'Total Phone Numbers',
     ],
 
     'actions' => [
@@ -73,5 +86,7 @@ return [
         'view_all_documents' => 'View All Documents →',
         'view_all_tasks' => 'View All Tasks →',
         'view_all_trello_boards' => 'View All Trello Boards →',
+        'view_all_important_urls' => 'View All Important URLs →',
+        'view_all_phone_numbers' => 'View All Phone Numbers →',
     ],
 ];

@@ -60,8 +60,21 @@ return [
         'description' => 'Lihat Semua :total tugasan →',
     ],
 
+    'your_meeting_links' => [
+        'title' => 'Pautan Mesyuarat Anda',
+        'description' => 'Lihat Semua :total pautan mesyuarat →',
+    ],
+
     'total_trello_boards' => [
         'title' => 'Jumlah Papan Trello',
+    ],
+
+    'total_important_urls' => [
+        'title' => 'Jumlah URL Penting',
+    ],
+
+    'total_phone_numbers' => [
+        'title' => 'Jumlah Nombor Telefon',
     ],
 
     'actions' => [
@@ -73,5 +86,7 @@ return [
         'view_all_documents' => 'Lihat Semua Dokumen →',
         'view_all_tasks' => 'Lihat Semua Tugasan →',
         'view_all_trello_boards' => 'Lihat Semua Papan Trello →',
+        'view_all_important_urls' => 'Lihat Semua URL Penting →',
+        'view_all_phone_numbers' => 'Lihat Semua Nombor Telefon →',
     ],
 ];
