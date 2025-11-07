@@ -70,6 +70,7 @@ return [
         'description' => 'Description',
         'client' => 'Client',
         'issue_tracker_code' => 'Issue Tracker Code',
+        'tracking_tokens_count' => 'Tracking Tokens',
         'status' => 'Status',
         'document_count' => 'Documents',
         'important_url_count' => 'Important URLs',

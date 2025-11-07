@@ -69,6 +69,7 @@ return [
         'client' => 'Pelanggan',
         'description' => 'Deskripsi',
         'issue_tracker_code' => 'Kod Penjejak Isu',
+        'tracking_tokens_count' => 'Token Penjejakan',
         'status' => 'Status',
         'document_count' => 'Dokumen',
         'important_url_count' => 'URL Penting',

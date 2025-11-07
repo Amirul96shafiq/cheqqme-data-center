@@ -366,10 +366,18 @@ class ProjectResource extends Resource
                     ->toggleable()
                     ->alignCenter(),
 
+                TextColumn::make('tracking_tokens_count')
+                    ->label(__('project.table.tracking_tokens_count'))
+                    ->badge()
+                    ->color('primary')
+                    ->alignCenter()
+                    ->toggleable(),
+
                 Tables\Columns\ViewColumn::make('status')
                     ->label(__('project.table.status'))
                     ->view('filament.resources.project-resource.status-column')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 TextColumn::make('document_count')
                     ->label(__('project.table.document_count'))
@@ -387,7 +395,8 @@ class ProjectResource extends Resource
                     ->label(__('project.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('project.table.updated_at_by'))

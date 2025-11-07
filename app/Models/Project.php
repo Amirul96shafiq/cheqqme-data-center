@@ -87,6 +87,13 @@ class Project extends Model
         return $this->importantUrls()->count();
     }
 
+    public function getTrackingTokensCountAttribute()
+    {
+        return Task::whereNotNull('tracking_token')
+            ->whereJsonContains('project', (string) $this->id)
+            ->count();
+    }
+
     protected static function boot()
     {
         parent::boot();
