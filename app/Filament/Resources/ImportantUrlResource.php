@@ -307,21 +307,21 @@ class ImportantUrlResource extends Resource
                 Tables\Columns\ViewColumn::make('title')
                     ->label(__('importanturl.table.title'))
                     ->view('filament.resources.important-url-resource.title-column')
-                    ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
 
                 Tables\Columns\ViewColumn::make('client_id')
                     ->label(__('importanturl.table.client'))
                     ->view('filament.resources.important-url-resource.client-column')
-                    ->sortable()
                     ->searchable()
+                    ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('project_id')
                     ->label(__('importanturl.table.project'))
                     ->view('filament.resources.important-url-resource.project-column')
-                    ->sortable()
                     ->searchable()
+                    ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('url')

@@ -271,6 +271,7 @@ class UserResource extends Resource
                 Tables\Columns\ViewColumn::make('email')
                     ->label(__('user.table.email'))
                     ->view('filament.resources.user-resource.email-column')
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('country_from_phone')
@@ -317,6 +318,7 @@ class UserResource extends Resource
                     ->getStateUsing(function ($record) {
                         return $record->timezone ?? '-';
                     })
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
 

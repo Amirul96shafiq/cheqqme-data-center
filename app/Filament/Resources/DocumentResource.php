@@ -350,8 +350,8 @@ class DocumentResource extends Resource
                 Tables\Columns\ViewColumn::make('title')
                     ->label(__('document.table.title'))
                     ->view('filament.resources.document-resource.title-column')
-                    ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
 
                 TextColumn::make('type')
                     ->label(__('document.table.type'))
@@ -372,8 +372,8 @@ class DocumentResource extends Resource
                 Tables\Columns\ViewColumn::make('project_id')
                     ->label(__('document.table.project'))
                     ->view('filament.resources.document-resource.project-column')
-                    ->sortable()
                     ->searchable()
+                    ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('created_at')

@@ -66,6 +66,7 @@ class ChatbotHistory extends Page implements HasTable
                 ViewColumn::make('backup_name')
                     ->label(__('chatbot.table.backup_name'))
                     ->view('filament.pages.backup-name-column')
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('backup_type')
@@ -83,6 +84,7 @@ class ChatbotHistory extends Page implements HasTable
                         'import' => __('chatbot.filter.types.import'),
                         default => ucfirst($state),
                     })
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('message_count')

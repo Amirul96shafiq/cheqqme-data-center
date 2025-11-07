@@ -959,13 +959,12 @@ class MeetingLinkResource extends Resource
                 Tables\Columns\ViewColumn::make('title')
                     ->label(__('meetinglink.table.title'))
                     ->view('filament.resources.meeting-link-resource.title-column')
-                    ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('meeting_platform')
                     ->label(__('meetinglink.table.platform'))
                     ->sortable()
-                    ->searchable()
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Google Meet', 'Zoom Meeting', 'Teams Meeting' => 'primary',
@@ -976,7 +975,7 @@ class MeetingLinkResource extends Resource
                 Tables\Columns\TextColumn::make('meeting_url')
                     ->label(__('meetinglink.table.url_link'))
                     ->searchable()
-                    ->limit(40)
+                    ->limit(30)
                     ->copyable()
                     ->color('primary')
                     ->formatStateUsing(fn ($state) => $state ? str_replace(['https://', 'http://'], '', $state) : null)

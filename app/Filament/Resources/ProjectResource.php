@@ -340,6 +340,7 @@ class ProjectResource extends Resource
             ->recordUrl(null)
             ->recordAction(null)
             ->columns([
+
                 TextColumn::make('id')
                     ->label(__('project.table.id'))
                     ->sortable(),
@@ -347,22 +348,22 @@ class ProjectResource extends Resource
                 Tables\Columns\ViewColumn::make('title')
                     ->label(__('project.table.title'))
                     ->view('filament.resources.project-resource.title-column')
-                    ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
 
                 Tables\Columns\ViewColumn::make('client_id')
                     ->label(__('project.table.client'))
                     ->view('filament.resources.project-resource.client-column')
-                    ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('issue_tracker_code')
                     ->label(__('project.table.issue_tracker_code'))
-                    ->searchable()
                     ->copyable()
                     ->copyableState(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
                     ->color('primary')
                     ->url(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
+                    ->searchable()
                     ->toggleable()
                     ->alignCenter(),
 
@@ -404,6 +405,7 @@ class ProjectResource extends Resource
                     ->label(__('project.table.updated_at_by'))
                     ->view('filament.resources.project-resource.updated-by-column')
                     ->sortable(),
+
             ])
             ->filters([
 
@@ -525,7 +527,7 @@ class ProjectResource extends Resource
                     Tables\Actions\RestoreAction::make(),
 
                     Tables\Actions\ForceDeleteAction::make(),
-                    
+
                 ]),
             ])
             ->bulkActions([

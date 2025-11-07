@@ -281,6 +281,7 @@ class PhoneNumberResource extends Resource
                 Tables\Columns\ViewColumn::make('title')
                     ->label(__('phonenumber.table.title'))
                     ->view('filament.resources.phone-number-resource.title-column')
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('country_from_phone')
@@ -307,7 +308,6 @@ class PhoneNumberResource extends Resource
                     ->badge()
                     ->color('primary')
                     ->alignCenter()
-                    ->searchable()
                     ->sortable()
                     ->toggleable(),
 

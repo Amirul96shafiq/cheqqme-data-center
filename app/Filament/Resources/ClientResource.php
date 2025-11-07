@@ -432,6 +432,7 @@ class ClientResource extends Resource
                 Tables\Columns\ViewColumn::make('pic_name')
                     ->label(__('client.table.pic_name'))
                     ->view('filament.resources.client-resource.pic-name-column')
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('country_from_phone')
@@ -458,7 +459,6 @@ class ClientResource extends Resource
                     ->badge()
                     ->color('primary')
                     ->alignCenter()
-                    ->searchable()
                     ->sortable()
                     ->toggleable(),
 
