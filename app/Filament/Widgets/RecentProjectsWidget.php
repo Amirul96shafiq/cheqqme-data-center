@@ -20,29 +20,52 @@ class RecentProjectsWidget extends TableWidget
     protected function getTableColumns(): array
     {
         return [
+
             TextColumn::make('id')
-                ->label(__('dashboard.recent_projects.id'))
-                ->sortable()
-                ->url(fn ($record) => route('filament.admin.resources.projects.edit', $record)),
+                ->label(__('dashboard.recent_projects.id')),
+
             ViewColumn::make('title')
                 ->label(__('dashboard.recent_projects.project_title'))
                 ->view('filament.widgets.recent-projects-title-column'),
-            ViewColumn::make('status')
-                ->label(__('dashboard.recent_projects.status'))
-                ->view('filament.widgets.recent-projects-status-column'),
+
+            TextColumn::make('issue_tracker_code')
+                ->label(__('dashboard.recent_projects.issue_tracker'))
+                ->badge()
+                ->color(fn ($state) => filled($state) ? 'primary' : 'gray')
+                ->alignCenter()
+                ->copyable()
+                ->copyableState(fn (Project $record) => filled($record->issue_tracker_code) ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
+                ->url(fn (Project $record) => filled($record->issue_tracker_code) ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
+                ->openUrlInNewTab(),
+
+            TextColumn::make('tracking_tokens_count')
+                ->label(__('dashboard.recent_projects.tracking_tokens'))
+                ->badge()
+                ->color(fn ($state) => (int) $state > 0 ? 'primary' : 'gray')
+                ->alignCenter(),
+
             TextColumn::make('created_at')
                 ->label(__('dashboard.recent_projects.created_at'))
-                ->dateTime('j/n/y, h:i A')
-                ->sortable(),
+                ->dateTime('j/n/y, h:i A'),
+
         ];
     }
 
     protected function getTableActions(): array
     {
         return [
+
+            Action::make('view')
+                ->label('')
+                ->icon('heroicon-o-link')
+                ->url(fn (Project $record) => route('issue-tracker.show', ['project' => $record->issue_tracker_code]))
+                ->visible(fn (Project $record) => filled($record->issue_tracker_code))
+                ->openUrlInNewTab(),
+
             EditAction::make()
                 ->label(__('dashboard.actions.edit'))
                 ->url(fn (Project $record) => route('filament.admin.resources.projects.edit', $record)),
+
         ];
     }
 

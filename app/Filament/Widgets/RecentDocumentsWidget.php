@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Document;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Widgets\TableWidget;
@@ -19,31 +20,74 @@ class RecentDocumentsWidget extends TableWidget
     protected function getTableColumns(): array
     {
         return [
+
             TextColumn::make('id')
-                ->label(__('dashboard.recent_documents.id'))
-                ->sortable()
-                ->url(fn ($record) => route('filament.admin.resources.documents.edit', $record)),
+                ->label(__('dashboard.recent_documents.id')),
+
             ViewColumn::make('title')
                 ->label(__('dashboard.recent_documents.document_title'))
                 ->view('filament.widgets.recent-documents-title-column'),
-            ViewColumn::make('project_id')
-                ->label(__('dashboard.recent_documents.project_title'))
-                ->view('filament.widgets.recent-documents-project-column'),
+
+            TextColumn::make('type')
+                ->label(__('dashboard.recent_documents.type'))
+                ->badge()
+                ->formatStateUsing(fn (string $state): string => match ($state) {
+                    'internal' => __('dashboard.recent_documents.internal'),
+                    'external' => __('dashboard.recent_documents.external'),
+                    default => ucfirst($state),
+                }),
+
+            TextColumn::make('file_type')
+                ->label(__('dashboard.recent_documents.file_type'))
+                ->badge()
+                ->color(fn ($state) => $state === '-' ? 'gray' : 'primary')
+                ->getStateUsing(function (Document $record): string {
+                    if ($record->type === 'external') {
+                        return 'URL';
+                    }
+
+                    if ($record->type === 'internal' && filled($record->file_path)) {
+                        $extension = strtolower(pathinfo($record->file_path, PATHINFO_EXTENSION));
+
+                        return match ($extension) {
+                            'jpg', 'jpeg' => 'JPG',
+                            'png' => 'PNG',
+                            'pdf' => 'PDF',
+                            'docx' => 'DOCX',
+                            'doc' => 'DOC',
+                            'xlsx' => 'XLSX',
+                            'xls' => 'XLS',
+                            'pptx' => 'PPTX',
+                            'ppt' => 'PPT',
+                            'csv' => 'CSV',
+                            'mp4' => 'MP4',
+                            default => strtoupper($extension),
+                        };
+                    }
+
+                    return '-';
+                }),
+
             TextColumn::make('created_at')
                 ->label(__('dashboard.recent_documents.created_at'))
-                ->dateTime('j/n/y, h:i A')
-                ->sortable(),
+                ->dateTime('j/n/y, h:i A'),
+
         ];
     }
 
     protected function getTableActions(): array
     {
         return [
+
             Action::make('view')
-                ->label(__('dashboard.actions.view'))
-                ->icon('heroicon-o-eye')
+                ->label('')
+                ->icon('heroicon-o-link')
                 ->url(fn (Document $record) => $record->url ?? asset('storage/'.$record->file_path))
                 ->openUrlInNewTab(),
+
+            EditAction::make()
+                ->label(__('dashboard.actions.edit'))
+                ->url(fn (Document $record) => route('filament.admin.resources.documents.edit', $record)),
         ];
     }
 
