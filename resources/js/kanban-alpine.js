@@ -790,12 +790,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (matchesAllFilters) visible++;
                 });
 
-                // Find create task button in this column
-                const createButton = col.querySelector(
-                    '.ff-create-button, [data-create-button], .create-task-button, button[title*="create"], button[title*="Create"], .add-task-btn, .create-button'
-                );
+                // Update column badge count
+                const countBadge = col.querySelector(".ff-column__count");
 
-                // Hide/show the entire column and create button based on whether it has visible cards
                 const hasActiveFilters =
                     search.length > 0 ||
                     assignedTo.length > 0 ||
@@ -804,6 +801,35 @@ document.addEventListener("DOMContentLoaded", function () {
                     !!dueDate.to ||
                     priority.length > 0 ||
                     cardType !== "all";
+
+                if (countBadge) {
+                    const currentText = (countBadge.textContent || "").trim();
+                    if (
+                        !countBadge.dataset.originalCount &&
+                        currentText !== ""
+                    ) {
+                        countBadge.dataset.originalCount = currentText;
+                    }
+
+                    if (hasActiveFilters) {
+                        countBadge.textContent = visible.toString();
+                    } else {
+                        const original = (
+                            countBadge.dataset.originalCount ||
+                            currentText ||
+                            visible.toString()
+                        ).trim();
+                        countBadge.textContent = original;
+                        countBadge.dataset.originalCount = original;
+                    }
+                }
+
+                // Find create task button in this column
+                const createButton = col.querySelector(
+                    '.ff-create-button, [data-create-button], .create-task-button, button[title*="create"], button[title*="Create"], .add-task-btn, .create-button'
+                );
+
+                // Hide/show the entire column and create button based on whether it has visible cards
                 if (hasActiveFilters && visible === 0) {
                     col.style.display = "none";
                     // Hide create button when column is hidden
