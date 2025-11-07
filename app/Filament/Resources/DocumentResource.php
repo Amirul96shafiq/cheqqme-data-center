@@ -361,6 +361,7 @@ class DocumentResource extends Resource
                         'external' => __('document.table.external'),
                         default => ucfirst($state),
                     })
+                    ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('file_type')

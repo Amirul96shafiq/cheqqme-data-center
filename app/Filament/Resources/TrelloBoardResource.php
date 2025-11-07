@@ -266,7 +266,6 @@ class TrelloBoardResource extends Resource
                 Tables\Columns\TextColumn::make('url')
                     ->label(__('trelloboard.table.board_url'))
                     ->searchable()
-                    ->sortable()
                     ->limit(40)
                     ->copyable()
                     ->color('primary')

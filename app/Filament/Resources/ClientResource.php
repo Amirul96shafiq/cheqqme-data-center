@@ -471,12 +471,14 @@ class ClientResource extends Resource
                     ->label(__('client.table.project_count'))
                     ->badge()
                     ->alignCenter()
+                    ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('important_url_count')
                     ->label(__('client.table.important_url_count'))
                     ->badge()
                     ->alignCenter()
+                    ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('created_at')

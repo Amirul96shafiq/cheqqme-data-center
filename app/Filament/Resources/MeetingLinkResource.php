@@ -953,7 +953,8 @@ class MeetingLinkResource extends Resource
             ->columns([
 
                 Tables\Columns\TextColumn::make('id')
-                    ->label(__('meetinglink.table.id')),
+                    ->label(__('meetinglink.table.id'))
+                    ->sortable(),
 
                 Tables\Columns\ViewColumn::make('title')
                     ->label(__('meetinglink.table.title'))
@@ -1022,12 +1023,14 @@ class MeetingLinkResource extends Resource
 
                         return 'gray';
                     })
+                    ->sortable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('meetinglink.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\ViewColumn::make('updated_by')

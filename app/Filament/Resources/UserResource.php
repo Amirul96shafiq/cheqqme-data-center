@@ -304,7 +304,6 @@ class UserResource extends Resource
                 TextColumn::make('phone')
                     ->label(__('user.table.phone_number'))
                     ->searchable()
-                    ->sortable()
                     ->getStateUsing(function ($record) {
                         $phone = $record->phone;
 

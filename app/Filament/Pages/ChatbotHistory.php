@@ -59,6 +59,7 @@ class ChatbotHistory extends Page implements HasTable
         return $table
             ->query(ChatbotBackup::query()->where('user_id', Auth::id()))
             ->columns([
+
                 TextColumn::make('id')
                     ->label(__('chatbot.table.backup_id')),
 
@@ -81,7 +82,8 @@ class ChatbotHistory extends Page implements HasTable
                         'weekly' => __('chatbot.filter.types.weekly'),
                         'import' => __('chatbot.filter.types.import'),
                         default => ucfirst($state),
-                    }),
+                    })
+                    ->sortable(),
 
                 TextColumn::make('message_count')
                     ->label(__('chatbot.table.backup_messages'))
@@ -100,8 +102,10 @@ class ChatbotHistory extends Page implements HasTable
                 TextColumn::make('file_size')
                     ->label(__('chatbot.table.backup_size'))
                     ->alignCenter(),
+
             ])
             ->filters([
+
                 SelectFilter::make('time_period')
                     ->label(__('chatbot.filter.time_period'))
                     ->options([
@@ -138,8 +142,10 @@ class ChatbotHistory extends Page implements HasTable
                     ])
                     ->placeholder(__('chatbot.filter.all_types'))
                     ->searchable(),
+
             ])
             ->actions([
+
                 TableAction::make('download')
                     ->label('')
                     ->icon('heroicon-o-arrow-down-tray')
@@ -153,6 +159,7 @@ class ChatbotHistory extends Page implements HasTable
                     }),
 
                 ActionGroup::make([
+
                     TableAction::make('restore')
                         ->label(__('chatbot.actions.restore'))
                         ->icon('heroicon-o-arrow-path')
@@ -174,9 +181,12 @@ class ChatbotHistory extends Page implements HasTable
                         ->action(function (ChatbotBackup $record) {
                             $this->deleteBackup($record->id);
                         }),
+
                 ]),
+
             ])
             ->bulkActions([
+
                 BulkActionGroup::make([
                     BulkAction::make('delete')
                         ->label(__('chatbot.actions.delete'))
@@ -191,6 +201,7 @@ class ChatbotHistory extends Page implements HasTable
                             }
                         }),
                 ]),
+
             ])
             ->defaultSort('backup_date', 'desc')
             ->emptyStateHeading(__('chatbot.empty.no_backups'))

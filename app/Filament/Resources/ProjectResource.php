@@ -383,12 +383,14 @@ class ProjectResource extends Resource
                     ->label(__('project.table.document_count'))
                     ->badge()
                     ->alignCenter()
+                    ->sortable()
                     ->toggleable(),
 
                 TextColumn::make('important_url_count')
                     ->label(__('project.table.important_url_count'))
                     ->badge()
                     ->alignCenter()
+                    ->sortable()
                     ->toggleable(),
 
                 TextColumn::make(__('created_at'))
@@ -404,6 +406,7 @@ class ProjectResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+
                 SelectFilter::make('client_id')
                     ->label(__('project.table.client'))
                     ->relationship('client', 'pic_name')
@@ -427,8 +430,10 @@ class ProjectResource extends Resource
                 TrashedFilter::make()
                     ->label(__('project.filter.trashed'))
                     ->searchable(), // To show trashed or only active
+
             ])
             ->actions([
+
                 Tables\Actions\Action::make('open_issue_tracker')
                     ->label('')
                     ->icon('heroicon-o-link')
@@ -444,10 +449,13 @@ class ProjectResource extends Resource
                         return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     })
                     ->visible(fn ($record) => ! empty($record->issue_tracker_code)),
+
                 Tables\Actions\ViewAction::make(),
+
                 Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
+
                     Tables\Actions\Action::make('share_issue_tracker_link')
                         ->label(__('project.actions.share_issue_tracker_link'))
                         ->icon('heroicon-o-share')
@@ -511,9 +519,13 @@ class ProjectResource extends Resource
                         }),
 
                     ActivityLogTimelineTableAction::make('Log'),
+
                     Tables\Actions\DeleteAction::make(),
+
                     Tables\Actions\RestoreAction::make(),
+
                     Tables\Actions\ForceDeleteAction::make(),
+                    
                 ]),
             ])
             ->bulkActions([
