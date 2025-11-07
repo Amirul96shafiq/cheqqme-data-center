@@ -957,7 +957,8 @@ class MeetingLinkResource extends Resource
                 Tables\Columns\ViewColumn::make('title')
                     ->label(__('meetinglink.table.title'))
                     ->view('filament.resources.meeting-link-resource.title-column')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('meeting_platform')
                     ->label(__('meetinglink.table.platform'))
@@ -977,7 +978,8 @@ class MeetingLinkResource extends Resource
                     ->color('primary')
                     ->formatStateUsing(fn ($state) => $state ? str_replace(['https://', 'http://'], '', $state) : null)
                     ->url(fn ($record) => $record->meeting_url)
-                    ->toggleable(),
+                    ->toggleable()
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('meeting_start_time')
                     ->label(__('meetinglink.table.start_time'))

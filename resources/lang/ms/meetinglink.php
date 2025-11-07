@@ -83,6 +83,14 @@ return [
         'start_date_until' => 'Tarikh Mula Hingga',
     ],
 
+    'tabs' => [
+        'all' => 'Semua',
+        'today' => 'Hari Ini',
+        'tomorrow' => 'Esok',
+        'this_week' => 'Minggu Ini',
+        'this_month' => 'Bulan Ini',
+    ],
+
     'actions' => [
         'generate_meet_link' => 'Jana Pautan Mesyuarat',
         'regenerate_meet_link' => 'Jana Semula Pautan',

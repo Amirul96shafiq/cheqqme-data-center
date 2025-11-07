@@ -83,6 +83,14 @@ return [
         'start_date_until' => 'Start Date Until',
     ],
 
+    'tabs' => [
+        'all' => 'All',
+        'today' => 'Today',
+        'tomorrow' => 'Tomorrow',
+        'this_week' => 'This Week',
+        'this_month' => 'This Month',
+    ],
+
     'actions' => [
         'generate_meet_link' => 'Generate Meet Link',
         'regenerate_meet_link' => 'Regenerate Meet Link',
