@@ -223,6 +223,7 @@ class UserResource extends Resource
             // Disable record URL for all records
             ->recordUrl(null)
             ->columns([
+
                 TextColumn::make('id')
                     ->label(__('user.table.id'))
                     ->sortable()
@@ -317,13 +318,15 @@ class UserResource extends Resource
                     ->getStateUsing(function ($record) {
                         return $record->timezone ?? '-';
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 TextColumn::make('created_at')
                     ->label(__('user.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 // TextColumn::make('updated_at')
                 //     ->label(__('user.table.updated_at_by'))
@@ -345,6 +348,7 @@ class UserResource extends Resource
                 //         return $state?->format('j/n/y, h:i A')." ({$formattedName})";
                 //     })
                 //     ->sortable(),
+
             ])
             ->recordClasses(function ($record) {
                 $coverImageUrl = $record->getFilamentCoverImageUrl();
@@ -453,6 +457,7 @@ class UserResource extends Resource
                     ->searchable(), // To show trashed or only active
             ])
             ->actions([
+
                 TableAction::make('personalize')
                     ->label(__('user.table.personalize'))
                     ->icon('heroicon-o-sparkles')
@@ -473,6 +478,7 @@ class UserResource extends Resource
                 Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
+
                     TableAction::make('settings')
                         ->label(__('user.table.settings'))
                         ->icon('heroicon-o-cog-6-tooth')
@@ -489,6 +495,7 @@ class UserResource extends Resource
                             // Only visible to the logged-in user and only for their own account
                             auth()->id() === $record->id
                         ),
+
                     TableAction::make('chatbot-history')
                         ->label(__('user.table.chatbot-history'))
                         ->icon('heroicon-o-chat-bubble-left-right')
@@ -507,8 +514,11 @@ class UserResource extends Resource
                         ),
 
                     ActivityLogTimelineTableAction::make('Log'),
+
                     Tables\Actions\RestoreAction::make(),
+
                     Tables\Actions\ForceDeleteAction::make(),
+
                 ]),
             ])
             ->bulkActions([

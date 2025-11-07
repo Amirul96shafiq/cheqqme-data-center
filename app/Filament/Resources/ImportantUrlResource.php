@@ -314,13 +314,15 @@ class ImportantUrlResource extends Resource
                     ->label(__('importanturl.table.client'))
                     ->view('filament.resources.important-url-resource.client-column')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('project_id')
                     ->label(__('importanturl.table.project'))
                     ->view('filament.resources.important-url-resource.project-column')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('url')
                     ->label(__('importanturl.table.important_url'))
@@ -339,7 +341,8 @@ class ImportantUrlResource extends Resource
                     ->label(__('importanturl.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('importanturl.table.updated_at_by'))
@@ -348,6 +351,7 @@ class ImportantUrlResource extends Resource
 
             ])
             ->filters([
+
                 SelectFilter::make('client_id')
                     ->label(__('importanturl.filters.client_id'))
                     ->relationship('client', 'pic_name')
@@ -357,17 +361,21 @@ class ImportantUrlResource extends Resource
                     ->preload()
                     ->searchable()
                     ->multiple(),
+
                 SelectFilter::make('project_id')
                     ->label(__('importanturl.filters.project_id'))
                     ->relationship('project', 'title')
                     ->preload()
                     ->searchable()
                     ->multiple(),
+
                 TrashedFilter::make()
                     ->label(__('importanturl.filter.trashed'))
                     ->searchable(), // To show trashed or only active
+
             ])
             ->actions([
+
                 Tables\Actions\Action::make('open_url')
                     ->label('')
                     ->icon('heroicon-o-link')
@@ -379,8 +387,11 @@ class ImportantUrlResource extends Resource
 
                         return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     }),
+
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
+
+                Tables\Actions\EditAction::make()
+                    ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     ActivityLogTimelineTableAction::make('Log'),

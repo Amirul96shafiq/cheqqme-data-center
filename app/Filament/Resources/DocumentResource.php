@@ -342,6 +342,7 @@ class DocumentResource extends Resource
             ->recordUrl(null)
             ->recordAction(null)
             ->columns([
+
                 TextColumn::make('id')
                     ->label('ID')
                     ->sortable(),
@@ -371,20 +372,24 @@ class DocumentResource extends Resource
                     ->label(__('document.table.project'))
                     ->view('filament.resources.document-resource.project-column')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('created_at')
                     ->label(__('document.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('document.table.updated_at_by'))
                     ->view('filament.resources.document-resource.updated-by-column')
                     ->sortable(),
+
             ])
             ->filters([
+
                 SelectFilter::make('project_id')
                     ->label(__('document.table.project'))
                     ->relationship('project', 'title')
@@ -476,8 +481,10 @@ class DocumentResource extends Resource
                 TrashedFilter::make()
                     ->label(__('document.filter.trashed'))
                     ->searchable(), // To show trashed or only active
+
             ])
             ->actions([
+
                 Tables\Actions\Action::make('open_url')
                     ->label('')
                     ->icon('heroicon-o-link')

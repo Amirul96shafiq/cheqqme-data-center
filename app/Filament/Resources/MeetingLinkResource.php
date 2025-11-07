@@ -951,6 +951,7 @@ class MeetingLinkResource extends Resource
             ->recordUrl(null)
             ->recordAction(null)
             ->columns([
+
                 Tables\Columns\TextColumn::make('id')
                     ->label(__('meetinglink.table.id')),
 
@@ -968,7 +969,8 @@ class MeetingLinkResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'Google Meet', 'Zoom Meeting', 'Teams Meeting' => 'primary',
                         default => 'gray',
-                    }),
+                    })
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('meeting_url')
                     ->label(__('meetinglink.table.url_link'))
@@ -1032,8 +1034,10 @@ class MeetingLinkResource extends Resource
                     ->label(__('meetinglink.table.updated_at_by'))
                     ->view('filament.resources.meeting-link-resource.updated-by-column')
                     ->sortable(),
+
             ])
             ->filters([
+
                 Tables\Filters\SelectFilter::make('meeting_platform')
                     ->label(__('meetinglink.form.meeting_platform'))
                     ->searchable()
@@ -1070,6 +1074,7 @@ class MeetingLinkResource extends Resource
 
                 Tables\Filters\TrashedFilter::make()
                     ->searchable(),
+
             ])
             ->actions([
 

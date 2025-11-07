@@ -424,6 +424,7 @@ class ClientResource extends Resource
             ->recordUrl(null)
             ->recordAction(null)
             ->columns([
+
                 TextColumn::make('id')
                     ->label(__('client.table.id'))
                     ->sortable(),
@@ -482,14 +483,17 @@ class ClientResource extends Resource
                     ->label(__('client.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('client.table.updated_at_by'))
                     ->view('filament.resources.client-resource.updated-by-column')
                     ->sortable(),
+                    
             ])
             ->filters([
+
                 Filter::make('country_code')
                     ->label(__('client.filter.country_code'))
                     ->form([
@@ -564,6 +568,7 @@ class ClientResource extends Resource
                 TrashedFilter::make()
                     ->label(__('client.filter.trashed'))
                     ->searchable(), // To show trashed or only active
+
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

@@ -273,13 +273,16 @@ class PhoneNumberResource extends Resource
             ->recordUrl(null)
             ->recordAction(null)
             ->columns([
+
                 TextColumn::make('id')
                     ->label(__('phonenumber.table.id'))
                     ->sortable(),
+
                 Tables\Columns\ViewColumn::make('title')
                     ->label(__('phonenumber.table.title'))
                     ->view('filament.resources.phone-number-resource.title-column')
                     ->sortable(),
+
                 TextColumn::make('country_from_phone')
                     ->label(__('phonenumber.table.country'))
                     ->getStateUsing(function ($record) {
@@ -307,20 +310,26 @@ class PhoneNumberResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
+
                 TextColumn::make('phone')
                     ->label(__('phonenumber.table.phone_number'))
                     ->searchable(),
+
                 TextColumn::make('created_at')
                     ->label(__('phonenumber.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
+
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('phonenumber.table.updated_at_by'))
                     ->view('filament.resources.phone-number-resource.updated-by-column')
                     ->sortable(),
+
             ])
             ->filters([
+
                 Filter::make('country_code')
                     ->label(__('phonenumber.filter.country_code'))
                     ->form([
@@ -402,9 +411,12 @@ class PhoneNumberResource extends Resource
                 TrashedFilter::make()
                     ->label(__('phonenumber.filter.trashed'))
                     ->searchable(), // To show trashed or only active
+
             ])
             ->actions([
+
                 Tables\Actions\ViewAction::make(),
+
                 Tables\Actions\EditAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
 
@@ -414,6 +426,7 @@ class PhoneNumberResource extends Resource
                     Tables\Actions\RestoreAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
                 ]),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

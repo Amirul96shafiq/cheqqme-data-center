@@ -252,6 +252,7 @@ class TrelloBoardResource extends Resource
             ->recordUrl(null)
             ->recordAction(null)
             ->columns([
+
                 TextColumn::make('id')
                     ->label(__('trelloboard.table.id'))
                     ->sortable(),
@@ -281,14 +282,17 @@ class TrelloBoardResource extends Resource
                     ->label(__('trelloboard.table.created_at'))
                     ->since()
                     ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('trelloboard.table.updated_at_by'))
                     ->view('filament.resources.trello-board-resource.updated-by-column')
                     ->sortable(),
+
             ])
             ->filters([
+
                 SelectFilter::make('show_on_boards')
                     ->label(__('trelloboard.table.show_on_boards'))
                     ->options([
@@ -302,8 +306,10 @@ class TrelloBoardResource extends Resource
                 TrashedFilter::make()
                     ->label(__('trelloboard.filter.trashed'))
                     ->searchable(), // To show trashed or only active
+
             ])
             ->actions([
+
                 Tables\Actions\Action::make('open_url')
                     ->label('')
                     ->icon('heroicon-o-link')
@@ -315,8 +321,10 @@ class TrelloBoardResource extends Resource
 
                         return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     }),
+
                 Tables\Actions\ViewAction::make()
                     ->label(__('trelloboard.actions.view')),
+
                 Tables\Actions\EditAction::make()
                     ->label(__('trelloboard.actions.edit'))
                     ->hidden(fn ($record) => $record->trashed()),
@@ -352,10 +360,12 @@ class TrelloBoardResource extends Resource
                         ->label(__('trelloboard.actions.restore')),
                     Tables\Actions\ForceDeleteAction::make()
                         ->label(__('trelloboard.actions.force_delete')),
+
                 ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+
                     Tables\Actions\BulkAction::make('toggle_show_on_boards')
                         ->label(__('trelloboard.actions.toggle_show_on_boards'))
                         ->icon('heroicon-o-eye')
@@ -381,12 +391,16 @@ class TrelloBoardResource extends Resource
                         ->modalHeading(__('trelloboard.actions.toggle_show_on_boards_modal_heading'))
                         ->modalDescription(__('trelloboard.actions.toggle_show_on_boards_modal_description'))
                         ->modalSubmitActionLabel(__('trelloboard.actions.toggle_show_on_boards_modal_confirm')),
+
                     Tables\Actions\DeleteBulkAction::make()
                         ->label(__('trelloboard.actions.delete')),
+
                     Tables\Actions\RestoreBulkAction::make()
                         ->label(__('trelloboard.actions.restore')),
+
                     Tables\Actions\ForceDeleteBulkAction::make()
                         ->label(__('trelloboard.actions.force_delete')),
+
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
