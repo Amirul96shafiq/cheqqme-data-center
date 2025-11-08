@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ProjectResource\RelationManagers;
 
 use App\Filament\Resources\TaskResource;
 use App\Models\Task;
+use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -46,6 +47,35 @@ class TrackingTokensRelationManager extends RelationManager
             ->with('updatedBy')
             ->whereNotNull('tracking_token')
             ->whereJsonContains('project', (string) $this->getOwnerRecord()->id);
+    }
+
+    protected function getIssueStatusTextForCopy(Task $task, Model $project): string
+    {
+        $projectTitle = $project->title ?? 'TBD';
+        $issueTitle = $task->title ?: __('project.actions.issue_status_no_title');
+        $statusLabel = $this->formatIssueStatusLabel($task->status);
+        $statusUrl = route('issue-tracker.status', ['token' => $task->tracking_token]);
+        $submittedAt = $task->created_at?->format('j/n/y, h:i A');
+
+        $submittedLine = $submittedAt ? "\n🔹 Reported On: {$submittedAt}" : '';
+
+        return "Hi team 👋,\n\nHere's the latest status update for \"{$issueTitle}\" in the {$projectTitle} project.\n\n🔹 Tracking Token: {$task->tracking_token}\n🔹 Current Status: {$statusLabel}{$submittedLine}\n\nCheck the live status here:\n{$statusUrl}\n\nThank you!";
+    }
+
+    protected function formatIssueStatusLabel(?string $status): string
+    {
+        if (empty($status)) {
+            return __('project.actions.issue_status_unknown');
+        }
+
+        $translationKey = "action.status.{$status}";
+        $translated = __($translationKey);
+
+        if ($translated !== $translationKey) {
+            return $translated;
+        }
+
+        return ucfirst(str_replace('_', ' ', $status));
     }
 
     public function table(Table $table): Table
@@ -148,6 +178,67 @@ class TrackingTokensRelationManager extends RelationManager
                     ->url(fn ($record) => TaskResource::getUrl('edit', ['record' => $record->id]))
                     ->openUrlInNewTab()
                     ->visible(fn ($record) => ! $record->trashed()),
+
+                Tables\Actions\ActionGroup::make([
+
+                    Tables\Actions\Action::make('share_issue_status_link')
+                        ->label(__('project.actions.share_issue_status_link'))
+                        ->icon('heroicon-o-share')
+                        ->color('primary')
+                        ->visible(fn ($record) => ! $record->trashed() && ! empty($record->tracking_token))
+                        ->modalWidth('2xl')
+                        ->modalHeading(__('project.actions.share_issue_status_link'))
+                        ->modalDescription(__('project.actions.share_issue_status_link_description'))
+                        ->form(function (Task $record) {
+                            $project = $this->getOwnerRecord();
+                            $issueStatusText = $this->getIssueStatusTextForCopy($record, $project);
+
+                            return [
+                                Forms\Components\Textarea::make('issue_status_preview')
+                                    ->label(__('project.actions.issue_status_preview'))
+                                    ->default($issueStatusText)
+                                    ->disabled()
+                                    ->rows(12)
+                                    ->extraInputAttributes([
+                                        'class' => 'font-mono text-sm !resize-none',
+                                        'style' => 'resize: none !important; max-height: none !important;',
+                                        'x-init' => '$el.style.resize = "none"',
+                                    ])
+                                    ->columnSpanFull(),
+                            ];
+                        })
+                        ->modalSubmitAction(false)
+                        ->modalCancelAction(false)
+                        ->extraModalFooterActions(function (Task $record, $livewire) {
+                            $actions = [];
+
+                            // Detect mobile device and hide copy button on mobile
+                            $userAgent = request()->userAgent() ?? '';
+                            $isMobile = preg_match('/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $userAgent);
+
+                            // Only show copy button on desktop, hide on mobile so users can manually copy from preview
+                            if (! $isMobile) {
+                                $actions[] = Tables\Actions\Action::make('copy_to_clipboard')
+                                    ->label(__('project.actions.copy_to_clipboard'))
+                                    ->icon('heroicon-o-clipboard-document')
+                                    ->color('primary')
+                                    ->extraAttributes([
+                                        'x-data' => '{}',
+                                        'x-on:copy-success.window' => 'showCopiedBubble($el)',
+                                    ])
+                                    ->action(function () use ($record, $livewire) {
+                                        $project = $this->getOwnerRecord();
+                                        $issueStatusText = $this->getIssueStatusTextForCopy($record, $project);
+
+                                        // Dispatch browser event with the text to copy and success callback
+                                        $livewire->dispatch('copy-to-clipboard-with-callback', text: $issueStatusText);
+                                    });
+                            }
+
+                            return $actions;
+                        }),
+
+                ]),
 
             ])
             ->bulkActions([

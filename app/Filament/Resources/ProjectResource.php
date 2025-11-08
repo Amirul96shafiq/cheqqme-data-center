@@ -8,7 +8,6 @@ use App\Filament\Resources\ProjectResource\RelationManagers\ProjectActivityLogRe
 use App\Filament\Resources\ProjectResource\RelationManagers\TrackingTokensRelationManager;
 use App\Helpers\ClientFormatter;
 use App\Models\Project;
-use App\Models\Task;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
@@ -21,16 +20,13 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 class ProjectResource extends Resource
@@ -67,40 +63,6 @@ class ProjectResource extends Resource
         $projectTitle = $record->title ?? 'TBD';
 
         return "Good day everyone ✨,\n\nHere's the issue tracker link for {$projectTitle} project.\n\n👉 {$issueTrackerUrl}\n\nPlease use this link to submit any issues or feedback related to this project.\n\nThank you! ☺️";
-    }
-
-    protected static function getIssueStatusTextForCopy(Project $project, string $trackingToken): string
-    {
-        $task = Task::query()
-            ->select(['title', 'status', 'created_at'])
-            ->where('tracking_token', $trackingToken)
-            ->first();
-
-        $projectTitle = $project->title ?? 'TBD';
-        $issueTitle = $task?->title ?: __('project.actions.issue_status_no_title');
-        $statusLabel = self::formatIssueStatusLabel($task?->status);
-        $statusUrl = route('issue-tracker.status', ['token' => $trackingToken]);
-        $submittedAt = $task?->created_at?->format('j/n/y, h:i A');
-
-        $submittedLine = $submittedAt ? "\n🔹 Reported On: {$submittedAt}" : '';
-
-        return "Hi team 👋,\n\nHere's the latest status update for \"{$issueTitle}\" in the {$projectTitle} project.\n\n🔹 Tracking Token: {$trackingToken}\n🔹 Current Status: {$statusLabel}{$submittedLine}\n\nCheck the live status here:\n{$statusUrl}\n\nThank you!";
-    }
-
-    protected static function formatIssueStatusLabel(?string $status): string
-    {
-        if (empty($status)) {
-            return __('project.actions.issue_status_unknown');
-        }
-
-        $translationKey = "action.status.{$status}";
-        $translated = __($translationKey);
-
-        if ($translated !== $translationKey) {
-            return $translated;
-        }
-
-        return ucfirst(str_replace('_', ' ', $status));
     }
 
     public static function form(Form $form): Form
@@ -565,119 +527,6 @@ class ProjectResource extends Resource
                                 ->close();
 
                             return $actions;
-                        }),
-
-                    Tables\Actions\Action::make('share_issue_status_link')
-                        ->label(__('project.actions.share_issue_status_link'))
-                        ->icon('heroicon-o-share')
-                        ->color('primary')
-                        ->visible(fn ($record) => ! $record->trashed() && $record->tracking_tokens_count > 0)
-                        ->modalWidth('2xl')
-                        ->modalHeading(__('project.actions.share_issue_status_link'))
-                        ->modalDescription(__('project.actions.share_issue_status_link_description'))
-                        ->form(function ($record) {
-                            $trackingTokens = Task::query()
-                                ->select(['tracking_token', 'title', 'status', 'created_at'])
-                                ->whereNotNull('tracking_token')
-                                ->whereJsonContains('project', (string) $record->id)
-                                ->orderByDesc('created_at')
-                                ->get();
-
-                            $options = $trackingTokens->mapWithKeys(function (Task $task) {
-                                $title = $task->title ? Str::limit($task->title, 60) : __('project.actions.issue_status_no_title');
-                                $statusLabel = self::formatIssueStatusLabel($task->status);
-
-                                return [
-                                    $task->tracking_token => "{$task->tracking_token} • {$statusLabel} • {$title}",
-                                ];
-                            });
-
-                            $defaultToken = $trackingTokens->first()?->tracking_token;
-
-                            return [
-                                Select::make('tracking_token')
-                                    ->label(__('project.actions.issue_status_select_token'))
-                                    ->options($options->toArray())
-                                    ->placeholder(__('project.actions.issue_status_select_placeholder'))
-                                    ->default($defaultToken)
-                                    ->searchable()
-                                    ->reactive()
-                                    ->live()
-                                    ->required()
-                                    ->afterStateUpdated(function (Set $set, ?string $state) use ($record): void {
-                                        if (empty($state)) {
-                                            $set('issue_status_preview', __('project.actions.issue_status_no_tokens'));
-
-                                            return;
-                                        }
-
-                                        $set('issue_status_preview', self::getIssueStatusTextForCopy($record, $state));
-                                    }),
-
-                                Forms\Components\Textarea::make('issue_status_preview')
-                                    ->label(__('project.actions.issue_status_preview'))
-                                    ->default($defaultToken ? self::getIssueStatusTextForCopy($record, $defaultToken) : __('project.actions.issue_status_no_tokens'))
-                                    ->rows(12)
-                                    ->disabled()
-                                    ->dehydrated(false)
-                                    ->extraInputAttributes([
-                                        'class' => 'font-mono text-sm !resize-none',
-                                        'style' => 'resize: none !important; max-height: none !important;',
-                                        'x-init' => '$el.style.resize = "none"',
-                                    ])
-                                    ->columnSpanFull(),
-                            ];
-                        })
-                        ->modalSubmitAction(false)
-                        ->modalCancelAction(false)
-                        ->extraModalFooterActions(function ($record, Tables\Actions\Action $action) {
-                            $actions = [];
-
-                            // Detect mobile device and hide copy button on mobile
-                            $userAgent = request()->userAgent() ?? '';
-                            $isMobile = preg_match('/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $userAgent);
-
-                            // Only show copy button on desktop, hide on mobile so users can manually copy from preview
-                            if (! $isMobile) {
-                                $actions[] = $action
-                                    ->makeModalSubmitAction('copy_issue_status_to_clipboard', arguments: ['copy_issue_status_to_clipboard' => true])
-                                    ->label(__('project.actions.copy_to_clipboard'))
-                                    ->icon('heroicon-o-clipboard-document')
-                                    ->color('primary')
-                                    ->extraAttributes([
-                                        'x-data' => '{}',
-                                        'x-on:copy-success.window' => 'showCopiedBubble($el)',
-                                    ]);
-                            }
-
-                            $actions[] = Tables\Actions\Action::make('edit_project')
-                                ->label(__('project.actions.edit_project'))
-                                ->icon('heroicon-o-pencil-square')
-                                ->color('gray')
-                                ->url(fn ($record) => self::getUrl('edit', ['record' => $record->id]))
-                                ->close();
-
-                            return $actions;
-                        })
-                        ->action(function (array $data, array $arguments, Project $record, HasTable $livewire, Tables\Actions\Action $action): void {
-                            if (! ($arguments['copy_issue_status_to_clipboard'] ?? false)) {
-                                return;
-                            }
-
-                            $selectedToken = $data['tracking_token'] ?? null;
-
-                            if (! $selectedToken) {
-                                $action->halt();
-
-                                return;
-                            }
-
-                            $issueStatusText = self::getIssueStatusTextForCopy($record, $selectedToken);
-
-                            // Dispatch browser event with the text to copy and success callback
-                            $livewire->dispatch('copy-to-clipboard-with-callback', text: $issueStatusText);
-
-                            $action->halt();
                         }),
 
                     ActivityLogTimelineTableAction::make('Log'),
