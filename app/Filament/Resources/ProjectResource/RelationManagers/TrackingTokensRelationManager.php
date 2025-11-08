@@ -64,6 +64,7 @@ class TrackingTokensRelationManager extends RelationManager
                     ->searchable()
                     ->sortable()
                     ->copyable()
+                    ->copyableState(fn (Task $record): string => route('issue-tracker.status', ['token' => $record->tracking_token]))
                     ->color('primary'),
 
                 ViewColumn::make('title')
