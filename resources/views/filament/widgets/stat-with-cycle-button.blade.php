@@ -35,11 +35,6 @@
     @endif
     {{
         $getExtraAttributeBag()
-            ->merge([
-                'x-data' => '{ showButton: false }',
-                'x-on:mouseenter' => 'showButton = true',
-                'x-on:mouseleave' => 'showButton = false',
-            ])
             ->class([
                 'fi-wi-stats-overview-stat relative rounded-xl bg-white/65 p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900/65 dark:ring-white/10 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 hover:shadow-md hover:ring-gray-950/10 dark:hover:bg-gray-900/80 dark:hover:ring-white/20',
             ])
@@ -50,8 +45,6 @@
         type="button"
         wire:click.prevent.stop="toggleView"
         @click.prevent.stop
-        x-show="showButton"
-        x-transition
         class="absolute top-2 right-2 z-10 p-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         title="{{ __('dashboard.actions.toggle_view') }}"
     >

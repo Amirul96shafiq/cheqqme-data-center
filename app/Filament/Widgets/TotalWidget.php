@@ -12,7 +12,6 @@ use App\Models\Client;
 use App\Models\ImportantUrl;
 use App\Models\MeetingLink;
 use App\Models\PhoneNumber;
-use App\Filament\Widgets\StatWithCycleButton;
 use App\Models\Task;
 use App\Models\TrelloBoard;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -23,6 +22,11 @@ class TotalWidget extends BaseWidget
 {
     public bool $showIssueTrackers = false;
 
+    public function mount(): void
+    {
+        $this->showIssueTrackers = $this->getStoredViewPreference();
+    }
+
     protected function getColumns(): int
     {
         return 6;
@@ -31,6 +35,8 @@ class TotalWidget extends BaseWidget
     public function toggleView(): void
     {
         $this->showIssueTrackers = ! $this->showIssueTrackers;
+
+        $this->persistViewPreference();
     }
 
     protected function getStats(): array
@@ -50,9 +56,6 @@ class TotalWidget extends BaseWidget
                     ->icon(ActionBoard::getNavigationIcon())
                     ->url(route('filament.admin.pages.action-board'))
                     ->extraAttributes([
-                        'x-data' => '{ showButton: false }',
-                        'x-on:mouseenter' => 'showButton = true',
-                        'x-on:mouseleave' => 'showButton = false',
                         'class' => 'relative',
                     ]),
 
@@ -96,9 +99,6 @@ class TotalWidget extends BaseWidget
                 ->icon(ActionBoard::getNavigationIcon())
                 ->url(route('filament.admin.pages.action-board'))
                 ->extraAttributes([
-                    'x-data' => '{ showButton: false }',
-                    'x-on:mouseenter' => 'showButton = true',
-                    'x-on:mouseleave' => 'showButton = false',
                     'class' => 'relative',
                 ]),
 
@@ -188,5 +188,32 @@ class TotalWidget extends BaseWidget
             $query->whereRaw('JSON_EXTRACT(user_ids, "$") LIKE ?', ['%"'.$userId.'"%'])
                 ->orWhereRaw('JSON_EXTRACT(user_ids, "$") LIKE ?', ['%'.$userId.'%']);
         })->count();
+    }
+
+    private function getStoredViewPreference(): bool
+    {
+        $userId = Auth::id();
+
+        if (! $userId) {
+            return false;
+        }
+
+        return (bool) session()->get($this->getSessionKey($userId), false);
+    }
+
+    private function persistViewPreference(): void
+    {
+        $userId = Auth::id();
+
+        if (! $userId) {
+            return;
+        }
+
+        session()->put($this->getSessionKey($userId), $this->showIssueTrackers);
+    }
+
+    private function getSessionKey(int $userId): string
+    {
+        return 'widgets.total.show_issue_trackers.user_'.$userId;
     }
 }
