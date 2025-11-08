@@ -34,6 +34,8 @@ class ActionBoard extends KanbanBoardPage
 
     public string $cardTypeFilter = 'all';
 
+    public bool $showFeaturedImages = true;
+
     public function getSubject(): Builder
     {
         $query = Task::query()
@@ -57,6 +59,9 @@ class ActionBoard extends KanbanBoardPage
 
     public function mount(): void
     {
+        // Load featured images visibility preference from session
+        $this->showFeaturedImages = session('action_board_show_featured_images', true);
+
         $this
             ->titleField('title')
             ->orderField('order_column')
@@ -927,6 +932,13 @@ class ActionBoard extends KanbanBoardPage
     public function updatedCardTypeFilter(): void
     {
         $this->dispatchUnifiedFilter();
+    }
+
+    public function toggleFeaturedImages(): void
+    {
+        $this->showFeaturedImages = ! $this->showFeaturedImages;
+        session(['action_board_show_featured_images' => $this->showFeaturedImages]);
+        $this->dispatch('featured-images-visibility-changed', visible: $this->showFeaturedImages);
     }
 
     public function clearFilter(): void

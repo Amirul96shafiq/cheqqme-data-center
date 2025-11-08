@@ -11,6 +11,7 @@
     'dueDateTo' => null,
     'priorityFilter' => [],
     'cardTypeFilter' => 'all',
+    'showFeaturedImages' => true,
 ])
 
 @php
@@ -607,5 +608,24 @@ $usersForFilter = $usersCollection
 
             </div>
         @endif
+
+        {{-- Toggle Featured Images Button --}}
+        <div class="relative">
+            <x-tooltip :text="__('action.toggle_featured_images_tooltip')" position="left" align="center">
+                <button
+                    wire:click="toggleFeaturedImages"
+                    class="flex items-center justify-center w-10 h-10 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 focus:ring-1 focus:ring-primary-500"
+                    type="button"
+                    title="{{ __('action.toggle_featured_images_tooltip') }}"
+                >
+                    @if($showFeaturedImages)
+                        <x-heroicon-o-eye class="w-4 h-4" />
+                    @else
+                        <x-heroicon-o-eye-slash class="w-4 h-4" />
+                    @endif
+                </button>
+            </x-tooltip>
+        </div>
+        
     </div>
 </div>

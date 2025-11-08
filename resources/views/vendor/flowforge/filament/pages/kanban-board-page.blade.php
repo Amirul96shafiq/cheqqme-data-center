@@ -14,6 +14,7 @@
         :due-date-to="$dueDateTo"
         :priority-filter="$priorityFilter"
         :card-type-filter="$cardTypeFilter"
+        :show-featured-images="$showFeaturedImages"
     />
     
     <div class="h-[calc(100vh-16rem)] min-h-[400px] pb-8 md:pb-0">

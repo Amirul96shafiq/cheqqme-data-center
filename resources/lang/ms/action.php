@@ -68,6 +68,8 @@ return [
     'show_all' => 'Papar Semua',
     'show_less' => 'Papar Sedikit',
     'more' => 'lagi',
+    'toggle_featured_images' => 'Togol Imej Pilihan',
+    'toggle_featured_images_tooltip' => 'Papar atau sembunyikan imej pilihan',
 
     'filter' => [
         'assigned_to' => 'Ditugaskan Kepada',

@@ -83,6 +83,8 @@ return [
     'show_all' => 'Show all',
     'show_less' => 'Show less',
     'more' => 'more',
+    'toggle_featured_images' => 'Toggle Featured Images',
+    'toggle_featured_images_tooltip' => 'Show or hide featured images',
 
     'filter' => [
         'assigned_to' => 'Assigned To',

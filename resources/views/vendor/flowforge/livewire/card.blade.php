@@ -64,7 +64,10 @@
         'ff-card--interactive' => $this->editAction() &&  ($this->editAction)(['record' => $record['id']])->isVisible(),
         'ff-card--non-interactive' => !$this->editAction()
     ])
-    x-data="{ filterActive: false }"
+    x-data="{ 
+        filterActive: false,
+        showFeaturedImages: {{ session('action_board_show_featured_images', true) ? 'true' : 'false' }}
+    }"
     x-init="
         // Listen for filter events to disable drag and drop
         window.addEventListener('action-board-unified-filter', (e) => {
@@ -73,6 +76,11 @@
             const dueDate = e?.detail?.dueDate || { preset: null, from: null, to: null };
             const cardType = e?.detail?.cardType || 'all';
             filterActive = search.length > 0 || assignedTo.length > 0 || !!dueDate.preset || !!dueDate.from || !!dueDate.to || cardType !== 'all';
+        });
+        
+        // Listen for featured images visibility changes
+        window.addEventListener('featured-images-visibility-changed', (e) => {
+            showFeaturedImages = e?.detail?.visible ?? true;
         });
     "
     x-sortable-handle
@@ -97,7 +105,7 @@
         
         {{-- Featured image section --}}
         @if(!empty($record['attributes']['featured_image']['value']))
-            <div class="ff-card__featured-image -mx-4 -mt-4 mb-3 relative">
+            <div class="ff-card__featured-image -mx-4 -mt-4 mb-3 relative" x-show="showFeaturedImages" x-cloak>
                 
                 {{-- Share button for cards with featured image --}}
                 <button
@@ -126,7 +134,7 @@
             </div>
         @endif
 
-        {{-- If no featured image, show card title and share button section --}}
+        {{-- If no featured image OR featured images are hidden, show card title and share button section --}}
         @if(empty($record['attributes']['featured_image']['value']))
             <div class="flex justify-between items-center mb-2">
                 
@@ -147,9 +155,28 @@
 
             </div>
         @else
+            {{-- Show title/share button when featured images are hidden --}}
+            <div class="flex justify-between items-center mb-2" x-show="!showFeaturedImages" x-cloak>
+                
+                {{-- Card title --}}
+                <h4 class="ff-card__title m-0">{{ Str::limit($record['title'], 60) }}</h4>
 
-            {{-- Card title --}}
-            <h4 class="ff-card__title">{{ Str::limit($record['title'], 60) }}</h4>
+                {{-- Share button --}}
+                <button
+                    class="ff-card__badge inline-flex items-center px-2 py-[3px] rounded-md bg-white/90 dark:bg-gray-800/90 hover:bg-white  dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 hover:border-gray-300 text-xs cursor-pointer md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 touch-manipulation"
+                    onclick="event.stopPropagation(); event.stopImmediatePropagation(); if (!this.dataset.touched) { shareTaskUrl(event, '{{ $record['id'] }}'); showCopiedBubble(this); }"
+                    ontouchstart="event.stopPropagation(); event.stopImmediatePropagation(); this.dataset.touched = '1';"
+                    ontouchend="event.stopPropagation(); event.stopImmediatePropagation(); this.dataset.touched = '1'; shareTaskUrlMobile(event, '{{ $record['id'] }}', this); setTimeout(() => delete this.dataset.touched, 300);"
+                    title="Share Task"
+                    type="button"
+                >
+                    @svg('heroicon-o-share', 'w-3 h-3 text-gray-600 dark:text-gray-300')
+                </button>
+
+            </div>
+
+            {{-- Card title (shown when featured image is visible) --}}
+            <h4 class="ff-card__title" x-show="showFeaturedImages">{{ Str::limit($record['title'], 60) }}</h4>
 
         @endif
 
