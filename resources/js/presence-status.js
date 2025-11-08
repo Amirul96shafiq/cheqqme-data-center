@@ -175,30 +175,30 @@ class PresenceStatusManager {
      * Update status indicators for a specific user
      */
     updateUserStatusIndicators(userId, status) {
-        // Find all indicators for this user
-        document
-            .querySelectorAll(`[data-user-id="${userId}"]`)
-            .forEach((element) => {
-                // Update the status indicator element
-                this.updateStatusIndicatorElement(element, status);
+        const indicatorSelector = `.online-status-indicator[data-user-id="${userId}"], [data-status-indicator][data-user-id="${userId}"]`;
 
-                // Update tooltip if present
-                const tooltipElement =
-                    element.querySelector("[data-tooltip-text]") || element;
-                if (tooltipElement) {
-                    const statusConfig = this.getStatusConfig();
-                    if (statusConfig[status]) {
-                        tooltipElement.setAttribute(
-                            "data-tooltip-text",
-                            statusConfig[status].label
-                        );
-                        tooltipElement.setAttribute(
-                            "title",
-                            statusConfig[status].label
-                        );
-                    }
+        // Find all indicators for this user
+        document.querySelectorAll(indicatorSelector).forEach((element) => {
+            // Update the status indicator element
+            this.updateStatusIndicatorElement(element, status);
+
+            // Update tooltip if present
+            const tooltipElement =
+                element.querySelector("[data-tooltip-text]") || element;
+            if (tooltipElement) {
+                const statusConfig = this.getStatusConfig();
+                if (statusConfig[status]) {
+                    tooltipElement.setAttribute(
+                        "data-tooltip-text",
+                        statusConfig[status].label
+                    );
+                    tooltipElement.setAttribute(
+                        "title",
+                        statusConfig[status].label
+                    );
                 }
-            });
+            }
+        });
     }
 
     /**
@@ -384,6 +384,13 @@ class PresenceStatusManager {
      * Update a single status indicator element
      */
     updateStatusIndicatorElement(element, status) {
+        if (
+            !element.classList?.contains("online-status-indicator") &&
+            !element.hasAttribute("data-status-indicator")
+        ) {
+            return;
+        }
+
         // Get status configuration
         const statusConfig = this.getStatusConfig();
 
