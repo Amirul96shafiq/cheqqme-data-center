@@ -189,7 +189,7 @@ class MeetingLinkResource extends Resource
                                     Forms\Components\TextInput::make('title')
                                         ->label(__('meetinglink.form.title'))
                                         ->required()
-                                        ->maxLength(255)
+                                        ->maxLength(100)
                                         ->live(onBlur: true)
                                         ->default('CheQQMeeting')
                                         ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {

@@ -51,6 +51,7 @@ class ImportantUrlResource extends Resource
     {
         return $form
             ->schema([
+
                 Section::make(__('importanturl.section.important_url_info'))->schema([
                     Grid::make([
                         'default' => 1,
@@ -60,7 +61,11 @@ class ImportantUrlResource extends Resource
                         'xl' => 1,
                         '2xl' => 3,
                     ])->schema([
-                        TextInput::make('title')->label(__('importanturl.form.important_url_title'))->required()->maxLength(50),
+
+                        TextInput::make('title')
+                            ->label(__('importanturl.form.important_url_title'))
+                            ->required()
+                            ->maxLength(100),
 
                         Select::make('client_id')
                             ->label(__('importanturl.form.client'))
@@ -136,6 +141,7 @@ class ImportantUrlResource extends Resource
                                     ->label(__('importanturl.form.create_project'))
                             )
                             ->nullable(),
+
                     ]),
 
                     TextInput::make('url')
@@ -150,6 +156,7 @@ class ImportantUrlResource extends Resource
                                 ->tooltip(__('importanturl.form.important_url_helper'))
                         )
                         ->url(),
+
                 ]),
 
                 Section::make()
@@ -168,6 +175,7 @@ class ImportantUrlResource extends Resource
                     ->collapsible(true)
                     ->live()
                     ->schema([
+
                         RichEditor::make('notes')
                             ->label(__('importanturl.form.notes'))
                             ->toolbarButtons([
@@ -287,6 +295,7 @@ class ImportantUrlResource extends Resource
                             ->live(onBlur: true)
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                            
                     ])
                     ->collapsible(),
             ]);

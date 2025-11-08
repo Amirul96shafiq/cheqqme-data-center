@@ -51,14 +51,12 @@ class PhoneNumberResource extends Resource
             ->schema([
                 Section::make(__('phonenumber.section.phone_number_info'))
                     ->schema([
+
                         TextInput::make('title')
                             ->label(__('phonenumber.form.phone_number_title'))
                             ->required()
-                            ->maxLength(255),
-                        /*TextInput::make('phone')
-                            ->label(__('phonenumber.form.phone_number'))
-                            ->required()
-                            ->tel(),*/
+                            ->maxLength(100),
+
                         PhoneInput::make('phone')
                             ->label(__('phonenumber.form.phone_number'))
                             ->required()
@@ -123,6 +121,7 @@ class PhoneNumberResource extends Resource
 
                                 return $digits;
                             }),
+
                     ])
                     ->columns(2),
 
@@ -142,6 +141,7 @@ class PhoneNumberResource extends Resource
                     ->collapsible(true)
                     ->live()
                     ->schema([
+
                         RichEditor::make('notes')
                             ->label(__('phonenumber.form.notes'))
                             ->toolbarButtons([
@@ -261,6 +261,7 @@ class PhoneNumberResource extends Resource
                             ->live(onBlur: true)
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                            
                     ])
                     ->collapsible(),
             ]);

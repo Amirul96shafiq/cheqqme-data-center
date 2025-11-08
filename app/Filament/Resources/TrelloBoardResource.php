@@ -54,6 +54,7 @@ class TrelloBoardResource extends Resource
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
+
                                 Forms\Components\TextInput::make('url')
                                     ->label(__('trelloboard.form.board_url'))
                                     ->placeholder('https://trello.com/b/12345678/board-name')
@@ -95,14 +96,17 @@ class TrelloBoardResource extends Resource
                                     ->required()
                                     ->placeholder('Board Name')
                                     ->helperText(__('trelloboard.form.board_name_helper')),
+
                             ]),
                     ]),
 
                 Section::make(__('trelloboard.section.display_info'))
                     ->schema([
+
                         Toggle::make('show_on_boards')
                             ->label(__('trelloboard.form.show_on_boards'))
                             ->default(true),
+
                     ]),
 
                 Section::make()
@@ -121,6 +125,7 @@ class TrelloBoardResource extends Resource
                     ->collapsible(true)
                     ->live()
                     ->schema([
+
                         RichEditor::make('notes')
                             ->label(__('trelloboard.form.trelloboard_notes'))
                             ->toolbarButtons([
@@ -240,6 +245,7 @@ class TrelloBoardResource extends Resource
                             ->live(onBlur: true)
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                            
                     ])
                     ->collapsible(),
             ]);

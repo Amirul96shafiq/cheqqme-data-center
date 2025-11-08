@@ -44,129 +44,141 @@ class UserResource extends Resource
 
                 Section::make(heading: __('user.section.user_info'))
                     ->schema([
-                        Grid::make(3)->schema([
-                            TextInput::make('username')
-                                ->label(__('user.form.username'))
-                                ->required()
-                                ->maxLength(20)
-                                ->unique(ignoreRecord: true)
-                                ->reactive()
-                                ->debounce(500) // Delay the reaction so user can finish typing
-                                ->extraAttributes([
-                                    'x-on:blur' => "
+
+                        Grid::make(3)
+                            ->schema([
+
+                                TextInput::make('username')
+                                    ->label(__('user.form.username'))
+                                    ->required()
+                                    ->maxLength(100)
+                                    ->unique(ignoreRecord: true)
+                                    ->reactive()
+                                    ->debounce(500) // Delay the reaction so user can finish typing
+                                    ->extraAttributes([
+                                        'x-on:blur' => "
                                         if (\$refs.username && !\$refs.username.value) {
                                             \$refs.username.value = \$el.value;
                                             \$el.dispatchEvent(new Event('input')); // Force model update
                                             \$refs.username.dispatchEvent(new Event('input'));
                                         }
                                     ",
-                                ])
-                                ->extraAlpineAttributes(['x-ref' => 'username']),
+                                    ])
+                                    ->extraAlpineAttributes(['x-ref' => 'username']),
 
-                            TextInput::make('name')
-                                ->label(__('user.form.name'))
-                                ->nullable()
-                                ->extraAlpineAttributes(['x-ref' => 'name'])
-                                ->helperText(__('user.form.name_helper'))
-                                ->placeholder(fn (callable $get) => $get('username'))
-                                ->maxLength(50),
+                                TextInput::make('name')
+                                    ->label(__('user.form.name'))
+                                    ->nullable()
+                                    ->extraAlpineAttributes(['x-ref' => 'name'])
+                                    ->helperText(__('user.form.name_helper'))
+                                    ->placeholder(fn (callable $get) => $get('username'))
+                                    ->maxLength(50),
 
-                            TextInput::make('email')
-                                ->label(__('user.form.email'))
-                                ->required()
-                                ->email()
-                                ->maxLength(60)
-                                ->unique(
-                                    table: 'users',
-                                    column: 'email',
-                                    ignoreRecord: true,
-                                    modifyRuleUsing: fn (Unique $rule) => $rule->whereNull('deleted_at')
-                                ),
+                                TextInput::make('email')
+                                    ->label(__('user.form.email'))
+                                    ->required()
+                                    ->email()
+                                    ->maxLength(60)
+                                    ->unique(
+                                        table: 'users',
+                                        column: 'email',
+                                        ignoreRecord: true,
+                                        modifyRuleUsing: fn (Unique $rule) => $rule->whereNull('deleted_at')
+                                    ),
 
-                            Hidden::make('Updated_by')->default(fn () => auth()->id())->dehydrated(),
-                        ]),
+                                Hidden::make('Updated_by')->default(fn () => auth()->id())->dehydrated(),
+
+                            ]),
+
                     ]),
 
                 Section::make(heading: __('user.section.password_info'))
                     ->description(fn (string $context) => $context === 'edit' ? __('user.section.password_info_description') : null)
                     ->schema([
 
-                        Grid::make(3)->schema([
-                            // Only show "Change password?" during editing
-                            Toggle::make('change_password_toggle')
-                                ->label(__('user.form.change_password'))
-                                ->live()
-                                ->afterStateUpdated(function (bool $state, callable $set) {
-                                    if (! $state) {
-                                        $set('old_password', null);
-                                        $set('password', null);
-                                        $set('password_confirmation', null);
-                                    }
-                                })
-                                ->visible(fn (string $context) => $context === 'edit'),
+                        Grid::make(3)
+                            ->schema([
 
-                            // Generate password feature
-                            Forms\Components\Actions::make([
-                                Action::make('generatePassword')
-                                    ->label(__('user.form.generate_password'))
-                                    ->icon('heroicon-o-code-bracket-square')
-                                    ->color('gray')
-                                    ->action(function ($set) {
-                                        $generated = str()->random(16);
-                                        $set('password', $generated);
+                                // Only show "Change password?" during editing
+                                Toggle::make('change_password_toggle')
+                                    ->label(__('user.form.change_password'))
+                                    ->live()
+                                    ->afterStateUpdated(function (bool $state, callable $set) {
+                                        if (! $state) {
+                                            $set('old_password', null);
+                                            $set('password', null);
+                                            $set('password_confirmation', null);
+                                        }
                                     })
+                                    ->visible(fn (string $context) => $context === 'edit'),
+
+                                // Generate password feature
+                                Forms\Components\Actions::make([
+                                    Action::make('generatePassword')
+                                        ->label(__('user.form.generate_password'))
+                                        ->icon('heroicon-o-code-bracket-square')
+                                        ->color('gray')
+                                        ->action(function ($set) {
+                                            $generated = str()->random(16);
+                                            $set('password', $generated);
+                                        })
+                                        ->visible(
+                                            fn (Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
+                                        ),
+                                ]),
+
+                            ]),
+
+                        Grid::make(3)
+                            ->schema([
+
+                                // OLD PASSWORD
+                                Forms\Components\TextInput::make('old_password')
+                                    ->label(label: __('user.form.old_password'))
+                                    ->password()
+                                    ->revealable()
+                                    ->dehydrated(false)
+                                    ->visible(
+                                        fn (Get $get, string $context) => $context === 'edit' && $get('change_password_toggle') === true
+                                    )
+                                    ->rule(function (Get $get) {
+                                        return function (string $attribute, $value, $fail) use ($get) {
+                                            $record = $get('record');
+                                            if ($record && $value && ! Hash::check($value, $record->password)) {
+                                                $fail('The old password is incorrect.');
+                                            }
+                                        };
+                                    }),
+
+                                // NEW PASSWORD
+                                TextInput::make('password')
+                                    ->label(fn (string $context) => $context === 'edit' ? __('user.form.new_password') : __('user.form.new_password'))
+                                    ->helperText(__('user.form.password_helper'))
+                                    ->password()
+                                    ->revealable()
+                                    ->minLength(5)
+                                    ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
+                                    ->dehydrated(fn ($state) => filled($state))
+                                    ->required(fn (string $context) => $context === 'create')
+                                    ->visible(
+                                        fn (Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
+                                    )
+                                    ->same('password_confirmation'),
+
+                                // CONFIRM NEW PASSWORD
+                                TextInput::make('password_confirmation')
+                                    ->label(label: __('user.form.confirm_new_password'))
+                                    ->password()
+                                    ->revealable()
+                                    ->required(
+                                        fn (Get $get, string $context) => $context === 'create' || filled($get('password'))
+                                    )
                                     ->visible(
                                         fn (Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
                                     ),
+
                             ]),
-                        ]),
 
-                        Grid::make(3)->schema([
-                            // OLD PASSWORD
-                            Forms\Components\TextInput::make('old_password')
-                                ->label(label: __('user.form.old_password'))
-                                ->password()
-                                ->revealable()
-                                ->dehydrated(false)
-                                ->visible(
-                                    fn (Get $get, string $context) => $context === 'edit' && $get('change_password_toggle') === true
-                                )
-                                ->rule(function (Get $get) {
-                                    return function (string $attribute, $value, $fail) use ($get) {
-                                        $record = $get('record');
-                                        if ($record && $value && ! Hash::check($value, $record->password)) {
-                                            $fail('The old password is incorrect.');
-                                        }
-                                    };
-                                }),
-
-                            // NEW PASSWORD
-                            TextInput::make('password')
-                                ->label(fn (string $context) => $context === 'edit' ? __('user.form.new_password') : __('user.form.new_password'))
-                                ->helperText(__('user.form.password_helper'))
-                                ->password()
-                                ->revealable()
-                                ->minLength(5)
-                                ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
-                                ->dehydrated(fn ($state) => filled($state))
-                                ->required(fn (string $context) => $context === 'create')
-                                ->visible(
-                                    fn (Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
-                                )
-                                ->same('password_confirmation'),
-
-                            // CONFIRM NEW PASSWORD
-                            TextInput::make('password_confirmation')
-                                ->label(label: __('user.form.confirm_new_password'))
-                                ->password()
-                                ->revealable()
-                                ->required(
-                                    fn (Get $get, string $context) => $context === 'create' || filled($get('password'))
-                                )
-                                ->visible(
-                                    fn (Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
-                                ),
-                        ]),
                     ]),
 
                 // Account deletion
@@ -174,6 +186,7 @@ class UserResource extends Resource
                     ->description(__('user.section.danger_zone_description'))
                     ->visible(fn (string $context) => $context === 'edit') // hide entire section when creating
                     ->Schema([
+
                         // Only show "User Deletion?" during editing
                         Toggle::make('user_delete')
                             ->label(label: __('user.form.user_deletion'))
@@ -213,7 +226,9 @@ class UserResource extends Resource
                                     $livewire->redirect('/admin/users');
                                 }),
                         ]),
+
                     ]),
+                    
             ]);
     }
 

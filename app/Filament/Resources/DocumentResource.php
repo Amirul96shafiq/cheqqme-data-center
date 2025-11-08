@@ -87,6 +87,7 @@ class DocumentResource extends Resource
 
                 Section::make(__('document.section.document_info'))
                     ->schema([
+
                         Grid::make([
                             'default' => 1,
                             'sm' => 1,
@@ -96,10 +97,11 @@ class DocumentResource extends Resource
                             '2xl' => 3,
                         ])
                             ->schema([
+
                                 TextInput::make('title')
                                     ->label(__('document.form.document_title'))
                                     ->required()
-                                    ->maxLength(50),
+                                    ->maxLength(100),
 
                                 Select::make('project_id')
                                     ->label(__('document.form.project'))
@@ -150,6 +152,7 @@ class DocumentResource extends Resource
                                     ->searchable()
                                     ->default('internal')
                                     ->live(),
+
                             ]),
 
                         TextInput::make('url')
@@ -193,6 +196,7 @@ class DocumentResource extends Resource
                             ])
                             ->maxFiles(20480) // 20MB
                             ->nullable(),
+
                     ]),
 
                 Section::make()
@@ -211,6 +215,7 @@ class DocumentResource extends Resource
                     ->collapsible(true)
                     ->live()
                     ->schema([
+
                         RichEditor::make('notes')
                             ->label(__('document.form.notes'))
                             ->toolbarButtons([
@@ -330,6 +335,7 @@ class DocumentResource extends Resource
                             ->live(onBlur: true)
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+                            
                     ])
                     ->collapsible(),
             ]);

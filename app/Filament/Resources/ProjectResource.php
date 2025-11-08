@@ -71,6 +71,7 @@ class ProjectResource extends Resource
             ->schema([
                 Section::make(__('project.section.project_info'))
                     ->schema([
+
                         Grid::make([
                             'default' => 1,
                             'sm' => 1,
@@ -80,10 +81,11 @@ class ProjectResource extends Resource
                             '2xl' => 3,
                         ])
                             ->schema([
+
                                 TextInput::make('title')
                                     ->label(__('project.form.project_title'))
                                     ->required()
-                                    ->maxLength(50),
+                                    ->maxLength(100),
 
                                 Select::make('client_id')
                                     ->label(__('project.form.client'))
@@ -125,6 +127,7 @@ class ProjectResource extends Resource
                                     ->options(['Planning' => __('project.form.planning'), 'In Progress' => __('project.form.in_progress'), 'Completed' => __('project.form.completed')])
                                     ->searchable()
                                     ->nullable(),
+
                             ]),
 
                         TextInput::make('project_url')
@@ -137,10 +140,12 @@ class ProjectResource extends Resource
                             ->rows(3)
                             ->nullable()
                             ->maxLength(200),
+
                     ]),
 
                 Section::make(__('project.section.issue_tracker_info'))
                     ->schema([
+
                         Repeater::make('issue_tracker_info')
                             ->label('')
                             ->schema([
@@ -209,6 +214,7 @@ class ProjectResource extends Resource
                     ->collapsible(true)
                     ->live()
                     ->schema([
+
                         RichEditor::make('notes')
                             ->label(__('project.form.notes'))
                             ->toolbarButtons([
@@ -328,6 +334,7 @@ class ProjectResource extends Resource
                             ->live(onBlur: true)
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+
                     ])
                     ->collapsible(),
             ]);

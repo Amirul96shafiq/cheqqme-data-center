@@ -62,9 +62,11 @@ class ClientResource extends Resource
                             'xl' => 1,
                             '2xl' => 3,
                         ])->schema([
+
                             TextInput::make('pic_name')
                                 ->label(__('client.form.pic_name'))
                                 ->required()
+                                ->maxLength(100)
                                 ->reactive()
                                 ->debounce(500) // Delay the reaction so user can finish typing
                                 ->extraAttributes([
@@ -145,12 +147,14 @@ class ClientResource extends Resource
                                 ->label(__('client.form.pic_email'))
                                 ->email()
                                 ->nullable(),
+
                         ]),
                     ]),
 
                 Section::make(__('client.section.staff_info'))
                     ->description(__('client.section.staff_info_description'))
                     ->schema([
+
                         Repeater::make('staff_information')
                             ->label(__('client.form.staff_information'))
                             ->schema([
@@ -241,6 +245,7 @@ class ClientResource extends Resource
                             ->collapsed()
                             ->itemLabel(fn (array $state): string => ! empty($state['staff_name']) ? $state['staff_name'] : __('client.form.staff_placeholder'))
                             ->columnSpanFull(),
+
                     ])
                     ->collapsible(),
 
@@ -254,6 +259,7 @@ class ClientResource extends Resource
                             'xl' => 1,
                             '2xl' => 2,
                         ])->schema([
+
                             TextInput::make('company_name')
                                 ->label(__('client.form.company_name'))
                                 ->nullable()
@@ -274,6 +280,7 @@ class ClientResource extends Resource
                                 ->label(__('client.form.billing_address'))
                                 ->rows(2)
                                 ->nullable(),
+
                         ]),
                     ]),
 
@@ -293,6 +300,7 @@ class ClientResource extends Resource
                     ->collapsible(true)
                     ->live()
                     ->schema([
+
                         RichEditor::make('notes')
                             ->label(__('client.form.notes'))
                             ->toolbarButtons([
@@ -412,6 +420,7 @@ class ClientResource extends Resource
                             ->live(onBlur: true)
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
+
                     ])
                     ->collapsible(),
             ]);
