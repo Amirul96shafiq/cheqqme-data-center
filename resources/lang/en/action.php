@@ -87,6 +87,7 @@ return [
     'filter' => [
         'assigned_to' => 'Assigned To',
         'all_users' => 'All Users',
+        'current_user' => 'You',
         'select_users' => 'Select users to filter by',
         'selected_users' => 'Selected Users',
         'users_selected' => 'users selected',

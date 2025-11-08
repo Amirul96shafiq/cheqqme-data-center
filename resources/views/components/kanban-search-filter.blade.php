@@ -14,7 +14,33 @@
 ])
 
 @php
-$usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, username) ASC')->get()->mapWithKeys(fn($user) => [$user->id => ($user->name ?: 'User #'.$user->id).($user->deleted_at ? ' (deleted)' : '')])->toArray();
+$currentUserId = auth()->id();
+
+$usersCollection = \App\Models\User::withTrashed()
+    ->orderByRaw('COALESCE(name, username) ASC')
+    ->get();
+
+$usersForFilter = $usersCollection
+    ->sortBy(function ($user) use ($currentUserId) {
+        $baseLabel = $user->name ?: ($user->username ?: __('action.form.user_with_id', ['id' => $user->id]));
+
+        return [
+            $user->id === $currentUserId ? 0 : 1,
+            mb_strtolower($baseLabel),
+        ];
+    })
+    ->mapWithKeys(function ($user) use ($currentUserId) {
+        $label = $user->id === $currentUserId
+            ? __('action.filter.current_user')
+            : ($user->name ?: ($user->username ?: __('action.form.user_with_id', ['id' => $user->id])));
+
+        if ($user->deleted_at) {
+            $label .= __('action.form.deleted_suffix');
+        }
+
+        return [$user->id => $label];
+    })
+    ->toArray();
 @endphp
 
 <div
@@ -22,7 +48,7 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
      x-init="init()"
      data-initial-search="{{ $search }}"
      data-initial-assigned-to="{{ json_encode($assignedToFilter) }}"
-     data-initial-users="{{ json_encode($usersForFilter) }}"
+     data-initial-users="{{ json_encode($usersForFilter, JSON_UNESCAPED_UNICODE) }}"
      data-initial-due-date-preset="{{ $dueDatePreset }}"
      data-initial-due-date-from="{{ $dueDateFrom }}"
      data-initial-due-date-to="{{ $dueDateTo }}"
@@ -144,21 +170,18 @@ $usersForFilter = \App\Models\User::withTrashed()->orderByRaw('COALESCE(name, us
                                 <x-dropdown-panel is-open="assignedDropdownOpen">
                                     <!-- Users List Section -->
                                     <div class="p-4">
-                                        <div class="max-h-48 overflow-y-auto space-y-1">
-                                    @foreach(\App\Models\User::withTrashed()->orderByRaw('COALESCE(name, username) ASC')->get() as $user)
+                                    <div class="max-h-48 overflow-y-auto space-y-1">
+                                    @foreach($usersForFilter as $userId => $userLabel)
                                                 <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <input 
                                                     type="checkbox" 
-                                                    value="{{ $user->id }}"
+                                                    value="{{ $userId }}"
                                                     x-model="assignedToFilter"
                                                         @change="handleAssignedFilterChange()"
                                                         class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
                                                 >
                                                     <span class="text-gray-700 dark:text-gray-300 flex-1">
-                                                    {{ $user->name ?: 'User #'.$user->id }}
-                                                    @if($user->deleted_at)
-                                                        <span class="text-gray-500 dark:text-gray-400">(deleted)</span>
-                                                    @endif
+                                                    {{ $userLabel }}
                                                 </span>
                                             </label>
                                     @endforeach

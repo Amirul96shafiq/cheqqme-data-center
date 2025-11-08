@@ -72,6 +72,7 @@ return [
     'filter' => [
         'assigned_to' => 'Ditugaskan Kepada',
         'all_users' => 'Semua Pengguna',
+        'current_user' => 'Anda',
         'select_users' => 'Pilih pengguna untuk menapis',
         'selected_users' => 'Pengguna Terpilih',
         'users_selected' => 'pengguna dipilih',
