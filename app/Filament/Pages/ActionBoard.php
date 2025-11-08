@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\User;
 use Closure;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Forms;
 use Filament\Forms\Get;
 use Filament\Notifications\Notification;
@@ -107,17 +108,8 @@ class ActionBoard extends KanbanBoardPage
                 'attachment_count' => 'heroicon-o-paper-clip',
                 'resource_count' => 'heroicon-o-folder',
             ])
-            ->columns([
-                'issue_tracker' => __('action.status.issue_tracker'),
-                'todo' => __('action.status.todo'),
-                'in_progress' => __('action.status.in_progress'),
-                'toreview' => __('action.status.toreview'),
-                'completed' => __('action.status.completed'),
-                'archived' => __('action.status.archived'),
-            ])
-            ->columnColors([
-                'issue_tracker', 'todo', 'in_progress', 'toreview', 'completed', 'archived' => 'gray',
-            ])
+            ->columns($this->getAvailableStatuses())
+            ->columnColors(array_fill_keys(array_keys($this->getAvailableStatuses()), 'gray'))
             ->cardLabel(__('action.card_label'))
             ->pluralCardLabel(__('action.card_label_plural'));
     }
@@ -829,23 +821,39 @@ class ActionBoard extends KanbanBoardPage
         return null;
     }
 
-    protected function getHeaderActions(): array
+    /**
+     * Get all available task statuses dynamically.
+     * This method serves as a single source of truth for task statuses.
+     *
+     * @return array<string, string> Array of status keys => translated labels
+     */
+    protected function getAvailableStatuses(): array
     {
         return [
-            // Create Task button - the only way to create tasks (replaces buggy Flowforge createAction)
-            Action::make('createTask')
-                ->label(__('action.modal.create_title'))
-                ->icon('heroicon-o-plus')
+            'issue_tracker' => __('action.status.issue_tracker'),
+            'todo' => __('action.status.todo'),
+            'in_progress' => __('action.status.in_progress'),
+            'toreview' => __('action.status.toreview'),
+            'completed' => __('action.status.completed'),
+            'archived' => __('action.status.archived'),
+        ];
+    }
+
+    protected function getHeaderActions(): array
+    {
+        $statuses = $this->getAvailableStatuses();
+
+        $actions = [];
+
+        // Create a group action with dropdown for each status
+        foreach ($statuses as $statusKey => $statusLabel) {
+            $actions[] = Action::make("createTask_{$statusKey}")
+                ->label($statusLabel)
                 ->color('primary')
-                ->size('lg')
                 ->modalHeading(__('action.modal.create_title'))
                 ->modalWidth('5xl')
-                ->form(function (Forms\Form $form) {
-
-                    // Use database default status 'todo'
-                    $col = 'todo';
-
-                    return $this->taskFormSchema($form, 'create', $col);
+                ->form(function (Forms\Form $form) use ($statusKey) {
+                    return $this->taskFormSchema($form, 'create', $statusKey);
                 })
                 ->action(function (array $data) {
                     $task = Task::create($data);
@@ -860,7 +868,16 @@ class ActionBoard extends KanbanBoardPage
 
                     // Refresh the entire ActionBoard page to show the new task
                     $this->redirect(static::getUrl());
-                }),
+                });
+        }
+
+        return [
+            ActionGroup::make($actions)
+                ->label(__('action.modal.create_title'))
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->size('lg')
+                ->button(),
         ];
     }
 
