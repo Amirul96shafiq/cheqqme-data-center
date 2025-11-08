@@ -41,98 +41,11 @@ class TotalWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $totalIssueTrackers = Task::where(function ($query) {
-            $query->where('status', 'issue_tracker')
-                ->orWhereNotNull('tracking_token');
-        })->count();
+        $stats = $this->getSharedStats();
 
-        if ($this->showIssueTrackers) {
-            $issueTrackerCount = $this->getUserIssueTrackersCount();
+        array_unshift($stats, $this->getPrimaryStat());
 
-            return [
-                StatWithCycleButton::make(__('dashboard.your_issue_trackers.title'), $issueTrackerCount)
-                    ->description(__('dashboard.your_issue_trackers.description', ['total' => $totalIssueTrackers]))
-                    ->color('primary')
-                    ->icon(ActionBoard::getNavigationIcon())
-                    ->url(route('filament.admin.pages.action-board'))
-                    ->extraAttributes([
-                        'class' => 'relative',
-                    ]),
-
-                Stat::make(__('dashboard.your_meeting_links.title'), $this->getUserMeetingLinksCount())
-                    ->description(__('dashboard.your_meeting_links.description', ['total' => MeetingLink::count()]))
-                    ->color('primary')
-                    ->icon(MeetingLinkResource::getNavigationIcon())
-                    ->url(route('filament.admin.resources.meeting-links.index')),
-
-                Stat::make(__('dashboard.total_trello_boards.title'), TrelloBoard::count())
-                    ->description(__('dashboard.actions.view_all_trello_boards'))
-                    ->color('primary')
-                    ->icon(TrelloBoardResource::getNavigationIcon())
-                    ->url(route('filament.admin.resources.trello-boards.index')),
-
-                Stat::make(__('dashboard.total_clients.title'), Client::count())
-                    ->description(__('dashboard.actions.view_all_clients'))
-                    ->color('primary')
-                    ->icon(ClientResource::getNavigationIcon())
-                    ->url(route('filament.admin.resources.clients.index')),
-
-                Stat::make(__('dashboard.total_important_urls.title'), ImportantUrl::count())
-                    ->description(__('dashboard.actions.view_all_important_urls'))
-                    ->color('primary')
-                    ->icon(ImportantUrlResource::getNavigationIcon())
-                    ->url(route('filament.admin.resources.important-urls.index')),
-
-                Stat::make(__('dashboard.total_phone_numbers.title'), PhoneNumber::count())
-                    ->description(__('dashboard.actions.view_all_phone_numbers'))
-                    ->color('primary')
-                    ->icon(PhoneNumberResource::getNavigationIcon())
-                    ->url(route('filament.admin.resources.phone-numbers.index')),
-
-            ];
-        }
-
-        return [
-            StatWithCycleButton::make(__('dashboard.your_tasks.title'), $this->getUserTasksCount())
-                ->description(__('dashboard.your_tasks.description', ['total' => Task::count()]))
-                ->color('primary')
-                ->icon(ActionBoard::getNavigationIcon())
-                ->url(route('filament.admin.pages.action-board'))
-                ->extraAttributes([
-                    'class' => 'relative',
-                ]),
-
-            Stat::make(__('dashboard.your_meeting_links.title'), $this->getUserMeetingLinksCount())
-                ->description(__('dashboard.your_meeting_links.description', ['total' => MeetingLink::count()]))
-                ->color('primary')
-                ->icon(MeetingLinkResource::getNavigationIcon())
-                ->url(route('filament.admin.resources.meeting-links.index')),
-
-            Stat::make(__('dashboard.total_trello_boards.title'), TrelloBoard::count())
-                ->description(__('dashboard.actions.view_all_trello_boards'))
-                ->color('primary')
-                ->icon(TrelloBoardResource::getNavigationIcon())
-                ->url(route('filament.admin.resources.trello-boards.index')),
-
-            Stat::make(__('dashboard.total_clients.title'), Client::count())
-                ->description(__('dashboard.actions.view_all_clients'))
-                ->color('primary')
-                ->icon(ClientResource::getNavigationIcon())
-                ->url(route('filament.admin.resources.clients.index')),
-
-            Stat::make(__('dashboard.total_important_urls.title'), ImportantUrl::count())
-                ->description(__('dashboard.actions.view_all_important_urls'))
-                ->color('primary')
-                ->icon(ImportantUrlResource::getNavigationIcon())
-                ->url(route('filament.admin.resources.important-urls.index')),
-
-            Stat::make(__('dashboard.total_phone_numbers.title'), PhoneNumber::count())
-                ->description(__('dashboard.actions.view_all_phone_numbers'))
-                ->color('primary')
-                ->icon(PhoneNumberResource::getNavigationIcon())
-                ->url(route('filament.admin.resources.phone-numbers.index')),
-
-        ];
+        return $stats;
     }
 
     protected function getUserTasksCount(): int
@@ -187,6 +100,75 @@ class TotalWidget extends BaseWidget
         return MeetingLink::where(function ($query) use ($userId) {
             $query->whereRaw('JSON_EXTRACT(user_ids, "$") LIKE ?', ['%"'.$userId.'"%'])
                 ->orWhereRaw('JSON_EXTRACT(user_ids, "$") LIKE ?', ['%'.$userId.'%']);
+        })->count();
+    }
+
+    private function getSharedStats(): array
+    {
+        return [
+            Stat::make(__('dashboard.your_meeting_links.title'), $this->getUserMeetingLinksCount())
+                ->description(__('dashboard.your_meeting_links.description', ['total' => MeetingLink::count()]))
+                ->color('primary')
+                ->icon(MeetingLinkResource::getNavigationIcon())
+                ->url(route('filament.admin.resources.meeting-links.index')),
+
+            Stat::make(__('dashboard.total_trello_boards.title'), TrelloBoard::count())
+                ->description(__('dashboard.actions.view_all_trello_boards'))
+                ->color('primary')
+                ->icon(TrelloBoardResource::getNavigationIcon())
+                ->url(route('filament.admin.resources.trello-boards.index')),
+
+            Stat::make(__('dashboard.total_clients.title'), Client::count())
+                ->description(__('dashboard.actions.view_all_clients'))
+                ->color('primary')
+                ->icon(ClientResource::getNavigationIcon())
+                ->url(route('filament.admin.resources.clients.index')),
+
+            Stat::make(__('dashboard.total_important_urls.title'), ImportantUrl::count())
+                ->description(__('dashboard.actions.view_all_important_urls'))
+                ->color('primary')
+                ->icon(ImportantUrlResource::getNavigationIcon())
+                ->url(route('filament.admin.resources.important-urls.index')),
+
+            Stat::make(__('dashboard.total_phone_numbers.title'), PhoneNumber::count())
+                ->description(__('dashboard.actions.view_all_phone_numbers'))
+                ->color('primary')
+                ->icon(PhoneNumberResource::getNavigationIcon())
+                ->url(route('filament.admin.resources.phone-numbers.index')),
+        ];
+    }
+
+    private function getPrimaryStat(): Stat
+    {
+        if ($this->showIssueTrackers) {
+            $issueTrackerCount = $this->getUserIssueTrackersCount();
+            $totalIssueTrackers = $this->getTotalIssueTrackersCount();
+
+            return StatWithCycleButton::make(__('dashboard.your_issue_trackers.title'), $issueTrackerCount)
+                ->description(__('dashboard.your_issue_trackers.description', ['total' => $totalIssueTrackers]))
+                ->color('primary')
+                ->icon(ActionBoard::getNavigationIcon())
+                ->url(route('filament.admin.pages.action-board'))
+                ->extraAttributes([
+                    'class' => 'relative',
+                ]);
+        }
+
+        return StatWithCycleButton::make(__('dashboard.your_tasks.title'), $this->getUserTasksCount())
+            ->description(__('dashboard.your_tasks.description', ['total' => Task::count()]))
+            ->color('primary')
+            ->icon(ActionBoard::getNavigationIcon())
+            ->url(route('filament.admin.pages.action-board'))
+            ->extraAttributes([
+                'class' => 'relative',
+            ]);
+    }
+
+    private function getTotalIssueTrackersCount(): int
+    {
+        return Task::where(function ($query) {
+            $query->where('status', 'issue_tracker')
+                ->orWhereNotNull('tracking_token');
         })->count();
     }
 
