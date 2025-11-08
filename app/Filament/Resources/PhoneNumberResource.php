@@ -139,6 +139,7 @@ class PhoneNumberResource extends Resource
                         return new HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
+                    ->collapsed()
                     ->live()
                     ->schema([
 

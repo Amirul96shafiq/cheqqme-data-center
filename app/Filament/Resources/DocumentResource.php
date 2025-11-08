@@ -213,6 +213,7 @@ class DocumentResource extends Resource
                         return new \Illuminate\Support\HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
+                    ->collapsed()
                     ->live()
                     ->schema([
 
