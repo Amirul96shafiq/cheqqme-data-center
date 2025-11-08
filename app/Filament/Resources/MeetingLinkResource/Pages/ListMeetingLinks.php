@@ -17,7 +17,6 @@ class ListMeetingLinks extends ListRecords
     {
         parent::mount();
 
-        // Check for flash message from Google Calendar connection
         if (session('success')) {
             Notification::make()
                 ->title(__('meetinglink.notifications.google_calendar_connected'))
@@ -33,36 +32,24 @@ class ListMeetingLinks extends ListRecords
     {
         return [
             'all' => Tab::make(__('meetinglink.tabs.all')),
-
             'today' => Tab::make(__('meetinglink.tabs.today'))
-                ->modifyQueryUsing(function (Builder $query) {
-                    return $query->whereDate('meeting_start_time', now()->toDateString());
-                })
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereDate('meeting_start_time', now()->toDateString()))
                 ->badge(fn () => \App\Models\MeetingLink::whereDate('meeting_start_time', now()->toDateString())->count()),
-
             'tomorrow' => Tab::make(__('meetinglink.tabs.tomorrow'))
-                ->modifyQueryUsing(function (Builder $query) {
-                    return $query->whereDate('meeting_start_time', now()->addDay()->toDateString());
-                })
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereDate('meeting_start_time', now()->addDay()->toDateString()))
                 ->badge(fn () => \App\Models\MeetingLink::whereDate('meeting_start_time', now()->addDay()->toDateString())->count()),
-
             'this_week' => Tab::make(__('meetinglink.tabs.this_week'))
-                ->modifyQueryUsing(function (Builder $query) {
-                    return $query->whereBetween('meeting_start_time', [
-                        now()->startOfWeek(),
-                        now()->endOfWeek(),
-                    ]);
-                })
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereBetween('meeting_start_time', [
+                    now()->startOfWeek(),
+                    now()->endOfWeek(),
+                ]))
                 ->badge(fn () => \App\Models\MeetingLink::whereBetween('meeting_start_time', [
                     now()->startOfWeek(),
                     now()->endOfWeek(),
                 ])->count()),
-
             'this_month' => Tab::make(__('meetinglink.tabs.this_month'))
-                ->modifyQueryUsing(function (Builder $query) {
-                    return $query->whereMonth('meeting_start_time', now()->month)
-                        ->whereYear('meeting_start_time', now()->year);
-                })
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereMonth('meeting_start_time', now()->month)
+                    ->whereYear('meeting_start_time', now()->year))
                 ->badge(fn () => \App\Models\MeetingLink::whereMonth('meeting_start_time', now()->month)
                     ->whereYear('meeting_start_time', now()->year)
                     ->count()),
