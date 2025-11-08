@@ -21,6 +21,14 @@ return [
         'issue_tracker_preview' => 'Pratonton Pautan Penjejak Isu',
         'copy_to_clipboard' => 'Salin ke Papan Klip',
         'edit_project' => 'Kemaskini Projek',
+        'share_issue_status_link' => 'Kongsi Pautan Status Isu',
+        'share_issue_status_link_description' => 'Pilih token penjejakan untuk berkongsi halaman status awam.',
+        'issue_status_select_token' => 'Token Penjejakan',
+        'issue_status_select_placeholder' => 'Pilih token penjejakan',
+        'issue_status_preview' => 'Pratonton Status Isu',
+        'issue_status_no_tokens' => 'Tiada token penjejakan tersedia untuk projek ini.',
+        'issue_status_no_title' => 'Isu tanpa tajuk',
+        'issue_status_unknown' => 'Tidak diketahui',
     ],
 
     'section' => [

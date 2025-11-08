@@ -21,6 +21,14 @@ return [
         'issue_tracker_preview' => 'Issue Tracker Link Preview',
         'copy_to_clipboard' => 'Copy to Clipboard',
         'edit_project' => 'Edit Project',
+        'share_issue_status_link' => 'Share Issue Status Link',
+        'share_issue_status_link_description' => 'Select a tracking token to share its public status page.',
+        'issue_status_select_token' => 'Tracking Token',
+        'issue_status_select_placeholder' => 'Select a tracking token',
+        'issue_status_preview' => 'Issue Status Preview',
+        'issue_status_no_tokens' => 'No tracking tokens are available for this project yet.',
+        'issue_status_no_title' => 'Untitled issue',
+        'issue_status_unknown' => 'Unknown',
     ],
 
     'section' => [
