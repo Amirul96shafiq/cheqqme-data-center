@@ -36,6 +36,8 @@ class ActionBoard extends KanbanBoardPage
 
     public bool $showFeaturedImages = true;
 
+    public bool $showOptions = false;
+
     public function getSubject(): Builder
     {
         $query = Task::query()
@@ -61,6 +63,8 @@ class ActionBoard extends KanbanBoardPage
     {
         // Load featured images visibility preference from session
         $this->showFeaturedImages = session('action_board_show_featured_images', true);
+        // Load options visibility preference from session
+        $this->showOptions = session('action_board_show_options', false);
 
         $this
             ->titleField('title')
@@ -877,12 +881,24 @@ class ActionBoard extends KanbanBoardPage
         }
 
         return [
+
             ActionGroup::make($actions)
                 ->label(__('action.modal.create_title'))
                 ->icon('heroicon-o-plus')
                 ->color('primary')
                 ->size('lg')
                 ->button(),
+
+            Action::make('toggleShowOptions')
+                ->label(fn () => $this->showOptions ? __('action.hide_options') : __('action.show_options'))
+                ->icon(fn () => $this->showOptions ? 'heroicon-o-chevron-down' : 'heroicon-o-chevron-up')
+                ->color('gray')
+                ->size('lg')
+                ->button()
+                ->action(function () {
+                    $this->toggleShowOptions();
+                }),
+                
         ];
     }
 
@@ -939,6 +955,12 @@ class ActionBoard extends KanbanBoardPage
         $this->showFeaturedImages = ! $this->showFeaturedImages;
         session(['action_board_show_featured_images' => $this->showFeaturedImages]);
         $this->dispatch('featured-images-visibility-changed', visible: $this->showFeaturedImages);
+    }
+
+    public function toggleShowOptions(): void
+    {
+        $this->showOptions = ! $this->showOptions;
+        session(['action_board_show_options' => $this->showOptions]);
     }
 
     public function clearFilter(): void

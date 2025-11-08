@@ -85,6 +85,8 @@ return [
     'more' => 'more',
     'toggle_featured_images' => 'Toggle Featured Images',
     'toggle_featured_images_tooltip' => 'Show or hide featured images',
+    'show_options' => 'Show Options',
+    'hide_options' => 'Hide Options',
 
     'filter' => [
         'assigned_to' => 'Assigned To',

@@ -70,6 +70,8 @@ return [
     'more' => 'lagi',
     'toggle_featured_images' => 'Togol Imej Pilihan',
     'toggle_featured_images_tooltip' => 'Papar atau sembunyikan imej pilihan',
+    'show_options' => 'Papar Pilihan',
+    'hide_options' => 'Sembunyikan Pilihan',
 
     'filter' => [
         'assigned_to' => 'Ditugaskan Kepada',
