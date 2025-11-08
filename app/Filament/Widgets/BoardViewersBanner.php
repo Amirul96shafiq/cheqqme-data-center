@@ -15,5 +15,3 @@ class BoardViewersBanner extends Widget
         ];
     }
 }
-
-

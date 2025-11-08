@@ -62,6 +62,11 @@ return [
         'description' => 'View all :total tasks →',
     ],
 
+    'your_issue_trackers' => [
+        'title' => 'Your Issue Trackers',
+        'description' => 'View all :total issue trackers →',
+    ],
+
     'your_meeting_links' => [
         'title' => 'Your Meeting Links',
         'description' => 'View all :total meeting links →',
@@ -83,6 +88,7 @@ return [
         'view_all' => 'View All',
         'view' => 'View',
         'edit' => 'Edit',
+        'toggle_view' => 'Toggle View',
         'view_all_clients' => 'View All Clients →',
         'view_all_projects' => 'View All Projects →',
         'view_all_documents' => 'View All Documents →',

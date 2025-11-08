@@ -62,6 +62,11 @@ return [
         'description' => 'Lihat Semua :total tugasan →',
     ],
 
+    'your_issue_trackers' => [
+        'title' => 'Penjejak Isu Anda',
+        'description' => 'Lihat Semua :total penjejak isu →',
+    ],
+
     'your_meeting_links' => [
         'title' => 'Pautan Mesyuarat Anda',
         'description' => 'Lihat Semua :total pautan mesyuarat →',
@@ -83,6 +88,7 @@ return [
         'view_all' => 'Lihat Semua',
         'view' => 'Lihat',
         'edit' => 'Sunting',
+        'toggle_view' => 'Tukar Paparan',
         'view_all_clients' => 'Lihat Semua Pelanggan →',
         'view_all_projects' => 'Lihat Semua Projek →',
         'view_all_documents' => 'Lihat Semua Dokumen →',
