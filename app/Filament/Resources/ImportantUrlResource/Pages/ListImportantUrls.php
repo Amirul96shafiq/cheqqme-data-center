@@ -77,90 +77,91 @@ class ListImportantUrls extends ListRecords
                         ->schema([
 
                             Grid::make([
-                                
+
                                 'default' => 1,
 
-                            ])->schema([
+                            ])
+                                ->schema([
 
-                                TextInput::make('title')
-                                    ->label(__('importanturl.form.important_url_title'))
-                                    ->required()
-                                    ->maxLength(100),
+                                    TextInput::make('title')
+                                        ->label(__('importanturl.form.important_url_title'))
+                                        ->required()
+                                        ->maxLength(100),
 
-                                Select::make('client_id')
-                                    ->label(__('importanturl.form.client'))
-                                    ->relationship('client', 'pic_name')
-                                    ->getOptionLabelFromRecordUsing(function ($record) {
-                                        return ClientFormatter::formatClientDisplay($record->pic_name, $record->company_name);
-                                    })
-                                    ->preload()
-                                    ->searchable()
-                                    ->native(false)
-                                    ->dehydrated()
-                                    ->live()
-                                    ->prefixAction(
-                                        FormAction::make('openClient')
-                                            ->icon('heroicon-o-pencil-square')
-                                            ->url(function (Get $get) {
-                                                $clientId = $get('client_id');
-                                                if (! $clientId) {
-                                                    return null;
-                                                }
+                                    Select::make('client_id')
+                                        ->label(__('importanturl.form.client'))
+                                        ->relationship('client', 'pic_name')
+                                        ->getOptionLabelFromRecordUsing(function ($record) {
+                                            return ClientFormatter::formatClientDisplay($record->pic_name, $record->company_name);
+                                        })
+                                        ->preload()
+                                        ->searchable()
+                                        ->native(false)
+                                        ->dehydrated()
+                                        ->live()
+                                        ->prefixAction(
+                                            FormAction::make('openClient')
+                                                ->icon('heroicon-o-pencil-square')
+                                                ->url(function (Get $get) {
+                                                    $clientId = $get('client_id');
+                                                    if (! $clientId) {
+                                                        return null;
+                                                    }
 
-                                                return \App\Filament\Resources\ClientResource::getUrl('edit', ['record' => $clientId]);
-                                            })
-                                            ->openUrlInNewTab()
-                                            ->visible(fn (Get $get) => (bool) $get('client_id'))
-                                    )
-                                    ->suffixAction(
-                                        FormAction::make('createClient')
-                                            ->icon('heroicon-o-plus')
-                                            ->url(\App\Filament\Resources\ClientResource::getUrl('create'))
-                                            ->openUrlInNewTab()
-                                            ->label(__('importanturl.form.create_client'))
-                                    )
-                                    ->nullable(),
+                                                    return \App\Filament\Resources\ClientResource::getUrl('edit', ['record' => $clientId]);
+                                                })
+                                                ->openUrlInNewTab()
+                                                ->visible(fn (Get $get) => (bool) $get('client_id'))
+                                        )
+                                        ->suffixAction(
+                                            FormAction::make('createClient')
+                                                ->icon('heroicon-o-plus')
+                                                ->url(\App\Filament\Resources\ClientResource::getUrl('create'))
+                                                ->openUrlInNewTab()
+                                                ->label(__('importanturl.form.create_client'))
+                                        )
+                                        ->nullable(),
 
-                                Select::make('project_id')
-                                    ->label(__('importanturl.form.project'))
-                                    ->options(function () {
-                                        return Project::all()->mapWithKeys(function ($project) {
-                                            $truncatedTitle = strlen($project->title) > 25
-                                                ? substr($project->title, 0, 25).'...'
-                                                : $project->title;
+                                    Select::make('project_id')
+                                        ->label(__('importanturl.form.project'))
+                                        ->options(function () {
+                                            return Project::all()->mapWithKeys(function ($project) {
+                                                $truncatedTitle = strlen($project->title) > 25
+                                                    ? substr($project->title, 0, 25).'...'
+                                                    : $project->title;
 
-                                            return [$project->id => $truncatedTitle];
-                                        });
-                                    })
-                                    ->preload()
-                                    ->searchable()
-                                    ->native(false)
-                                    ->dehydrated()
-                                    ->live()
-                                    ->prefixAction(
-                                        FormAction::make('openProject')
-                                            ->icon('heroicon-o-pencil-square')
-                                            ->url(function (Get $get) {
-                                                $projectId = $get('project_id');
-                                                if (! $projectId) {
-                                                    return null;
-                                                }
+                                                return [$project->id => $truncatedTitle];
+                                            });
+                                        })
+                                        ->preload()
+                                        ->searchable()
+                                        ->native(false)
+                                        ->dehydrated()
+                                        ->live()
+                                        ->prefixAction(
+                                            FormAction::make('openProject')
+                                                ->icon('heroicon-o-pencil-square')
+                                                ->url(function (Get $get) {
+                                                    $projectId = $get('project_id');
+                                                    if (! $projectId) {
+                                                        return null;
+                                                    }
 
-                                                return \App\Filament\Resources\ProjectResource::getUrl('edit', ['record' => $projectId]);
-                                            })
-                                            ->openUrlInNewTab()
-                                            ->visible(fn (Get $get) => (bool) $get('project_id'))
-                                    )
-                                    ->suffixAction(
-                                        FormAction::make('createProject')
-                                            ->icon('heroicon-o-plus')
-                                            ->url(\App\Filament\Resources\ProjectResource::getUrl('create'))
-                                            ->openUrlInNewTab()
-                                            ->label(__('importanturl.form.create_project'))
-                                    )
-                                    ->nullable(),
+                                                    return \App\Filament\Resources\ProjectResource::getUrl('edit', ['record' => $projectId]);
+                                                })
+                                                ->openUrlInNewTab()
+                                                ->visible(fn (Get $get) => (bool) $get('project_id'))
+                                        )
+                                        ->suffixAction(
+                                            FormAction::make('createProject')
+                                                ->icon('heroicon-o-plus')
+                                                ->url(\App\Filament\Resources\ProjectResource::getUrl('create'))
+                                                ->openUrlInNewTab()
+                                                ->label(__('importanturl.form.create_project'))
+                                        )
+                                        ->nullable(),
 
-                            ]),
+                                ]),
 
                             TextInput::make('url')
                                 ->label(__('importanturl.form.important_url'))
