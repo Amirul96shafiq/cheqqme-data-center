@@ -273,6 +273,7 @@ class MeetingLinkResource extends Resource
 
                                             Forms\Components\TextInput::make('meeting_url')
                                                 ->label(__('meetinglink.form.meeting_url'))
+                                                ->required()
                                                 ->disabled()
                                                 ->dehydrated()
                                                 ->placeholder(__('meetinglink.notifications.no_meeting_url'))
