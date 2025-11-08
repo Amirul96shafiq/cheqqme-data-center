@@ -52,7 +52,7 @@ return [
         'issue_tracker_code' => 'Kod Penjejak Isu',
         'issue_tracker_url' => 'URL Penjejak Isu',
         'issue_tracker_code_helper' => 'URL Penjejak Isu: :url',
-        'issue_tracker_code_helper_new' => 'Kod Penjejak Isu akan dijana secara automatik apabila anda menyimpan projek ini.',
+        'issue_tracker_code_helper_new' => 'Kod Penjejak Isu akan dijana secara automatik apabila projek dicipta.',
         'open_issue_tracker' => 'Buka Penjejak Isu',
         'tracking_tokens' => 'Token Penjejakan',
         'tracking_token' => 'Token Penjejakan',

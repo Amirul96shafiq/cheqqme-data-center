@@ -196,6 +196,7 @@ class ProjectResource extends Resource
                             ->columnSpanFull(),
 
                     ])
+                    ->visible(fn (?Project $record): bool => $record !== null)
                     ->collapsible(true),
 
                 Section::make()

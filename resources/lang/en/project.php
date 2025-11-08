@@ -53,7 +53,7 @@ return [
         'issue_tracker_code' => 'Issue Tracker Code',
         'issue_tracker_url' => 'Issue Tracker URL',
         'issue_tracker_code_helper' => 'Issue Tracker URL: :url',
-        'issue_tracker_code_helper_new' => 'Issue Tracker Code will be auto-generated when you save this project.',
+        'issue_tracker_code_helper_new' => 'Issue Tracker Code will be auto-generated when project is created.',
         'open_issue_tracker' => 'Open Issue Tracker',
         'tracking_tokens' => 'Tracking Tokens',
         'tracking_token' => 'Tracking Token',
