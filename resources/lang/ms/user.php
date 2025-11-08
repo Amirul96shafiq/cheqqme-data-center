@@ -153,7 +153,6 @@ return [
     // Modal
     'modal' => [
         'create_heading' => 'Tambah Pengguna Baru',
-        'create_description' => 'Isi borang di bawah untuk menambah akaun pengguna baru.',
     ],
 
     // Notifications

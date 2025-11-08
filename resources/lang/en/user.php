@@ -154,7 +154,6 @@ return [
     // Modal
     'modal' => [
         'create_heading' => 'Create New User',
-        'create_description' => 'Fill in the form below to create a new user account.',
     ],
 
     // Notifications

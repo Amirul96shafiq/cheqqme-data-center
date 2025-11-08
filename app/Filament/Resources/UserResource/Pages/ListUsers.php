@@ -90,7 +90,6 @@ class ListUsers extends ListRecords
                         ]),
                 ])
                 ->modalHeading(__('user.modal.create_heading'))
-                ->modalDescription(__('user.modal.create_description'))
                 ->modalSubmitActionLabel(__('user.actions.create'))
                 ->modalWidth('lg')
                 ->action(function (array $data) {
