@@ -66,6 +66,16 @@ class ActionBoard extends KanbanBoardPage
         // Load options visibility preference from session
         $this->showOptions = session('action_board_show_options', false);
 
+        // Initialize card type filter from URL parameter
+        $typeParam = request()->query('type');
+        if ($typeParam === 'task') {
+            $this->cardTypeFilter = 'tasks';
+        } elseif ($typeParam === 'issue') {
+            $this->cardTypeFilter = 'issue_trackers';
+        } else {
+            $this->cardTypeFilter = 'all';
+        }
+
         $this
             ->titleField('title')
             ->orderField('order_column')

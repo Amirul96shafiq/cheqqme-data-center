@@ -41,7 +41,7 @@ window.globalKanbanFilter = function () {
         // Card type filter state
         cardTypeFilter: "all", // 'all' | 'tasks' | 'issue_trackers'
 
-        init() {
+        init(initialCardType = null) {
             // Get initial data from data attributes
             const element = this.$el;
             if (element) {
@@ -57,11 +57,22 @@ window.globalKanbanFilter = function () {
                 this.priorityFilter = JSON.parse(
                     element.dataset.initialPriorityFilter || "[]"
                 );
-                const initialCardType =
-                    element.dataset.initialCardType || "all";
-                this.cardTypeFilter =
-                    initialCardType && initialCardType !== ""
+
+                // Use parameter if provided, otherwise fall back to data attribute
+                const cardTypeFromParam =
+                    initialCardType !== null &&
+                    initialCardType !== undefined &&
+                    initialCardType !== "null" &&
+                    initialCardType !== ""
                         ? initialCardType
+                        : null;
+                const cardTypeFromData =
+                    element.dataset.initialCardType || "all";
+                const finalCardType = cardTypeFromParam || cardTypeFromData;
+
+                this.cardTypeFilter =
+                    finalCardType && finalCardType !== ""
+                        ? finalCardType
                         : "all";
             }
 
@@ -83,6 +94,12 @@ window.globalKanbanFilter = function () {
 
             // Initialize global card type filter state
             window.currentCardTypeFilter = this.cardTypeFilter;
+
+            // Trigger initial filtering based on URL parameters
+            // Delay the initial filter dispatch to allow DOM to be fully ready
+            setTimeout(() => {
+                this.dispatchFilterEvent();
+            }, 100);
         },
 
         // Search methods
@@ -202,30 +219,26 @@ window.globalKanbanFilter = function () {
         },
 
         // Card type filter methods
-        handleCardTypeFilterChange(value) {
-            // Single-select behavior: clicking a checked item unchecks it (sets to 'all')
-            // Otherwise, set to the selected value
-            if (this.cardTypeFilter === value) {
-                this.cardTypeFilter = "all";
+        navigateToCardType(value) {
+            // Update URL without page refresh
+            const url = new URL(window.location);
+            if (value === "all") {
+                url.searchParams.delete("type");
             } else {
-                this.cardTypeFilter = value;
+                url.searchParams.set(
+                    "type",
+                    value === "tasks" ? "task" : "issue"
+                );
             }
-            window.currentCardTypeFilter = this.cardTypeFilter;
-            this.dispatchFilterEvent();
-        },
 
-        setCardTypeFilter(value) {
-            if (!value) {
-                value = "all";
-            }
+            // Update browser history
+            window.history.pushState({}, "", url);
+
+            // Update filter state
             this.cardTypeFilter = value;
             window.currentCardTypeFilter = value;
-            this.dispatchFilterEvent();
-        },
 
-        clearCardTypeFilter() {
-            this.cardTypeFilter = "all";
-            window.currentCardTypeFilter = "all";
+            // Dispatch filter event to update cards
             this.dispatchFilterEvent();
         },
 
