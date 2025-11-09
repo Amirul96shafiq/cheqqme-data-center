@@ -58,18 +58,18 @@ return [
     ],
 
     'your_tasks' => [
-        'title' => 'Your Tasks',
-        'description' => 'View all :total tasks →',
+        'title' => 'Your Assigned Tasks',
+        'description' => 'View all :total Tasks →',
     ],
 
     'your_issue_trackers' => [
-        'title' => 'Your Issue Trackers',
-        'description' => 'View all :total issue trackers →',
+        'title' => 'Your Assigned Issues',
+        'description' => 'View all :total Issue Trackers →',
     ],
 
     'your_meeting_links' => [
         'title' => 'Your Meeting Links',
-        'description' => 'View all :total meeting links →',
+        'description' => 'View all :total Meeting Links →',
     ],
 
     'total_trello_boards' => [

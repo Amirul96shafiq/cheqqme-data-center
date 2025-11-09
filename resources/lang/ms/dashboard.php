@@ -59,17 +59,17 @@ return [
 
     'your_tasks' => [
         'title' => 'Tugasan Anda',
-        'description' => 'Lihat Semua :total tugasan →',
+        'description' => 'Lihat Semua :total Tugasan →',
     ],
 
     'your_issue_trackers' => [
         'title' => 'Penjejak Isu Anda',
-        'description' => 'Lihat Semua :total penjejak isu →',
+        'description' => 'Lihat Semua :total Penjejak Isu →',
     ],
 
     'your_meeting_links' => [
         'title' => 'Pautan Mesyuarat Anda',
-        'description' => 'Lihat Semua :total pautan mesyuarat →',
+        'description' => 'Lihat Semua :total Pautan Mesyuarat →',
     ],
 
     'total_trello_boards' => [
