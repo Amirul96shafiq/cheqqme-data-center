@@ -895,10 +895,11 @@ class ActionBoard extends KanbanBoardPage
                 ->color('gray')
                 ->size('lg')
                 ->button()
+                ->extraAttributes(['style' => 'margin-right: 1px;'])
                 ->action(function () {
                     $this->toggleShowOptions();
                 }),
-                
+
         ];
     }
 
