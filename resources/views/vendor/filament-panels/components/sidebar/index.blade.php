@@ -140,9 +140,15 @@
 
             @if (filament()->isSidebarCollapsibleOnDesktop())
                 <!-- Custom chat image when sidebar is collapsed -->
-                <div 
+                <div
                     x-cloak
                     x-show="! $store.sidebar.isOpen"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-300"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
                     class="flex flex-col items-center justify-center h-full"
                 >
                     <a href="/admin" draggable="false">
