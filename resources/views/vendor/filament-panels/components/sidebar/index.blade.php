@@ -146,9 +146,10 @@
                     class="flex flex-col items-center justify-center h-full"
                 >
                     <a href="/admin">
-                        <img 
-                            src="/logos/logo_collapsed.png" 
-                            alt="CheQQme Data Center" 
+                        <img
+                            src="/logos/logo_collapsed.png"
+                            alt="CheQQme Data Center"
+                            draggable="false"
                             class="w-8 h-8 object-contain hover:opacity-80 transition-opacity"
                         />
                     </a>

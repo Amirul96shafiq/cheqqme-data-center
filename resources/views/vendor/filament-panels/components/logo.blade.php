@@ -30,6 +30,7 @@
         <img
             alt="{{ __('filament-panels::layout.logo.alt', ['name' => $brandName]) }}"
             src="{{ $logo }}"
+            draggable="false"
             {{
                 $attributes
                     ->class([$getLogoClasses($isDarkMode)])
