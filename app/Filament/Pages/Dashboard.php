@@ -30,17 +30,44 @@ class Dashboard extends BaseDashboard
 
     public function mount(): void
     {
-        $this->activeTab = 'overview';
+        $this->activeTab = request()->query('tab', 'overview');
     }
 
     public function switchToOverview(): void
     {
         $this->activeTab = 'overview';
+        $this->updateBrowserUrl();
     }
 
     public function switchToAnalytics(): void
     {
         $this->activeTab = 'analytics';
+        $this->updateBrowserUrl();
+    }
+
+    protected function updateBrowserUrl(): void
+    {
+        $queryParams = request()->query();
+        $queryParams['tab'] = $this->activeTab;
+
+        $url = route('filament.admin.pages.dashboard', $queryParams);
+
+        $this->dispatch('update-url', url: $url);
+    }
+
+    public static function getTabUrl(string $tab): string
+    {
+        return route('filament.admin.pages.dashboard', ['tab' => $tab]);
+    }
+
+    public static function getOverviewUrl(): string
+    {
+        return self::getTabUrl('overview');
+    }
+
+    public static function getAnalyticsUrl(): string
+    {
+        return self::getTabUrl('analytics');
     }
 
     protected function getHeaderActions(): array

@@ -6,7 +6,7 @@
     </div>
 
     <div class="flex items-center gap-2">
-      
+
         <!-- Overview Tab -->
         <button
             wire:click="switchToOverview"
@@ -25,3 +25,13 @@
 
     </div>
 </div>
+
+<script>
+document.addEventListener('livewire:init', () => {
+    Livewire.on('update-url', (data) => {
+        if (data.url && window.history.replaceState) {
+            window.history.replaceState(null, '', data.url);
+        }
+    });
+});
+</script>
