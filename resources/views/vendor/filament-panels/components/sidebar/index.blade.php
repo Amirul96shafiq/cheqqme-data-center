@@ -130,7 +130,7 @@
                 @endif
             >
                 @if ($homeUrl = filament()->getHomeUrl())
-                    <a {{ \Filament\Support\generate_href_html($homeUrl) }}>
+                    <a {{ \Filament\Support\generate_href_html($homeUrl) }} draggable="false">
                         <x-filament-panels::logo />
                     </a>
                 @else
@@ -145,7 +145,7 @@
                     x-show="! $store.sidebar.isOpen"
                     class="flex flex-col items-center justify-center h-full"
                 >
-                    <a href="/admin">
+                    <a href="/admin" draggable="false">
                         <img
                             src="/logos/logo_collapsed.png"
                             alt="CheQQme Data Center"
