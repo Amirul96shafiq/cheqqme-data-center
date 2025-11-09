@@ -57,19 +57,22 @@ class Dashboard extends BaseDashboard
 
     public function getWidgets(): array
     {
-        if ($this->activeTab === 'analytics') {
-            return [
-                \App\Filament\Widgets\AnalyticsWidget::class,
-            ];
-        }
-
-        return [
+        // Always show these widgets regardless of active tab
+        $persistentWidgets = [
             \Filament\Widgets\AccountWidget::class,
             \Filament\Widgets\FilamentInfoWidget::class,
-            \App\Filament\Widgets\TotalWidget::class,
-            \App\Filament\Widgets\RecentProjectsWidget::class,
-            \App\Filament\Widgets\RecentDocumentsWidget::class,
         ];
+
+        // Add tab-specific widgets
+        $tabWidgets = $this->activeTab === 'analytics'
+            ? [\App\Filament\Widgets\AnalyticsWidget::class]
+            : [
+                \App\Filament\Widgets\TotalWidget::class,
+                \App\Filament\Widgets\RecentProjectsWidget::class,
+                \App\Filament\Widgets\RecentDocumentsWidget::class,
+            ];
+
+        return array_merge($persistentWidgets, $tabWidgets);
     }
 
     public function getColumns(): int|array|string
