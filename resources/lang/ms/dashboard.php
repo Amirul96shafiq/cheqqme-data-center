@@ -85,6 +85,11 @@ return [
         'title' => 'Jumlah Nombor Telefon',
     ],
 
+    'tabs' => [
+        'overview' => 'Tinjauan',
+        'analytics' => 'Analisis',
+    ],
+
     'actions' => [
         'view_all' => 'Lihat Semua',
         'view' => 'Lihat',

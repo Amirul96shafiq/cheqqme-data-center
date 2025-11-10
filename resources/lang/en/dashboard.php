@@ -85,6 +85,11 @@ return [
         'title' => 'Total Phone Numbers',
     ],
 
+    'tabs' => [
+        'overview' => 'Overview',
+        'analytics' => 'Analytics',
+    ],
+
     'actions' => [
         'view_all' => 'View All',
         'view' => 'View',

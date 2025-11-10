@@ -14,7 +14,7 @@
         >
             <x-heroicon-m-bars-3 wire:loading.remove wire:target="switchToOverview" class="w-4 h-4" />
             <x-heroicon-m-arrow-path wire:loading wire:target="switchToOverview" class="w-4 h-4 animate-spin" />
-            <span wire:loading.remove wire:target="switchToOverview">Overview</span>
+            <span wire:loading.remove wire:target="switchToOverview">{{ __('dashboard.tabs.overview') }}</span>
             <span wire:loading wire:target="switchToOverview">{{ __('calendar.calendar.loading') }}</span>
         </button>
 
@@ -25,7 +25,7 @@
         >
             <x-heroicon-m-chart-bar wire:loading.remove wire:target="switchToAnalytics" class="w-4 h-4" />
             <x-heroicon-m-arrow-path wire:loading wire:target="switchToAnalytics" class="w-4 h-4 animate-spin" />
-            <span wire:loading.remove wire:target="switchToAnalytics">Analytics</span>
+            <span wire:loading.remove wire:target="switchToAnalytics">{{ __('dashboard.tabs.analytics') }}</span>
             <span wire:loading wire:target="switchToAnalytics">{{ __('calendar.calendar.loading') }}</span>
         </button>
 
