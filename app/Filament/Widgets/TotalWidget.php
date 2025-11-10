@@ -148,7 +148,7 @@ class TotalWidget extends BaseWidget
                 ->description(__('dashboard.your_issue_trackers.description', ['total' => $totalIssueTrackers]))
                 ->color('primary')
                 ->icon(ActionBoard::getNavigationIcon())
-                ->url(route('filament.admin.pages.action-board'))
+                ->url(route('filament.admin.pages.action-board', ['type' => 'issue']))
                 ->extraAttributes([
                     'class' => 'relative',
                 ]);
@@ -158,7 +158,7 @@ class TotalWidget extends BaseWidget
             ->description(__('dashboard.your_tasks.description', ['total' => Task::count()]))
             ->color('primary')
             ->icon(ActionBoard::getNavigationIcon())
-            ->url(route('filament.admin.pages.action-board'))
+            ->url(route('filament.admin.pages.action-board', ['type' => 'task']))
             ->extraAttributes([
                 'class' => 'relative',
             ]);
