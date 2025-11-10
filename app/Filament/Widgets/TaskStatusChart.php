@@ -62,7 +62,7 @@ class TaskStatusChart extends ApexChartWidget
         return [
             'chart' => [
                 'type' => 'donut',
-                'height' => 300,
+                'height' => '315px',
             ],
             'series' => array_values($data),
             'labels' => array_values($labels),

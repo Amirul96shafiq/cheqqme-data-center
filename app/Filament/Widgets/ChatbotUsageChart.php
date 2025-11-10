@@ -38,7 +38,7 @@ class ChatbotUsageChart extends ApexChartWidget
                 'type' => 'line',
                 'height' => '300px',
                 'toolbar' => [
-                    'show' => true,
+                    'show' => false,
                 ],
             ],
             'series' => [
@@ -66,7 +66,7 @@ class ChatbotUsageChart extends ApexChartWidget
                     ],
                 ],
             ],
-            'colors' => ['#3b82f6', '#10b981'],
+            'colors' => ['#fbb43e', '#10b981'],
             'stroke' => [
                 'curve' => 'smooth',
                 'width' => [3, 2],
@@ -83,7 +83,7 @@ class ChatbotUsageChart extends ApexChartWidget
                 'intersect' => false,
             ],
             'legend' => [
-                'position' => 'top',
+                'position' => 'bottom',
                 'fontFamily' => 'inherit',
             ],
         ];
