@@ -34,6 +34,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 // ActivityLog by Rômulo Ramos
+use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
+// Apex Charts by Leandro Costa Ferreira
 use Rmsramos\Activitylog\ActivitylogPlugin;
 
 class AdminPanelProvider extends PanelProvider
@@ -432,6 +434,8 @@ class AdminPanelProvider extends PanelProvider
                 ActivitylogPlugin::make()
                     ->navigationGroup(fn () => __('activitylog.navigation_group'))
                     ->navigationSort(11),
+
+                FilamentApexChartsPlugin::make(),
             ]);
     }
 }

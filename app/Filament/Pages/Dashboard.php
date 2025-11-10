@@ -84,32 +84,49 @@ class Dashboard extends BaseDashboard
 
     public function getWidgets(): array
     {
-        // Always show these widgets regardless of active tab
-        $persistentWidgets = [
-            \Filament\Widgets\AccountWidget::class,
-            \Filament\Widgets\FilamentInfoWidget::class,
+        // Add tab-specific widgets
+        $analyticsWidgets = [
+            \App\Filament\Widgets\AccountWidget::class,
+            \App\Filament\Widgets\FilamentInfoWidget::class,
+            \App\Filament\Widgets\TaskStatusChart::class,
+            \App\Filament\Widgets\UserProductivityChart::class,
+            \App\Filament\Widgets\ChatbotUsageChart::class,
         ];
 
-        // Add tab-specific widgets
-        $tabWidgets = $this->activeTab === 'analytics'
-            ? [\App\Filament\Widgets\AnalyticsWidget::class]
-            : [
-                \App\Filament\Widgets\TotalWidget::class,
-                \App\Filament\Widgets\RecentProjectsWidget::class,
-                \App\Filament\Widgets\RecentDocumentsWidget::class,
-            ];
+        $overviewWidgets = [
+            \App\Filament\Widgets\OverviewAccountWidget::class,
+            \App\Filament\Widgets\OverviewFilamentInfoWidget::class,
+            \App\Filament\Widgets\TotalWidget::class,
+            \App\Filament\Widgets\RecentProjectsWidget::class,
+            \App\Filament\Widgets\RecentDocumentsWidget::class,
+        ];
 
-        return array_merge($persistentWidgets, $tabWidgets);
+        if ($this->activeTab === 'analytics') {
+            return $analyticsWidgets;
+        }
+
+        return $overviewWidgets;
     }
 
     public function getColumns(): int|array|string
     {
+        if ($this->activeTab === 'analytics') {
+            return [
+                'default' => 1,
+                'sm' => 1,
+                'md' => 1,
+                'lg' => 6,
+                'xl' => 6,
+                '2xl' => 6,
+            ];
+        }
+
         return [
             'default' => 1,
             'sm' => 1,
             'md' => 1,
-            'lg' => 1,
-            'xl' => 1,
+            'lg' => 2,
+            'xl' => 2,
             '2xl' => 2,
         ];
     }

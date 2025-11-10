@@ -20,6 +20,15 @@ use Illuminate\Support\Facades\Auth;
 
 class TotalWidget extends BaseWidget
 {
+    protected int|string|array $columnSpan = [
+        'default' => 1,
+        'sm' => 1,
+        'md' => 1,
+        'lg' => 2,
+        'xl' => 2,
+        '2xl' => 2,
+    ];
+
     public bool $showIssueTrackers = false;
 
     public function mount(): void
