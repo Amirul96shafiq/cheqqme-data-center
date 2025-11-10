@@ -16,6 +16,7 @@ return [
     'widgets' => [
         'welcome_back' => 'Selamat Kembali, :name',
         'dashboard_subtitle' => 'Tengoklah apa yang berlaku didalam CheQQme Data Center hari ini',
+        'view_github' => 'Lihat di GitHub 🡥',
         'view_calendar' => 'Lihat Kalendar Acara 🡥',
         'view_changelog' => 'Lihat Apa Yang Baru? (Changelog) 🡥',
     ],

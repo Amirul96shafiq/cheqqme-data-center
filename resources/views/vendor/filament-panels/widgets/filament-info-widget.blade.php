@@ -53,7 +53,7 @@
                         </svg>
                     </x-slot>
                     
-                    {{ __('filament-panels::widgets/filament-info-widget.actions.open_github.label') }}
+                    {{ __('dashboard.widgets.view_github') }}
                 </x-filament::link>
                 
                 <x-filament::link

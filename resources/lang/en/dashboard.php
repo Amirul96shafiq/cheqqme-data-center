@@ -16,6 +16,7 @@ return [
     'widgets' => [
         'welcome_back' => 'Welcome Back, :name',
         'dashboard_subtitle' => 'Here\'s what happening with CheQQme Data Center today',
+        'view_github' => 'View on GitHub 🡥',
         'view_calendar' => 'View Event Calendar 🡥',
         'view_changelog' => 'View What\'s New? (Changelog) 🡥',
     ],
