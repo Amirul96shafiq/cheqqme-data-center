@@ -121,6 +121,8 @@ return [
             ],
             'filters' => [
                 'quick_filter' => 'Quick Filter',
+                'users' => 'Users',
+                'all_users' => 'All Users',
                 'today' => 'Today',
                 'yesterday' => 'Yesterday',
                 'this_week' => 'This Week',

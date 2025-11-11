@@ -40,6 +40,24 @@ class ChatbotUsageChart extends ApexChartWidget
     {
         return [
 
+            Select::make('user_ids')
+                ->label(__('dashboard.analytics.chatbot_usage.filters.users'))
+                ->options(function () {
+                    return \App\Models\User::withTrashed()
+                        ->orderBy('username')
+                        ->get()
+                        ->mapWithKeys(fn ($u) => [
+                            $u->id => ($u->username ?: 'User #'.$u->id).($u->deleted_at ? ' (deleted)' : ''),
+                        ])
+                        ->toArray();
+                })
+                ->searchable()
+                ->preload()
+                ->native(false)
+                ->nullable()
+                ->placeholder(__('dashboard.analytics.chatbot_usage.filters.all_users'))
+                ->columnSpanFull(),
+
             Select::make('quick_filter')
                 ->label(__('dashboard.analytics.chatbot_usage.filters.quick_filter'))
                 ->options([
@@ -68,7 +86,7 @@ class ChatbotUsageChart extends ApexChartWidget
                 ->native(false)
                 ->displayFormat('j/n/y')
                 ->default(now()->endOfWeek()->toDateString()),
-                
+
         ];
     }
 
@@ -188,6 +206,7 @@ class ChatbotUsageChart extends ApexChartWidget
     {
         $startDate = $this->filterFormData['date_start'] ?? now()->subDays(7)->toDateString();
         $endDate = $this->filterFormData['date_end'] ?? now()->toDateString();
+        $userId = $this->filterFormData['user_ids'] ?? null;
 
         $start = \Carbon\Carbon::parse($startDate);
         $end = \Carbon\Carbon::parse($endDate);
@@ -196,7 +215,13 @@ class ChatbotUsageChart extends ApexChartWidget
         $current = $start->copy();
 
         while ($current->lte($end)) {
-            $count = ChatbotConversation::whereDate('created_at', $current->toDateString())->count();
+            $query = ChatbotConversation::whereDate('created_at', $current->toDateString());
+
+            if ($userId) {
+                $query->where('user_id', $userId);
+            }
+
+            $count = $query->count();
             $data[] = $count;
             $current->addDay();
         }
@@ -208,6 +233,7 @@ class ChatbotUsageChart extends ApexChartWidget
     {
         $startDate = $this->filterFormData['date_start'] ?? now()->subDays(7)->toDateString();
         $endDate = $this->filterFormData['date_end'] ?? now()->toDateString();
+        $userId = $this->filterFormData['user_ids'] ?? null;
 
         $start = \Carbon\Carbon::parse($startDate);
         $end = \Carbon\Carbon::parse($endDate);
@@ -216,7 +242,13 @@ class ChatbotUsageChart extends ApexChartWidget
         $current = $start->copy();
 
         while ($current->lte($end)) {
-            $count = OpenaiLog::whereDate('created_at', $current->toDateString())->count();
+            $query = OpenaiLog::whereDate('created_at', $current->toDateString());
+
+            if ($userId) {
+                $query->where('user_id', $userId);
+            }
+
+            $count = $query->count();
             $data[] = $count;
             $current->addDay();
         }

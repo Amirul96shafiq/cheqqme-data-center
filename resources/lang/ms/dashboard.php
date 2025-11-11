@@ -121,6 +121,8 @@ return [
             ],
             'filters' => [
                 'quick_filter' => 'Penapis Cepat',
+                'users' => 'Pengguna',
+                'all_users' => 'Semua Pengguna',
                 'today' => 'Hari Ini',
                 'yesterday' => 'Semalam',
                 'this_week' => 'Minggu Ini',
