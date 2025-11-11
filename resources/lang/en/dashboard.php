@@ -119,6 +119,10 @@ return [
                 'conversations' => 'Conversations',
                 'api_calls' => 'API Calls',
             ],
+            'filters' => [
+                'date_start' => 'Start Date',
+                'date_end' => 'End Date',
+            ],
         ],
     ],
 

@@ -119,6 +119,10 @@ return [
                 'conversations' => 'Perbualan',
                 'api_calls' => 'Panggilan API',
             ],
+            'filters' => [
+                'date_start' => 'Tarikh Mula',
+                'date_end' => 'Tarikh Akhir',
+            ],
         ],
     ],
 

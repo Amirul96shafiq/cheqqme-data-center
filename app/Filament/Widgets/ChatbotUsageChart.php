@@ -4,10 +4,14 @@ namespace App\Filament\Widgets;
 
 use App\Models\ChatbotConversation;
 use App\Models\OpenaiLog;
+use Filament\Forms\Components\DatePicker;
+use Leandrocfe\FilamentApexCharts\Concerns\CanFilter;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class ChatbotUsageChart extends ApexChartWidget
 {
+    use CanFilter;
+
     protected int|string|array $columnSpan = [
         'default' => 1,
         'sm' => 1,
@@ -29,6 +33,27 @@ class ChatbotUsageChart extends ApexChartWidget
     public function getSubheading(): ?string
     {
         return __('dashboard.analytics.chatbot_usage.description');
+    }
+
+    protected function getFormSchema(): array
+    {
+        return [
+
+            DatePicker::make('date_start')
+                ->label(__('dashboard.analytics.chatbot_usage.filters.date_start'))
+                ->placeholder('DD/MM/YYYY')
+                ->native(false)
+                ->displayFormat('j/n/y')
+                ->default(now()->subDays(7)->toDateString()),
+
+            DatePicker::make('date_end')
+                ->label(__('dashboard.analytics.chatbot_usage.filters.date_end'))
+                ->placeholder('DD/MM/YYYY')
+                ->native(false)
+                ->displayFormat('j/n/y')
+                ->default(now()->toDateString()),
+                
+        ];
     }
 
     protected function getOptions(): array
@@ -97,9 +122,18 @@ class ChatbotUsageChart extends ApexChartWidget
 
     protected function getDateCategories(): array
     {
+        $startDate = $this->filterFormData['date_start'] ?? now()->subDays(7)->toDateString();
+        $endDate = $this->filterFormData['date_end'] ?? now()->toDateString();
+
+        $start = \Carbon\Carbon::parse($startDate);
+        $end = \Carbon\Carbon::parse($endDate);
+
         $categories = [];
-        for ($i = 7; $i >= 0; $i--) {
-            $categories[] = now()->subDays($i)->format('j M');
+        $current = $start->copy();
+
+        while ($current->lte($end)) {
+            $categories[] = $current->format('j M');
+            $current->addDay();
         }
 
         return $categories;
@@ -107,11 +141,19 @@ class ChatbotUsageChart extends ApexChartWidget
 
     protected function getConversationsData(): array
     {
+        $startDate = $this->filterFormData['date_start'] ?? now()->subDays(7)->toDateString();
+        $endDate = $this->filterFormData['date_end'] ?? now()->toDateString();
+
+        $start = \Carbon\Carbon::parse($startDate);
+        $end = \Carbon\Carbon::parse($endDate);
+
         $data = [];
-        for ($i = 7; $i >= 0; $i--) {
-            $date = now()->subDays($i)->toDateString();
-            $count = ChatbotConversation::whereDate('created_at', $date)->count();
+        $current = $start->copy();
+
+        while ($current->lte($end)) {
+            $count = ChatbotConversation::whereDate('created_at', $current->toDateString())->count();
             $data[] = $count;
+            $current->addDay();
         }
 
         return $data;
@@ -119,11 +161,19 @@ class ChatbotUsageChart extends ApexChartWidget
 
     protected function getApiCallsData(): array
     {
+        $startDate = $this->filterFormData['date_start'] ?? now()->subDays(7)->toDateString();
+        $endDate = $this->filterFormData['date_end'] ?? now()->toDateString();
+
+        $start = \Carbon\Carbon::parse($startDate);
+        $end = \Carbon\Carbon::parse($endDate);
+
         $data = [];
-        for ($i = 7; $i >= 0; $i--) {
-            $date = now()->subDays($i)->toDateString();
-            $count = OpenaiLog::whereDate('created_at', $date)->count();
+        $current = $start->copy();
+
+        while ($current->lte($end)) {
+            $count = OpenaiLog::whereDate('created_at', $current->toDateString())->count();
             $data[] = $count;
+            $current->addDay();
         }
 
         return $data;
