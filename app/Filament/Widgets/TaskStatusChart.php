@@ -27,29 +27,28 @@ class TaskStatusChart extends ApexChartWidget
 
     protected function getOptions(): array
     {
-        $allStatuses = ['todo', 'in_progress', 'to_review', 'completed', 'archived', 'issue_tracker'];
-        $statusLabels = [
-            'todo' => 'To Do',
-            'in_progress' => 'In Progress',
-            'to_review' => 'To Review',
-            'completed' => 'Completed',
-            'archived' => 'Archived',
-            'issue_tracker' => 'Issue Tracker',
+        $orderedStatuses = [
+            'issue_tracker' => __('action.status.issue_tracker'),
+            'todo' => __('task.status.todo'),
+            'in_progress' => __('task.status.in_progress'),
+            'toreview' => __('task.status.toreview'),
+            'completed' => __('task.status.completed'),
+            'archived' => __('task.status.archived'),
         ];
 
         $data = array_map(
             static fn (string $status): int => Task::where('status', $status)->count(),
-            $allStatuses,
+            array_keys($orderedStatuses),
         );
 
         $labels = array_map(
-            static fn (string $status): string => $statusLabels[$status] ?? ucfirst(str_replace('_', ' ', $status)),
-            $allStatuses,
+            fn (string $status): string => $orderedStatuses[$status] ?? ucfirst(str_replace('_', ' ', $status)),
+            array_keys($orderedStatuses),
         );
 
         // Also count issue trackers that have tracking_token but different status
         $additionalIssueTrackers = Task::whereNotNull('tracking_token')
-            ->whereNotIn('status', $allStatuses)
+            ->whereNotIn('status', array_keys($orderedStatuses))
             ->count();
 
         if ($additionalIssueTrackers > 0) {
