@@ -134,7 +134,7 @@ class UserProductivityChart extends ApexChartWidget
                 'theme' => 'custom-tooltip-theme',
                 'cssClass' => 'apexcharts-tooltip-custom',
                 'style' => [
-                    'fontSize' => '14px',
+                    'fontSize' => '12px',
                     'fontFamily' => 'inherit',
                 ],
                 'y' => [
