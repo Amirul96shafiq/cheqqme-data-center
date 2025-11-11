@@ -99,7 +99,7 @@ class ChatbotUsageChart extends ApexChartWidget
     {
         $categories = [];
         for ($i = 7; $i >= 0; $i--) {
-            $categories[] = now()->subDays($i)->format('M d');
+            $categories[] = now()->subDays($i)->format('j M');
         }
 
         return $categories;
