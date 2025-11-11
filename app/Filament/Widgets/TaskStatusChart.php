@@ -3,10 +3,14 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Task;
+use Filament\Forms\Components\Select;
+use Leandrocfe\FilamentApexCharts\Concerns\CanFilter;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
 class TaskStatusChart extends ApexChartWidget
 {
+    use CanFilter;
+
     protected int|string|array $columnSpan = [
         'default' => 1,
         'sm' => 1,
@@ -30,13 +34,40 @@ class TaskStatusChart extends ApexChartWidget
         return __('dashboard.analytics.task_status_distribution.description');
     }
 
+    protected function getFormSchema(): array
+    {
+        return [
+            Select::make('card_type')
+                ->label(__('dashboard.analytics.task_status_distribution.filters.card_type'))
+                ->options([
+                    'all' => __('dashboard.analytics.task_status_distribution.filters.all_cards'),
+                    'tasks' => __('dashboard.analytics.task_status_distribution.filters.tasks'),
+                    'issue_trackers' => __('dashboard.analytics.task_status_distribution.filters.issue_trackers'),
+                ])
+                ->default('all')
+                ->searchable()
+                ->columnSpanFull(),
+        ];
+    }
+
     protected function getOptions(): array
     {
+        $cardType = $this->filterFormData['card_type'] ?? 'all';
+
         $orderedStatuses = Task::availableStatuses();
         $statusKeys = array_keys($orderedStatuses);
 
+        // Build base query based on card type
+        $baseQuery = match ($cardType) {
+            'tasks' => Task::whereNull('tracking_token'),
+            'issue_trackers' => Task::whereNotNull('tracking_token'),
+            default => Task::query(), // 'all' - no filtering
+        };
+
         $data = array_map(
-            static fn (string $status): int => Task::where('status', $status)->count(),
+            function (string $status) use ($baseQuery) {
+                return (clone $baseQuery)->where('status', $status)->count();
+            },
             $statusKeys,
         );
 
@@ -46,13 +77,24 @@ class TaskStatusChart extends ApexChartWidget
         );
 
         // Also count issue trackers that have tracking_token but different status
-        $additionalIssueTrackers = Task::whereNotNull('tracking_token')
-            ->whereNotIn('status', $statusKeys)
-            ->count();
+        // Only include this if we're showing all cards or issue trackers
+        if (in_array($cardType, ['all', 'issue_trackers'])) {
+            $additionalIssueTrackersQuery = Task::whereNotNull('tracking_token')
+                ->whereNotIn('status', $statusKeys);
 
-        if ($additionalIssueTrackers > 0) {
-            $data[] = (int) $additionalIssueTrackers;
-            $labels[] = __('dashboard.analytics.task_status_distribution.other_issue_trackers');
+            // If we're showing only issue trackers, no need to filter further
+            // The base query already filters for tracking_token
+            if ($cardType === 'all') {
+                $additionalIssueTrackers = $additionalIssueTrackersQuery->count();
+            } else {
+                // For issue_trackers filter, we need to count all issue trackers with non-standard status
+                $additionalIssueTrackers = (clone $baseQuery)->whereNotIn('status', $statusKeys)->count();
+            }
+
+            if ($additionalIssueTrackers > 0) {
+                $data[] = (int) $additionalIssueTrackers;
+                $labels[] = __('dashboard.analytics.task_status_distribution.other_issue_trackers');
+            }
         }
 
         return [

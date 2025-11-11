@@ -95,6 +95,12 @@ return [
             'heading' => 'Task Status Distribution',
             'description' => 'Distribution of tasks by their current status',
             'other_issue_trackers' => 'Other Issue Trackers',
+            'filters' => [
+                'card_type' => 'Card Type',
+                'all_cards' => 'All Cards',
+                'tasks' => 'Tasks',
+                'issue_trackers' => 'Issue Trackers',
+            ],
         ],
         'user_productivity' => [
             'heading' => 'User Productivity',

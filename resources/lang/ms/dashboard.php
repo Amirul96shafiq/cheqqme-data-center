@@ -95,6 +95,12 @@ return [
             'heading' => 'Pengagihan Status Tugasan',
             'description' => 'Pengagihan tugasan mengikut status semasa mereka',
             'other_issue_trackers' => 'Penjejak Isu Lain',
+            'filters' => [
+                'card_type' => 'Jenis Kad',
+                'all_cards' => 'Semua Kad',
+                'tasks' => 'Tugasan',
+                'issue_trackers' => 'Penjejak Isu',
+            ],
         ],
         'user_productivity' => [
             'heading' => 'Produktiviti Pengguna',
