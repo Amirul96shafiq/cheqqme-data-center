@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\ChatbotConversation;
 use App\Models\OpenaiLog;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Leandrocfe\FilamentApexCharts\Concerns\CanFilter;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
@@ -39,21 +40,65 @@ class ChatbotUsageChart extends ApexChartWidget
     {
         return [
 
+            Select::make('quick_filter')
+                ->label(__('dashboard.analytics.chatbot_usage.filters.quick_filter'))
+                ->options([
+                    'today' => __('dashboard.analytics.chatbot_usage.filters.today'),
+                    'yesterday' => __('dashboard.analytics.chatbot_usage.filters.yesterday'),
+                    'this_week' => __('dashboard.analytics.chatbot_usage.filters.this_week'),
+                    'this_month' => __('dashboard.analytics.chatbot_usage.filters.this_month'),
+                ])
+                ->searchable()
+                ->default('this_week')
+                ->afterStateUpdated(function ($state, callable $set) {
+                    $this->updateDateRange($state, $set);
+                })
+                ->live(),
+
             DatePicker::make('date_start')
                 ->label(__('dashboard.analytics.chatbot_usage.filters.date_start'))
                 ->placeholder('DD/MM/YYYY')
                 ->native(false)
                 ->displayFormat('j/n/y')
-                ->default(now()->subDays(7)->toDateString()),
+                ->default(now()->startOfWeek()->toDateString()),
 
             DatePicker::make('date_end')
                 ->label(__('dashboard.analytics.chatbot_usage.filters.date_end'))
                 ->placeholder('DD/MM/YYYY')
                 ->native(false)
                 ->displayFormat('j/n/y')
-                ->default(now()->toDateString()),
+                ->default(now()->endOfWeek()->toDateString()),
                 
         ];
+    }
+
+    protected function updateDateRange($filter, callable $set): void
+    {
+        $now = now();
+
+        switch ($filter) {
+
+            case 'today':
+                $set('date_start', $now->startOfDay()->toDateString());
+                $set('date_end', $now->endOfDay()->toDateString());
+                break;
+
+            case 'yesterday':
+                $set('date_start', $now->subDay()->startOfDay()->toDateString());
+                $set('date_end', $now->subDay()->endOfDay()->toDateString());
+                break;
+
+            case 'this_week':
+                $set('date_start', $now->startOfWeek()->toDateString());
+                $set('date_end', $now->endOfWeek()->toDateString());
+                break;
+
+            case 'this_month':
+                $set('date_start', $now->startOfMonth()->toDateString());
+                $set('date_end', $now->endOfMonth()->toDateString());
+                break;
+
+        }
     }
 
     protected function getOptions(): array

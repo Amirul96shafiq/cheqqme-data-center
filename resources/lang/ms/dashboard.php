@@ -120,6 +120,11 @@ return [
                 'api_calls' => 'Panggilan API',
             ],
             'filters' => [
+                'quick_filter' => 'Penapis Cepat',
+                'today' => 'Hari Ini',
+                'yesterday' => 'Semalam',
+                'this_week' => 'Minggu Ini',
+                'this_month' => 'Bulan Ini',
                 'date_start' => 'Tarikh Mula',
                 'date_end' => 'Tarikh Akhir',
             ],

@@ -120,6 +120,11 @@ return [
                 'api_calls' => 'API Calls',
             ],
             'filters' => [
+                'quick_filter' => 'Quick Filter',
+                'today' => 'Today',
+                'yesterday' => 'Yesterday',
+                'this_week' => 'This Week',
+                'this_month' => 'This Month',
                 'date_start' => 'Start Date',
                 'date_end' => 'End Date',
             ],
