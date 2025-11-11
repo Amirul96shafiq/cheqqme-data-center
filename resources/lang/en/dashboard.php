@@ -90,6 +90,37 @@ return [
         'analytics' => 'Analytics',
     ],
 
+    'analytics' => [
+        'task_status_distribution' => [
+            'heading' => 'Task Status Distribution',
+            'other_issue_trackers' => 'Other Issue Trackers',
+        ],
+        'user_productivity' => [
+            'heading' => 'User Productivity',
+            'description' => 'All-time tasks assigned & completed/archived, comments made, resources created, and meetings joined by each user',
+            'series' => [
+                'completed_tasks' => 'Completed & Archived Tasks',
+                'comments_made' => 'Comments Made',
+                'resources_created' => 'Resources Created',
+                'meetings_joined' => 'Meetings Joined',
+            ],
+            'tooltip' => [
+                'completed_tasks' => 'assigned tasks completed & archived',
+                'comments_made' => 'comments made',
+                'resources_created' => 'resources created (hover individual bars for details)',
+                'meetings_joined' => 'meetings joined',
+            ],
+        ],
+        'chatbot_usage' => [
+            'heading' => 'AI Assistant Usage',
+            'description' => 'Chatbot conversations and API usage over time',
+            'series' => [
+                'conversations' => 'Conversations',
+                'api_calls' => 'API Calls',
+            ],
+        ],
+    ],
+
     'actions' => [
         'view_all' => 'View All',
         'view' => 'View',

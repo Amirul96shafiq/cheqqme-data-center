@@ -22,7 +22,7 @@ class TaskStatusChart extends ApexChartWidget
 
     public function getHeading(): ?string
     {
-        return 'Task Status Distribution';
+        return __('dashboard.analytics.task_status_distribution.heading');
     }
 
     protected function getOptions(): array
@@ -47,7 +47,7 @@ class TaskStatusChart extends ApexChartWidget
 
         if ($additionalIssueTrackers > 0) {
             $data[] = (int) $additionalIssueTrackers;
-            $labels[] = 'Other Issue Trackers';
+            $labels[] = __('dashboard.analytics.task_status_distribution.other_issue_trackers');
         }
 
         return [

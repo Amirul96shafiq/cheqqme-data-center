@@ -31,12 +31,12 @@ class UserProductivityChart extends ApexChartWidget
 
     public function getHeading(): ?string
     {
-        return 'User Productivity';
+        return __('dashboard.analytics.user_productivity.heading');
     }
 
     public function getDescription(): ?string
     {
-        return 'All-time tasks assigned & completed/archived, comments made, resources created, and meetings joined by each user';
+        return __('dashboard.analytics.user_productivity.description');
     }
 
     protected function getOptions(): array
@@ -104,19 +104,19 @@ class UserProductivityChart extends ApexChartWidget
             ],
             'series' => [
                 [
-                    'name' => 'Completed & Archived Tasks',
+                    'name' => __('dashboard.analytics.user_productivity.series.completed_tasks'),
                     'data' => $taskData,
                 ],
                 [
-                    'name' => 'Comments Made',
+                    'name' => __('dashboard.analytics.user_productivity.series.comments_made'),
                     'data' => $commentData,
                 ],
                 [
-                    'name' => 'Resources Created',
+                    'name' => __('dashboard.analytics.user_productivity.series.resources_created'),
                     'data' => $resourcesData,
                 ],
                 [
-                    'name' => 'Meetings Joined',
+                    'name' => __('dashboard.analytics.user_productivity.series.meetings_joined'),
                     'data' => $meetingsData,
                 ],
             ],
@@ -156,14 +156,14 @@ class UserProductivityChart extends ApexChartWidget
                 'y' => [
                     'formatter' => 'function (val, opts) {
                         const seriesName = opts.seriesName;
-                        if (seriesName === "Completed & Archived Tasks") {
-                            return val + " assigned tasks completed & archived";
-                        } else if (seriesName === "Comments Made") {
-                            return val + " comments made";
-                        } else if (seriesName === "Resources Created") {
-                            return val + " resources created (hover individual bars for details)";
-                        } else if (seriesName === "Meetings Joined") {
-                            return val + " meetings joined";
+                        if (seriesName === "'.__('dashboard.analytics.user_productivity.series.completed_tasks').'") {
+                            return val + " '.__('dashboard.analytics.user_productivity.tooltip.completed_tasks').'";
+                        } else if (seriesName === "'.__('dashboard.analytics.user_productivity.series.comments_made').'") {
+                            return val + " '.__('dashboard.analytics.user_productivity.tooltip.comments_made').'";
+                        } else if (seriesName === "'.__('dashboard.analytics.user_productivity.series.resources_created').'") {
+                            return val + " '.__('dashboard.analytics.user_productivity.tooltip.resources_created').'";
+                        } else if (seriesName === "'.__('dashboard.analytics.user_productivity.series.meetings_joined').'") {
+                            return val + " '.__('dashboard.analytics.user_productivity.tooltip.meetings_joined').'";
                         }
                         return val;
                     }',

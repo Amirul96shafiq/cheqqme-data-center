@@ -90,6 +90,37 @@ return [
         'analytics' => 'Analisis',
     ],
 
+    'analytics' => [
+        'task_status_distribution' => [
+            'heading' => 'Pengagihan Status Tugasan',
+            'other_issue_trackers' => 'Penjejak Isu Lain',
+        ],
+        'user_productivity' => [
+            'heading' => 'Produktiviti Pengguna',
+            'description' => 'Semua tugasan yang ditugaskan & diselesai/dihapuskan, komen dibuat, sumber dicipta, dan mesyuarat dihadiri oleh setiap pengguna sepanjang masa',
+            'series' => [
+                'completed_tasks' => 'Tugasan Selesai & Dihapuskan',
+                'comments_made' => 'Komen Dibuat',
+                'resources_created' => 'Sumber Dicipta',
+                'meetings_joined' => 'Mesyuarat Dihadiri',
+            ],
+            'tooltip' => [
+                'completed_tasks' => 'tugasan ditugaskan selesai & dihapuskan',
+                'comments_made' => 'komen dibuat',
+                'resources_created' => 'sumber dicipta (hover bar individu untuk butiran)',
+                'meetings_joined' => 'mesyuarat dihadiri',
+            ],
+        ],
+        'chatbot_usage' => [
+            'heading' => 'Penggunaan Pembantu AI',
+            'description' => 'Perbualan chatbot dan penggunaan API dari masa ke semasa',
+            'series' => [
+                'conversations' => 'Perbualan',
+                'api_calls' => 'Panggilan API',
+            ],
+        ],
+    ],
+
     'actions' => [
         'view_all' => 'Lihat Semua',
         'view' => 'Lihat',

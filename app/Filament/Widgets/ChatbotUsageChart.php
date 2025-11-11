@@ -23,12 +23,12 @@ class ChatbotUsageChart extends ApexChartWidget
 
     public function getHeading(): ?string
     {
-        return 'AI Assistant Usage';
+        return __('dashboard.analytics.chatbot_usage.heading');
     }
 
     public function getDescription(): ?string
     {
-        return 'Chatbot conversations and API usage over time';
+        return __('dashboard.analytics.chatbot_usage.description');
     }
 
     protected function getOptions(): array
@@ -43,11 +43,11 @@ class ChatbotUsageChart extends ApexChartWidget
             ],
             'series' => [
                 [
-                    'name' => 'Conversations',
+                    'name' => __('dashboard.analytics.chatbot_usage.series.conversations'),
                     'data' => $this->getConversationsData(),
                 ],
                 [
-                    'name' => 'API Calls',
+                    'name' => __('dashboard.analytics.chatbot_usage.series.api_calls'),
                     'data' => $this->getApiCallsData(),
                 ],
             ],
