@@ -45,8 +45,8 @@ class UserProductivityChart extends ApexChartWidget
         $categories = [];
         $taskData = [];
         $commentData = [];
-        $resourcesData = [];
         $meetingsData = [];
+        $resourcesData = [];
 
         foreach ($users as $user) {
             $taskCount = Task::whereJsonContains('assigned_to', (string) $user->id)
@@ -65,15 +65,7 @@ class UserProductivityChart extends ApexChartWidget
             // Tasks created (all tasks, not just completed)
             $resourcesCount += Task::where('updated_by', $user->id)->count();
 
-            // Other resources
-            $resourcesCount += MeetingLink::where('created_by', $user->id)->count();
-            $resourcesCount += TrelloBoard::where('created_by', $user->id)->count();
-            $resourcesCount += Client::where('updated_by', $user->id)->count();
-            $resourcesCount += Project::where('updated_by', $user->id)->count();
-            $resourcesCount += Document::where('updated_by', $user->id)->count();
-            $resourcesCount += ImportantUrl::where('updated_by', $user->id)->count();
-            $resourcesCount += PhoneNumber::where('updated_by', $user->id)->count();
-
+            // Meetings joined
             $meetingsJoinedCount = MeetingLink::query()
                 ->where(function ($query) use ($user) {
                     $query
@@ -84,13 +76,22 @@ class UserProductivityChart extends ApexChartWidget
                 })
                 ->count();
 
+            // Other resources
+            $resourcesCount += MeetingLink::where('created_by', $user->id)->count();
+            $resourcesCount += TrelloBoard::where('created_by', $user->id)->count();
+            $resourcesCount += Client::where('updated_by', $user->id)->count();
+            $resourcesCount += Project::where('updated_by', $user->id)->count();
+            $resourcesCount += Document::where('updated_by', $user->id)->count();
+            $resourcesCount += ImportantUrl::where('updated_by', $user->id)->count();
+            $resourcesCount += PhoneNumber::where('updated_by', $user->id)->count();
+            
             // Include users with any activity
             if ($taskCount > 0 || $commentCount > 0 || $resourcesCount > 0 || $meetingsJoinedCount > 0) {
                 $categories[] = $this->formatDisplayName($user);
                 $taskData[] = $taskCount;
                 $commentData[] = $commentCount;
-                $resourcesData[] = $resourcesCount;
                 $meetingsData[] = $meetingsJoinedCount;
+                $resourcesData[] = $resourcesCount;
             }
         }
 
@@ -112,12 +113,12 @@ class UserProductivityChart extends ApexChartWidget
                     'data' => $commentData,
                 ],
                 [
-                    'name' => __('dashboard.analytics.user_productivity.series.resources_created'),
-                    'data' => $resourcesData,
-                ],
-                [
                     'name' => __('dashboard.analytics.user_productivity.series.meetings_joined'),
                     'data' => $meetingsData,
+                ],
+                [
+                    'name' => __('dashboard.analytics.user_productivity.series.resources_created'),
+                    'data' => $resourcesData,
                 ],
             ],
             'xaxis' => [
@@ -160,10 +161,10 @@ class UserProductivityChart extends ApexChartWidget
                             return val + " '.__('dashboard.analytics.user_productivity.tooltip.completed_tasks').'";
                         } else if (seriesName === "'.__('dashboard.analytics.user_productivity.series.comments_made').'") {
                             return val + " '.__('dashboard.analytics.user_productivity.tooltip.comments_made').'";
-                        } else if (seriesName === "'.__('dashboard.analytics.user_productivity.series.resources_created').'") {
-                            return val + " '.__('dashboard.analytics.user_productivity.tooltip.resources_created').'";
                         } else if (seriesName === "'.__('dashboard.analytics.user_productivity.series.meetings_joined').'") {
                             return val + " '.__('dashboard.analytics.user_productivity.tooltip.meetings_joined').'";
+                        } else if (seriesName === "'.__('dashboard.analytics.user_productivity.series.resources_created').'") {
+                            return val + " '.__('dashboard.analytics.user_productivity.tooltip.resources_created').'";
                         }
                         return val;
                     }',
