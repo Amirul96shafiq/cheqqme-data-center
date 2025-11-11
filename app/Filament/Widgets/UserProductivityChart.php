@@ -130,6 +130,13 @@ class UserProductivityChart extends ApexChartWidget
                 'enabled' => false,
             ],
             'tooltip' => [
+                'enabled' => true,
+                'theme' => 'custom-tooltip-theme',
+                'cssClass' => 'apexcharts-tooltip-custom',
+                'style' => [
+                    'fontSize' => '14px',
+                    'fontFamily' => 'inherit',
+                ],
                 'y' => [
                     'formatter' => 'function (val, opts) {
                         const seriesName = opts.seriesName;
