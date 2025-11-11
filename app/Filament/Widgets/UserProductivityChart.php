@@ -36,7 +36,7 @@ class UserProductivityChart extends ApexChartWidget
 
     public function getDescription(): ?string
     {
-        return 'All-time tasks assigned & completed/archived, comments made, and resources created by each user';
+        return 'All-time tasks assigned & completed/archived, comments made, resources created, and meetings joined by each user';
     }
 
     protected function getOptions(): array
@@ -46,6 +46,7 @@ class UserProductivityChart extends ApexChartWidget
         $taskData = [];
         $commentData = [];
         $resourcesData = [];
+        $meetingsData = [];
 
         foreach ($users as $user) {
             $taskCount = Task::whereJsonContains('assigned_to', (string) $user->id)
@@ -73,12 +74,23 @@ class UserProductivityChart extends ApexChartWidget
             $resourcesCount += ImportantUrl::where('updated_by', $user->id)->count();
             $resourcesCount += PhoneNumber::where('updated_by', $user->id)->count();
 
+            $meetingsJoinedCount = MeetingLink::query()
+                ->where(function ($query) use ($user) {
+                    $query
+                        ->whereJsonContains('user_ids', $user->id)
+                        ->orWhereJsonContains('user_ids', (string) $user->id)
+                        ->orWhereRaw('JSON_EXTRACT(user_ids, "$") LIKE ?', ['%"'.$user->id.'"%'])
+                        ->orWhere('created_by', $user->id);
+                })
+                ->count();
+
             // Include users with any activity
-            if ($taskCount > 0 || $commentCount > 0 || $resourcesCount > 0) {
+            if ($taskCount > 0 || $commentCount > 0 || $resourcesCount > 0 || $meetingsJoinedCount > 0) {
                 $categories[] = $this->formatDisplayName($user);
                 $taskData[] = $taskCount;
                 $commentData[] = $commentCount;
                 $resourcesData[] = $resourcesCount;
+                $meetingsData[] = $meetingsJoinedCount;
             }
         }
 
@@ -103,6 +115,10 @@ class UserProductivityChart extends ApexChartWidget
                     'name' => 'Resources Created',
                     'data' => $resourcesData,
                 ],
+                [
+                    'name' => 'Meetings Joined',
+                    'data' => $meetingsData,
+                ],
             ],
             'xaxis' => [
                 'categories' => $categories,
@@ -119,7 +135,7 @@ class UserProductivityChart extends ApexChartWidget
                     ],
                 ],
             ],
-            'colors' => ['#fbb43e', '#10b981', '#3b82f6'],
+            'colors' => ['#fbb43e', '#10b981', '#3b82f6', '#8b5cf6'],
             'plotOptions' => [
                 'bar' => [
                     'borderRadius' => 4,
@@ -146,6 +162,8 @@ class UserProductivityChart extends ApexChartWidget
                             return val + " comments made";
                         } else if (seriesName === "Resources Created") {
                             return val + " resources created (hover individual bars for details)";
+                        } else if (seriesName === "Meetings Joined") {
+                            return val + " meetings joined";
                         }
                         return val;
                     }',
