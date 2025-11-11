@@ -2,8 +2,15 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Client;
 use App\Models\Comment;
+use App\Models\Document;
+use App\Models\ImportantUrl;
+use App\Models\MeetingLink;
+use App\Models\PhoneNumber;
+use App\Models\Project;
 use App\Models\Task;
+use App\Models\TrelloBoard;
 use App\Models\User;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
 
@@ -29,7 +36,7 @@ class UserProductivityChart extends ApexChartWidget
 
     public function getDescription(): ?string
     {
-        return 'All-time tasks completed and comments made by each user';
+        return 'All-time tasks completed, comments made, and resources created by each user';
     }
 
     protected function getOptions(): array
@@ -38,6 +45,7 @@ class UserProductivityChart extends ApexChartWidget
         $categories = [];
         $taskData = [];
         $commentData = [];
+        $resourcesData = [];
 
         foreach ($users as $user) {
             $taskCount = Task::where('updated_by', $user->id)
@@ -50,11 +58,27 @@ class UserProductivityChart extends ApexChartWidget
                 ->whereNull('parent_id') // Only count top-level comments, not replies
                 ->count();
 
-            // Include users with either completed tasks or comments
-            if ($taskCount > 0 || $commentCount > 0) {
+            // Count resources created by this user
+            $resourcesCount = 0;
+
+            // Tasks created (all tasks, not just completed)
+            $resourcesCount += Task::where('updated_by', $user->id)->count();
+
+            // Other resources
+            $resourcesCount += MeetingLink::where('created_by', $user->id)->count();
+            $resourcesCount += TrelloBoard::where('created_by', $user->id)->count();
+            $resourcesCount += Client::where('updated_by', $user->id)->count();
+            $resourcesCount += Project::where('updated_by', $user->id)->count();
+            $resourcesCount += Document::where('updated_by', $user->id)->count();
+            $resourcesCount += ImportantUrl::where('updated_by', $user->id)->count();
+            $resourcesCount += PhoneNumber::where('updated_by', $user->id)->count();
+
+            // Include users with any activity
+            if ($taskCount > 0 || $commentCount > 0 || $resourcesCount > 0) {
                 $categories[] = $user->name ?? $user->username ?? 'User #'.$user->id;
                 $taskData[] = $taskCount;
                 $commentData[] = $commentCount;
+                $resourcesData[] = $resourcesCount;
             }
         }
 
@@ -75,6 +99,10 @@ class UserProductivityChart extends ApexChartWidget
                     'name' => 'Comments Made',
                     'data' => $commentData,
                 ],
+                [
+                    'name' => 'Resources Created',
+                    'data' => $resourcesData,
+                ],
             ],
             'xaxis' => [
                 'categories' => $categories,
@@ -91,7 +119,7 @@ class UserProductivityChart extends ApexChartWidget
                     ],
                 ],
             ],
-            'colors' => ['#fbb43e', '#10b981'],
+            'colors' => ['#fbb43e', '#10b981', '#3b82f6'],
             'plotOptions' => [
                 'bar' => [
                     'borderRadius' => 4,
@@ -109,6 +137,8 @@ class UserProductivityChart extends ApexChartWidget
                             return val + " tasks completed";
                         } else if (seriesName === "Comments Made") {
                             return val + " comments made";
+                        } else if (seriesName === "Resources Created") {
+                            return val + " resources created";
                         }
                         return val;
                     }',
