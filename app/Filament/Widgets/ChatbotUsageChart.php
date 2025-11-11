@@ -81,6 +81,12 @@ class ChatbotUsageChart extends ApexChartWidget
             'tooltip' => [
                 'shared' => true,
                 'intersect' => false,
+                'theme' => 'custom-tooltip-theme',
+                'cssClass' => 'apexcharts-tooltip-custom',
+                'style' => [
+                    'fontSize' => '12px',
+                    'fontFamily' => 'inherit',
+                ],
             ],
             'legend' => [
                 'position' => 'bottom',

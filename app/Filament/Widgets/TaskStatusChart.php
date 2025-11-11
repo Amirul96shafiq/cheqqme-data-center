@@ -84,6 +84,13 @@ class TaskStatusChart extends ApexChartWidget
             ],
             'tooltip' => [
                 'enabled' => true,
+                'theme' => 'custom-tooltip-theme',
+                'cssClass' => 'apexcharts-tooltip-custom',
+                'fillSeriesColor' => false,
+                'style' => [
+                    'fontSize' => '12px',
+                    'fontFamily' => 'inherit',
+                ],
             ],
         ];
     }
