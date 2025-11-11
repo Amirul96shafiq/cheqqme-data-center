@@ -108,7 +108,7 @@ return [
             'heading' => 'User Productivity',
             'description' => 'Each user\'s activities: tasks, comments, resources, etc.',
             'series' => [
-                'completed_tasks' => 'Completed & Archived Tasks',
+                'completed_tasks' => 'Tasks Completed',
                 'comments_made' => 'Comments Made',
                 'resources_created' => 'Resources Created',
                 'meetings_joined' => 'Meetings Joined',

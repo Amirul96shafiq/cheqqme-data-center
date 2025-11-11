@@ -108,13 +108,13 @@ return [
             'heading' => 'Produktiviti Pengguna',
             'description' => 'Aktiviti setiap pengguna: tugasan, komen, sumber, dll.',
             'series' => [
-                'completed_tasks' => 'Tugasan Selesai & Dihapuskan',
+                'completed_tasks' => 'Tugasan Selesai',
                 'comments_made' => 'Komen Dibuat',
                 'resources_created' => 'Sumber Dicipta',
                 'meetings_joined' => 'Mesyuarat Dihadiri',
             ],
             'tooltip' => [
-                'completed_tasks' => 'tugasan ditugaskan selesai & dihapuskan',
+                'completed_tasks' => 'tugasan ditugaskan selesai',
                 'comments_made' => 'komen dibuat',
                 'resources_created' => 'sumber dicipta (hover bar individu untuk butiran)',
                 'meetings_joined' => 'mesyuarat dihadiri',
