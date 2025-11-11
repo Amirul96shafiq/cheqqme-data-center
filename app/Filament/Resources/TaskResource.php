@@ -531,7 +531,12 @@ return false;
                                             $document = $get('document') ?? [];
                                             $importantUrl = $get('important_url') ?? [];
 
-                                            return $client + count($project) + count($document) + count($importantUrl) ?: null;
+                                            // Ensure arrays are countable (handle corrupted data)
+                                            $projectCount = is_array($project) ? count($project) : 0;
+                                            $documentCount = is_array($document) ? count($document) : 0;
+                                            $importantUrlCount = is_array($importantUrl) ? count($importantUrl) : 0;
+
+                                            return $client + $projectCount + $documentCount + $importantUrlCount ?: null;
                                         })
                                         ->visible(fn (Forms\Get $get) => (bool) $get('enable_task_resources'))
                                         ->schema([

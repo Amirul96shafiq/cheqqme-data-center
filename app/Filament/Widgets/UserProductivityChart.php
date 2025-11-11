@@ -36,7 +36,7 @@ class UserProductivityChart extends ApexChartWidget
 
     public function getDescription(): ?string
     {
-        return 'All-time tasks completed, comments made, and resources created by each user';
+        return 'All-time tasks assigned & completed/archived, comments made, and resources created by each user';
     }
 
     protected function getOptions(): array
@@ -48,8 +48,8 @@ class UserProductivityChart extends ApexChartWidget
         $resourcesData = [];
 
         foreach ($users as $user) {
-            $taskCount = Task::where('updated_by', $user->id)
-                ->where('status', 'completed')
+            $taskCount = Task::whereJsonContains('assigned_to', (string) $user->id)
+                ->whereIn('status', ['completed', 'archived'])
                 ->count();
 
             $commentCount = Comment::where('user_id', $user->id)
@@ -92,7 +92,7 @@ class UserProductivityChart extends ApexChartWidget
             ],
             'series' => [
                 [
-                    'name' => 'Completed Tasks',
+                    'name' => 'Completed & Archived Tasks',
                     'data' => $taskData,
                 ],
                 [
@@ -133,12 +133,12 @@ class UserProductivityChart extends ApexChartWidget
                 'y' => [
                     'formatter' => 'function (val, opts) {
                         const seriesName = opts.seriesName;
-                        if (seriesName === "Completed Tasks") {
-                            return val + " tasks completed";
+                        if (seriesName === "Completed & Archived Tasks") {
+                            return val + " assigned tasks completed & archived";
                         } else if (seriesName === "Comments Made") {
                             return val + " comments made";
                         } else if (seriesName === "Resources Created") {
-                            return val + " resources created";
+                            return val + " resources created (hover individual bars for details)";
                         }
                         return val;
                     }',
