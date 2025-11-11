@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Comment;
 use App\Models\Task;
 use App\Models\User;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
@@ -28,25 +29,32 @@ class UserProductivityChart extends ApexChartWidget
 
     public function getDescription(): ?string
     {
-        return 'Tasks completed by each user this month';
+        return 'All-time tasks completed and comments made by each user';
     }
 
     protected function getOptions(): array
     {
         $users = User::all();
         $categories = [];
-        $data = [];
+        $taskData = [];
+        $commentData = [];
 
         foreach ($users as $user) {
             $taskCount = Task::where('updated_by', $user->id)
                 ->where('status', 'completed')
-                ->whereMonth('updated_at', now()->month)
-                ->whereYear('updated_at', now()->year)
                 ->count();
 
-            if ($taskCount > 0) { // Only include users with completed tasks
-                $categories[] = $user->short_name ?? $user->name ?? $user->username ?? 'User #'.$user->id;
-                $data[] = $taskCount;
+            $commentCount = Comment::where('user_id', $user->id)
+                ->where('status', '!=', 'deleted')
+                ->whereNull('deleted_at')
+                ->whereNull('parent_id') // Only count top-level comments, not replies
+                ->count();
+
+            // Include users with either completed tasks or comments
+            if ($taskCount > 0 || $commentCount > 0) {
+                $categories[] = $user->name ?? $user->username ?? 'User #'.$user->id;
+                $taskData[] = $taskCount;
+                $commentData[] = $commentCount;
             }
         }
 
@@ -61,7 +69,11 @@ class UserProductivityChart extends ApexChartWidget
             'series' => [
                 [
                     'name' => 'Completed Tasks',
-                    'data' => $data,
+                    'data' => $taskData,
+                ],
+                [
+                    'name' => 'Comments Made',
+                    'data' => $commentData,
                 ],
             ],
             'xaxis' => [
@@ -79,7 +91,7 @@ class UserProductivityChart extends ApexChartWidget
                     ],
                 ],
             ],
-            'colors' => ['#fbb43e'],
+            'colors' => ['#fbb43e', '#10b981'],
             'plotOptions' => [
                 'bar' => [
                     'borderRadius' => 4,
@@ -91,8 +103,14 @@ class UserProductivityChart extends ApexChartWidget
             ],
             'tooltip' => [
                 'y' => [
-                    'formatter' => 'function (val) {
-                        return val + " tasks completed";
+                    'formatter' => 'function (val, opts) {
+                        const seriesName = opts.seriesName;
+                        if (seriesName === "Completed Tasks") {
+                            return val + " tasks completed";
+                        } else if (seriesName === "Comments Made") {
+                            return val + " comments made";
+                        }
+                        return val;
                     }',
                 ],
             ],
