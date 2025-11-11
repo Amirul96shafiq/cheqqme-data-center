@@ -75,7 +75,7 @@ class UserProductivityChart extends ApexChartWidget
 
             // Include users with any activity
             if ($taskCount > 0 || $commentCount > 0 || $resourcesCount > 0) {
-                $categories[] = $user->name ?? $user->username ?? 'User #'.$user->id;
+                $categories[] = $this->formatDisplayName($user);
                 $taskData[] = $taskCount;
                 $commentData[] = $commentCount;
                 $resourcesData[] = $resourcesCount;
@@ -145,5 +145,28 @@ class UserProductivityChart extends ApexChartWidget
                 ],
             ],
         ];
+    }
+
+    private function formatDisplayName(User $user): string
+    {
+        $name = $user->name ?? $user->username;
+
+        if (! $name) {
+            return 'User #'.$user->id;
+        }
+
+        $parts = array_values(array_filter(preg_split('/\s+/', trim($name))));
+
+        if (count($parts) === 1) {
+            return $parts[0];
+        }
+
+        $firstName = array_shift($parts);
+        $initials = array_map(
+            fn (string $part): string => mb_strtoupper(mb_substr($part, 0, 1)).'.',
+            $parts
+        );
+
+        return $firstName.' '.implode(' ', $initials);
     }
 }
