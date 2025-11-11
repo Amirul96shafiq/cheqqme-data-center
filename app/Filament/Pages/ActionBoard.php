@@ -127,8 +127,8 @@ class ActionBoard extends KanbanBoardPage
                 'attachment_count' => 'heroicon-o-paper-clip',
                 'resource_count' => 'heroicon-o-folder',
             ])
-            ->columns($this->getAvailableStatuses())
-            ->columnColors(array_fill_keys(array_keys($this->getAvailableStatuses()), 'gray'))
+            ->columns(Task::availableStatuses())
+            ->columnColors(array_fill_keys(array_keys(Task::availableStatuses()), 'gray'))
             ->cardLabel(__('action.card_label'))
             ->pluralCardLabel(__('action.card_label_plural'));
     }
@@ -783,7 +783,7 @@ class ActionBoard extends KanbanBoardPage
      */
     protected function detectCreateColumn(): ?string
     {
-        $valid = ['issue_tracker', 'todo', 'in_progress', 'toreview', 'completed', 'archived'];
+        $valid = array_keys(Task::availableStatuses());
         $calls = request()->input('components.0.calls');
         if (is_array($calls)) {
             foreach (array_reverse($calls) as $call) {
@@ -848,19 +848,12 @@ class ActionBoard extends KanbanBoardPage
      */
     protected function getAvailableStatuses(): array
     {
-        return [
-            'issue_tracker' => __('action.status.issue_tracker'),
-            'todo' => __('action.status.todo'),
-            'in_progress' => __('action.status.in_progress'),
-            'toreview' => __('action.status.toreview'),
-            'completed' => __('action.status.completed'),
-            'archived' => __('action.status.archived'),
-        ];
+        return Task::availableStatuses();
     }
 
     protected function getHeaderActions(): array
     {
-        $statuses = $this->getAvailableStatuses();
+        $statuses = Task::availableStatuses();
 
         $actions = [];
 

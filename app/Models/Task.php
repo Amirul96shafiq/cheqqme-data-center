@@ -65,6 +65,23 @@ class Task extends Model
     ];
 
     /**
+     * Returns the available task statuses keyed by their identifier and translated label.
+     *
+     * @return array<string, string>
+     */
+    public static function availableStatuses(): array
+    {
+        return [
+            'issue_tracker' => __('action.status.issue_tracker'),
+            'todo' => __('task.status.todo'),
+            'in_progress' => __('task.status.in_progress'),
+            'toreview' => __('task.status.toreview'),
+            'completed' => __('task.status.completed'),
+            'archived' => __('task.status.archived'),
+        ];
+    }
+
+    /**
      * Mutator to ensure assigned_to is always an array when setting.
      */
     public function setAssignedToAttribute($value)
