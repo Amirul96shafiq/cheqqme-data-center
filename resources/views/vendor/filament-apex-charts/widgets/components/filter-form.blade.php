@@ -35,7 +35,7 @@
     <div x-show="dropdownOpen" x-cloak @click="dropdownOpen = false" class="fixed inset-0 h-full w-full z-10"></div>
 
     <div x-show="dropdownOpen" x-cloak @class([
-        'absolute mt-2 z-20 w-screen divide-y divide-gray-100 rounded-lg bg-white shadow-lg ring-1 ring-gray-950/5 transition dark:divide-gray-700 dark:bg-gray-800 dark:ring-white/20',
+        'absolute mt-2 z-20 w-screen rounded-lg bg-white shadow-xl border border-gray-200 dark:bg-gray-800 dark:border-gray-700 transition',
     ])
         style="{{ match ($width) {
             MaxWidth::ExtraSmall, 'xs' => 'width: 20rem;',
@@ -51,19 +51,28 @@
             MaxWidth::SevenExtraLarge, '7xl' => 'width: 80rem;',
             default => $width,
         } }}; right:0">
-        <div class="py-4 px-6">
 
+        <!-- Filter Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('filament-apex-charts::filters.heading') }}</h3>
+            <button
+                wire:click="resetFiltersForm"
+                class="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium"
+            >
+                {{ __('filament-apex-charts::filters.reset.label') }}
+            </button>
+        </div>
+
+        <!-- Filter Content -->
+        <div class="p-6">
             {{ $slot }}
+        </div>
 
-            <div class="mt-2 text-end flex gap-6 justify-end">
-                <x-filament::link wire:click="submitFiltersForm" color="primary" tag="button" size="sm">
-                    {{ __('filament-actions::modal.actions.submit.label') }}
-                </x-filament::link>
-
-                <x-filament::link wire:click="resetFiltersForm" color="danger" tag="button" size="sm">
-                    {{ __('filament-apex-charts::filters.reset.label') }}
-                </x-filament::link>
-            </div>
+        <!-- Submit Action -->
+        <div class="flex justify-end p-6 border-gray-200 dark:border-gray-700">
+            <x-filament::link wire:click="submitFiltersForm" color="primary" tag="button" size="sm">
+                {{ __('filament-actions::modal.actions.submit.label') }}
+            </x-filament::link>
         </div>
 
     </div>
