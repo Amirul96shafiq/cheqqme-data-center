@@ -98,7 +98,7 @@ return [
         ],
         'user_productivity' => [
             'heading' => 'Produktiviti Pengguna',
-            'description' => 'Aktiviti setiap pengguna: tugasan, komen, sumber & mesyuarat',
+            'description' => 'Aktiviti setiap pengguna: tugasan, komen, sumber, dll.',
             'series' => [
                 'completed_tasks' => 'Tugasan Selesai & Dihapuskan',
                 'comments_made' => 'Komen Dibuat',

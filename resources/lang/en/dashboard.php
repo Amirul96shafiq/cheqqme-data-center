@@ -98,7 +98,7 @@ return [
         ],
         'user_productivity' => [
             'heading' => 'User Productivity',
-            'description' => 'Activity of each user: tasks, comments, resources & meetings',
+            'description' => 'Each user\'s activities: tasks, comments, resources, etc.',
             'series' => [
                 'completed_tasks' => 'Completed & Archived Tasks',
                 'comments_made' => 'Comments Made',
