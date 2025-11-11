@@ -93,11 +93,12 @@ return [
     'analytics' => [
         'task_status_distribution' => [
             'heading' => 'Pengagihan Status Tugasan',
+            'description' => 'Pengagihan tugasan mengikut status semasa mereka',
             'other_issue_trackers' => 'Penjejak Isu Lain',
         ],
         'user_productivity' => [
             'heading' => 'Produktiviti Pengguna',
-            'description' => 'Semua tugasan yang ditugaskan & diselesai/dihapuskan, komen dibuat, sumber dicipta, dan mesyuarat dihadiri oleh setiap pengguna sepanjang masa',
+            'description' => 'Aktiviti setiap pengguna: tugasan, komen, sumber & mesyuarat',
             'series' => [
                 'completed_tasks' => 'Tugasan Selesai & Dihapuskan',
                 'comments_made' => 'Komen Dibuat',

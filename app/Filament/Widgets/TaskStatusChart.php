@@ -25,6 +25,11 @@ class TaskStatusChart extends ApexChartWidget
         return __('dashboard.analytics.task_status_distribution.heading');
     }
 
+    public function getSubheading(): ?string
+    {
+        return __('dashboard.analytics.task_status_distribution.description');
+    }
+
     protected function getOptions(): array
     {
         $orderedStatuses = Task::availableStatuses();

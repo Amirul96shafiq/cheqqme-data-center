@@ -34,7 +34,7 @@ class UserProductivityChart extends ApexChartWidget
         return __('dashboard.analytics.user_productivity.heading');
     }
 
-    public function getDescription(): ?string
+    public function getSubheading(): ?string
     {
         return __('dashboard.analytics.user_productivity.description');
     }
@@ -84,7 +84,7 @@ class UserProductivityChart extends ApexChartWidget
             $resourcesCount += Document::where('updated_by', $user->id)->count();
             $resourcesCount += ImportantUrl::where('updated_by', $user->id)->count();
             $resourcesCount += PhoneNumber::where('updated_by', $user->id)->count();
-            
+
             // Include users with any activity
             if ($taskCount > 0 || $commentCount > 0 || $resourcesCount > 0 || $meetingsJoinedCount > 0) {
                 $categories[] = $this->formatDisplayName($user);

@@ -93,11 +93,12 @@ return [
     'analytics' => [
         'task_status_distribution' => [
             'heading' => 'Task Status Distribution',
+            'description' => 'Distribution of tasks by their current status',
             'other_issue_trackers' => 'Other Issue Trackers',
         ],
         'user_productivity' => [
             'heading' => 'User Productivity',
-            'description' => 'All-time tasks assigned & completed/archived, comments made, resources created, and meetings joined by each user',
+            'description' => 'Activity of each user: tasks, comments, resources & meetings',
             'series' => [
                 'completed_tasks' => 'Completed & Archived Tasks',
                 'comments_made' => 'Comments Made',

@@ -26,7 +26,7 @@ class ChatbotUsageChart extends ApexChartWidget
         return __('dashboard.analytics.chatbot_usage.heading');
     }
 
-    public function getDescription(): ?string
+    public function getSubheading(): ?string
     {
         return __('dashboard.analytics.chatbot_usage.description');
     }
