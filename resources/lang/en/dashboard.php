@@ -96,6 +96,8 @@ return [
             'description' => 'Distribution of tasks by their current status',
             'other_issue_trackers' => 'Other Issue Trackers',
             'filters' => [
+                'users' => 'Users',
+                'all_users' => 'All Users',
                 'card_type' => 'Card Type',
                 'all_cards' => 'All Cards',
                 'tasks' => 'Tasks',

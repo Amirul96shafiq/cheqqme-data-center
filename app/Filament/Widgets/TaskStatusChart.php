@@ -37,6 +37,24 @@ class TaskStatusChart extends ApexChartWidget
     protected function getFormSchema(): array
     {
         return [
+            Select::make('user_ids')
+                ->label(__('dashboard.analytics.task_status_distribution.filters.users'))
+                ->options(function () {
+                    return \App\Models\User::withTrashed()
+                        ->orderBy('username')
+                        ->get()
+                        ->mapWithKeys(fn ($u) => [
+                            $u->id => ($u->username ?: 'User #'.$u->id).($u->deleted_at ? ' (deleted)' : ''),
+                        ])
+                        ->toArray();
+                })
+                ->searchable()
+                ->preload()
+                ->native(false)
+                ->nullable()
+                ->placeholder(__('dashboard.analytics.task_status_distribution.filters.all_users'))
+                ->columnSpanFull(),
+
             Select::make('card_type')
                 ->label(__('dashboard.analytics.task_status_distribution.filters.card_type'))
                 ->options([
@@ -53,16 +71,28 @@ class TaskStatusChart extends ApexChartWidget
     protected function getOptions(): array
     {
         $cardType = $this->filterFormData['card_type'] ?? 'all';
+        $userId = $this->filterFormData['user_ids'] ?? null;
 
         $orderedStatuses = Task::availableStatuses();
         $statusKeys = array_keys($orderedStatuses);
 
-        // Build base query based on card type
+        // Build base query based on card type and user
+        $baseQuery = Task::query();
+
+        // Apply card type filtering
         $baseQuery = match ($cardType) {
-            'tasks' => Task::whereNull('tracking_token'),
-            'issue_trackers' => Task::whereNotNull('tracking_token'),
-            default => Task::query(), // 'all' - no filtering
+            'tasks' => $baseQuery->whereNull('tracking_token'),
+            'issue_trackers' => $baseQuery->whereNotNull('tracking_token'),
+            default => $baseQuery, // 'all' - no filtering
         };
+
+        // Apply user filtering - filter by tasks assigned to the user
+        if ($userId) {
+            $baseQuery = $baseQuery->where(function ($query) use ($userId) {
+                $query->whereJsonContains('assigned_to', (int) $userId)
+                    ->orWhereJsonContains('assigned_to', (string) $userId);
+            });
+        }
 
         $data = array_map(
             function (string $status) use ($baseQuery) {
