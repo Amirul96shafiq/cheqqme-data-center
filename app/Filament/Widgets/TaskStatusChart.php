@@ -37,17 +37,15 @@ class TaskStatusChart extends ApexChartWidget
             'issue_tracker' => 'Issue Tracker',
         ];
 
-        $data = [];
-        $labels = [];
+        $data = array_map(
+            static fn (string $status): int => Task::where('status', $status)->count(),
+            $allStatuses,
+        );
 
-        // Count all tasks by status (including both regular tasks and issue trackers)
-        foreach ($allStatuses as $status) {
-            $count = Task::where('status', $status)->count();
-            if ($count > 0) {
-                $data[] = (int) $count;
-                $labels[] = $statusLabels[$status] ?? ucfirst(str_replace('_', ' ', $status));
-            }
-        }
+        $labels = array_map(
+            static fn (string $status): string => $statusLabels[$status] ?? ucfirst(str_replace('_', ' ', $status)),
+            $allStatuses,
+        );
 
         // Also count issue trackers that have tracking_token but different status
         $additionalIssueTrackers = Task::whereNotNull('tracking_token')
@@ -64,8 +62,8 @@ class TaskStatusChart extends ApexChartWidget
                 'type' => 'donut',
                 'height' => '315px',
             ],
-            'series' => array_values($data),
-            'labels' => array_values($labels),
+            'series' => $data,
+            'labels' => $labels,
             'colors' => array_slice([
                 '#fbb43e',
                 '#14b8a6',
