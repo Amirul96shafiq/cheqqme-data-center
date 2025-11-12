@@ -23,6 +23,19 @@
         loadingTokens: false,
         trackingTokensData: null,
         tokensError: null,
+        issuesCount: 0,
+        async fetchIssuesCount() {
+          try {
+            const response = await fetch('/api/issue-trk/{{ $project ? $project->issue_tracker_code : '' }}/tokens/count');
+            if (!response.ok) {
+              throw new Error('Failed to fetch issues count');
+            }
+            const data = await response.json();
+            this.issuesCount = data.count;
+          } catch (error) {
+            console.error('Error fetching issues count:', error);
+          }
+        },
         async fetchTrackingTokens() {
           this.loadingTokens = true;
           this.tokensError = null;
@@ -38,6 +51,12 @@
           } finally {
             this.loadingTokens = false;
           }
+        },
+        init() {
+          // Wait for window to fully load before fetching count
+          window.addEventListener('load', () => {
+            this.fetchIssuesCount();
+          });
         }
       }">
   
@@ -484,6 +503,13 @@
             class="fixed top-6 right-6 z-40 inline-flex items-center justify-center w-12 h-12 bg-primary-500 hover:bg-primary-600 text-primary-900 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             title="View All Submitted Issues">
       <x-heroicon-m-inbox class="h-6 w-6" />
+
+      {{-- Issues Count Badge --}}
+      <span x-show="issuesCount > 0"
+            x-text="issuesCount"
+            class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white bg-danger-500 rounded-full min-w-[18px] h-[18px]">
+      </span>
+
     </button>
 
   </div>
@@ -564,7 +590,7 @@
 
         {{-- Tokens List --}}
         <div x-show="!loadingTokens && trackingTokensData?.tracking_tokens?.length > 0" class="divide-y divide-gray-200">
-          <template x-for="token in trackingTokensData.tracking_tokens" :key="token.token">
+          <template x-for="token in (trackingTokensData?.tracking_tokens || [])" :key="token.token">
             <div class="group relative px-6 py-8 hover:bg-gray-50 transition-colors"
                  :class="{ 'bg-teal-50/50': token.token === '{{ $task->tracking_token }}' }">
               <div class="flex-1 min-w-0">

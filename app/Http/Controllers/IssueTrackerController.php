@@ -164,6 +164,18 @@ class IssueTrackerController extends Controller
     }
 
     /**
+     * Get tracking tokens count for a project (API endpoint).
+     */
+    public function getTrackingTokensCount(string $projectCode)
+    {
+        $project = Project::where('issue_tracker_code', $projectCode)->firstOrFail();
+
+        return response()->json([
+            'count' => $project->tracking_tokens_count,
+        ]);
+    }
+
+    /**
      * Get tracking tokens for a project (API endpoint).
      */
     public function getTrackingTokens(string $projectCode)
