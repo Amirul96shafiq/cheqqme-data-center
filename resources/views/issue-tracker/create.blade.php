@@ -388,7 +388,7 @@
                     {{-- View Button --}}
                     <a :href="token.url"
                        target="_blank"
-                       class="text-xs text-primary-500 hover:text-primary-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity w-1/6 text-right">
+                       class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-primary-900 bg-primary-500 hover:bg-primary-600 rounded-md shadow-sm transition-all duration-200 opacity-0 group-hover:opacity-100 w-1/6 text-center">
                       View →
                     </a>
 
