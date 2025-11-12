@@ -253,7 +253,7 @@
                       <p>or drag and drop</p>
                     </div>
                     <p class="text-xs text-gray-500">
-                      JPG, JPEG, PNG, PDF, MP4 (max 20MB each)
+                      JPG, JPEG, PNG, PDF, MP4 (max 8MB each)
                     </p>
                   </div>
                 </div>
@@ -445,7 +445,7 @@
         const fileInput = document.getElementById('attachments');
         const fileList = document.getElementById('file-list');
         const maxFiles = 5;
-        const maxSize = 20 * 1024 * 1024; // 20MB in bytes
+        const maxSize = 8 * 1024 * 1024; // 8MB in bytes
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf', 'video/mp4'];
         let selectedFiles = [];
 
@@ -515,7 +515,7 @@
 
             // Check file size
             if (file.size > maxSize) {
-              alert(`File "${file.name}" exceeds the maximum size of 20MB.`);
+              alert(`File "${file.name}" exceeds the maximum size of 8MB.`);
               return;
             }
 
