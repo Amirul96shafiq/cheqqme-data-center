@@ -17,8 +17,11 @@ return [
     'actions' => [
         'create' => 'Create Project',
         'share_issue_tracker_link' => 'Share Issue Tracker Link',
+        'share_all_issue_status_link' => 'Share All Issue Status',
         'share_issue_tracker_link_description' => 'Preview and share issue tracker link details',
+        'share_all_issue_status_link_description' => 'Preview and share all issue status links',
         'issue_tracker_preview' => 'Issue Tracker Link Preview',
+        'all_issue_status_preview' => 'All Issue Status Links Preview',
         'copy_to_clipboard' => 'Copy to Clipboard',
         'edit_project' => 'Edit Project',
         'share_issue_status_link' => 'Share Issue Status Link',

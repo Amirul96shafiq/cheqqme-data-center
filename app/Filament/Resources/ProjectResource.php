@@ -8,6 +8,7 @@ use App\Filament\Resources\ProjectResource\RelationManagers\ProjectActivityLogRe
 use App\Filament\Resources\ProjectResource\RelationManagers\TrackingTokensRelationManager;
 use App\Helpers\ClientFormatter;
 use App\Models\Project;
+use App\Models\Task;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
@@ -63,6 +64,66 @@ class ProjectResource extends Resource
         $projectTitle = $record->title ?? 'TBD';
 
         return "Good day everyone ✨,\n\nHere's the issue tracker link for {$projectTitle} project.\n\n👉 {$issueTrackerUrl}\n\nPlease use this link to submit any issues or feedback related to this project.\n\nThank you! ☺️";
+    }
+
+    protected static function getAllIssueStatusLinksForCopy($record): string
+    {
+        $projectTitle = $record->title ?? 'TBD';
+        $projectId = $record->id;
+
+        $trackingTasks = Task::query()
+            ->whereNotNull('tracking_token')
+            ->with('updatedBy')
+            ->where(function ($query) use ($projectId) {
+                $query
+                    ->whereJsonContains('project', $projectId)
+                    ->orWhereJsonContains('project', (string) $projectId)
+                    ->orWhere('project', 'like', '%"'.$projectId.'"%')
+                    ->orWhere('project', 'like', '%['.$projectId.']%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        if ($trackingTasks->isEmpty()) {
+            return "Hi team 👋,\n\nThere are currently no active issue tracking tokens for the {$projectTitle} project.\n\nWhen issues are submitted, their status links will appear here.\n\nThank you!";
+        }
+
+        $linksText = "Hi team 👋,\n\nHere are all the current issue status links for the {$projectTitle} project:\n\n";
+
+        foreach ($trackingTasks as $task) {
+            $issueTitle = $task->title ?: __('project.actions.issue_status_no_title');
+            $statusLabel = self::formatIssueStatusLabel($task->status);
+            $statusUrl = route('issue-tracker.status', ['token' => $task->tracking_token]);
+            $submittedAt = $task->created_at?->format('j/n/y, h:i A');
+
+            $linksText .= "🔹 {$issueTitle}\n";
+            $linksText .= "   Status: {$statusLabel}\n";
+            $linksText .= "   Link: {$statusUrl}\n";
+            if ($submittedAt) {
+                $linksText .= "   Submitted: {$submittedAt}\n";
+            }
+            $linksText .= "\n";
+        }
+
+        $linksText .= "Please use these links to check the latest status of each issue.\n\nThank you!";
+
+        return $linksText;
+    }
+
+    protected static function formatIssueStatusLabel(?string $status): string
+    {
+        if (empty($status)) {
+            return __('project.actions.issue_status_unknown');
+        }
+
+        $translationKey = "action.status.{$status}";
+        $translated = __($translationKey);
+
+        if ($translated !== $translationKey) {
+            return $translated;
+        }
+
+        return ucfirst(str_replace('_', ' ', $status));
     }
 
     public static function form(Form $form): Form
@@ -516,6 +577,68 @@ class ProjectResource extends Resource
 
                                         // Dispatch browser event with the text to copy and success callback
                                         $livewire->dispatch('copy-to-clipboard-with-callback', text: $issueTrackerText);
+                                    });
+                            }
+
+                            $actions[] = Tables\Actions\Action::make('edit_project')
+                                ->label(__('project.actions.edit_project'))
+                                ->icon('heroicon-o-pencil-square')
+                                ->color('gray')
+                                ->url(fn ($record) => self::getUrl('edit', ['record' => $record->id]))
+                                ->close();
+
+                            return $actions;
+                        }),
+
+                    Tables\Actions\Action::make('share_all_issue_status_link')
+                        ->label(__('project.actions.share_all_issue_status_link'))
+                        ->icon('heroicon-o-share')
+                        ->color('primary')
+                        ->visible(fn ($record) => ! $record->trashed() && $record->issue_tracker_code)
+                        ->modalWidth('2xl')
+                        ->modalHeading(__('project.actions.share_all_issue_status_link'))
+                        ->modalDescription(__('project.actions.share_all_issue_status_link_description'))
+                        ->form(function ($record) {
+                            $allIssueStatusText = self::getAllIssueStatusLinksForCopy($record);
+
+                            return [
+                                Forms\Components\Textarea::make('all_issue_status_preview')
+                                    ->label(__('project.actions.all_issue_status_preview'))
+                                    ->default($allIssueStatusText)
+                                    ->disabled()
+                                    ->rows(12)
+                                    ->extraInputAttributes([
+                                        'class' => 'font-mono text-sm !resize-none',
+                                        'style' => 'resize: none !important; max-height: none !important;',
+                                        'x-init' => '$el.style.resize = "none"',
+                                    ])
+                                    ->columnSpanFull(),
+                            ];
+                        })
+                        ->modalSubmitAction(false)
+                        ->modalCancelAction(false)
+                        ->extraModalFooterActions(function ($record, $livewire) {
+                            $actions = [];
+
+                            // Detect mobile device and hide copy button on mobile
+                            $userAgent = request()->userAgent() ?? '';
+                            $isMobile = preg_match('/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $userAgent);
+
+                            // Only show copy button on desktop, hide on mobile so users can manually copy from preview
+                            if (! $isMobile) {
+                                $actions[] = Tables\Actions\Action::make('copy_to_clipboard')
+                                    ->label(__('project.actions.copy_to_clipboard'))
+                                    ->icon('heroicon-o-clipboard-document')
+                                    ->color('primary')
+                                    ->extraAttributes([
+                                        'x-data' => '{}',
+                                        'x-on:copy-success.window' => 'showCopiedBubble($el)',
+                                    ])
+                                    ->action(function () use ($record, $livewire) {
+                                        $allIssueStatusText = self::getAllIssueStatusLinksForCopy($record);
+
+                                        // Dispatch browser event with the text to copy and success callback
+                                        $livewire->dispatch('copy-to-clipboard-with-callback', text: $allIssueStatusText);
                                     });
                             }
 
