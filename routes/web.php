@@ -610,14 +610,14 @@ Route::get('/microsoft/coming-soon', function (Illuminate\Http\Request $request)
 })->name('microsoft.coming-soon');
 
 // Issue Tracker - Public routes (no authentication required)
-Route::get('/issue-tracker', function () {
+Route::get('/issue-trkr', function () {
     abort(404);
 })->name('issue-tracker.index');
-Route::get('/issue-tracker/{project}', [\App\Http\Controllers\IssueTrackerController::class, 'show'])
+Route::get('/issue-trkr/{project}', [\App\Http\Controllers\IssueTrackerController::class, 'show'])
     ->where('project', '[A-Z0-9]{6}') // Ensure the parameter matches the code format
     ->name('issue-tracker.show');
-Route::post('/issue-tracker', [\App\Http\Controllers\IssueTrackerController::class, 'store'])
+Route::post('/issue-trkr', [\App\Http\Controllers\IssueTrackerController::class, 'store'])
     ->name('issue-tracker.store');
-Route::get('/issue-tracker/status/{token}', [\App\Http\Controllers\IssueTrackerController::class, 'status'])
+Route::get('/issue-trkr/s/{token}', [\App\Http\Controllers\IssueTrackerController::class, 'status'])
     ->where('token', 'CHEQQ-TRK-[A-Z0-9]{6}') // Match tracking token format
     ->name('issue-tracker.status');
