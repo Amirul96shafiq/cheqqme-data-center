@@ -39,6 +39,13 @@ class CalendarModal extends Component
         $this->typeFilter = ['task', 'meeting', 'holiday', 'birthday'];
     }
 
+    public function getTaskStatusUrl(Task $task): ?string
+    {
+        return $task->tracking_token
+            ? route('issue-tracker.status', ['token' => $task->tracking_token])
+            : null;
+    }
+
     public function previousMonth(): void
     {
         $date = Carbon::create($this->year, $this->month, 1)->subMonth();
@@ -299,11 +306,11 @@ class CalendarModal extends Component
             ? Task::query()
                 ->whereNotNull('due_date')
                 ->whereBetween('due_date', [$calendarStart, $calendarEnd])
-                ->orderByRaw("CASE 
-                    WHEN priority = 'high' THEN 1 
-                    WHEN priority = 'medium' THEN 2 
-                    WHEN priority = 'low' THEN 3 
-                    ELSE 4 
+                ->orderByRaw("CASE
+                    WHEN priority = 'high' THEN 1
+                    WHEN priority = 'medium' THEN 2
+                    WHEN priority = 'low' THEN 3
+                    ELSE 4
                 END")
                 ->orderBy('due_date')
                 ->get()
