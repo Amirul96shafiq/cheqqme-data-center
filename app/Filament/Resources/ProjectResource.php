@@ -643,10 +643,10 @@ class ProjectResource extends Resource
                             }
 
                             $actions[] = Tables\Actions\Action::make('edit_project')
-                                ->label(__('project.actions.edit_project'))
-                                ->icon('heroicon-o-pencil-square')
+                                ->label(__('project.actions.view_tracking_tokens'))
+                                ->icon('heroicon-o-eye')
                                 ->color('gray')
-                                ->url(fn ($record) => self::getUrl('edit', ['record' => $record->id]))
+                                ->url(fn ($record) => self::getUrl('edit', ['record' => $record->id, 'activeRelationManager' => 0]))
                                 ->close();
 
                             return $actions;

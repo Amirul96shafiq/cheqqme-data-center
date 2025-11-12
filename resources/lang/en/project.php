@@ -24,6 +24,7 @@ return [
         'all_issue_status_preview' => 'All Issue Status Links Preview',
         'copy_to_clipboard' => 'Copy to Clipboard',
         'edit_project' => 'Edit Project',
+        'view_tracking_tokens' => 'View Tracking Tokens',
         'share_issue_status_link' => 'Share Issue Status Link',
         'share_issue_status_link_description' => 'Select a tracking token to share its public status page.',
         'issue_status_select_token' => 'Tracking Token',

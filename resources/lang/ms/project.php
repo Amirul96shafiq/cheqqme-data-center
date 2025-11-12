@@ -24,6 +24,7 @@ return [
         'all_issue_status_preview' => 'Pratonton Semua Pautan Status Isu',
         'copy_to_clipboard' => 'Salin ke Papan Klip',
         'edit_project' => 'Kemaskini Projek',
+        'view_tracking_tokens' => 'Lihat Token Penjejakan',
         'share_issue_status_link' => 'Kongsi Pautan Status Isu',
         'share_issue_status_link_description' => 'Pilih token penjejakan untuk berkongsi halaman status awam.',
         'issue_status_select_token' => 'Token Penjejakan',
