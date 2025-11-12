@@ -319,24 +319,22 @@
       <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
         <div class="flex items-center space-x-3">
           <div class="flex-shrink-0">
-            <x-heroicon-o-inbox class="h-6 w-6 text-gray-600" />
+            <x-heroicon-o-inbox class="h-6 w-6 text-primary-500" />
           </div>
           <div>
             <h2 class="text-base font-semibold leading-6 text-gray-900">
               Submitted Issues
             </h2>
-            <p class="text-sm text-gray-600 mt-1">
+            <p class="text-xs text-gray-600 mt-1">
               <span x-text="trackingTokensData?.project?.title || 'Loading...'" class="font-medium"></span>
-              <span class="text-xs text-gray-500 ml-1" x-text="'(' + (trackingTokensData?.project?.code || '') + ')'"></span>
+              <span class="text-xs text-primary-500 ml-1" x-text="'(' + (trackingTokensData?.project?.code || '') + ')'"></span>
             </p>
           </div>
         </div>
         <button type="button"
                 @click="showTrackingTokensModal = false"
                 class="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1 rounded-md hover:bg-gray-50 flex-shrink-0">
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <x-heroicon-o-x-mark class="h-5 w-5" />
         </button>
       </div>
 
@@ -345,6 +343,7 @@
 
         {{-- Loading State --}}
         <div x-show="loadingTokens" class="flex flex-col items-center justify-center py-12 px-6 space-y-4">
+
           {{-- Loading Spinner --}}
           <div class="relative">
             <x-icons.custom-icon name="refresh" class="w-8 h-8" color="text-primary-500" />
@@ -359,6 +358,7 @@
               Loading submitted issues...
             </p>
           </div>
+          
         </div>
 
         {{-- Tokens List --}}

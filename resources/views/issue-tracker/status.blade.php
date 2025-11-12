@@ -520,24 +520,22 @@
       <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
         <div class="flex items-center space-x-3">
           <div class="flex-shrink-0">
-            <x-heroicon-o-inbox class="h-6 w-6 text-gray-600" />
+            <x-heroicon-o-inbox class="h-6 w-6 text-primary-500" />
           </div>
           <div>
             <h2 class="text-base font-semibold leading-6 text-gray-900">
               Submitted Issues
             </h2>
-            <p class="text-sm text-gray-600 mt-1">
+            <p class="text-xs text-gray-600 mt-1">
               <span x-text="trackingTokensData?.project?.title || 'Loading...'" class="font-medium"></span>
-              <span class="text-xs text-gray-500 ml-1" x-text="'(' + (trackingTokensData?.project?.code || '') + ')'"></span>
+              <span class="text-xs text-primary-500 ml-1" x-text="'(' + (trackingTokensData?.project?.code || '') + ')'"></span>
             </p>
           </div>
         </div>
         <button type="button"
                 @click="showTrackingTokensModal = false"
                 class="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1 rounded-md hover:bg-gray-50 flex-shrink-0">
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <x-heroicon-o-x-mark class="h-5 w-5" />
         </button>
       </div>
 
@@ -561,19 +559,20 @@
               Loading submitted issues...
             </p>
           </div>
+          
         </div>
 
         {{-- Tokens List --}}
         <div x-show="!loadingTokens && trackingTokensData?.tracking_tokens?.length > 0" class="divide-y divide-gray-200">
           <template x-for="token in trackingTokensData.tracking_tokens" :key="token.token">
             <div class="group relative px-6 py-8 hover:bg-gray-50 transition-colors"
-                 :class="{ 'bg-blue-50/50': token.token === '{{ $task->tracking_token }}' }">
+                 :class="{ 'bg-teal-50/50': token.token === '{{ $task->tracking_token }}' }">
               <div class="flex-1 min-w-0">
                   <div class="flex items-center space-x-2 mb-2">
 
                     {{-- Issue ID --}}
                     <code class="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full"
-                          :class="{ 'text-blue-700 bg-blue-100': token.token === '{{ $task->tracking_token }}' }"
+                          :class="{ 'text-teal-700 bg-teal-100': token.token === '{{ $task->tracking_token }}' }"
                           x-text="token.token"></code>
 
                     {{-- Status Badge --}}
@@ -581,7 +580,7 @@
                           x-text="token.status.replace('_', ' ')"></span>
 
                     {{-- Current Badge --}}
-                    <span x-show="token.token === '{{ $task->tracking_token }}'" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <span x-show="token.token === '{{ $task->tracking_token }}'" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
                       Current
                     </span>
 
@@ -595,7 +594,7 @@
                   {{-- Title --}}
                   <div class="flex items-center">
                     <p class="text-sm font-medium text-gray-900 w-5/6 pr-2"
-                       :class="{ 'text-blue-900': token.token === '{{ $task->tracking_token }}' }"
+                       :class="{ 'text-teal-900': token.token === '{{ $task->tracking_token }}' }"
                        x-text="token.title.length > 100 ? token.title.substring(0, 100) + '...' : token.title"></p>
 
                     {{-- View Button --}}
