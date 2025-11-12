@@ -206,13 +206,18 @@ return false;
                                                                             $set('enable_additional_information', true);
                                                                         }
                                                                     }
+
+                                                                    // For issue tracker tasks, always enable the toggle to preserve reporter data
+                                                                    if ($record && $record->tracking_token) {
+                                                                        $set('enable_additional_information', true);
+                                                                    }
                                                                 })
                                                                 ->disabled(function (?Task $record) {
                                                                     return ! empty($record?->tracking_token);
                                                                 })
-                                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                                                    // When toggle is disabled, clear all extra_information
-                                                                    if (! $state) {
+                                                                ->afterStateUpdated(function ($state, Forms\Set $set, ?Task $record) {
+                                                                    // When toggle is disabled, clear all extra_information (except for issue tracker tasks)
+                                                                    if (! $state && (! $record || ! $record->tracking_token)) {
                                                                         $set('extra_information', []);
                                                                     }
                                                                 }),
@@ -1110,13 +1115,20 @@ return false;
                                                 ->live(onBlur: true)
                                                 ->columnSpanFull()
                                                 ->extraAttributes(['class' => 'no-repeater-collapse-toolbar'])
-                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                ->afterStateUpdated(function ($state, Forms\Set $set, ?Task $record) {
                                                     // Automatically enable toggle when extra_information items are added
                                                     if (! empty($state) && is_array($state)) {
                                                         $set('enable_additional_information', true);
                                                     } elseif (empty($state)) {
-                                                        // Disable toggle when all items are removed
-                                                        $set('enable_additional_information', false);
+                                                        // For issue tracker tasks, preserve the extra_information even when empty
+                                                        // This prevents reporter data from being lost when editing
+                                                        if ($record && $record->tracking_token) {
+                                                            // Keep the toggle enabled for issue tracker tasks
+                                                            $set('enable_additional_information', true);
+                                                        } else {
+                                                            // Disable toggle when all items are removed for regular tasks
+                                                            $set('enable_additional_information', false);
+                                                        }
                                                     }
                                                 }),
                                         ]),

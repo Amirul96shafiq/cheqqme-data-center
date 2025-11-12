@@ -76,14 +76,25 @@ class IssueTrackerController extends Controller
                 ],
                 [
                     'title' => 'Communication Preference',
-                    'value' => $validated['communication_preference'] === 'email' ? 'Email' : 'WhatsApp',
+                    'value' => $validated['communication_preference'] === 'email' ? 'Email' : ($validated['communication_preference'] === 'whatsapp' ? 'WhatsApp' : 'Both (Email & WhatsApp)'),
                 ],
-                [
-                    'title' => $validated['communication_preference'] === 'email' ? 'Reporter Email' : 'Reporter WhatsApp',
-                    'value' => $validated['communication_preference'] === 'email'
-                        ? ($validated['email'] ?? '')
-                        : ($validated['whatsapp_number'] ?? ''),
-                ],
+                ...($validated['communication_preference'] === 'both' ? [
+                    [
+                        'title' => 'Reporter Email',
+                        'value' => $validated['email'] ?? '',
+                    ],
+                    [
+                        'title' => 'Reporter WhatsApp',
+                        'value' => $validated['whatsapp_number'] ?? '',
+                    ],
+                ] : [
+                    [
+                        'title' => $validated['communication_preference'] === 'email' ? 'Reporter Email' : 'Reporter WhatsApp',
+                        'value' => $validated['communication_preference'] === 'email'
+                            ? ($validated['email'] ?? '')
+                            : ($validated['whatsapp_number'] ?? ''),
+                    ],
+                ]),
                 [
                     'title' => 'Submitted on',
                     'value' => now()->format('j/n/y, h:i A'),
@@ -98,10 +109,10 @@ class IssueTrackerController extends Controller
         $client = $project->client;
         if ($client) {
             $reporterName = $validated['name'];
-            $reporterEmail = ($validated['communication_preference'] === 'email')
+            $reporterEmail = in_array($validated['communication_preference'], ['email', 'both'])
                 ? ($validated['email'] ?? null)
                 : null;
-            $reporterWhatsapp = ($validated['communication_preference'] === 'whatsapp')
+            $reporterWhatsapp = in_array($validated['communication_preference'], ['whatsapp', 'both'])
                 ? ($validated['whatsapp_number'] ?? null)
                 : null;
 

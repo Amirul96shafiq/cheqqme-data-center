@@ -176,7 +176,7 @@
                   Preferred Communication Method <span class="text-red-500">*</span>
                 </label>
                 <div class="flex gap-6">
-                  
+
                   {{-- WhatsApp Radio Button --}}
                   <label class="flex items-center space-x-2 cursor-pointer">
                     <input type="radio" name="communication_preference" value="whatsapp"
@@ -184,36 +184,44 @@
                            class="cursor-pointer">
                     <span class="text-sm text-gray-700">WhatsApp</span>
                   </label>
-                  
+
                   {{-- Email Radio Button --}}
                   <label class="flex items-center space-x-2 cursor-pointer">
-                    <input type="radio" name="communication_preference" value="email" 
+                    <input type="radio" name="communication_preference" value="email"
                            x-model="communicationPreference"
                            class="cursor-pointer">
                     <span class="text-sm text-gray-700">Email</span>
                   </label>
 
+                  {{-- Both Radio Button --}}
+                  <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="radio" name="communication_preference" value="both"
+                           x-model="communicationPreference"
+                           class="cursor-pointer">
+                    <span class="text-sm text-gray-700">Both</span>
+                  </label>
+
                 </div>
 
                 {{-- Email Field (conditional) --}}
-                <div x-show="communicationPreference === 'email'" x-transition>
+                <div x-show="communicationPreference === 'email' || communicationPreference === 'both'" x-transition>
                   <label for="email" class="block text-sm font-medium text-gray-700 mb-2 mt-4">
                     Your Email <span class="text-red-500">*</span>
                   </label>
                   <input id="email" type="email" name="email" value="{{ old('email') }}"
-                        x-bind:required="communicationPreference === 'email'"
+                        x-bind:required="communicationPreference === 'email' || communicationPreference === 'both'"
                         autocomplete="email"
                         placeholder="e.g., john.doe@example.com"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm">
                 </div>
 
                 {{-- WhatsApp Number Field (conditional) --}}
-                <div x-show="communicationPreference === 'whatsapp'" x-transition>
+                <div x-show="communicationPreference === 'whatsapp' || communicationPreference === 'both'" x-transition>
                   <label for="whatsapp_number" class="block text-sm font-medium text-gray-700 mb-2 mt-4">
                     WhatsApp Number <span class="text-red-500">*</span>
                   </label>
                   <input id="whatsapp_number" type="tel" name="whatsapp_number" value="{{ old('whatsapp_number') }}"
-                        x-bind:required="communicationPreference === 'whatsapp'"
+                        x-bind:required="communicationPreference === 'whatsapp' || communicationPreference === 'both'"
                         pattern="^\+[1-9]\d{7,14}$"
                         title="Enter a valid WhatsApp number with + and country code, e.g. +60123456789"
                         autocomplete="tel"
