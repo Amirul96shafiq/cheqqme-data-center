@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -89,8 +90,16 @@ class Project extends Model
 
     public function getTrackingTokensCountAttribute()
     {
+        $projectId = $this->id;
+
         return Task::whereNotNull('tracking_token')
-            ->whereJsonContains('project', (string) $this->id)
+            ->where(function (Builder $query) use ($projectId) {
+                $query
+                    ->whereJsonContains('project', $projectId)
+                    ->orWhereJsonContains('project', (string) $projectId)
+                    ->orWhere('project', 'like', '%"'.$projectId.'"%')
+                    ->orWhere('project', 'like', '%['.$projectId.']%');
+            })
             ->count();
     }
 

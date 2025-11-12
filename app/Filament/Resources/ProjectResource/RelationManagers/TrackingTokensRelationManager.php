@@ -29,8 +29,16 @@ class TrackingTokensRelationManager extends RelationManager
 
     public static function getBadge(Model $ownerRecord, string $pageClass): ?string
     {
+        $projectId = $ownerRecord->id;
+
         $count = Task::whereNotNull('tracking_token')
-            ->whereJsonContains('project', (string) $ownerRecord->id)
+            ->where(function (Builder $query) use ($projectId) {
+                $query
+                    ->whereJsonContains('project', $projectId)
+                    ->orWhereJsonContains('project', (string) $projectId)
+                    ->orWhere('project', 'like', '%"'.$projectId.'"%')
+                    ->orWhere('project', 'like', '%['.$projectId.']%');
+            })
             ->count();
 
         return $count > 0 ? (string) $count : null;
@@ -43,10 +51,18 @@ class TrackingTokensRelationManager extends RelationManager
 
     protected function getTableQuery(): Builder
     {
+        $projectId = $this->getOwnerRecord()->id;
+
         return Task::query()
             ->with('updatedBy')
             ->whereNotNull('tracking_token')
-            ->whereJsonContains('project', (string) $this->getOwnerRecord()->id);
+            ->where(function (Builder $query) use ($projectId) {
+                $query
+                    ->whereJsonContains('project', $projectId)
+                    ->orWhereJsonContains('project', (string) $projectId)
+                    ->orWhere('project', 'like', '%"'.$projectId.'"%')
+                    ->orWhere('project', 'like', '%['.$projectId.']%');
+            });
     }
 
     protected function getIssueStatusTextForCopy(Task $task, Model $project): string
