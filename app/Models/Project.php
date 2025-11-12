@@ -23,6 +23,7 @@ class Project extends Model
         'description',
         'status',
         'notes',
+        'created_by',
         'updated_by',
         'extra_information',
         'issue_tracker_code',
@@ -39,6 +40,7 @@ class Project extends Model
                 'status',
                 'notes',
                 'extra_information',
+                'created_by',
                 'updated_at',
                 'updated_by',
             ])
@@ -73,7 +75,12 @@ class Project extends Model
         return $this->hasMany(Task::class);
     }
 
-    public function updatedBy()
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
     }

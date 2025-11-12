@@ -89,7 +89,7 @@ return [
         'in_progress' => 'Sedang Berjalan',
         'completed' => 'Selesai',
         'total_documents' => 'Jumlah Dokumen',
-        'created_at' => 'Dicipta Pada',
+        'created_at_by' => 'Dicipta Pada (Oleh)',
         'updated_at_by' => 'Dikemaskini Pada (oleh)',
         'tooltip' => [
             'full_name' => 'Nama Penuh',

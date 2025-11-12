@@ -71,7 +71,7 @@ return [
         'start_time' => 'Start Time',
         'attendees' => 'Attendees',
         'created_by' => 'Created By',
-        'created_at' => 'Created At',
+        'created_at_by' => 'Created At (By)',
         'updated_at_by' => 'Updated At (By)',
         'no_attendees' => 'No attendees',
         'attendee' => 'attendee',

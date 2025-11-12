@@ -55,7 +55,7 @@ return [
         'type' => 'Jenis',
         'file_type' => 'Jenis Fail',
         'project' => 'Projek',
-        'created_at' => 'Dicipta Pada',
+        'created_at_by' => 'Dicipta Pada (Oleh)',
         'updated_at_by' => 'Dikemaskini Pada (oleh)',
         'internal' => 'Dalaman',
         'external' => 'Luar',

@@ -63,7 +63,7 @@ return [
         'board_name' => 'Nama Papan',
         'board_url' => 'URL Papan',
         'show_on_boards' => 'Papar pada Papan',
-        'created_at' => 'Dicipta Pada',
+        'created_at_by' => 'Dicipta Pada (Oleh)',
         'updated_at_by' => 'Dikemaskini Pada (oleh)',
         'show_on_boards_true' => 'Ya',
         'show_on_boards_false' => 'Tidak',

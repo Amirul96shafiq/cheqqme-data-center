@@ -61,7 +61,7 @@ return [
         'pic_contact_number' => 'Nombor Telefon PIC',
         'project_count' => 'Projek',
         'important_url_count' => 'URL Penting',
-        'created_at' => 'Dicipta Pada',
+        'created_at_by' => 'Dicipta Pada (Oleh)',
         'updated_at_by' => 'Dikemas Kini pada (oleh)',
         'tooltip' => [
             'full_name' => 'Nama Penuh',

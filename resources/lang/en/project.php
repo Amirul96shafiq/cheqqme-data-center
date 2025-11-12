@@ -90,7 +90,7 @@ return [
         'in_progress' => 'In Progress',
         'completed' => 'Completed',
         'total_documents' => 'Total Documents',
-        'created_at' => 'Created At',
+        'created_at_by' => 'Created At (By)',
         'updated_at_by' => 'Updated At (by)',
         'tooltip' => [
             'full_name' => 'Full Name',

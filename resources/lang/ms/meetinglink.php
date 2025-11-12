@@ -71,7 +71,7 @@ return [
         'start_time' => 'Masa Mula',
         'attendees' => 'Peserta',
         'created_by' => 'Dicipta Oleh',
-        'created_at' => 'Dicipta Pada',
+        'created_at_by' => 'Dicipta Pada (Oleh)',
         'updated_at_by' => 'Dikemas Kini (Oleh)',
         'no_attendees' => 'Tiada peserta',
         'attendee' => 'peserta',

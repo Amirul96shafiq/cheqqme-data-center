@@ -63,7 +63,7 @@ return [
         'board_name' => 'Board Name',
         'board_url' => 'Board URL',
         'show_on_boards' => 'Show on Boards',
-        'created_at' => 'Created At',
+        'created_at_by' => 'Created At (By)',
         'updated_at_by' => 'Updated At (by)',
         'show_on_boards_true' => 'Yes',
         'show_on_boards_false' => 'No',

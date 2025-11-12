@@ -61,7 +61,7 @@ return [
         'pic_contact_number' => 'Contact Number',
         'project_count' => 'Projects',
         'important_url_count' => 'Important URLs',
-        'created_at' => 'Created At',
+        'created_at_by' => 'Created At (By)',
         'updated_at_by' => 'Updated At (by)',
         'tooltip' => [
             'full_name' => 'Full Name',

@@ -228,7 +228,7 @@ class UserResource extends Resource
                         ]),
 
                     ]),
-                    
+
             ]);
     }
 
@@ -338,9 +338,26 @@ class UserResource extends Resource
                     ->toggleable(),
 
                 TextColumn::make('created_at')
-                    ->label(__('user.table.created_at'))
+                    ->label(__('user.table.created_at_by'))
                     ->since()
-                    ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
+                    ->tooltip(function ($record) {
+                        $createdAt = $record->created_at;
+
+                        if (! $createdAt) {
+                            return null;
+                        }
+
+                        $formatted = $createdAt->format('j/n/y, h:i A');
+
+                        $creatorName = null;
+
+                        if (method_exists($record, 'createdBy')) {
+                            $creator = $record->createdBy;
+                            $creatorName = $creator?->short_name ?? $creator?->name;
+                        }
+
+                        return $creatorName ? $formatted.' ('.$creatorName.')' : $formatted;
+                    })
                     ->sortable()
                     ->toggleable(),
 

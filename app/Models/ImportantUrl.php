@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -18,6 +19,7 @@ class ImportantUrl extends Model
         'project_id',
         'client_id',
         'notes',
+        'created_by',
         'updated_by',
         'extra_information',
     ];
@@ -52,7 +54,12 @@ class ImportantUrl extends Model
         return $this->belongsTo(Client::class);
     }
 
-    public function updatedBy()
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
     }

@@ -42,7 +42,7 @@ return [
         'title' => 'Tajuk',
         'country' => 'Negara',
         'phone_number' => 'Nombor Telefon',
-        'created_at' => 'Dicipta Pada',
+        'created_at_by' => 'Dicipta Pada (Oleh)',
         'updated_at_by' => 'Dikemaskini Pada (oleh)',
     ],
 

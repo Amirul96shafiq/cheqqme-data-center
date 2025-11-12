@@ -51,7 +51,7 @@ return [
         'project' => 'Projek',
         'client' => 'Pelanggan',
         'important_url' => 'Link URL',
-        'created_at' => 'Dicipta Pada',
+        'created_at_by' => 'Dicipta Pada (Oleh)',
         'updated_at_by' => 'Dikemas Kini Pada (oleh)',
         'tooltip' => [
             'full_name' => 'Nama Penuh',

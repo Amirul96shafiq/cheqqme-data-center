@@ -21,6 +21,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
@@ -262,7 +263,7 @@ class PhoneNumberResource extends Resource
                             ->live(onBlur: true)
                             ->columnSpanFull()
                             ->extraAttributes(['class' => 'no-repeater-collapse-toolbar']),
-                            
+
                     ])
                     ->collapsible(),
             ]);
@@ -274,6 +275,7 @@ class PhoneNumberResource extends Resource
             // Disable record URL and record action for all records
             ->recordUrl(null)
             ->recordAction(null)
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['createdBy', 'updatedBy']))
             ->columns([
 
                 TextColumn::make('id')
@@ -318,9 +320,26 @@ class PhoneNumberResource extends Resource
                     ->searchable(),
 
                 TextColumn::make('created_at')
-                    ->label(__('phonenumber.table.created_at'))
+                    ->label(__('phonenumber.table.created_at_by'))
                     ->since()
-                    ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
+                    ->tooltip(function ($record) {
+                        $createdAt = $record->created_at;
+
+                        if (! $createdAt) {
+                            return null;
+                        }
+
+                        $formatted = $createdAt->format('j/n/y, h:i A');
+
+                        $creatorName = null;
+
+                        if (method_exists($record, 'createdBy')) {
+                            $creator = $record->createdBy;
+                            $creatorName = $creator?->short_name ?? $creator?->name;
+                        }
+
+                        return $creatorName ? $formatted.' ('.$creatorName.')' : $formatted;
+                    })
                     ->sortable()
                     ->toggleable(),
 

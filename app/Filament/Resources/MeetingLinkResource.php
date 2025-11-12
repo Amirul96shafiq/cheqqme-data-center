@@ -1027,9 +1027,20 @@ class MeetingLinkResource extends Resource
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label(__('meetinglink.table.created_at'))
+                    ->label(__('meetinglink.table.created_at_by'))
                     ->since()
-                    ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
+                    ->tooltip(function ($record) {
+                        $createdAt = $record->created_at;
+
+                        if (! $createdAt) {
+                            return null;
+                        }
+
+                        $formatted = $createdAt->format('j/n/y, h:i A');
+                        $shortName = $record->createdBy?->short_name;
+
+                        return $shortName ? $formatted.' ('.$shortName.')' : $formatted;
+                    })
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
@@ -1171,7 +1182,7 @@ class MeetingLinkResource extends Resource
 
                     Tables\Actions\ForceDeleteAction::make()
                         ->label(__('meetinglink.actions.force_delete')),
-                        
+
                 ]),
             ])
             ->bulkActions([

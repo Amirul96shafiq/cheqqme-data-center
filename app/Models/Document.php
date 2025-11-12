@@ -20,6 +20,7 @@ class Document extends Model
         'file_path',
         'project_id',
         'notes',
+        'created_by',
         'updated_by',
         'extra_information',
     ];
@@ -49,6 +50,11 @@ class Document extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function updatedBy()

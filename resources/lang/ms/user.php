@@ -135,7 +135,7 @@ return [
         'phone_number' => 'Nombor Telefon',
         'timezone' => 'Zon Waktu',
         'country' => 'Negara',
-        'created_at' => 'Created At',
+        'created_at_by' => 'Dicipta Pada (Oleh)',
         // 'updated_at_by' => 'Updated At (by)',
         'personalize' => 'Personalisasi',
         'settings' => 'Tetapan',

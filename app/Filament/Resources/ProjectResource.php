@@ -28,6 +28,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 class ProjectResource extends Resource
@@ -409,6 +410,7 @@ class ProjectResource extends Resource
             // Disable record URL and record action for all records
             ->recordUrl(null)
             ->recordAction(null)
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['client', 'createdBy', 'updatedBy']))
             ->columns([
 
                 TextColumn::make('id')
@@ -464,10 +466,27 @@ class ProjectResource extends Resource
                     ->sortable()
                     ->toggleable(),
 
-                TextColumn::make(__('created_at'))
-                    ->label(__('project.table.created_at'))
+                TextColumn::make('created_at')
+                    ->label(__('project.table.created_at_by'))
                     ->since()
-                    ->tooltip(fn ($record) => $record->created_at?->format('j/n/y, h:i A'))
+                    ->tooltip(function ($record) {
+                        $createdAt = $record->created_at;
+
+                        if (! $createdAt) {
+                            return null;
+                        }
+
+                        $formatted = $createdAt->format('j/n/y, h:i A');
+
+                        $creatorName = null;
+
+                        if (method_exists($record, 'createdBy')) {
+                            $creator = $record->createdBy;
+                            $creatorName = $creator?->short_name ?? $creator?->name;
+                        }
+
+                        return $creatorName ? $formatted.' ('.$creatorName.')' : $formatted;
+                    })
                     ->sortable()
                     ->toggleable(),
 
