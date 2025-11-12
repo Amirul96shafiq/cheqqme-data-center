@@ -731,7 +731,7 @@
                                     <template x-if="task.tracking_token">
                                         <div>
                                             <x-tooltip text="{{ __('calendar.tooltip.view_status') }}" position="left">
-                                                <a href="{{ $this->getTaskStatusUrl($task) }}"
+                                                <a :href="task.status_url"
                                                 target="_blank"
                                                 class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
                                                     {{ __('calendar.calendar.status') }}

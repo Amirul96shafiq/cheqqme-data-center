@@ -314,6 +314,12 @@ class CalendarModal extends Component
                 END")
                 ->orderBy('due_date')
                 ->get()
+                ->map(function ($task) {
+                    // Add status URL to task object
+                    $task->status_url = $this->getTaskStatusUrl($task);
+
+                    return $task;
+                })
                 ->groupBy(fn ($task) => Carbon::parse($task->due_date)->format('Y-m-d'))
             : collect();
 
