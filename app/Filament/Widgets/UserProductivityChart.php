@@ -296,7 +296,16 @@ class UserProductivityChart extends ApexChartWidget
                     ],
                 ],
             ],
-            'colors' => ['#fbb43e', '#10b981', '#3b82f6', '#8b5cf6'],
+            'colors' => [
+                '#fbb43e',
+                '#14b8a6',
+                '#fcd34d',
+                '#0d9488',
+                '#f59e0b',
+                '#5eead4',
+                '#b45309',
+                '#115e59',
+            ],
             'plotOptions' => [
                 'bar' => [
                     'borderRadius' => 4,
