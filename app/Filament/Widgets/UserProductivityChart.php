@@ -144,8 +144,8 @@ class UserProductivityChart extends ApexChartWidget
         $applyDateFilter = $quickFilter !== 'overall' && $startDate && $endDate;
 
         if ($applyDateFilter) {
-            $start = \Carbon\Carbon::parse($startDate);
-            $end = \Carbon\Carbon::parse($endDate);
+            $start = \Carbon\Carbon::parse($startDate)->startOfDay();
+            $end = \Carbon\Carbon::parse($endDate)->endOfDay();
         }
 
         // Filter users if a specific user is selected
