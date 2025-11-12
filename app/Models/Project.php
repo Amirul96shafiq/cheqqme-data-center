@@ -103,6 +103,32 @@ class Project extends Model
             ->count();
     }
 
+    public function getTrackingTokens()
+    {
+        $projectId = $this->id;
+
+        return Task::whereNotNull('tracking_token')
+            ->where(function (Builder $query) use ($projectId) {
+                $query
+                    ->whereJsonContains('project', $projectId)
+                    ->orWhereJsonContains('project', (string) $projectId)
+                    ->orWhere('project', 'like', '%"'.$projectId.'"%')
+                    ->orWhere('project', 'like', '%['.$projectId.']%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->select(['tracking_token', 'title', 'status', 'created_at'])
+            ->get()
+            ->map(function ($task) {
+                return [
+                    'token' => $task->tracking_token,
+                    'title' => $task->title,
+                    'status' => $task->status,
+                    'created_at' => $task->created_at->format('m/d/Y, g:i A'),
+                    'url' => route('issue-tracker.status', ['token' => $task->tracking_token]),
+                ];
+            });
+    }
+
     protected static function boot()
     {
         parent::boot();

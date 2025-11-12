@@ -164,6 +164,22 @@ class IssueTrackerController extends Controller
     }
 
     /**
+     * Get tracking tokens for a project (API endpoint).
+     */
+    public function getTrackingTokens(string $projectCode)
+    {
+        $project = Project::where('issue_tracker_code', $projectCode)->firstOrFail();
+
+        return response()->json([
+            'project' => [
+                'title' => $project->title,
+                'code' => $project->issue_tracker_code,
+            ],
+            'tracking_tokens' => $project->getTrackingTokens(),
+        ]);
+    }
+
+    /**
      * Normalize phone number to +country_code format (e.g., +60123456789)
      */
     private static function normalizePhoneNumber(?string $phone): ?string
