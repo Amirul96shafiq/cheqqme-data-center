@@ -75,7 +75,7 @@ class TrelloBoard extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    public function creator(): BelongsTo
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
