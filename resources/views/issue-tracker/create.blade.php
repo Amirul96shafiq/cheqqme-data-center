@@ -72,14 +72,14 @@
         <div class="text-center">
           <img src="{{ asset('logos/logo-light.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-32 w-auto mb-8">
           <h1 class="text-3xl font-bold text-gray-900">
-            Submit an Issue / Bug
+            Issue Submission
           </h1>
           <p class="mt-2 text-sm text-gray-600">
-            Project: <span class="inline-block px-3 py-1.5 bg-white rounded-full font-semibold text-primary-500">{{ $project->title }}</span>
+            Project: <span class="inline-block px-3 py-1.5 bg-white rounded-full font-semibold text-primary-500">{{ $project->title }} ({{ $project->issue_tracker_code }})</span>
           </p>
         </div>
 
-                {{-- Success Message --}}
+        {{-- Success Message --}}
         @if (session('success'))
           <div class="rounded-md bg-teal-50 p-4 border border-teal-200 mb-6">
             <div class="flex flex-col items-center">
@@ -122,6 +122,7 @@
                     </div>
                   </div>
                 @endif
+
               </div>
             </div>
           </div>
