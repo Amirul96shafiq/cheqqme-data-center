@@ -1,7 +1,7 @@
 <div class="flex items-center justify-between">
     <div>
         <h1 class="text-2xl font-bold text-gray-950 dark:text-white">
-            {{ __('filament-panels::pages/dashboard.title') }}
+            {{ $activeTab === 'analytics' ? __('dashboard.tabs.analytics') : __('filament-panels::pages/dashboard.title') }}
         </h1>
     </div>
 

@@ -14,6 +14,15 @@ class Dashboard extends BaseDashboard
 
     protected static ?string $slug = 'dashboard';
 
+    public function getTitle(): string
+    {
+        if ($this->activeTab === 'analytics') {
+            return 'Analytics';
+        }
+
+        return 'Dashboard';
+    }
+
     protected static ?int $navigationSort = -2;
 
     public ?string $activeTab = 'overview';
