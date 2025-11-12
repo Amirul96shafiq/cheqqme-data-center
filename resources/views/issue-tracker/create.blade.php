@@ -382,13 +382,13 @@
                   </div>
 
                   {{-- Title --}}
-                  <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-gray-900" x-text="token.title.length > 100 ? token.title.substring(0, 100) + '...' : token.title"></p>
+                  <div class="flex items-center">
+                    <p class="text-sm font-medium text-gray-900 w-5/6 pr-2" x-text="token.title.length > 100 ? token.title.substring(0, 100) + '...' : token.title"></p>
 
                     {{-- View Button --}}
                     <a :href="token.url"
                        target="_blank"
-                       class="text-xs text-primary-500 hover:text-primary-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                       class="text-xs text-primary-500 hover:text-primary-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity w-1/6 text-right">
                       View →
                     </a>
 
