@@ -596,7 +596,7 @@
                   <div class="flex items-center justify-between">
                     <p class="text-sm font-medium text-gray-900"
                        :class="{ 'text-blue-900': token.token === '{{ $task->tracking_token }}' }"
-                       x-text="token.title"></p>
+                       x-text="token.title.length > 100 ? token.title.substring(0, 100) + '...' : token.title"></p>
 
                     {{-- View Button --}}
                     <a :href="token.url"
