@@ -365,7 +365,11 @@
             <div class="group relative px-6 py-8 hover:bg-gray-50 transition-colors">
               <div class="flex-1 min-w-0">
                   <div class="flex items-center space-x-2 mb-2">
+
+                    {{-- Tracking Token --}}
                     <code class="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded" x-text="token.token"></code>
+
+                    {{-- Status Badge --}}
                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize"
                           :class="{
                             'bg-blue-50 text-blue-700': token.status === 'issue_tracker',
@@ -377,22 +381,28 @@
                           }"
                           x-text="token.status.replace('_', ' ')"></span>
                   </div>
+
+                  {{-- Created At --}}
                   <div class="flex items-center mb-4">
                     <span class="text-xs text-gray-500" x-text="token.created_at"></span>
                   </div>
+
+                  {{-- Title --}}
                   <div class="flex items-center justify-between">
                     <p class="text-sm font-medium text-gray-900" x-text="token.title"></p>
+
+                    {{-- View Button --}}
                     <a :href="token.url"
                        target="_blank"
                        class="text-xs text-primary-500 hover:text-primary-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                       View →
                     </a>
+
                   </div>
+                  
                 </div>
-              </div>
             </div>
           </template>
-          
         </div>
 
         {{-- Empty State --}}
