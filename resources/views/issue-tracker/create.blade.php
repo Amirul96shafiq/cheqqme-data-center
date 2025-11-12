@@ -378,7 +378,7 @@
 
                   {{-- Created At --}}
                   <div class="flex items-center mb-4">
-                    <span class="text-xs text-gray-500" x-text="token.created_at"></span>
+                    <span class="text-[10px] text-gray-500" x-text="token.created_at"></span>
                   </div>
 
                   {{-- Title --}}
