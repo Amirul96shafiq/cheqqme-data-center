@@ -281,19 +281,19 @@
     <button type="button"
             @click="showTrackingTokensModal = true; fetchTrackingTokens()"
             class="fixed top-6 right-6 z-40 inline-flex items-center justify-center w-12 h-12 bg-primary-500 hover:bg-primary-600 text-primary-900 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-            title="View All Tracking Tokens">
+            title="View All Submitted Issues">
       <x-heroicon-m-inbox class="h-6 w-6" />
     </button>
 
   </div>
 
-  {{-- Tracking Tokens Slide Panel --}}
+  {{-- Submitted Issues Slide Panel --}}
   <div x-show="showTrackingTokensModal"
        x-cloak
        @keydown.escape.window="showTrackingTokensModal = false"
        class="fixed inset-0 z-50"
        style="display: none;">
-       
+
     {{-- Backdrop --}}
     <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm"
          x-show="showTrackingTokensModal"
@@ -323,7 +323,7 @@
           </div>
           <div>
             <h2 class="text-base font-semibold leading-6 text-gray-900">
-              Tracking Tokens
+              Submitted Issues
             </h2>
             <p class="text-sm text-gray-600 mt-1">
               <span x-text="trackingTokensData?.project?.title || 'Loading...'" class="font-medium"></span>
@@ -356,7 +356,7 @@
               {{ __('auth.loading') }}
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Loading tracking tokens...
+              Loading submitted issues...
             </p>
           </div>
         </div>
@@ -368,7 +368,7 @@
               <div class="flex-1 min-w-0">
                   <div class="flex items-center space-x-2 mb-2">
 
-                    {{-- Tracking Token --}}
+                    {{-- Issue ID --}}
                     <code class="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full" x-text="token.token"></code>
 
                     {{-- Status Badge --}}
@@ -404,7 +404,7 @@
           <svg class="h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
-          <h3 class="text-sm font-medium text-gray-900 mb-1">No tracking tokens found</h3>
+          <h3 class="text-sm font-medium text-gray-900 mb-1">No submitted issues found</h3>
           <p class="text-sm text-gray-500">No issues have been submitted for this project yet.</p>
         </div>
 
@@ -413,7 +413,7 @@
           <svg class="h-12 w-12 text-red-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
-          <h3 class="text-sm font-medium text-gray-900 mb-1">Error loading tracking tokens</h3>
+          <h3 class="text-sm font-medium text-gray-900 mb-1">Error loading submitted issues</h3>
           <p class="text-sm text-red-500" x-text="tokensError"></p>
         </div>
       </div>
