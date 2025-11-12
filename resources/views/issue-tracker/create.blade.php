@@ -370,15 +370,7 @@
                     <code class="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full" x-text="token.token"></code>
 
                     {{-- Status Badge --}}
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize"
-                          :class="{
-                            'bg-blue-50 text-blue-700': token.status === 'issue_tracker',
-                            'bg-yellow-50 text-yellow-700': token.status === 'todo',
-                            'bg-purple-50 text-purple-700': token.status === 'in_progress',
-                            'bg-orange-50 text-orange-700': token.status === 'toreview',
-                            'bg-green-50 text-green-700': token.status === 'completed',
-                            'bg-gray-50 text-gray-700': token.status === 'archived'
-                          }"
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize bg-primary-50 text-primary-700"
                           x-text="token.status.replace('_', ' ')"></span>
                   </div>
 
