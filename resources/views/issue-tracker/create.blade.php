@@ -367,7 +367,7 @@
                   <div class="flex items-center space-x-2 mb-2">
 
                     {{-- Tracking Token --}}
-                    <code class="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded" x-text="token.token"></code>
+                    <code class="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full" x-text="token.token"></code>
 
                     {{-- Status Badge --}}
                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize"
