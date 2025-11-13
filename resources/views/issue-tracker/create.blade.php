@@ -474,13 +474,20 @@
         descriptionField.addEventListener('input', updateCharCount);
         updateCharCount(); // Initial count
 
-        // File upload handling
+        // File upload handling with AJAX
         const fileInput = document.getElementById('attachments');
         const fileList = document.getElementById('file-list');
         const maxFiles = 5;
         const maxSize = 8 * 1024 * 1024; // 8MB in bytes
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf', 'video/mp4'];
-        let selectedFiles = [];
+        let uploadedTempFiles = [];
+
+        // Check for existing temp files from previous failed submission
+        const existingTempIds = @json(session('temp_file_ids', old('temp_file_ids', [])));
+        if (existingTempIds.length > 0) {
+          // Load existing temp files
+          fetchExistingTempFiles(existingTempIds);
+        }
 
         function formatFileSize(bytes) {
           if (bytes === 0) return '0 Bytes';
@@ -490,79 +497,150 @@
           return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
         }
 
-                function updateFileList() {
+        async function fetchExistingTempFiles(tempIds) {
+          try {
+            const response = await fetch('/api/issue-trk/temp-files');
+            const result = await response.json();
+
+            if (result.success) {
+              // Filter temp files to only include the ones that were previously uploaded
+              uploadedTempFiles = result.temp_files.filter(file => tempIds.includes(file.temp_id));
+              updateFileList();
+            } else {
+              console.error('Failed to load temp files:', result.error);
+              // Fallback: create placeholder entries
+              uploadedTempFiles = tempIds.map(id => ({ temp_id: id, original_name: 'File', size: 0 }));
+              updateFileList();
+            }
+          } catch (error) {
+            console.error('Error loading existing temp files:', error);
+            // Fallback: create placeholder entries
+            uploadedTempFiles = tempIds.map(id => ({ temp_id: id, original_name: 'File', size: 0 }));
+            updateFileList();
+          }
+        }
+
+        function updateFileList() {
           fileList.innerHTML = '';
-          selectedFiles.forEach((file, index) => {
+          uploadedTempFiles.forEach((tempFile, index) => {
               const fileItem = document.createElement('div');
-              fileItem.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-md';                                                               
+              fileItem.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-md';
               fileItem.innerHTML = `
-                <div class="flex items-center space-x-3 flex-1 min-w-0">        
-                  <svg class="h-5 w-5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">                                       
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />                           
+                <div class="flex items-center space-x-3 flex-1 min-w-0">
+                  <svg class="h-5 w-5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-gray-900 truncate">${file.name}</p>                                                                      
-                    <p class="text-xs text-gray-500">${formatFileSize(file.size)}</p>                                                                           
+                    <p class="text-sm font-medium text-gray-900 truncate">${tempFile.original_name || 'Uploading...'}</p>
+                    <p class="text-xs text-gray-500">${tempFile.size ? formatFileSize(tempFile.size) : 'Processing...'}</p>
                   </div>
                 </div>
-                  <button type="button" onclick="removeFile(${index})" class="ml-3 text-red-600 hover:text-red-800">                                            
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">                                                                   
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />                                           
+                  <button type="button" onclick="removeTempFile('${tempFile.temp_id}')" class="ml-3 text-red-600 hover:text-red-800">
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
                 `;
                 fileList.appendChild(fileItem);
             });
 
-            // Update file input
-            const dataTransfer = new DataTransfer();
-            selectedFiles.forEach(file => dataTransfer.items.add(file));        
-            fileInput.files = dataTransfer.files;
+            // Update hidden input with temp file IDs
+            updateTempFileIdsInput();
 
             // Show/hide upload box based on file count
             const uploadBox = document.getElementById('upload-box');
-            if (selectedFiles.length === 5) {
+            if (uploadedTempFiles.length >= maxFiles) {
               uploadBox.style.display = 'none';
-              fileInput.removeAttribute('required');
             } else {
               uploadBox.style.display = 'flex';
-              fileInput.setAttribute('required', 'required');
             }
         }
 
-        window.removeFile = function(index) {
-            selectedFiles.splice(index, 1);
-            updateFileList();
+        function updateTempFileIdsInput() {
+          // Remove existing hidden inputs
+          document.querySelectorAll('input[name="temp_file_ids[]"]').forEach(el => el.remove());
+
+          // Add new hidden inputs for each temp file
+          uploadedTempFiles.forEach(tempFile => {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'temp_file_ids[]';
+            hiddenInput.value = tempFile.temp_id;
+            document.querySelector('form').appendChild(hiddenInput);
+          });
+        }
+
+        async function uploadFile(file) {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+
+          try {
+            const response = await fetch('/api/issue-trk/upload-temp-file', {
+              method: 'POST',
+              body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              return result.temp_file;
+            } else {
+              throw new Error(result.error || 'Upload failed');
+            }
+          } catch (error) {
+            console.error('Upload error:', error);
+            throw error;
+          }
+        }
+
+        window.removeTempFile = async function(tempId) {
+            try {
+              // Remove from local array
+              uploadedTempFiles = uploadedTempFiles.filter(file => file.temp_id !== tempId);
+              updateFileList();
+
+              // Optionally delete from server (you might want to add this endpoint)
+              // await fetch(`/api/issue-trk/delete-temp-file/${tempId}`, { method: 'DELETE' });
+            } catch (error) {
+              console.error('Error removing temp file:', error);
+            }
         };
 
-        fileInput.addEventListener('change', function(e) {
+        fileInput.addEventListener('change', async function(e) {
           const files = Array.from(e.target.files);
-          let validFiles = [];
 
-          files.forEach(file => {
+          for (const file of files) {
             // Check file count
-            if (selectedFiles.length + validFiles.length >= maxFiles) {
+            if (uploadedTempFiles.length >= maxFiles) {
               alert(`You can only upload a maximum of ${maxFiles} files.`);
-              return;
-              }
+              break;
+            }
 
             // Check file size
             if (file.size > maxSize) {
               alert(`File "${file.name}" exceeds the maximum size of 8MB.`);
-              return;
+              continue;
             }
 
             // Check file type
             if (!allowedTypes.includes(file.type)) {
               alert(`File "${file.name}" is not an allowed type. Only JPG, JPEG, PNG, PDF, and MP4 files are allowed.`);
-              return;
+              continue;
             }
 
-            validFiles.push(file);
-          });
+            try {
+              // Upload file immediately
+              const tempFile = await uploadFile(file);
+              uploadedTempFiles.push(tempFile);
+              updateFileList();
+            } catch (error) {
+              alert(`Failed to upload "${file.name}": ${error.message}`);
+            }
+          }
 
-          selectedFiles = [...selectedFiles, ...validFiles];
-          updateFileList();
+          // Clear the file input
+          fileInput.value = '';
         });
 
         // Drag and drop
@@ -589,12 +667,37 @@
           }, false);
         });
 
-          dropZone.addEventListener('drop', function(e) {
+          dropZone.addEventListener('drop', async function(e) {
             const files = Array.from(e.dataTransfer.files);
-            const dataTransfer = new DataTransfer();
-            files.forEach(file => dataTransfer.items.add(file));
-            fileInput.files = dataTransfer.files;
-            fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+
+            for (const file of files) {
+              // Check file count
+              if (uploadedTempFiles.length >= maxFiles) {
+                alert(`You can only upload a maximum of ${maxFiles} files.`);
+                break;
+              }
+
+              // Check file size
+              if (file.size > maxSize) {
+                alert(`File "${file.name}" exceeds the maximum size of 8MB.`);
+                continue;
+              }
+
+              // Check file type
+              if (!allowedTypes.includes(file.type)) {
+                alert(`File "${file.name}" is not an allowed type. Only JPG, JPEG, PNG, PDF, and MP4 files are allowed.`);
+                continue;
+              }
+
+              try {
+                // Upload file immediately
+                const tempFile = await uploadFile(file);
+                uploadedTempFiles.push(tempFile);
+                updateFileList();
+              } catch (error) {
+                alert(`Failed to upload "${file.name}": ${error.message}`);
+              }
+            }
           });
         }
 

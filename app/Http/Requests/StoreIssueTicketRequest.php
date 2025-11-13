@@ -28,12 +28,8 @@ class StoreIssueTicketRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:700'],
             'project_id' => ['required', 'integer', 'exists:projects,id'],
-            'attachments' => ['required', 'array', 'min:1', 'max:5'],
-            'attachments.*' => [
-                'file',
-                'max:20480', // 20MB in kilobytes
-                'mimes:jpg,jpeg,png,pdf,mp4',
-            ],
+            'temp_file_ids' => ['required', 'array', 'min:1', 'max:5'],
+            'temp_file_ids.*' => ['required', 'string', 'uuid'],
         ];
 
         // Conditional validation based on communication preference
@@ -76,11 +72,10 @@ class StoreIssueTicketRequest extends FormRequest
             'project_id.required' => 'Project is required.',
             'project_id.exists' => 'The selected project does not exist.',
             'description.required' => 'Description is required.',
-            'attachments.required' => 'Please attach at least one file.',
-            'attachments.min' => 'Please attach at least one file.',
-            'attachments.max' => 'You can upload a maximum of 5 files.',
-            'attachments.*.max' => 'Each file must not exceed 20MB.',
-            'attachments.*.mimes' => 'Only JPG, JPEG, PNG, PDF, and MP4 files are allowed.',
+            'temp_file_ids.required' => 'Please attach at least one file.',
+            'temp_file_ids.min' => 'Please attach at least one file.',
+            'temp_file_ids.max' => 'You can upload a maximum of 5 files.',
+            'temp_file_ids.*.uuid' => 'Invalid file reference.',
         ];
     }
 }

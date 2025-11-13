@@ -24,5 +24,12 @@ Schedule::command('chatbot:weekly-cleanup')
     ->runInBackground()
     ->appendOutputTo(storage_path('logs/chatbot-weekly-cleanup.log'));
 
+// Schedule temporary file cleanup daily at 2 AM
+Schedule::command('app:cleanup-temporary-files')
+    ->dailyAt('02:00') // Run during low traffic hours
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/temp-file-cleanup.log'));
+
 // User online status updates are now handled by presence channels in real-time
 // No scheduled job needed

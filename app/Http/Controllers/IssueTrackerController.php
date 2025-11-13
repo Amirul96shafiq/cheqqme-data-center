@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreIssueTicketRequest;
 use App\Models\Project;
 use App\Models\Task;
+use App\Services\TemporaryFileService;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class IssueTrackerController extends Controller
 {
@@ -23,19 +25,51 @@ class IssueTrackerController extends Controller
     /**
      * Store a new issue ticket.
      */
-    public function store(StoreIssueTicketRequest $request)
+    public function store(Request $request)
     {
-        $validated = $request->validated();
+        try {
+            // Validate the request
+            $validated = $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'communication_preference' => ['required', 'string', 'in:email,whatsapp,both'],
+                'title' => ['required', 'string', 'max:255'],
+                'description' => ['required', 'string', 'max:700'],
+                'project_id' => ['required', 'integer', 'exists:projects,id'],
+                'temp_file_ids' => ['required', 'array', 'min:1', 'max:5'],
+                'temp_file_ids.*' => ['required', 'string', 'uuid'],
+            ]);
 
-        // Handle file uploads
-        $attachments = [];
-        if ($request->hasFile('attachments')) {
-            foreach ($request->file('attachments') as $file) {
-                // Store file in public/tasks directory (same as Filament)
-                // Preserve original filename like Filament does
-                $path = $file->storeAs('tasks', $file->getClientOriginalName(), 'public');
-                $attachments[] = $path;
+            // Conditional validation based on communication preference
+            if ($request->input('communication_preference') === 'email') {
+                $validated['email'] = $request->validate(['email' => ['required', 'email', 'max:255']])['email'];
+            } elseif ($request->input('communication_preference') === 'whatsapp') {
+                $validated['whatsapp_number'] = $request->validate(['whatsapp_number' => [
+                    'required',
+                    'string',
+                    'regex:/^\+[1-9]\d{7,14}$/',
+                ]])['whatsapp_number'];
+            } elseif ($request->input('communication_preference') === 'both') {
+                $additional = $request->validate([
+                    'email' => ['required', 'email', 'max:255'],
+                    'whatsapp_number' => [
+                        'required',
+                        'string',
+                        'regex:/^\+[1-9]\d{7,14}$/',
+                    ],
+                ]);
+                $validated['email'] = $additional['email'];
+                $validated['whatsapp_number'] = $additional['whatsapp_number'];
             }
+
+            // Handle temporary file uploads
+            $tempService = new TemporaryFileService;
+            $attachments = $tempService->moveToPermanent($validated['temp_file_ids']);
+        } catch (ValidationException $e) {
+            // If validation fails, redirect back with temp_file_ids preserved
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput($request->all())
+                ->with('temp_file_ids', $request->input('temp_file_ids', []));
         }
 
         // Get the maximum order_column value and add 1 for the new task
@@ -200,6 +234,55 @@ class IssueTrackerController extends Controller
             ],
             'tracking_tokens' => $project->getTrackingTokens(),
         ]);
+    }
+
+    /**
+     * Upload a file temporarily via AJAX.
+     */
+    public function uploadTemporaryFile(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|max:8192|mimes:jpg,jpeg,png,pdf,mp4',
+        ]);
+
+        $file = $request->file('file');
+        $tempService = new TemporaryFileService;
+
+        try {
+            $tempFile = $tempService->storeTemporarily($file);
+
+            return response()->json([
+                'success' => true,
+                'temp_file' => $tempFile,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to upload file: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get temporary files for the current session.
+     */
+    public function getTemporaryFiles(Request $request)
+    {
+        $tempService = new TemporaryFileService;
+
+        try {
+            $tempFiles = $tempService->getSessionFiles();
+
+            return response()->json([
+                'success' => true,
+                'temp_files' => $tempFiles,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to get temporary files: '.$e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

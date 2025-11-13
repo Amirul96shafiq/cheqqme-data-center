@@ -628,3 +628,9 @@ Route::get('/api/issue-trk/{project}/tokens/count', [\App\Http\Controllers\Issue
 Route::get('/api/issue-trk/{project}/tokens', [\App\Http\Controllers\IssueTrackerController::class, 'getTrackingTokens'])
     ->where('project', '[A-Z0-9]{6}') // Ensure the parameter matches the code format
     ->name('issue-tracker.api.tokens');
+
+// Temporary file upload endpoints
+Route::post('/api/issue-trk/upload-temp-file', [\App\Http\Controllers\IssueTrackerController::class, 'uploadTemporaryFile'])
+    ->name('issue-tracker.api.upload-temp-file');
+Route::get('/api/issue-trk/temp-files', [\App\Http\Controllers\IssueTrackerController::class, 'getTemporaryFiles'])
+    ->name('issue-tracker.api.get-temp-files');
