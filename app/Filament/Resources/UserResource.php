@@ -351,14 +351,14 @@ class UserResource extends Resource
 
                         $formatted = $createdAt->format('j/n/y, h:i A');
 
-                        $creatorName = null;
+                        $updaterName = null;
 
-                        if (method_exists($record, 'createdBy')) {
-                            $creator = $record->createdBy;
-                            $creatorName = $creator?->short_name ?? $creator?->name;
+                        if (method_exists($record, 'updatedBy')) {
+                            $updater = $record->updatedBy;
+                            $updaterName = $updater?->short_name ?? $updater?->name;
                         }
 
-                        return $creatorName ? $formatted.' ('.$creatorName.')' : $formatted;
+                        return $updaterName ? $formatted.' ('.$updaterName.')' : $formatted;
                     })
                     ->sortable()
                     ->toggleable(),
