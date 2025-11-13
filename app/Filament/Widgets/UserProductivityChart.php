@@ -245,6 +245,12 @@ class UserProductivityChart extends ApexChartWidget
             }
             $resourcesCount += $phoneQuery->count();
 
+            $userQuery = User::where('updated_by', $user->id);
+            if ($applyDateFilter) {
+                $userQuery->whereBetween('created_at', [$start, $end]);
+            }
+            $resourcesCount += $userQuery->count();
+
             // Include users with any activity
             if ($taskCount > 0 || $commentCount > 0 || $resourcesCount > 0 || $meetingsJoinedCount > 0) {
                 $categories[] = $this->formatDisplayName($user);
