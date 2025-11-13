@@ -445,11 +445,33 @@ class User extends Authenticatable implements HasAvatar
     }
 
     /**
+     * Get user options for Filament select fields with current user first
+     */
+    public static function getUserSelectOptions(): array
+    {
+        $currentUser = auth()->user();
+        $users = static::withTrashed()
+            ->orderByRaw('CASE WHEN id = ? THEN 0 ELSE 1 END, username', [$currentUser?->id])
+            ->get();
+
+        return $users->mapWithKeys(function ($u) use ($currentUser) {
+            $isCurrentUser = $currentUser && $u->id === $currentUser->id;
+            $displayName = $isCurrentUser
+                ? __('task.activity_log.you')
+                : ($u->username ?: 'User #'.$u->id);
+
+            return [
+                $u->id => $displayName.($u->deleted_at ? ' (deleted)' : ''),
+            ];
+        })->toArray();
+    }
+
+    /**
      * Get phone number without country code
      */
     public function getPhoneWithoutCountryCode(): ?string
     {
-        if (!$this->phone) {
+        if (! $this->phone) {
             return null;
         }
 
@@ -464,7 +486,7 @@ class User extends Authenticatable implements HasAvatar
         };
 
         $phone = preg_replace('/\D+/', '', $this->phone);
-        
+
         if (str_starts_with($phone, $dialCode)) {
             return substr($phone, strlen($dialCode));
         }

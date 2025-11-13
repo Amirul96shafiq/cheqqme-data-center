@@ -269,15 +269,7 @@ return false;
 
                                             Forms\Components\Select::make('assigned_to')
                                                 ->label(__('task.form.assign_to'))
-                                                ->options(function () {
-                                                    return \App\Models\User::withTrashed()
-                                                        ->orderBy('username')
-                                                        ->get()
-                                                        ->mapWithKeys(fn ($u) => [
-                                                            $u->id => ($u->username ?: 'User #'.$u->id).($u->deleted_at ? ' (deleted)' : ''),
-                                                        ])
-                                                        ->toArray();
-                                                })
+                                                ->options(\App\Models\User::getUserSelectOptions())
                                                 ->searchable()
                                                 ->preload()
                                                 ->native(false)

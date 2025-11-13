@@ -252,15 +252,7 @@ class MeetingLinkResource extends Resource
 
                                     Forms\Components\Select::make('user_ids')
                                         ->label(__('meetinglink.form.users'))
-                                        ->options(function () {
-                                            return \App\Models\User::withTrashed()
-                                                ->orderBy('username')
-                                                ->get()
-                                                ->mapWithKeys(fn ($u) => [
-                                                    $u->id => ($u->username ?: 'User #'.$u->id).($u->deleted_at ? ' (deleted)' : ''),
-                                                ])
-                                                ->toArray();
-                                        })
+                                        ->options(\App\Models\User::getUserSelectOptions())
                                         ->searchable()
                                         ->preload()
                                         ->native(false)

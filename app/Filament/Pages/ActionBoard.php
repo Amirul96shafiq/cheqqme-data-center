@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use App\Filament\Resources\TaskResource;
 use App\Models\Task;
-use App\Models\User;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -235,15 +234,7 @@ class ActionBoard extends KanbanBoardPage
 
                                             Forms\Components\Select::make('assigned_to')
                                                 ->label(__('task.form.assign_to'))
-                                                ->options(function () {
-                                                    return User::withTrashed()
-                                                        ->orderBy('username')
-                                                        ->get()
-                                                        ->mapWithKeys(fn ($u) => [
-                                                            $u->id => ($u->username ?: 'User #'.$u->id).($u->deleted_at ? ' (deleted)' : ''),
-                                                        ])
-                                                        ->toArray();
-                                                })
+                                                ->options(\App\Models\User::getUserSelectOptions())
                                                 ->searchable()
                                                 ->preload()
                                                 ->native(false)
