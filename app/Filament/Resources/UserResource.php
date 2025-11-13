@@ -401,7 +401,8 @@ class UserResource extends Resource
             ->filters([
                 Filter::make('has_cover_image')
                     ->label(__('user.filter.has_cover_image'))
-                    ->query(fn (Builder $query) => $query->whereNotNull('cover_image')),
+                    ->query(fn (Builder $query) => $query->whereNotNull('cover_image'))
+                    ->toggle(),
 
                 Filter::make('country_code')
                     ->label(__('user.filter.country_code'))
