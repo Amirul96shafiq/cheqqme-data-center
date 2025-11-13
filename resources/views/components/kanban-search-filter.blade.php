@@ -349,8 +349,8 @@ $usersForFilter = $usersCollection
                                 >
 
                                     <!-- Due Date Filter Section -->
-                                    <div class="p-4" x-data="{ activeAccordion: null }">
-                                        <div class="max-h-48 overflow-y-auto space-y-4">
+                                    <div class="p-4" x-data="{ activeAccordion: 'quick' }">
+                                        <div class="max-h-64 overflow-y-auto space-y-4">
  
                                             <!-- Quick Filters -->
                                             <div>
