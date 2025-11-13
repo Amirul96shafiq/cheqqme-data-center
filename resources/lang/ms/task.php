@@ -92,7 +92,7 @@ return [
         'updated_title' => 'Tugasam Dikemas Kini',
         'updated_body' => 'Tugasan berjaya dikemas kini.',
         'assigned_title' => 'Tugasan Ditugaskan',
-        'assigned_body' => 'Tugasan telah ditugaskan kepada anda.',
+        'assigned_body' => 'Anda telah ditugaskan ke :task.',
         'view_task' => 'Papar Tugasan',
         'view_comment' => 'Papar Komen',
         'mentioned_title' => 'Anda dinyatakan dalam komen',

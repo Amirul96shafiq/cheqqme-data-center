@@ -92,7 +92,7 @@ return [
         'updated_title' => 'Task Updated',
         'updated_body' => 'The task was updated successfully.',
         'assigned_title' => 'Task Assigned',
-        'assigned_body' => 'A task was assigned to you.',
+        'assigned_body' => 'You\'ve been assigned to :task.',
         'view_task' => 'View Task',
         'view_comment' => 'View Comment',
         'mentioned_title' => 'You were mentioned in a comment',
