@@ -79,6 +79,7 @@ return [
     ],
 
     'filters' => [
+        'my_meetings' => 'Mesyuarat Saya',
         'start_date_from' => 'Tarikh Mula Dari',
         'start_date_until' => 'Tarikh Mula Hingga',
     ],

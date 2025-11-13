@@ -79,6 +79,7 @@ return [
     ],
 
     'filters' => [
+        'my_meetings' => 'My Meetings',
         'start_date_from' => 'Start Date From',
         'start_date_until' => 'Start Date Until',
     ],

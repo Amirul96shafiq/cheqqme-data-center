@@ -1044,6 +1044,20 @@ class MeetingLinkResource extends Resource
             ])
             ->filters([
 
+                Tables\Filters\Filter::make('my_meetings')
+                    ->label(__('meetinglink.filters.my_meetings'))
+                    ->query(function ($query) {
+                        $currentUserId = Auth::id();
+
+                        // Use whereJsonContains for MySQL/PostgreSQL, fallback to LIKE for SQLite
+                        if (config('database.default') === 'sqlite') {
+                            return $query->where('user_ids', 'LIKE', '%"'.$currentUserId.'"%');
+                        }
+
+                        return $query->whereJsonContains('user_ids', $currentUserId);
+                    })
+                    ->toggle(),
+
                 Tables\Filters\SelectFilter::make('meeting_platform')
                     ->label(__('meetinglink.form.meeting_platform'))
                     ->searchable()
