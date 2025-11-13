@@ -11,7 +11,7 @@
                 @endif
 
                 @if ($subheading)
-                    <div class="filament-apex-charts-subheading text-sm text-gray-500 dark:text-gray-400">
+                    <div class="filament-apex-charts-subheading text-sm text-gray-600 dark:text-gray-300">
                         {!! $subheading !!}
                     </div>
                 @endif
