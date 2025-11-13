@@ -415,6 +415,7 @@ class ProjectResource extends Resource
 
                 TextColumn::make('id')
                     ->label(__('project.table.id'))
+                    ->url(fn ($record) => route('filament.admin.resources.projects.edit', $record->id))
                     ->sortable(),
 
                 Tables\Columns\ViewColumn::make('title')

@@ -262,6 +262,7 @@ class TrelloBoardResource extends Resource
 
                 TextColumn::make('id')
                     ->label(__('trelloboard.table.id'))
+                    ->url(fn ($record) => route('filament.admin.resources.trello-boards.edit', $record->id))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')

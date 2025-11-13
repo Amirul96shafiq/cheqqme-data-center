@@ -49,6 +49,7 @@ class DocumentsRelationManager extends RelationManager
 
                 TextColumn::make('id')
                     ->label(__('document.table.id'))
+                    ->url(fn ($record) => route('filament.admin.resources.documents.edit', $record->id))
                     ->sortable(),
 
                 ViewColumn::make('title')

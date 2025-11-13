@@ -947,6 +947,7 @@ class MeetingLinkResource extends Resource
 
                 Tables\Columns\TextColumn::make('id')
                     ->label(__('meetinglink.table.id'))
+                    ->url(fn ($record) => route('filament.admin.resources.meeting-links.edit', $record->id))
                     ->sortable(),
 
                 Tables\Columns\ViewColumn::make('title')

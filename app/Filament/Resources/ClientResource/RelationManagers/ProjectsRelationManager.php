@@ -50,6 +50,7 @@ class ProjectsRelationManager extends RelationManager
 
                 TextColumn::make('id')
                     ->label(__('project.table.id'))
+                    ->url(fn ($record) => route('filament.admin.resources.projects.edit', $record->id))
                     ->sortable(),
 
                 TextColumn::make('title')

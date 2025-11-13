@@ -47,6 +47,7 @@ class ImportantUrlsRelationManager extends RelationManager
 
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
+                    ->url(fn ($record) => route('filament.admin.resources.important-urls.edit', $record->id))
                     ->sortable(),
 
                 ViewColumn::make('title')

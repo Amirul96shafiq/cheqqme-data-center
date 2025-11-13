@@ -353,6 +353,7 @@ class DocumentResource extends Resource
 
                 TextColumn::make('id')
                     ->label('ID')
+                    ->url(fn ($record) => route('filament.admin.resources.documents.edit', $record->id))
                     ->sortable(),
 
                 Tables\Columns\ViewColumn::make('title')

@@ -439,6 +439,7 @@ class ClientResource extends Resource
 
                 TextColumn::make('id')
                     ->label(__('client.table.id'))
+                    ->url(fn ($record) => route('filament.admin.resources.clients.edit', $record->id))
                     ->sortable(),
 
                 Tables\Columns\ViewColumn::make('pic_name')
