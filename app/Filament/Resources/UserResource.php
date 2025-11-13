@@ -88,6 +88,8 @@ class UserResource extends Resource
 
                                 Hidden::make('Updated_by')->default(fn () => auth()->id())->dehydrated(),
 
+                                Hidden::make('online_status')->default('invisible')->dehydrated(),
+
                             ]),
 
                     ]),
