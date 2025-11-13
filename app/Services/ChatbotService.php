@@ -333,36 +333,36 @@ class ChatbotService
 
         // Malay
         $output .= "**Bahasa Melayu:**\n";
-        $output .= $helpContent['malay']['title'] . "\n";
-        $output .= $helpContent['malay']['intro'] . "\n";
+        $output .= $helpContent['malay']['title']."\n";
+        $output .= $helpContent['malay']['intro']."\n";
         $counter = 1;
         foreach ($helpContent['malay']['shortcuts'] as $shortcut => $description) {
             $output .= "{$counter}. **{$shortcut}** - {$description}\n";
             $counter++;
         }
-        $output .= $helpContent['malay']['footer'] . "\n\n";
+        $output .= $helpContent['malay']['footer']."\n\n";
 
         // Korean
         $output .= "**한국어:**\n";
-        $output .= $helpContent['korean']['title'] . "\n";
-        $output .= $helpContent['korean']['intro'] . "\n";
+        $output .= $helpContent['korean']['title']."\n";
+        $output .= $helpContent['korean']['intro']."\n";
         $counter = 1;
         foreach ($helpContent['korean']['shortcuts'] as $shortcut => $description) {
             $output .= "{$counter}. **{$shortcut}** - {$description}\n";
             $counter++;
         }
-        $output .= $helpContent['korean']['footer'] . "\n\n";
+        $output .= $helpContent['korean']['footer']."\n\n";
 
         // English
         $output .= "**English:**\n";
-        $output .= $helpContent['english']['title'] . "\n";
-        $output .= $helpContent['english']['intro'] . "\n";
+        $output .= $helpContent['english']['title']."\n";
+        $output .= $helpContent['english']['intro']."\n";
         $counter = 1;
         foreach ($helpContent['english']['shortcuts'] as $shortcut => $description) {
             $output .= "{$counter}. **{$shortcut}** - {$description}\n";
             $counter++;
         }
-        $output .= $helpContent['english']['footer'] . "\n\n";
+        $output .= $helpContent['english']['footer']."\n\n";
 
         $output .= '**Note:** Choose the language that matches your conversation! 🌍';
 
@@ -376,10 +376,10 @@ class ChatbotService
     public function getIncompleteTasks(bool $includeDetails = true, bool $includeCount = true): string
     {
         $query = Task::where('assigned_to', $this->user->id)
-            ->whereIn('status', ['todo', 'in_progress', 'toreview']);
+            ->whereIn('status', ['todo', 'in_progress', 'toreview', 'issue_tracker']);
 
         // If only count is needed, return early
-        if (!$includeDetails && $includeCount) {
+        if (! $includeDetails && $includeCount) {
             $count = $query->count();
 
             return json_encode(['task_count' => $count]);
@@ -396,7 +396,7 @@ class ChatbotService
             $result['task_count'] = $tasks->count();
         }
 
-        if (!$includeDetails) {
+        if (! $includeDetails) {
             return json_encode($result);
         }
 
@@ -426,12 +426,12 @@ class ChatbotService
         $result['tasks_by_status'] = $tasksByStatus;
 
         // If count only, return JSON
-        if (!$includeDetails) {
+        if (! $includeDetails) {
             return json_encode($result);
         }
 
         // Format as structured text with proper styling
-        $output = "You've got " . $tasks->count() . " incomplete tasks grouped by their current status. Here's a quick peek:\n\n";
+        $output = "You've got ".$tasks->count()." incomplete tasks grouped by their current status. Here's a quick peek:\n\n";
 
         // Define status labels and their counts
         $statusLabels = [
@@ -454,7 +454,7 @@ class ChatbotService
                 foreach ($displayTasks as $task) {
                     // Truncate task name to 30 characters
                     $truncatedName = strlen($task['task_name']) > 30
-                        ? substr($task['task_name'], 0, 30) . '...'
+                        ? substr($task['task_name'], 0, 30).'...'
                         : $task['task_name'];
 
                     $output .= "{$counter}. [**{$truncatedName}**]({$task['url']})";

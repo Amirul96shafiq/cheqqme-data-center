@@ -369,7 +369,7 @@ Route::middleware('auth')->group(function () {
         $count = cache()->remember("assigned-active-count-{$userId}", 5, function () use ($userId) {
             return \App\Models\Task::query()
                 ->where('assigned_to', 'like', '%'.$userId.'%')
-                ->whereIn('status', ['todo', 'in_progress', 'toreview'])
+                ->whereIn('status', ['todo', 'in_progress', 'toreview', 'issue_tracker'])
                 ->count();
         });
 
