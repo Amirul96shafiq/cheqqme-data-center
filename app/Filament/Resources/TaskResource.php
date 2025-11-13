@@ -1010,6 +1010,7 @@ return false;
 
                                             Forms\Components\Repeater::make('extra_information')
                                                 ->label(__('task.form.extra_information'))
+                                                ->dehydrated(true) // Always save, even when hidden
                                                 ->schema([
 
                                                     Forms\Components\TextInput::make('title')
@@ -1072,7 +1073,74 @@ return false;
                                                         })
                                                         ->columnSpanFull(),
                                                 ])
-                                                ->defaultItems(1)
+                                                ->default(function (?Task $record) {
+                                                    // If record exists and has extra_information, use it
+                                                    if ($record && $record->extra_information) {
+                                                        $extraInfo = is_array($record->extra_information) ? $record->extra_information : [];
+
+                                                        // Filter out empty items (items with no title and no value)
+                                                        $filtered = array_filter($extraInfo, function ($item) {
+                                                            if (! is_array($item)) {
+                                                                return false;
+                                                            }
+                                                            $title = trim($item['title'] ?? '');
+                                                            $value = trim(strip_tags($item['value'] ?? ''));
+
+                                                            return ! empty($title) || ! empty($value);
+                                                        });
+
+                                                        // If we have valid items, return them
+                                                        if (! empty($filtered)) {
+                                                            return array_values($filtered);
+                                                        }
+                                                    }
+
+                                                    // Default to empty array (no default items)
+                                                    return [];
+                                                })
+                                                ->defaultItems(0)
+                                                ->afterStateHydrated(function (Forms\Components\Repeater $component, ?array $state) {
+                                                    // Only load data from record if current state is empty or has only empty items
+                                                    $record = $component->getRecord();
+
+                                                    if ($record instanceof Task && $record->extra_information) {
+                                                        $extraInfo = is_array($record->extra_information) ? $record->extra_information : [];
+
+                                                        // Filter out empty items from record
+                                                        $filtered = array_filter($extraInfo, function ($item) {
+                                                            if (! is_array($item)) {
+                                                                return false;
+                                                            }
+                                                            $title = trim($item['title'] ?? '');
+                                                            $value = trim(strip_tags($item['value'] ?? ''));
+
+                                                            return ! empty($title) || ! empty($value);
+                                                        });
+
+                                                        // Check if current state has valid data
+                                                        $currentState = $component->getState();
+                                                        $hasValidCurrentData = false;
+
+                                                        if (is_array($currentState) && ! empty($currentState)) {
+                                                            foreach ($currentState as $item) {
+                                                                if (is_array($item)) {
+                                                                    $title = trim($item['title'] ?? '');
+                                                                    $value = trim(strip_tags($item['value'] ?? ''));
+                                                                    if (! empty($title) || ! empty($value)) {
+                                                                        $hasValidCurrentData = true;
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+
+                                                        // Only set state from record if current state is empty or invalid
+                                                        // This prevents overwriting user input or causing duplication
+                                                        if (! $hasValidCurrentData && ! empty($filtered)) {
+                                                            $component->state(array_values($filtered));
+                                                        }
+                                                    }
+                                                })
                                                 ->addActionLabel(__('task.form.add_extra_info'))
                                                 ->addActionAlignment(Alignment::Start)
                                                 ->cloneable()
@@ -1130,6 +1198,24 @@ return false;
                                                             $set('enable_additional_information', false);
                                                         }
                                                     }
+                                                })
+                                                ->dehydrateStateUsing(function ($state, ?Task $record) {
+                                                    // Filter out empty items before saving
+                                                    if (! is_array($state)) {
+                                                        return [];
+                                                    }
+
+                                                    $filtered = array_filter($state, function ($item) {
+                                                        if (! is_array($item)) {
+                                                            return false;
+                                                        }
+                                                        $title = trim($item['title'] ?? '');
+                                                        $value = trim(strip_tags($item['value'] ?? ''));
+
+                                                        return ! empty($title) || ! empty($value);
+                                                    });
+
+                                                    return array_values($filtered);
                                                 }),
                                         ]),
 

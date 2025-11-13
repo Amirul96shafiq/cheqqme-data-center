@@ -119,9 +119,140 @@ class EditTask extends EditRecord
         return true;
     }
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // Filter out empty items from extra_information before filling the form
+        if (isset($data['extra_information']) && is_array($data['extra_information'])) {
+            $extraInfo = $data['extra_information'];
+
+            // Filter out empty items (items with no title and no value)
+            $filtered = array_filter($extraInfo, function ($item) {
+                if (! is_array($item)) {
+                    return false;
+                }
+                $title = trim($item['title'] ?? '');
+                $value = trim(strip_tags($item['value'] ?? ''));
+
+                return ! empty($title) || ! empty($value);
+            });
+
+            // Set the filtered data (preserve keys for Filament Repeater)
+            $data['extra_information'] = array_values($filtered);
+        }
+
+        return $data;
+    }
+
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $data['updated_by'] = auth()->id();
+
+        $record = $this->record;
+
+        // Get existing data from record
+        $existingExtraInfo = [];
+        if ($record && $record->extra_information) {
+            $existingExtraInfo = is_array($record->extra_information) ? $record->extra_information : [];
+            // Filter out empty items
+            $existingExtraInfo = array_filter($existingExtraInfo, function ($item) {
+                if (! is_array($item)) {
+                    return false;
+                }
+                $title = trim($item['title'] ?? '');
+                $value = trim(strip_tags($item['value'] ?? ''));
+
+                return ! empty($title) || ! empty($value);
+            });
+        }
+
+        // Get form data
+        $formExtraInfo = [];
+        if (isset($data['extra_information']) && is_array($data['extra_information'])) {
+            $formExtraInfo = $data['extra_information'];
+            // Filter out empty items
+            $formExtraInfo = array_filter($formExtraInfo, function ($item) {
+                if (! is_array($item)) {
+                    return false;
+                }
+                $title = trim($item['title'] ?? '');
+                $value = trim(strip_tags($item['value'] ?? ''));
+
+                return ! empty($title) || ! empty($value);
+            });
+        }
+
+        // For issue tracker tasks, merge existing data with form data
+        // This ensures original reporter data is preserved while allowing new data to be added
+        if ($record && $record->tracking_token) {
+            // Identify locked titles that should be preserved from existing data
+            $lockedTitles = ['Reporter Name', 'Communication Preference', 'Reporter Email', 'Reporter WhatsApp', 'Submitted on'];
+
+            // If form has data, merge intelligently
+            if (! empty($formExtraInfo)) {
+                $merged = [];
+                $seenItems = []; // Track seen items by title+value to prevent duplicates
+
+                // First, add all locked items from existing data (they should always be preserved)
+                foreach ($existingExtraInfo as $item) {
+                    if (is_array($item)) {
+                        $title = trim($item['title'] ?? '');
+                        if (in_array($title, $lockedTitles, true)) {
+                            $merged[] = $item;
+                            // Create a unique key for this item (title + value)
+                            $itemKey = $title.'|'.trim(strip_tags($item['value'] ?? ''));
+                            $seenItems[] = $itemKey;
+                        }
+                    }
+                }
+
+                // Then, add form data (avoid ALL duplicates by checking title+value)
+                foreach ($formExtraInfo as $item) {
+                    if (is_array($item)) {
+                        $title = trim($item['title'] ?? '');
+                        $value = trim(strip_tags($item['value'] ?? ''));
+                        $itemKey = $title.'|'.$value;
+
+                        // Skip if this item (title+value combination) is already in merged
+                        if (in_array($itemKey, $seenItems, true)) {
+                            continue;
+                        }
+
+                        // Skip if this is a locked title that's already in merged (from existing data)
+                        if (in_array($title, $lockedTitles, true)) {
+                            // Check if we already have this locked title in merged
+                            $hasLockedTitle = false;
+                            foreach ($merged as $mergedItem) {
+                                if (is_array($mergedItem) && trim($mergedItem['title'] ?? '') === $title) {
+                                    $hasLockedTitle = true;
+                                    break;
+                                }
+                            }
+                            if ($hasLockedTitle) {
+                                continue;
+                            }
+                        }
+
+                        // Add the item
+                        $merged[] = $item;
+                        $seenItems[] = $itemKey;
+                    }
+                }
+
+                $data['extra_information'] = array_values($merged);
+            } else {
+                // If no form data, use existing data
+                $data['extra_information'] = array_values($existingExtraInfo);
+            }
+        } else {
+            // For regular tasks, use form data if available, otherwise preserve existing
+            if (! empty($formExtraInfo)) {
+                $data['extra_information'] = array_values($formExtraInfo);
+            } elseif (! empty($existingExtraInfo)) {
+                $data['extra_information'] = array_values($existingExtraInfo);
+            } else {
+                $data['extra_information'] = [];
+            }
+        }
 
         return $data;
     }
