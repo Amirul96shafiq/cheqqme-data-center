@@ -92,10 +92,11 @@ $usersForFilter = $usersCollection
         @if($showFilter)
 
             <!-- Filter Button -->
-            <div class="relative" @click.outside="filterOpen = false">
+            <div class="relative" @click.outside="filterOpen = false" x-ref="filterContainer">
                 <x-tooltip :text="__('action.filter_tasks')" position="left" align="center">
                 <button
-                        @click="filterOpen = !filterOpen"
+                        @click="toggleFilter()"
+                        x-ref="filterButton"
                     class="flex items-center justify-center w-10 h-10 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 focus:ring-1 focus:ring-primary-500"
                         :class="{ 'ring-1 ring-primary-500 dark:ring-offset-gray-800': filterOpen }"
                 >
@@ -126,7 +127,12 @@ $usersForFilter = $usersCollection
                     x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-95"
-                    class="fixed sm:absolute top-10 sm:top-full left-1/2 sm:right-0 -translate-x-1/2 sm:-translate-x-full mt-0 sm:mt-2 z-50 w-80"
+                    x-ref="filterDropdown"
+                    class="fixed sm:absolute left-1/2 sm:right-0 -translate-x-1/2 sm:-translate-x-full z-50 w-80"
+                    :class="{
+                        'top-10 sm:top-full mt-0 sm:mt-2': dropdownPosition === 'bottom',
+                        'bottom-10 sm:bottom-full mb-0 sm:mb-2': dropdownPosition === 'top'
+                    }"
                     style="display: none;"
                 >
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
@@ -304,7 +310,8 @@ $usersForFilter = $usersCollection
                             <!-- Custom Dropdown -->
                             <div class="relative" @click.outside="dueDateDropdownOpen = false">
                                 <button
-                                    @click="dueDateDropdownOpen = !dueDateDropdownOpen"
+                                    @click="toggleDueDateDropdown()"
+                                    x-ref="dueDateButton"
                                     type="button"
                                     class="relative w-full cursor-default rounded-lg bg-white dark:bg-gray-800 py-2 pl-3 pr-10 text-left ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm"
                                 >
@@ -324,7 +331,22 @@ $usersForFilter = $usersCollection
                                     </span>
                                 </button>
                                 
-                                <x-dropdown-panel is-open="dueDateDropdownOpen">
+                                <div 
+                                    x-ref="dueDateDropdown"
+                                    x-show="dueDateDropdownOpen"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute z-[60] w-64 overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 focus:outline-none left-0"
+                                    :class="{
+                                        'top-full mt-1': dueDateDropdownPosition === 'bottom',
+                                        'bottom-full mb-1': dueDateDropdownPosition === 'top'
+                                    }"
+                                    style="display: none;"
+                                >
 
                                     <!-- Due Date Filter Section -->
                                     <div class="p-4" x-data="{ activeAccordion: null }">
@@ -449,7 +471,7 @@ $usersForFilter = $usersCollection
                                         </div>
                                     </div>
                                     
-                                </x-dropdown-panel>
+                                </div>
                             </div>
                             
                             <!-- Selected Due Date Display -->
@@ -478,7 +500,8 @@ $usersForFilter = $usersCollection
                             <!-- Custom Dropdown -->
                             <div class="relative" @click.outside="priorityDropdownOpen = false">
                                 <button
-                                    @click="priorityDropdownOpen = !priorityDropdownOpen"
+                                    @click="togglePriorityDropdown()"
+                                    x-ref="priorityButton"
                                     type="button"
                                     class="relative w-full cursor-default rounded-lg bg-white dark:bg-gray-800 py-2 pl-3 pr-10 text-left ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm"
                                 >
@@ -495,7 +518,22 @@ $usersForFilter = $usersCollection
                                     </span>
                                 </button>
                                 
-                                <x-dropdown-panel is-open="priorityDropdownOpen">
+                                <div 
+                                    x-ref="priorityDropdown"
+                                    x-show="priorityDropdownOpen"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute z-[60] w-64 overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 focus:outline-none left-0"
+                                    :class="{
+                                        'top-full mt-1': priorityDropdownPosition === 'bottom',
+                                        'bottom-full mb-1': priorityDropdownPosition === 'top'
+                                    }"
+                                    style="display: none;"
+                                >
 
                                     <!-- Priority List Section -->
                                     <div class="p-4">
@@ -549,7 +587,7 @@ $usersForFilter = $usersCollection
                                         </div>
                                     </div>
                                     
-                                </x-dropdown-panel>
+                                </div>
                             </div>
                             
                             <!-- Selected Priority Display -->

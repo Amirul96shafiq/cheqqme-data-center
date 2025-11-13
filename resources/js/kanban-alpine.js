@@ -26,9 +26,12 @@ window.globalKanbanFilter = function () {
 
         // Filter state
         filterOpen: false,
+        dropdownPosition: "bottom", // 'top' or 'bottom'
         assignedDropdownOpen: false,
         dueDateDropdownOpen: false,
+        dueDateDropdownPosition: "bottom", // 'top' or 'bottom'
         priorityDropdownOpen: false,
+        priorityDropdownPosition: "bottom", // 'top' or 'bottom'
         cardTypeDropdownOpen: false,
         assignedToFilter: [],
         users: {},
@@ -100,6 +103,20 @@ window.globalKanbanFilter = function () {
             setTimeout(() => {
                 this.dispatchFilterEvent();
             }, 100);
+
+            // Add resize handler to recalculate dropdown position when window is resized
+            this.resizeHandler = () => {
+                if (this.filterOpen) {
+                    this.calculateDropdownPosition();
+                }
+                if (this.dueDateDropdownOpen) {
+                    this.calculateDueDateDropdownPosition();
+                }
+                if (this.priorityDropdownOpen) {
+                    this.calculatePriorityDropdownPosition();
+                }
+            };
+            window.addEventListener("resize", this.resizeHandler);
         },
 
         // Search methods
@@ -115,6 +132,171 @@ window.globalKanbanFilter = function () {
             this.globalSearch = "";
             window.globalSearch = "";
             this.dispatchFilterEvent();
+        },
+
+        // Generic method to calculate dropdown position based on available space
+        // Parameters:
+        //   buttonRef: string - ref name of the button element
+        //   dropdownRef: string - ref name of the dropdown element
+        //   positionProperty: string - property name to set (e.g., 'dropdownPosition')
+        //   defaultHeight: number - default height if dropdown not rendered yet
+        calculateSmartDropdownPosition(
+            buttonRef,
+            dropdownRef,
+            positionProperty,
+            defaultHeight = 300
+        ) {
+            // Use double nextTick to ensure dropdown is fully rendered
+            this.$nextTick(() => {
+                this.$nextTick(() => {
+                    const button = this.$refs[buttonRef];
+                    const dropdown = this.$refs[dropdownRef];
+
+                    if (!button || !dropdown) return;
+
+                    const buttonRect = button.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight;
+                    const viewportWidth = window.innerWidth;
+
+                    // Get actual dropdown height (or use approximate if not rendered yet)
+                    let dropdownHeight = defaultHeight;
+                    if (dropdown.offsetHeight > 0) {
+                        dropdownHeight = dropdown.offsetHeight;
+                    }
+
+                    const spacing = 8; // Margin/spacing
+                    const minSpaceRequired = dropdownHeight + spacing;
+
+                    // Check available space
+                    const spaceBelow = viewportHeight - buttonRect.bottom;
+                    const spaceAbove = buttonRect.top;
+
+                    // On mobile (sm breakpoint is 640px), always check both
+                    // On desktop, check if dropdown would be cut off
+                    const isMobile = viewportWidth < 640;
+
+                    let position = "bottom";
+
+                    if (isMobile) {
+                        // On mobile, prefer bottom but use top if not enough space
+                        if (
+                            spaceBelow < minSpaceRequired &&
+                            spaceAbove > spaceBelow
+                        ) {
+                            position = "top";
+                        }
+                    } else {
+                        // On desktop, check if dropdown would be cut off at bottom
+                        if (
+                            spaceBelow < minSpaceRequired &&
+                            spaceAbove >= minSpaceRequired
+                        ) {
+                            position = "top";
+                        }
+                    }
+
+                    // Set the position property dynamically
+                    this[positionProperty] = position;
+                });
+            });
+        },
+
+        // Calculate dropdown position based on available space
+        calculateDropdownPosition() {
+            this.calculateSmartDropdownPosition(
+                "filterButton",
+                "filterDropdown",
+                "dropdownPosition",
+                600
+            );
+        },
+
+        // Generic method to toggle dropdown and calculate position
+        // Parameters:
+        //   openProperty: string - property name for open state (e.g., 'filterOpen')
+        //   buttonRef: string - ref name of the button element
+        //   dropdownRef: string - ref name of the dropdown element
+        //   positionProperty: string - property name to set (e.g., 'dropdownPosition')
+        //   defaultHeight: number - default height if dropdown not rendered yet
+        toggleSmartDropdown(
+            openProperty,
+            buttonRef,
+            dropdownRef,
+            positionProperty,
+            defaultHeight = 300
+        ) {
+            this[openProperty] = !this[openProperty];
+            if (this[openProperty]) {
+                this.calculateSmartDropdownPosition(
+                    buttonRef,
+                    dropdownRef,
+                    positionProperty,
+                    defaultHeight
+                );
+            }
+        },
+
+        // Calculate dropdown position based on available space
+        calculateDropdownPosition() {
+            this.calculateSmartDropdownPosition(
+                "filterButton",
+                "filterDropdown",
+                "dropdownPosition",
+                600
+            );
+        },
+
+        // Toggle filter and calculate position
+        toggleFilter() {
+            this.toggleSmartDropdown(
+                "filterOpen",
+                "filterButton",
+                "filterDropdown",
+                "dropdownPosition",
+                600
+            );
+        },
+
+        // Calculate priority dropdown position based on available space
+        calculatePriorityDropdownPosition() {
+            this.calculateSmartDropdownPosition(
+                "priorityButton",
+                "priorityDropdown",
+                "priorityDropdownPosition",
+                200
+            );
+        },
+
+        // Toggle priority dropdown and calculate position
+        togglePriorityDropdown() {
+            this.toggleSmartDropdown(
+                "priorityDropdownOpen",
+                "priorityButton",
+                "priorityDropdown",
+                "priorityDropdownPosition",
+                200
+            );
+        },
+
+        // Calculate due date dropdown position based on available space
+        calculateDueDateDropdownPosition() {
+            this.calculateSmartDropdownPosition(
+                "dueDateButton",
+                "dueDateDropdown",
+                "dueDateDropdownPosition",
+                400
+            );
+        },
+
+        // Toggle due date dropdown and calculate position
+        toggleDueDateDropdown() {
+            this.toggleSmartDropdown(
+                "dueDateDropdownOpen",
+                "dueDateButton",
+                "dueDateDropdown",
+                "dueDateDropdownPosition",
+                400
+            );
         },
 
         // Filter methods
