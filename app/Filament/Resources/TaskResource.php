@@ -459,14 +459,14 @@ return false;
                                                     $raw = $get('description') ?? '';
                                                     $noHtml = strip_tags($raw);
                                                     $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                    $remaining = 500 - mb_strlen($decoded);
+                                                    $remaining = 700 - mb_strlen($decoded);
 
                                                     return __('task.edit.description_helper', ['count' => $remaining]);
                                                 })
                                                 ->rule(function (Forms\Get $get): \Closure {
                                                     return function (string $attribute, $value, \Closure $fail) {
                                                         $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                        if (mb_strlen($textOnly) > 500) {
+                                                        if (mb_strlen($textOnly) > 700) {
                                                             $fail(__('task.edit.description_warning'));
                                                         }
                                                     };
