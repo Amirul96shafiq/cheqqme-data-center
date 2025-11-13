@@ -16,6 +16,46 @@ return false;
 }*/
 {
     /**
+     * Locked titles that should be preserved from existing data for issue tracker tasks.
+     */
+    protected static function getLockedTitles(): array
+    {
+        return ['Reporter Name', 'Communication Preference', 'Reporter Email', 'Reporter WhatsApp', 'Submitted on'];
+    }
+
+    /**
+     * Filter out empty items from extra_information array.
+     */
+    protected static function filterEmptyExtraInformationItems(array $items): array
+    {
+        return array_values(array_filter($items, function ($item) {
+            if (! is_array($item)) {
+                return false;
+            }
+
+            $title = trim($item['title'] ?? '');
+            $value = trim(strip_tags($item['value'] ?? ''));
+
+            return ! empty($title) || ! empty($value);
+        }));
+    }
+
+    /**
+     * Check if an extra_information item has valid data.
+     */
+    protected static function isValidExtraInformationItem($item): bool
+    {
+        if (! is_array($item)) {
+            return false;
+        }
+
+        $title = trim($item['title'] ?? '');
+        $value = trim(strip_tags($item['value'] ?? ''));
+
+        return ! empty($title) || ! empty($value);
+    }
+
+    /**
      * Redirect global search result to Action Board and open the selected Task.
      */
     public static function getGlobalSearchResultUrl($record): string
@@ -1019,15 +1059,8 @@ return false;
                                                         ->columnSpanFull()
                                                         ->disabled(function (Forms\Get $get) {
                                                             $title = (string) ($get('title') ?? '');
-                                                            $lockedTitles = [
-                                                                'Reporter Name',
-                                                                'Communication Preference',
-                                                                'Reporter Email',
-                                                                'Reporter WhatsApp',
-                                                                'Submitted on',
-                                                            ];
 
-                                                            return in_array($title, $lockedTitles, true);
+                                                            return in_array($title, static::getLockedTitles(), true);
                                                         }),
 
                                                     Forms\Components\RichEditor::make('value')
@@ -1045,15 +1078,8 @@ return false;
                                                         ->reactive()
                                                         ->disabled(function (Forms\Get $get) {
                                                             $title = (string) ($get('title') ?? '');
-                                                            $lockedTitles = [
-                                                                'Reporter Name',
-                                                                'Communication Preference',
-                                                                'Reporter Email',
-                                                                'Reporter WhatsApp',
-                                                                'Submitted on',
-                                                            ];
 
-                                                            return in_array($title, $lockedTitles, true);
+                                                            return in_array($title, static::getLockedTitles(), true);
                                                         })
                                                         ->helperText(function (Forms\Get $get) {
                                                             $raw = $get('value') ?? '';
@@ -1077,21 +1103,11 @@ return false;
                                                     // If record exists and has extra_information, use it
                                                     if ($record && $record->extra_information) {
                                                         $extraInfo = is_array($record->extra_information) ? $record->extra_information : [];
-
-                                                        // Filter out empty items (items with no title and no value)
-                                                        $filtered = array_filter($extraInfo, function ($item) {
-                                                            if (! is_array($item)) {
-                                                                return false;
-                                                            }
-                                                            $title = trim($item['title'] ?? '');
-                                                            $value = trim(strip_tags($item['value'] ?? ''));
-
-                                                            return ! empty($title) || ! empty($value);
-                                                        });
+                                                        $filtered = static::filterEmptyExtraInformationItems($extraInfo);
 
                                                         // If we have valid items, return them
                                                         if (! empty($filtered)) {
-                                                            return array_values($filtered);
+                                                            return $filtered;
                                                         }
                                                     }
 
@@ -1103,42 +1119,34 @@ return false;
                                                     // Only load data from record if current state is empty or has only empty items
                                                     $record = $component->getRecord();
 
-                                                    if ($record instanceof Task && $record->extra_information) {
-                                                        $extraInfo = is_array($record->extra_information) ? $record->extra_information : [];
+                                                    if (! ($record instanceof Task) || ! $record->extra_information) {
+                                                        return;
+                                                    }
 
-                                                        // Filter out empty items from record
-                                                        $filtered = array_filter($extraInfo, function ($item) {
-                                                            if (! is_array($item)) {
-                                                                return false;
-                                                            }
-                                                            $title = trim($item['title'] ?? '');
-                                                            $value = trim(strip_tags($item['value'] ?? ''));
+                                                    $extraInfo = is_array($record->extra_information) ? $record->extra_information : [];
+                                                    $filtered = static::filterEmptyExtraInformationItems($extraInfo);
 
-                                                            return ! empty($title) || ! empty($value);
-                                                        });
+                                                    if (empty($filtered)) {
+                                                        return;
+                                                    }
 
-                                                        // Check if current state has valid data
-                                                        $currentState = $component->getState();
-                                                        $hasValidCurrentData = false;
+                                                    // Check if current state has valid data
+                                                    $currentState = $component->getState();
+                                                    $hasValidCurrentData = false;
 
-                                                        if (is_array($currentState) && ! empty($currentState)) {
-                                                            foreach ($currentState as $item) {
-                                                                if (is_array($item)) {
-                                                                    $title = trim($item['title'] ?? '');
-                                                                    $value = trim(strip_tags($item['value'] ?? ''));
-                                                                    if (! empty($title) || ! empty($value)) {
-                                                                        $hasValidCurrentData = true;
-                                                                        break;
-                                                                    }
-                                                                }
+                                                    if (is_array($currentState) && ! empty($currentState)) {
+                                                        foreach ($currentState as $item) {
+                                                            if (static::isValidExtraInformationItem($item)) {
+                                                                $hasValidCurrentData = true;
+                                                                break;
                                                             }
                                                         }
+                                                    }
 
-                                                        // Only set state from record if current state is empty or invalid
-                                                        // This prevents overwriting user input or causing duplication
-                                                        if (! $hasValidCurrentData && ! empty($filtered)) {
-                                                            $component->state(array_values($filtered));
-                                                        }
+                                                    // Only set state from record if current state is empty or invalid
+                                                    // This prevents overwriting user input or causing duplication
+                                                    if (! $hasValidCurrentData) {
+                                                        $component->state($filtered);
                                                     }
                                                 })
                                                 ->addActionLabel(__('task.form.add_extra_info'))
@@ -1146,35 +1154,19 @@ return false;
                                                 ->cloneable()
                                                 ->reorderable()
                                                 ->cloneAction(function (\Filament\Forms\Components\Actions\Action $action, \Filament\Forms\Components\Repeater $component) {
-                                                    $lockedTitles = [
-                                                        'Reporter Name',
-                                                        'Communication Preference',
-                                                        'Reporter Email',
-                                                        'Reporter WhatsApp',
-                                                        'Submitted on',
-                                                    ];
-
-                                                    return $action->visible(function (array $arguments) use ($component, $lockedTitles) {
+                                                    return $action->visible(function (array $arguments) use ($component) {
                                                         $itemData = (array) $component->getRawItemState($arguments['item']);
                                                         $title = (string) ($itemData['title'] ?? '');
 
-                                                        return ! in_array($title, $lockedTitles, true);
+                                                        return ! in_array($title, static::getLockedTitles(), true);
                                                     });
                                                 })
                                                 ->deleteAction(function (\Filament\Forms\Components\Actions\Action $action, \Filament\Forms\Components\Repeater $component) {
-                                                    $lockedTitles = [
-                                                        'Reporter Name',
-                                                        'Communication Preference',
-                                                        'Reporter Email',
-                                                        'Reporter WhatsApp',
-                                                        'Submitted on',
-                                                    ];
-
-                                                    return $action->visible(function (array $arguments) use ($component, $lockedTitles) {
+                                                    return $action->visible(function (array $arguments) use ($component) {
                                                         $itemData = (array) $component->getRawItemState($arguments['item']);
                                                         $title = (string) ($itemData['title'] ?? '');
 
-                                                        return ! in_array($title, $lockedTitles, true);
+                                                        return ! in_array($title, static::getLockedTitles(), true);
                                                     });
                                                 })
                                                 ->collapsible(true)
@@ -1205,17 +1197,7 @@ return false;
                                                         return [];
                                                     }
 
-                                                    $filtered = array_filter($state, function ($item) {
-                                                        if (! is_array($item)) {
-                                                            return false;
-                                                        }
-                                                        $title = trim($item['title'] ?? '');
-                                                        $value = trim(strip_tags($item['value'] ?? ''));
-
-                                                        return ! empty($title) || ! empty($value);
-                                                    });
-
-                                                    return array_values($filtered);
+                                                    return static::filterEmptyExtraInformationItems($state);
                                                 }),
                                         ]),
 

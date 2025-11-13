@@ -119,25 +119,47 @@ class EditTask extends EditRecord
         return true;
     }
 
+    /**
+     * Locked titles that should be preserved from existing data for issue tracker tasks.
+     */
+    protected function getLockedTitles(): array
+    {
+        return ['Reporter Name', 'Communication Preference', 'Reporter Email', 'Reporter WhatsApp', 'Submitted on'];
+    }
+
+    /**
+     * Filter out empty items from extra_information array.
+     */
+    protected function filterEmptyItems(array $items): array
+    {
+        return array_values(array_filter($items, function ($item) {
+            if (! is_array($item)) {
+                return false;
+            }
+
+            $title = trim($item['title'] ?? '');
+            $value = trim(strip_tags($item['value'] ?? ''));
+
+            return ! empty($title) || ! empty($value);
+        }));
+    }
+
+    /**
+     * Create a unique key for an item based on title and value.
+     */
+    protected function getItemKey(array $item): string
+    {
+        $title = trim($item['title'] ?? '');
+        $value = trim(strip_tags($item['value'] ?? ''));
+
+        return $title.'|'.$value;
+    }
+
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Filter out empty items from extra_information before filling the form
         if (isset($data['extra_information']) && is_array($data['extra_information'])) {
-            $extraInfo = $data['extra_information'];
-
-            // Filter out empty items (items with no title and no value)
-            $filtered = array_filter($extraInfo, function ($item) {
-                if (! is_array($item)) {
-                    return false;
-                }
-                $title = trim($item['title'] ?? '');
-                $value = trim(strip_tags($item['value'] ?? ''));
-
-                return ! empty($title) || ! empty($value);
-            });
-
-            // Set the filtered data (preserve keys for Filament Repeater)
-            $data['extra_information'] = array_values($filtered);
+            $data['extra_information'] = $this->filterEmptyItems($data['extra_information']);
         }
 
         return $data;
@@ -148,112 +170,100 @@ class EditTask extends EditRecord
         $data['updated_by'] = auth()->id();
 
         $record = $this->record;
-
-        // Get existing data from record
-        $existingExtraInfo = [];
-        if ($record && $record->extra_information) {
-            $existingExtraInfo = is_array($record->extra_information) ? $record->extra_information : [];
-            // Filter out empty items
-            $existingExtraInfo = array_filter($existingExtraInfo, function ($item) {
-                if (! is_array($item)) {
-                    return false;
-                }
-                $title = trim($item['title'] ?? '');
-                $value = trim(strip_tags($item['value'] ?? ''));
-
-                return ! empty($title) || ! empty($value);
-            });
+        if (! $record) {
+            return $data;
         }
 
-        // Get form data
+        // Get and filter existing data from record
+        $existingExtraInfo = [];
+        if ($record->extra_information) {
+            $existingExtraInfo = is_array($record->extra_information)
+                ? $this->filterEmptyItems($record->extra_information)
+                : [];
+        }
+
+        // Get and filter form data
         $formExtraInfo = [];
         if (isset($data['extra_information']) && is_array($data['extra_information'])) {
-            $formExtraInfo = $data['extra_information'];
-            // Filter out empty items
-            $formExtraInfo = array_filter($formExtraInfo, function ($item) {
-                if (! is_array($item)) {
-                    return false;
-                }
-                $title = trim($item['title'] ?? '');
-                $value = trim(strip_tags($item['value'] ?? ''));
-
-                return ! empty($title) || ! empty($value);
-            });
+            $formExtraInfo = $this->filterEmptyItems($data['extra_information']);
         }
 
         // For issue tracker tasks, merge existing data with form data
-        // This ensures original reporter data is preserved while allowing new data to be added
-        if ($record && $record->tracking_token) {
-            // Identify locked titles that should be preserved from existing data
-            $lockedTitles = ['Reporter Name', 'Communication Preference', 'Reporter Email', 'Reporter WhatsApp', 'Submitted on'];
-
-            // If form has data, merge intelligently
-            if (! empty($formExtraInfo)) {
-                $merged = [];
-                $seenItems = []; // Track seen items by title+value to prevent duplicates
-
-                // First, add all locked items from existing data (they should always be preserved)
-                foreach ($existingExtraInfo as $item) {
-                    if (is_array($item)) {
-                        $title = trim($item['title'] ?? '');
-                        if (in_array($title, $lockedTitles, true)) {
-                            $merged[] = $item;
-                            // Create a unique key for this item (title + value)
-                            $itemKey = $title.'|'.trim(strip_tags($item['value'] ?? ''));
-                            $seenItems[] = $itemKey;
-                        }
-                    }
-                }
-
-                // Then, add form data (avoid ALL duplicates by checking title+value)
-                foreach ($formExtraInfo as $item) {
-                    if (is_array($item)) {
-                        $title = trim($item['title'] ?? '');
-                        $value = trim(strip_tags($item['value'] ?? ''));
-                        $itemKey = $title.'|'.$value;
-
-                        // Skip if this item (title+value combination) is already in merged
-                        if (in_array($itemKey, $seenItems, true)) {
-                            continue;
-                        }
-
-                        // Skip if this is a locked title that's already in merged (from existing data)
-                        if (in_array($title, $lockedTitles, true)) {
-                            // Check if we already have this locked title in merged
-                            $hasLockedTitle = false;
-                            foreach ($merged as $mergedItem) {
-                                if (is_array($mergedItem) && trim($mergedItem['title'] ?? '') === $title) {
-                                    $hasLockedTitle = true;
-                                    break;
-                                }
-                            }
-                            if ($hasLockedTitle) {
-                                continue;
-                            }
-                        }
-
-                        // Add the item
-                        $merged[] = $item;
-                        $seenItems[] = $itemKey;
-                    }
-                }
-
-                $data['extra_information'] = array_values($merged);
-            } else {
-                // If no form data, use existing data
-                $data['extra_information'] = array_values($existingExtraInfo);
-            }
+        if ($record->tracking_token) {
+            $data['extra_information'] = $this->mergeExtraInformationForIssueTracker(
+                $existingExtraInfo,
+                $formExtraInfo
+            );
         } else {
             // For regular tasks, use form data if available, otherwise preserve existing
-            if (! empty($formExtraInfo)) {
-                $data['extra_information'] = array_values($formExtraInfo);
-            } elseif (! empty($existingExtraInfo)) {
-                $data['extra_information'] = array_values($existingExtraInfo);
-            } else {
-                $data['extra_information'] = [];
-            }
+            $data['extra_information'] = ! empty($formExtraInfo) ? $formExtraInfo : $existingExtraInfo;
         }
 
         return $data;
+    }
+
+    /**
+     * Merge existing and form extra_information for issue tracker tasks.
+     * Preserves locked items from existing data and adds new items from form data without duplicates.
+     */
+    protected function mergeExtraInformationForIssueTracker(array $existingExtraInfo, array $formExtraInfo): array
+    {
+        $lockedTitles = $this->getLockedTitles();
+
+        // If no form data, return existing data
+        if (empty($formExtraInfo)) {
+            return $existingExtraInfo;
+        }
+
+        $merged = [];
+        $seenItems = [];
+
+        // First, add all locked items from existing data (they should always be preserved)
+        foreach ($existingExtraInfo as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+
+            $title = trim($item['title'] ?? '');
+            if (in_array($title, $lockedTitles, true)) {
+                $merged[] = $item;
+                $seenItems[] = $this->getItemKey($item);
+            }
+        }
+
+        // Then, add form data (avoid duplicates by checking title+value)
+        foreach ($formExtraInfo as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+
+            $title = trim($item['title'] ?? '');
+            $itemKey = $this->getItemKey($item);
+
+            // Skip if this item (title+value combination) is already in merged
+            if (in_array($itemKey, $seenItems, true)) {
+                continue;
+            }
+
+            // Skip if this is a locked title that's already in merged (from existing data)
+            if (in_array($title, $lockedTitles, true)) {
+                $hasLockedTitle = false;
+                foreach ($merged as $mergedItem) {
+                    if (is_array($mergedItem) && trim($mergedItem['title'] ?? '') === $title) {
+                        $hasLockedTitle = true;
+                        break;
+                    }
+                }
+                if ($hasLockedTitle) {
+                    continue;
+                }
+            }
+
+            // Add the item
+            $merged[] = $item;
+            $seenItems[] = $itemKey;
+        }
+
+        return $merged;
     }
 }
