@@ -30,6 +30,7 @@ class StoreIssueTicketRequest extends FormRequest
             'project_id' => ['required', 'integer', 'exists:projects,id'],
             'temp_file_ids' => ['required', 'array', 'min:1', 'max:5'],
             'temp_file_ids.*' => ['required', 'string', 'uuid'],
+            'search_confirmation' => ['required', 'accepted'],
         ];
 
         // Conditional validation based on communication preference
@@ -76,6 +77,8 @@ class StoreIssueTicketRequest extends FormRequest
             'temp_file_ids.min' => 'Please attach at least one file.',
             'temp_file_ids.max' => 'You can upload a maximum of 5 files.',
             'temp_file_ids.*.uuid' => 'Invalid file reference.',
+            'search_confirmation.required' => 'Please confirm that you have searched for similar issues.',
+            'search_confirmation.accepted' => 'Please confirm that you have searched for similar issues.',
         ];
     }
 }

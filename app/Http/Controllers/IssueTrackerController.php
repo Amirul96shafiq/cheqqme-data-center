@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreIssueTicketRequest;
 use App\Models\Project;
 use App\Models\Task;
 use App\Services\TemporaryFileService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class IssueTrackerController extends Controller
 {
@@ -25,49 +25,19 @@ class IssueTrackerController extends Controller
     /**
      * Store a new issue ticket.
      */
-    public function store(Request $request)
+    public function store(StoreIssueTicketRequest $request)
     {
         try {
-            // Validate the request
-            $validated = $request->validate([
-                'name' => ['required', 'string', 'max:255'],
-                'communication_preference' => ['required', 'string', 'in:email,whatsapp,both'],
-                'title' => ['required', 'string', 'max:255'],
-                'description' => ['required', 'string', 'max:700'],
-                'project_id' => ['required', 'integer', 'exists:projects,id'],
-                'temp_file_ids' => ['required', 'array', 'min:1', 'max:5'],
-                'temp_file_ids.*' => ['required', 'string', 'uuid'],
-            ]);
-
-            // Conditional validation based on communication preference
-            if ($request->input('communication_preference') === 'email') {
-                $validated['email'] = $request->validate(['email' => ['required', 'email', 'max:255']])['email'];
-            } elseif ($request->input('communication_preference') === 'whatsapp') {
-                $validated['whatsapp_number'] = $request->validate(['whatsapp_number' => [
-                    'required',
-                    'string',
-                    'regex:/^\+[1-9]\d{7,14}$/',
-                ]])['whatsapp_number'];
-            } elseif ($request->input('communication_preference') === 'both') {
-                $additional = $request->validate([
-                    'email' => ['required', 'email', 'max:255'],
-                    'whatsapp_number' => [
-                        'required',
-                        'string',
-                        'regex:/^\+[1-9]\d{7,14}$/',
-                    ],
-                ]);
-                $validated['email'] = $additional['email'];
-                $validated['whatsapp_number'] = $additional['whatsapp_number'];
-            }
+            // Get validated data from the form request
+            $validated = $request->validated();
 
             // Handle temporary file uploads
             $tempService = new TemporaryFileService;
             $attachments = $tempService->moveToPermanent($validated['temp_file_ids']);
-        } catch (ValidationException $e) {
-            // If validation fails, redirect back with temp_file_ids preserved
+        } catch (\Exception $e) {
+            // If something goes wrong, redirect back with temp_file_ids preserved
             return redirect()->back()
-                ->withErrors($e->errors())
+                ->withErrors(['error' => 'An error occurred while processing your submission. Please try again.'])
                 ->withInput($request->all())
                 ->with('temp_file_ids', $request->input('temp_file_ids', []));
         }

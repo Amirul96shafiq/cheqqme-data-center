@@ -288,9 +288,29 @@
                 <div id="file-list" class="mt-3 space-y-2"></div>
               </div>
 
+              {{-- Search Confirmation --}}
+              <div class="bg-primary-50 border border-primary-200 rounded-md p-4">
+                <div class="flex items-start space-x-3">
+                  <div class="flex-shrink-0">
+                    <input id="search_confirmation" name="search_confirmation" type="checkbox" value="1"
+                           @click="showTrackingTokensModal = true; fetchTrackingTokens()"
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded cursor-pointer">
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <label for="search_confirmation" class="text-xs text-gray-700">
+                      <span class="font-medium">I have done a search for similar issues</span>
+                      <span class="text-primary-600 hover:text-primary-800 underline cursor-pointer ml-0.5"
+                            @click="showTrackingTokensModal = true; fetchTrackingTokens()">
+                        (search for similar suggestion)
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
               {{-- Submit Button --}}
               <div>
-                <x-loading-submit-button :label="'Submit Issue'" :sr="'Submit Issue'" 
+                <x-loading-submit-button :label="'Submit Issue'" :sr="'Submit Issue'"
                   class="w-full py-2 px-4 text-sm bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" />
               </div>
 
