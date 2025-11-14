@@ -197,7 +197,8 @@
     x-sortable-handle
     x-sortable-item="{{ $record['id'] }}"
     x-bind:class="filterActive ? 'drag-disabled' : ''"
-    x-on:dragstart="isDragging = true; filterActive && $event.preventDefault()"
+    x-on:dragstart="if (filterActive) { $event.preventDefault(); alert('Unable to move cards during filter active'); return false; } else { isDragging = true; }"
+    x-on:dragend="isDragging = false"
     @if(!empty($normalizedDueDate)) data-due-date="{{ $normalizedDueDate }}" @endif
     data-task-id="{{ $record['id'] }}"
     x-on:mousedown="handleMouseDown($event)"
