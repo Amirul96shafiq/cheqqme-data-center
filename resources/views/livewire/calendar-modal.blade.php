@@ -544,7 +544,7 @@
                                         <button type="button"
                                                 @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                             'date' => $this->formatDateWithTranslation($day['date']),
-                                                            'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'status' => $task->status, 'tracking_token' => $task->tracking_token, 'type' => 'task', 'is_assigned' => $isAssigned]],
+                                                            'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'status' => $task->status, 'tracking_token' => $task->tracking_token, 'status_url' => $task->status_url ?? null, 'type' => 'task', 'is_assigned' => $isAssigned]],
                                                             'meetings' => []
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
                                                 class="flex items-center px-0.5 py-0.5 sm:px-1 sm:py-1.5 text-[10px] sm:text-xs rounded transition-colors w-full text-left {{ $this->getTaskClasses($task, $isAssigned) }}"
@@ -620,7 +620,7 @@
                                         <button type="button"
                                             @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                         'date' => $this->formatDateWithTranslation($day['date']),
-                                                         'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'status' => $t->status, 'tracking_token' => $t->tracking_token, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
+                                                         'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'status' => $t->status, 'tracking_token' => $t->tracking_token, 'status_url' => $t->status_url ?? null, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
                                                          'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => \App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($m->title ?: 'CheQQMeeting', $m->meeting_platform ?: 'Google Meet', $m->meeting_start_time ? $m->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $m->meeting_duration ?: 60), 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values(),
                                                          'holidays' => $day['holidays']->map(fn($h) => ['name' => $h->name, 'type' => $h->type, 'date' => $h->date->format('Y-m-d'), 'country_code' => $h->country_code])->values(),
                                                          'birthdays' => $day['birthdays']->map(fn($b) => ['id' => $b->id, 'name' => $b->name, 'short_name' => $b->short_name, 'age' => $b->age, 'is_current_user' => $b->is_current_user, 'hooray_text' => __('calendar.calendar.hooray')])->values()
