@@ -61,6 +61,7 @@ class TaskStatusChart extends ApexChartWidget
                     'all' => __('dashboard.analytics.task_status_distribution.filters.all_cards'),
                     'tasks' => __('dashboard.analytics.task_status_distribution.filters.tasks'),
                     'issue_trackers' => __('dashboard.analytics.task_status_distribution.filters.issue_trackers'),
+                    'wishlist_trackers' => __('dashboard.analytics.task_status_distribution.filters.wishlist_trackers'),
                 ])
                 ->default('all')
                 ->searchable()
@@ -83,6 +84,7 @@ class TaskStatusChart extends ApexChartWidget
         $baseQuery = match ($cardType) {
             'tasks' => $baseQuery->whereNull('tracking_token'),
             'issue_trackers' => $baseQuery->whereNotNull('tracking_token'),
+            'wishlist_trackers' => $baseQuery->wishlistTokens(),
             default => $baseQuery, // 'all' - no filtering
         };
 

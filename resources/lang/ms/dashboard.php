@@ -102,6 +102,7 @@ return [
                 'all_cards' => 'Semua Kad',
                 'tasks' => 'Tugasan',
                 'issue_trackers' => 'Penjejak Isu',
+                'wishlist_trackers' => 'Penjejak Wishlist',
             ],
         ],
         'user_productivity' => [

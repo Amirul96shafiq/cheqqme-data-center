@@ -102,6 +102,7 @@ return [
                 'all_cards' => 'All Cards',
                 'tasks' => 'Tasks',
                 'issue_trackers' => 'Issue Trackers',
+                'wishlist_trackers' => 'Wishlist Trackers',
             ],
         ],
         'user_productivity' => [
