@@ -73,7 +73,10 @@
     x-data="{
         filterActive: false,
         showFeaturedImages: {{ session('action_board_show_featured_images', true) ? 'true' : 'false' }},
-        isDragging: false
+        isDragging: false,
+        mouseDownPos: null,
+        dragThreshold: 5,
+        globalDragActive: false
     }"
     x-init="
         // Listen for filter events to disable drag and drop
@@ -90,12 +93,66 @@
             showFeaturedImages = e?.detail?.visible ?? true;
         });
 
+        // Global drag detection - prevent card clicks during any drag operation
+        let globalMouseDownPos = null;
+        const globalDragThreshold = 5;
+
+        document.addEventListener('mousedown', (e) => {
+            globalMouseDownPos = { x: e.clientX, y: e.clientY };
+            globalDragActive = false;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (globalMouseDownPos && !globalDragActive) {
+                const deltaX = Math.abs(e.clientX - globalMouseDownPos.x);
+                const deltaY = Math.abs(e.clientY - globalMouseDownPos.y);
+                if (deltaX > globalDragThreshold || deltaY > globalDragThreshold) {
+                    globalDragActive = true;
+                }
+            }
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            globalMouseDownPos = null;
+            // Keep globalDragActive true until next mousedown to prevent accidental clicks
+            setTimeout(() => {
+                globalDragActive = false;
+            }, 100);
+        });
+
         // Handle card click with immediate response - direct navigation for speed
+        handleMouseDown = (event) => {
+            if (event.button !== 0) return;
+            // Track mouse down position to detect drags
+            mouseDownPos = { x: event.clientX, y: event.clientY };
+        };
+
         handleMouseUp = (event) => {
-            // Only allow left-clicks when not dragging
-            if (event.button !== 0 || isDragging) {
+            // Only allow left-clicks
+            if (event.button !== 0) {
                 return;
             }
+
+            // Check if globally dragging (mousedown anywhere + mouse movement)
+            if (globalDragActive) {
+                return;
+            }
+
+            // Check if locally dragging (sortable drag or local mouse movement)
+            if (mouseDownPos) {
+                const deltaX = Math.abs(event.clientX - mouseDownPos.x);
+                const deltaY = Math.abs(event.clientY - mouseDownPos.y);
+                const moved = deltaX > dragThreshold || deltaY > dragThreshold;
+
+                if (moved || isDragging) {
+                    // Reset for next interaction
+                    mouseDownPos = null;
+                    return;
+                }
+            }
+
+            // Reset for next interaction
+            mouseDownPos = null;
 
             // Add visual feedback immediately
             event.target.closest('.ff-card').style.opacity = '0.7';
@@ -112,6 +169,7 @@
     x-on:dragstart="isDragging = true; filterActive && $event.preventDefault()"
     @if(!empty($normalizedDueDate)) data-due-date="{{ $normalizedDueDate }}" @endif
     data-task-id="{{ $record['id'] }}"
+    x-on:mousedown="handleMouseDown($event)"
     x-on:mouseup="handleMouseUp($event)"
     data-card-type="{{ $cardType }}"
     @if(method_exists($this, 'isTaskHighlighted') && $this->isTaskHighlighted((object) ['id' => $record['id']])) data-highlighted="true" @endif
@@ -491,4 +549,5 @@
 
     </div>
 </div>
+
 
