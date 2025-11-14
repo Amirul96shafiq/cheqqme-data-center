@@ -73,6 +73,7 @@ class Task extends Model
     {
         return [
             'issue_tracker' => __('action.status.issue_tracker'),
+            'wishlist' => __('action.status.wishlist'),
             'todo' => __('task.status.todo'),
             'in_progress' => __('task.status.in_progress'),
             'toreview' => __('task.status.toreview'),
@@ -671,8 +672,14 @@ class Task extends Model
         parent::boot();
 
         static::creating(function ($task) {
+            // Auto-generate tracking_token if status is 'issue_tracker' and token is missing
             if ($task->status === 'issue_tracker' && empty($task->tracking_token)) {
-                $task->tracking_token = static::generateTrackingToken();
+                $task->tracking_token = static::generateTrackingToken('CHEQQ-ISU');
+            }
+
+            // Auto-generate tracking_token if status is 'wishlist' and token is missing
+            if ($task->status === 'wishlist' && empty($task->tracking_token)) {
+                $task->tracking_token = static::generateTrackingToken('CHEQQ-WSH');
             }
         });
 
@@ -684,16 +691,23 @@ class Task extends Model
 
             // Auto-generate tracking_token if status is changed to 'issue_tracker' and token is missing
             if ($task->isDirty('status') && $task->status === 'issue_tracker' && empty($task->tracking_token)) {
-                $task->tracking_token = static::generateTrackingToken();
+                $task->tracking_token = static::generateTrackingToken('CHEQQ-ISU');
+            }
+
+            // Auto-generate tracking_token if status is changed to 'wishlist' and token is missing
+            if ($task->isDirty('status') && $task->status === 'wishlist' && empty($task->tracking_token)) {
+                $task->tracking_token = static::generateTrackingToken('CHEQQ-WSH');
             }
         });
     }
 
     /**
-     * Generate a unique tracking token for issue tracker submissions.
-     * Format: CHEQQ-TRK-{6 alphanumeric characters}
+     * Generate a unique tracking token for tracker submissions.
+     * Format: {prefix}-{6 alphanumeric characters}
+     *
+     * @param  string  $prefix  The prefix for the token (e.g., 'CHEQQ-ISU', 'CHEQQ-WSH')
      */
-    public static function generateTrackingToken(): string
+    public static function generateTrackingToken(string $prefix = 'CHEQQ-ISU'): string
     {
         do {
             // Generate 3 random uppercase letters
@@ -713,12 +727,44 @@ class Task extends Model
             shuffle($characters);
             $code = implode('', $characters);
 
-            // Format as CHEQQ-TRK-{code}
-            $token = 'CHEQQ-TRK-'.$code;
+            // Format as {prefix}-{code}
+            $token = $prefix.'-'.$code;
 
             // Check uniqueness
         } while (static::where('tracking_token', $token)->exists());
 
         return $token;
+    }
+
+    /**
+     * Scope to filter tasks with issue tracker tokens (CHEQQ-ISU- prefix).
+     */
+    public function scopeIssueTokens($query)
+    {
+        return $query->where('tracking_token', 'LIKE', 'CHEQQ-ISU-%');
+    }
+
+    /**
+     * Scope to filter tasks with wishlist tokens (CHEQQ-WSH- prefix).
+     */
+    public function scopeWishlistTokens($query)
+    {
+        return $query->where('tracking_token', 'LIKE', 'CHEQQ-WSH-%');
+    }
+
+    /**
+     * Check if this task has an issue tracker token.
+     */
+    public function isIssueTracker(): bool
+    {
+        return $this->tracking_token && str_starts_with($this->tracking_token, 'CHEQQ-ISU-');
+    }
+
+    /**
+     * Check if this task has a wishlist token.
+     */
+    public function isWishlist(): bool
+    {
+        return $this->tracking_token && str_starts_with($this->tracking_token, 'CHEQQ-WSH-');
     }
 }

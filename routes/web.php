@@ -619,7 +619,7 @@ Route::get('/issue-trk/{project}', [\App\Http\Controllers\IssueTrackerController
 Route::post('/issue-trk', [\App\Http\Controllers\IssueTrackerController::class, 'store'])
     ->name('issue-tracker.store');
 Route::get('/issue-trk/s/{token}', [\App\Http\Controllers\IssueTrackerController::class, 'status'])
-    ->where('token', 'CHEQQ-TRK-[A-Z0-9]{6}') // Match tracking token format
+    ->where('token', 'CHEQQ-ISU-[A-Z0-9]{6}') // Match tracking token format
     ->name('issue-tracker.status');
 Route::get('/api/issue-trk/{project}/tokens/count', [\App\Http\Controllers\IssueTrackerController::class, 'getTrackingTokensCount'])
     ->where('project', '[A-Z0-9]{6}') // Ensure the parameter matches the code format
@@ -634,3 +634,29 @@ Route::post('/api/issue-trk/upload-temp-file', [\App\Http\Controllers\IssueTrack
     ->name('issue-tracker.api.upload-temp-file');
 Route::get('/api/issue-trk/temp-files', [\App\Http\Controllers\IssueTrackerController::class, 'getTemporaryFiles'])
     ->name('issue-tracker.api.get-temp-files');
+
+// Wishlist Tracker - Public routes (no authentication required)
+Route::get('/wishlist-trk', function () {
+    abort(404);
+})->name('wishlist-tracker.index');
+Route::get('/wishlist-trk/{project}', [\App\Http\Controllers\WishlistTrackerController::class, 'show'])
+    ->where('project', '[A-Z0-9]{6}') // Ensure the parameter matches the code format
+    ->name('wishlist-tracker.show');
+Route::post('/wishlist-trk', [\App\Http\Controllers\WishlistTrackerController::class, 'store'])
+    ->name('wishlist-tracker.store');
+Route::get('/wishlist-trk/s/{token}', [\App\Http\Controllers\WishlistTrackerController::class, 'status'])
+    ->where('token', 'CHEQQ-WSH-[A-Z0-9]{6}') // Match wishlist token format
+    ->name('wishlist-tracker.status');
+Route::get('/api/wishlist-trk/{project}/tokens/count', [\App\Http\Controllers\WishlistTrackerController::class, 'getTrackingTokensCount'])
+    ->where('project', '[A-Z0-9]{6}') // Ensure the parameter matches the code format
+    ->name('wishlist-tracker.api.tokens.count');
+
+Route::get('/api/wishlist-trk/{project}/tokens', [\App\Http\Controllers\WishlistTrackerController::class, 'getTrackingTokens'])
+    ->where('project', '[A-Z0-9]{6}') // Ensure the parameter matches the code format
+    ->name('wishlist-tracker.api.tokens');
+
+// Temporary file upload endpoints for wishlist
+Route::post('/api/wishlist-trk/upload-temp-file', [\App\Http\Controllers\WishlistTrackerController::class, 'uploadTemporaryFile'])
+    ->name('wishlist-tracker.api.upload-temp-file');
+Route::get('/api/wishlist-trk/temp-files', [\App\Http\Controllers\WishlistTrackerController::class, 'getTemporaryFiles'])
+    ->name('wishlist-tracker.api.get-temp-files');

@@ -127,6 +127,73 @@ class ProjectResource extends Resource
         return ucfirst(str_replace('_', ' ', $status));
     }
 
+    protected static function getWishlistTrackerTextForCopy($record): string
+    {
+        $wishlistTrackerUrl = $record->wishlist_tracker_code ? route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]) : 'TBD';
+        $projectTitle = $record->title ?? 'TBD';
+
+        return "Good day everyone ✨,\n\nHere's the wishlist tracker link for {$projectTitle} project.\n\n👉 {$wishlistTrackerUrl}\n\nPlease use this link to submit any wishlist items or feature requests related to this project.\n\nThank you! ☺️";
+    }
+
+    protected static function getAllWishlistStatusLinksForCopy($record): string
+    {
+        $projectTitle = $record->title ?? 'TBD';
+        $projectId = $record->id;
+
+        $wishlistTasks = Task::wishlistTokens()
+            ->with('updatedBy')
+            ->where(function ($query) use ($projectId) {
+                $query
+                    ->whereJsonContains('project', $projectId)
+                    ->orWhereJsonContains('project', (string) $projectId)
+                    ->orWhere('project', 'like', '%"'.$projectId.'"%')
+                    ->orWhere('project', 'like', '%['.$projectId.']%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        if ($wishlistTasks->isEmpty()) {
+            return "Hi team 👋,\n\nThere are currently no active wishlist tracking tokens for the {$projectTitle} project.\n\nWhen wishlist items are submitted, their status links will appear here.\n\nThank you!";
+        }
+
+        $linksText = "Hi team 👋,\n\nHere are all the current wishlist status links for the {$projectTitle} project:\n\n";
+
+        foreach ($wishlistTasks as $task) {
+            $wishlistTitle = $task->title ?: __('project.actions.wishlist_status_no_title');
+            $statusLabel = self::formatWishlistStatusLabel($task->status);
+            $statusUrl = route('wishlist-tracker.status', ['token' => $task->tracking_token]);
+            $submittedAt = $task->created_at?->format('j/n/y, h:i A');
+
+            $linksText .= "🔹 {$wishlistTitle}\n";
+            $linksText .= "   Status: {$statusLabel}\n";
+            $linksText .= "   Link: {$statusUrl}\n";
+            if ($submittedAt) {
+                $linksText .= "   Submitted: {$submittedAt}\n";
+            }
+            $linksText .= "\n";
+        }
+
+        $linksText .= "Please use these links to check the latest status of each wishlist item.\n\nThank you!";
+
+        return $linksText;
+    }
+
+    protected static function formatWishlistStatusLabel(?string $status): string
+    {
+        if (empty($status)) {
+            return __('project.actions.wishlist_status_unknown');
+        }
+
+        $translationKey = "action.status.{$status}";
+        $translated = __($translationKey);
+
+        if ($translated !== $translationKey) {
+            return $translated;
+        }
+
+        return ucfirst(str_replace('_', ' ', $status));
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -246,6 +313,62 @@ class ProjectResource extends Resource
                                 return [[
                                     'code' => $record->issue_tracker_code,
                                     'url' => route('issue-tracker.show', ['project' => $record->issue_tracker_code]),
+                                ]];
+                            })
+                            ->disabled()
+                            ->deletable(false)
+                            ->addable(false)
+                            ->reorderable(false)
+                            ->collapsible(false)
+                            ->itemLabel('')
+                            ->columns(1)
+                            ->columnSpanFull(),
+
+                    ])
+                    ->visible(fn (?Project $record): bool => $record !== null)
+                    ->collapsible(true),
+
+                Section::make(__('project.section.wishlist_tracker_info'))
+                    ->schema([
+
+                        Repeater::make('wishlist_tracker_info')
+                            ->label('')
+                            ->schema([
+                                Grid::make(2)
+                                    ->schema([
+                                        TextInput::make('code')
+                                            ->label(__('project.form.wishlist_tracker_code'))
+                                            ->disabled(fn ($record) => $record !== null)
+                                            ->maxLength(6)
+                                            ->helperText(fn ($record) => $record && $record->wishlist_tracker_code
+                                                ? __('project.form.wishlist_tracker_code_helper_existing')
+                                                : __('project.form.wishlist_tracker_code_helper_new'))
+                                            ->columnSpan(1)
+                                            ->dehydrated(false),
+
+                                        TextInput::make('url')
+                                            ->label(__('project.form.wishlist_tracker_url'))
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->suffixAction(
+                                                Forms\Components\Actions\Action::make('openWishlistTracker')
+                                                    ->icon('heroicon-o-arrow-top-right-on-square')
+                                                    ->url(fn (Get $get) => $get('url'))
+                                                    ->openUrlInNewTab()
+                                                    ->tooltip(__('project.form.open_wishlist_tracker'))
+                                                    ->visible(fn (Get $get) => ! empty($get('url')))
+                                            )
+                                            ->columnSpan(1),
+                                    ]),
+                            ])
+                            ->default(function ($record) {
+                                if (! $record || ! $record->wishlist_tracker_code) {
+                                    return [];
+                                }
+
+                                return [[
+                                    'code' => $record->wishlist_tracker_code,
+                                    'url' => route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]),
                                 ]];
                             })
                             ->disabled()
@@ -440,10 +563,27 @@ class ProjectResource extends Resource
                     ->toggleable()
                     ->alignCenter(),
 
+                Tables\Columns\TextColumn::make('wishlist_tracker_code')
+                    ->label(__('project.table.wishlist_tracker_code'))
+                    ->copyable()
+                    ->copyableState(fn ($record) => $record->wishlist_tracker_code ? route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]) : null)
+                    ->color('success')
+                    ->url(fn ($record) => $record->wishlist_tracker_code ? route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]) : null)
+                    ->searchable()
+                    ->toggleable()
+                    ->alignCenter(),
+
                 TextColumn::make('tracking_tokens_count')
                     ->label(__('project.table.tracking_tokens_count'))
                     ->badge()
                     ->color('primary')
+                    ->alignCenter()
+                    ->toggleable(),
+
+                TextColumn::make('wishlist_tokens_count')
+                    ->label(__('project.table.wishlist_tokens_count'))
+                    ->badge()
+                    ->color('success')
                     ->alignCenter()
                     ->toggleable(),
 
@@ -541,6 +681,22 @@ class ProjectResource extends Resource
                         return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
                     })
                     ->visible(fn ($record) => ! empty($record->issue_tracker_code)),
+
+                Tables\Actions\Action::make('open_wishlist_tracker')
+                    ->label('')
+                    ->icon('heroicon-o-link')
+                    ->color('success')
+                    ->url(fn ($record) => $record->wishlist_tracker_code ? route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]) : null)
+                    ->openUrlInNewTab()
+                    ->tooltip(function ($record) {
+                        if (! $record->wishlist_tracker_code) {
+                            return null;
+                        }
+                        $url = route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]);
+
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
+                    })
+                    ->visible(fn ($record) => ! empty($record->wishlist_tracker_code)),
 
                 Tables\Actions\ViewAction::make(),
 
@@ -664,6 +820,130 @@ class ProjectResource extends Resource
 
                             $actions[] = Tables\Actions\Action::make('edit_project')
                                 ->label(__('project.actions.view_tracking_tokens'))
+                                ->icon('heroicon-o-eye')
+                                ->color('gray')
+                                ->url(fn ($record) => self::getUrl('edit', ['record' => $record->id, 'activeRelationManager' => 0]))
+                                ->close();
+
+                            return $actions;
+                        }),
+
+                    Tables\Actions\Action::make('share_wishlist_tracker_link')
+                        ->label(__('project.actions.share_wishlist_tracker_link'))
+                        ->icon('heroicon-o-share')
+                        ->color('success')
+                        ->visible(fn ($record) => ! $record->trashed() && $record->wishlist_tracker_code)
+                        ->modalWidth('2xl')
+                        ->modalHeading(__('project.actions.share_wishlist_tracker_link'))
+                        ->modalDescription(__('project.actions.share_wishlist_tracker_link_description'))
+                        ->form(function ($record) {
+                            $wishlistTrackerText = self::getWishlistTrackerTextForCopy($record);
+
+                            return [
+                                Forms\Components\Textarea::make('wishlist_tracker_preview')
+                                    ->label(__('project.actions.wishlist_tracker_preview'))
+                                    ->default($wishlistTrackerText)
+                                    ->disabled()
+                                    ->rows(12)
+                                    ->extraInputAttributes([
+                                        'class' => 'font-mono text-sm !resize-none',
+                                        'style' => 'resize: none !important; max-height: none !important;',
+                                        'x-init' => '$el.style.resize = "none"',
+                                    ])
+                                    ->columnSpanFull(),
+                            ];
+                        })
+                        ->modalSubmitAction(false)
+                        ->modalCancelAction(false)
+                        ->extraModalFooterActions(function ($record, $livewire) {
+                            $actions = [];
+
+                            // Detect mobile device and hide copy button on mobile
+                            $userAgent = request()->userAgent() ?? '';
+                            $isMobile = preg_match('/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $userAgent);
+
+                            // Only show copy button on desktop, hide on mobile so users can manually copy from preview
+                            if (! $isMobile) {
+                                $actions[] = Tables\Actions\Action::make('copy_wishlist_to_clipboard')
+                                    ->label(__('project.actions.copy_to_clipboard'))
+                                    ->icon('heroicon-o-clipboard-document')
+                                    ->color('success')
+                                    ->extraAttributes([
+                                        'x-data' => '{}',
+                                        'x-on:copy-success.window' => 'showCopiedBubble($el)',
+                                    ])
+                                    ->action(function () use ($record, $livewire) {
+                                        $wishlistTrackerText = self::getWishlistTrackerTextForCopy($record);
+
+                                        // Dispatch browser event with the text to copy and success callback
+                                        $livewire->dispatch('copy-to-clipboard-with-callback', text: $wishlistTrackerText);
+                                    });
+                            }
+
+                            $actions[] = Tables\Actions\Action::make('edit_project')
+                                ->label(__('project.actions.edit_project'))
+                                ->icon('heroicon-o-pencil-square')
+                                ->color('gray')
+                                ->url(fn ($record) => self::getUrl('edit', ['record' => $record->id]))
+                                ->close();
+
+                            return $actions;
+                        }),
+
+                    Tables\Actions\Action::make('share_all_wishlist_status_link')
+                        ->label(__('project.actions.share_all_wishlist_status_link'))
+                        ->icon('heroicon-o-share')
+                        ->color('success')
+                        ->visible(fn ($record) => ! $record->trashed() && $record->wishlist_tracker_code)
+                        ->modalWidth('2xl')
+                        ->modalHeading(__('project.actions.share_all_wishlist_status_link'))
+                        ->modalDescription(__('project.actions.share_all_wishlist_status_link_description'))
+                        ->form(function ($record) {
+                            $allWishlistStatusText = self::getAllWishlistStatusLinksForCopy($record);
+
+                            return [
+                                Forms\Components\Textarea::make('all_wishlist_status_preview')
+                                    ->label(__('project.actions.all_wishlist_status_preview'))
+                                    ->default($allWishlistStatusText)
+                                    ->disabled()
+                                    ->rows(12)
+                                    ->extraInputAttributes([
+                                        'class' => 'font-mono text-sm !resize-none',
+                                        'style' => 'resize: none !important; max-height: none !important;',
+                                        'x-init' => '$el.style.resize = "none"',
+                                    ])
+                                    ->columnSpanFull(),
+                            ];
+                        })
+                        ->modalSubmitAction(false)
+                        ->modalCancelAction(false)
+                        ->extraModalFooterActions(function ($record, $livewire) {
+                            $actions = [];
+
+                            // Detect mobile device and hide copy button on mobile
+                            $userAgent = request()->userAgent() ?? '';
+                            $isMobile = preg_match('/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i', $userAgent);
+
+                            // Only show copy button on desktop, hide on mobile so users can manually copy from preview
+                            if (! $isMobile) {
+                                $actions[] = Tables\Actions\Action::make('copy_all_wishlist_to_clipboard')
+                                    ->label(__('project.actions.copy_to_clipboard'))
+                                    ->icon('heroicon-o-clipboard-document')
+                                    ->color('success')
+                                    ->extraAttributes([
+                                        'x-data' => '{}',
+                                        'x-on:copy-success.window' => 'showCopiedBubble($el)',
+                                    ])
+                                    ->action(function () use ($record, $livewire) {
+                                        $allWishlistStatusText = self::getAllWishlistStatusLinksForCopy($record);
+
+                                        // Dispatch browser event with the text to copy and success callback
+                                        $livewire->dispatch('copy-to-clipboard-with-callback', text: $allWishlistStatusText);
+                                    });
+                            }
+
+                            $actions[] = Tables\Actions\Action::make('view_wishlists')
+                                ->label(__('project.actions.view_wishlists'))
                                 ->icon('heroicon-o-eye')
                                 ->color('gray')
                                 ->url(fn ($record) => self::getUrl('edit', ['record' => $record->id, 'activeRelationManager' => 0]))

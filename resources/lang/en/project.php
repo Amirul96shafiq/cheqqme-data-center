@@ -16,15 +16,18 @@ return [
 
     'actions' => [
         'create' => 'Create Project',
+        'edit_project' => 'Edit Project',
+        'view_tracking_tokens' => 'View Issue Trackers',
+        'view_wishlists' => 'View Wishlists',
+        'copy_to_clipboard' => 'Copy to Clipboard',
+
+        // Issue Tracker Actions
         'share_issue_tracker_link' => 'Share Issue Tracker Link',
         'share_all_issue_status_link' => 'Share All Issue Status',
         'share_issue_tracker_link_description' => 'Preview and share issue tracker link details',
         'share_all_issue_status_link_description' => 'Preview and share all issue status links',
         'issue_tracker_preview' => 'Issue Tracker Link Preview',
         'all_issue_status_preview' => 'All Issue Status Links Preview',
-        'copy_to_clipboard' => 'Copy to Clipboard',
-        'edit_project' => 'Edit Project',
-        'view_tracking_tokens' => 'View Tracking Tokens',
         'share_issue_status_link' => 'Share Issue Status Link',
         'share_issue_status_link_description' => 'Select a tracking token to share its public status page.',
         'issue_status_select_token' => 'Tracking Token',
@@ -33,11 +36,28 @@ return [
         'issue_status_no_tokens' => 'No tracking tokens are available for this project yet.',
         'issue_status_no_title' => 'Untitled issue',
         'issue_status_unknown' => 'Unknown',
+
+        // Wishlist Tracker Actions
+        'share_wishlist_tracker_link' => 'Share Wishlist Tracker Link',
+        'share_all_wishlist_status_link' => 'Share All Wishlist Status',
+        'share_wishlist_tracker_link_description' => 'Select a wishlist token to share its public status page.',
+        'share_all_wishlist_status_link_description' => 'Preview and share all wishlist status links',
+        'wishlist_tracker_preview' => 'Wishlist Tracker Link Preview',
+        'all_wishlist_status_preview' => 'All Wishlist Status Links Preview',
+        'share_wishlist_status_link' => 'Share Wishlist Status Link',
+        'share_wishlist_status_link_description' => 'Select a wishlist token to share its public status page.',
+        'wishlist_status_select_token' => 'Wishlist Token',
+        'wishlist_status_select_placeholder' => 'Select a wishlist token',
+        'wishlist_status_preview' => 'Wishlist Status Preview',
+        'wishlist_status_no_tokens' => 'No wishlist tokens are available for this project yet.',
+        'wishlist_status_no_title' => 'Untitled wishlist item',
+        'wishlist_status_unknown' => 'Unknown',
     ],
 
     'section' => [
         'project_info' => 'Project Information',
         'issue_tracker_info' => 'Issue Tracker Information',
+        'wishlist_tracker_info' => 'Wishlist Tracker Information',
         'extra_info' => 'Project Extra Information',
         'project_documents' => 'Project Documents',
         'important_urls' => 'Project Important URLs',
@@ -67,6 +87,7 @@ return [
         'issue_tracker_code_helper' => 'Issue Tracker URL: :url',
         'issue_tracker_code_helper_new' => 'Issue Tracker Code will be auto-generated when project is created.',
         'open_issue_tracker' => 'Open Issue Tracker',
+        'open_wishlist_tracker' => 'Open Wishlist Tracker',
         'tracking_tokens' => 'Tracking Tokens',
         'tracking_token' => 'Tracking Token',
         'task_status' => 'Status',
@@ -74,6 +95,8 @@ return [
         'view_status' => 'Status Page',
         'open_edit_task' => 'Open Edit Task',
         'open_status_page' => 'Open Status Page',
+        'wishlist_tracker_code_helper_existing' => 'Wishlist Tracker Code will be auto-generated when project is created.',
+        'wishlist_tracker_code_helper_new' => 'Wishlist Tracker Code will be auto-generated when project is created.',
     ],
 
     'table' => [
@@ -82,7 +105,9 @@ return [
         'description' => 'Description',
         'client' => 'Client',
         'issue_tracker_code' => 'Issue Tracker Code',
+        'wishlist_tracker_code' => 'Wishlist Tracker Code',
         'tracking_tokens_count' => 'Tracking Tokens',
+        'wishlist_tokens_count' => 'Wishlist Tokens',
         'status' => 'Status',
         'document_count' => 'Documents',
         'important_url_count' => 'Important URLs',
@@ -108,6 +133,12 @@ return [
         'in_progress' => 'In Progress',
         'completed' => 'Completed',
         'trashed' => 'Trashed',
+    ],
+
+    'status' => [
+        'planning' => 'Planning',
+        'in_progress' => 'In Progress',
+        'completed' => 'Completed',
     ],
 
     'search' => [

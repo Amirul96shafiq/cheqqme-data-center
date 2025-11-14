@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  <title>Submit Issue - {{ $project->title }} - {{ config('app.name') }}</title>
+  <title>Submit Wishlist - {{ $project->title }} - {{ config('app.name') }}</title>
 
   {{-- Favicon --}}
   <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -23,24 +23,24 @@
         loadingTokens: false,
         trackingTokensData: null,
         tokensError: null,
-        issuesCount: 0,
-        async fetchIssuesCount() {
+        wishlistsCount: 0,
+        async fetchWishlistsCount() {
           try {
-            const response = await fetch('/api/issue-trk/{{ $project->issue_tracker_code }}/tokens/count');
+            const response = await fetch('/api/wishlist-trk/{{ $project->wishlist_tracker_code }}/tokens/count');
             if (!response.ok) {
-              throw new Error('Failed to fetch issues count');
+              throw new Error('Failed to fetch wishlists count');
             }
             const data = await response.json();
-            this.issuesCount = data.count;
+            this.wishlistsCount = data.count;
           } catch (error) {
-            console.error('Error fetching issues count:', error);
+            console.error('Error fetching wishlists count:', error);
           }
         },
         async fetchTrackingTokens() {
           this.loadingTokens = true;
           this.tokensError = null;
           try {
-            const response = await fetch('/api/issue-trk/{{ $project->issue_tracker_code }}/tokens');
+            const response = await fetch('/api/wishlist-trk/{{ $project->wishlist_tracker_code }}/tokens');
             if (!response.ok) {
               throw new Error('Failed to fetch tracking tokens');
             }
@@ -55,14 +55,14 @@
         init() {
           // Wait for window to fully load before fetching count
           window.addEventListener('load', () => {
-            this.fetchIssuesCount();
+            this.fetchWishlistsCount();
           });
         }
       }">
-  
+
   {{-- Loading Transition --}}
   <x-auth-loading />
-    
+
   {{-- Content area --}}
   <div style="flex: 1; overflow-y: auto; min-height: 100vh;">
     <div class="flex items-center justify-center min-h-full py-12 px-4 sm:px-6 lg:px-8">
@@ -72,10 +72,10 @@
         <div class="text-center">
           <img src="{{ asset('logos/logo-light.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-32 w-auto mb-8">
           <h1 class="text-3xl font-bold text-gray-900">
-            Issue Submission
+            Wishlist Submission
           </h1>
           <p class="mt-2 text-sm text-gray-600">
-            Project: <span class="inline-block px-3 py-1.5 bg-white rounded-full font-semibold text-primary-500">{{ $project->title }} ({{ $project->issue_tracker_code }})</span>
+            Project: <span class="inline-block px-3 py-1.5 bg-white rounded-full font-semibold text-primary-500">{{ $project->title }} ({{ $project->wishlist_tracker_code }})</span>
           </p>
         </div>
 
@@ -106,7 +106,7 @@
                       <div class="flex items-center space-x-2">
                         <input type="text"
                                id="tracking-url"
-                               value="{{ route('issue-tracker.status', ['token' => session('tracking_token')]) }}"
+                               value="{{ route('wishlist-tracker.status', ['token' => session('tracking_token')]) }}"
                                readonly
                                class="flex-1 px-3 py-2 bg-white border border-teal-200 rounded-md text-sm text-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-500">
                         <button type="button"
@@ -129,7 +129,7 @@
         @endif
 
         {{-- Form --}}
-        <form method="POST" action="{{ route('issue-tracker.store') }}" enctype="multipart/form-data" class="mt-6 space-y-6 bg-white shadow-lg rounded-lg p-6">
+        <form method="POST" action="{{ route('wishlist-tracker.store') }}" enctype="multipart/form-data" class="mt-6 space-y-6 bg-white shadow-lg rounded-lg p-6">
           @csrf
 
             {{-- Hidden Project ID --}}
@@ -237,10 +237,10 @@
               {{-- Title Field --}}
               <div>
                 <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
-                  Issue Title <span class="text-red-500">*</span>
+                  Wishlist Title <span class="text-red-500">*</span>
                 </label>
                 <input id="title" type="text" name="title" value="{{ old('title') }}"
-                  required placeholder="Brief description of the issue"
+                  required placeholder="Brief description of your wishlist item"
                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm">
               </div>
 
@@ -253,10 +253,10 @@
                   Be concise and to the point
                 </p>
                 <textarea id="description" name="description" rows="10"
-                  placeholder="Provide more details about the issue..."
+                  placeholder="Provide more details about your wishlist item..."
                   maxlength="700"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm resize-y">{{ old('description', "Steps to Reproduce\n1- \n\nExpected Result:\n- \n\nActual Result:\n- ") }}</textarea>
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm resize-y">{{ old('description', "Describe your wishlist item in detail...\n\nWhy do you need this feature?\n- \n\nHow would it benefit the project?\n- ") }}</textarea>
                 <p class="mt-1 text-xs text-gray-500">
                   <span id="char-count">0</span> / 700 characters
                 </p>
@@ -268,7 +268,7 @@
                   Attachments
                 </label>
                 <p class="mb-2 text-xs text-gray-500">
-                  Proof of issues or bugs - screenshots, videos, etc. (optional)
+                  Screenshots, mockups, or reference materials (optional)
                 </p>
                 <div id="upload-box" class="mt-1 flex items-center justify-center px-6 py-8 border-2 border-gray-300 border-dashed rounded-md hover:border-primary-400 transition-colors">
                   <div class="space-y-1 text-center w-full flex flex-col items-center">
@@ -298,7 +298,7 @@
                   </div>
                   <div class="flex-1 min-w-0">
                     <label for="search_confirmation" class="text-xs text-gray-700">
-                      <span class="font-medium">I have done a search for similar issues</span>
+                      <span class="font-medium">I have done a search for similar wishlist items</span>
                       <span class="text-primary-600 hover:text-primary-800 underline cursor-pointer ml-0.5"
                             @click="showTrackingTokensModal = true; fetchTrackingTokens()">
                         (search for similar suggestion)
@@ -310,7 +310,7 @@
 
               {{-- Submit Button --}}
               <div>
-                <x-loading-submit-button :label="'Submit Issue'" :sr="'Submit Issue'"
+                <x-loading-submit-button :label="'Submit Wishlist'" :sr="'Submit Wishlist'"
                   class="w-full py-2 px-4 text-sm bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" />
               </div>
 
@@ -329,12 +329,12 @@
     <button type="button"
             @click="showTrackingTokensModal = true; fetchTrackingTokens()"
             class="fixed top-6 right-6 z-40 inline-flex items-center justify-center w-12 h-12 bg-primary-500 hover:bg-primary-600 text-primary-900 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-            title="View All Submitted Issues">
+            title="View All Submitted Wishlists">
       <x-heroicon-m-inbox class="h-6 w-6" />
 
-      {{-- Issues Count Badge --}}
-      <span x-show="issuesCount > 0"
-            x-text="issuesCount"
+      {{-- Wishlists Count Badge --}}
+      <span x-show="wishlistsCount > 0"
+            x-text="wishlistsCount"
             class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white bg-danger-500 rounded-full min-w-[18px] h-[18px]">
       </span>
 
@@ -342,7 +342,7 @@
 
   </div>
 
-  {{-- Submitted Issues Slide Panel --}}
+  {{-- Submitted Wishlists Slide Panel --}}
   <div x-show="showTrackingTokensModal"
        x-cloak
        @keydown.escape.window="showTrackingTokensModal = false"
@@ -378,7 +378,7 @@
           </div>
           <div>
             <h2 class="text-base font-semibold leading-6 text-gray-900">
-              Submitted Issues
+              Submitted Wishlists
             </h2>
             <p class="text-xs text-gray-600 mt-1">
               <span x-text="trackingTokensData?.project?.title || 'Loading...'" class="font-medium"></span>
@@ -410,10 +410,10 @@
               {{ __('auth.loading') }}
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Loading submitted issues...
+              Loading submitted wishlists...
             </p>
           </div>
-          
+
         </div>
 
         {{-- Tokens List --}}
@@ -423,7 +423,7 @@
               <div class="flex-1 min-w-0">
                   <div class="flex items-center space-x-2 mb-2">
 
-                    {{-- Issue ID --}}
+                    {{-- Wishlist ID --}}
                     <code class="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full" x-text="token.token"></code>
 
                     {{-- Status Badge --}}
@@ -448,7 +448,7 @@
                     </a>
 
                   </div>
-                  
+
                 </div>
             </div>
           </template>
@@ -457,8 +457,8 @@
         {{-- Empty State --}}
         <div x-show="!loadingTokens && (!trackingTokensData?.tracking_tokens || trackingTokensData.tracking_tokens.length === 0)" class="flex flex-col items-center justify-center py-12 px-6 text-center">
           <x-heroicon-o-inbox class="h-12 w-12 text-gray-400 mb-4" />
-          <h3 class="text-sm font-medium text-gray-900 mb-1">No submitted issues found</h3>
-          <p class="text-sm text-gray-500">No issues have been submitted for this project yet.</p>
+          <h3 class="text-sm font-medium text-gray-900 mb-1">No submitted wishlists found</h3>
+          <p class="text-sm text-gray-500">No wishlists have been submitted for this project yet.</p>
         </div>
 
         {{-- Error State --}}
@@ -466,7 +466,7 @@
           <svg class="h-12 w-12 text-red-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
-          <h3 class="text-sm font-medium text-gray-900 mb-1">Error loading submitted issues</h3>
+          <h3 class="text-sm font-medium text-gray-900 mb-1">Error loading submitted wishlists</h3>
           <p class="text-sm text-red-500" x-text="tokensError"></p>
         </div>
       </div>
@@ -519,7 +519,7 @@
 
         async function fetchExistingTempFiles(tempIds) {
           try {
-            const response = await fetch('/api/issue-trk/temp-files');
+            const response = await fetch('/api/wishlist-trk/temp-files');
             const result = await response.json();
 
             if (result.success) {
@@ -596,7 +596,7 @@
           formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
 
           try {
-            const response = await fetch('/api/issue-trk/upload-temp-file', {
+            const response = await fetch('/api/wishlist-trk/upload-temp-file', {
               method: 'POST',
               body: formData
             });
@@ -616,12 +616,9 @@
 
         window.removeTempFile = async function(tempId) {
             try {
-              // Remove from local array
+              // Remove from temp array
               uploadedTempFiles = uploadedTempFiles.filter(file => file.temp_id !== tempId);
               updateFileList();
-
-              // Optionally delete from server (you might want to add this endpoint)
-              // await fetch(`/api/issue-trk/delete-temp-file/${tempId}`, { method: 'DELETE' });
             } catch (error) {
               console.error('Error removing temp file:', error);
             }
@@ -766,4 +763,3 @@
   </script>
 </body>
 </html>
-

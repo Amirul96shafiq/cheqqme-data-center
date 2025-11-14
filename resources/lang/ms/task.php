@@ -55,6 +55,7 @@ return [
         'issue_tracker_code' => 'Kod Penjejak Isu / Token Penjejakan',
         'open_issue_tracker' => 'Buka Penjejak Isu',
         'view_issue_status' => 'Lihat Status Isu',
+        'view_wishlist_status' => 'Lihat Status Wishlist',
     ],
     'search' => [
         'status' => 'Status',

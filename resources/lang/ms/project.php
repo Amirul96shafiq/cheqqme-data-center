@@ -16,15 +16,18 @@ return [
 
     'actions' => [
         'create' => 'Tambah Projek',
+        'edit_project' => 'Kemaskini Projek',
+        'view_tracking_tokens' => 'Lihat Penjejak Isu',
+        'view_wishlists' => 'Lihat Wishlist',
+        'copy_to_clipboard' => 'Salin ke Papan Klip',
+
+        // Issue Tracker Actions
         'share_issue_tracker_link' => 'Kongsi Pautan Penjejak Isu',
         'share_all_issue_status_link' => 'Kongsi Semua Status Isu',
         'share_issue_tracker_link_description' => 'Pratonton dan kongsi butiran pautan penjejak isu',
         'share_all_issue_status_link_description' => 'Pratonton dan kongsi semua pautan status isu',
         'issue_tracker_preview' => 'Pratonton Pautan Penjejak Isu',
         'all_issue_status_preview' => 'Pratonton Semua Pautan Status Isu',
-        'copy_to_clipboard' => 'Salin ke Papan Klip',
-        'edit_project' => 'Kemaskini Projek',
-        'view_tracking_tokens' => 'Lihat Token Penjejakan',
         'share_issue_status_link' => 'Kongsi Pautan Status Isu',
         'share_issue_status_link_description' => 'Pilih token penjejakan untuk berkongsi halaman status awam.',
         'issue_status_select_token' => 'Token Penjejakan',
@@ -33,11 +36,28 @@ return [
         'issue_status_no_tokens' => 'Tiada token penjejakan tersedia untuk projek ini.',
         'issue_status_no_title' => 'Isu tanpa tajuk',
         'issue_status_unknown' => 'Tidak diketahui',
+
+        // Wishlist Tracker Actions
+        'share_wishlist_tracker_link' => 'Kongsi Pautan Penjejak Wishlist',
+        'share_all_wishlist_status_link' => 'Kongsi Semua Status Wishlist',
+        'share_wishlist_tracker_link_description' => 'Pilih token wishlist untuk berkongsi halaman status awam.',
+        'share_all_wishlist_status_link_description' => 'Pratonton dan kongsi semua pautan status wishlist',
+        'wishlist_tracker_preview' => 'Pratonton Pautan Penjejak Wishlist',
+        'all_wishlist_status_preview' => 'Pratonton Semua Pautan Status Wishlist',
+        'share_wishlist_status_link' => 'Kongsi Pautan Status Wishlist',
+        'share_wishlist_status_link_description' => 'Pilih token wishlist untuk berkongsi halaman status awam.',
+        'wishlist_status_select_token' => 'Token Wishlist',
+        'wishlist_status_select_placeholder' => 'Pilih token wishlist',
+        'wishlist_status_preview' => 'Pratonton Status Wishlist',
+        'wishlist_status_no_tokens' => 'Tiada token wishlist tersedia untuk projek ini.',
+        'wishlist_status_no_title' => 'Item wishlist tanpa tajuk',
+        'wishlist_status_unknown' => 'Tidak diketahui',
     ],
 
     'section' => [
         'project_info' => 'Maklumat Projek',
         'issue_tracker_info' => 'Maklumat Penjejak Isu',
+        'wishlist_tracker_info' => 'Maklumat Penjejak Wishlist',
         'extra_info' => 'Maklumat Tambahan Projek',
         'project_documents' => 'Dokumen Projek',
         'important_urls' => 'URL Penting Projek',
@@ -66,6 +86,7 @@ return [
         'issue_tracker_code_helper' => 'URL Penjejak Isu: :url',
         'issue_tracker_code_helper_new' => 'Kod Penjejak Isu akan dijana secara automatik apabila projek dicipta.',
         'open_issue_tracker' => 'Buka Penjejak Isu',
+        'open_wishlist_tracker' => 'Buka Penjejak Wishlist',
         'tracking_tokens' => 'Token Penjejakan',
         'tracking_token' => 'Token Penjejakan',
         'task_status' => 'Status',
@@ -73,6 +94,8 @@ return [
         'view_status' => 'Halaman Status',
         'open_edit_task' => 'Buka Edit Tugasan',
         'open_status_page' => 'Buka Halaman Status',
+        'wishlist_tracker_code_helper_existing' => 'Kod Penjejak Wishlist akan dijana secara automatik apabila projek dicipta.',
+        'wishlist_tracker_code_helper_new' => 'Kod Penjejak Wishlist akan dijana secara automatik apabila projek dicipta.',
     ],
 
     'table' => [
@@ -81,6 +104,8 @@ return [
         'client' => 'Pelanggan',
         'description' => 'Deskripsi',
         'issue_tracker_code' => 'Kod Penjejak Isu',
+        'wishlist_tracker_code' => 'Kod Penjejak Wishlist',
+        'wishlist_tokens_count' => 'Token Wishlist',
         'tracking_tokens_count' => 'Token Penjejakan',
         'status' => 'Status',
         'document_count' => 'Dokumen',
@@ -107,6 +132,12 @@ return [
         'in_progress' => 'Sedang Berjalan',
         'completed' => 'Selesai',
         'trashed' => 'Dihapus',
+    ],
+
+    'status' => [
+        'planning' => 'Perancangan',
+        'in_progress' => 'Sedang Berjalan',
+        'completed' => 'Selesai',
     ],
 
     'search' => [

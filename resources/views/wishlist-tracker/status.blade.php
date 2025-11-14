@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  <title>Issue Status - {{ $task->tracking_token }} - {{ config('app.name') }}</title>
+  <title>Wishlist Status - {{ $task->tracking_token }} - {{ config('app.name') }}</title>
 
   {{-- Favicon --}}
   <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -23,24 +23,24 @@
         loadingTokens: false,
         trackingTokensData: null,
         tokensError: null,
-        issuesCount: 0,
-        async fetchIssuesCount() {
+        wishlistsCount: 0,
+        async fetchWishlistsCount() {
           try {
-            const response = await fetch('/api/issue-trk/{{ $project ? $project->issue_tracker_code : '' }}/tokens/count');
+            const response = await fetch('/api/wishlist-trk/{{ $project ? $project->wishlist_tracker_code : '' }}/tokens/count');
             if (!response.ok) {
-              throw new Error('Failed to fetch issues count');
+              throw new Error('Failed to fetch wishlists count');
             }
             const data = await response.json();
-            this.issuesCount = data.count;
+            this.wishlistsCount = data.count;
           } catch (error) {
-            console.error('Error fetching issues count:', error);
+            console.error('Error fetching wishlists count:', error);
           }
         },
         async fetchTrackingTokens() {
           this.loadingTokens = true;
           this.tokensError = null;
           try {
-            const response = await fetch('/api/issue-trk/{{ $project ? $project->issue_tracker_code : '' }}/tokens');
+            const response = await fetch('/api/wishlist-trk/{{ $project ? $project->wishlist_tracker_code : '' }}/tokens');
             if (!response.ok) {
               throw new Error('Failed to fetch tracking tokens');
             }
@@ -55,14 +55,14 @@
         init() {
           // Wait for window to fully load before fetching count
           window.addEventListener('load', () => {
-            this.fetchIssuesCount();
+            this.fetchWishlistsCount();
           });
         }
       }">
-  
+
   {{-- Loading Transition --}}
   <x-auth-loading />
-    
+
   {{-- Content area --}}
   <div style="flex: 1; overflow-y: auto; min-height: 100vh;">
 
@@ -73,7 +73,7 @@
         <div class="text-center">
           <img src="{{ asset('logos/logo-light.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-32 w-auto mb-8">
           <h1 class="text-3xl font-bold text-gray-900">
-            Issue Tracker Status
+            Wishlist Tracker Status
           </h1>
           <p class="mt-2 text-sm text-gray-600">
             Tracking Code: <span class="inline-block px-3 py-1.5 bg-white rounded-full font-mono font-semibold text-primary-500">{{ $task->tracking_token }}</span>
@@ -82,36 +82,36 @@
 
         {{-- Status Card --}}
         <div class="bg-white shadow-lg rounded-lg p-6 space-y-6">
-          
+
           {{-- Status Roadmap --}}
           <div class="border-b border-gray-200 pb-4">
             <div class="text-center space-y-4">
-              
+
               {{-- Heading --}}
               <h2 class="text-sm font-medium text-gray-500">Status Roadmap</h2>
-              
+
               {{-- Roadmap badges --}}
               @php
                 $statusOrder = [
-                  'issue_tracker' => 1,
+                  'wishlist' => 1,
                   'todo' => 2,
                   'in_progress' => 3,
                   'toreview' => 4,
                   'completed' => 5,
                   'archived' => 6,
                 ];
-                
+
                 $statusLabels = [
-                  'issue_tracker' => 'Issue Tracker',
+                  'wishlist' => 'Wishlist',
                   'todo' => 'To Do',
                   'in_progress' => 'In Progress',
                   'toreview' => 'To Review',
                   'completed' => 'Completed',
                   'archived' => 'Archived',
                 ];
-                
+
                 $currentStatusOrder = $statusOrder[$task->status] ?? 1;
-                
+
                 // Show all statuses with their type (previous, current, upcoming)
                 $statusesToShow = [];
                 foreach ($statusOrder as $status => $order) {
@@ -121,7 +121,7 @@
                   } elseif ($order === $currentStatusOrder) {
                     $statusType = 'current';
                   }
-                  
+
                   $statusesToShow[] = [
                     'key' => $status,
                     'label' => $statusLabels[$status],
@@ -166,7 +166,7 @@
                         $badgeFontSize = 'text-xs';
                         $badgeFontWeight = 'font-semibold';
                       }
-                      
+
                       // Badge opacity and styling based on status type
                       if ($status['type'] === 'current') {
                         $badgeOpacity = '';
@@ -190,27 +190,27 @@
                   @endforeach
                 </div>
               </div>
-              
+
               <script>
                 (function() {
                   'use strict';
-                  
+
                   let isScrolling = false;
-                  
+
                   function scrollToCurrentStatus() {
                     const container = document.getElementById('status-roadmap-container');
                     const currentStatusBadge = document.getElementById('current-status-badge');
-                    
+
                     if (!container || !currentStatusBadge || isScrolling) {
                       return;
                     }
-                    
+
                     isScrolling = true;
-                    
+
                     // Force layout recalculation
                     void container.offsetWidth;
                     void currentStatusBadge.offsetWidth;
-                    
+
                     // Use requestAnimationFrame to ensure layout is stable
                     requestAnimationFrame(function() {
                       requestAnimationFrame(function() {
@@ -219,18 +219,18 @@
                         const badgeOffsetLeft = currentStatusBadge.offsetLeft;
                         const badgeWidth = currentStatusBadge.offsetWidth;
                         const badgeCenter = badgeOffsetLeft + (badgeWidth / 2);
-                        
+
                         // Calculate scroll position to center the badge (not including arrow)
                         const scrollLeft = badgeCenter - (containerWidth / 2);
                         const maxScroll = Math.max(0, containerScrollWidth - containerWidth);
                         const finalScrollLeft = Math.max(0, Math.min(scrollLeft, maxScroll));
-                        
+
                         // Smooth scroll to center
                         container.scrollTo({
                           left: finalScrollLeft,
                           behavior: 'smooth'
                         });
-                        
+
                         // Reset flag after scroll completes
                         setTimeout(function() {
                           isScrolling = false;
@@ -239,7 +239,7 @@
                     });
 
                   }
-                  
+
                   // Initialize when DOM is ready
                   function init() {
                     scrollToCurrentStatus();
@@ -248,27 +248,27 @@
                     setTimeout(scrollToCurrentStatus, 300);
 
                   }
-                  
+
                   if (document.readyState === 'loading') {
                     document.addEventListener('DOMContentLoaded', init);
                   } else {
                     init();
                   }
-                  
+
                   // Re-scroll on window resize
                   let resizeTimer;
                   window.addEventListener('resize', function() {
                     clearTimeout(resizeTimer);
                     resizeTimer = setTimeout(scrollToCurrentStatus, 200);
                   });
-                  
+
                   // Watch for DOM changes (in case status changes)
                   const observer = new MutationObserver(function() {
                     if (!isScrolling) {
                       setTimeout(scrollToCurrentStatus, 100);
                     }
                   });
-                  
+
                   setTimeout(function() {
                     const roadmap = document.getElementById('status-roadmap');
                     if (roadmap) {
@@ -282,21 +282,21 @@
                   }, 500);
                 })();
               </script>
-              
+
               <style>
-                
+
                 /* Hide scrollbar for all browsers */
                 #status-roadmap-container::-webkit-scrollbar {
                   display: none;
                 }
-                
+
                 #status-roadmap-container {
                   -ms-overflow-style: none;
                   scrollbar-width: none;
                   -webkit-overflow-scrolling: touch;
                 }
               </style>
-              
+
               {{-- Submitted on --}}
               <div class="pt-2">
                 <h2 class="text-sm font-medium text-gray-500">Submitted on</h2>
@@ -307,7 +307,7 @@
                       if (is_array($item)) {
                         $title = $item['title'] ?? '';
                         $value = $item['value'] ?? '';
-                        
+
                         if (stripos($title, 'Submitted on') !== false) {
                           $cleanValue = strip_tags($value);
                           $cleanValue = html_entity_decode($cleanValue, ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -317,7 +317,7 @@
                       }
                     }
                   }
-                  
+
                   // Fallback to created_at if not found in extra_information
                   if (!$submittedOn) {
                     $submittedOn = $task->created_at->format('j/n/y').', '.$task->created_at->format('h:i A');
@@ -327,7 +327,7 @@
                   {{ $submittedOn }}
                 </p>
               </div>
-              
+
             </div>
           </div>
 
@@ -350,42 +350,42 @@
           @if($firstImageAttachment)
           <div>
             <div class="rounded-lg overflow-hidden">
-              <img src="{{ asset('storage/'.$firstImageAttachment) }}" 
-                   alt="Attachment preview" 
+              <img src="{{ asset('storage/'.$firstImageAttachment) }}"
+                   alt="Attachment preview"
                    class="w-full h-auto max-h-32 object-cover bg-gray-50">
             </div>
           </div>
           @endif
 
-          {{-- Reporter Information --}}
+          {{-- Requester Information --}}
           <div>
-            <h3 class="text-sm font-medium text-gray-700 mb-3">Reporter Information</h3>
+            <h3 class="text-sm font-medium text-gray-700 mb-3">Requester Information</h3>
             <div class="space-y-2">
               @php
-                $reporterName = 'N/A';
-                $reporterEmail = 'N/A';
-                $reporterWhatsApp = 'N/A';
+                $requesterName = 'N/A';
+                $requesterEmail = 'N/A';
+                $requesterWhatsApp = 'N/A';
                 $communicationPreference = 'N/A';
-                
+
                 if (!empty($task->extra_information) && is_array($task->extra_information)) {
                   foreach ($task->extra_information as $item) {
                     if (is_array($item)) {
                       $title = $item['title'] ?? '';
                       $value = $item['value'] ?? '';
-                      
+
                       // Strip HTML tags from value (RichEditor stores HTML)
                       $cleanValue = strip_tags($value);
                       $cleanValue = html_entity_decode($cleanValue, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                       $cleanValue = trim($cleanValue);
-                      
-                      if (stripos($title, 'Reporter Name') !== false || stripos($title, 'name') !== false) {
-                        $reporterName = $cleanValue ?: 'N/A';
+
+                      if (stripos($title, 'Requester Name') !== false || stripos($title, 'name') !== false) {
+                        $requesterName = $cleanValue ?: 'N/A';
                       }
-                      if (stripos($title, 'Reporter Email') !== false || stripos($title, 'email') !== false) {
-                        $reporterEmail = $cleanValue ?: 'N/A';
+                      if (stripos($title, 'Requester Email') !== false || stripos($title, 'email') !== false) {
+                        $requesterEmail = $cleanValue ?: 'N/A';
                       }
-                      if (stripos($title, 'Reporter WhatsApp') !== false || stripos($title, 'whatsapp') !== false) {
-                        $reporterWhatsApp = $cleanValue ?: 'N/A';
+                      if (stripos($title, 'Requester WhatsApp') !== false || stripos($title, 'whatsapp') !== false) {
+                        $requesterWhatsApp = $cleanValue ?: 'N/A';
                       }
                       if (stripos($title, 'Communication Preference') !== false || stripos($title, 'preference') !== false) {
                         $communicationPreference = $cleanValue ?: 'N/A';
@@ -396,22 +396,22 @@
               @endphp
               <div>
                 <p class="text-xs text-gray-500">Name</p>
-                <p class="text-sm font-medium text-gray-900">{{ $reporterName }}</p>
+                <p class="text-sm font-medium text-gray-900">{{ $requesterName }}</p>
               </div>
               <div>
                 <p class="text-xs text-gray-500">Preferred Communication Method</p>
                 <p class="text-sm font-medium text-gray-900">{{ $communicationPreference }}</p>
               </div>
-              @if($reporterEmail !== 'N/A')
+              @if($requesterEmail !== 'N/A')
               <div>
                 <p class="text-xs text-gray-500">Email</p>
-                <p class="text-sm font-medium text-gray-900">{{ $reporterEmail }}</p>
+                <p class="text-sm font-medium text-gray-900">{{ $requesterEmail }}</p>
               </div>
               @endif
-              @if($reporterWhatsApp !== 'N/A')
+              @if($requesterWhatsApp !== 'N/A')
               <div>
                 <p class="text-xs text-gray-500">WhatsApp Number</p>
-                <p class="text-sm font-medium text-gray-900">{{ $reporterWhatsApp }}</p>
+                <p class="text-sm font-medium text-gray-900">{{ $requesterWhatsApp }}</p>
               </div>
               @endif
             </div>
@@ -425,9 +425,9 @@
           </div>
           @endif
 
-          {{-- Issue Title --}}
+          {{-- Wishlist Title --}}
           <div>
-            <h3 class="text-sm font-medium text-gray-700 mb-3">Issue Title</h3>
+            <h3 class="text-sm font-medium text-gray-700 mb-3">Wishlist Title</h3>
             <p class="text-sm text-gray-900">{{ $task->title }}</p>
           </div>
 
@@ -474,9 +474,9 @@
           {{-- Actions --}}
           <div class="pt-4 border-t border-gray-200">
             @if($project)
-            <a href="{{ route('issue-tracker.show', ['project' => $project->issue_tracker_code]) }}" 
+            <a href="{{ route('wishlist-tracker.show', ['project' => $project->wishlist_tracker_code]) }}"
                class="inline-flex items-center justify-center w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-900 bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
-              Submit Another Issue
+              Submit Another Wishlist Item
             </a>
             @endif
 
@@ -501,12 +501,12 @@
     <button type="button"
             @click="showTrackingTokensModal = true; fetchTrackingTokens()"
             class="fixed top-6 right-6 z-40 inline-flex items-center justify-center w-12 h-12 bg-primary-500 hover:bg-primary-600 text-primary-900 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-            title="View All Submitted Issues">
+            title="View All Submitted Wishlists">
       <x-heroicon-m-inbox class="h-6 w-6" />
 
-      {{-- Issues Count Badge --}}
-      <span x-show="issuesCount > 0"
-            x-text="issuesCount"
+      {{-- Wishlists Count Badge --}}
+      <span x-show="wishlistsCount > 0"
+            x-text="wishlistsCount"
             class="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white bg-danger-500 rounded-full min-w-[18px] h-[18px]">
       </span>
 
@@ -514,7 +514,7 @@
 
   </div>
 
-  {{-- Submitted Issues Slide Panel --}}
+  {{-- Submitted Wishlists Slide Panel --}}
   <div x-show="showTrackingTokensModal"
        x-cloak
        @keydown.escape.window="showTrackingTokensModal = false"
@@ -550,7 +550,7 @@
           </div>
           <div>
             <h2 class="text-base font-semibold leading-6 text-gray-900">
-              Submitted Issues
+              Submitted Wishlists
             </h2>
             <p class="text-xs text-gray-600 mt-1">
               <span x-text="trackingTokensData?.project?.title || 'Loading...'" class="font-medium"></span>
@@ -582,10 +582,10 @@
               {{ __('auth.loading') }}
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Loading submitted issues...
+              Loading submitted wishlists...
             </p>
           </div>
-          
+
         </div>
 
         {{-- Tokens List --}}
@@ -596,7 +596,7 @@
               <div class="flex-1 min-w-0">
                   <div class="flex items-center space-x-2 mb-2">
 
-                    {{-- Issue ID --}}
+                    {{-- Wishlist ID --}}
                     <code class="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full"
                           :class="{ 'text-teal-700 bg-teal-100': token.token === '{{ $task->tracking_token }}' }"
                           x-text="token.token"></code>
@@ -633,7 +633,7 @@
                     </a>
 
                   </div>
-                  
+
               </div>
             </div>
           </template>
@@ -642,8 +642,8 @@
         {{-- Empty State --}}
         <div x-show="!loadingTokens && (!trackingTokensData?.tracking_tokens || trackingTokensData.tracking_tokens.length === 0)" class="flex flex-col items-center justify-center py-12 px-6 text-center">
           <x-heroicon-o-inbox class="h-12 w-12 text-gray-400 mb-4" />
-          <h3 class="text-sm font-medium text-gray-900 mb-1">No submitted issues found</h3>
-          <p class="text-sm text-gray-500">No issues have been submitted for this project yet.</p>
+          <h3 class="text-sm font-medium text-gray-900 mb-1">No submitted wishlists found</h3>
+          <p class="text-sm text-gray-500">No wishlists have been submitted for this project yet.</p>
         </div>
 
         {{-- Error State --}}
@@ -651,7 +651,7 @@
           <svg class="h-12 w-12 text-red-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
-          <h3 class="text-sm font-medium text-gray-900 mb-1">Error loading submitted issues</h3>
+          <h3 class="text-sm font-medium text-gray-900 mb-1">Error loading submitted wishlists</h3>
           <p class="text-sm text-red-500" x-text="tokensError"></p>
         </div>
       </div>
@@ -742,4 +742,3 @@
 
 </body>
 </html>
-

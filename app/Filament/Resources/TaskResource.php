@@ -91,6 +91,7 @@ return false;
 
         $statusLabels = [
             'issue_tracker' => __('action.status.issue_tracker'),
+            'wishlist' => __('action.status.wishlist'),
             'todo' => __('task.status.todo'),
             'in_progress' => __('task.status.in_progress'),
             'toreview' => __('task.status.toreview'),
@@ -298,6 +299,7 @@ return false;
                                                         ->label(__('task.form.status'))
                                                         ->options([
                                                             'issue_tracker' => __('action.status.issue_tracker'),
+                                                            'wishlist' => __('action.status.wishlist'),
                                                             'todo' => __('task.status.todo'),
                                                             'in_progress' => __('task.status.in_progress'),
                                                             'toreview' => __('task.status.toreview'),
@@ -431,13 +433,22 @@ return false;
                                                 ->suffixAction(
                                                     Forms\Components\Actions\Action::make('viewStatus')
                                                         ->icon('heroicon-o-eye')
-                                                        ->label(__('task.form.view_issue_status'))
+                                                        ->label(function (?Task $record) {
+                                                            if ($record && $record->isWishlist()) {
+                                                                return __('task.form.view_wishlist_status');
+                                                            }
+                                                            return __('task.form.view_issue_status');
+                                                        })
                                                         ->url(function (?Task $record) {
                                                             if (! $record || ! $record->tracking_token) {
                                                                 return null;
                                                             }
 
-                                                            return route('issue-tracker.status', ['token' => $record->tracking_token]);
+                                                            if ($record->isWishlist()) {
+                                                                return route('wishlist-tracker.status', ['token' => $record->tracking_token]);
+                                                            } else {
+                                                                return route('issue-tracker.status', ['token' => $record->tracking_token]);
+                                                            }
                                                         })
                                                         ->openUrlInNewTab()
                                                         ->visible(fn (?Task $record) => $record && $record->tracking_token)

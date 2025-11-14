@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreIssueTicketRequest extends FormRequest
+class StoreWishlistRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -69,14 +69,14 @@ class StoreIssueTicketRequest extends FormRequest
             'email.email' => 'Please provide a valid email address.',
             'whatsapp_number.required' => 'Please provide your WhatsApp number.',
             'whatsapp_number.regex' => 'Enter a valid WhatsApp number with + and country code (e.g., +60123456789).',
-            'title.required' => 'Please provide a title for the issue.',
+            'title.required' => 'Please provide a title for the wishlist item.',
             'project_id.required' => 'Project is required.',
             'project_id.exists' => 'The selected project does not exist.',
             'description.required' => 'Description is required.',
             'temp_file_ids.max' => 'You can upload a maximum of 5 files.',
             'temp_file_ids.*.uuid' => 'Invalid file reference.',
-            'search_confirmation.required' => 'Please confirm that you have searched for similar issues.',
-            'search_confirmation.accepted' => 'Please confirm that you have searched for similar issues.',
+            'search_confirmation.required' => 'Please confirm that you have searched for similar wishlist items.',
+            'search_confirmation.accepted' => 'Please confirm that you have searched for similar wishlist items.',
         ];
     }
 }

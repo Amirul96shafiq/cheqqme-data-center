@@ -55,6 +55,7 @@ return [
         'issue_tracker_code' => 'Issue Tracker Code / Tracking Token',
         'open_issue_tracker' => 'Open Issue Tracker',
         'view_issue_status' => 'View Issue Status',
+        'view_wishlist_status' => 'View Wishlist Status',
     ],
     'search' => [
         'status' => 'Status',

@@ -27,6 +27,7 @@ class Project extends Model
         'updated_by',
         'extra_information',
         'issue_tracker_code',
+        'wishlist_tracker_code',
     ];
 
     public function getActivityLogOptions(): LogOptions
@@ -43,6 +44,8 @@ class Project extends Model
                 'created_by',
                 'updated_at',
                 'updated_by',
+                'issue_tracker_code',
+                'wishlist_tracker_code',
             ])
             ->logOnlyDirty() // Only log when values actually change
             ->useLogName('Projects');
@@ -136,6 +139,47 @@ class Project extends Model
             });
     }
 
+    public function getWishlistTokensCountAttribute()
+    {
+        $projectId = $this->id;
+
+        return Task::wishlistTokens()
+            ->where(function (Builder $query) use ($projectId) {
+                $query
+                    ->whereJsonContains('project', $projectId)
+                    ->orWhereJsonContains('project', (string) $projectId)
+                    ->orWhere('project', 'like', '%"'.$projectId.'"%')
+                    ->orWhere('project', 'like', '%['.$projectId.']%');
+            })
+            ->count();
+    }
+
+    public function getWishlistTokens()
+    {
+        $projectId = $this->id;
+
+        return Task::wishlistTokens()
+            ->where(function (Builder $query) use ($projectId) {
+                $query
+                    ->whereJsonContains('project', $projectId)
+                    ->orWhereJsonContains('project', (string) $projectId)
+                    ->orWhere('project', 'like', '%"'.$projectId.'"%')
+                    ->orWhere('project', 'like', '%['.$projectId.']%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->select(['tracking_token', 'title', 'status', 'created_at'])
+            ->get()
+            ->map(function ($task) {
+                return [
+                    'token' => $task->tracking_token,
+                    'title' => $task->title,
+                    'status' => $task->status,
+                    'created_at' => $task->created_at->format('m/d/Y, g:i A'),
+                    'url' => route('wishlist-tracker.status', ['token' => $task->tracking_token]),
+                ];
+            });
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -144,11 +188,17 @@ class Project extends Model
             if (empty($project->issue_tracker_code)) {
                 $project->issue_tracker_code = static::generateIssueTrackerCode();
             }
+            if (empty($project->wishlist_tracker_code)) {
+                $project->wishlist_tracker_code = static::generateWishlistTrackerCode();
+            }
         });
 
         static::updating(function ($project) {
             if (empty($project->issue_tracker_code)) {
                 $project->issue_tracker_code = static::generateIssueTrackerCode();
+            }
+            if (empty($project->wishlist_tracker_code)) {
+                $project->wishlist_tracker_code = static::generateWishlistTrackerCode();
             }
         });
     }
@@ -179,6 +229,34 @@ class Project extends Model
 
             // Check uniqueness
         } while (static::where('issue_tracker_code', $code)->exists());
+
+        return $code;
+    }
+
+    /**
+     * Generate a unique 6-character wishlist tracker code.
+     * Format: 3 uppercase letters + 3 digits, randomly arranged.
+     */
+    public static function generateWishlistTrackerCode(): string
+    {
+        do {
+            // Generate 3 random uppercase letters
+            $letters = '';
+            for ($i = 0; $i < 3; $i++) {
+                $letters .= chr(65 + random_int(0, 25)); // A-Z
+            }
+
+            // Generate 3 random digits
+            $digits = '';
+            for ($i = 0; $i < 3; $i++) {
+                $digits .= random_int(0, 9);
+            }
+
+            // Combine and shuffle
+            $characters = str_split($letters.$digits);
+            shuffle($characters);
+            $code = implode('', $characters);
+        } while (static::where('wishlist_tracker_code', $code)->exists());
 
         return $code;
     }

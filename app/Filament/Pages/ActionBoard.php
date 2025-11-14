@@ -265,6 +265,7 @@ class ActionBoard extends KanbanBoardPage
                                                         ->label(__('task.form.status'))
                                                         ->options([
                                                             'issue_tracker' => __('action.status.issue_tracker'),
+                                                            'wishlist' => __('action.status.wishlist'),
                                                             'todo' => __('task.status.todo'),
                                                             'in_progress' => __('task.status.in_progress'),
                                                             'toreview' => __('task.status.toreview'),
