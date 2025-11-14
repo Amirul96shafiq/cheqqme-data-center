@@ -128,6 +128,9 @@ return [
 
     'filter' => [
         'status' => 'Status',
+        'tracker_type' => 'Jenis Penjejak',
+        'issue_tracker' => 'Penjejak Isu',
+        'wishlist_tracker' => 'Penjejak Wishlist',
         'planning' => 'Perancangan',
         'in_progress' => 'Sedang Berjalan',
         'completed' => 'Selesai',

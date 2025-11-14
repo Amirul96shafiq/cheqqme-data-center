@@ -129,6 +129,9 @@ return [
 
     'filter' => [
         'status' => 'Status',
+        'tracker_type' => 'Tracker Type',
+        'issue_tracker' => 'Issue Tracker',
+        'wishlist_tracker' => 'Wishlist Tracker',
         'planning' => 'Planning',
         'in_progress' => 'In Progress',
         'completed' => 'Completed',

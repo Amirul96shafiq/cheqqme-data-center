@@ -169,29 +169,57 @@ class TrackingTokensRelationManager extends RelationManager
 
             ])
             ->filters([
-                SelectFilter::make('status')
-                    ->label(__('project.form.task_status'))
-                    ->options(function () {
-                        // Dynamically get all statuses from translation file
-                        $statuses = __('action.status');
-                        if (is_array($statuses)) {
-                            return $statuses;
-                        }
-
-                        // Fallback to common statuses if translation structure is different
-                        return [
-                            'issue_tracker' => __('action.status.issue_tracker'),
-                            'todo' => __('action.status.todo'),
-                            'in_progress' => __('action.status.in_progress'),
-                            'toreview' => __('action.status.toreview'),
-                            'completed' => __('action.status.completed'),
-                            'archived' => __('action.status.archived'),
-                        ];
-                    })
+                
+                SelectFilter::make('tracker_type')
+                ->label(__('project.filter.tracker_type'))
+                ->options([
+                    'issue_tracker' => __('project.filter.issue_tracker'),
+                    'wishlist_tracker' => __('project.filter.wishlist_tracker'),
+                    ])
                     ->multiple()
                     ->preload()
-                    ->searchable(),
-            ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (empty($data['values'])) {
+                            return $query;
+                        }
+                        
+                        $query->where(function ($query) use ($data) {
+                            foreach ($data['values'] as $trackerType) {
+                                if ($trackerType === 'issue_tracker') {
+                                    $query->orWhere('tracking_token', 'LIKE', 'CHEQQ-ISU-%');
+                                } elseif ($trackerType === 'wishlist_tracker') {
+                                    $query->orWhere('tracking_token', 'LIKE', 'CHEQQ-WSH-%');
+                                }
+                            }
+                        });
+                        
+                        return $query;
+                    }),
+
+                    SelectFilter::make('status')
+                        ->label(__('project.form.task_status'))
+                        ->options(function () {
+                            // Dynamically get all statuses from translation file
+                            $statuses = __('action.status');
+                            if (is_array($statuses)) {
+                                return $statuses;
+                            }
+    
+                            // Fallback to common statuses if translation structure is different
+                            return [
+                                'issue_tracker' => __('action.status.issue_tracker'),
+                                'todo' => __('action.status.todo'),
+                                'in_progress' => __('action.status.in_progress'),
+                                'toreview' => __('action.status.toreview'),
+                                'completed' => __('action.status.completed'),
+                                'archived' => __('action.status.archived'),
+                            ];
+                        })
+                        ->multiple()
+                        ->preload()
+                        ->searchable(),
+                        
+                    ])
             ->headerActions([
                 // No create action - tracking tokens are created automatically
             ])
