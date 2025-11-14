@@ -252,65 +252,109 @@ $usersForFilter = $usersCollection
                                 {{ __('action.filter.card_type') }}
                             </label>
 
-                            <!-- Card Type Links -->
-                            <div class="space-y-1">
-
-                                <!-- All Cards -->
-                                <a
-                                    href="{{ route('filament.admin.pages.action-board') }}"
-                                    @click.prevent="navigateToCardType('all')"
-                                    class="flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
-                                    :class="{ 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300': cardTypeFilter === 'all' }"
+                            <!-- Custom Dropdown -->
+                            <div class="relative" @click.outside="cardTypeDropdownOpen = false">
+                                <button
+                                    @click="cardTypeDropdownOpen = !cardTypeDropdownOpen"
+                                    type="button"
+                                    class="relative w-full cursor-default rounded-lg bg-white dark:bg-gray-800 py-2 pl-3 pr-10 text-left ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm"
                                 >
-                                    <x-heroicon-o-squares-2x2 class="w-4 h-4 mr-3" />
-                                    <span class="flex-1">
-                                        {{ __('action.filter.card_type_all') }}
+                                    <span class="block truncate text-gray-900 dark:text-white">
+                                        <span x-show="cardTypeFilter === 'all'" x-text="'{{ __('action.filter.card_type_all') }}'"></span>
+                                        <span x-show="cardTypeFilter === 'tasks'" x-text="'{{ __('action.filter.card_type_tasks') }}'"></span>
+                                        <span x-show="cardTypeFilter === 'issue_trackers'" x-text="'{{ __('action.filter.card_type_issue_trackers') }}'"></span>
+                                        <span x-show="cardTypeFilter === 'wishlist_trackers'" x-text="'{{ __('action.filter.card_type_wishlist_trackers') }}'"></span>
                                     </span>
-                                    <span x-show="cardTypeFilter === 'all'" class="w-2 h-2 bg-primary-500 rounded-full"></span>
-                                </a>
+                                    <span class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                                        <x-heroicon-m-chevron-down
+                                            class="h-5 w-5 text-gray-400 transition-transform duration-200"
+                                            ::class="{ 'rotate-180': cardTypeDropdownOpen }"
+                                        />
+                                    </span>
+                                </button>
 
-                                <!-- Tasks Only -->
-                                <a
-                                    href="{{ route('filament.admin.pages.action-board', ['type' => 'task']) }}"
-                                    @click.prevent="navigateToCardType('tasks')"
-                                    class="flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
-                                    :class="{ 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300': cardTypeFilter === 'tasks' }"
+                                <div
+                                    x-show="cardTypeDropdownOpen"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute z-[60] w-full overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 focus:outline-none top-full mt-1"
+                                    style="display: none;"
                                 >
-                                    <x-heroicon-o-clipboard-document-list class="w-4 h-4 mr-3" />
-                                    <span class="flex-1">
-                                        {{ __('action.filter.card_type_tasks') }}
-                                    </span>
-                                    <span x-show="cardTypeFilter === 'tasks'" class="w-2 h-2 bg-primary-500 rounded-full"></span>
-                                </a>
 
-                                <!-- Issue Trackers -->
-                                <a
-                                    href="{{ route('filament.admin.pages.action-board', ['type' => 'issue']) }}"
-                                    @click.prevent="navigateToCardType('issue_trackers')"
-                                    class="flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
-                                    :class="{ 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300': cardTypeFilter === 'issue_trackers' }"
-                                >
-                                    <x-heroicon-o-exclamation-triangle class="w-4 h-4 mr-3" />
-                                    <span class="flex-1">
-                                        {{ __('action.filter.card_type_issue_trackers') }}
-                                    </span>
-                                    <span x-show="cardTypeFilter === 'issue_trackers'" class="w-2 h-2 bg-primary-500 rounded-full"></span>
-                                </a>
+                                    <!-- Card Type List Section -->
+                                    <div class="p-4">
 
-                                <!-- Wishlist Trackers -->
-                                <a
-                                    href="{{ route('filament.admin.pages.action-board', ['type' => 'wishlist']) }}"
-                                    @click.prevent="navigateToCardType('wishlist_trackers')"
-                                    class="flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
-                                    :class="{ 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300': cardTypeFilter === 'wishlist_trackers' }"
-                                >
-                                    <x-heroicon-o-light-bulb class="w-4 h-4 mr-3" />
-                                    <span class="flex-1">
-                                        {{ __('action.filter.card_type_wishlist_trackers') }}
-                                    </span>
-                                    <span x-show="cardTypeFilter === 'wishlist_trackers'" class="w-2 h-2 bg-primary-500 rounded-full"></span>
-                                </a>
+                                        <!-- All Cards -->
+                                        <button
+                                            @click="navigateToCardType('all'); cardTypeDropdownOpen = false"
+                                            type="button"
+                                            class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer"
+                                            :class="cardTypeFilter === 'all'
+                                                ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
+                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+                                        >
+                                            <x-heroicon-o-squares-2x2 class="w-4 h-4 mr-3" />
+                                            <span class="flex-1 text-left">
+                                                {{ __('action.filter.card_type_all') }}
+                                            </span>
+                                            <span x-show="cardTypeFilter === 'all'" class="w-2 h-2 bg-primary-500 rounded-full"></span>
+                                        </button>
 
+                                        <!-- Tasks Only -->
+                                        <button
+                                            @click="navigateToCardType('tasks'); cardTypeDropdownOpen = false"
+                                            type="button"
+                                            class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer"
+                                            :class="cardTypeFilter === 'tasks'
+                                                ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
+                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+                                        >
+                                            <x-heroicon-o-clipboard-document-list class="w-4 h-4 mr-3" />
+                                            <span class="flex-1 text-left">
+                                                {{ __('action.filter.card_type_tasks') }}
+                                            </span>
+                                            <span x-show="cardTypeFilter === 'tasks'" class="w-2 h-2 bg-primary-500 rounded-full"></span>
+                                        </button>
+
+                                        <!-- Issue Trackers -->
+                                        <button
+                                            @click="navigateToCardType('issue_trackers'); cardTypeDropdownOpen = false"
+                                            type="button"
+                                            class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer"
+                                            :class="cardTypeFilter === 'issue_trackers'
+                                                ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
+                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+                                        >
+                                            <x-heroicon-o-exclamation-triangle class="w-4 h-4 mr-3" />
+                                            <span class="flex-1 text-left">
+                                                {{ __('action.filter.card_type_issue_trackers') }}
+                                            </span>
+                                            <span x-show="cardTypeFilter === 'issue_trackers'" class="w-2 h-2 bg-primary-500 rounded-full"></span>
+                                        </button>
+
+                                        <!-- Wishlist Trackers -->
+                                        <button
+                                            @click="navigateToCardType('wishlist_trackers'); cardTypeDropdownOpen = false"
+                                            type="button"
+                                            class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer"
+                                            :class="cardTypeFilter === 'wishlist_trackers'
+                                                ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
+                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+                                        >
+                                            <x-heroicon-o-light-bulb class="w-4 h-4 mr-3" />
+                                            <span class="flex-1 text-left">
+                                                {{ __('action.filter.card_type_wishlist_trackers') }}
+                                            </span>
+                                            <span x-show="cardTypeFilter === 'wishlist_trackers'" class="w-2 h-2 bg-primary-500 rounded-full"></span>
+                                        </button>
+
+                                    </div>
+
+                                </div>
                             </div>
 
                         </div>

@@ -299,6 +299,10 @@ window.globalKanbanFilter = function () {
             );
         },
 
+        toggleCardTypeDropdown() {
+            this.cardTypeDropdownOpen = !this.cardTypeDropdownOpen;
+        },
+
         // Filter methods
         handleAssignedFilterChange() {
             // Update global assigned filter state
@@ -968,7 +972,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (cardTypeFilter === "tasks") {
                             // Show tasks (cards without tracking_token)
                             matchesCardType =
-                                cardTypeValue !== "issue_trackers" && cardTypeValue !== "wishlist_trackers";
+                                cardTypeValue !== "issue_trackers" &&
+                                cardTypeValue !== "wishlist_trackers";
                         } else if (cardTypeFilter === "issue_trackers") {
                             // Show only issue trackers (cards with tracking_token or status 'issue_tracker')
                             matchesCardType =
