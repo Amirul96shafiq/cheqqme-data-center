@@ -70,9 +70,10 @@
         'ff-card--interactive' => $this->editAction() &&  ($this->editAction)(['record' => $record['id']])->isVisible(),
         'ff-card--non-interactive' => !$this->editAction()
     ])
-    x-data="{ 
+    x-data="{
         filterActive: false,
-        showFeaturedImages: {{ session('action_board_show_featured_images', true) ? 'true' : 'false' }}
+        showFeaturedImages: {{ session('action_board_show_featured_images', true) ? 'true' : 'false' }},
+        isDragging: false
     }"
     x-init="
         // Listen for filter events to disable drag and drop
@@ -83,27 +84,35 @@
             const cardType = e?.detail?.cardType || 'all';
             filterActive = search.length > 0 || assignedTo.length > 0 || !!dueDate.preset || !!dueDate.from || !!dueDate.to || cardType !== 'all';
         });
-        
+
         // Listen for featured images visibility changes
         window.addEventListener('featured-images-visibility-changed', (e) => {
             showFeaturedImages = e?.detail?.visible ?? true;
         });
+
+        // Handle card click with immediate response - direct navigation for speed
+        handleMouseUp = (event) => {
+            // Only allow left-clicks when not dragging
+            if (event.button !== 0 || isDragging) {
+                return;
+            }
+
+            // Add visual feedback immediately
+            event.target.closest('.ff-card').style.opacity = '0.7';
+
+            // Direct navigation instead of Livewire action for immediate response
+            const recordId = event.target.closest('.ff-card').dataset.taskId;
+            const editUrl = `/admin/tasks/${recordId}/edit`;
+            window.location.href = editUrl;
+        };
     "
     x-sortable-handle
     x-sortable-item="{{ $record['id'] }}"
     x-bind:class="filterActive ? 'drag-disabled' : ''"
-    x-on:dragstart="filterActive && $event.preventDefault()"
-    x-on:drag="filterActive && $event.preventDefault()"
-    x-on:dragenter="filterActive && $event.preventDefault()"
-    x-on:dragover="filterActive && $event.preventDefault()"
-    x-on:dragleave="filterActive && $event.preventDefault()"
-    x-on:dragend="filterActive && $event.preventDefault()"
-    x-on:drop="filterActive && $event.preventDefault()"
+    x-on:dragstart="isDragging = true; filterActive && $event.preventDefault()"
     @if(!empty($normalizedDueDate)) data-due-date="{{ $normalizedDueDate }}" @endif
     data-task-id="{{ $record['id'] }}"
-    @if($this->editAction() &&  ($this->editAction)(['record' => $record['id']])->isVisible())
-        wire:click="mountAction('edit', {record: '{{ $record['id'] }}'})"
-    @endif
+    x-on:mouseup="handleMouseUp($event)"
     data-card-type="{{ $cardType }}"
     @if(method_exists($this, 'isTaskHighlighted') && $this->isTaskHighlighted((object) ['id' => $record['id']])) data-highlighted="true" @endif
 >
