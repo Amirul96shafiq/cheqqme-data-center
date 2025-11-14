@@ -41,9 +41,17 @@ class CalendarModal extends Component
 
     public function getTaskStatusUrl(Task $task): ?string
     {
-        return $task->tracking_token
-            ? route('issue-tracker.status', ['token' => $task->tracking_token])
-            : null;
+        if (! $task->tracking_token) {
+            return null;
+        }
+
+        // Check if it's a wishlist token
+        if (str_starts_with($task->tracking_token, 'CHEQQ-WSH-')) {
+            return route('wishlist-tracker.status', ['token' => $task->tracking_token]);
+        }
+
+        // Default to issue tracker
+        return route('issue-tracker.status', ['token' => $task->tracking_token]);
     }
 
     public function previousMonth(): void

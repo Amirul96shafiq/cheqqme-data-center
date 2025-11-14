@@ -11,6 +11,7 @@ return [
         'next_month' => 'Next month',
         'tasks' => 'Tasks',
         'issue_trackers' => 'Issue Trackers',
+        'wishlists' => 'Wishlists',
         'meetings' => 'Meetings',
         'loading' => 'Loading',
         'loading_description' => 'Fetching your calendar events...',

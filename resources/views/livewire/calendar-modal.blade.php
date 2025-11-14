@@ -98,17 +98,26 @@
         },
         
         isIssueTracker(task) {
-            return task && (task.status === 'issue_tracker' || task.tracking_token);
+            return task && (task.status === 'issue_tracker' || (task.tracking_token && task.tracking_token.startsWith('CHEQQ-ISU-')));
         },
-        
+
+        isWishlist(task) {
+            return task && (task.status === 'wishlist' || (task.tracking_token && task.tracking_token.startsWith('CHEQQ-WSH-')));
+        },
+
         getRegularTasks() {
             if (!this.popoverEvents.tasks || !Array.isArray(this.popoverEvents.tasks)) return [];
-            return this.popoverEvents.tasks.filter(t => t && !this.isIssueTracker(t));
+            return this.popoverEvents.tasks.filter(t => t && !this.isIssueTracker(t) && !this.isWishlist(t));
         },
-        
+
         getIssueTrackerTasks() {
             if (!this.popoverEvents.tasks || !Array.isArray(this.popoverEvents.tasks)) return [];
             return this.popoverEvents.tasks.filter(t => t && this.isIssueTracker(t));
+        },
+
+        getWishlistTasks() {
+            if (!this.popoverEvents.tasks || !Array.isArray(this.popoverEvents.tasks)) return [];
+            return this.popoverEvents.tasks.filter(t => t && this.isWishlist(t));
         }
     }">
     
@@ -727,6 +736,7 @@
                                 </div>
 
                                 <div class="flex items-center gap-1">
+
                                     {{-- Status Button for Issue Tracker Tasks --}}
                                     <template x-if="task.tracking_token">
                                         <div>
@@ -748,6 +758,7 @@
                                             {{ __('calendar.calendar.edit') }}
                                         </a>
                                     </x-tooltip>
+                                    
                                 </div>
                                 
                             </div>
@@ -756,7 +767,64 @@
                     </template>
                 </div>
             </template>
-            
+
+            {{-- Wishlists Section --}}
+            <template x-if="getWishlistTasks().length > 0">
+                <div class="space-y-2">
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('calendar.calendar.wishlists') }}</p>
+                    <template x-for="task in getWishlistTasks()" :key="task.id">
+                        <div class="px-3 py-2 rounded-lg border-l-4 bg-gray-50 dark:bg-gray-800/50"
+                             :class="{
+                                 'border-red-500': task.priority === 'high' && task.is_assigned,
+                                 'border-yellow-500': task.priority === 'medium' && task.is_assigned,
+                                 'border-green-500': task.priority === 'low' && task.is_assigned,
+                                 'border-gray-300 dark:border-gray-700': !task.is_assigned
+                             }">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium"
+                                          :class="task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
+                                                  task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                                                  'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'"
+                                          x-text="task.priority === 'high' ? '{{ $priorityTranslations['high'] }}' : task.priority === 'medium' ? '{{ $priorityTranslations['medium'] }}' : '{{ $priorityTranslations['low'] }}'"></span>
+                                    <span x-show="task.is_assigned" class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">
+                                        {{ __('calendar.calendar.assigned') }}
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center gap-1">
+
+                                    {{-- Status Button for Wishlist Tasks --}}
+                                    <template x-if="task.tracking_token">
+                                        <div>
+                                            <x-tooltip text="{{ __('calendar.tooltip.view_status') }}" position="left">
+                                                <a :href="task.status_url"
+                                                target="_blank"
+                                                class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                                    {{ __('calendar.calendar.status') }}
+                                                </a>
+                                            </x-tooltip>
+                                        </div>
+                                    </template>
+
+                                    {{-- Edit Task Button --}}
+                                    <x-tooltip text="{{ __('calendar.tooltip.edit_task') }}" position="left">
+                                        <a :href="`{{ url('admin/tasks') }}/${task.id}/edit`"
+                                        target="_blank"
+                                        class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                            {{ __('calendar.calendar.edit') }}
+                                        </a>
+                                    </x-tooltip>
+
+                                </div>
+
+                            </div>
+                            <p class="text-sm text-gray-900 dark:text-gray-100" x-text="task.title"></p>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
             {{-- Meetings Section --}}
             <template x-if="popoverEvents.meetings && popoverEvents.meetings.length > 0">
                 <div class="space-y-2">

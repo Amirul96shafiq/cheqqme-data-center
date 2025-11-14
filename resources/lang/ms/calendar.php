@@ -11,6 +11,7 @@ return [
         'next_month' => 'Bulan seterusnya',
         'tasks' => 'Tugasan',
         'issue_trackers' => 'Penjejak Isu',
+        'wishlists' => 'Senarai Hajat',
         'meetings' => 'Mesyuarat',
         'loading' => 'Memuatkan',
         'loading_description' => 'Mengambil acara kalendar anda...',
