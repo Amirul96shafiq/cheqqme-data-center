@@ -107,7 +107,10 @@
     data-card-type="{{ $cardType }}"
     @if(method_exists($this, 'isTaskHighlighted') && $this->isTaskHighlighted((object) ['id' => $record['id']])) data-highlighted="true" @endif
 >
-    <div class="ff-card__content">
+    <div class="ff-card__content"
+         @if($this->editAction() && ($this->editAction)(['record' => $record['id']])->isVisible())
+         onmousedown="if (event.button === 1) { event.preventDefault(); event.stopPropagation(); window.open('{{ \App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $record['id']]) }}', '_blank'); return false; }"
+         @endif>
         
         {{-- Featured image section --}}
         @if(!empty($record['attributes']['featured_image']['value']))
