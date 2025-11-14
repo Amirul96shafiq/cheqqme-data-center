@@ -20,7 +20,16 @@ return false;
      */
     protected static function getLockedTitles(): array
     {
-        return ['Reporter Name', 'Communication Preference', 'Reporter Email', 'Reporter WhatsApp', 'Submitted on'];
+        return [
+            'Reporter Name',
+            'Communication Preference',
+            'Reporter Email',
+            'Reporter WhatsApp',
+            'Requester Name',
+            'Requester Email',
+            'Requester WhatsApp',
+            'Submitted on',
+        ];
     }
 
     /**
@@ -437,6 +446,7 @@ return false;
                                                             if ($record && $record->isWishlist()) {
                                                                 return __('task.form.view_wishlist_status');
                                                             }
+
                                                             return __('task.form.view_issue_status');
                                                         })
                                                         ->url(function (?Task $record) {
