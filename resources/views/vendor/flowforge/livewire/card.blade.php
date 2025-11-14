@@ -72,11 +72,76 @@
     ])
     x-data="{
         filterActive: false,
-        showFeaturedImages: {{ session('action_board_show_featured_images', true) ? 'true' : 'false' }},
+        showFeaturedImages: true,
         isDragging: false,
         mouseDownPos: null,
         dragThreshold: 5,
-        globalDragActive: false
+
+        // Mouse event handlers
+        handleMouseDown(event) {
+            if (event.button !== 0) return;
+            // Track mouse down position to detect drags
+            this.mouseDownPos = { x: event.clientX, y: event.clientY };
+        },
+
+        handleMouseUp(event) {
+            // Only allow left-clicks
+            if (event.button !== 0) {
+                return;
+            }
+
+            // Check if globally dragging (mousedown anywhere + mouse movement)
+            if (window.globalDragState?.isActive) {
+                return;
+            }
+
+            // Check if locally dragging (sortable drag or local mouse movement)
+            if (this.mouseDownPos) {
+                const deltaX = Math.abs(event.clientX - this.mouseDownPos.x);
+                const deltaY = Math.abs(event.clientY - this.mouseDownPos.y);
+                const moved = deltaX > this.dragThreshold || deltaY > this.dragThreshold;
+
+                if (moved || this.isDragging) {
+                    // Reset for next interaction
+                    this.mouseDownPos = null;
+                    return;
+                }
+            }
+
+            // Check if clicked on interactive elements that should prevent navigation
+            const target = event.target;
+            const interactiveSelectors = [
+                'button',
+                'a',
+                'input',
+                'select',
+                'textarea',
+                '[onclick]',
+                '.ff-card__share-btn',
+                '.cursor-pointer',
+                'x-clickable-avatar-wrapper'
+            ];
+
+            // Check if the clicked element or any parent is interactive
+            for (const selector of interactiveSelectors) {
+                if (target.closest(selector)) {
+                    // Reset for next interaction
+                    this.mouseDownPos = null;
+                    return; // Don't navigate
+                }
+            }
+
+            // Reset for next interaction
+            this.mouseDownPos = null;
+
+            // Add visual feedback immediately
+            event.target.closest('.ff-card').style.opacity = '0.7';
+
+            // Direct navigation instead of Livewire action for immediate response
+            const recordId = event.target.closest('.ff-card').dataset.taskId;
+            const editUrl = `/admin/tasks/${recordId}/edit`;
+            window.location.href = editUrl;
+        }
     }"
     x-init="
         // Listen for filter events to disable drag and drop
@@ -88,80 +153,46 @@
             filterActive = search.length > 0 || assignedTo.length > 0 || !!dueDate.preset || !!dueDate.from || !!dueDate.to || cardType !== 'all';
         });
 
+        // Initialize showFeaturedImages (default to true)
+        showFeaturedImages = true;
+
         // Listen for featured images visibility changes
         window.addEventListener('featured-images-visibility-changed', (e) => {
             showFeaturedImages = e?.detail?.visible ?? true;
         });
 
         // Global drag detection - prevent card clicks during any drag operation
-        let globalMouseDownPos = null;
-        const globalDragThreshold = 5;
+        if (!window.globalDragState) {
+            window.globalDragState = {
+                isActive: false,
+                threshold: 5,
+                mouseDownPos: null
+            };
 
-        document.addEventListener('mousedown', (e) => {
-            globalMouseDownPos = { x: e.clientX, y: e.clientY };
-            globalDragActive = false;
-        });
+            document.addEventListener('mousedown', (e) => {
+                window.globalDragState.mouseDownPos = { x: e.clientX, y: e.clientY };
+                window.globalDragState.isActive = false;
+            });
 
-        document.addEventListener('mousemove', (e) => {
-            if (globalMouseDownPos && !globalDragActive) {
-                const deltaX = Math.abs(e.clientX - globalMouseDownPos.x);
-                const deltaY = Math.abs(e.clientY - globalMouseDownPos.y);
-                if (deltaX > globalDragThreshold || deltaY > globalDragThreshold) {
-                    globalDragActive = true;
+            document.addEventListener('mousemove', (e) => {
+                if (window.globalDragState.mouseDownPos && !window.globalDragState.isActive) {
+                    const deltaX = Math.abs(e.clientX - window.globalDragState.mouseDownPos.x);
+                    const deltaY = Math.abs(e.clientY - window.globalDragState.mouseDownPos.y);
+                    if (deltaX > window.globalDragState.threshold || deltaY > window.globalDragState.threshold) {
+                        window.globalDragState.isActive = true;
+                    }
                 }
-            }
-        });
+            });
 
-        document.addEventListener('mouseup', (e) => {
-            globalMouseDownPos = null;
-            // Keep globalDragActive true until next mousedown to prevent accidental clicks
-            setTimeout(() => {
-                globalDragActive = false;
-            }, 100);
-        });
+            document.addEventListener('mouseup', (e) => {
+                window.globalDragState.mouseDownPos = null;
+                // Keep drag state active briefly to prevent accidental clicks
+                setTimeout(() => {
+                    window.globalDragState.isActive = false;
+                }, 100);
+            });
+        }
 
-        // Handle card click with immediate response - direct navigation for speed
-        handleMouseDown = (event) => {
-            if (event.button !== 0) return;
-            // Track mouse down position to detect drags
-            mouseDownPos = { x: event.clientX, y: event.clientY };
-        };
-
-        handleMouseUp = (event) => {
-            // Only allow left-clicks
-            if (event.button !== 0) {
-                return;
-            }
-
-            // Check if globally dragging (mousedown anywhere + mouse movement)
-            if (globalDragActive) {
-                return;
-            }
-
-            // Check if locally dragging (sortable drag or local mouse movement)
-            if (mouseDownPos) {
-                const deltaX = Math.abs(event.clientX - mouseDownPos.x);
-                const deltaY = Math.abs(event.clientY - mouseDownPos.y);
-                const moved = deltaX > dragThreshold || deltaY > dragThreshold;
-
-                if (moved || isDragging) {
-                    // Reset for next interaction
-                    mouseDownPos = null;
-                    return;
-                }
-            }
-
-            // Reset for next interaction
-            mouseDownPos = null;
-
-            // Add visual feedback immediately
-            event.target.closest('.ff-card').style.opacity = '0.7';
-
-            // Direct navigation instead of Livewire action for immediate response
-            const recordId = event.target.closest('.ff-card').dataset.taskId;
-            const editUrl = `/admin/tasks/${recordId}/edit`;
-            window.location.href = editUrl;
-        };
     "
     x-sortable-handle
     x-sortable-item="{{ $record['id'] }}"
@@ -197,7 +228,7 @@
 
                 {{-- Featured image --}}
                 <div class="block cursor-pointer"
-                     onclick="window.location.href = '{{ \App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $record['id']]) }}'">
+                     onclick="event.stopPropagation(); window.location.href = '{{ \App\Filament\Resources\TaskResource::getUrl('edit', ['record' => $record['id']]) }}'">
                     <img src="{{ $record['attributes']['featured_image']['value'] }}"
                          alt="Featured image"
                          class="w-full h-24 object-cover rounded-t-lg border-l border-r border-t border-gray-200 dark:border-gray-700 hover:opacity-90 transition-opacity"
