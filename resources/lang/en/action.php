@@ -120,6 +120,7 @@ return [
         'card_type_all' => 'All cards',
         'card_type_tasks' => 'Tasks',
         'card_type_issue_trackers' => 'Issue Trackers',
+        'card_type_wishlist_trackers' => 'Wishlist Trackers',
         'selected_card_type' => 'Selected Card Type',
         'selected_label' => 'Selected',
     ],

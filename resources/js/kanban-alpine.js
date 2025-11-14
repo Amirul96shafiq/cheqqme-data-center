@@ -407,10 +407,13 @@ window.globalKanbanFilter = function () {
             if (value === "all") {
                 url.searchParams.delete("type");
             } else {
-                url.searchParams.set(
-                    "type",
-                    value === "tasks" ? "task" : "issue"
-                );
+                let typeParam = "task";
+                if (value === "issue_trackers") {
+                    typeParam = "issue";
+                } else if (value === "wishlist_trackers") {
+                    typeParam = "wishlist";
+                }
+                url.searchParams.set("type", typeParam);
             }
 
             // Update browser history
@@ -965,11 +968,15 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (cardTypeFilter === "tasks") {
                             // Show tasks (cards without tracking_token)
                             matchesCardType =
-                                cardTypeValue !== "issue_trackers";
+                                cardTypeValue !== "issue_trackers" && cardTypeValue !== "wishlist_trackers";
                         } else if (cardTypeFilter === "issue_trackers") {
                             // Show only issue trackers (cards with tracking_token or status 'issue_tracker')
                             matchesCardType =
                                 cardTypeValue === "issue_trackers";
+                        } else if (cardTypeFilter === "wishlist_trackers") {
+                            // Show only wishlist trackers (cards with wishlist tracking_token or status 'wishlist')
+                            matchesCardType =
+                                cardTypeValue === "wishlist_trackers";
                         }
                     }
 

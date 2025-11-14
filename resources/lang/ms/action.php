@@ -86,6 +86,7 @@ return [
         'card_type_all' => 'Semua kad',
         'card_type_tasks' => 'Tugasan',
         'card_type_issue_trackers' => 'Penjejak Isu',
+        'card_type_wishlist_trackers' => 'Penjejak Wishlist',
         'selected_card_type' => 'Jenis Kad Terpilih',
         'selected_label' => 'Terpilih',
         'due_date' => 'Tarikh Akhir',

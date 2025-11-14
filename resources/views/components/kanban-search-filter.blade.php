@@ -297,6 +297,20 @@ $usersForFilter = $usersCollection
                                     <span x-show="cardTypeFilter === 'issue_trackers'" class="w-2 h-2 bg-primary-500 rounded-full"></span>
                                 </a>
 
+                                <!-- Wishlist Trackers -->
+                                <a
+                                    href="{{ route('filament.admin.pages.action-board', ['type' => 'wishlist']) }}"
+                                    @click.prevent="navigateToCardType('wishlist_trackers')"
+                                    class="flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
+                                    :class="{ 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300': cardTypeFilter === 'wishlist_trackers' }"
+                                >
+                                    <x-heroicon-o-star class="w-4 h-4 mr-3" />
+                                    <span class="flex-1">
+                                        {{ __('action.filter.card_type_wishlist_trackers') }}
+                                    </span>
+                                    <span x-show="cardTypeFilter === 'wishlist_trackers'" class="w-2 h-2 bg-primary-500 rounded-full"></span>
+                                </a>
+
                             </div>
 
                         </div>

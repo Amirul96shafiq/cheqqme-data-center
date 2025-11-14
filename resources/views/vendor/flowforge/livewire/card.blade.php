@@ -27,19 +27,21 @@
 @endphp
 
 @php
-    // Determine card type: issue_trackers if task has tracking_token OR status is 'issue_tracker'
+    // Determine card type based on status and tracking token
     $cardType = 'tasks'; // Default to tasks
-    
+
     // Check status first (most reliable, always in record)
     $status = $record['status'] ?? null;
     if ($status === 'issue_tracker') {
         $cardType = 'issue_trackers';
+    } elseif ($status === 'wishlist') {
+        $cardType = 'wishlist_trackers';
     } else {
-        // Check for tracking_token if status is not 'issue_tracker'
-        $trackingToken = $record['tracking_token'] 
-            ?? $record['attributes']['tracking_token']['value'] 
+        // Check for tracking_token if status is not set to tracker types
+        $trackingToken = $record['tracking_token']
+            ?? $record['attributes']['tracking_token']['value']
             ?? null;
-        
+
         // Only query database if tracking_token not found and we have an ID
         if (empty($trackingToken) && isset($record['id'])) {
             try {
@@ -49,10 +51,14 @@
                 // Ignore errors, default to tasks
             }
         }
-        
-        // Set to issue_trackers if tracking_token exists
+
+        // Set card type based on tracking token prefix
         if (!empty($trackingToken) && trim($trackingToken) !== '') {
-            $cardType = 'issue_trackers';
+            if (str_starts_with($trackingToken, 'CHEQQ-ISU-')) {
+                $cardType = 'issue_trackers';
+            } elseif (str_starts_with($trackingToken, 'CHEQQ-WSH-')) {
+                $cardType = 'wishlist_trackers';
+            }
         }
     }
 @endphp

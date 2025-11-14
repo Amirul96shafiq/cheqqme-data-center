@@ -71,6 +71,8 @@ class ActionBoard extends KanbanBoardPage
             $this->cardTypeFilter = 'tasks';
         } elseif ($typeParam === 'issue') {
             $this->cardTypeFilter = 'issue_trackers';
+        } elseif ($typeParam === 'wishlist') {
+            $this->cardTypeFilter = 'wishlist_trackers';
         } else {
             $this->cardTypeFilter = 'all';
         }
