@@ -253,7 +253,7 @@ $usersForFilter = $usersCollection
                             </label>
 
                             <!-- Card Type Links -->
-                            <div class="space-y-2">
+                            <div class="space-y-1">
 
                                 <!-- All Cards -->
                                 <a
@@ -290,7 +290,7 @@ $usersForFilter = $usersCollection
                                     class="flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
                                     :class="{ 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300': cardTypeFilter === 'issue_trackers' }"
                                 >
-                                    <x-heroicon-o-bug-ant class="w-4 h-4 mr-3" />
+                                    <x-heroicon-o-exclamation-triangle class="w-4 h-4 mr-3" />
                                     <span class="flex-1">
                                         {{ __('action.filter.card_type_issue_trackers') }}
                                     </span>
@@ -304,7 +304,7 @@ $usersForFilter = $usersCollection
                                     class="flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
                                     :class="{ 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300': cardTypeFilter === 'wishlist_trackers' }"
                                 >
-                                    <x-heroicon-o-star class="w-4 h-4 mr-3" />
+                                    <x-heroicon-o-light-bulb class="w-4 h-4 mr-3" />
                                     <span class="flex-1">
                                         {{ __('action.filter.card_type_wishlist_trackers') }}
                                     </span>
