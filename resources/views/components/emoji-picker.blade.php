@@ -37,31 +37,8 @@
             />
         </div>
 
-        <!-- Search Input -->
-        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <div class="relative">
-                <input
-                    type="text"
-                    x-model="searchQuery"
-                    @input="filterEmojis()"
-                    placeholder="{{ __('comments.emoji_picker.search_emojis') }}"
-                    class="w-full px-3 py-2 pl-8 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                >
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <x-heroicon-o-magnifying-glass class="w-4 h-4 text-gray-400" />
-                </div>
-                <button
-                    x-show="searchQuery"
-                    @click="clearSearch()"
-                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-                >
-                    <x-heroicon-o-x-mark class="w-4 h-4" />
-                </button>
-            </div>
-        </div>
-
         <!-- Recent Emojis Section -->
-        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700" x-show="!searchQuery && recentEmojis.length > 0">
+        <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700" x-show="recentEmojis.length > 0">
             <div class="mb-2">
                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('comments.emoji_picker.recent') }}</p>
             </div>
@@ -96,17 +73,6 @@
                     </button>
                 </template>
 
-                <!-- No results message -->
-                <div x-show="filteredEmojis.length === 0" class="col-span-6 text-center py-8">
-                    <p class="text-gray-500 dark:text-gray-400 text-sm">{{ __('comments.emoji_picker.no_emojis_found') }} "<span x-text="searchQuery"></span>"</p>
-                    <button
-                        type="button"
-                        @click="clearSearch()"
-                        class="mt-2 text-xs text-primary-600 dark:text-primary-400 hover:underline"
-                    >
-                        {{ __('comments.emoji_picker.clear_search') }}
-                    </button>
-                </div>
             </div>
         </div>
     </div>
