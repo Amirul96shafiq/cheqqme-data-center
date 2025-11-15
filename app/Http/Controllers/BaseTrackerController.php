@@ -67,7 +67,7 @@ abstract class BaseTrackerController extends Controller
 
             // Handle temporary file uploads
             $tempService = new TemporaryFileService;
-            $attachments = !empty($validated['temp_file_ids'])
+            $attachments = ! empty($validated['temp_file_ids'])
                 ? $tempService->moveToPermanent($validated['temp_file_ids'])
                 : [];
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -80,11 +80,11 @@ abstract class BaseTrackerController extends Controller
             // For debugging, show the actual error
             $errorMessage = 'An error occurred while processing your submission. Please try again.';
             if (config('app.debug')) {
-                $errorMessage .= ' Debug: ' . $e->getMessage();
+                $errorMessage .= ' Debug: '.$e->getMessage();
             }
 
             // Log the actual error for debugging
-            \Log::error('Issue/Wishlist submission error: ' . $e->getMessage(), [
+            \Log::error('Issue/Wishlist submission error: '.$e->getMessage(), [
                 'request_data' => $request->except(['_token']),
                 'user_id' => auth()->id(),
                 'exception' => $e->getTraceAsString(),
@@ -135,7 +135,7 @@ abstract class BaseTrackerController extends Controller
         $task->refresh();
 
         // Handle reporter information
-        $this->handleReporterInformation($project, $validated);
+        $this->handleReporterInformation($project, $validated, $request);
 
         return redirect()
             ->route($this->routePrefix.'.show', ['project' => $project->{$this->projectCodeField}])
@@ -266,7 +266,7 @@ abstract class BaseTrackerController extends Controller
     /**
      * Handle reporter information processing.
      */
-    abstract protected function handleReporterInformation(Project $project, array $validated): void;
+    abstract protected function handleReporterInformation(Project $project, array $validated, Request $request): void;
 
     /**
      * Get success message after submission.
@@ -290,7 +290,7 @@ abstract class BaseTrackerController extends Controller
     }
 
     /**
-     * Normalize phone number to +country_code format (e.g., +60123456789)
+     * Normalize phone number to digits only (consistent with ClientResource)
      */
     protected static function normalizePhoneNumber(?string $phone): ?string
     {
@@ -298,37 +298,41 @@ abstract class BaseTrackerController extends Controller
             return null;
         }
 
-        // Extract digits only
+        // Extract digits only (consistent with ClientResource)
         $digits = preg_replace('/\D+/', '', $phone);
 
         if (empty($digits)) {
             return null;
         }
 
-        // Detect country code and normalize
+        // Return digits only (matching ClientResource storage format)
+        return $digits;
+    }
+
+    /**
+     * Detect country code from phone number digits
+     */
+    protected static function detectCountryCode(string $digits): string
+    {
         $countryCodes = [
-            '60' => 'MY', // Malaysia
-            '62' => 'ID', // Indonesia
-            '65' => 'SG', // Singapore
-            '63' => 'PH', // Philippines
-            '1' => 'US',  // USA
+            '60' => 'MY', // Malaysia (+60)
+            '62' => 'ID', // Indonesia (+62)
+            '65' => 'SG', // Singapore (+65)
+            '63' => 'PH', // Philippines (+63)
+            '1' => 'US', // USA (+1)
+            '86' => 'CN', // China (+86)
+            '91' => 'IN', // India (+91)
+            '44' => 'GB', // UK (+44)
+            '61' => 'AU', // Australia (+61)
         ];
 
-        // Check if already starts with country code
         foreach ($countryCodes as $code => $country) {
             if (str_starts_with($digits, $code)) {
-                return '+'.$digits;
+                return $country;
             }
         }
 
-        // If starts with 0, remove it and add default country code (60 for MY)
-        if (str_starts_with($digits, '0')) {
-            $digits = ltrim($digits, '0');
-
-            return '+60'.$digits;
-        }
-
-        // Default to Malaysia country code if no match
-        return '+60'.$digits;
+        // Default to Malaysia if no match
+        return 'MY';
     }
 }

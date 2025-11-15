@@ -67,49 +67,107 @@ class IssueTrackerController extends BaseTrackerController
     /**
      * Handle reporter information processing.
      */
-    protected function handleReporterInformation(Project $project, array $validated): void
+    protected function handleReporterInformation(Project $project, array $validated, Request $request): void
     {
         // Auto-transfer reporter information to client's staff_information
         $client = $project->client;
         if ($client) {
             $reporterName = $validated['name'];
             $reporterEmail = in_array($validated['communication_preference'], ['email', 'both'])
-                ? ($validated['email'] ?? null)
+                ? ($request->input('email') ?? null)
                 : null;
             $reporterWhatsapp = in_array($validated['communication_preference'], ['whatsapp', 'both'])
-                ? ($validated['whatsapp_number'] ?? null)
+                ? ($request->input('whatsapp_number') ?? null)
                 : null;
 
-            // Normalize phone number to +country_code format
+            // Normalize phone number to digits only
             $normalizedWhatsapp = static::normalizePhoneNumber($reporterWhatsapp);
 
-            // Check for duplicates (based on normalized phone number only)
+            // Smart duplicate detection and staff management
             $existingStaff = $client->staff_information ?? [];
             $isDuplicate = false;
 
-            if ($normalizedWhatsapp) {
-                foreach ($existingStaff as $staff) {
-                    $existingContact = $staff['staff_contact_number'] ?? null;
-                    if ($existingContact) {
-                        $normalizedExisting = static::normalizePhoneNumber($existingContact);
-                        if ($normalizedExisting === $normalizedWhatsapp) {
-                            $isDuplicate = true;
-                            break;
-                        }
-                    }
+            foreach ($existingStaff as $staff) {
+                $existingName = $staff['staff_name'] ?? null;
+                $existingEmail = $staff['staff_email'] ?? null;
+                $existingContact = $staff['staff_contact_number'] ?? null;
+
+                // Name matching (case-insensitive, trimmed)
+                $nameMatch = $existingName &&
+                             strtolower(trim($existingName)) === strtolower(trim($reporterName));
+
+                // Email matching (case-insensitive, trimmed)
+                $emailMatch = $existingEmail && $reporterEmail &&
+                              strtolower(trim($existingEmail)) === strtolower(trim($reporterEmail));
+
+                // Phone matching (normalized digits comparison)
+                $phoneMatch = false;
+                if ($normalizedWhatsapp && $existingContact) {
+                    $normalizedExisting = static::normalizePhoneNumber($existingContact);
+                    $phoneMatch = $normalizedExisting === $normalizedWhatsapp;
+                }
+
+                // Smart duplicate detection: Only consider exact matches as duplicates
+                if (($nameMatch && $phoneMatch) || // Same name AND same phone
+                    ($nameMatch && $emailMatch && $emailMatch !== null) || // Same name AND same email
+                    ($phoneMatch && $emailMatch && $emailMatch !== null)) { // Same phone AND same email
+                    $isDuplicate = true;
+                    break;
                 }
             }
 
-            // Add if not duplicate
-            if (! $isDuplicate) {
-                $existingStaff[] = [
-                    'staff_name' => $reporterName,
-                    'staff_email' => $reporterEmail,
-                    'staff_contact_number' => $normalizedWhatsapp,
-                ];
+            // Handle staff information storage/updates
+            if (! $isDuplicate && (! empty($reporterName) || ! empty($normalizedWhatsapp))) {
+                // Check if we have existing staff with same name (to update contact info)
+                $existingStaffIndex = null;
+                foreach ($existingStaff as $index => $staff) {
+                    $existingName = $staff['staff_name'] ?? null;
+                    if ($existingName && strtolower(trim($existingName)) === strtolower(trim($reporterName))) {
+                        $existingStaffIndex = $index;
+                        break;
+                    }
+                }
 
-                $client->staff_information = $existingStaff;
-                $client->save();
+                if ($existingStaffIndex !== null) {
+                    // Update existing staff with new contact information
+                    if (! empty($normalizedWhatsapp)) {
+                        $existingStaff[$existingStaffIndex]['staff_contact_number'] = $normalizedWhatsapp;
+                        $existingStaff[$existingStaffIndex]['staff_contact_number_country'] = static::detectCountryCode($normalizedWhatsapp);
+                    }
+                    if (! empty($reporterEmail)) {
+                        $existingStaff[$existingStaffIndex]['staff_email'] = trim($reporterEmail);
+                    }
+                    // Update timestamp to show this contact info was recently verified
+                    $existingStaff[$existingStaffIndex]['updated_at'] = now()->toISOString();
+                } else {
+                    // Create new staff entry
+                    $countryCode = static::detectCountryCode($normalizedWhatsapp ?? '');
+                    $staffEmail = (! empty($reporterEmail) && ! empty($normalizedWhatsapp)) ? trim($reporterEmail) : null;
+
+                    $newStaff = [
+                        'staff_name' => trim($reporterName) ?: null,
+                        'staff_email' => $staffEmail,
+                        'staff_contact_number' => $normalizedWhatsapp,
+                        'staff_contact_number_country' => $countryCode,
+                        'added_from' => 'issue_tracker',
+                        'added_at' => now()->toISOString(),
+                        'communication_preference' => $validated['communication_preference'],
+                    ];
+
+                    // Remove null values
+                    $newStaff = array_filter($newStaff, function ($value) {
+                        return $value !== null && $value !== '';
+                    });
+
+                    if (! empty($newStaff)) {
+                        $existingStaff[] = $newStaff;
+                    }
+                }
+
+                if (! empty($existingStaff)) {
+                    $client->staff_information = $existingStaff;
+                    $client->save();
+                }
             }
         }
     }
