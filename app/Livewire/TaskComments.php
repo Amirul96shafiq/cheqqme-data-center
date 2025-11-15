@@ -259,7 +259,13 @@ class TaskComments extends Component implements HasForms
         $this->composerData['newComment'] = '';
         // Invalidate cached total count
         $this->cachedTotalComments = null;
-        // keep visibleCount stable (newest-first list already includes new comment)
+
+        // Ensure visibleCount is large enough to show the new comment (newest-first ordering)
+        $totalComments = $this->getTotalCommentsProperty();
+        if ($this->visibleCount < $totalComments) {
+            $this->visibleCount = $totalComments;
+        }
+
         $this->dispatch('refreshTaskComments');
         // Browser event to forcibly clear editor DOM (fallback)
         $this->dispatch('resetComposerEditor');
@@ -808,7 +814,7 @@ class TaskComments extends Component implements HasForms
     // Get the comments
     public function getCommentsProperty()
     {
-        return $this->task->comments()
+        $comments = $this->task->comments()
             ->whereNull('parent_id') // Only top-level comments
             ->with([
                 // Ensure modal has full user info (email, country, timezone, cover_image, online_status, spotify_id)
@@ -824,6 +830,8 @@ class TaskComments extends Component implements HasForms
             ->orderByDesc('created_at')
             ->take($this->visibleCount)
             ->get();
+
+        return $comments;
     }
 
     // Get the total comments
