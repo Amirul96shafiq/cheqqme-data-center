@@ -151,9 +151,7 @@ window.emojiPicker = function (commentId) {
         userReactions: [],
         loading: false,
         pickerStyle: {},
-        searchQuery: "",
         allEmojis: [],
-        filteredEmojis: [],
         recentEmojis: [],
 
         init() {
@@ -345,27 +343,6 @@ window.emojiPicker = function (commentId) {
                     ],
                 },
             ];
-
-            this.filteredEmojis = [...this.allEmojis];
-        },
-
-        filterEmojis() {
-            if (!this.searchQuery.trim()) {
-                this.filteredEmojis = [...this.allEmojis];
-                return;
-            }
-
-            const query = this.searchQuery.toLowerCase();
-            this.filteredEmojis = this.allEmojis.filter((item) =>
-                item.keywords.some((keyword) =>
-                    keyword.toLowerCase().includes(query)
-                )
-            );
-        },
-
-        clearSearch() {
-            this.searchQuery = "";
-            this.filterEmojis();
         },
 
         loadRecentEmojis() {

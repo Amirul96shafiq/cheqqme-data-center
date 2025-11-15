@@ -61,7 +61,7 @@
         <!-- Emoji Grid -->
         <div class="p-4">
             <div class="grid grid-cols-6 gap-3">
-                <template x-for="emojiItem in filteredEmojis" :key="emojiItem.emoji">
+                <template x-for="emojiItem in allEmojis" :key="emojiItem.emoji">
                     <button
                         type="button"
                         class="emoji-button w-full aspect-square flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-100 text-2xl focus:outline-none focus:ring-2 focus:ring-primary-500"
