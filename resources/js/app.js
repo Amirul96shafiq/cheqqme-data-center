@@ -1,6 +1,7 @@
 // Import all modules
 import "./bootstrap";
 import "./app-custom";
+import "./emoji-picker";
 import "./presence-status";
 import "./user-mention-system";
 import "./task-viewers";
