@@ -12,7 +12,7 @@
         'lg' => 'w-5 h-5',
         default => 'w-4 h-4'
     };
-    
+
     $variantClasses = match($variant) {
         'minimal' => 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200',
         'default' => 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600',
@@ -20,12 +20,14 @@
     };
 @endphp
 
-<button 
-    type="button" 
+<button
+    type="button"
     @if($onClick) onclick="{{ $onClick }}" @endif
-    class="{{ $variantClasses }}"
+    class="{{ $attributes->get('class', '') }} {{ $variantClasses }}"
     aria-label="{{ $ariaLabel }}"
-    {{ $attributes }}
+    @if(isset($attributes['@click'])) @click="{{ $attributes['@click'] }}" @endif
+    @if(isset($attributes['x-on:click'])) x-on:click="{{ $attributes['x-on:click'] }}" @endif
+    {{ $attributes->except(['class', '@click', 'x-on:click']) }}
 >
     <x-heroicon-o-x-mark class="{{ $sizeClasses }}" />
 </button>

@@ -33,15 +33,13 @@
              class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
             
             <!-- Close Button -->
-            <button type="button" 
-                    @click="closeModal('deleteComment')" 
-                    class="absolute end-4 top-4 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900" 
-                    aria-label="Close">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button>
+            <x-close-button
+                @click="closeModal('deleteComment')"
+                size="lg"
+                variant="minimal"
+                class="absolute top-4 right-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                aria-label="Close"
+            />
             
             <!-- Content -->
             <div class="flex flex-col items-center text-center">
@@ -99,11 +97,11 @@
              class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
             
             <!-- Close Button -->
-            <x-close-button 
-                @click="closeModal('deleteReply')" 
+            <x-close-button
+                @click="closeModal('deleteReply')"
                 size="lg"
                 variant="minimal"
-                class="absolute end-4 top-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                class="absolute top-4 right-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                 aria-label="Close"
             />
             
@@ -163,11 +161,11 @@
              class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
             
             <!-- Close Button -->
-            <x-close-button 
-                @click="closeModal('forceDeleteComment')" 
+            <x-close-button
+                @click="closeModal('forceDeleteComment')"
                 size="lg"
                 variant="minimal"
-                class="absolute end-4 top-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                class="absolute top-4 right-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                 aria-label="Close"
             />
             
@@ -227,11 +225,11 @@
              class="relative w-full max-w-sm md:max-w-md mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 px-6 pt-8 pb-6 pointer-events-auto">
 
             <!-- Close Button -->
-            <x-close-button 
+            <x-close-button
                 @click="closeModal('forceDeleteReply')"
                 size="lg"
                 variant="minimal"
-                class="absolute end-4 top-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                class="absolute top-4 right-4 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
                 aria-label="Close"
             />
 
@@ -1073,7 +1071,7 @@
     window.globalModalContainer = function() {
         return {
             modals: window.globalModals,
-            
+
             // Changelog modal data
             loading: true,
             commits: [],
@@ -1081,37 +1079,37 @@
             pagination: null,
             currentPage: 1,
             expandedCommit: null,
-            
+
             init() {
                 // Debug: Log initial modal state
                 // console.log('Global modal container initialized', window.globalModals);
-                
+
                 // Force reset all modals to false on init
                 Object.keys(window.globalModals).forEach(key => {
                     window.globalModals[key].show = false;
                 });
-                
+
                 this.updateModals();
-                
+
                 // Remove x-cloak after initialization
                 this.$el.removeAttribute('x-cloak');
-                
+
                 // console.log('Global modal container ready');
-                
+
                 // Listen for custom events to update modals
                 document.addEventListener('global-modal-opened', (event) => {
                     // console.log('Global modal opened:', event.detail);
                     this.updateModals();
                 });
-                
+
                 document.addEventListener('global-modal-closed', (event) => {
                         // console.log('Global modal closed:', event.detail);
                     this.updateModals();
-                    
+
                     // Don't reset changelog data when modal is closed
                     // Keep the content so it doesn't show "No commits found"
                 });
-                
+
                 // Listen for changelog modal opened event
                 document.addEventListener('changelog-modal-opened', () => {
                     // Only load data if not already loaded
@@ -1126,7 +1124,7 @@
                         }
                     });
                 });
-                
+
                 // Handle escape key
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
@@ -1364,7 +1362,8 @@
                 this.pagination = null;
                 this.currentPage = 1;
                 this.loading = true;
-            }
+            },
+
         }
     };
 
