@@ -50,15 +50,7 @@ class UserProductivityChart extends ApexChartWidget
 
             Select::make('user_ids')
                 ->label(__('dashboard.analytics.user_productivity.filters.users'))
-                ->options(function () {
-                    return User::withTrashed()
-                        ->orderBy('username')
-                        ->get()
-                        ->mapWithKeys(fn ($u) => [
-                            $u->id => ($u->username ?: 'User #'.$u->id).($u->deleted_at ? ' (deleted)' : ''),
-                        ])
-                        ->toArray();
-                })
+                ->options(User::getUserSelectOptions())
                 ->searchable()
                 ->preload()
                 ->native(false)

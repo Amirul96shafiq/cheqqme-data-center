@@ -39,15 +39,7 @@ class TaskStatusChart extends ApexChartWidget
         return [
             Select::make('user_ids')
                 ->label(__('dashboard.analytics.task_status_distribution.filters.users'))
-                ->options(function () {
-                    return \App\Models\User::withTrashed()
-                        ->orderBy('username')
-                        ->get()
-                        ->mapWithKeys(fn ($u) => [
-                            $u->id => ($u->username ?: 'User #'.$u->id).($u->deleted_at ? ' (deleted)' : ''),
-                        ])
-                        ->toArray();
-                })
+                ->options(\App\Models\User::getUserSelectOptions())
                 ->searchable()
                 ->preload()
                 ->native(false)
