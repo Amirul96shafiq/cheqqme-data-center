@@ -65,12 +65,21 @@ class TrackingTokensRelationManager extends RelationManager
             });
     }
 
+    protected function getStatusRouteForToken(string $token): string
+    {
+        if (str_starts_with($token, 'CHEQQ-WSH-')) {
+            return route('wishlist-tracker.status', ['token' => $token]);
+        }
+
+        return route('issue-tracker.status', ['token' => $token]);
+    }
+
     protected function getIssueStatusTextForCopy(Task $task, Model $project): string
     {
         $projectTitle = $project->title ?? 'TBD';
         $issueTitle = $task->title ?: __('project.actions.issue_status_no_title');
         $statusLabel = $this->formatIssueStatusLabel($task->status);
-        $statusUrl = route('issue-tracker.status', ['token' => $task->tracking_token]);
+        $statusUrl = $this->getStatusRouteForToken($task->tracking_token);
         $submittedAt = $task->created_at?->format('j/n/y, h:i A');
 
         $submittedLine = $submittedAt ? "\n🔹 Reported On: {$submittedAt}" : '';
@@ -111,7 +120,7 @@ class TrackingTokensRelationManager extends RelationManager
                     ->searchable()
                     ->sortable()
                     ->copyable()
-                    ->copyableState(fn (Task $record): string => route('issue-tracker.status', ['token' => $record->tracking_token]))
+                    ->copyableState(fn (Task $record): string => $this->getStatusRouteForToken($record->tracking_token))
                     ->color('primary'),
 
                 ViewColumn::make('title')
@@ -229,7 +238,7 @@ class TrackingTokensRelationManager extends RelationManager
                     ->label('')
                     ->icon('heroicon-o-link')
                     ->color('primary')
-                    ->url(fn ($record) => route('issue-tracker.status', ['token' => $record->tracking_token]))
+                    ->url(fn ($record) => $this->getStatusRouteForToken($record->tracking_token))
                     ->openUrlInNewTab()
                     ->visible(fn ($record) => ! empty($record->tracking_token)),
 
