@@ -480,14 +480,9 @@ return false;
                                                         ->visible(fn (?Task $record) => $record && $record->tracking_token)
                                                 )
                                                 ->visible(function (?Task $record) {
-                                                    // Show only for issue tracker and wishlist tasks
-                                                    // This way it persists even when task is moved to other columns
-                                                    if (! $record || ! $record->tracking_token) {
-                                                        return false;
-                                                    }
-
-                                                    // Only show for issue_tracker and wishlist status tasks
-                                                    return in_array($record->status, ['issue_tracker', 'wishlist']);
+                                                    // Show for any task that has a tracking_token
+                                                    // This persists even when task is moved to other columns
+                                                    return $record && $record->tracking_token;
                                                 })
                                                 ->columnSpanFull(),
 
