@@ -660,6 +660,53 @@
           fileInput.value = '';
         });
 
+        // Handle pasted images anywhere inside the form
+        const formElement = document.querySelector('form');
+
+        if (formElement) {
+        formElement.addEventListener('paste', async function(e) {
+          if (!e.clipboardData || !e.clipboardData.files || e.clipboardData.files.length === 0) {
+            return;
+          }
+
+          const files = Array.from(e.clipboardData.files).filter(file => file.type.startsWith('image/'));
+
+          if (files.length === 0) {
+            return;
+          }
+
+          e.preventDefault();
+
+          for (const file of files) {
+            // Check file count
+            if (uploadedTempFiles.length >= maxFiles) {
+              alert(`You can only upload a maximum of ${maxFiles} files.`);
+              break;
+            }
+
+            // Check file size
+            if (file.size > maxSize) {
+              alert(`File "${file.name}" exceeds the maximum size of 8MB.`);
+              continue;
+            }
+
+            // Check file type
+            if (!allowedTypes.includes(file.type)) {
+              alert(`File "${file.name}" is not an allowed type. Only JPG, JPEG, PNG, PDF, and MP4 files are allowed.`);
+              continue;
+            }
+
+            try {
+              const tempFile = await uploadFile(file);
+              uploadedTempFiles.push(tempFile);
+              updateFileList();
+            } catch (error) {
+              alert(`Failed to upload "${file.name}": ${error.message}`);
+            }
+          }
+        });
+        }
+
         // Drag and drop
         const dropZone = fileInput.closest('.border-dashed');
         if (dropZone) {
