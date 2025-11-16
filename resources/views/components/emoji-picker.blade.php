@@ -42,11 +42,11 @@
             <div class="mb-2">
                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('comments.emoji_picker.recent') }}</p>
             </div>
-            <div class="flex gap-2 px-2">
+            <div class="flex gap-0.5">
                 <template x-for="emoji in recentEmojis.slice(0, 5)" :key="emoji">
                     <button
                         type="button"
-                        class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-2xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        class="flex-shrink-0 w-14 h-14 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-4xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                         :data-emoji="emoji"
                         @click="addReaction(emoji)"
                         :class="{ 'bg-primary-100 dark:bg-primary-900': userReactions.includes(emoji) }"
@@ -60,7 +60,7 @@
 
         <!-- Emoji Grid -->
         <div class="p-4">
-            <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+            <div class="flex gap-0.5 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
                 <template x-for="emojiItem in allEmojis" :key="emojiItem.emoji">
                     <button
                         type="button"
