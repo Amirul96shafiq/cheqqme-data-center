@@ -49,8 +49,7 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "exclude-from-classmap": [
-            "vendor/google/apiclient/src/Google/Service/**",
-            "vendor/google/apiclient/src/Google/Service/*.php",
+            "vendor/google/apiclient-services/src/**",
             "vendor/google/apiclient/tests/**",
             "vendor/filament/**/tests/**",
             "vendor/laravel/**/tests/**",
