@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
+use Schmeits\FilamentCharacterCounter\Forms\Components\RichEditor;
 
 class TaskResource extends Resource /*public static function shouldRegisterNavigation(): bool
 {
@@ -486,8 +487,9 @@ return false;
                                                 })
                                                 ->columnSpanFull(),
 
-                                            Forms\Components\RichEditor::make('description')
+                                            RichEditor::make('description')
                                                 ->label(__('task.form.description'))
+                                                ->maxLength(700)
                                                 ->toolbarButtons([
                                                     'bold',
                                                     'italic',
@@ -498,7 +500,6 @@ return false;
                                                     'codeBlock',
                                                 ])
                                                 ->extraAttributes(['style' => 'resize: vertical;'])
-                                                ->reactive()
                                                 ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
                                                     // Convert plain text with \n to HTML if description is plain text
                                                     if ($state && ! preg_match('/<[^>]+>/', $state)) {
@@ -519,22 +520,6 @@ return false;
                                                     }
 
                                                     return $state;
-                                                })
-                                                ->helperText(function (Forms\Get $get) {
-                                                    $raw = $get('description') ?? '';
-                                                    $noHtml = strip_tags($raw);
-                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                    $remaining = 700 - mb_strlen($decoded);
-
-                                                    return __('task.edit.description_helper', ['count' => $remaining]);
-                                                })
-                                                ->rule(function (Forms\Get $get): \Closure {
-                                                    return function (string $attribute, $value, \Closure $fail) {
-                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                        if (mb_strlen($textOnly) > 700) {
-                                                            $fail(__('task.edit.description_warning'));
-                                                        }
-                                                    };
                                                 })
                                                 ->nullable()
                                                 ->columnSpanFull(),
@@ -1088,8 +1073,9 @@ return false;
                                                             return in_array($title, static::getLockedTitles(), true);
                                                         }),
 
-                                                    Forms\Components\RichEditor::make('value')
+                                                    RichEditor::make('value')
                                                         ->label(__('task.form.value'))
+                                                        ->maxLength(500)
                                                         ->toolbarButtons([
                                                             'bold',
                                                             'italic',
@@ -1100,27 +1086,10 @@ return false;
                                                             'codeBlock',
                                                         ])
                                                         ->extraAttributes(['style' => 'resize: vertical;'])
-                                                        ->reactive()
                                                         ->disabled(function (Forms\Get $get) {
                                                             $title = (string) ($get('title') ?? '');
 
                                                             return in_array($title, static::getLockedTitles(), true);
-                                                        })
-                                                        ->helperText(function (Forms\Get $get) {
-                                                            $raw = $get('value') ?? '';
-                                                            $noHtml = strip_tags($raw);
-                                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                            $remaining = 500 - mb_strlen($decoded);
-
-                                                            return __('task.edit.extra_information_helper', ['count' => $remaining]);
-                                                        })
-                                                        ->rule(function (Forms\Get $get): \Closure {
-                                                            return function (string $attribute, $value, \Closure $fail) {
-                                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                                if (mb_strlen($textOnly) > 500) {
-                                                                    $fail(__('task.edit.extra_information_warning'));
-                                                                }
-                                                            };
                                                         })
                                                         ->columnSpanFull(),
                                                 ])

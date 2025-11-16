@@ -18,6 +18,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Schmeits\FilamentCharacterCounter\Forms\Components\RichEditor;
 
 class MeetingLinkResource extends Resource
 {
@@ -839,6 +840,7 @@ class MeetingLinkResource extends Resource
                                 ->schema([
                                     Forms\Components\RichEditor::make('notes')
                                         ->label(__('meetinglink.form.description'))
+                                        ->maxLength(500)
                                         ->toolbarButtons([
                                             'bold',
                                             'italic',
@@ -849,23 +851,6 @@ class MeetingLinkResource extends Resource
                                             'codeBlock',
                                         ])
                                         ->extraAttributes(['style' => 'resize: vertical;'])
-                                        ->reactive()
-                                        ->helperText(function (Forms\Get $get) {
-                                            $raw = $get('notes') ?? '';
-                                            $noHtml = strip_tags($raw);
-                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                            $remaining = 500 - mb_strlen($decoded);
-
-                                            return 'Characters remaining: '.$remaining;
-                                        })
-                                        ->rule(function (Forms\Get $get): \Closure {
-                                            return function (string $attribute, $value, \Closure $fail) {
-                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                if (mb_strlen($textOnly) > 500) {
-                                                    $fail('Description must not exceed 500 characters.');
-                                                }
-                                            };
-                                        })
                                         ->nullable()
                                         ->columnSpanFull(),
 
@@ -878,6 +863,7 @@ class MeetingLinkResource extends Resource
                                                 ->columnSpanFull(),
                                             Forms\Components\RichEditor::make('value')
                                                 ->label(__('meetinglink.form.extra_info_value'))
+                                                ->maxLength(500)
                                                 ->toolbarButtons([
                                                     'bold',
                                                     'italic',
@@ -888,23 +874,6 @@ class MeetingLinkResource extends Resource
                                                     'codeBlock',
                                                 ])
                                                 ->extraAttributes(['style' => 'resize: vertical;'])
-                                                ->reactive()
-                                                ->helperText(function (Forms\Get $get) {
-                                                    $raw = $get('value') ?? '';
-                                                    $noHtml = strip_tags($raw);
-                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                    $remaining = 500 - mb_strlen($decoded);
-
-                                                    return 'Characters remaining: '.$remaining;
-                                                })
-                                                ->rule(function (Forms\Get $get): \Closure {
-                                                    return function (string $attribute, $value, \Closure $fail) {
-                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                        if (mb_strlen($textOnly) > 500) {
-                                                            $fail('Value must not exceed 500 characters.');
-                                                        }
-                                                    };
-                                                })
                                                 ->columnSpanFull(),
                                         ])
                                         ->defaultItems(1)

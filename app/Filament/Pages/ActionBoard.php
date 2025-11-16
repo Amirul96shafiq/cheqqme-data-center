@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use App\Filament\Resources\TaskResource;
 use App\Models\Task;
-use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Forms;
@@ -14,6 +13,7 @@ use Filament\Support\Enums\Alignment;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Relaticle\Flowforge\Filament\Pages\KanbanBoardPage;
+use Schmeits\FilamentCharacterCounter\Forms\Components\RichEditor;
 
 class ActionBoard extends KanbanBoardPage
 {
@@ -290,8 +290,9 @@ class ActionBoard extends KanbanBoardPage
                                                         ->nullable(),
                                                 ]),
 
-                                            Forms\Components\RichEditor::make('description')
+                                            RichEditor::make('description')
                                                 ->label(__('task.form.description'))
+                                                ->maxLength(700)
                                                 ->toolbarButtons([
                                                     'bold',
                                                     'italic',
@@ -302,23 +303,6 @@ class ActionBoard extends KanbanBoardPage
                                                     'codeBlock',
                                                 ])
                                                 ->extraAttributes(['style' => 'resize: vertical;'])
-                                                ->reactive()
-                                                ->helperText(function (Forms\Get $get) {
-                                                    $raw = $get('description') ?? '';
-                                                    $noHtml = strip_tags($raw);
-                                                    $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                    $remaining = 700 - mb_strlen($decoded);
-
-                                                    return __('task.edit.description_helper', ['count' => $remaining]);
-                                                })
-                                                ->rule(function (Forms\Get $get): Closure {
-                                                    return function (string $attribute, $value, Closure $fail) {
-                                                        $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                        if (mb_strlen($textOnly) > 700) {
-                                                            $fail(__('task.edit.description_warning'));
-                                                        }
-                                                    };
-                                                })
                                                 ->nullable()
                                                 ->columnSpanFull(),
 
@@ -704,8 +688,9 @@ class ActionBoard extends KanbanBoardPage
                                                         ->maxLength(100)
                                                         ->columnSpanFull(),
 
-                                                    Forms\Components\RichEditor::make('value')
+                                                    RichEditor::make('value')
                                                         ->label(__('task.form.value'))
+                                                        ->maxLength(500)
                                                         ->toolbarButtons([
                                                             'bold',
                                                             'italic',
@@ -716,23 +701,6 @@ class ActionBoard extends KanbanBoardPage
                                                             'codeBlock',
                                                         ])
                                                         ->extraAttributes(['style' => 'resize: vertical;'])
-                                                        ->reactive()
-                                                        ->helperText(function (Forms\Get $get) {
-                                                            $raw = $get('value') ?? '';
-                                                            $noHtml = strip_tags($raw);
-                                                            $decoded = html_entity_decode($noHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                            $remaining = 500 - mb_strlen($decoded);
-
-                                                            return __('task.edit.extra_information_helper', ['count' => $remaining]);
-                                                        })
-                                                        ->rule(function (Forms\Get $get): Closure {
-                                                            return function (string $attribute, $value, Closure $fail) {
-                                                                $textOnly = trim(preg_replace('/\s+/', ' ', strip_tags($value ?? '')));
-                                                                if (mb_strlen($textOnly) > 500) {
-                                                                    $fail(__('task.edit.extra_information_warning'));
-                                                                }
-                                                            };
-                                                        })
                                                         ->columnSpanFull(),
 
                                                 ])

@@ -14,8 +14,8 @@ use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
+use Schmeits\FilamentCharacterCounter\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -404,6 +404,7 @@ class ProjectResource extends Resource
 
                         RichEditor::make('notes')
                             ->label(__('project.form.notes'))
+                            ->maxLength(500)
                             ->toolbarButtons([
                                 'bold',
                                 'italic',
@@ -414,39 +415,10 @@ class ProjectResource extends Resource
                                 'bulletList',
                                 'codeBlock',
                             ])
-                            // ->maxLength(500)
                             ->extraAttributes([
                                 'style' => 'resize: vertical;',
                             ])
                             ->live()
-                            // Character limit helper text
-                            ->helperText(function (Get $get) {
-                                $raw = $get('notes') ?? '';
-                                if (empty($raw)) {
-                                    return __('project.form.notes_helper', ['count' => 500]);
-                                }
-
-                                // Optimized character counting - strip tags and count
-                                $textOnly = strip_tags($raw);
-                                $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                $remaining = max(0, 500 - mb_strlen($textOnly));
-
-                                return __('project.form.notes_helper', ['count' => $remaining]);
-                            })
-                            // Block save if over 500 visible characters
-                            ->rule(function (Get $get): Closure {
-                                return function (string $attribute, $value, Closure $fail) {
-                                    if (empty($value)) {
-                                        return;
-                                    }
-                                    $textOnly = strip_tags($value);
-                                    $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                    $textOnly = trim(preg_replace('/\s+/', ' ', $textOnly));
-                                    if (mb_strlen($textOnly) > 500) {
-                                        $fail(__('project.form.notes_warning'));
-                                    }
-                                };
-                            })
                             ->nullable(),
 
                         Repeater::make('extra_information')
@@ -462,6 +434,7 @@ class ProjectResource extends Resource
                                             ->columnSpanFull(),
                                         RichEditor::make('value')
                                             ->label(__('project.form.extra_value'))
+                                            ->maxLength(500)
                                             ->toolbarButtons([
                                                 'bold',
                                                 'italic',
@@ -476,35 +449,6 @@ class ProjectResource extends Resource
                                                 'style' => 'resize: vertical;',
                                             ])
                                             ->live()
-                                            ->reactive()
-                                            // Character limit reactive function
-                                            ->helperText(function (Get $get) {
-                                                $raw = $get('value') ?? '';
-                                                if (empty($raw)) {
-                                                    return __('project.form.notes_helper', ['count' => 500]);
-                                                }
-
-                                                // Optimized character counting - strip tags and count
-                                                $textOnly = strip_tags($raw);
-                                                $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                $remaining = max(0, 500 - mb_strlen($textOnly));
-
-                                                return __('project.form.notes_helper', ['count' => $remaining]);
-                                            })
-                                            // Block save if over 500 visible characters
-                                            ->rule(function (Get $get): Closure {
-                                                return function (string $attribute, $value, Closure $fail) {
-                                                    if (empty($value)) {
-                                                        return;
-                                                    }
-                                                    $textOnly = strip_tags($value);
-                                                    $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                    $textOnly = trim(preg_replace('/\s+/', ' ', $textOnly));
-                                                    if (mb_strlen($textOnly) > 500) {
-                                                        $fail(__('project.form.notes_warning'));
-                                                    }
-                                                };
-                                            })
                                             ->nullable()
                                             ->columnSpanFull(),
                                     ]),

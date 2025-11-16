@@ -5,10 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PhoneNumberResource\Pages;
 use App\Filament\Resources\PhoneNumberResource\RelationManagers\PhoneNumberActivityLogRelationManager;
 use App\Models\PhoneNumber;
-use Closure;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -24,6 +22,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Schmeits\FilamentCharacterCounter\Forms\Components\RichEditor;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class PhoneNumberResource extends Resource
@@ -146,6 +145,7 @@ class PhoneNumberResource extends Resource
 
                         RichEditor::make('notes')
                             ->label(__('phonenumber.form.notes'))
+                            ->maxLength(500)
                             ->toolbarButtons([
                                 'bold',
                                 'italic',
@@ -156,39 +156,10 @@ class PhoneNumberResource extends Resource
                                 'bulletList',
                                 'codeBlock',
                             ])
-                            // ->maxLength(500)
                             ->extraAttributes([
                                 'style' => 'resize: vertical;',
                             ])
                             ->live()
-                            // Character limit helper text
-                            ->helperText(function (Get $get) {
-                                $raw = $get('notes') ?? '';
-                                if (empty($raw)) {
-                                    return __('phonenumber.form.notes_helper', ['count' => 500]);
-                                }
-
-                                // Optimized character counting - strip tags and count
-                                $textOnly = strip_tags($raw);
-                                $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                $remaining = max(0, 500 - mb_strlen($textOnly));
-
-                                return __('phonenumber.form.notes_helper', ['count' => $remaining]);
-                            })
-                            // Block save if over 500 visible characters
-                            ->rule(function (Get $get): Closure {
-                                return function (string $attribute, $value, Closure $fail) {
-                                    if (empty($value)) {
-                                        return;
-                                    }
-                                    $textOnly = strip_tags($value);
-                                    $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                    $textOnly = trim(preg_replace('/\s+/', ' ', $textOnly));
-                                    if (mb_strlen($textOnly) > 500) {
-                                        $fail(__('phonenumber.form.notes_warning'));
-                                    }
-                                };
-                            })
                             ->nullable(),
 
                         Repeater::make('extra_information')
@@ -204,6 +175,7 @@ class PhoneNumberResource extends Resource
                                             ->columnSpanFull(),
                                         RichEditor::make('value')
                                             ->label(__('phonenumber.form.extra_value'))
+                                            ->maxLength(500)
                                             ->toolbarButtons([
                                                 'bold',
                                                 'italic',
@@ -218,35 +190,7 @@ class PhoneNumberResource extends Resource
                                                 'style' => 'resize: vertical;',
                                             ])
                                             ->live()
-                                            ->reactive()
-                                            // Character limit reactive function
-                                            ->helperText(function (Get $get) {
-                                                $raw = $get('value') ?? '';
-                                                if (empty($raw)) {
-                                                    return __('phonenumber.form.notes_helper', ['count' => 500]);
-                                                }
-
-                                                // Optimized character counting - strip tags and count
-                                                $textOnly = strip_tags($raw);
-                                                $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                $remaining = max(0, 500 - mb_strlen($textOnly));
-
-                                                return __('phonenumber.form.notes_helper', ['count' => $remaining]);
-                                            })
-                                            // Block save if over 500 visible characters
-                                            ->rule(function (Get $get): Closure {
-                                                return function (string $attribute, $value, Closure $fail) {
-                                                    if (empty($value)) {
-                                                        return;
-                                                    }
-                                                    $textOnly = strip_tags($value);
-                                                    $textOnly = html_entity_decode($textOnly, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                                                    $textOnly = trim(preg_replace('/\s+/', ' ', $textOnly));
-                                                    if (mb_strlen($textOnly) > 500) {
-                                                        $fail(__('phonenumber.form.notes_warning'));
-                                                    }
-                                                };
-                                            })
+                                            //->reactive()
                                             ->nullable()
                                             ->columnSpanFull(),
                                     ]),
