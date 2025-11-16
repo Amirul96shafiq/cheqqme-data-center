@@ -974,7 +974,7 @@ class MeetingLinkResource extends Resource
                     ->color('primary')
                     ->formatStateUsing(fn ($state) => $state ? str_replace(['https://', 'http://'], '', $state) : null)
                     ->url(fn ($record) => $record->meeting_url)
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('meeting_start_time')
@@ -1035,7 +1035,7 @@ class MeetingLinkResource extends Resource
                         return $shortName ? $formatted.' ('.$shortName.')' : $formatted;
                     })
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
 
                 Tables\Columns\ViewColumn::make('updated_by')
                     ->label(__('meetinglink.table.updated_at_by'))

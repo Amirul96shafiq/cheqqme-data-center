@@ -591,21 +591,21 @@ class ProjectResource extends Resource
                     ->label(__('project.table.status'))
                     ->view('filament.resources.project-resource.status-column')
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('document_count')
                     ->label(__('project.table.document_count'))
                     ->badge()
                     ->alignCenter()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('important_url_count')
                     ->label(__('project.table.important_url_count'))
                     ->badge()
                     ->alignCenter()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
                     ->label(__('project.table.created_at_by'))
