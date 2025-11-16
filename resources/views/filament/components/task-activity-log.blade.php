@@ -43,6 +43,8 @@
                         <p class="text-xs font-medium {{ $activity['causer_id'] === auth()->id() ? 'text-primary-600 dark:text-primary-300' : 'text-gray-900 dark:text-white' }}">
                             @if(isset($activity['is_issue_tracker']) && $activity['is_issue_tracker'])
                                 {{ $activity['reporter_name'] ?? 'Unknown' }}@if($activity['reporter_email'] ?? null) ({{ $activity['reporter_email'] }})@endif
+                            @elseif(isset($activity['is_wishlist_tracker']) && $activity['is_wishlist_tracker'])
+                                {{ $activity['requester_name'] ?? 'Unknown' }}@if($activity['requester_email'] ?? null) ({{ $activity['requester_email'] }})@elseif($activity['requester_whatsapp'] ?? null) ({{ $activity['requester_whatsapp'] }})@endif
                             @else
                                 {{ $activity['causer_id'] === auth()->id() ? __('task.activity_log.you') : $activity['causer_name'] }}
                             @endif
@@ -59,6 +61,11 @@
                             {{ __('task.activity_log.activity_issue_tracker_created') }}
                             <span class="text-xs text-gray-500 dark:text-gray-400">
                                 (@if($activity['issue_tracker_code'] ?? null){{ $activity['issue_tracker_code'] }}, @endif{{ $activity['tracking_token'] ?? '' }})
+                            </span>
+                        @elseif(isset($activity['is_wishlist_tracker']) && $activity['is_wishlist_tracker'])
+                            {{ __('task.activity_log.activity_wishlist_tracker_created') }}
+                            <span class="text-xs text-gray-500 dark:text-gray-400">
+                                (@if($activity['wishlist_tracker_code'] ?? null){{ $activity['wishlist_tracker_code'] }}, @endif{{ $activity['tracking_token'] ?? '' }})
                             </span>
                         @elseif(\Illuminate\Support\Facades\Lang::has("task.activity_log.{$descKey}"))
                             {{ __("task.activity_log.{$descKey}") }}

@@ -121,5 +121,6 @@ return [
         'activity_deleted' => 'Dihapus',
         'activity_task_moved' => 'Tugasan Dipindahkan',
         'activity_issue_tracker_created' => 'Penjejak Isu dicipta',
+        'activity_wishlist_tracker_created' => 'Penjejak Wishlist dicipta',
     ],
 ];

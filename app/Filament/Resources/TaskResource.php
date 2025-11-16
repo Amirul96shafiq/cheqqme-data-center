@@ -1274,7 +1274,7 @@ return false;
                                                                 'causer_id' => $activity->causer_id,
                                                             ];
 
-                                                            // For 'created' or 'Task created' activities, check if it's an issue tracker creation
+                                                            // For 'created' or 'Task created' activities, check if it's an issue tracker or wishlist tracker creation
                                                             if ($activity->description === 'created' || $activity->description === 'Task created') {
                                                                 $attributes = $activity->properties->get('attributes', []);
                                                                 $status = $attributes['status'] ?? null;
@@ -1284,9 +1284,13 @@ return false;
                                                                 $extraInformation = $attributes['extra_information'] ?? [];
                                                                 $projectIds = $attributes['project'] ?? [];
 
+                                                                // Check if tracking token starts with issue tracker or wishlist tracker prefix
+                                                                $isIssueTracker = ! empty($trackingToken) && str_starts_with($trackingToken, 'CHEQQ-ISU-');
+                                                                $isWishlistTracker = ! empty($trackingToken) && str_starts_with($trackingToken, 'CHEQQ-WSH-');
+
                                                                 // Check if this is an issue tracker creation
                                                                 // Use task record status and tracking_token since activity log might not have tracking_token
-                                                                if (($status === 'issue_tracker' || $record->status === 'issue_tracker') && ! empty($trackingToken)) {
+                                                                if (($status === 'issue_tracker' || $record->status === 'issue_tracker' || $isIssueTracker) && ! empty($trackingToken)) {
                                                                     // Extract reporter information from extra_information
                                                                     $reporterName = null;
                                                                     $reporterEmail = null;
@@ -1315,6 +1319,46 @@ return false;
                                                                     $activityData['reporter_name'] = $reporterName;
                                                                     $activityData['reporter_email'] = $reporterEmail;
                                                                     $activityData['issue_tracker_code'] = $issueTrackerCode;
+                                                                    $activityData['tracking_token'] = $trackingToken;
+                                                                }
+                                                                // Check if this is a wishlist tracker creation
+                                                                elseif (($status === 'wishlist' || $record->status === 'wishlist' || $isWishlistTracker) && ! empty($trackingToken)) {
+                                                                    // Extract requester information from extra_information
+                                                                    $requesterName = null;
+                                                                    $requesterEmail = null;
+                                                                    $requesterWhatsapp = null;
+                                                                    $communicationPreference = null;
+                                                                    if (is_array($extraInformation)) {
+                                                                        foreach ($extraInformation as $item) {
+                                                                            if (isset($item['title']) && isset($item['value'])) {
+                                                                                if ($item['title'] === 'Requester Name') {
+                                                                                    $requesterName = $item['value'];
+                                                                                } elseif ($item['title'] === 'Requester Email') {
+                                                                                    $requesterEmail = $item['value'];
+                                                                                } elseif ($item['title'] === 'Requester WhatsApp') {
+                                                                                    $requesterWhatsapp = $item['value'];
+                                                                                } elseif ($item['title'] === 'Communication Preference') {
+                                                                                    $communicationPreference = $item['value'];
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                    // Get wishlist tracker code from project
+                                                                    $wishlistTrackerCode = null;
+                                                                    if (! empty($projectIds) && is_array($projectIds) && ! empty($projectIds[0])) {
+                                                                        $project = \App\Models\Project::find($projectIds[0]);
+                                                                        if ($project) {
+                                                                            $wishlistTrackerCode = $project->wishlist_tracker_code;
+                                                                        }
+                                                                    }
+
+                                                                    $activityData['is_wishlist_tracker'] = true;
+                                                                    $activityData['requester_name'] = $requesterName;
+                                                                    $activityData['requester_email'] = $requesterEmail;
+                                                                    $activityData['requester_whatsapp'] = $requesterWhatsapp;
+                                                                    $activityData['communication_preference'] = $communicationPreference;
+                                                                    $activityData['wishlist_tracker_code'] = $wishlistTrackerCode;
                                                                     $activityData['tracking_token'] = $trackingToken;
                                                                 }
                                                             }

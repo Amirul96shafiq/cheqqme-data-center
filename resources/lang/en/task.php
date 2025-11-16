@@ -120,5 +120,6 @@ return [
         'activity_deleted' => 'Deleted',
         'activity_task_moved' => 'Task Moved',
         'activity_issue_tracker_created' => 'Issue Tracker created',
+        'activity_wishlist_tracker_created' => 'Wishlist Tracker created',
     ],
 ];
