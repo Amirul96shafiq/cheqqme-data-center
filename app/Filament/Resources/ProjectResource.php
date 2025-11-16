@@ -551,7 +551,8 @@ class ProjectResource extends Resource
                     ->label(__('project.table.client'))
                     ->view('filament.resources.project-resource.client-column')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('issue_tracker_code')
                     ->label(__('project.table.issue_tracker_code'))
