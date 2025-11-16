@@ -236,7 +236,9 @@
                         <div class="flex-1 min-w-0">
                             <div class="flex items-start justify-between gap-2">
                                 <div class="flex flex-col">
-                                        <span class="comment-username text-gray-900 dark:text-gray-100 leading-none">{{ $comment->user->username ?? __('comments.meta.unknown') }}</span>
+                                        <x-clickable-avatar-wrapper :user="$comment->user">
+                                            <span class="comment-username text-gray-900 dark:text-gray-100 leading-none cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200">{{ $comment->user->username ?? __('comments.meta.unknown') }}</span>
+                                        </x-clickable-avatar-wrapper>
                                         <span class="mt-1 comment-meta text-gray-500 dark:text-gray-400" title="{{ $comment->isDeleted() && $comment->deletion_timestamp ? $comment->deletion_timestamp->format('j/n/y, h:i A') : $comment->created_at->format('j/n/y, h:i A') }}">
                                             @if($comment->isDeleted() && $comment->deletion_timestamp)
                                                 {{ $comment->deletion_timestamp->diffForHumans(short: true) }} · {{ $comment->deletion_timestamp->format('j/n/y, h:i A') }}
@@ -487,7 +489,9 @@
                                                     <div class="flex-1 min-w-0">
                                                         <div class="flex items-start justify-between gap-2">
                                                             <div class="flex flex-col">
-                                                                <span class="comment-username text-gray-900 dark:text-gray-100 leading-none text-sm">{{ $reply->user->username ?? __('comments.meta.unknown') }}</span>
+                                                                <x-clickable-avatar-wrapper :user="$reply->user">
+                                                                    <span class="comment-username text-gray-900 dark:text-gray-100 leading-none text-sm cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200">{{ $reply->user->username ?? __('comments.meta.unknown') }}</span>
+                                                                </x-clickable-avatar-wrapper>
                                                                 <span class="mt-1 comment-meta text-gray-500 dark:text-gray-400 text-xs" title="{{ $reply->isDeleted() && $reply->deletion_timestamp ? $reply->deletion_timestamp->format('j/n/y, h:i A') : $reply->created_at->format('j/n/y, h:i A') }}">
                                                                     @if($reply->isDeleted() && $reply->deletion_timestamp)
                                                                         {{ $reply->deletion_timestamp->diffForHumans(short: true) }} · {{ $reply->deletion_timestamp->format('j/n/y, h:i A') }}
