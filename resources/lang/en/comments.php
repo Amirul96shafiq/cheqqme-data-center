@@ -115,6 +115,7 @@ return [
         'error_deleting_comment' => 'Error deleting comment',
     ],
     'emoji_picker' => [
+        'tooltip' => 'Pick reaction',
         'add_reaction' => 'Add Reaction',
         'close' => 'Close',
         'search_emojis' => 'Search emojis',

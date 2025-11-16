@@ -115,6 +115,7 @@ return [
         'error_deleting_comment' => 'Ralat memadam komen',
     ],
     'emoji_picker' => [
+        'tooltip' => 'Pilih reaksi',
         'add_reaction' => 'Tambah Reaksi',
         'close' => 'Tutup',
         'search_emojis' => 'Cari emojis',
