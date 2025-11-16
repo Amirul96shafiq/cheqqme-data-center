@@ -53,6 +53,7 @@ return [
         'create_document' => 'Create Document',
         'create_important_url' => 'Create Important URL',
         'issue_tracker_code' => 'Issue Tracker Code / Tracking Token',
+        'wishlist_tracker_code' => 'Wishlist Tracker Code / Tracking Token',
         'open_issue_tracker' => 'Open Issue Tracker',
         'view_issue_status' => 'View Issue Status',
         'view_wishlist_status' => 'View Wishlist Status',

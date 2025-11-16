@@ -329,12 +329,20 @@ return false;
 
                                                 ]),
 
-                                            // Issue Tracker Code Display
-                                            // Show if task was created from issue tracker submission (has tracking_token)
+                                            // Tracker Code Display
+                                            // Show if task was created from issue tracker or wishlist tracker submission
                                             // This persists even when task is moved to other columns
-                                            // Displays both: Issue Tracker Code (project) and Tracking Token (task)
+                                            // Displays both: Tracker Code (project) and Tracking Token (task)
                                             Forms\Components\TextInput::make('issue_tracker_code_display')
-                                                ->label(__('task.form.issue_tracker_code'))
+                                                ->label(function (?Task $record) {
+                                                    if (! $record) {
+                                                        return __('task.form.issue_tracker_code');
+                                                    }
+
+                                                    return $record->isWishlist()
+                                                        ? __('task.form.wishlist_tracker_code')
+                                                        : __('task.form.issue_tracker_code');
+                                                })
                                                 ->default(function (?Task $record) {
                                                     if (! $record || ! $record->tracking_token) {
                                                         return null;
@@ -464,13 +472,14 @@ return false;
                                                         ->visible(fn (?Task $record) => $record && $record->tracking_token)
                                                 )
                                                 ->visible(function (?Task $record) {
-                                                    // Show if task has tracking_token (created from issue tracker)
+                                                    // Show only for issue tracker and wishlist tasks
                                                     // This way it persists even when task is moved to other columns
                                                     if (! $record || ! $record->tracking_token) {
                                                         return false;
                                                     }
 
-                                                    return true; // Show if tracking_token exists, even without project
+                                                    // Only show for issue_tracker and wishlist status tasks
+                                                    return in_array($record->status, ['issue_tracker', 'wishlist']);
                                                 })
                                                 ->columnSpanFull(),
 
