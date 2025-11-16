@@ -57,6 +57,8 @@ return [
         'open_issue_tracker' => 'Buka Penjejak Isu',
         'view_issue_status' => 'Lihat Status Isu',
         'view_wishlist_status' => 'Lihat Status Wishlist',
+        'disabled_for_issue_tracker' => 'Tidak Aktif untuk Penjejak Isu',
+        'disabled_for_wishlist_tracker' => 'Tidak Aktif untuk Penjejak Wishlist',
     ],
     'search' => [
         'status' => 'Status',

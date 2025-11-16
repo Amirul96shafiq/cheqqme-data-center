@@ -57,6 +57,8 @@ return [
         'open_issue_tracker' => 'Open Issue Tracker',
         'view_issue_status' => 'View Issue Status',
         'view_wishlist_status' => 'View Wishlist Status',
+        'disabled_for_issue_tracker' => 'Disabled for Issue Tracker',
+        'disabled_for_wishlist_tracker' => 'Disabled for Wishlist Tracker',
     ],
     'search' => [
         'status' => 'Status',

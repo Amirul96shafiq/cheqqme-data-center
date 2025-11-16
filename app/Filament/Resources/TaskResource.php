@@ -149,7 +149,15 @@ return false;
                                             // Enable/Disable Attachments, Resources, Additional Information
                                             Forms\Components\Fieldset::make('')
                                                 ->label(function (?Task $record) {
-                                                    return ! empty($record?->tracking_token) ? 'Disabled for Issue Tracker' : '';
+                                                    if (empty($record?->tracking_token)) {
+                                                        return '';
+                                                    }
+
+                                                    if ($record->isWishlist()) {
+                                                        return __('task.form.disabled_for_wishlist_tracker');
+                                                    }
+
+                                                    return __('task.form.disabled_for_issue_tracker');
                                                 })
                                                 ->schema([
 
