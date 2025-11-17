@@ -41,7 +41,7 @@ return [
 
     'section' => [
         'trello_board_info' => 'Maklumat Papan Trello',
-        'display_info' => 'Maklumat Paparan Papan Trello',
+        'display_info' => 'Maklumat Status Sumber',
         'extra_info' => 'Maklumat Tambahan Papan Trello',
         'activity_logs' => 'Log Aktiviti',
     ],
