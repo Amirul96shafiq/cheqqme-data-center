@@ -381,6 +381,35 @@ class TrelloBoardResource extends Resource
                             ? __('trelloboard.actions.hide_from_boards')
                             : __('trelloboard.actions.show_on_boards'))
                         ->hidden(fn ($record) => $record->trashed()),
+
+                    Tables\Actions\Action::make('toggle_status')
+                        ->label(fn ($record) => $record->status === 'active'
+                            ? __('trelloboard.actions.make_draft')
+                            : __('trelloboard.actions.make_active'))
+                        ->icon(fn ($record) => $record->status === 'active' ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
+                        ->color(fn ($record) => $record->status === 'active' ? 'warning' : 'success')
+                        ->action(function ($record) {
+                            $newStatus = $record->status === 'active' ? 'draft' : 'active';
+
+                            $record->update([
+                                'status' => $newStatus,
+                                'updated_by' => auth()->id(),
+                            ]);
+
+                            // Show success notification
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('trelloboard.actions.status_updated'))
+                                ->body($newStatus === 'active'
+                                    ? __('trelloboard.actions.board_activated')
+                                    : __('trelloboard.actions.board_made_draft'))
+                                ->success()
+                                ->send();
+                        })
+                        ->tooltip(fn ($record) => $record->status === 'active'
+                            ? __('trelloboard.actions.make_draft_tooltip')
+                            : __('trelloboard.actions.make_active_tooltip'))
+                        ->hidden(fn ($record) => $record->trashed() || $record->created_by !== auth()->id()),
+
                     ActivityLogTimelineTableAction::make(__('trelloboard.actions.log')),
                     Tables\Actions\DeleteAction::make()
                         ->label(__('trelloboard.actions.delete')),

@@ -31,6 +31,12 @@ return [
         'toggle_show_on_boards_modal_confirm' => 'Toggle Status',
         'status_updated' => 'Status updated successfully',
         'refresh_sidebar_notification' => 'Please refresh the page to see the updated Trello boards in the sidebar.',
+        'make_draft' => 'Change to Draft',
+        'make_active' => 'Change to Active',
+        'make_draft_tooltip' => 'Change this board to Draft status (only you can see it)',
+        'make_active_tooltip' => 'Change this board to Active status (all users can see it)',
+        'board_activated' => 'Board is now Active and visible to all users.',
+        'board_made_draft' => 'Board is now in Draft mode and only visible to you.',
     ],
 
     'section' => [
