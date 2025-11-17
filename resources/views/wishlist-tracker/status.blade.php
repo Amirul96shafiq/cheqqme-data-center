@@ -698,7 +698,6 @@
 
                     {{-- View Button --}}
                     <a :href="token.url"
-                       target="_blank"
                        x-show="token.token !== '{{ $task->tracking_token }}'"
                        class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-primary-900 bg-primary-500 hover:bg-primary-600 rounded-md shadow-sm transition-all duration-200 opacity-0 group-hover:opacity-100 w-1/6 text-center"
                        x-cloak>
