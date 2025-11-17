@@ -125,6 +125,46 @@ class PhoneNumberResource extends Resource
                     ])
                     ->columns(2),
 
+                Section::make(__('phonenumber.section.visibility_status'))
+                    ->schema([
+                        \Filament\Forms\Components\Radio::make('visibility_status')
+                            ->label(__('phonenumber.form.visibility_status'))
+                            ->options([
+                                'active' => __('phonenumber.form.visibility_status_active'),
+                                'draft' => __('phonenumber.form.visibility_status_draft'),
+                            ])
+                            ->default('active')
+                            ->inline()
+                            ->required()
+                            ->helperText(__('phonenumber.form.visibility_status_helper'))
+                            ->disabled(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = PhoneNumber::find($recordId);
+
+                                    return $record && $record->created_by !== auth()->id();
+                                }
+
+                                // We're creating - never disable
+                                return false;
+                            })
+                            ->visible(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = PhoneNumber::find($recordId);
+
+                                    return $record && $record->created_by === auth()->id();
+                                }
+
+                                // We're creating - always show
+                                return true;
+                            }),
+                    ]),
+
                 Section::make()
                     ->heading(function (Get $get) {
                         $count = 0;
@@ -190,7 +230,7 @@ class PhoneNumberResource extends Resource
                                                 'style' => 'resize: vertical;',
                                             ])
                                             ->live()
-                                            //->reactive()
+                                            // ->reactive()
                                             ->nullable()
                                             ->columnSpanFull(),
                                     ]),
@@ -219,7 +259,7 @@ class PhoneNumberResource extends Resource
             // Disable record URL and record action for all records
             ->recordUrl(null)
             ->recordAction(null)
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['createdBy', 'updatedBy']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['createdBy', 'updatedBy'])->visibleToUser())
             ->columns([
 
                 TextColumn::make('id')
@@ -263,6 +303,23 @@ class PhoneNumberResource extends Resource
                 TextColumn::make('phone')
                     ->label(__('phonenumber.table.phone_number'))
                     ->searchable(),
+
+                TextColumn::make('visibility_status')
+                    ->label(__('phonenumber.table.visibility_status'))
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'draft' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'active' => __('phonenumber.table.visibility_status_active'),
+                        'draft' => __('phonenumber.table.visibility_status_draft'),
+                        default => $state,
+                    })
+                    ->toggleable()
+                    ->visible(true)
+                    ->alignment(Alignment::Center),
 
                 TextColumn::make('created_at')
                     ->label(__('phonenumber.table.created_at_by'))
@@ -387,6 +444,31 @@ class PhoneNumberResource extends Resource
                     ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('toggle_visibility_status')
+                        ->label(fn ($record) => $record->visibility_status === 'active'
+                            ? __('phonenumber.actions.make_draft')
+                            : __('phonenumber.actions.make_active'))
+                        ->icon(fn ($record) => $record->visibility_status === 'active' ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
+                        ->color(fn ($record) => $record->visibility_status === 'active' ? 'warning' : 'success')
+                        ->action(function ($record) {
+                            $newStatus = $record->visibility_status === 'active' ? 'draft' : 'active';
+                            $record->update([
+                                'visibility_status' => $newStatus,
+                                'updated_by' => auth()->id(),
+                            ]);
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('phonenumber.actions.visibility_status_updated'))
+                                ->body($newStatus === 'active'
+                                    ? __('phonenumber.actions.phone_number_activated')
+                                    : __('phonenumber.actions.phone_number_made_draft'))
+                                ->success()
+                                ->send();
+                        })
+                        ->tooltip(fn ($record) => $record->visibility_status === 'active'
+                            ? __('phonenumber.actions.make_draft_tooltip')
+                            : __('phonenumber.actions.make_active_tooltip'))
+                        ->hidden(fn ($record) => $record->trashed() || $record->created_by !== auth()->id()),
+
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),

@@ -16,12 +16,20 @@ return [
 
     'actions' => [
         'create' => 'Create Phone Number',
+        'make_draft' => 'Change to Draft',
+        'make_active' => 'Change to Active',
+        'make_draft_tooltip' => 'Change this phone number to draft (only visible to creator)',
+        'make_active_tooltip' => 'Change this phone number to active (visible to all users)',
+        'visibility_status_updated' => 'Visibility Status Updated',
+        'phone_number_activated' => 'Phone number is now active and visible to all users.',
+        'phone_number_made_draft' => 'Phone number is now draft and only visible to you.',
     ],
 
     'section' => [
         'phone_number_info' => 'Phone Number Information',
         'extra_info' => 'Phone Number Extra Information',
         'activity_logs' => 'Activity Logs',
+        'visibility_status' => 'Visibility Status',
     ],
 
     'form' => [
@@ -35,6 +43,10 @@ return [
         'extra_value' => 'Value',
         'add_extra_info' => '+ Add Extra Information',
         'title_placeholder_short' => 'Title goes here',
+        'visibility_status' => 'Visibility Status',
+        'visibility_status_active' => 'Active (Visible to all users)',
+        'visibility_status_draft' => 'Draft (Visible only to creator)',
+        'visibility_status_helper' => 'Active phone numbers are visible to all users. Draft phone numbers are only visible to their creator.',
     ],
 
     'table' => [
@@ -42,6 +54,9 @@ return [
         'title' => 'Title',
         'country' => 'Country',
         'phone_number' => 'Phone Number',
+        'visibility_status' => 'Status',
+        'visibility_status_active' => 'Active',
+        'visibility_status_draft' => 'Draft',
         'created_at_by' => 'Created At (By)',
         'updated_at_by' => 'Updated At (by)',
     ],
