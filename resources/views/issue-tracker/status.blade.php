@@ -508,13 +508,27 @@
           <div>
             <h3 class="text-sm font-medium text-gray-700 mb-3">Description</h3>
             <div class="bg-gray-50 rounded-md p-4">
-              <div class="text-sm text-gray-900 prose prose-sm max-w-none">
+              <div class="text-sm text-gray-900 prose prose-sm max-w-none space-y-3" id="description-content">
                 @php
-                  // Check if description contains HTML tags
+                  // Ensure HTML is properly formatted when displaying
                   $description = $task->description ?? '';
-                  if (!empty($description) && !preg_match('/<[^>]+>/', $description)) {
-                    // Plain text - convert \n to <br> and preserve spaces
-                    $description = nl2br(e($description));
+
+                  if (! empty($description)) {
+                    // If it's plain text (no HTML tags), convert to HTML with proper paragraphs
+                    if (! preg_match('/<[^>]+>/', $description)) {
+                      // Plain text - split by double newlines for paragraphs, single newlines for line breaks
+                      $paragraphs = preg_split('/\n\s*\n/', trim($description));
+                      $html = '';
+                      foreach ($paragraphs as $paragraph) {
+                        $paragraph = trim($paragraph);
+                        if (! empty($paragraph)) {
+                          // Convert single newlines within paragraph to <br>
+                          $paragraph = nl2br(e($paragraph));
+                          $html .= '<p>'.$paragraph.'</p>';
+                        }
+                      }
+                      $description = $html;
+                    }
                   }
                 @endphp
                 {!! $description !!}
