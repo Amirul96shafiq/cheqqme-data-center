@@ -148,7 +148,7 @@ abstract class BaseTrackerController extends Controller
      */
     public function status(string $token)
     {
-        $task = Task::where('tracking_token', $token)->firstOrFail();
+        $task = Task::with('updatedBy')->where('tracking_token', $token)->firstOrFail();
 
         // Get project information
         $project = null;

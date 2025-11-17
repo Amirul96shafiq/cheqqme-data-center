@@ -20,6 +20,7 @@
       style="height: 100vh; margin: 0; padding: 0; background-image: url('{{ asset('images/issue-tracker-bg.png') }}'); background-position: top center; display: flex; flex-direction: column;"
       x-data="{
         showTrackingTokensModal: false,
+        showStatusDetailsModal: false,
         loadingTokens: false,
         trackingTokensData: null,
         tokensError: null,
@@ -184,9 +185,18 @@
 
                     @endphp
 
-                    <span @if($status['isCurrent']) id="current-status-badge"@endif class="inline-flex items-center px-3 py-1.5 rounded-full {{ $badgeFontSize }} {{ $badgeFontWeight }} flex-shrink-0 {{ $badgeColor }} {{ $badgeOpacity }} {{ $badgeStyle }}">
-                      {{ $status['label'] }}
-                    </span>
+                    @if($status['isCurrent'])
+                      <button type="button"
+                              @click="showStatusDetailsModal = true"
+                              id="current-status-badge"
+                              class="inline-flex items-center px-3 py-1.5 rounded-full {{ $badgeFontSize }} {{ $badgeFontWeight }} flex-shrink-0 {{ $badgeColor }} {{ $badgeOpacity }} {{ $badgeStyle }} cursor-pointer hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        {{ $status['label'] }}
+                      </button>
+                    @else
+                      <span class="inline-flex items-center px-3 py-1.5 rounded-full {{ $badgeFontSize }} {{ $badgeFontWeight }} flex-shrink-0 {{ $badgeColor }} {{ $badgeOpacity }} {{ $badgeStyle }}">
+                        {{ $status['label'] }}
+                      </span>
+                    @endif
                   @endforeach
                 </div>
               </div>
@@ -296,6 +306,69 @@
                   -webkit-overflow-scrolling: touch;
                 }
               </style>
+
+              {{-- Status Details Modal --}}
+              <div x-show="showStatusDetailsModal"
+                   x-cloak
+                   @keydown.escape.window="showStatusDetailsModal = false"
+                   class="fixed inset-0 z-50"
+                   style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;">
+
+                {{-- Backdrop --}}
+                <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm"
+                     x-show="showStatusDetailsModal"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     style="position: fixed; top: 0; left: 0; right: 0; bottom: 0;"
+                     @click="showStatusDetailsModal = false"></div>
+
+                {{-- Modal --}}
+                <div class="fixed inset-0 flex items-center justify-center p-4 pointer-events-none"
+                     @click.away="showStatusDetailsModal = false">
+                  <div class="relative bg-white rounded-lg shadow-xl max-w-xs w-full pointer-events-auto"
+                       x-show="showStatusDetailsModal"
+                       x-transition:enter="transition ease-out duration-300"
+                       x-transition:enter-start="opacity-0 scale-95"
+                       x-transition:enter-end="opacity-100 scale-100"
+                       x-transition:leave="transition ease-in duration-200"
+                       x-transition:leave-start="opacity-100 scale-100"
+                       x-transition:leave-end="opacity-0 scale-95"
+                       @click.stop>
+
+                    {{-- Header --}}
+                    <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-200">
+                      <h3 class="text-lg font-semibold text-gray-900">Status Details</h3>
+                      <button type="button"
+                              @click="showStatusDetailsModal = false"
+                              class="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1 rounded-md hover:bg-gray-50">
+                        <x-heroicon-o-x-mark class="h-5 w-5" />
+                      </button>
+                    </div>
+
+                    {{-- Content --}}
+                    <div class="px-6 pt-4 pb-6 space-y-4">
+                      @php
+                        $updatedAt = $task->updated_at ? $task->updated_at->format('j/n/y, h:i A') : 'N/A';
+                        $updatedBy = $task->updatedBy ? ($task->updatedBy->name ?? $task->updatedBy->username ?? 'Unknown') : 'System';
+                      @endphp
+                      <div>
+                        <p class="text-sm font-medium text-gray-500 mb-1">Updated on</p>
+                        <p class="text-sm text-gray-900">{{ $updatedAt }}</p>
+                      </div>
+                      <div>
+                        <p class="text-sm font-medium text-gray-500 mb-1">Updated by</p>
+                        <p class="text-sm text-gray-900">{{ $updatedBy }}</p>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
 
               {{-- Submitted on --}}
               <div class="pt-2">
