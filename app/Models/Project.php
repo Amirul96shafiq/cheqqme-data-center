@@ -22,6 +22,7 @@ class Project extends Model
         'client_id',
         'description',
         'status',
+        'visibility_status',
         'notes',
         'created_by',
         'updated_by',
@@ -39,6 +40,7 @@ class Project extends Model
                 'client_id',
                 'description',
                 'status',
+                'visibility_status',
                 'notes',
                 'extra_information',
                 'created_by',
@@ -178,6 +180,34 @@ class Project extends Model
                     'url' => route('wishlist-tracker.status', ['token' => $task->tracking_token]),
                 ];
             });
+    }
+
+    /**
+     * Scope to get visible projects for the current user.
+     * Active projects are visible to all users.
+     * Draft projects are only visible to their creator.
+     */
+    public function scopeVisibleToUser($query, $userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+
+        return $query->where(function ($q) use ($userId) {
+            $q->where('visibility_status', 'active')
+                ->orWhere(function ($q2) use ($userId) {
+                    $q2->where('visibility_status', 'draft')
+                        ->where('created_by', $userId);
+                });
+        });
+    }
+
+    /**
+     * Check if the project is visible to a specific user.
+     */
+    public function isVisibleToUser($userId = null): bool
+    {
+        $userId = $userId ?? auth()->id();
+
+        return $this->visibility_status === 'active' || $this->created_by === $userId;
     }
 
     protected static function boot()

@@ -9,13 +9,11 @@ use App\Filament\Resources\ProjectResource\RelationManagers\TrackingTokensRelati
 use App\Helpers\ClientFormatter;
 use App\Models\Project;
 use App\Models\Task;
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
-use Schmeits\FilamentCharacterCounter\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -30,6 +28,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Schmeits\FilamentCharacterCounter\Forms\Components\RichEditor;
 
 class ProjectResource extends Resource
 {
@@ -271,7 +270,7 @@ class ProjectResource extends Resource
                             ->maxLength(200),
 
                     ]),
-
+                
                 Section::make(__('project.section.issue_tracker_info'))
                     ->schema([
 
@@ -468,6 +467,47 @@ class ProjectResource extends Resource
 
                     ])
                     ->collapsible(),
+
+                    Section::make(__('project.section.visibility_status'))
+                    ->schema([
+                        \Filament\Forms\Components\Radio::make('visibility_status')
+                            ->label(__('project.form.visibility_status'))
+                            ->options([
+                                'active' => __('project.form.visibility_status_active'),
+                                'draft' => __('project.form.visibility_status_draft'),
+                            ])
+                            ->default('active')
+                            ->inline()
+                            ->required()
+                            ->helperText(__('project.form.visibility_status_helper'))
+                            ->disabled(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = Project::find($recordId);
+
+                                    return $record && $record->created_by !== auth()->id();
+                                }
+
+                                // We're creating - never disable
+                                return false;
+                            })
+                            ->visible(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = Project::find($recordId);
+
+                                    return $record && $record->created_by === auth()->id();
+                                }
+
+                                // We're creating - always show
+                                return true;
+                            }),
+                    ]),
+                    
             ]);
     }
 
@@ -477,7 +517,7 @@ class ProjectResource extends Resource
             // Disable record URL and record action for all records
             ->recordUrl(null)
             ->recordAction(null)
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['client', 'createdBy', 'updatedBy']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['client', 'createdBy', 'updatedBy'])->visibleToUser())
             ->columns([
 
                 TextColumn::make('id')
@@ -537,6 +577,23 @@ class ProjectResource extends Resource
                     ->view('filament.resources.project-resource.status-column')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('visibility_status')
+                    ->label(__('project.table.visibility_status'))
+                    ->badge()
+                    ->color(fn (string $state) => match ($state) {
+                        'active' => 'success',
+                        'draft' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state) => match ($state) {
+                        'active' => __('project.table.visibility_status_active'),
+                        'draft' => __('project.table.visibility_status_draft'),
+                        default => $state,
+                    })
+                    ->toggleable()
+                    ->visible(true)
+                    ->alignment(Alignment::Center),
 
                 TextColumn::make('document_count')
                     ->label(__('project.table.document_count'))
@@ -896,6 +953,34 @@ class ProjectResource extends Resource
 
                             return $actions;
                         }),
+
+                    Tables\Actions\Action::make('toggle_visibility_status')
+                        ->label(fn ($record) => $record->visibility_status === 'active'
+                            ? __('project.actions.make_draft')
+                            : __('project.actions.make_active'))
+                        ->icon(fn ($record) => $record->visibility_status === 'active' ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
+                        ->color(fn ($record) => $record->visibility_status === 'active' ? 'warning' : 'success')
+                        ->action(function ($record) {
+                            $newStatus = $record->visibility_status === 'active' ? 'draft' : 'active';
+
+                            $record->update([
+                                'visibility_status' => $newStatus,
+                                'updated_by' => auth()->id(),
+                            ]);
+
+                            // Show success notification
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('project.actions.visibility_status_updated'))
+                                ->body($newStatus === 'active'
+                                    ? __('project.actions.project_activated')
+                                    : __('project.actions.project_made_draft'))
+                                ->success()
+                                ->send();
+                        })
+                        ->tooltip(fn ($record) => $record->visibility_status === 'active'
+                            ? __('project.actions.make_draft_tooltip')
+                            : __('project.actions.make_active_tooltip'))
+                        ->hidden(fn ($record) => $record->trashed() || $record->created_by !== auth()->id()),
 
                     ActivityLogTimelineTableAction::make('Log'),
 
