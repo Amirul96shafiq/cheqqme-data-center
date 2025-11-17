@@ -270,7 +270,7 @@ class ProjectResource extends Resource
                             ->maxLength(200),
 
                     ]),
-                
+
                 Section::make(__('project.section.issue_tracker_info'))
                     ->schema([
 
@@ -468,7 +468,7 @@ class ProjectResource extends Resource
                     ])
                     ->collapsible(),
 
-                    Section::make(__('project.section.visibility_status'))
+                Section::make(__('project.section.visibility_status'))
                     ->schema([
                         \Filament\Forms\Components\Radio::make('visibility_status')
                             ->label(__('project.form.visibility_status'))
@@ -507,7 +507,7 @@ class ProjectResource extends Resource
                                 return true;
                             }),
                     ]),
-                    
+
             ]);
     }
 

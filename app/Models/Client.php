@@ -26,7 +26,7 @@ class Client extends Model
         'company_address',
         'billing_address',
         'notes',
-        'status',
+        'visibility_status',
         'created_by',
         'updated_by',
         'extra_information',
@@ -45,7 +45,7 @@ class Client extends Model
                 'company_address',
                 'billing_address',
                 'notes',
-                'status',
+                'visibility_status',
                 'extra_information',
                 'created_at',
                 'updated_by',
@@ -118,9 +118,9 @@ class Client extends Model
         $userId = $userId ?? auth()->id();
 
         return $query->where(function ($q) use ($userId) {
-            $q->where('status', 'active')
+            $q->where('visibility_status', 'active')
                 ->orWhere(function ($q2) use ($userId) {
-                    $q2->where('status', 'draft')
+                    $q2->where('visibility_status', 'draft')
                         ->where('created_by', $userId);
                 });
         });
@@ -133,6 +133,6 @@ class Client extends Model
     {
         $userId = $userId ?? auth()->id();
 
-        return $this->status === 'active' || $this->created_by === $userId;
+        return $this->visibility_status === 'active' || $this->created_by === $userId;
     }
 }

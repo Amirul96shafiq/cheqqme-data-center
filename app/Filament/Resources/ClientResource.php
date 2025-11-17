@@ -371,7 +371,7 @@ class ClientResource extends Resource
 
                 Section::make(__('client.section.status_info'))
                     ->schema([
-                        \Filament\Forms\Components\Radio::make('status')
+                        \Filament\Forms\Components\Radio::make('visibility_status')
                             ->label(__('client.form.status'))
                             ->options([
                                 'active' => __('client.form.status_active'),
@@ -471,7 +471,7 @@ class ClientResource extends Resource
                     ->sortable()
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\TextColumn::make('visibility_status')
                     ->label(__('client.table.status'))
                     ->badge()
                     ->color(fn (string $state) => match ($state) {
@@ -608,17 +608,17 @@ class ClientResource extends Resource
                 Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('toggle_status')
-                        ->label(fn ($record) => $record->status === 'active'
+                    Tables\Actions\Action::make('toggle_visibility_status')
+                        ->label(fn ($record) => $record->visibility_status === 'active'
                             ? __('client.actions.make_draft')
                             : __('client.actions.make_active'))
-                        ->icon(fn ($record) => $record->status === 'active' ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
-                        ->color(fn ($record) => $record->status === 'active' ? 'warning' : 'success')
+                        ->icon(fn ($record) => $record->visibility_status === 'active' ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
+                        ->color(fn ($record) => $record->visibility_status === 'active' ? 'warning' : 'success')
                         ->action(function ($record) {
-                            $newStatus = $record->status === 'active' ? 'draft' : 'active';
+                            $newStatus = $record->visibility_status === 'active' ? 'draft' : 'active';
 
                             $record->update([
-                                'status' => $newStatus,
+                                'visibility_status' => $newStatus,
                                 'updated_by' => auth()->id(),
                             ]);
 
@@ -631,7 +631,7 @@ class ClientResource extends Resource
                                 ->success()
                                 ->send();
                         })
-                        ->tooltip(fn ($record) => $record->status === 'active'
+                        ->tooltip(fn ($record) => $record->visibility_status === 'active'
                             ? __('client.actions.make_draft_tooltip')
                             : __('client.actions.make_active_tooltip'))
                         ->hidden(fn ($record) => $record->trashed() || $record->created_by !== auth()->id()),

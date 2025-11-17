@@ -186,7 +186,7 @@ class TrelloBoardResource extends Resource
                 Section::make(__('trelloboard.section.display_info'))
                     ->schema([
 
-                        Forms\Components\Radio::make('status')
+                        Forms\Components\Radio::make('visibility_status')
                             ->label(__('trelloboard.form.status'))
                             ->options([
                                 'active' => __('trelloboard.form.status_active'),
@@ -271,7 +271,7 @@ class TrelloBoardResource extends Resource
                     ->boolean()
                     ->alignment(Alignment::Center),
 
-                Tables\Columns\TextColumn::make('status')
+                Tables\Columns\TextColumn::make('visibility_status')
                     ->label(__('trelloboard.table.status'))
                     ->badge()
                     ->color(fn (string $state) => match ($state) {
@@ -388,17 +388,17 @@ class TrelloBoardResource extends Resource
                             : __('trelloboard.actions.show_on_boards'))
                         ->hidden(fn ($record) => $record->trashed()),
 
-                    Tables\Actions\Action::make('toggle_status')
-                        ->label(fn ($record) => $record->status === 'active'
+                    Tables\Actions\Action::make('toggle_visibility_status')
+                        ->label(fn ($record) => $record->visibility_status === 'active'
                             ? __('trelloboard.actions.make_draft')
                             : __('trelloboard.actions.make_active'))
-                        ->icon(fn ($record) => $record->status === 'active' ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
-                        ->color(fn ($record) => $record->status === 'active' ? 'warning' : 'success')
+                        ->icon(fn ($record) => $record->visibility_status === 'active' ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
+                        ->color(fn ($record) => $record->visibility_status === 'active' ? 'warning' : 'success')
                         ->action(function ($record) {
-                            $newStatus = $record->status === 'active' ? 'draft' : 'active';
+                            $newStatus = $record->visibility_status === 'active' ? 'draft' : 'active';
 
                             $record->update([
-                                'status' => $newStatus,
+                                'visibility_status' => $newStatus,
                                 'updated_by' => auth()->id(),
                             ]);
 
@@ -411,7 +411,7 @@ class TrelloBoardResource extends Resource
                                 ->success()
                                 ->send();
                         })
-                        ->tooltip(fn ($record) => $record->status === 'active'
+                        ->tooltip(fn ($record) => $record->visibility_status === 'active'
                             ? __('trelloboard.actions.make_draft_tooltip')
                             : __('trelloboard.actions.make_active_tooltip'))
                         ->hidden(fn ($record) => $record->trashed() || $record->created_by !== auth()->id()),

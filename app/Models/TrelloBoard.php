@@ -21,7 +21,7 @@ class TrelloBoard extends Model
         'url',
         'notes',
         'show_on_boards',
-        'status',
+        'visibility_status',
         'created_by',
         'updated_by',
         'extra_information',
@@ -35,7 +35,7 @@ class TrelloBoard extends Model
                 'url',
                 'notes',
                 'show_on_boards',
-                'status',
+                'visibility_status',
                 'extra_information',
                 'updated_at',
                 'updated_by',
@@ -92,9 +92,9 @@ class TrelloBoard extends Model
         $userId = $userId ?? auth()->id();
 
         return $query->where(function ($q) use ($userId) {
-            $q->where('status', 'active')
+            $q->where('visibility_status', 'active')
                 ->orWhere(function ($q2) use ($userId) {
-                    $q2->where('status', 'draft')
+                    $q2->where('visibility_status', 'draft')
                         ->where('created_by', $userId);
                 });
         });
@@ -107,6 +107,6 @@ class TrelloBoard extends Model
     {
         $userId = $userId ?? auth()->id();
 
-        return $this->status === 'active' || $this->created_by === $userId;
+        return $this->visibility_status === 'active' || $this->created_by === $userId;
     }
 }
