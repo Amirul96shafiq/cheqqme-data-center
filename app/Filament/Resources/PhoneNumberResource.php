@@ -211,7 +211,7 @@ class PhoneNumberResource extends Resource
                     ])
                     ->collapsible(),
 
-                    Section::make(__('phonenumber.section.visibility_status'))
+                Section::make(__('phonenumber.section.visibility_status'))
                     ->schema([
                         \Filament\Forms\Components\Radio::make('visibility_status')
                             ->label(__('phonenumber.form.visibility_status'))
@@ -250,7 +250,7 @@ class PhoneNumberResource extends Resource
                                 return true;
                             }),
                     ]),
-                    
+
             ]);
     }
 
@@ -431,6 +431,15 @@ class PhoneNumberResource extends Resource
                             }
                         });
                     }),
+
+                Tables\Filters\SelectFilter::make('visibility_status')
+                    ->label(__('phonenumber.table.visibility_status'))
+                    ->options([
+                        'active' => __('phonenumber.table.visibility_status_active'),
+                        'draft' => __('phonenumber.table.visibility_status_draft'),
+                    ])
+                    ->preload()
+                    ->searchable(),
 
                 TrashedFilter::make()
                     ->label(__('phonenumber.filter.trashed'))

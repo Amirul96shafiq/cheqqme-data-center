@@ -661,6 +661,15 @@ class ProjectResource extends Resource
                     ->preload()
                     ->searchable(),
 
+                Tables\Filters\SelectFilter::make('visibility_status')
+                    ->label(__('project.table.visibility_status'))
+                    ->options([
+                        'active' => __('project.table.visibility_status_active'),
+                        'draft' => __('project.table.visibility_status_draft'),
+                    ])
+                    ->preload()
+                    ->searchable(),
+
                 TrashedFilter::make()
                     ->label(__('project.filter.trashed'))
                     ->searchable(), // To show trashed or only active

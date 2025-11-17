@@ -244,7 +244,7 @@ class ImportantUrlResource extends Resource
                     ])
                     ->collapsible(),
 
-                    Section::make(__('importanturl.section.visibility_status'))
+                Section::make(__('importanturl.section.visibility_status'))
                     ->schema([
                         \Filament\Forms\Components\Radio::make('visibility_status')
                             ->label(__('importanturl.form.visibility_status'))
@@ -283,7 +283,7 @@ class ImportantUrlResource extends Resource
                                 return true;
                             }),
                     ]),
-                    
+
             ]);
     }
 
@@ -399,6 +399,15 @@ class ImportantUrlResource extends Resource
                     ->preload()
                     ->searchable()
                     ->multiple(),
+
+                Tables\Filters\SelectFilter::make('visibility_status')
+                    ->label(__('importanturl.table.visibility_status'))
+                    ->options([
+                        'active' => __('importanturl.table.visibility_status_active'),
+                        'draft' => __('importanturl.table.visibility_status_draft'),
+                    ])
+                    ->preload()
+                    ->searchable(),
 
                 TrashedFilter::make()
                     ->label(__('importanturl.filter.trashed'))

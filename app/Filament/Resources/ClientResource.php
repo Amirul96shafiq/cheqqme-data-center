@@ -598,6 +598,15 @@ class ClientResource extends Resource
                         });
                     }),
 
+                Tables\Filters\SelectFilter::make('visibility_status')
+                    ->label(__('client.table.status'))
+                    ->options([
+                        'active' => __('client.table.status_active'),
+                        'draft' => __('client.table.status_draft'),
+                    ])
+                    ->preload()
+                    ->searchable(),
+
                 TrashedFilter::make()
                     ->label(__('client.filter.trashed'))
                     ->searchable(), // To show trashed or only active

@@ -283,7 +283,7 @@ class DocumentResource extends Resource
                     ])
                     ->collapsible(),
 
-                    Section::make(__('document.section.visibility_status'))
+                Section::make(__('document.section.visibility_status'))
                     ->schema([
                         \Filament\Forms\Components\Radio::make('visibility_status')
                             ->label(__('document.form.visibility_status'))
@@ -322,7 +322,7 @@ class DocumentResource extends Resource
                                 return true;
                             }),
                     ]),
-                    
+
             ]);
     }
 
@@ -503,6 +503,15 @@ class DocumentResource extends Resource
                         });
                     })
                     ->multiple()
+                    ->preload()
+                    ->searchable(),
+
+                Tables\Filters\SelectFilter::make('visibility_status')
+                    ->label(__('document.table.visibility_status'))
+                    ->options([
+                        'active' => __('document.table.visibility_status_active'),
+                        'draft' => __('document.table.visibility_status_draft'),
+                    ])
                     ->preload()
                     ->searchable(),
 
