@@ -29,7 +29,7 @@ return [
         'phone_number_info' => 'Phone Number Information',
         'extra_info' => 'Phone Number Extra Information',
         'activity_logs' => 'Activity Logs',
-        'visibility_status' => 'Visibility Status',
+        'visibility_status' => 'Visibility Resource Information',
     ],
 
     'form' => [

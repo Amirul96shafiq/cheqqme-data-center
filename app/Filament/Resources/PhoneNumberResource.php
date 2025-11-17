@@ -125,46 +125,6 @@ class PhoneNumberResource extends Resource
                     ])
                     ->columns(2),
 
-                Section::make(__('phonenumber.section.visibility_status'))
-                    ->schema([
-                        \Filament\Forms\Components\Radio::make('visibility_status')
-                            ->label(__('phonenumber.form.visibility_status'))
-                            ->options([
-                                'active' => __('phonenumber.form.visibility_status_active'),
-                                'draft' => __('phonenumber.form.visibility_status_draft'),
-                            ])
-                            ->default('active')
-                            ->inline()
-                            ->required()
-                            ->helperText(__('phonenumber.form.visibility_status_helper'))
-                            ->disabled(function (Get $get) {
-                                // Check if we're in edit mode by looking for record in route
-                                $recordId = request()->route('record');
-                                if ($recordId) {
-                                    // We're editing - get the record from route
-                                    $record = PhoneNumber::find($recordId);
-
-                                    return $record && $record->created_by !== auth()->id();
-                                }
-
-                                // We're creating - never disable
-                                return false;
-                            })
-                            ->visible(function (Get $get) {
-                                // Check if we're in edit mode by looking for record in route
-                                $recordId = request()->route('record');
-                                if ($recordId) {
-                                    // We're editing - get the record from route
-                                    $record = PhoneNumber::find($recordId);
-
-                                    return $record && $record->created_by === auth()->id();
-                                }
-
-                                // We're creating - always show
-                                return true;
-                            }),
-                    ]),
-
                 Section::make()
                     ->heading(function (Get $get) {
                         $count = 0;
@@ -250,6 +210,47 @@ class PhoneNumberResource extends Resource
 
                     ])
                     ->collapsible(),
+
+                    Section::make(__('phonenumber.section.visibility_status'))
+                    ->schema([
+                        \Filament\Forms\Components\Radio::make('visibility_status')
+                            ->label(__('phonenumber.form.visibility_status'))
+                            ->options([
+                                'active' => __('phonenumber.form.visibility_status_active'),
+                                'draft' => __('phonenumber.form.visibility_status_draft'),
+                            ])
+                            ->default('active')
+                            ->inline()
+                            ->required()
+                            ->helperText(__('phonenumber.form.visibility_status_helper'))
+                            ->disabled(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = PhoneNumber::find($recordId);
+
+                                    return $record && $record->created_by !== auth()->id();
+                                }
+
+                                // We're creating - never disable
+                                return false;
+                            })
+                            ->visible(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = PhoneNumber::find($recordId);
+
+                                    return $record && $record->created_by === auth()->id();
+                                }
+
+                                // We're creating - always show
+                                return true;
+                            }),
+                    ]),
+                    
             ]);
     }
 

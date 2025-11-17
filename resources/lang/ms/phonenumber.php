@@ -29,7 +29,7 @@ return [
         'phone_number_info' => 'Maklumat Nombor Telefon',
         'phone_number_extra_info' => 'Maklumat Tambahan Nombor Telefon',
         'activity_logs' => 'Log Aktiviti',
-        'visibility_status' => 'Status Keterlihatan',
+        'visibility_status' => 'Maklumat Keterlihatan Sumber',
     ],
 
     'form' => [
