@@ -545,21 +545,29 @@
           uploadedTempFiles.forEach((tempFile, index) => {
               const fileItem = document.createElement('div');
               fileItem.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-md';
+              const fileUrl = tempFile.path ? `/storage/${tempFile.path}` : '';
+              const isImage = tempFile.mime_type && tempFile.mime_type.startsWith('image/');
               fileItem.innerHTML = `
                 <div class="flex items-center space-x-3 flex-1 min-w-0">
-                  <svg class="h-5 w-5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
+                  ${fileUrl ? `<a href="${fileUrl}" target="_blank" class="text-primary-600 hover:text-primary-800 cursor-pointer flex-shrink-0" title="Preview in new tab">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                  </a>` : `<svg class="h-5 w-5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                  </svg>`}
                   <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-gray-900 truncate">${tempFile.original_name || 'Uploading...'}</p>
                     <p class="text-xs text-gray-500">${tempFile.size ? formatFileSize(tempFile.size) : 'Processing...'}</p>
                   </div>
                 </div>
-                  <button type="button" onclick="removeTempFile('${tempFile.temp_id}')" class="ml-3 text-red-600 hover:text-red-800">
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                <div class="flex items-center ml-3">
+                  <button type="button" onclick="removeTempFile('${tempFile.temp_id}')" class="text-red-600 hover:text-red-800" title="Remove file">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
                 `;
                 fileList.appendChild(fileItem);
             });

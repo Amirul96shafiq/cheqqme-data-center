@@ -56,6 +56,7 @@ class TemporaryFileService
                     'temp_id' => $tempId,
                     'original_name' => basename($file),
                     'path' => $file,
+                    'mime_type' => Storage::disk('public')->mimeType($file),
                     'size' => Storage::disk('public')->size($file),
                     'uploaded_at' => now(), // We don't store this, so use current time
                 ];
