@@ -19,6 +19,7 @@ class ImportantUrl extends Model
         'project_id',
         'client_id',
         'notes',
+        'visibility_status',
         'created_by',
         'updated_by',
         'extra_information',
@@ -33,6 +34,7 @@ class ImportantUrl extends Model
                 'project_id',
                 'client_id',
                 'notes',
+                'visibility_status',
                 'extra_information',
                 'updated_at',
                 'updated_by',
@@ -62,5 +64,33 @@ class ImportantUrl extends Model
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * Scope to get visible important URLs for the current user.
+     * Active important URLs are visible to all users.
+     * Draft important URLs are only visible to their creator.
+     */
+    public function scopeVisibleToUser($query, $userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+
+        return $query->where(function ($q) use ($userId) {
+            $q->where('visibility_status', 'active')
+                ->orWhere(function ($q2) use ($userId) {
+                    $q2->where('visibility_status', 'draft')
+                        ->where('created_by', $userId);
+                });
+        });
+    }
+
+    /**
+     * Check if the important URL is visible to a specific user.
+     */
+    public function isVisibleToUser($userId = null): bool
+    {
+        $userId = $userId ?? auth()->id();
+
+        return $this->visibility_status === 'active' || $this->created_by === $userId;
     }
 }

@@ -16,14 +16,23 @@ return [
 
     'actions' => [
         'create' => 'Create Important URL',
+        'make_draft' => 'Change to Draft',
+        'make_active' => 'Change to Active',
+        'make_draft_tooltip' => 'Change this important URL to draft (only visible to creator)',
+        'make_active_tooltip' => 'Change this important URL to active (visible to all users)',
+        'visibility_status_updated' => 'Visibility Status Updated',
+        'important_url_activated' => 'Important URL is now active and visible to all users.',
+        'important_url_made_draft' => 'Important URL is now draft and only visible to you.',
     ],
 
     'section' => [
         'important_url_info' => 'Important URL Information',
         'extra_info' => 'Important URL Extra Information',
         'activity_logs' => 'Activity Logs',
+        'visibility_status' => 'Visibility Status',
     ],
 
+    // Form fields
     'form' => [
         'important_url_title' => 'Important URL Title',
         'project' => 'Project',
@@ -42,8 +51,13 @@ return [
         'title_placeholder_short' => 'Title goes here',
         'create_project' => 'Create Project',
         'create_client' => 'Create Client',
+        'visibility_status' => 'Visibility Status',
+        'visibility_status_active' => 'Active (Visible to all users)',
+        'visibility_status_draft' => 'Draft (Visible only to creator)',
+        'visibility_status_helper' => 'Active important URLs are visible to all users. Draft important URLs are only visible to their creator.',
     ],
 
+    // Table columns
     'table' => [
         'id' => 'ID',
         'title' => 'Title',
@@ -51,6 +65,9 @@ return [
         'project' => 'Project',
         'client' => 'Client',
         'important_url' => 'URL Link',
+        'visibility_status' => 'Visibility Status',
+        'visibility_status_active' => 'Active',
+        'visibility_status_draft' => 'Draft',
         'created_at_by' => 'Created At (By)',
         'updated_at_by' => 'Updated At (by)',
         'tooltip' => [
@@ -59,6 +76,7 @@ return [
         ],
     ],
 
+    // Filters
     'filters' => [
         'client_id' => 'Client',
         'project_id' => 'Project',
@@ -71,7 +89,11 @@ return [
         'this_month' => 'This Month',
         'this_year' => 'This Year',
     ],
+    'filter' => [
+        'trashed' => 'Trashed Records',
+    ],
 
+    // Search
     'search' => [
         'project' => 'Project',
         'client' => 'Client',

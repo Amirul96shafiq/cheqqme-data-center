@@ -16,6 +16,13 @@ return [
 
     'actions' => [
         'create' => 'Tambah URL Penting',
+        'make_draft' => 'Tukar ke Draf',
+        'make_active' => 'Tukar ke Aktif',
+        'make_draft_tooltip' => 'Tukar URL Penting ini ke status Draf (hanya anda boleh melihatnya)',
+        'make_active_tooltip' => 'Tukar URL Penting ini ke status Aktif (semua pengguna boleh melihatnya)',
+        'visibility_status_updated' => 'Status keterlihatan dikemaskini berjaya',
+        'important_url_activated' => 'URL Penting kini Aktif dan boleh dilihat oleh semua pengguna.',
+        'important_url_made_draft' => 'URL Penting kini dalam status Draf dan boleh dilihat oleh anda sahaja.',
     ],
 
     'section' => [
@@ -51,6 +58,9 @@ return [
         'project' => 'Projek',
         'client' => 'Pelanggan',
         'important_url' => 'Link URL',
+        'visibility_status' => 'Status Keterlihatan',
+        'visibility_status_active' => 'Aktif',
+        'visibility_status_draft' => 'Draf',
         'created_at_by' => 'Dicipta Pada (Oleh)',
         'updated_at_by' => 'Dikemas Kini Pada (oleh)',
         'tooltip' => [

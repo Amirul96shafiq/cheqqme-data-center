@@ -159,6 +159,46 @@ class ImportantUrlResource extends Resource
 
                 ]),
 
+                Section::make(__('importanturl.section.visibility_status'))
+                    ->schema([
+                        \Filament\Forms\Components\Radio::make('visibility_status')
+                            ->label(__('importanturl.form.visibility_status'))
+                            ->options([
+                                'active' => __('importanturl.form.visibility_status_active'),
+                                'draft' => __('importanturl.form.visibility_status_draft'),
+                            ])
+                            ->default('active')
+                            ->inline()
+                            ->required()
+                            ->helperText(__('importanturl.form.visibility_status_helper'))
+                            ->disabled(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = ImportantUrl::find($recordId);
+
+                                    return $record && $record->created_by !== auth()->id();
+                                }
+
+                                // We're creating - never disable
+                                return false;
+                            })
+                            ->visible(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = ImportantUrl::find($recordId);
+
+                                    return $record && $record->created_by === auth()->id();
+                                }
+
+                                // We're creating - always show
+                                return true;
+                            }),
+                    ]),
+
                 Section::make()
                     ->heading(function (Get $get) {
                         $count = 0;
@@ -252,7 +292,7 @@ class ImportantUrlResource extends Resource
             // Disable record URL and record action for all records
             ->recordUrl(null)
             ->recordAction(null)
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['project', 'client', 'createdBy', 'updatedBy']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['project', 'client', 'createdBy', 'updatedBy'])->visibleToUser())
             ->columns([
 
                 TextColumn::make('id')
@@ -292,6 +332,23 @@ class ImportantUrlResource extends Resource
                     })
                     ->toggleable()
                     ->searchable(),
+
+                TextColumn::make('visibility_status')
+                    ->label(__('importanturl.table.visibility_status'))
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'draft' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'active' => __('importanturl.table.visibility_status_active'),
+                        'draft' => __('importanturl.table.visibility_status_draft'),
+                        default => $state,
+                    })
+                    ->toggleable()
+                    ->visible(true)
+                    ->alignment(Alignment::Center),
 
                 TextColumn::make('created_at')
                     ->label(__('importanturl.table.created_at_by'))
@@ -367,6 +424,31 @@ class ImportantUrlResource extends Resource
                     ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('toggle_visibility_status')
+                        ->label(fn ($record) => $record->visibility_status === 'active'
+                            ? __('importanturl.actions.make_draft')
+                            : __('importanturl.actions.make_active'))
+                        ->icon(fn ($record) => $record->visibility_status === 'active' ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
+                        ->color(fn ($record) => $record->visibility_status === 'active' ? 'warning' : 'success')
+                        ->action(function ($record) {
+                            $newStatus = $record->visibility_status === 'active' ? 'draft' : 'active';
+                            $record->update([
+                                'visibility_status' => $newStatus,
+                                'updated_by' => auth()->id(),
+                            ]);
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('importanturl.actions.visibility_status_updated'))
+                                ->body($newStatus === 'active'
+                                    ? __('importanturl.actions.important_url_activated')
+                                    : __('importanturl.actions.important_url_made_draft'))
+                                ->success()
+                                ->send();
+                        })
+                        ->tooltip(fn ($record) => $record->visibility_status === 'active'
+                            ? __('importanturl.actions.make_draft_tooltip')
+                            : __('importanturl.actions.make_active_tooltip'))
+                        ->hidden(fn ($record) => $record->trashed() || $record->created_by !== auth()->id()),
+
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
