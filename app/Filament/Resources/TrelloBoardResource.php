@@ -102,6 +102,43 @@ class TrelloBoardResource extends Resource
                 Section::make(__('trelloboard.section.display_info'))
                     ->schema([
 
+                        Forms\Components\Radio::make('status')
+                            ->label(__('trelloboard.form.status'))
+                            ->options([
+                                'active' => __('trelloboard.form.status_active'),
+                                'draft' => __('trelloboard.form.status_draft'),
+                            ])
+                            ->default('active')
+                            ->inline()
+                            ->required()
+                            ->helperText(__('trelloboard.form.status_helper'))
+                            ->disabled(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = TrelloBoard::find($recordId);
+
+                                    return $record && $record->created_by !== auth()->id();
+                                }
+
+                                // We're creating - never disable
+                                return false;
+                            })
+                            ->visible(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = TrelloBoard::find($recordId);
+
+                                    return $record && $record->created_by === auth()->id();
+                                }
+
+                                // We're creating - always show
+                                return true;
+                            }),
+
                         Toggle::make('show_on_boards')
                             ->label(__('trelloboard.form.show_on_boards'))
                             ->default(true),
@@ -228,6 +265,23 @@ class TrelloBoardResource extends Resource
                     ->boolean()
                     ->alignment(Alignment::Center),
 
+                Tables\Columns\TextColumn::make('status')
+                    ->label(__('trelloboard.table.status'))
+                    ->badge()
+                    ->color(fn (string $state) => match ($state) {
+                        'active' => 'success',
+                        'draft' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state) => match ($state) {
+                        'active' => __('trelloboard.table.status_active'),
+                        'draft' => __('trelloboard.table.status_draft'),
+                        default => $state,
+                    })
+                    ->toggleable()
+                    ->visible(true)
+                    ->alignment(Alignment::Center),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('trelloboard.table.created_at_by'))
                     ->since()
@@ -254,8 +308,10 @@ class TrelloBoardResource extends Resource
                     ->sortable(),
 
             ])
+            ->modifyQueryUsing(function ($query) {
+                return $query->visibleToUser();
+            })
             ->filters([
-
                 SelectFilter::make('show_on_boards')
                     ->label(__('trelloboard.table.show_on_boards'))
                     ->options([
@@ -263,6 +319,15 @@ class TrelloBoardResource extends Resource
                         false => __('trelloboard.table.show_on_boards_false'),
                     ])
                     ->multiple()
+                    ->preload()
+                    ->searchable(),
+
+                SelectFilter::make('status')
+                    ->label(__('trelloboard.table.status'))
+                    ->options([
+                        'active' => __('trelloboard.table.status_active'),
+                        'draft' => __('trelloboard.table.status_draft'),
+                    ])
                     ->preload()
                     ->searchable(),
 
@@ -290,7 +355,7 @@ class TrelloBoardResource extends Resource
 
                 Tables\Actions\EditAction::make()
                     ->label(__('trelloboard.actions.edit'))
-                    ->hidden(fn ($record) => $record->trashed()),
+                    ->hidden(fn ($record) => $record && $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\Action::make('toggle_show_on_boards')

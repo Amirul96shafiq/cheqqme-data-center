@@ -21,6 +21,7 @@ class TrelloBoard extends Model
         'url',
         'notes',
         'show_on_boards',
+        'status',
         'created_by',
         'updated_by',
         'extra_information',
@@ -34,6 +35,7 @@ class TrelloBoard extends Model
                 'url',
                 'notes',
                 'show_on_boards',
+                'status',
                 'extra_information',
                 'updated_at',
                 'updated_by',
@@ -78,5 +80,33 @@ class TrelloBoard extends Model
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Scope to get visible boards for the current user.
+     * Active boards are visible to all users.
+     * Draft boards are only visible to their creator.
+     */
+    public function scopeVisibleToUser($query, $userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+
+        return $query->where(function ($q) use ($userId) {
+            $q->where('status', 'active')
+                ->orWhere(function ($q2) use ($userId) {
+                    $q2->where('status', 'draft')
+                        ->where('created_by', $userId);
+                });
+        });
+    }
+
+    /**
+     * Check if the board is visible to a specific user.
+     */
+    public function isVisibleToUser($userId = null): bool
+    {
+        $userId = $userId ?? auth()->id();
+
+        return $this->status === 'active' || $this->created_by === $userId;
     }
 }
