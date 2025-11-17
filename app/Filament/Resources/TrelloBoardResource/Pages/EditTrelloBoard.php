@@ -8,7 +8,6 @@ use Filament\Actions;
 
 class EditTrelloBoard extends BaseEditRecord
 {
-
     protected static string $resource = TrelloBoardResource::class;
 
     protected static string $view = 'filament.resources.trello-board-resource.pages.edit-trello-board';
@@ -25,10 +24,7 @@ class EditTrelloBoard extends BaseEditRecord
 
     protected function getHeaderActions(): array
     {
-        return [
-            Actions\DeleteAction::make()
-                ->label(__('trelloboard.actions.delete')),
-        ];
+        return [];
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
