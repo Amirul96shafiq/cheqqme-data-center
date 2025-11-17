@@ -6,11 +6,9 @@ use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers;
 use App\Filament\Resources\ClientResource\RelationManagers\ClientActivityLogRelationManager;
 use App\Models\Client;
-use Closure;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
-use Schmeits\FilamentCharacterCounter\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -25,6 +23,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Schmeits\FilamentCharacterCounter\Forms\Components\RichEditor;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class ClientResource extends Resource
@@ -369,6 +368,47 @@ class ClientResource extends Resource
 
                     ])
                     ->collapsible(),
+
+                Section::make(__('client.section.status_info'))
+                    ->schema([
+                        \Filament\Forms\Components\Radio::make('status')
+                            ->label(__('client.form.status'))
+                            ->options([
+                                'active' => __('client.form.status_active'),
+                                'draft' => __('client.form.status_draft'),
+                            ])
+                            ->default('active')
+                            ->inline()
+                            ->required()
+                            ->helperText(__('client.form.status_helper'))
+                            ->disabled(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = Client::find($recordId);
+
+                                    return $record && $record->created_by !== auth()->id();
+                                }
+
+                                // We're creating - never disable
+                                return false;
+                            })
+                            ->visible(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = Client::find($recordId);
+
+                                    return $record && $record->created_by === auth()->id();
+                                }
+
+                                // We're creating - always show
+                                return true;
+                            }),
+                    ]),
+
             ]);
     }
 
@@ -378,7 +418,7 @@ class ClientResource extends Resource
             // Disable record URL and record action for all records
             ->recordUrl(null)
             ->recordAction(null)
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['createdBy', 'updatedBy']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['createdBy', 'updatedBy'])->visibleToUser())
             ->columns([
 
                 TextColumn::make('id')
@@ -430,6 +470,23 @@ class ClientResource extends Resource
                     ->alignCenter()
                     ->sortable()
                     ->toggleable(),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label(__('client.table.status'))
+                    ->badge()
+                    ->color(fn (string $state) => match ($state) {
+                        'active' => 'success',
+                        'draft' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state) => match ($state) {
+                        'active' => __('client.table.status_active'),
+                        'draft' => __('client.table.status_draft'),
+                        default => $state,
+                    })
+                    ->toggleable()
+                    ->visible(true)
+                    ->alignment(Alignment::Center),
 
                 TextColumn::make('important_url_count')
                     ->label(__('client.table.important_url_count'))
@@ -551,6 +608,34 @@ class ClientResource extends Resource
                 Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('toggle_status')
+                        ->label(fn ($record) => $record->status === 'active'
+                            ? __('client.actions.make_draft')
+                            : __('client.actions.make_active'))
+                        ->icon(fn ($record) => $record->status === 'active' ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
+                        ->color(fn ($record) => $record->status === 'active' ? 'warning' : 'success')
+                        ->action(function ($record) {
+                            $newStatus = $record->status === 'active' ? 'draft' : 'active';
+
+                            $record->update([
+                                'status' => $newStatus,
+                                'updated_by' => auth()->id(),
+                            ]);
+
+                            // Show success notification
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('client.actions.status_updated'))
+                                ->body($newStatus === 'active'
+                                    ? __('client.actions.client_activated')
+                                    : __('client.actions.client_made_draft'))
+                                ->success()
+                                ->send();
+                        })
+                        ->tooltip(fn ($record) => $record->status === 'active'
+                            ? __('client.actions.make_draft_tooltip')
+                            : __('client.actions.make_active_tooltip'))
+                        ->hidden(fn ($record) => $record->trashed() || $record->created_by !== auth()->id()),
+
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),

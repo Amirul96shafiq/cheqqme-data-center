@@ -11,7 +11,6 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
@@ -99,52 +98,6 @@ class TrelloBoardResource extends Resource
                             ]),
                     ]),
 
-                Section::make(__('trelloboard.section.display_info'))
-                    ->schema([
-
-                        Forms\Components\Radio::make('status')
-                            ->label(__('trelloboard.form.status'))
-                            ->options([
-                                'active' => __('trelloboard.form.status_active'),
-                                'draft' => __('trelloboard.form.status_draft'),
-                            ])
-                            ->default('active')
-                            ->inline()
-                            ->required()
-                            ->helperText(__('trelloboard.form.status_helper'))
-                            ->disabled(function (Get $get) {
-                                // Check if we're in edit mode by looking for record in route
-                                $recordId = request()->route('record');
-                                if ($recordId) {
-                                    // We're editing - get the record from route
-                                    $record = TrelloBoard::find($recordId);
-
-                                    return $record && $record->created_by !== auth()->id();
-                                }
-
-                                // We're creating - never disable
-                                return false;
-                            })
-                            ->visible(function (Get $get) {
-                                // Check if we're in edit mode by looking for record in route
-                                $recordId = request()->route('record');
-                                if ($recordId) {
-                                    // We're editing - get the record from route
-                                    $record = TrelloBoard::find($recordId);
-
-                                    return $record && $record->created_by === auth()->id();
-                                }
-
-                                // We're creating - always show
-                                return true;
-                            }),
-
-                        Toggle::make('show_on_boards')
-                            ->label(__('trelloboard.form.show_on_boards'))
-                            ->default(true),
-
-                    ]),
-
                 Section::make()
                     ->heading(function (Get $get) {
                         $count = 0;
@@ -229,6 +182,59 @@ class TrelloBoardResource extends Resource
 
                     ])
                     ->collapsible(),
+
+                Section::make(__('trelloboard.section.display_info'))
+                    ->schema([
+
+                        Forms\Components\Radio::make('status')
+                            ->label(__('trelloboard.form.status'))
+                            ->options([
+                                'active' => __('trelloboard.form.status_active'),
+                                'draft' => __('trelloboard.form.status_draft'),
+                            ])
+                            ->default('active')
+                            ->inline()
+                            ->required()
+                            ->helperText(__('trelloboard.form.status_helper'))
+                            ->disabled(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = TrelloBoard::find($recordId);
+
+                                    return $record && $record->created_by !== auth()->id();
+                                }
+
+                                // We're creating - never disable
+                                return false;
+                            })
+                            ->visible(function (Get $get) {
+                                // Check if we're in edit mode by looking for record in route
+                                $recordId = request()->route('record');
+                                if ($recordId) {
+                                    // We're editing - get the record from route
+                                    $record = TrelloBoard::find($recordId);
+
+                                    return $record && $record->created_by === auth()->id();
+                                }
+
+                                // We're creating - always show
+                                return true;
+                            }),
+
+                        Forms\Components\Radio::make('show_on_boards')
+                            ->label(__('trelloboard.form.show_on_boards'))
+                            ->options([
+                                true => __('trelloboard.table.show_on_boards_true'),
+                                false => __('trelloboard.table.show_on_boards_false'),
+                            ])
+                            ->default(true)
+                            ->inline()
+                            ->required(),
+
+                    ]),
+
             ]);
     }
 

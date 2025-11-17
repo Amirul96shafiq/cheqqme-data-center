@@ -16,6 +16,13 @@ return [
 
     'actions' => [
         'create' => 'Tambah Pelanggan',
+        'make_draft' => 'Tukar ke Draf',
+        'make_active' => 'Tukar ke Aktif',
+        'make_draft_tooltip' => 'Tukar pelanggan ini ke status Draf (hanya anda boleh melihatnya)',
+        'make_active_tooltip' => 'Tukar pelanggan ini ke status Aktif (semua pengguna boleh melihatnya)',
+        'status_updated' => 'Status dikemaskini berjaya',
+        'client_activated' => 'Pelanggan kini Aktif dan boleh dilihat oleh semua pengguna.',
+        'client_made_draft' => 'Pelanggan kini dalam status Draf dan boleh dilihat oleh anda sahaja.',
     ],
 
     'section' => [
@@ -25,6 +32,7 @@ return [
         'company_info' => 'Maklumat Syarikat Pelanggan',
         'company_projects' => 'Projek Syarikat Pelanggan',
         'extra_info' => 'Maklumat Tambahan Pelanggan',
+        'status_info' => 'Maklumat Status Sumber',
         'important_urls' => 'URL Penting Pelanggan',
         'activity_logs' => 'Log Aktiviti',
     ],
@@ -47,6 +55,10 @@ return [
         'notes_helper' => 'Baki aksara: :count',
         'notes_warning' => 'Catatan tidak boleh melebihi 500 aksara yang boleh dibaca.',
         'company_name_helper' => 'Akan guna nama PIC secara automatik, tapi boleh diubah.',
+        'status' => 'Status',
+        'status_active' => 'Aktif',
+        'status_draft' => 'Draf',
+        'status_helper' => 'Pelanggan aktif boleh dilihat oleh semua pengguna. Pelanggan draf boleh dilihat oleh anda sahaja.',
         'extra_information' => 'Maklumat Tambahan',
         'extra_title' => 'Tajuk',
         'extra_value' => 'Nilai',
@@ -60,6 +72,9 @@ return [
         'country' => 'Negara',
         'pic_contact_number' => 'Nombor Telefon PIC',
         'project_count' => 'Projek',
+        'status' => 'Status',
+        'status_active' => 'Aktif',
+        'status_draft' => 'Draf',
         'important_url_count' => 'URL Penting',
         'created_at_by' => 'Dicipta Pada (Oleh)',
         'updated_at_by' => 'Dikemas Kini pada (oleh)',

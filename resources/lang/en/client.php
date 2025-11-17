@@ -16,6 +16,13 @@ return [
 
     'actions' => [
         'create' => 'Create Client',
+        'make_draft' => 'Change to Draft',
+        'make_active' => 'Change to Active',
+        'make_draft_tooltip' => 'Change this client to Draft status (only you can see it)',
+        'make_active_tooltip' => 'Change this client to Active status (all users can see it)',
+        'status_updated' => 'Status updated successfully',
+        'client_activated' => 'Client is now Active and visible to all users.',
+        'client_made_draft' => 'Client is now in Draft mode and only visible to you.',
     ],
 
     'section' => [
@@ -25,6 +32,7 @@ return [
         'company_info' => 'Client Company Information',
         'company_projects' => 'Client Projects',
         'extra_info' => 'Client Additional Information',
+        'status_info' => 'Resource Status Information',
         'important_urls' => 'Client Important URLs',
         'activity_logs' => 'Activity Logs',
     ],
@@ -47,6 +55,10 @@ return [
         'notes_helper' => 'Remaining characters: :count',
         'notes_warning' => 'Notes must not exceed 500 visible characters.',
         'company_name_helper' => 'Defaults to the name of the person in charge, Changeable.',
+        'status' => 'Status',
+        'status_active' => 'Active',
+        'status_draft' => 'Draft',
+        'status_helper' => 'Active clients are visible to all users. Draft clients are only visible to you.',
         'extra_information' => 'Extra Information',
         'extra_title' => 'Title',
         'extra_value' => 'Value',
@@ -60,6 +72,9 @@ return [
         'country' => 'Country',
         'pic_contact_number' => 'Contact Number',
         'project_count' => 'Projects',
+        'status' => 'Status',
+        'status_active' => 'Active',
+        'status_draft' => 'Draft',
         'important_url_count' => 'Important URLs',
         'created_at_by' => 'Created At (By)',
         'updated_at_by' => 'Updated At (by)',

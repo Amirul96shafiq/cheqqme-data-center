@@ -26,6 +26,7 @@ class Client extends Model
         'company_address',
         'billing_address',
         'notes',
+        'status',
         'created_by',
         'updated_by',
         'extra_information',
@@ -44,6 +45,7 @@ class Client extends Model
                 'company_address',
                 'billing_address',
                 'notes',
+                'status',
                 'extra_information',
                 'created_at',
                 'updated_by',
@@ -104,5 +106,33 @@ class Client extends Model
         return Attribute::make(
             get: fn () => $this->importantUrls->count(),
         );
+    }
+
+    /**
+     * Scope to get visible clients for the current user.
+     * Active clients are visible to all users.
+     * Draft clients are only visible to their creator.
+     */
+    public function scopeVisibleToUser($query, $userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+
+        return $query->where(function ($q) use ($userId) {
+            $q->where('status', 'active')
+                ->orWhere(function ($q2) use ($userId) {
+                    $q2->where('status', 'draft')
+                        ->where('created_by', $userId);
+                });
+        });
+    }
+
+    /**
+     * Check if the client is visible to a specific user.
+     */
+    public function isVisibleToUser($userId = null): bool
+    {
+        $userId = $userId ?? auth()->id();
+
+        return $this->status === 'active' || $this->created_by === $userId;
     }
 }
