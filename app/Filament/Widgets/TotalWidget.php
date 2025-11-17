@@ -29,11 +29,11 @@ class TotalWidget extends BaseWidget
         '2xl' => 2,
     ];
 
-    public bool $showIssueTrackers = false;
+    public int $viewState = 0; // 0=tasks, 1=issues, 2=wishlists
 
     public function mount(): void
     {
-        $this->showIssueTrackers = $this->getStoredViewPreference();
+        $this->viewState = $this->getStoredViewPreference();
     }
 
     protected function getColumns(): int
@@ -43,7 +43,7 @@ class TotalWidget extends BaseWidget
 
     public function toggleView(): void
     {
-        $this->showIssueTrackers = ! $this->showIssueTrackers;
+        $this->viewState = ($this->viewState + 1) % 3; // Cycle through 0, 1, 2
 
         $this->persistViewPreference();
     }
@@ -112,6 +112,23 @@ class TotalWidget extends BaseWidget
         })->count();
     }
 
+    protected function getUserWishlistCount(): int
+    {
+        $userId = Auth::id();
+
+        if (! $userId) {
+            return 0;
+        }
+
+        // Count wishlist tasks assigned to the user
+        return Task::where(function ($query) use ($userId) {
+            $query->whereRaw('JSON_EXTRACT(assigned_to, "$") LIKE ?', ['%"'.$userId.'"%'])
+                ->orWhereRaw('JSON_EXTRACT(assigned_to, "$") LIKE ?', ['%'.$userId.'%']);
+        })
+            ->where('tracking_token', 'LIKE', 'CHEQQ-WSH-%')
+            ->count();
+    }
+
     private function getSharedStats(): array
     {
         return [
@@ -149,28 +166,43 @@ class TotalWidget extends BaseWidget
 
     private function getPrimaryStat(): Stat
     {
-        if ($this->showIssueTrackers) {
-            $issueTrackerCount = $this->getUserIssueTrackersCount();
-            $totalIssueTrackers = $this->getTotalIssueTrackersCount();
+        switch ($this->viewState) {
+            case 1: // Issues
+                $issueTrackerCount = $this->getUserIssueTrackersCount();
+                $totalIssueTrackers = $this->getTotalIssueTrackersCount();
 
-            return StatWithCycleButton::make(__('dashboard.your_issue_trackers.title'), $issueTrackerCount)
-                ->description(__('dashboard.your_issue_trackers.description', ['total' => $totalIssueTrackers]))
-                ->color('primary')
-                ->icon(ActionBoard::getNavigationIcon())
-                ->url(route('filament.admin.pages.action-board', ['type' => 'issue']))
-                ->extraAttributes([
-                    'class' => 'relative',
-                ]);
+                return StatWithCycleButton::make(__('dashboard.your_issue_trackers.title'), $issueTrackerCount)
+                    ->description(__('dashboard.your_issue_trackers.description', ['total' => $totalIssueTrackers]))
+                    ->color('primary')
+                    ->icon(ActionBoard::getNavigationIcon())
+                    ->url(route('filament.admin.pages.action-board', ['type' => 'issue']))
+                    ->extraAttributes([
+                        'class' => 'relative',
+                    ]);
+
+            case 2: // Wishlists
+                $wishlistCount = $this->getUserWishlistCount();
+                $totalWishlists = Task::wishlistTokens()->count();
+
+                return StatWithCycleButton::make(__('dashboard.your_wishlist.title'), $wishlistCount)
+                    ->description(__('dashboard.your_wishlist.description', ['total' => $totalWishlists]))
+                    ->color('primary')
+                    ->icon(ActionBoard::getNavigationIcon())
+                    ->url(route('filament.admin.pages.action-board', ['type' => 'wishlist']))
+                    ->extraAttributes([
+                        'class' => 'relative',
+                    ]);
+
+            default: // Tasks (case 0)
+                return StatWithCycleButton::make(__('dashboard.your_tasks.title'), $this->getUserTasksCount())
+                    ->description(__('dashboard.your_tasks.description', ['total' => Task::count()]))
+                    ->color('primary')
+                    ->icon(ActionBoard::getNavigationIcon())
+                    ->url(route('filament.admin.pages.action-board', ['type' => 'task']))
+                    ->extraAttributes([
+                        'class' => 'relative',
+                    ]);
         }
-
-        return StatWithCycleButton::make(__('dashboard.your_tasks.title'), $this->getUserTasksCount())
-            ->description(__('dashboard.your_tasks.description', ['total' => Task::count()]))
-            ->color('primary')
-            ->icon(ActionBoard::getNavigationIcon())
-            ->url(route('filament.admin.pages.action-board', ['type' => 'task']))
-            ->extraAttributes([
-                'class' => 'relative',
-            ]);
     }
 
     private function getTotalIssueTrackersCount(): int
@@ -181,15 +213,15 @@ class TotalWidget extends BaseWidget
         })->count();
     }
 
-    private function getStoredViewPreference(): bool
+    private function getStoredViewPreference(): int
     {
         $userId = Auth::id();
 
         if (! $userId) {
-            return false;
+            return 0;
         }
 
-        return (bool) session()->get($this->getSessionKey($userId), false);
+        return (int) session()->get($this->getSessionKey($userId), 0);
     }
 
     private function persistViewPreference(): void
@@ -200,7 +232,7 @@ class TotalWidget extends BaseWidget
             return;
         }
 
-        session()->put($this->getSessionKey($userId), $this->showIssueTrackers);
+        session()->put($this->getSessionKey($userId), $this->viewState);
     }
 
     private function getSessionKey(int $userId): string

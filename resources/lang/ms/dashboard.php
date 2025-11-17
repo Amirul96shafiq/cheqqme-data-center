@@ -73,6 +73,11 @@ return [
         'description' => 'Lihat Semua :total Pautan Mesyuarat →',
     ],
 
+    'your_wishlist' => [
+        'title' => 'Senarai Wishlist Ditugaskan Anda',
+        'description' => 'Lihat Semua :total Item Senarai Wishlist →',
+    ],
+
     'total_trello_boards' => [
         'title' => 'Jumlah Papan Trello',
     ],

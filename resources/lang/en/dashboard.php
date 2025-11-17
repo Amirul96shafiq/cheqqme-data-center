@@ -73,6 +73,11 @@ return [
         'description' => 'View all :total Meeting Links →',
     ],
 
+    'your_wishlist' => [
+        'title' => 'Your Assigned Wishlist',
+        'description' => 'View all :total Wishlist Items →',
+    ],
+
     'total_trello_boards' => [
         'title' => 'Total Trello Boards',
     ],
