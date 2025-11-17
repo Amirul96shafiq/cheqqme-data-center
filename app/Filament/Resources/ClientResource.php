@@ -471,6 +471,13 @@ class ClientResource extends Resource
                     ->sortable()
                     ->toggleable(),
 
+                TextColumn::make('important_url_count')
+                    ->label(__('client.table.important_url_count'))
+                    ->badge()
+                    ->alignCenter()
+                    ->sortable()
+                    ->toggleable(),
+
                 Tables\Columns\TextColumn::make('visibility_status')
                     ->label(__('client.table.status'))
                     ->badge()
@@ -487,13 +494,6 @@ class ClientResource extends Resource
                     ->toggleable()
                     ->visible(true)
                     ->alignment(Alignment::Center),
-
-                TextColumn::make('important_url_count')
-                    ->label(__('client.table.important_url_count'))
-                    ->badge()
-                    ->alignCenter()
-                    ->sortable()
-                    ->toggleable(),
 
                 TextColumn::make('created_at')
                     ->label(__('client.table.created_at_by'))

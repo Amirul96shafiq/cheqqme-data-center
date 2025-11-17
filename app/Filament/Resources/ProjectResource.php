@@ -631,7 +631,7 @@ class ProjectResource extends Resource
                         return $creatorName ? $formatted.' ('.$creatorName.')' : $formatted;
                     })
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('project.table.updated_at_by'))
