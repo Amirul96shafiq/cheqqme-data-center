@@ -41,24 +41,28 @@
     }}
 >
     {{-- Cycle Action Button --}}
-    <button
-        type="button"
-        wire:click.prevent.stop="toggleView"
-        @click.prevent.stop
-        class="absolute top-2 right-2 z-10 p-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        title="{{ __('dashboard.actions.toggle_view') }}"
-    >
-        <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            wire:loading.class="animate-spin"
-            wire:target="toggleView"
+    <div class="absolute top-2 right-2 z-10 flex items-center gap-1">
+
+        {{-- Cycle button --}}
+        <button
+            type="button"
+            wire:click.prevent.stop="toggleView"
+            @click.prevent.stop
+            class="p-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            title="{{ __('dashboard.actions.toggle_view') }} (Tasks ↔ Issues ↔ Wishlist)"
         >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-    </button>
+            <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                wire:loading.class="animate-spin"
+                wire:target="toggleView"
+            >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+        </button>
+    </div>
 
     <div class="grid gap-y-2">
         <div class="flex items-center gap-x-2">
