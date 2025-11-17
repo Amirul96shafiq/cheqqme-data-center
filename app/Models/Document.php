@@ -20,6 +20,7 @@ class Document extends Model
         'file_path',
         'project_id',
         'notes',
+        'visibility_status',
         'created_by',
         'updated_by',
         'extra_information',
@@ -35,6 +36,7 @@ class Document extends Model
                 'file_path',
                 'project_id',
                 'notes',
+                'visibility_status',
                 'extra_information',
                 'updated_at',
                 'updated_by',
@@ -60,5 +62,33 @@ class Document extends Model
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * Scope to get visible documents for the current user.
+     * Active documents are visible to all users.
+     * Draft documents are only visible to their creator.
+     */
+    public function scopeVisibleToUser($query, $userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+
+        return $query->where(function ($q) use ($userId) {
+            $q->where('visibility_status', 'active')
+                ->orWhere(function ($q2) use ($userId) {
+                    $q2->where('visibility_status', 'draft')
+                        ->where('created_by', $userId);
+                });
+        });
+    }
+
+    /**
+     * Check if the document is visible to a specific user.
+     */
+    public function isVisibleToUser($userId = null): bool
+    {
+        $userId = $userId ?? auth()->id();
+
+        return $this->visibility_status === 'active' || $this->created_by === $userId;
     }
 }
