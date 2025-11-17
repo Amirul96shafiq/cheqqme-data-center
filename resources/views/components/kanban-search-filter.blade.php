@@ -356,6 +356,23 @@ $usersForFilter = $usersCollection
 
                                 </div>
                             </div>
+                            
+                            <!-- Selected Card Type Display -->
+                            <div x-show="cardTypeFilter !== 'all'" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ __('action.filter.selected_card_type') }}</div>
+                                <div class="flex flex-wrap gap-1">
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 rounded-md">
+                                        <span x-show="cardTypeFilter === 'tasks'" x-text="'{{ __('action.filter.card_type_tasks') }}'"></span>
+                                        <span x-show="cardTypeFilter === 'issue_trackers'" x-text="'{{ __('action.filter.card_type_issue_trackers') }}'"></span>
+                                        <span x-show="cardTypeFilter === 'wishlist_trackers'" x-text="'{{ __('action.filter.card_type_wishlist_trackers') }}'"></span>
+                                        <button @click="navigateToCardType('all')" class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
 
                         </div>
 
