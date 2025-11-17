@@ -41,7 +41,7 @@ return [
 
     'section' => [
         'trello_board_info' => 'Trello Board Information',
-        'display_info' => 'Resource Status Information',
+        'display_info' => 'Visibility Resource Information',
         'extra_info' => 'Trello Board Additional Information',
         'activity_logs' => 'Activity Logs',
     ],
@@ -54,7 +54,7 @@ return [
         'open_url' => 'Open URL',
         'trelloboard_notes' => 'Notes',
         'show_on_boards' => 'Show on Boards',
-        'status' => 'Resource Status',
+        'status' => 'Visibility Status',
         'status_active' => 'Active',
         'status_draft' => 'Draft',
         'status_helper' => 'Active boards are visible to all users. Draft boards are only visible to you.',
@@ -73,7 +73,7 @@ return [
         'board_name' => 'Board Name',
         'board_url' => 'Board URL',
         'show_on_boards' => 'Show on Boards',
-        'status' => 'Resource Status',
+        'status' => 'Visibility',
         'status_active' => 'Active',
         'status_draft' => 'Draft',
         'created_at_by' => 'Created At (By)',

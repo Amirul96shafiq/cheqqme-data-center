@@ -29,6 +29,7 @@ return [
         'important_url_info' => 'Maklumat URL Penting',
         'extra_info' => 'Maklumat Tambahan URL Penting',
         'activity_logs' => 'Log Aktiviti',
+        'visibility_status' => 'Maklumat Keterlihatan Sumber',
     ],
 
     'form' => [
@@ -49,6 +50,10 @@ return [
         'title_placeholder_short' => 'Tajuk di sini',
         'create_project' => 'Tambah Projek',
         'create_client' => 'Tambah Pelanggan',
+        'visibility_status' => 'Status Keterlihatan',
+        'visibility_status_active' => 'Aktif',
+        'visibility_status_draft' => 'Draf',
+        'visibility_status_helper' => 'URL Penting Aktif boleh dilihat oleh semua pengguna. URL Penting Draf hanya boleh dilihat oleh pencipta.',
     ],
 
     'table' => [
@@ -58,7 +63,7 @@ return [
         'project' => 'Projek',
         'client' => 'Pelanggan',
         'important_url' => 'Link URL',
-        'visibility_status' => 'Status Keterlihatan',
+        'visibility_status' => 'Keterlihatan',
         'visibility_status_active' => 'Aktif',
         'visibility_status_draft' => 'Draf',
         'created_at_by' => 'Dicipta Pada (Oleh)',
@@ -69,6 +74,7 @@ return [
         ],
     ],
 
+    // Filters
     'filters' => [
         'client_id' => 'Pelanggan',
         'project_id' => 'Projek',

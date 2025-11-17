@@ -41,7 +41,7 @@ return [
 
     'section' => [
         'trello_board_info' => 'Maklumat Papan Trello',
-        'display_info' => 'Maklumat Status Sumber',
+        'display_info' => 'Maklumat Keterlihatan Sumber',
         'extra_info' => 'Maklumat Tambahan Papan Trello',
         'activity_logs' => 'Log Aktiviti',
     ],
@@ -54,7 +54,7 @@ return [
         'open_url' => 'Buka URL',
         'trelloboard_notes' => 'Catatan',
         'show_on_boards' => 'Papar pada Papan',
-        'status' => 'Status Sumber',
+        'status' => 'Status Keterlihatan',
         'status_active' => 'Aktif',
         'status_draft' => 'Draf',
         'status_helper' => 'Papan Trello aktif boleh dilihat oleh semua pengguna. Papan Trello draf hanya boleh dilihat oleh pembuatnya.',
@@ -73,7 +73,7 @@ return [
         'board_name' => 'Nama Papan',
         'board_url' => 'URL Papan',
         'show_on_boards' => 'Papar pada Papan',
-        'status' => 'Status Sumber',
+        'status' => 'Keterlihatan',
         'status_active' => 'Aktif',
         'status_draft' => 'Draf',
         'status_helper' => 'Papan Trello aktif boleh dilihat oleh semua pengguna. Papan Trello draf hanya boleh dilihat oleh pembuatnya.',

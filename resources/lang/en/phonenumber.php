@@ -44,9 +44,9 @@ return [
         'add_extra_info' => '+ Add Extra Information',
         'title_placeholder_short' => 'Title goes here',
         'visibility_status' => 'Visibility Status',
-        'visibility_status_active' => 'Active (Visible to all users)',
-        'visibility_status_draft' => 'Draft (Visible only to creator)',
-        'visibility_status_helper' => 'Active phone numbers are visible to all users. Draft phone numbers are only visible to their creator.',
+        'visibility_status_active' => 'Active',
+        'visibility_status_draft' => 'Draft',
+        'visibility_status_helper' => 'Active Phone Numbers are visible to all users. Draft Phone Numbers are only visible to their creator.',
     ],
 
     'table' => [
@@ -54,7 +54,7 @@ return [
         'title' => 'Title',
         'country' => 'Country',
         'phone_number' => 'Phone Number',
-        'visibility_status' => 'Status',
+        'visibility_status' => 'Visibility',
         'visibility_status_active' => 'Active',
         'visibility_status_draft' => 'Draft',
         'created_at_by' => 'Created At (By)',

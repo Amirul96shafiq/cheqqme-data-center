@@ -44,9 +44,9 @@ return [
         'add_extra_info' => '+ Tambah Maklumat Tambahan',
         'title_placeholder_short' => 'Tajuk di sini',
         'visibility_status' => 'Status Keterlihatan',
-        'visibility_status_active' => 'Aktif (Boleh dilihat semua pengguna)',
-        'visibility_status_draft' => 'Draf (Boleh dilihat pencipta sahaja)',
-        'visibility_status_helper' => 'Nombor telefon aktif boleh dilihat semua pengguna. Nombor telefon draf hanya boleh dilihat oleh pencipta.',
+        'visibility_status_active' => 'Aktif',
+        'visibility_status_draft' => 'Draf',
+        'visibility_status_helper' => 'Nombor Telefon Aktif boleh dilihat semua pengguna. Nombor Telefon Draf hanya boleh dilihat oleh pencipta.',
     ],
 
     'table' => [
@@ -54,7 +54,7 @@ return [
         'title' => 'Tajuk',
         'country' => 'Negara',
         'phone_number' => 'Nombor Telefon',
-        'visibility_status' => 'Status',
+        'visibility_status' => 'Keterlihatan',
         'visibility_status_active' => 'Aktif',
         'visibility_status_draft' => 'Draf',
         'created_at_by' => 'Dicipta Pada (Oleh)',
