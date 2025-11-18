@@ -99,6 +99,10 @@ return [
         'issue_tracker_url' => 'URL Penjejak Isu',
         'issue_tracker_code_helper' => 'URL Penjejak Isu: :url',
         'issue_tracker_code_helper_new' => 'Kod Penjejak Isu akan dijana secara automatik apabila projek dicipta.',
+        'wishlist_tracker_code' => 'Kod Penjejak Wishlist',
+        'wishlist_tracker_url' => 'URL Penjejak Wishlist',
+        'wishlist_tracker_code_helper' => 'URL Penjejak Wishlist: :url',
+        'wishlist_tracker_code_helper_new' => 'Kod Penjejak Wishlist akan dijana secara automatik apabila projek dicipta.',
         'open_issue_tracker' => 'Buka Penjejak Isu',
         'open_wishlist_tracker' => 'Buka Penjejak Wishlist',
         'tracking_tokens' => 'Token Penjejakan',
@@ -109,7 +113,6 @@ return [
         'open_edit_task' => 'Buka Edit Tugasan',
         'open_status_page' => 'Buka Halaman Status',
         'wishlist_tracker_code_helper_existing' => 'Kod Penjejak Wishlist akan dijana secara automatik apabila projek dicipta.',
-        'wishlist_tracker_code_helper_new' => 'Kod Penjejak Wishlist akan dijana secara automatik apabila projek dicipta.',
     ],
 
     'table' => [

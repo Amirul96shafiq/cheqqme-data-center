@@ -35,6 +35,16 @@ class EditProject extends BaseEditRecord
             $data['issue_tracker_info'] = [];
         }
 
+        // Populate wishlist tracker info
+        if ($record && $record->wishlist_tracker_code) {
+            $data['wishlist_tracker_info'] = [[
+                'code' => $record->wishlist_tracker_code,
+                'url' => route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]),
+            ]];
+        } else {
+            $data['wishlist_tracker_info'] = [];
+        }
+
         return $data;
     }
 

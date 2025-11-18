@@ -100,6 +100,10 @@ return [
         'issue_tracker_url' => 'Issue Tracker URL',
         'issue_tracker_code_helper' => 'Issue Tracker URL: :url',
         'issue_tracker_code_helper_new' => 'Issue Tracker Code will be auto-generated when project is created.',
+        'wishlist_tracker_code' => 'Wishlist Tracker Code',
+        'wishlist_tracker_url' => 'Wishlist Tracker URL',
+        'wishlist_tracker_code_helper' => 'Wishlist Tracker URL: :url',
+        'wishlist_tracker_code_helper_new' => 'Wishlist Tracker Code will be auto-generated when project is created.',
         'open_issue_tracker' => 'Open Issue Tracker',
         'open_wishlist_tracker' => 'Open Wishlist Tracker',
         'tracking_tokens' => 'Tracking Tokens',
@@ -110,7 +114,6 @@ return [
         'open_edit_task' => 'Open Edit Task',
         'open_status_page' => 'Open Status Page',
         'wishlist_tracker_code_helper_existing' => 'Wishlist Tracker Code will be auto-generated when project is created.',
-        'wishlist_tracker_code_helper_new' => 'Wishlist Tracker Code will be auto-generated when project is created.',
     ],
 
     'table' => [
