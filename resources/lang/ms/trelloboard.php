@@ -58,6 +58,7 @@ return [
         'status_active' => 'Aktif',
         'status_draft' => 'Draf',
         'status_helper' => 'Papan Trello aktif boleh dilihat oleh semua pengguna. Papan Trello draf hanya boleh dilihat oleh pembuatnya.',
+        'status_helper_readonly' => 'Hanya pengguna yang mencipta sumber ini boleh menukar status keterlihatan. Sila hubungi',
         'notes_helper' => 'Baki aksara: :count',
         'notes_warning' => 'Catatan tidak boleh melebihi 500 aksara yang boleh dilihat.',
         'extra_information' => 'Maklumat Tambahan',

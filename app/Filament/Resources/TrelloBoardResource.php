@@ -20,6 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 use Schmeits\FilamentCharacterCounter\Forms\Components\RichEditor;
 
@@ -184,46 +185,50 @@ class TrelloBoardResource extends Resource
                     ->collapsible(),
 
                 Section::make(__('trelloboard.section.display_info'))
-                    ->schema([
+                    ->schema(function (Get $get) {
+                        // Check if we're in edit mode by looking for record in route
+                        $recordId = request()->route('record');
+                        $isEditMode = $recordId !== null;
+                        $canEditVisibility = true;
 
-                        Forms\Components\Radio::make('visibility_status')
-                            ->label(__('trelloboard.form.status'))
-                            ->options([
-                                'active' => __('trelloboard.form.status_active'),
-                                'draft' => __('trelloboard.form.status_draft'),
-                            ])
-                            ->default('active')
-                            ->inline()
-                            ->required()
-                            ->helperText(__('trelloboard.form.status_helper'))
-                            ->disabled(function (Get $get) {
-                                // Check if we're in edit mode by looking for record in route
-                                $recordId = request()->route('record');
-                                if ($recordId) {
-                                    // We're editing - get the record from route
-                                    $record = TrelloBoard::find($recordId);
+                        if ($isEditMode) {
+                            // We're editing - get the record from route
+                            $record = \App\Models\TrelloBoard::find($recordId);
+                            $canEditVisibility = $record && $record->created_by === auth()->id();
+                        }
 
-                                    return $record && $record->created_by !== auth()->id();
-                                }
+                        $schema = [];
 
-                                // We're creating - never disable
-                                return false;
-                            })
-                            ->visible(function (Get $get) {
-                                // Check if we're in edit mode by looking for record in route
-                                $recordId = request()->route('record');
-                                if ($recordId) {
-                                    // We're editing - get the record from route
-                                    $record = TrelloBoard::find($recordId);
+                        if ($canEditVisibility) {
+                            // User can edit visibility - show radio field
+                            $schema[] = Forms\Components\Radio::make('visibility_status')
+                                ->label(__('trelloboard.form.status'))
+                                ->options([
+                                    'active' => __('trelloboard.form.status_active'),
+                                    'draft' => __('trelloboard.form.status_draft'),
+                                ])
+                                ->default('active')
+                                ->inline()
+                                ->required()
+                                ->helperText(__('trelloboard.form.status_helper'));
+                        } else {
+                            // User cannot edit visibility - show message with clickable creator name
+                            $creator = null;
+                            if ($isEditMode && $record) {
+                                $creator = $record->createdBy;
+                            }
 
-                                    return $record && $record->created_by === auth()->id();
-                                }
+                            $schema[] = Forms\Components\Placeholder::make('visibility_status_readonly')
+                                ->label(__('trelloboard.form.status'))
+                                ->content(new HtmlString(
+                                    __('trelloboard.form.status_helper_readonly').' '.
+                                    \Blade::render('<x-clickable-creator-name :user="$user" />', ['user' => $creator]).
+                                    '.'
+                                ));
+                        }
 
-                                // We're creating - always show
-                                return true;
-                            }),
-
-                        Forms\Components\Radio::make('show_on_boards')
+                        // Always show the show_on_boards field
+                        $schema[] = Forms\Components\Radio::make('show_on_boards')
                             ->label(__('trelloboard.form.show_on_boards'))
                             ->options([
                                 true => __('trelloboard.table.show_on_boards_true'),
@@ -231,9 +236,10 @@ class TrelloBoardResource extends Resource
                             ])
                             ->default(true)
                             ->inline()
-                            ->required(),
+                            ->required();
 
-                    ]),
+                        return $schema;
+                    }),
 
             ]);
     }

@@ -58,6 +58,7 @@ return [
         'status_active' => 'Active',
         'status_draft' => 'Draft',
         'status_helper' => 'Active boards are visible to all users. Draft boards are only visible to you.',
+        'status_helper_readonly' => 'Only the user who created this resource can change the visibility status. Please contact',
         'notes_helper' => 'Remaining characters: :count',
         'notes_warning' => 'Notes must not exceed 500 visible characters.',
         'extra_information' => 'Extra Information',
