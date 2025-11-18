@@ -59,6 +59,7 @@ return [
         'status_active' => 'Aktif',
         'status_draft' => 'Draf',
         'status_helper' => 'Pelanggan Aktif boleh dilihat oleh semua pengguna. Pelanggan Draf hanya boleh dilihat oleh anda.',
+        'status_helper_readonly' => 'Hanya pengguna yang mencipta sumber ini boleh menukar status keterlihatan. Sila hubungi',
         'extra_information' => 'Maklumat Tambahan',
         'extra_title' => 'Tajuk',
         'extra_value' => 'Nilai',

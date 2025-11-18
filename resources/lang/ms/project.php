@@ -87,6 +87,7 @@ return [
         'visibility_status_active' => 'Aktif',
         'visibility_status_draft' => 'Draf',
         'visibility_status_helper' => 'Projek aktif boleh dilihat oleh semua pengguna. Projek draf hanya boleh dilihat oleh anda.',
+        'visibility_status_helper_readonly' => 'Hanya pengguna yang mencipta sumber ini boleh menukar status keterlihatan. Sila hubungi',
         'notes' => 'Nota',
         'notes_helper' => 'Baki aksara: :count',
         'notes_warning' => 'Nota tidak boleh melebihi 500 aksara yang boleh dilihat.',

@@ -59,6 +59,7 @@ return [
         'status_active' => 'Active',
         'status_draft' => 'Draft',
         'status_helper' => 'Active clients are visible to all users. Draft clients are only visible to you.',
+        'status_helper_readonly' => 'Only the user who created this resource can change the visibility status. Please contact',
         'extra_information' => 'Extra Information',
         'extra_title' => 'Title',
         'extra_value' => 'Value',

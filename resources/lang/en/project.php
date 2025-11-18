@@ -87,6 +87,7 @@ return [
         'visibility_status_active' => 'Active',
         'visibility_status_draft' => 'Draft',
         'visibility_status_helper' => 'Active projects are visible to all users. Draft projects are only visible to you.',
+        'visibility_status_helper_readonly' => 'Only the user who created this resource can change the visibility status. Please contact',
         'notes' => 'Notes',
         'notes_helper' => 'Remaining characters: :count',
         'notes_warning' => 'Notes must not exceed 500 visible characters.',

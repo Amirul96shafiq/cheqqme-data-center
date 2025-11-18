@@ -47,6 +47,7 @@ return [
         'visibility_status_active' => 'Active',
         'visibility_status_draft' => 'Draft',
         'visibility_status_helper' => 'Active Phone Numbers are visible to all users. Draft Phone Numbers are only visible to their creator.',
+        'visibility_status_helper_readonly' => 'Only the user who created this resource can change the visibility status. Please contact',
     ],
 
     'table' => [

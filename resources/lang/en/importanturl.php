@@ -55,6 +55,7 @@ return [
         'visibility_status_active' => 'Active',
         'visibility_status_draft' => 'Draft',
         'visibility_status_helper' => 'Active Important URLs are visible to all users. Draft Important URLs are only visible to their creator.',
+        'visibility_status_helper_readonly' => 'Only the user who created this resource can change the visibility status. Please contact',
     ],
 
     // Table columns

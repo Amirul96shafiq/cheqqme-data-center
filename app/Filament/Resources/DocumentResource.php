@@ -23,6 +23,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 use Schmeits\FilamentCharacterCounter\Forms\Components\RichEditor;
 
@@ -284,44 +285,50 @@ class DocumentResource extends Resource
                     ->collapsible(),
 
                 Section::make(__('document.section.visibility_status'))
-                    ->schema([
-                        \Filament\Forms\Components\Radio::make('visibility_status')
-                            ->label(__('document.form.visibility_status'))
-                            ->options([
-                                'active' => __('document.form.visibility_status_active'),
-                                'draft' => __('document.form.visibility_status_draft'),
-                            ])
-                            ->default('active')
-                            ->inline()
-                            ->required()
-                            ->helperText(__('document.form.visibility_status_helper'))
-                            ->disabled(function (Get $get) {
-                                // Check if we're in edit mode by looking for record in route
-                                $recordId = request()->route('record');
-                                if ($recordId) {
-                                    // We're editing - get the record from route
-                                    $record = Document::find($recordId);
+                    ->schema(function (Get $get) {
+                        // Check if we're in edit mode by looking for record in route
+                        $recordId = request()->route('record');
+                        $isEditMode = $recordId !== null;
+                        $canEditVisibility = true;
 
-                                    return $record && $record->created_by !== auth()->id();
-                                }
+                        if ($isEditMode) {
+                            // We're editing - get the record from route
+                            $record = \App\Models\Document::find($recordId);
+                            $canEditVisibility = $record && $record->created_by === auth()->id();
+                        }
 
-                                // We're creating - never disable
-                                return false;
-                            })
-                            ->visible(function (Get $get) {
-                                // Check if we're in edit mode by looking for record in route
-                                $recordId = request()->route('record');
-                                if ($recordId) {
-                                    // We're editing - get the record from route
-                                    $record = Document::find($recordId);
+                        if ($canEditVisibility) {
+                            // User can edit visibility - show radio field
+                            return [
+                                \Filament\Forms\Components\Radio::make('visibility_status')
+                                    ->label(__('document.form.visibility_status'))
+                                    ->options([
+                                        'active' => __('document.form.visibility_status_active'),
+                                        'draft' => __('document.form.visibility_status_draft'),
+                                    ])
+                                    ->default('active')
+                                    ->inline()
+                                    ->required()
+                                    ->helperText(__('document.form.visibility_status_helper')),
+                            ];
+                        } else {
+                            // User cannot edit visibility - show message with clickable creator name
+                            $creator = null;
+                            if ($isEditMode && $record) {
+                                $creator = $record->createdBy;
+                            }
 
-                                    return $record && $record->created_by === auth()->id();
-                                }
-
-                                // We're creating - always show
-                                return true;
-                            }),
-                    ]),
+                            return [
+                                \Filament\Forms\Components\Placeholder::make('visibility_status_readonly')
+                                    ->label(__('document.form.visibility_status'))
+                                    ->content(new HtmlString(
+                                        __('document.form.visibility_status_helper_readonly').' '.
+                                        \Blade::render('<x-clickable-creator-name :user="$user" />', ['user' => $creator]).
+                                        '.'
+                                    )),
+                            ];
+                        }
+                    }),
 
             ]);
     }

@@ -47,6 +47,7 @@ return [
         'visibility_status_active' => 'Aktif',
         'visibility_status_draft' => 'Draf',
         'visibility_status_helper' => 'Nombor Telefon Aktif boleh dilihat semua pengguna. Nombor Telefon Draf hanya boleh dilihat oleh pencipta.',
+        'visibility_status_helper_readonly' => 'Hanya pengguna yang mencipta sumber ini boleh menukar status keterlihatan. Sila hubungi',
     ],
 
     'table' => [

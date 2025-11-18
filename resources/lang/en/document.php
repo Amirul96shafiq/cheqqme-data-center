@@ -55,6 +55,7 @@ return [
         'visibility_status_active' => 'Active',
         'visibility_status_draft' => 'Draft',
         'visibility_status_helper' => 'Active documents are visible to all users. Draft documents are only visible to you.',
+        'visibility_status_helper_readonly' => 'Only the user who created this resource can change the visibility status. Please contact',
         'add_extra_info' => '+ Add Extra Information',
         'title_placeholder_short' => 'Title goes here',
         'create_project' => 'Create Project',

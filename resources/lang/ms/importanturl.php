@@ -54,6 +54,7 @@ return [
         'visibility_status_active' => 'Aktif',
         'visibility_status_draft' => 'Draf',
         'visibility_status_helper' => 'URL Penting Aktif boleh dilihat oleh semua pengguna. URL Penting Draf hanya boleh dilihat oleh pencipta.',
+        'visibility_status_helper_readonly' => 'Hanya pengguna yang mencipta sumber ini boleh menukar status keterlihatan. Sila hubungi',
     ],
 
     'table' => [

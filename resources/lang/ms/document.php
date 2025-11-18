@@ -52,6 +52,7 @@ return [
         'visibility_status_active' => 'Aktif',
         'visibility_status_draft' => 'Draf',
         'visibility_status_helper' => 'Dokumen aktif boleh dilihat oleh semua pengguna. Dokumen draf hanya boleh dilihat oleh anda.',
+        'visibility_status_helper_readonly' => 'Hanya pengguna yang mencipta sumber ini boleh menukar status keterlihatan. Sila hubungi',
         'extra_information' => 'Maklumat Tambahan',
         'extra_title' => 'Tajuk',
         'extra_value' => 'Nilai',
