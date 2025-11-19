@@ -21,7 +21,7 @@
 }
 
 .microsoft-signin-button:focus {
-    outline: 2px solid #0078d4;
+    outline: 2px solid #fbb43e;
     outline-offset: 2px;
 }
 </style>
