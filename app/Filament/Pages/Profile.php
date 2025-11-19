@@ -24,11 +24,13 @@ class Profile extends EditProfile
     public string $old_password = ''; // For old password input
 
     /**
-     * Enable unsaved changes alert for this page
+     * Disable unsaved changes alert for Profile page
+     * The Profile page contains user preferences and OAuth connections,
+     * not critical data that needs protection from accidental loss
      */
     protected function hasUnsavedDataChangesAlert(): bool
     {
-        return true;
+        return false;
     }
 
     public function mount(): void

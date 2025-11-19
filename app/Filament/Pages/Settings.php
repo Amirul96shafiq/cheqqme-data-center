@@ -37,11 +37,13 @@ class Settings extends Page
     }
 
     /**
-     * Enable unsaved changes alert for this page
+     * Disable unsaved changes alert for Settings page
+     * The Settings page contains user preferences and OAuth connections,
+     * not critical data that needs protection from accidental loss
      */
     protected function hasUnsavedDataChangesAlert(): bool
     {
-        return true;
+        return false;
     }
 
     // Get navigation label and title
