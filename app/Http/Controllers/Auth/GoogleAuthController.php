@@ -78,7 +78,14 @@ class GoogleAuthController extends Controller
             ]);
 
             // Update Google avatar only if no custom avatar exists
-            $user->updateGoogleAvatar($googleUser->getAvatar());
+            // Wrap in try-catch to handle SSL certificate issues in development
+            try {
+                $user->updateGoogleAvatar($googleUser->getAvatar());
+            } catch (\Exception $e) {
+                // Log the error but don't fail the authentication
+                \Log::warning('Failed to fetch Google avatar: ' . $e->getMessage());
+                // Continue without avatar - authentication still succeeds
+            }
 
             // Log the user in
             Auth::login($user);

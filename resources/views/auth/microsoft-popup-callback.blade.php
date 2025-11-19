@@ -48,12 +48,17 @@
 
         // Helper function to close popup with fallback message
         function closePopupWithFallback(message, isError = false) {
+            console.log('Popup: Calling window.close()...');
             window.close();
 
             setTimeout(() => {
+                console.log('Popup: Checking if window is still open after 500ms:', !window.closed);
                 if (!window.closed) {
                     const icon = isError ? 'Authentication failed' : 'Successfully signed in! Redirecting...';
                     document.body.innerHTML = `<div class="loading"><p>${icon}</p><p>You can close this window.</p></div>`;
+                    console.log('Popup: Showing fallback message');
+                } else {
+                    console.log('Popup: Window closed successfully');
                 }
             }, 500);
         }
@@ -131,10 +136,19 @@
                         }
                         closePopupWithFallback('Successfully connected!', false);
                     } else {
-                        // LOGIN: Redirect parent window directly
+                        // LOGIN: Redirect parent window directly (same as Google)
+                        console.log('Popup: Redirecting parent to:', data.redirect_url);
+                        console.log('Popup: Parent window available:', !!window.opener, 'Parent closed:', window.opener ? window.opener.closed : 'N/A');
+
                         if (window.opener && !window.opener.closed) {
+                            console.log('Popup: Setting parent location...');
                             window.opener.location.href = data.redirect_url;
+                            console.log('Popup: Parent location set successfully');
+                        } else {
+                            console.log('Popup: Parent window not available or closed');
                         }
+
+                        console.log('Popup: Calling closePopupWithFallback...');
                         closePopupWithFallback('Successfully signed in!', false);
                     }
                 } else {

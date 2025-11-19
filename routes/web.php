@@ -280,9 +280,9 @@ Route::middleware('auth')->group(function () {
 });
 
 // Microsoft OAuth routes
-// Route::get('/auth/microsoft', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'redirectToMicrosoft'])->name('auth.microsoft');
-// Route::get('/auth/microsoft/callback', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'handleMicrosoftCallback'])->name('auth.microsoft.callback');
-// Route::get('/auth/microsoft/popup-callback', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'showPopupCallback'])->name('auth.microsoft.popup-callback');
+Route::get('/auth/microsoft', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'redirectToMicrosoft'])->name('auth.microsoft');
+Route::get('/auth/microsoft/callback', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'handleMicrosoftCallback'])->name('auth.microsoft.callback');
+Route::get('/auth/microsoft/popup-callback', [\App\Http\Controllers\Auth\MicrosoftAuthController::class, 'showPopupCallback'])->name('auth.microsoft.popup-callback');
 
 // Debug route for Microsoft OAuth testing
 // Route::get('/debug/microsoft', function () {

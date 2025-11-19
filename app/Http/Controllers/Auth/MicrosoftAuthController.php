@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use SocialiteProviders\Microsoft\Provider as BaseMicrosoftProvider;
 
-// Custom Microsoft provider that uses 'consumers' tenant instead of 'common'
+// Custom Microsoft provider that uses 'common' tenant for both organizational and personal accounts
 class CustomMicrosoftProvider extends BaseMicrosoftProvider
 {
     protected function getTokenUrl(): string
     {
-        return sprintf('https://login.microsoftonline.com/%s/oauth2/v2.0/token', 'consumers');
+        return sprintf('https://login.microsoftonline.com/%s/oauth2/v2.0/token', 'common');
     }
 
     protected function getAuthUrl($state): string
@@ -22,7 +22,7 @@ class CustomMicrosoftProvider extends BaseMicrosoftProvider
         return $this->buildAuthUrlFromBase(
             sprintf(
                 'https://login.microsoftonline.com/%s/oauth2/v2.0/authorize',
-                'consumers'
+                'common'
             ),
             $state
         );
@@ -30,7 +30,7 @@ class CustomMicrosoftProvider extends BaseMicrosoftProvider
 
     public function getLogoutUrl(?string $redirectUri = null)
     {
-        $logoutUrl = sprintf('https://login.microsoftonline.com/%s/oauth2/v2.0/logout', 'consumers');
+        $logoutUrl = sprintf('https://login.microsoftonline.com/%s/oauth2/v2.0/logout', 'common');
 
         return $redirectUri === null ?
             $logoutUrl :
@@ -52,7 +52,7 @@ class MicrosoftAuthController extends Controller
         // For production, use proper SSL verification:
         // return Socialite::driver('microsoft')->redirect();
 
-        // Use custom Microsoft provider that uses 'consumers' tenant
+        // Use custom Microsoft provider that uses 'common' tenant for both org and personal accounts
         $driver = new CustomMicrosoftProvider(
             request(),
             config('services.microsoft.client_id'),
@@ -65,7 +65,12 @@ class MicrosoftAuthController extends Controller
             'verify' => false,
         ]));
 
-        return redirect($driver->redirect()->getTargetUrl());
+        $redirectUrl = $driver->redirect()->getTargetUrl();
+
+        // Debug: Log the redirect URL
+        \Log::info('Microsoft OAuth redirect URL: '.$redirectUrl);
+
+        return redirect($redirectUrl);
     }
 
     /**
@@ -74,6 +79,11 @@ class MicrosoftAuthController extends Controller
      */
     public function handleMicrosoftCallback(Request $request)
     {
+        // If this is accessed directly in a browser (popup), show the popup callback view
+        if (! $request->ajax() && ! $request->wantsJson()) {
+            return view('auth.microsoft-popup-callback');
+        }
+
         try {
             // For production, use proper SSL verification:
             // $microsoftUser = Socialite::driver('microsoft')->user();
@@ -121,7 +131,14 @@ class MicrosoftAuthController extends Controller
             ]);
 
             // Update Microsoft avatar only if no custom avatar exists
-            $user->updateMicrosoftAvatar($microsoftUser->getAvatar());
+            // Wrap in try-catch to handle SSL certificate issues in development
+            try {
+                $user->updateMicrosoftAvatar($microsoftUser->getAvatar());
+            } catch (\Exception $e) {
+                // Log the error but don't fail the authentication
+                \Log::warning('Failed to fetch Microsoft avatar: '.$e->getMessage());
+                // Continue without avatar - authentication still succeeds
+            }
 
             // Log the user in
             Auth::login($user);

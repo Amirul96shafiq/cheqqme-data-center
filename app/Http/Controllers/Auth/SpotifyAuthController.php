@@ -136,7 +136,14 @@ class SpotifyAuthController extends Controller
             ]);
 
             // Update Spotify avatar only if no custom avatar exists
-            $user->updateSpotifyAvatar($spotifyUser->getAvatar());
+            // Wrap in try-catch to handle SSL certificate issues in development
+            try {
+                $user->updateSpotifyAvatar($spotifyUser->getAvatar());
+            } catch (\Exception $e) {
+                // Log the error but don't fail the authentication
+                \Log::warning('Failed to fetch Spotify avatar: ' . $e->getMessage());
+                // Continue without avatar - authentication still succeeds
+            }
 
             // Determine redirect URL based on session source (used for both success and error cases)
             $source = session('spotify_oauth_source', 'profile');
