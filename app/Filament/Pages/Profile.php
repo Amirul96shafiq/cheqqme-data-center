@@ -65,6 +65,11 @@ class Profile extends EditProfile
                 sessionStorage.removeItem("spotify_connection_success");
                 $wire.call("showSpotifyConnectionSuccess");
             }
+
+            if (sessionStorage.getItem("microsoft_connection_success") === "true") {
+                sessionStorage.removeItem("microsoft_connection_success");
+                $wire.call("showMicrosoftConnectionSuccess");
+            }
             
         ');
     }
@@ -397,14 +402,28 @@ class Profile extends EditProfile
                                     ->helperText(new \Illuminate\Support\HtmlString('<span class="text-xs">'.__('profile.fieldset.description.microsoft_text').'</span>'))
                                     ->content(function () {
                                         $icons = $this->getStatusIcons();
+                                        $user = auth()->user();
+                                        if ($user->hasMicrosoftAuth()) {
+                                            return new \Illuminate\Support\HtmlString(
+                                                '<div class="flex items-center gap-2">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                                                        '.$icons['check'].'
+                                                        '.__('profile.form.connected').'
+                                                    </span>
+                                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                        '.($user->microsoft_connected_at ? __('profile.form.connected_on').' '.$user->microsoft_connected_at->format('j/n/y, h:i A') : '').'
+                                                    </span>
+                                                </div>'
+                                            );
+                                        }
 
                                         return new \Illuminate\Support\HtmlString(
                                             '<div class="flex items-center gap-2">
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400">
-                                                        '.$icons['warning'].'
-                                                        '.__('profile.form.microsoft_coming_soon').'
-                                                    </span>
-                                                </div>'
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+                                                    '.$icons['x-mark'].'
+                                                    '.__('profile.form.not_connected').'
+                                                </span>
+                                            </div>'
                                         );
                                     })
                                     ->columnSpan(['default' => 'full', 'lg' => 4]),
@@ -412,21 +431,38 @@ class Profile extends EditProfile
                                 Forms\Components\Actions::make([
                                     Forms\Components\Actions\Action::make('connect_microsoft')
                                         ->label(__('profile.form.connect_microsoft'))
-                                        ->color('gray')
-                                        ->outlined()
+                                        ->color('primary')
                                         ->icon('heroicon-o-link')
-                                        ->disabled()
-                                        ->requiresConfirmation(false)
-                                        ->extraAttributes(['class' => 'w-full']),
-                                    // ->modalIcon('heroicon-o-link')
-                                    // ->modalHeading(__('profile.form.microsoft_coming_soon'))
-                                    // ->modalDescription(__('profile.form.microsoft_coming_soon_description'))
-                                    // ->modalSubmitActionLabel(__('profile.form.connect_microsoft'))
-                                    // ->modalCancelActionLabel(__('profile.form.cancel'))
-                                    // ->modalWidth('md')
-                                    // ->action(function () {
-                                    //     // Coming soon functionality
-                                    // }),
+                                        ->visible(fn () => ! auth()->user()->hasMicrosoftAuth())
+                                        ->requiresConfirmation()
+                                        ->modalIcon('heroicon-o-link')
+                                        ->modalHeading(__('profile.form.connect_microsoft'))
+                                        ->modalDescription(__('profile.form.microsoft_description'))
+                                        ->modalSubmitActionLabel(__('profile.form.connect_microsoft'))
+                                        ->modalCancelActionLabel(__('profile.form.cancel'))
+                                        ->modalWidth('md')
+                                        ->extraAttributes(['class' => 'w-full'])
+                                        ->action(function () {
+                                            $this->openMicrosoftAuthPopup();
+                                        }),
+
+                                    Forms\Components\Actions\Action::make('disconnect_microsoft')
+                                        ->label(__('profile.form.disconnect_microsoft'))
+                                        ->color('danger')
+                                        ->outlined()
+                                        ->icon('heroicon-o-link-slash')
+                                        ->visible(fn () => auth()->user()->hasMicrosoftAuth())
+                                        ->requiresConfirmation()
+                                        ->modalIcon('heroicon-o-link-slash')
+                                        ->modalHeading(__('profile.form.disconnect_microsoft_confirm'))
+                                        ->modalDescription(__('profile.form.disconnect_microsoft_description'))
+                                        ->modalSubmitActionLabel(__('profile.form.disconnect'))
+                                        ->modalCancelActionLabel(__('profile.form.cancel'))
+                                        ->modalWidth('md')
+                                        ->extraAttributes(['class' => 'w-full'])
+                                        ->action(function () {
+                                            $this->confirmDisconnectMicrosoft();
+                                        }),
                                 ])
                                     ->columnSpan(['default' => 'full', 'lg' => 1])
                                     ->alignment(Alignment::End)
@@ -1031,6 +1067,112 @@ class Profile extends EditProfile
                     } else {
                         // Fallback to Livewire notification
                         $wire.call("showGoogleConnectionError", event.data.message || "Failed to connect Google account");
+                    }
+                }
+            };
+            
+            window.addEventListener("message", messageListener);
+            
+            // Check if popup was closed manually
+            const checkClosed = setInterval(function () {
+                if (popup.closed) {
+                    clearInterval(checkClosed);
+                    window.removeEventListener("message", messageListener);
+                }
+            }, 1000);
+        ');
+    }
+
+    /**
+     * Confirm disconnect Microsoft account
+     */
+    public function confirmDisconnectMicrosoft(): void
+    {
+        $user = auth()->user();
+        if (! $user) {
+            return;
+        }
+
+        $user->disconnectMicrosoft();
+
+        Notification::make()
+            ->title(__('profile.form.microsoft_disconnected'))
+            ->body(__('profile.form.microsoft_disconnected_body'))
+            ->success()
+            ->send();
+    }
+
+    /**
+     * Show success notification for Microsoft connection
+     */
+    public function showMicrosoftConnectionSuccess(): void
+    {
+        Notification::make()
+            ->title(__('profile.form.microsoft_connected'))
+            ->body(__('profile.form.microsoft_connected_body'))
+            ->success()
+            ->send();
+    }
+
+    /**
+     * Show error notification for Microsoft connection
+     */
+    public function showMicrosoftConnectionError(string $message): void
+    {
+        Notification::make()
+            ->title(__('profile.form.microsoft_connection_failed'))
+            ->body($message)
+            ->danger()
+            ->send();
+    }
+
+    /**
+     * Open Microsoft OAuth popup window for account connection
+     */
+    public function openMicrosoftAuthPopup(): void
+    {
+        $this->js('
+            const popup = window.open(
+                "'.route('auth.microsoft', ['source' => 'profile']).'",
+                "microsoftSignIn",
+                "width=460,height=800,scrollbars=yes,resizable=yes,top=" +
+                    Math.max(0, (screen.height - 800) / 2) +
+                    ",left=" +
+                    Math.max(0, (screen.width - 460) / 2)
+            );
+            
+            if (!popup) {
+                alert("Popup window was blocked. Please allow popups for this site.");
+                return;
+            }
+            
+            // Listen for messages from the popup
+            const messageListener = (event) => {
+                if (event.origin !== window.location.origin) return;
+                
+                if (event.data.success === true) {
+                    popup.close();
+                    window.removeEventListener("message", messageListener);
+                    // Show success notification using custom notification system
+                    if (typeof showSuccessNotification === "function") {
+                        showSuccessNotification(event.data.message || "Microsoft account connected successfully!");
+                    } else if (typeof showNotification === "function") {
+                        showNotification("success", event.data.message || "Microsoft account connected successfully!");
+                    }
+                    // Store success in session storage and redirect
+                    sessionStorage.setItem("microsoft_connection_success", "true");
+                    window.location.href = "'.route('filament.admin.auth.profile').'";
+                } else if (event.data.success === false) {
+                    popup.close();
+                    window.removeEventListener("message", messageListener);
+                    // Show error notification using custom notification system
+                    if (typeof showErrorNotification === "function") {
+                        showErrorNotification(event.data.message || "Failed to connect Microsoft account");
+                    } else if (typeof showNotification === "function") {
+                        showNotification("error", event.data.message || "Failed to connect Microsoft account");
+                    } else {
+                        // Fallback to Livewire notification
+                        $wire.call("showMicrosoftConnectionError", event.data.message || "Failed to connect Microsoft account");
                     }
                 }
             };

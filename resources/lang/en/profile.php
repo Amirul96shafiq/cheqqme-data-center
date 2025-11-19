@@ -101,9 +101,18 @@ return [
         'zoom_connection_failed' => 'Zoom Connection Failed',
 
         // Microsoft Connection
-        'connect_microsoft' => 'Coming Soon',
+        'connect_microsoft' => 'Connect Now',
         'microsoft_coming_soon' => 'Coming Soon',
         'microsoft_connection' => 'Microsoft oAuth',
+        'microsoft_description' => 'Connect your Microsoft account for faster login and synchronize your Microsoft avatar with your profile.',
+        'disconnect_microsoft' => 'Disconnect',
+        'disconnect_microsoft_confirm' => 'Disconnect Microsoft Account',
+        'disconnect_microsoft_description' => 'Are you sure you want to disconnect your Microsoft account? You will no longer be able to sign in using Microsoft.',
+        'microsoft_disconnected' => 'Microsoft Account Disconnected',
+        'microsoft_disconnected_body' => 'Your Microsoft account has been successfully disconnected.',
+        'microsoft_connected' => 'Microsoft Account Connected',
+        'microsoft_connected_body' => 'Your Microsoft account has been successfully connected. You can now sign in using Microsoft.',
+        'microsoft_connection_failed' => 'Microsoft Connection Failed',
 
         // Spotify Connection
         'connect_spotify' => 'Connect Now',

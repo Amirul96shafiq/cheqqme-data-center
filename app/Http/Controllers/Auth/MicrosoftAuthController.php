@@ -124,11 +124,16 @@ class MicrosoftAuthController extends Controller
                 ], 404);
             }
 
-            // Update Microsoft ID and connection date
-            $user->update([
+            // Update Microsoft ID and connection date (only if not already connected)
+            $updateData = [
                 'microsoft_id' => $microsoftUser->getId(),
-                'microsoft_connected_at' => now(),
-            ]);
+            ];
+
+            if (! $user->microsoft_connected_at) {
+                $updateData['microsoft_connected_at'] = now();
+            }
+
+            $user->update($updateData);
 
             // Update Microsoft avatar only if no custom avatar exists
             // Wrap in try-catch to handle SSL certificate issues in development

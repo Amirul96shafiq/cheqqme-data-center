@@ -101,9 +101,18 @@ return [
         'zoom_connection_failed' => 'Sambungan Zoom Gagal',
 
         // Microsoft Connection
-        'connect_microsoft' => 'Akan Datang',
+        'connect_microsoft' => 'Sambung',
         'microsoft_coming_soon' => 'Akan Datang',
         'microsoft_connection' => 'Microsoft oAuth',
+        'microsoft_description' => 'Sambungkan akaun Microsoft anda untuk log masuk yang lebih cepat & menyesuaikan avatar Microsoft dengan profil anda.',
+        'disconnect_microsoft' => 'Putuskan Sambungan',
+        'disconnect_microsoft_confirm' => 'Putuskan Sambungan Akaun Microsoft',
+        'disconnect_microsoft_description' => 'Adakah anda pasti ingin memutuskan sambungan akaun Microsoft anda? Anda tidak lagi boleh log masuk menggunakan Microsoft.',
+        'microsoft_disconnected' => 'Akaun Microsoft Diputuskan',
+        'microsoft_disconnected_body' => 'Akaun Microsoft anda telah berjaya diputuskan.',
+        'microsoft_connected' => 'Akaun Microsoft Disambungkan',
+        'microsoft_connected_body' => 'Akaun Microsoft anda telah berjaya disambungkan. Anda kini boleh log masuk menggunakan Microsoft.',
+        'microsoft_connection_failed' => 'Sambungan Microsoft Gagal',
 
         // Spotify Connection
         'connect_spotify' => 'Sambung',
