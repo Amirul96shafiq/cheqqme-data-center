@@ -103,9 +103,6 @@ class MicrosoftAuthController extends Controller
 
             $microsoftUser = $driver->user();
 
-            // Check if user exists by email
-            $user = User::where('email', $microsoftUser->getEmail())->first();
-
             // Determine redirect URL based on session source (used for both success and error cases)
             $source = session('microsoft_oauth_source', 'login');
             $isFromProfile = $source === 'profile';
@@ -113,15 +110,46 @@ class MicrosoftAuthController extends Controller
                 ? route('filament.admin.auth.profile')
                 : route('filament.admin.pages.dashboard');
 
-            if (! $user) {
-                // Clear the session data even on error to avoid stale state
-                session()->forget('microsoft_oauth_source');
+            $microsoftEmail = $microsoftUser->getEmail();
 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to login. The selected Microsoft Account does not exist in the system.',
-                    'redirect_url' => $redirectUrl,
-                ], 404);
+            if ($isFromProfile) {
+                // User is connecting their account - verify email matches
+                $currentUser = Auth::user();
+                
+                if (! $currentUser) {
+                    // Should not happen if source is profile, but handle gracefully
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Session expired. Please login again.',
+                        'redirect_url' => route('filament.admin.auth.login'),
+                    ], 401);
+                }
+
+                if (strtolower($currentUser->email) !== strtolower($microsoftEmail)) {
+                    session()->forget('microsoft_oauth_source');
+                    
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'The email address of the Microsoft account (' . $microsoftEmail . ') does not match your current account\'s email. Please connect with the correct account.',
+                        'redirect_url' => $redirectUrl,
+                    ], 400);
+                }
+
+                $user = $currentUser;
+            } else {
+                // Login flow - check if user exists by email
+                $user = User::where('email', $microsoftEmail)->first();
+
+                if (! $user) {
+                    // Clear the session data even on error to avoid stale state
+                    session()->forget('microsoft_oauth_source');
+    
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to login. The selected Microsoft Account does not exist in the system.',
+                        'redirect_url' => $redirectUrl,
+                    ], 404);
+                }
             }
 
             // Update Microsoft ID and connection date (only if not already connected)
