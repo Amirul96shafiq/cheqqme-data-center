@@ -57,6 +57,8 @@ class ChatbotUsageChart extends ApexChartWidget
                     'yesterday' => __('dashboard.analytics.chatbot_usage.filters.yesterday'),
                     'this_week' => __('dashboard.analytics.chatbot_usage.filters.this_week'),
                     'this_month' => __('dashboard.analytics.chatbot_usage.filters.this_month'),
+                    'this_year' => __('dashboard.analytics.chatbot_usage.filters.this_year'),
+                    'overall' => __('dashboard.analytics.chatbot_usage.filters.overall'),
                 ])
                 ->searchable()
                 ->default('this_week')
@@ -108,11 +110,30 @@ class ChatbotUsageChart extends ApexChartWidget
                 $set('date_end', $now->endOfMonth()->toDateString());
                 break;
 
+            case 'this_year':
+                $set('date_start', $now->startOfYear()->toDateString());
+                $set('date_end', $now->endOfYear()->toDateString());
+                break;
+
+            case 'overall':
+                // For overall, we'll handle this specially in getOptions method
+                $set('date_start', null);
+                $set('date_end', null);
+                break;
+
         }
     }
 
     protected function getOptions(): array
     {
+        $quickFilter = $this->filterFormData['quick_filter'] ?? 'this_week';
+
+        // For overall filter, we show data for the past year
+        if ($quickFilter === 'overall') {
+            $this->filterFormData['date_start'] = now()->subYear()->toDateString();
+            $this->filterFormData['date_end'] = now()->toDateString();
+        }
+
         return [
             'chart' => [
                 'type' => 'line',

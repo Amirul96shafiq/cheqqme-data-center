@@ -154,6 +154,8 @@ return [
                 'yesterday' => 'Semalam',
                 'this_week' => 'Minggu Ini',
                 'this_month' => 'Bulan Ini',
+                'this_year' => 'Tahun Ini',
+                'overall' => 'Keseluruhan',
                 'date_start' => 'Tarikh Mula',
                 'date_end' => 'Tarikh Akhir',
             ],

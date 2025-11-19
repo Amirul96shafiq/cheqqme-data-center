@@ -154,6 +154,8 @@ return [
                 'yesterday' => 'Yesterday',
                 'this_week' => 'This Week',
                 'this_month' => 'This Month',
+                'this_year' => 'This Year',
+                'overall' => 'Overall',
                 'date_start' => 'Start Date',
                 'date_end' => 'End Date',
             ],
