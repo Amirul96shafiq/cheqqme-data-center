@@ -74,3 +74,6 @@ mcp-server/servers
 sail
 tatus
 NUL
+
+# Antigravity
+.antigravity/
