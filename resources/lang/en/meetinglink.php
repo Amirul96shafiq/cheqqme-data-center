@@ -93,9 +93,9 @@ return [
     ],
 
     'actions' => [
-        'generate_meet_link' => 'Generate Meet Link',
-        'regenerate_meet_link' => 'Regenerate Meet Link',
-        'delete_meet_link' => 'Delete Meet Link',
+        'generate_meet_link' => 'Generate Meeting Link',
+        'regenerate_meet_link' => 'Regenerate Meeting Link',
+        'delete_meet_link' => 'Delete Meeting Link',
         'copy_meeting_text' => 'Copy Meeting Text',
         'copy_meeting_text_success' => 'Meeting invitation text copied to clipboard!',
         'copy_meeting_text_body' => 'You can now paste it anywhere',
