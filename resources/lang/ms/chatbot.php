@@ -15,7 +15,7 @@ return [
 
     // Actions
     'action' => [
-        'open_chat' => 'Sembang dengan Arem',
+        'open_chat' => 'Sembang dengan Arem AI',
         'close_chat' => 'Tutup Chat',
         'clear_conversation' => 'Kosongkan Perbualan',
     ],

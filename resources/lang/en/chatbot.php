@@ -15,7 +15,7 @@ return [
 
     // Actions
     'action' => [
-        'open_chat' => 'Chat with Arem',
+        'open_chat' => 'Chat with Arem AI',
         'close_chat' => 'Close chat',
         'clear_conversation' => 'Clear Conversation',
     ],
