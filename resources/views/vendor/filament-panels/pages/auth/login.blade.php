@@ -166,7 +166,7 @@
                         </div>
 
                         {{-- Social Sign-in Buttons --}}
-                        <div class="space-y-6">
+                        <div class="space-y-1">
                             
                             {{-- Google Sign-in Button --}}
                             <x-google-signin-button />
