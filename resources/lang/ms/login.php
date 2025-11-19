@@ -6,8 +6,9 @@ return [
     'actions' => [
         'login' => 'Log Masuk',
         'forgotPassword' => 'Lupa Kata Laluan?',
-        'googleSignin' => 'Log Masuk dengan Google',
-        'microsoftSignin' => 'Log Masuk dengan Microsoft',
+        'signInWith' => 'Log Masuk dengan',
+        'googleSignin' => 'Google oAuth Log Masuk',
+        'microsoftSignin' => 'Microsoft oAuth Log Masuk',
     ],
 
     'tooltips' => [

@@ -165,15 +165,30 @@
                             <div class="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
                         </div>
 
-                        {{-- Social Sign-in Buttons --}}
-                        <div class="space-y-1">
+                        {{-- Social Sign-in Section --}}
+                        <div class="space-y-2">
+
+                            {{-- Social Sign-in Label --}}
+                            <div class="text-center">
+                                <span class="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                                    {{ __('login.actions.signInWith') }}
+                                </span>
+                            </div>
+
+                            {{-- Social Sign-in Buttons --}}
+                            <div class="flex gap-2">
+
+                                {{-- Google Sign-in Button --}}
+                                <div class="flex-1">
+                                    <x-google-signin-button class="w-full" />
+                                </div>
+
+                                {{-- Microsoft Sign-in Button --}}
+                                <div class="flex-1">
+                                    <x-microsoft-signin-button class="w-full" />
+                                </div>
+                            </div>
                             
-                            {{-- Google Sign-in Button --}}
-                            <x-google-signin-button />
-
-                            {{-- Microsoft Sign-in Button --}}
-                            <x-microsoft-signin-button />
-
                         </div>
 
                     </form>

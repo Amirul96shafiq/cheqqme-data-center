@@ -6,8 +6,9 @@ return [
     'actions' => [
         'login' => 'Sign In',
         'forgotPassword' => 'Forgot Password?',
-        'googleSignin' => 'Sign in with Google',
-        'microsoftSignin' => 'Sign in with Microsoft',
+        'signInWith' => 'Sign in with',
+        'googleSignin' => 'Google oAuth Sign-in',
+        'microsoftSignin' => 'Microsoft oAuth Sign-in',
     ],
 
     'tooltips' => [
