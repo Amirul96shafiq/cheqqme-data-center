@@ -9,6 +9,7 @@ return [
         'signInWith' => 'Sign in with',
         'googleSignin' => 'Google oAuth Sign-in',
         'microsoftSignin' => 'Microsoft oAuth Sign-in',
+        'githubSignin' => 'Coming Soon',
     ],
 
     'tooltips' => [

@@ -187,6 +187,11 @@
                                 <div class="flex-1">
                                     <x-microsoft-signin-button class="w-full" />
                                 </div>
+
+                                {{-- GitHub Sign-in Button --}}
+                                <div class="flex-1">
+                                    <x-github-signin-button class="w-full" />
+                                </div>
                             </div>
                             
                         </div>

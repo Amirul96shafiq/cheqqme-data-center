@@ -9,6 +9,7 @@ return [
         'signInWith' => 'Log Masuk dengan',
         'googleSignin' => 'Google oAuth Log Masuk',
         'microsoftSignin' => 'Microsoft oAuth Log Masuk',
+        'githubSignin' => 'Akan Datang',
     ],
 
     'tooltips' => [
