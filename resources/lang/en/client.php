@@ -28,7 +28,7 @@ return [
     'section' => [
         'client_info' => 'Person In Charge Information',
         'staff_info' => 'Staff Information',
-        'staff_info_description' => 'Manually add or Automatically add from Issue Tracker',
+        'staff_info_description' => 'Manually add or Automatically add from Issue / Wishlist Tracker',
         'company_info' => 'Client Company Information',
         'company_projects' => 'Client Projects',
         'extra_info' => 'Client Additional Information',
