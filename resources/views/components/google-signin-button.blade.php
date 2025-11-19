@@ -4,7 +4,7 @@
     <button
         type="button"
         onclick="openGoogleSignIn()"
-        class="w-full py-3 google-signin-button flex items-center justify-center gap-3 px-4 border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors duration-200"
+        class="w-full py-3 google-signin-button flex items-center justify-center gap-3 px-4 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
         aria-label="{{ __('login.actions.googleSignin') }}"
     >
         <img src="{{ asset('images/google-icon.svg') }}" alt="Google" class="w-6 h-6" />
