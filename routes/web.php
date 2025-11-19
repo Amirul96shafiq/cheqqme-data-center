@@ -445,7 +445,7 @@ Route::middleware('auth')->group(function () {
         // If they have a manual status (last_status_change is not null), preserve it
         if ($user->last_status_change !== null) {
             // User has manually set their status, don't change it
-            \Illuminate\Support\Facades\Log::info("User {$user->id} has manual status ({$user->online_status}), not setting to invisible on tab close");
+            Log::info("User {$user->id} has manual status ({$user->online_status}), not setting to invisible on tab close");
 
             return response()->json([
                 'success' => true,
@@ -462,7 +462,7 @@ Route::middleware('auth')->group(function () {
             'last_status_change' => null, // Keep null to mark as auto-invisible
         ]);
 
-        \Illuminate\Support\Facades\Log::info("User {$user->id} set to invisible status on browser tab close (auto-invisible) from status: {$previousStatus}");
+        Log::info("User {$user->id} set to invisible status on browser tab close (auto-invisible) from status: {$previousStatus}");
 
         return response()->json([
             'success' => true,
@@ -477,7 +477,7 @@ Route::middleware('auth')->group(function () {
 
         // If user has a manual status, don't change it
         if ($user->last_status_change !== null) {
-            \Illuminate\Support\Facades\Log::info("User {$user->id} has manual status ({$user->online_status}), not changing on tab return");
+            Log::info("User {$user->id} has manual status ({$user->online_status}), not changing on tab return");
 
             return response()->json([
                 'success' => true,
@@ -491,7 +491,7 @@ Route::middleware('auth')->group(function () {
         if ($user->online_status === 'invisible') {
             // This is auto-invisible (last_status_change is null), restore to online
             \App\Services\OnlineStatus\PresenceStatusManager::setOnline($user);
-            \Illuminate\Support\Facades\Log::info("User {$user->id} set back to online status on tab return (was auto-invisible)");
+            Log::info("User {$user->id} set back to online status on tab return (was auto-invisible)");
 
             return response()->json([
                 'success' => true,
