@@ -1,6 +1,6 @@
 {{-- Left Section (70%) - Hero Section --}}
 <div class="relative w-[70%] hidden lg:flex flex-col justify-between overflow-hidden bg-gray-50 dark:bg-gray-900 p-6" x-data="heroSlideshow()">
-    
+
     {{-- Hero Section with Gradient Background --}}
     <div class="relative w-full h-full rounded-2xl overflow-hidden">
         
@@ -173,12 +173,19 @@
                 {{-- Play Button Overlay --}}
                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <x-tooltip position="top" :text="__('login.tooltips.playVideo')">
-                        <button type="button"
-                                @click="openVideoModal()"
-                                class="pointer-events-auto w-16 h-16 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group backdrop-blur-sm border border-white/20 dark:border-gray-700/20"
-                                aria-label="Play video">
-                            <x-heroicon-m-play class="w-8 h-8 text-primary-600 dark:text-primary-400 ml-1 group-hover:scale-110 transition-transform duration-200" />
-                        </button>
+                        <div class="relative">
+
+                            {{-- Animated Rotating Circle --}}
+                            <div class="absolute -inset-3 rounded-full border-2 border-primary-600/10 border-t-primary-600/80 animate-spin-slow"></div>
+
+                            <button type="button"
+                                    @click="openVideoModal()"
+                                    class="relative pointer-events-auto w-16 h-16 bg-primary-400/80 hover:bg-primary-400 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group backdrop-blur-sm"
+                                    aria-label="Play video">
+                                <x-heroicon-m-play class="w-8 h-8 text-primary-900 ml-1 group-hover:scale-110 transition-transform duration-200" />
+                            </button>
+
+                        </div>
                     </x-tooltip>
                 </div>
 
