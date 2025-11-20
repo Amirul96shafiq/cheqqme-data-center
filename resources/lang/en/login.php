@@ -22,6 +22,7 @@ return [
         'pausePlaySlide' => 'Pause / Play slide',
         'nextSlide' => 'Next slide',
         'whatsNew' => "View What's New",
+        'playVideo' => 'Play video',
     ],
 
     'form' => [

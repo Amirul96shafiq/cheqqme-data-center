@@ -160,6 +160,7 @@
 
         {{-- Bottom Section: Hero Images --}}
         <div class="absolute bottom-0 left-0 w-full h-3/4 pl-12 hero-image-container">
+
             {{-- Hero Image Wrapper for Animations --}}
             <div id="heroImageWrapper" class="relative w-full h-full">
                 <img id="heroImage"
@@ -171,14 +172,18 @@
 
                 {{-- Play Button Overlay --}}
                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <button type="button"
-                            @click="openVideoModal()"
-                            class="pointer-events-auto w-16 h-16 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group backdrop-blur-sm border border-white/20 dark:border-gray-700/20"
-                            aria-label="Play video">
-                        <x-heroicon-o-play class="w-8 h-8 text-primary-600 dark:text-primary-400 ml-1 group-hover:scale-110 transition-transform duration-200" />
-                    </button>
+                    <x-tooltip position="top" :text="__('login.tooltips.playVideo')">
+                        <button type="button"
+                                @click="openVideoModal()"
+                                class="pointer-events-auto w-16 h-16 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group backdrop-blur-sm border border-white/20 dark:border-gray-700/20"
+                                aria-label="Play video">
+                            <x-heroicon-m-play class="w-8 h-8 text-primary-600 dark:text-primary-400 ml-1 group-hover:scale-110 transition-transform duration-200" />
+                        </button>
+                    </x-tooltip>
                 </div>
+
             </div>
+            
         </div>
 
     </div>

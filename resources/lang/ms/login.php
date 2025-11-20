@@ -22,6 +22,7 @@ return [
         'pausePlaySlide' => 'Hentikan / Mainkan slide',
         'nextSlide' => 'Slide seterusnya',
         'whatsNew' => 'Lihat Apa yang Baru',
+        'playVideo' => 'Main video',
     ],
 
     'form' => [
