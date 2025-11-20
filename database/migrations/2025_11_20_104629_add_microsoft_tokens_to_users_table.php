@@ -12,9 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('microsoft_id')->nullable()->after('zoom_connected_at');
-            $table->string('microsoft_avatar_url')->nullable()->after('microsoft_id');
-            $table->timestamp('microsoft_connected_at')->nullable()->after('microsoft_avatar_url');
+            $table->text('microsoft_token')->nullable();
+            $table->text('microsoft_refresh_token')->nullable();
         });
     }
 
@@ -24,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['microsoft_id', 'microsoft_avatar_url', 'microsoft_connected_at']);
+            $table->dropColumn(['microsoft_token', 'microsoft_refresh_token']);
         });
     }
 };

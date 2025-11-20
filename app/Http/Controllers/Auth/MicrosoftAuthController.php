@@ -65,6 +65,16 @@ class MicrosoftAuthController extends Controller
             'verify' => false,
         ]));
 
+        // Request basic scopes (OnlineMeetings.ReadWrite commented out for testing without admin consent)
+        $driver->scopes([
+            'openid',
+            'profile',
+            'email',
+            'User.Read',
+            // 'OnlineMeetings.ReadWrite', // TODO: Requires admin consent - re-enable when ready for production
+            'offline_access', // Required to get refresh token
+        ]);
+
         $redirectUrl = $driver->redirect()->getTargetUrl();
 
         // Debug: Log the redirect URL
@@ -155,6 +165,8 @@ class MicrosoftAuthController extends Controller
             // Update Microsoft ID and connection date (only if not already connected)
             $updateData = [
                 'microsoft_id' => $microsoftUser->getId(),
+                'microsoft_token' => $microsoftUser->token, // This is already the JWT access token string
+                'microsoft_refresh_token' => $microsoftUser->refreshToken,
             ];
 
             if (! $user->microsoft_connected_at) {

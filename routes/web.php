@@ -289,6 +289,33 @@ Route::get('/debug/google-calendar', function () {
     ]);
 })->middleware('auth');
 
+// Debug route for Microsoft Teams testing
+Route::get('/debug/microsoft-teams', function () {
+    $user = auth()->user();
+
+    if (!$user || !$user->microsoft_token) {
+        return response()->json([
+            'error' => 'No Microsoft token found. Please connect your Microsoft account first.',
+        ], 400);
+    }
+
+    $teamsService = app(\App\Services\MicrosoftTeamsService::class);
+    $teamsService->setAccessToken($user->microsoft_token);
+
+    $result = $teamsService->generateMeetingLink(
+        'Test Teams Meeting',
+        now()->addHour()->toIso8601String(),
+        60
+    );
+
+    return response()->json([
+        'user_id' => $user->id,
+        'has_token' => !empty($user->microsoft_token),
+        'token_length' => strlen($user->microsoft_token ?? ''),
+        'result' => $result,
+    ]);
+})->middleware('auth');
+
 // Spotify OAuth routes
 Route::get('/auth/spotify', [\App\Http\Controllers\Auth\SpotifyAuthController::class, 'redirectToSpotify'])->name('auth.spotify');
 Route::get('/auth/spotify/callback', [\App\Http\Controllers\Auth\SpotifyAuthController::class, 'handleSpotifyCallback'])->name('auth.spotify.callback');

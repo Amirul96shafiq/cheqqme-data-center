@@ -52,6 +52,8 @@ class User extends Authenticatable implements HasAvatar
         'microsoft_id',
         'microsoft_avatar_url',
         'microsoft_connected_at',
+        'microsoft_token',
+        'microsoft_refresh_token',
         'spotify_id',
         'spotify_avatar_url',
         'spotify_connected_at',
@@ -132,6 +134,8 @@ class User extends Authenticatable implements HasAvatar
     protected $hidden = [
         'password',
         'remember_token',
+        'microsoft_token',
+        'microsoft_refresh_token',
     ];
 
     /**
