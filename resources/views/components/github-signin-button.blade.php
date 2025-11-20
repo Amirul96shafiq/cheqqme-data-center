@@ -7,7 +7,7 @@
         class="w-full py-3 github-signin-button flex items-center justify-center gap-3 px-4 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 opacity-60 cursor-not-allowed"
         aria-label="{{ __('login.actions.githubSignin') }}"
     >
-        <img src="{{ asset('images/github-icon.svg') }}" alt="GitHub" class="w-6 h-6" />
+        <img src="{{ asset('images/github-icon.svg') }}" alt="GitHub" class="w-6 h-6 dark:invert" />
     </button>
 </x-tooltip>
 
