@@ -363,8 +363,8 @@ function openGreetingModal(forceOpen = false) {
                             <div class="relative">
                                 <video 
                                     class="w-full rounded-lg shadow-sm" 
-                                    controls 
                                     preload="metadata"
+                                    loop
                                 >
                                     <source src="/videos/video_sample_01.mp4" type="video/mp4">
                                     {{ __('greetingmodal.video-not-supported') }}
@@ -603,6 +603,7 @@ window.toggleDataManagementVideo = function() {
                 const video = videoContainer.querySelector('video');
                 if (video) {
                     video.currentTime = 0;
+                    video.play();
                 }
             }, 100);
         } else {
