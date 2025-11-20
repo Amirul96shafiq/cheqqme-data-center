@@ -147,13 +147,14 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
     }
 
     // Rate limiting: track by input + IP address for security
-    $rateLimitKey = 'login-attempt:'.strtolower($input).':'.$request->ip();
-    $maxAttempts = 5;
-    $decaySeconds = 60; // 1 minute lockout
+    $ipAddress = $request->ip();
+    $keySuffix = strtolower($input).':'.$ipAddress;
+    $attemptsKey = 'login-attempts:'.$keySuffix;
+    $lockoutKey = 'login-lockout:'.$keySuffix;
 
-    // Check if too many attempts have been made
-    if (RateLimiter::tooManyAttempts($rateLimitKey, $maxAttempts)) {
-        $seconds = RateLimiter::availableIn($rateLimitKey);
+    // Check if user is currently locked out
+    if (RateLimiter::tooManyAttempts($lockoutKey, 0)) {
+        $seconds = RateLimiter::availableIn($lockoutKey);
         $minutes = ceil($seconds / 60);
 
         return back()->withErrors([
@@ -178,8 +179,9 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
     if (Auth::attempt($attemptCredentials, $rememberMe)) {
         $request->session()->regenerate();
 
-        // Clear rate limit on successful login
-        RateLimiter::clear($rateLimitKey);
+        // Clear rate limits on successful login
+        RateLimiter::clear($attemptsKey);
+        RateLimiter::clear($lockoutKey);
 
         $user = Auth::user();
 
@@ -218,10 +220,32 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
     }
 
     // Increment failed login attempts
-    RateLimiter::hit($rateLimitKey, $decaySeconds);
+    // Keep track of attempts for 1 hour
+    RateLimiter::hit($attemptsKey, 3600);
+    
+    $attempts = RateLimiter::attempts($attemptsKey);
+
+    // If 5 or more failed attempts, trigger the 5-minute lockout
+    if ($attempts >= 5) {
+        // Clear any existing lockout key to ensure we start a fresh 300s timer
+        RateLimiter::clear($lockoutKey);
+        
+        // Hit the lockout key to start the 5-minute timer
+        RateLimiter::hit($lockoutKey, 300);
+        
+        // Clear the attempts counter so it resets after the lockout expires
+        RateLimiter::clear($attemptsKey);
+
+        $seconds = RateLimiter::availableIn($lockoutKey);
+        $minutes = ceil($seconds / 60);
+
+        return back()->withErrors([
+            'email' => trans('auth.throttle', ['seconds' => $seconds, 'minutes' => $minutes]),
+        ])->onlyInput('email');
+    }
 
     // Calculate remaining attempts
-    $attemptsLeft = $maxAttempts - RateLimiter::attempts($rateLimitKey);
+    $attemptsLeft = 5 - $attempts;
 
     if ($attemptsLeft > 0) {
         return back()->withErrors([
@@ -229,7 +253,7 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
         ])->onlyInput('email');
     }
 
-    // This is the last failed attempt
+    // This fallback shouldn't be reached if logic is correct, but safe to keep
     return back()->withErrors([
         'email' => trans('auth.locked_out'),
     ])->onlyInput('email');

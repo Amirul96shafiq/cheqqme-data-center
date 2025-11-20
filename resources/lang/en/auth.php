@@ -22,7 +22,7 @@ return [
     'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
     'failed_with_attempts' => 'The provided credentials do not match our records. You have :attempts attempt(s) remaining.',
-    'locked_out' => 'Too many failed login attempts. Please try again in 1 minute.',
+    'locked_out' => 'Too many failed login attempts. Please try again in 5 minutes.',
 
     // Language
     'english' => 'English',
