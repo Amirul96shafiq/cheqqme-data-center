@@ -360,18 +360,31 @@ function openGreetingModal(forceOpen = false) {
                                     aria-label="Close video"
                                 />
                             </div>
-                            <div class="relative">
+                            <div class="relative group">
                                 <video 
-                                    class="w-full rounded-lg shadow-sm" 
+                                    id="resource-tutorial-video"
+                                    class="w-full rounded-lg shadow-sm cursor-pointer" 
                                     preload="metadata"
                                     loop
+                                    onclick="toggleVideoPlay(this)"
                                 >
-                                    <source src="/videos/video_sample_01.mp4" type="video/mp4">
+                                    <source src="/videos/resources_tutorial_video01.mp4" type="video/mp4">
                                     {{ __('greetingmodal.video-not-supported') }}
                                 </video>
+                                
+                                <!-- Custom Play in Fullscreen Button -->
+                                <button 
+                                    onclick="playVideoInFullscreen()"
+                                    class="absolute bottom-3 right-3 p-2 bg-black/60 hover:bg-black/80 text-white rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+                                    title="Play in Fullscreen"
+                                >
+                                    @svg('heroicon-o-arrows-pointing-out', 'w-5 h-5')
+                                </button>
+
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
             
@@ -630,6 +643,29 @@ window.toggleDataManagementVideo = function() {
                 }, 100); // Additional delay after video container is hidden
             }, 300);
         }
+    }
+};
+
+// Video Custom Controls
+window.toggleVideoPlay = function(video) {
+    if (video.paused) {
+        video.play();
+    } else {
+        video.pause();
+    }
+};
+
+window.playVideoInFullscreen = function() {
+    const video = document.getElementById('resource-tutorial-video');
+    if (video) {
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        } else if (video.webkitRequestFullscreen) {
+            video.webkitRequestFullscreen();
+        } else if (video.msRequestFullscreen) {
+            video.msRequestFullscreen();
+        }
+        video.play();
     }
 };
 
