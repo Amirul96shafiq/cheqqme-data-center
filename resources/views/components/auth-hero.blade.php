@@ -173,10 +173,11 @@
                 {{-- Play Button Overlay --}}
                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <x-tooltip position="top" :text="__('login.tooltips.playVideo')">
-                        <div class="relative">
+                        <div class="relative group">
 
                             {{-- Animated Rotating Circle --}}
-                            <div class="absolute -inset-3 rounded-full border-2 border-primary-600/10 border-t-primary-600/80 animate-spin-slow"></div>
+                            <div class="absolute -inset-2 rounded-full border-2 border-dashed group-hover:border-solid border-primary-600/5 border-t-primary-600/80 animate-spin-slow transition-all duration-600"></div>
+                            <div class="absolute -inset-2 rounded-full border-2 border-dashed group-hover:border-solid border-primary-600/5 border-b-primary-600/80 animate-spin-slow transition-all duration-600"></div>
 
                             <button type="button"
                                     @click="openVideoModal()"
