@@ -59,7 +59,7 @@ class HeroSlider {
 
         this.autoAdvanceInterval = null;
         this.progressInterval = null;
-        this.autoAdvanceDuration = 10000; // 10 seconds in milliseconds
+        this.autoAdvanceDuration = 5000; // 5 seconds in milliseconds
         this.progressUpdateInterval = 50; // Update progress every 50ms for smooth animation
         this.isPaused = false; // Track pause state
         this.init();
