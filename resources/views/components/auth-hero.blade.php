@@ -1,5 +1,5 @@
 {{-- Left Section (70%) - Hero Section --}}
-<div class="relative w-[70%] hidden lg:flex flex-col justify-between overflow-hidden bg-gray-50 dark:bg-gray-900 p-6" x-data="{}">
+<div class="relative w-[70%] hidden lg:flex flex-col justify-between overflow-hidden bg-gray-50 dark:bg-gray-900 p-6" x-data="heroSlideshow()">
     
     {{-- Hero Section with Gradient Background --}}
     <div class="relative w-full h-full rounded-2xl overflow-hidden">
@@ -160,17 +160,81 @@
 
         {{-- Bottom Section: Hero Images --}}
         <div class="absolute bottom-0 left-0 w-full h-3/4 pl-12 hero-image-container">
-            <img id="heroImage"
-                 src="{{ asset('images/hero-images/light/01.png') }}"
-                 alt="CheQQme Data Center platform showcase"
-                 class="w-full h-full object-cover object-center rounded-tl-3xl border-l-8 border-t-8 border-white/50 dark:border-white/10 transition-all duration-500"
-                 loading="eager"
-                 draggable="false">
+            {{-- Hero Image Wrapper for Animations --}}
+            <div id="heroImageWrapper" class="relative w-full h-full">
+                <img id="heroImage"
+                     src="{{ asset('images/hero-images/light/01.png') }}"
+                     alt="CheQQme Data Center platform showcase"
+                     class="w-full h-full object-cover object-center rounded-tl-3xl border-l-8 border-t-8 border-white/50 dark:border-white/10 transition-all duration-500"
+                     loading="eager"
+                     draggable="false">
+
+                {{-- Play Button Overlay --}}
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <button type="button"
+                            @click="openVideoModal()"
+                            class="pointer-events-auto w-16 h-16 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group backdrop-blur-sm border border-white/20 dark:border-gray-700/20"
+                            aria-label="Play video">
+                        <x-heroicon-o-play class="w-8 h-8 text-primary-600 dark:text-primary-400 ml-1 group-hover:scale-110 transition-transform duration-200" />
+                    </button>
+                </div>
+            </div>
         </div>
 
     </div>
 
-</div>
+    </div>
+
+    {{-- Video Modal Script --}}
+    <script>
+        function heroSlideshow() {
+            return {
+                currentSlide: 0,
+                videoUrls: [
+                    '{{ asset("videos/resources_tutorial_video01.mp4") }}', // Slide 0
+                    '{{ asset("videos/resources_tutorial_video01.mp4") }}', // Slide 1
+                    '{{ asset("videos/resources_tutorial_video01.mp4") }}', // Slide 2
+                    '{{ asset("videos/resources_tutorial_video01.mp4") }}', // Slide 3
+                    '{{ asset("videos/resources_tutorial_video01.mp4") }}', // Slide 4
+                    '{{ asset("videos/resources_tutorial_video01.mp4") }}', // Slide 5
+                ],
+
+                init() {
+                    // Listen for slide changes from HeroSlider
+                    document.addEventListener('heroSlideChanged', (event) => {
+                        this.currentSlide = event.detail.slideIndex;
+                    });
+                },
+
+                getCurrentTitle() {
+                    if (window.heroSliderLang) {
+                        const slideNumber = this.currentSlide + 1;
+                        return window.heroSliderLang[`title${slideNumber}`] || 'Product Demo';
+                    }
+                    return 'Product Demo';
+                },
+
+                getCurrentDescription() {
+                    if (window.heroSliderLang) {
+                        const slideNumber = this.currentSlide + 1;
+                        return window.heroSliderLang[`description${slideNumber}`] || 'Watch how our platform works';
+                    }
+                    return 'Watch how our platform works';
+                },
+
+                openVideoModal() {
+                    if (window.showGlobalModal) {
+                        // Pass the current slide's video URL, title, and description
+                        window.showGlobalModal('heroVideo', {
+                            videoUrl: this.videoUrls[this.currentSlide],
+                            title: this.getCurrentTitle(),
+                            description: this.getCurrentDescription()
+                        });
+                    }
+                }
+            }
+        }
+    </script>
 
 {{-- Sticky Version Text for Responsive (1024px and below) --}}
 <div class="version-text-sticky hidden">

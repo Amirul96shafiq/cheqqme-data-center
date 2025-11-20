@@ -597,6 +597,87 @@
         </div>
     </div>
 
+    {{-- Hero Video Modal --}}
+    <div x-show="modals.heroVideo.show"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
+
+        {{-- Backdrop --}}
+        <div class="absolute inset-0 bg-gray-950/80 backdrop-blur-sm"
+             @click="closeModal('heroVideo')"
+             aria-hidden="true">
+        </div>
+
+        {{-- Modal --}}
+        <div role="dialog"
+             aria-modal="true"
+             aria-labelledby="hero-video-heading"
+             class="relative w-full max-w-6xl mx-auto cursor-default flex flex-col rounded-xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-950/5 dark:ring-white/10 pointer-events-auto overflow-hidden">
+
+            {{-- Header --}}
+            <div class="flex items-center justify-between px-6 pt-6 pb-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400">
+                        <x-heroicon-o-video-camera class="h-5 w-5" />
+                    </div>
+                    <div>
+                        <h2 id="hero-video-heading" class="text-lg font-semibold text-gray-900 dark:text-gray-100" x-text="modals.heroVideo.title">
+                            Product Demo
+                        </h2>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5" x-text="modals.heroVideo.description">
+                            Watch how our platform works
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Close Button --}}
+                <x-tooltip :text="__('Close video')" position="left">
+                    <x-close-button
+                        @click="closeModal('heroVideo')"
+                        size="lg"
+                        variant="minimal"
+                        class="focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900"
+                    />
+                </x-tooltip>
+            </div>
+
+            {{-- Video Content --}}
+            <div class="flex-1 overflow-hidden">
+                <div class="relative group h-full">
+                    <video id="heroVideoPlayer"
+                           preload="metadata"
+                           autoplay
+                           loop
+                           class="w-full h-full object-cover cursor-pointer"
+                           onclick="toggleHeroVideoPlay(this)"
+                           poster="{{ asset('images/hero-images/light/01.png') }}">
+                        <source :src="modals.heroVideo.videoUrl" type="video/mp4">
+                        {{ __('Your browser does not support the video tag.') }}
+                    </video>
+
+                    <!-- Custom Play in Fullscreen Button -->
+                    <div class="absolute bottom-3 right-3">
+                        <x-tooltip :text="__('Play in Fullscreen')" position="left">
+                            <button
+                                onclick="playHeroVideoInFullscreen()"
+                                class="p-2 bg-black/60 hover:bg-black/80 text-white rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+                            >
+                                @svg('heroicon-o-arrows-pointing-out', 'w-5 h-5')
+                            </button>
+                        </x-tooltip>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     {{-- Changelog Modal --}}
     <div x-show="modals.changelog.show"
          x-transition:enter="transition ease-out duration-300"
@@ -912,7 +993,8 @@
         downloadBackup: { show: false, backupId: null },
         clearConversation: { show: false },
         changelog: { show: false },
-        calendar: { show: false }
+        calendar: { show: false },
+        heroVideo: { show: false, videoUrl: null, title: '', description: '' }
     };
     
     // Force close all modals on page load
@@ -940,6 +1022,10 @@
             if (type !== 'createBackup') {
                 if (type === 'restoreBackup' || type === 'deleteBackup' || type === 'downloadBackup') {
                     window.globalModals[type].backupId = id;
+                } else if (type === 'heroVideo') {
+                    window.globalModals[type].videoUrl = id.videoUrl;
+                    window.globalModals[type].title = id.title;
+                    window.globalModals[type].description = id.description;
                 } else {
                     window.globalModals[type][type.includes('Reply') ? 'replyId' : 'commentId'] = id;
                 }
@@ -950,13 +1036,24 @@
                 // Trigger changelog loading after a small delay to ensure modal is visible
                 setTimeout(() => {
                     document.dispatchEvent(new CustomEvent('changelog-modal-opened'));
-                    
+
                     // Re-initialize drag-to-scroll for modal content
                     if (window.initDragToScroll) {
                         const modalContainer = document.querySelector('[aria-labelledby="changelog-heading"]');
                         if (modalContainer) {
                             window.initDragToScroll(modalContainer);
                         }
+                    }
+                }, 100);
+            }
+
+            // Special handling for hero video modal
+            if (type === 'heroVideo') {
+                // Pause any currently playing video when opening modal
+                setTimeout(() => {
+                    const videoPlayer = document.getElementById('heroVideoPlayer');
+                    if (videoPlayer) {
+                        videoPlayer.load(); // Reload video with new source
                     }
                 }, 100);
             }
@@ -1058,8 +1155,25 @@
     window.closeGlobalModal = function(type) {
         if (window.globalModals[type]) {
             window.globalModals[type].show = false;
-            window.globalModals[type][type.includes('Reply') ? 'replyId' : 'commentId'] = null;
-            
+
+            // Reset modal data based on type
+            if (type === 'heroVideo') {
+                window.globalModals[type].videoUrl = null;
+                window.globalModals[type].title = '';
+                window.globalModals[type].description = '';
+                // Pause video when closing modal
+                const videoPlayer = document.getElementById('heroVideoPlayer');
+                if (videoPlayer) {
+                    videoPlayer.pause();
+                }
+            } else if (type !== 'createBackup' && type !== 'clearConversation' && type !== 'changelog' && type !== 'calendar') {
+                if (type === 'restoreBackup' || type === 'deleteBackup' || type === 'downloadBackup') {
+                    window.globalModals[type].backupId = null;
+                } else {
+                    window.globalModals[type][type.includes('Reply') ? 'replyId' : 'commentId'] = null;
+                }
+            }
+
             // Dispatch custom event to notify Alpine.js
             document.dispatchEvent(new CustomEvent('global-modal-closed', {
                 detail: { type }
@@ -1129,6 +1243,13 @@
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
                         this.closeAllModals();
+                    }
+                });
+
+                // Handle video modal escape key specifically
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.modals.heroVideo.show) {
+                        this.closeModal('heroVideo');
                     }
                 });
             },
@@ -1366,5 +1487,28 @@
 
         }
     };
+
+// Hero Video Custom Controls
+window.toggleHeroVideoPlay = function(video) {
+    if (video.paused) {
+        video.play();
+    } else {
+        video.pause();
+    }
+};
+
+window.playHeroVideoInFullscreen = function() {
+    const video = document.getElementById('heroVideoPlayer');
+    if (video) {
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        } else if (video.webkitRequestFullscreen) {
+            video.webkitRequestFullscreen();
+        } else if (video.msRequestFullscreen) {
+            video.msRequestFullscreen();
+        }
+        video.play();
+    }
+};
 
 </script>

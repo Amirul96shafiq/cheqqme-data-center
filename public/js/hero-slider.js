@@ -46,6 +46,7 @@ class HeroSlider {
         this.clickDebounceDelay = 500; // Minimum time between clicks (ms)
         this.elements = {
             heroImage: document.getElementById("heroImage"),
+            heroImageWrapper: document.getElementById("heroImageWrapper"),
             heroTitle: document.getElementById("heroTitle"),
             heroDescription: document.getElementById("heroDescription"),
             sliderButtons: document.querySelectorAll("#sliderNav button"),
@@ -112,7 +113,7 @@ class HeroSlider {
         this.isAnimating = true;
 
         // Remove any existing animation classes
-        this.elements.heroImage.classList.remove(
+        this.elements.heroImageWrapper.classList.remove(
             "hero-image-slide-left",
             "hero-image-slide-right",
             "hero-image-exit-left",
@@ -125,9 +126,13 @@ class HeroSlider {
 
         // Play exit animation for current image
         if (direction === "left") {
-            this.elements.heroImage.classList.add("hero-image-exit-left");
+            this.elements.heroImageWrapper.classList.add(
+                "hero-image-exit-left"
+            );
         } else if (direction === "right") {
-            this.elements.heroImage.classList.add("hero-image-exit-right");
+            this.elements.heroImageWrapper.classList.add(
+                "hero-image-exit-right"
+            );
         }
 
         // Wait for exit animation to complete, then play entrance animation
@@ -141,16 +146,20 @@ class HeroSlider {
             this.elements.heroDescription.innerHTML = slide.description;
 
             // Remove exit animation class
-            this.elements.heroImage.classList.remove(
+            this.elements.heroImageWrapper.classList.remove(
                 "hero-image-exit-left",
                 "hero-image-exit-right"
             );
 
             // Apply entrance animation to new hero image
             if (direction === "left") {
-                this.elements.heroImage.classList.add("hero-image-slide-left");
+                this.elements.heroImageWrapper.classList.add(
+                    "hero-image-slide-left"
+                );
             } else if (direction === "right") {
-                this.elements.heroImage.classList.add("hero-image-slide-right");
+                this.elements.heroImageWrapper.classList.add(
+                    "hero-image-slide-right"
+                );
             }
 
             // Fade in text content
@@ -162,7 +171,7 @@ class HeroSlider {
 
             // Restore transition after entrance animation completes
             setTimeout(() => {
-                this.elements.heroImage.classList.remove(
+                this.elements.heroImageWrapper.classList.remove(
                     "hero-image-slide-left",
                     "hero-image-slide-right"
                 );
@@ -410,6 +419,7 @@ class HeroSlider {
 
         this.previousSlideIndex = this.currentSlide;
         this.currentSlide = slideIndex;
+        this.dispatchSlideChangeEvent();
         this.updateSlider();
     }
 
@@ -439,6 +449,7 @@ class HeroSlider {
             this.currentSlide === 0
                 ? this.slides.length - 1
                 : this.currentSlide - 1;
+        this.dispatchSlideChangeEvent();
         this.updateSlider("right");
     }
 
@@ -467,6 +478,7 @@ class HeroSlider {
 
         this.previousSlideIndex = this.currentSlide;
         this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+        this.dispatchSlideChangeEvent();
         this.updateSlider("left");
     }
 
@@ -563,6 +575,17 @@ class HeroSlider {
     }
 
     /**
+     * Dispatch slide change event for Alpine.js synchronization
+     */
+    dispatchSlideChangeEvent() {
+        document.dispatchEvent(
+            new CustomEvent("heroSlideChanged", {
+                detail: { slideIndex: this.currentSlide },
+            })
+        );
+    }
+
+    /**
      * Update all slide images when theme changes
      */
     updateAllSlideImages() {
@@ -571,6 +594,14 @@ class HeroSlider {
         });
         // Update current slide with new theme
         this.updateSlider();
+
+        // Clear any animation classes from wrapper during theme change
+        this.elements.heroImageWrapper.classList.remove(
+            "hero-image-slide-left",
+            "hero-image-slide-right",
+            "hero-image-exit-left",
+            "hero-image-exit-right"
+        );
     }
 
     /**
