@@ -25,7 +25,7 @@
         </div>
         
         {{-- Top Section: Content Container and Navigation Controls --}}
-        <div class="relative z-10 flex w-full h-1/4 justify-end">
+        <div class="relative z-10 flex w-full h-[22%] justify-end">
             
             {{-- Left Content Container (65% width) --}}
             <div class="flex flex-col justify-start p-12 w-[65%]">
@@ -44,14 +44,14 @@
                     </div>
 
                     {{-- Description --}}
-                    <div class="min-h-14">
-                        <p id="heroDescription" class="text-md dark:text-white text-gray-600 transition-all duration-500 leading-relaxed hero-description">
+                    <div class="min-h-14 xl:min-h-6">
+                        <p id="heroDescription" class="text-xs xl:text-base dark:text-white text-gray-600 transition-all duration-500 leading-relaxed hero-description">
                             Loading...
                         </p>
                     </div>
 
                     {{-- Slider Navigation --}}
-                    <nav class="flex items-center space-x-3 mt-8 slider-navigation" id="sliderNav" aria-label="Slide navigation">
+                    <nav class="flex items-center space-x-3 slider-navigation" id="sliderNav" aria-label="Slide navigation">
                         
                         {{-- Slide 1 --}}
                         <button type="button" data-slide="0" aria-label="Go to slide 1" class="relative w-12 h-1 dark:bg-gray-200 rounded-full transition-all duration-300 bg-primary-400 hover:bg-primary-400 overflow-hidden">
@@ -159,7 +159,7 @@
         </div>
 
         {{-- Bottom Section: Hero Images --}}
-        <div class="absolute bottom-0 left-0 w-full h-3/4 pl-12 hero-image-container">
+        <div class="absolute bottom-0 left-0 w-full h-[78%] pl-12 hero-image-container">
 
             {{-- Hero Image Wrapper for Animations --}}
             <div id="heroImageWrapper" class="relative w-full h-full">
