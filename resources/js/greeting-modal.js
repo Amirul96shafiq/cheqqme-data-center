@@ -219,6 +219,49 @@ function scrollToWeatherSection() {
     }
 }
 
+// Video source URL constant
+const TUTORIAL_VIDEO_SRC = "/videos/resources_tutorial_video01.mp4";
+
+// Helper function to load video source dynamically
+function loadVideoSource(video) {
+    if (!video.querySelector("source")) {
+        const source = document.createElement("source");
+        source.src = TUTORIAL_VIDEO_SRC;
+        source.type = "video/mp4";
+        video.appendChild(source);
+        video.load();
+    }
+}
+
+// Helper function to play video safely
+function playVideoSafely(video) {
+    if (video.readyState >= 2) {
+        video.currentTime = 0;
+        video.play().catch((error) => {
+            console.error("Video play failed:", error);
+        });
+    } else {
+        video.addEventListener(
+            "canplay",
+            () => {
+                video.currentTime = 0;
+                video.play().catch((error) => {
+                    console.error("Video play failed:", error);
+                });
+            },
+            { once: true }
+        );
+
+        video.addEventListener(
+            "error",
+            (e) => {
+                console.error("Video error:", e.target.error);
+            },
+            { once: true }
+        );
+    }
+}
+
 // Toggle Resources video container
 function toggleDataManagementVideo() {
     const videoContainer = document.getElementById("data-management-video");
@@ -256,9 +299,19 @@ function toggleDataManagementVideo() {
             // Reset video to beginning when showing
             setTimeout(() => {
                 const video = videoContainer.querySelector("video");
+                // console.log(
+                //     "Video element found:",
+                //     !!video,
+                //     "in container:",
+                //     "data-management-video"
+                // );
                 if (video) {
-                    video.currentTime = 0;
-                    video.play();
+                    loadVideoSource(video);
+                    playVideoSafely(video);
+                } else {
+                    console.error(
+                        "No video element found in container: data-management-video"
+                    );
                 }
             }, 100);
         } else {
@@ -308,7 +361,23 @@ function toggleVideoPlay(video) {
 }
 
 function playVideoInFullscreen() {
-    const video = document.getElementById("resource-tutorial-video");
+    // Find the currently visible video
+    const videoIds = [
+        "resource-tutorial-video",
+        "profile-tutorial-video",
+        "settings-tutorial-video",
+        "action-board-tutorial-video",
+    ];
+    let video = null;
+
+    for (const videoId of videoIds) {
+        const currentVideo = document.getElementById(videoId);
+        if (currentVideo && !currentVideo.closest(".hidden")) {
+            video = currentVideo;
+            break;
+        }
+    }
+
     if (video) {
         if (video.requestFullscreen) {
             video.requestFullscreen();
@@ -1058,6 +1127,123 @@ window.navigateToProfile = navigateToProfile;
 window.navigateToSettings = navigateToSettings;
 window.navigateToActionBoard = navigateToActionBoard;
 window.scrollToWeatherSection = scrollToWeatherSection;
+// Toggle Profile video container
+function toggleProfileVideo() {
+    toggleGenericVideo(
+        "profile-video",
+        'button:not([onclick="toggleProfileVideo()"])'
+    );
+}
+
+// Toggle Settings video container
+function toggleSettingsVideo() {
+    toggleGenericVideo(
+        "settings-video",
+        'button:not([onclick="toggleSettingsVideo()"])'
+    );
+}
+
+// Toggle Action Board video container
+function toggleActionBoardVideo() {
+    toggleGenericVideo(
+        "action-board-video",
+        'button:not([onclick="toggleActionBoardVideo()"])'
+    );
+}
+
+// Generic video toggle function
+function toggleGenericVideo(videoId, otherActionsSelector) {
+    const videoContainer = document.getElementById(videoId);
+    const quickActionsContainer =
+        videoContainer?.parentElement?.querySelector(".space-y-3");
+
+    if (videoContainer && quickActionsContainer) {
+        const isHidden = videoContainer.classList.contains("hidden");
+
+        if (isHidden) {
+            // Show video container with animation
+            videoContainer.classList.remove("hidden");
+            // Force reflow to ensure the element is visible before animation
+            videoContainer.offsetHeight;
+            // Add animation classes
+            videoContainer.classList.remove("opacity-0", "scale-95");
+            videoContainer.classList.add("opacity-100", "scale-100");
+
+            // Update Alpine.js state for icon rotation
+            const iconContainer = quickActionsContainer.querySelector(
+                '[x-data*="isVideoActive"]'
+            );
+            if (iconContainer && iconContainer._x_dataStack) {
+                iconContainer._x_dataStack[0].isVideoActive = true;
+            }
+
+            // Hide other quick actions
+            const otherActions =
+                quickActionsContainer.querySelectorAll(otherActionsSelector);
+            otherActions.forEach((action) => {
+                action.style.display = "none";
+            });
+
+            // Reset video to beginning when showing
+            setTimeout(() => {
+                const video = videoContainer.querySelector("video");
+                // console.log(
+                //     "Video element found:",
+                //     !!video,
+                //     "in container:",
+                //     videoId
+                // );
+                if (video) {
+                    loadVideoSource(video);
+                    playVideoSafely(video);
+                } else {
+                    console.error(
+                        "No video element found in container:",
+                        videoId
+                    );
+                }
+            }, 100);
+        } else {
+            // Hide video container with animation
+            videoContainer.classList.remove("opacity-100", "scale-100");
+            videoContainer.classList.add("opacity-0", "scale-95");
+
+            // Update Alpine.js state for icon rotation
+            const iconContainer = quickActionsContainer.querySelector(
+                '[x-data*="isVideoActive"]'
+            );
+            if (iconContainer && iconContainer._x_dataStack) {
+                iconContainer._x_dataStack[0].isVideoActive = false;
+            }
+
+            // Pause video when hiding
+            const video = videoContainer.querySelector("video");
+            if (video) {
+                video.pause();
+            }
+
+            // Hide element after animation completes
+            setTimeout(() => {
+                videoContainer.classList.add("hidden");
+
+                // Show other quick actions after video container is completely hidden
+                setTimeout(() => {
+                    const otherActions =
+                        quickActionsContainer.querySelectorAll(
+                            otherActionsSelector
+                        );
+                    otherActions.forEach((action) => {
+                        action.style.display = "flex";
+                    });
+                }, 100); // Additional delay after video container is hidden
+            }, 300);
+        }
+    }
+}
+
 window.toggleDataManagementVideo = toggleDataManagementVideo;
+window.toggleProfileVideo = toggleProfileVideo;
+window.toggleSettingsVideo = toggleSettingsVideo;
+window.toggleActionBoardVideo = toggleActionBoardVideo;
 window.toggleVideoPlay = toggleVideoPlay;
 window.playVideoInFullscreen = playVideoInFullscreen;

@@ -284,7 +284,7 @@
                     <div class="space-y-3 mb-6">
 
                         <!-- Profile Quick Action -->
-                        <button onclick="navigateToProfile()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                        <button onclick="toggleProfileVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
                                 @svg('heroicon-o-user', 'w-5 h-5 text-primary-600 dark:text-primary-400')
                             </div>
@@ -296,13 +296,16 @@
                                     {{ __('greetingmodal.action-1-description') }}
                                 </p>
                             </div>
-                            <div class="flex-shrink-0">
-                                @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
+                            <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('profile-video')?.classList.contains('hidden')">
+                                <span class="text-sm text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors mr-2">View →</span>
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
                             </div>
                         </button>
 
                         <!-- Settings Quick Action -->
-                        <button onclick="navigateToSettings()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                        <button onclick="toggleSettingsVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
                                 @svg('heroicon-o-cog-6-tooth', 'w-5 h-5 text-primary-600 dark:text-primary-400')
                             </div>
@@ -314,13 +317,16 @@
                                     {{ __('greetingmodal.action-2-description') }}
                                 </p>
                             </div>
-                            <div class="flex-shrink-0">
-                                @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
+                            <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('settings-video')?.classList.contains('hidden')">
+                                <span class="text-sm text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors mr-2">View →</span>
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
                             </div>
                         </button>
 
                         <!-- Action Board Quick Action -->
-                        <button onclick="navigateToActionBoard()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                        <button onclick="toggleActionBoardVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
                                 @svg('heroicon-o-rocket-launch', 'w-5 h-5 text-primary-600 dark:text-primary-400')
                             </div>
@@ -332,8 +338,11 @@
                                     {{ __('greetingmodal.action-3-description') }}
                                 </p>
                             </div>
-                            <div class="flex-shrink-0">
-                                @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
+                            <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('action-board-video')?.classList.contains('hidden')">
+                                <span class="text-sm text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors mr-2">View →</span>
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
                             </div>
                         </button>
 
@@ -350,7 +359,8 @@
                                     {{ __('greetingmodal.action-4-description') }}
                                 </p>
                             </div>
-                            <div class="flex-shrink-0" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('data-management-video')?.classList.contains('hidden')">
+                            <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('data-management-video')?.classList.contains('hidden')">
+                                <span class="text-sm text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors mr-2">View →</span>
                                 <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
@@ -374,11 +384,122 @@
                                 <video
                                     id="resource-tutorial-video"
                                     class="w-full rounded-lg shadow-sm cursor-pointer"
-                                    preload="metadata"
+                                    preload="none"
                                     loop
+                                    muted
                                     onclick="toggleVideoPlay(this)"
                                 >
-                                    <source src="/videos/resources_tutorial_video01.mp4" type="video/mp4">
+                                    {{ __('greetingmodal.video-not-supported') }}
+                                </video>
+
+                                <!-- Custom Play in Fullscreen Button -->
+                                <button
+                                    onclick="playVideoInFullscreen()"
+                                    class="absolute bottom-3 right-3 p-2 bg-black/60 hover:bg-black/80 text-white rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+                                    title="Play in Fullscreen"
+                                >
+                                    @svg('heroicon-o-arrows-pointing-out', 'w-5 h-5')
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Video Container -->
+                    <div id="profile-video" class="hidden mt-[-20px] mb-6 opacity-0 transform scale-95 transition-all duration-300 ease-in-out">
+                        <div class="bg-gray-50/10 dark:bg-gray-700/10 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                            <div class="flex items-center justify-between mb-3">
+                                <h6 class="text-sm font-semibold text-gray-900 dark:text-white">
+                                    {{ __('greetingmodal.action-1-title') }} Tutorial
+                                </h6>
+                                <x-close-button
+                                    onclick="toggleProfileVideo()"
+                                    aria-label="Close video"
+                                />
+                            </div>
+                            <div class="relative group">
+                                <video
+                                    id="profile-tutorial-video"
+                                    class="w-full rounded-lg shadow-sm cursor-pointer"
+                                    preload="none"
+                                    loop
+                                    muted
+                                    onclick="toggleVideoPlay(this)"
+                                >
+                                    {{ __('greetingmodal.video-not-supported') }}
+                                </video>
+
+                                <!-- Custom Play in Fullscreen Button -->
+                                <button
+                                    onclick="playVideoInFullscreen()"
+                                    class="absolute bottom-3 right-3 p-2 bg-black/60 hover:bg-black/80 text-white rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+                                    title="Play in Fullscreen"
+                                >
+                                    @svg('heroicon-o-arrows-pointing-out', 'w-5 h-5')
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Video Container -->
+                    <div id="settings-video" class="hidden mt-[-20px] mb-6 opacity-0 transform scale-95 transition-all duration-300 ease-in-out">
+                        <div class="bg-gray-50/10 dark:bg-gray-700/10 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                            <div class="flex items-center justify-between mb-3">
+                                <h6 class="text-sm font-semibold text-gray-900 dark:text-white">
+                                    {{ __('greetingmodal.action-2-title') }} Tutorial
+                                </h6>
+                                <x-close-button
+                                    onclick="toggleSettingsVideo()"
+                                    aria-label="Close video"
+                                />
+                            </div>
+                            <div class="relative group">
+                                <video
+                                    id="settings-tutorial-video"
+                                    class="w-full rounded-lg shadow-sm cursor-pointer"
+                                    preload="none"
+                                    loop
+                                    muted
+                                    onclick="toggleVideoPlay(this)"
+                                >
+                                    {{ __('greetingmodal.video-not-supported') }}
+                                </video>
+
+                                <!-- Custom Play in Fullscreen Button -->
+                                <button
+                                    onclick="playVideoInFullscreen()"
+                                    class="absolute bottom-3 right-3 p-2 bg-black/60 hover:bg-black/80 text-white rounded-lg transition-all duration-200 opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+                                    title="Play in Fullscreen"
+                                >
+                                    @svg('heroicon-o-arrows-pointing-out', 'w-5 h-5')
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Board Video Container -->
+                    <div id="action-board-video" class="hidden mt-[-20px] mb-6 opacity-0 transform scale-95 transition-all duration-300 ease-in-out">
+                        <div class="bg-gray-50/10 dark:bg-gray-700/10 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                            <div class="flex items-center justify-between mb-3">
+                                <h6 class="text-sm font-semibold text-gray-900 dark:text-white">
+                                    {{ __('greetingmodal.action-3-title') }} Tutorial
+                                </h6>
+                                <x-close-button
+                                    onclick="toggleActionBoardVideo()"
+                                    aria-label="Close video"
+                                />
+                            </div>
+                            <div class="relative group">
+                                <video
+                                    id="action-board-tutorial-video"
+                                    class="w-full rounded-lg shadow-sm cursor-pointer"
+                                    preload="none"
+                                    loop
+                                    muted
+                                    onclick="toggleVideoPlay(this)"
+                                >
                                     {{ __('greetingmodal.video-not-supported') }}
                                 </video>
 
