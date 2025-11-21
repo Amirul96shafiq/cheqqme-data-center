@@ -18,7 +18,7 @@ function openGreetingModal(forceOpen = false) {
     if (!forceOpen) {
         const today = new Date().toDateString();
         const lastDismissed = localStorage.getItem('greetingModalDismissed');
-        
+
         if (lastDismissed === today) {
             return; // Don't show modal if dismissed today
         }
@@ -412,7 +412,7 @@ function openGreetingModal(forceOpen = false) {
     
     // Add to body
     document.body.appendChild(modal);
-    
+
     // Animate in
     setTimeout(() => {
         const modalContent = modal.querySelector('.bg-white');
@@ -420,18 +420,18 @@ function openGreetingModal(forceOpen = false) {
             modalContent.style.transform = 'scale(1)';
             modalContent.style.opacity = '1';
         }
-        
+
         // Set up dark mode background image switching after modal is rendered
         setTimeout(() => {
             setupGreetingBackgroundImage();
         }, 50);
-        
+
         // Check user location and fetch weather data
         setTimeout(() => {
             checkUserLocationAndFetchWeather();
         }, 200);
     }, 10);
-    
+
     // Prevent body scroll
     document.body.style.overflow = 'hidden';
     
@@ -736,12 +736,13 @@ function getHeroiconSVG(iconName) {
 // Update weather data
 function updateWeatherData(weatherData) {
     const weatherSection = document.querySelector('.weather-section');
+
     if (!weatherSection || !weatherData) {
         return;
     }
 
     const { current, forecast, error } = weatherData;
-    
+
     if (error) {
         showWeatherError();
         return;
@@ -749,10 +750,10 @@ function updateWeatherData(weatherData) {
 
     // Update current weather
     updateCurrentWeather(current);
-    
+
     // Update forecast
     updateForecastData(forecast);
-    
+
     // Update footer with weather timestamp
     updateWeatherFooter(current);
 }
@@ -977,10 +978,11 @@ function updateWeatherFooter(weatherData) {
     }
 }
 
-// Fetch weather data
+// Fetch weather data (optimized with client-side caching)
 async function fetchWeatherData(retryCount = 0) {
     try {
         const weatherSection = document.querySelector('.weather-section');
+
         if (!weatherSection) {
             if (retryCount < 5) {
                 setTimeout(() => fetchWeatherData(retryCount + 1), 100);
@@ -988,7 +990,14 @@ async function fetchWeatherData(retryCount = 0) {
             }
             return;
         }
-        
+
+        // Check client-side weather cache (valid for 15 minutes)
+        const cachedWeatherData = getCachedWeatherData();
+        if (cachedWeatherData) {
+            updateWeatherData(cachedWeatherData);
+            return;
+        }
+
         const response = await fetch('/weather/data', {
             method: 'GET',
             headers: {
@@ -1002,8 +1011,10 @@ async function fetchWeatherData(retryCount = 0) {
         }
 
         const result = await response.json();
-        
+
         if (result.success) {
+            // Cache the weather data for future use
+            cacheWeatherData(result.data);
             updateWeatherData(result.data);
         } else {
             showWeatherError();
@@ -1013,11 +1024,42 @@ async function fetchWeatherData(retryCount = 0) {
     }
 }
 
+// Client-side weather data caching functions
+function cacheWeatherData(data) {
+    try {
+        const cacheData = {
+            ...data,
+            cachedAt: Date.now(),
+            expiresAt: Date.now() + (15 * 60 * 1000) // 15 minutes
+        };
+        localStorage.setItem('weatherDataCache', JSON.stringify(cacheData));
+    } catch (error) {
+        // Silent fail
+    }
+}
+
+function getCachedWeatherData() {
+    try {
+        const cached = localStorage.getItem('weatherDataCache');
+        if (!cached) return null;
+
+        const cacheData = JSON.parse(cached);
+        if (Date.now() > cacheData.expiresAt) {
+            localStorage.removeItem('weatherDataCache');
+            return null;
+        }
+
+        return cacheData;
+    } catch (error) {
+        return null;
+    }
+}
+
 // Refresh weather data
 async function refreshWeatherData() {
     const refreshButton = document.querySelector('button[onclick="refreshWeatherData()"]');
     const originalIcon = refreshButton ? refreshButton.innerHTML : '';
-    
+
     try {
         if (refreshButton) {
             refreshButton.disabled = true;
@@ -1026,8 +1068,8 @@ async function refreshWeatherData() {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>`;
         }
-        
-        // Clear cache first
+
+        // Clear both server-side and client-side caches
         await fetch('/weather/clear-cache', {
             method: 'POST',
             headers: {
@@ -1035,16 +1077,19 @@ async function refreshWeatherData() {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
             }
         });
-        
+
+        // Clear client-side caches
+        localStorage.removeItem('weatherDataCache');
+        localStorage.removeItem('weatherLocationCache');
+
         // Fetch fresh data
         await fetchWeatherData();
-        
+
         // Show success bubble after successful refresh
         if (refreshButton && window.showRefreshedBubble) {
             window.showRefreshedBubble(refreshButton);
         }
     } catch (error) {
-        console.error('Error refreshing weather data:', error);
         showWeatherError();
     } finally {
         if (refreshButton) {
@@ -1055,8 +1100,17 @@ async function refreshWeatherData() {
     }
 }
 
-// Check user location and fetch weather
+// Check user location and fetch weather (optimized with client-side caching)
 async function checkUserLocationAndFetchWeather() {
+    // Check client-side cache first (valid for 24 hours)
+    const cachedLocationData = getCachedLocationData();
+    if (cachedLocationData && cachedLocationData.hasLocation && cachedLocationData.latitude && cachedLocationData.longitude) {
+        setTimeout(() => {
+            fetchWeatherData();
+        }, 200);
+        return;
+    }
+
     try {
         const response = await fetch('/weather/user-location', {
             method: 'GET',
@@ -1066,18 +1120,58 @@ async function checkUserLocationAndFetchWeather() {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
             }
         });
-        
+
         const data = await response.json();
-        
+
+        // Cache the location data for future use
+        cacheLocationData(data);
+
         if (data.hasLocation && data.latitude && data.longitude) {
-            setTimeout(() => fetchWeatherData(), 500);
+            setTimeout(() => {
+                fetchWeatherData();
+            }, 200);
         } else {
             detectUserLocation();
-            setTimeout(() => fetchWeatherData(), 1000);
+            setTimeout(() => {
+                fetchWeatherData();
+            }, 1000);
         }
     } catch (error) {
         detectUserLocation();
-        setTimeout(() => fetchWeatherData(), 1000);
+        setTimeout(() => {
+            fetchWeatherData();
+        }, 1000);
+    }
+}
+
+// Client-side location data caching functions
+function cacheLocationData(data) {
+    try {
+        const cacheData = {
+            ...data,
+            cachedAt: Date.now(),
+            expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+        };
+        localStorage.setItem('weatherLocationCache', JSON.stringify(cacheData));
+    } catch (error) {
+        // Silent fail
+    }
+}
+
+function getCachedLocationData() {
+    try {
+        const cached = localStorage.getItem('weatherLocationCache');
+        if (!cached) return null;
+
+        const cacheData = JSON.parse(cached);
+        if (Date.now() > cacheData.expiresAt) {
+            localStorage.removeItem('weatherLocationCache');
+            return null;
+        }
+
+        return cacheData;
+    } catch (error) {
+        return null;
     }
 }
 
