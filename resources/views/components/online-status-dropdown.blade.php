@@ -6,17 +6,13 @@
 ])
 
 @php
-    $positionClasses = $position === 'top' 
-        ? 'bottom-full mb-2' 
-        : 'top-full mt-2';
-    
-    $arrowClasses = $position === 'top'
-        ? 'top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white dark:border-t-gray-800'
-        : 'bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-white dark:border-b-gray-800';
+    $positionClasses = $position === 'top'
+        ? 'bottom-full mb-1'
+        : 'top-full mt-1';
 @endphp
 
 <!-- Dropdown Menu -->
-<div 
+<div
     x-show="open"
     x-transition:enter="transition ease-out duration-200"
     x-transition:enter-start="opacity-0 scale-95"
@@ -24,10 +20,10 @@
     x-transition:leave="transition ease-in duration-150"
     x-transition:leave-start="opacity-100 scale-100"
     x-transition:leave-end="opacity-0 scale-95"
-    class="absolute {{ $positionClasses }} left-1/2 transform -translate-x-1/2 z-50 min-w-[180px]"
+    class="absolute {{ $positionClasses }} left-1/2 transform -translate-x-1/2 z-[60] min-w-[180px] overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700"
     style="display: none;"
->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
+>{{--  --}}
+    <div class="p-2 space-y-1">
         @foreach($statusOptions as $status => $option)
             <button 
                 @click="
@@ -39,7 +35,7 @@
                     }
                     open = false;
                 "
-                class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 {{ $user->online_status === $status ? 'bg-primary-50 dark:bg-primary-900/10' : '' }}"
+                class="w-full flex items-center gap-2 p-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md {{ $user->online_status === $status ? 'bg-primary-50 dark:bg-primary-900/10' : '' }}"
             >
                 <!-- Status Color Circle -->
                 <div class="w-3 h-3 rounded-full border-2 border-white dark:border-gray-900 {{ $option['color'] }} flex-shrink-0"></div>
@@ -54,7 +50,4 @@
             </button>
         @endforeach
     </div>
-    
-    <!-- Dropdown Arrow -->
-    <div class="absolute {{ $arrowClasses }}"></div>
 </div>
