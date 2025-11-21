@@ -941,7 +941,7 @@ function showWeatherError() {
 function updateWeatherFooter(weatherData) {
     const weatherElement = document.getElementById('weather-last-updated');
     if (!weatherElement || !weatherData) {
-        console.log('Weather element not found or no weather data');
+        // console.log('Weather element not found or no weather data');
         return;
     }
 
@@ -951,7 +951,7 @@ function updateWeatherFooter(weatherData) {
     // Extract timestamp from weather data
     const timestamp = weatherData.timestamp;
     if (!timestamp) {
-        console.log('No timestamp found in weather data');
+        // console.log('No timestamp found in weather data');
         return;
     }
 
@@ -1105,7 +1105,7 @@ function detectUserLocation() {
                     }
                 } catch (geocodeError) {
                     // Silent fail for reverse geocoding
-                    console.log('Reverse geocoding failed, proceeding with coordinates only');
+                    // console.log('Reverse geocoding failed, proceeding with coordinates only');
                 }
                 
                 // Update location with city and country if available
@@ -1187,7 +1187,7 @@ window.showNotification = function(type, message) {
         });
     } else {
         // Fallback to console log
-        console.log(`[${type.toUpperCase()}] ${message}`);
+        // console.log(`[${type.toUpperCase()}] ${message}`);
     }
 };
 
@@ -1215,16 +1215,17 @@ window.updateOnlineStatus = function(status) {
                 if (window.showNotification) {
                     window.showNotification('success', '{{ __("user.indicator.online_status_updated") }}');
                 }
-                
+
                 // Restore button content immediately after status update
                 if (button && originalContent) {
                     button.innerHTML = originalContent;
                     button.disabled = false;
                 }
-                
+
                 // Dispatch Livewire event to update form fields
                 if (window.Livewire) {
-                    window.Livewire.dispatch('online-status-updated');
+                    // console.log('updateOnlineStatus: Dispatching online-status-updated event with status:', status);
+                    window.Livewire.dispatch('online-status-updated', { status: status });
                 }
             })
             .catch(error => {
@@ -1243,7 +1244,7 @@ window.updateOnlineStatus = function(status) {
             });
     } else {
         // Fallback to AJAX request
-        console.log('Making AJAX request to update status:', status);
+        // console.log('Making AJAX request to update status:', status);
         fetch('/admin/profile/update-online-status', {
             method: 'POST',
             headers: {
@@ -1256,11 +1257,11 @@ window.updateOnlineStatus = function(status) {
             })
         })
         .then(response => {
-            console.log('AJAX response status:', response.status);
+            // console.log('AJAX response status:', response.status);
             return response.json();
         })
         .then(data => {
-            console.log('AJAX response data:', data);
+            // console.log('AJAX response data:', data);
             if (data.success) {
                 // Update only the current user's status indicators
                 updateAllStatusIndicators(status, true);
@@ -1278,7 +1279,8 @@ window.updateOnlineStatus = function(status) {
                 
                 // Dispatch Livewire event to update form fields
                 if (window.Livewire) {
-                    window.Livewire.dispatch('online-status-updated');
+                    // console.log('updateOnlineStatus (AJAX): Dispatching online-status-updated event with status:', status);
+                    window.Livewire.dispatch('online-status-updated', { status: status });
                 }
                 
                 // No need to refresh page - real-time updates handle this
@@ -1672,10 +1674,10 @@ window.startAutoAwayTimer = function() {
                     window.updateAllStatusIndicators('away', true);
                 }
             } else {
-                console.log('Auto-away failed:', data.message);
+                // console.log('Auto-away failed:', data.message);
             }
         }).catch(error => {
-            console.log('Auto-away API call failed:', error);
+            // console.log('Auto-away API call failed:', error);
         });
     }, 300000); // 10 seconds (10000ms) - for testing | 5 minutes (300000ms) - for production
 };
@@ -1779,7 +1781,7 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('tabCloseLogs', JSON.stringify(logs));
         
         // Also log to console
-        console.log(`[${timestamp}] ${message}`, data || '');
+        // console.log(`[${timestamp}] ${message}`, data || '');
     }
     
     // Detect refresh key combinations
@@ -2058,7 +2060,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // console.log('User status unchanged on tab return:', data.data?.status || 'unknown');
             }
         }).catch(error => {
-            console.log('Failed to restore from auto-status:', error);
+            // console.log('Failed to restore from auto-status:', error);
         });
     }
     
