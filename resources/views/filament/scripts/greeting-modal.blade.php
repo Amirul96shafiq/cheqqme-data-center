@@ -430,67 +430,67 @@
                             <!-- Trello Boards -->
                             <button
                                 onclick="navigateToTrelloBoards();"
-                                class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+                                class="w-full flex items-center gap-3 p-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
                             >
                                 <div class="flex-shrink-0">
-                                    @svg('heroicon-o-rectangle-stack', 'w-5 h-5 text-gray-600 dark:text-gray-400')
+                                    @svg('heroicon-o-rectangle-stack', 'w-4 h-4 text-gray-600 dark:text-gray-400')
                                 </div>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-trello-boards') }}</span>
+                                <span class="text-xs font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-trello-boards') }}</span>
                             </button>
 
                             <!-- Clients -->
                             <button
                                 onclick="navigateToClients();"
-                                class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+                                class="w-full flex items-center gap-3 p-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
                             >
                                 <div class="flex-shrink-0">
-                                    @svg('heroicon-o-briefcase', 'w-5 h-5 text-gray-600 dark:text-gray-400')
+                                    @svg('heroicon-o-briefcase', 'w-4 h-4 text-gray-600 dark:text-gray-400')
                                 </div>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-clients') }}</span>
+                                <span class="text-xs font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-clients') }}</span>
                             </button>
 
                             <!-- Projects -->
                             <button
                                 onclick="navigateToProjects();"
-                                class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+                                class="w-full flex items-center gap-3 p-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
                             >
                                 <div class="flex-shrink-0">
-                                    @svg('heroicon-o-folder-open', 'w-5 h-5 text-gray-600 dark:text-gray-400')
+                                    @svg('heroicon-o-folder-open', 'w-4 h-4 text-gray-600 dark:text-gray-400')
                                 </div>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-projects') }}</span>
+                                <span class="text-xs font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-projects') }}</span>
                             </button>
 
                             <!-- Documents -->
                             <button
                                 onclick="navigateToDocuments();"
-                                class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+                                class="w-full flex items-center gap-3 p-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
                             >
                                 <div class="flex-shrink-0">
-                                    @svg('heroicon-o-archive-box', 'w-5 h-5 text-gray-600 dark:text-gray-400')
+                                    @svg('heroicon-o-archive-box', 'w-4 h-4 text-gray-600 dark:text-gray-400')
                                 </div>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-documents') }}</span>
+                                <span class="text-xs font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-documents') }}</span>
                             </button>
 
                             <!-- Important URLs -->
                             <button
                                 onclick="navigateToImportantUrls();"
-                                class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+                                class="w-full flex items-center gap-3 p-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
                             >
                                 <div class="flex-shrink-0">
-                                    @svg('heroicon-o-link', 'w-5 h-5 text-gray-600 dark:text-gray-400')
+                                    @svg('heroicon-o-link', 'w-4 h-4 text-gray-600 dark:text-gray-400')
                                 </div>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-important-urls') }}</span>
+                                <span class="text-xs font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-important-urls') }}</span>
                             </button>
 
                             <!-- Phone Numbers -->
                             <button
                                 onclick="navigateToPhoneNumbers();"
-                                class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+                                class="w-full flex items-center gap-3 p-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
                             >
                                 <div class="flex-shrink-0">
-                                    @svg('heroicon-o-device-phone-mobile', 'w-5 h-5 text-gray-600 dark:text-gray-400')
+                                    @svg('heroicon-o-device-phone-mobile', 'w-4 h-4 text-gray-600 dark:text-gray-400')
                                 </div>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-phone-numbers') }}</span>
+                                <span class="text-xs font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-phone-numbers') }}</span>
                             </button>
 
                         </div>
