@@ -280,10 +280,11 @@ function toggleDataManagementVideo() {
             videoContainer.classList.remove("opacity-0", "scale-95");
             videoContainer.classList.add("opacity-100", "scale-100");
 
-            // Update Alpine.js state for icon rotation
+            // Update Alpine.js state for icon rotation - find the specific action button
             const iconContainer = quickActionsContainer.querySelector(
-                '[x-data*="isVideoActive"]'
+                'button[onclick*="toggleDataManagementVideo"] [x-data*="isVideoActive"]'
             );
+
             if (iconContainer && iconContainer._x_dataStack) {
                 iconContainer._x_dataStack[0].isVideoActive = true;
             }
@@ -319,10 +320,11 @@ function toggleDataManagementVideo() {
             videoContainer.classList.remove("opacity-100", "scale-100");
             videoContainer.classList.add("opacity-0", "scale-95");
 
-            // Update Alpine.js state for icon rotation
+            // Update Alpine.js state for icon rotation - find the specific action button
             const iconContainer = quickActionsContainer.querySelector(
-                '[x-data*="isVideoActive"]'
+                'button[onclick*="toggleDataManagementVideo"] [x-data*="isVideoActive"]'
             );
+
             if (iconContainer && iconContainer._x_dataStack) {
                 iconContainer._x_dataStack[0].isVideoActive = false;
             }
@@ -1169,10 +1171,26 @@ function toggleGenericVideo(videoId, otherActionsSelector) {
             videoContainer.classList.remove("opacity-0", "scale-95");
             videoContainer.classList.add("opacity-100", "scale-100");
 
-            // Update Alpine.js state for icon rotation
-            const iconContainer = quickActionsContainer.querySelector(
-                '[x-data*="isVideoActive"]'
-            );
+            // Update Alpine.js state for icon rotation - find the specific action button
+            let iconContainer = null;
+            if (videoId === "profile-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleProfileVideo"] [x-data*="isVideoActive"]'
+                );
+            } else if (videoId === "settings-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleSettingsVideo"] [x-data*="isVideoActive"]'
+                );
+            } else if (videoId === "action-board-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleActionBoardVideo"] [x-data*="isVideoActive"]'
+                );
+            } else if (videoId === "data-management-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleDataManagementVideo"] [x-data*="isVideoActive"]'
+                );
+            }
+
             if (iconContainer && iconContainer._x_dataStack) {
                 iconContainer._x_dataStack[0].isVideoActive = true;
             }
@@ -1208,10 +1226,26 @@ function toggleGenericVideo(videoId, otherActionsSelector) {
             videoContainer.classList.remove("opacity-100", "scale-100");
             videoContainer.classList.add("opacity-0", "scale-95");
 
-            // Update Alpine.js state for icon rotation
-            const iconContainer = quickActionsContainer.querySelector(
-                '[x-data*="isVideoActive"]'
-            );
+            // Update Alpine.js state for icon rotation - find the specific action button
+            let iconContainer = null;
+            if (videoId === "profile-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleProfileVideo"] [x-data*="isVideoActive"]'
+                );
+            } else if (videoId === "settings-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleSettingsVideo"] [x-data*="isVideoActive"]'
+                );
+            } else if (videoId === "action-board-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleActionBoardVideo"] [x-data*="isVideoActive"]'
+                );
+            } else if (videoId === "data-management-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleDataManagementVideo"] [x-data*="isVideoActive"]'
+                );
+            }
+
             if (iconContainer && iconContainer._x_dataStack) {
                 iconContainer._x_dataStack[0].isVideoActive = false;
             }
