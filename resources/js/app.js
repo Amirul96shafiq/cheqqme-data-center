@@ -9,3 +9,5 @@ import "./meeting-links";
 import "./spotify-player-alpine";
 import "./smart-tooltip";
 import "./kanban-mobile-drag";
+import "./greeting-modal";
+import "./greeting-weather";
