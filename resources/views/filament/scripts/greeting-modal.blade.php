@@ -342,8 +342,10 @@ function openGreetingModal(forceOpen = false) {
                                     {{ __('greetingmodal.action-4-description') }}
                                 </p>
                             </div>
-                            <div class="flex-shrink-0">
-                                @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors')
+                            <div class="flex-shrink-0" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('data-management-video')?.classList.contains('hidden')">
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
                             </div>
                         </button>
                     </div>
@@ -592,10 +594,10 @@ window.scrollToWeatherSection = function() {
 window.toggleDataManagementVideo = function() {
     const videoContainer = document.getElementById('data-management-video');
     const quickActionsContainer = videoContainer?.parentElement?.querySelector('.space-y-3');
-    
+
     if (videoContainer && quickActionsContainer) {
         const isHidden = videoContainer.classList.contains('hidden');
-        
+
         if (isHidden) {
             // Show video container with animation
             videoContainer.classList.remove('hidden');
@@ -604,13 +606,19 @@ window.toggleDataManagementVideo = function() {
             // Add animation classes
             videoContainer.classList.remove('opacity-0', 'scale-95');
             videoContainer.classList.add('opacity-100', 'scale-100');
-            
+
+            // Update Alpine.js state for icon rotation
+            const iconContainer = quickActionsContainer.querySelector('[x-data*="isVideoActive"]');
+            if (iconContainer && iconContainer._x_dataStack) {
+                iconContainer._x_dataStack[0].isVideoActive = true;
+            }
+
             // Hide other quick actions
             const otherActions = quickActionsContainer.querySelectorAll('button:not([onclick="toggleDataManagementVideo()"])');
             otherActions.forEach(action => {
                 action.style.display = 'none';
             });
-            
+
             // Reset video to beginning when showing
             setTimeout(() => {
                 const video = videoContainer.querySelector('video');
@@ -623,17 +631,23 @@ window.toggleDataManagementVideo = function() {
             // Hide video container with animation
             videoContainer.classList.remove('opacity-100', 'scale-100');
             videoContainer.classList.add('opacity-0', 'scale-95');
-            
+
+            // Update Alpine.js state for icon rotation
+            const iconContainer = quickActionsContainer.querySelector('[x-data*="isVideoActive"]');
+            if (iconContainer && iconContainer._x_dataStack) {
+                iconContainer._x_dataStack[0].isVideoActive = false;
+            }
+
             // Pause video when hiding
             const video = videoContainer.querySelector('video');
             if (video) {
                 video.pause();
             }
-            
+
             // Hide element after animation completes
             setTimeout(() => {
                 videoContainer.classList.add('hidden');
-                
+
                 // Show other quick actions after video container is completely hidden
                 setTimeout(() => {
                     const otherActions = quickActionsContainer.querySelectorAll('button:not([onclick="toggleDataManagementVideo()"])');
