@@ -217,6 +217,49 @@ function navigateToUsers() {
     window.location.href = "/admin/users";
 }
 
+function navigateToTrelloBoards() {
+    closeGreetingModal();
+    window.location.href = "/admin/trello-boards";
+}
+
+function navigateToClients() {
+    closeGreetingModal();
+    window.location.href = "/admin/clients";
+}
+
+function navigateToProjects() {
+    closeGreetingModal();
+    window.location.href = "/admin/projects";
+}
+
+function navigateToDocuments() {
+    closeGreetingModal();
+    window.location.href = "/admin/documents";
+}
+
+function navigateToImportantUrls() {
+    closeGreetingModal();
+    window.location.href = "/admin/important-urls";
+}
+
+function navigateToPhoneNumbers() {
+    closeGreetingModal();
+    window.location.href = "/admin/phone-numbers";
+}
+
+// Make navigation functions globally available
+window.navigateToProfile = navigateToProfile;
+window.navigateToSettings = navigateToSettings;
+window.navigateToActionBoard = navigateToActionBoard;
+window.navigateToMeetingLinks = navigateToMeetingLinks;
+window.navigateToUsers = navigateToUsers;
+window.navigateToTrelloBoards = navigateToTrelloBoards;
+window.navigateToClients = navigateToClients;
+window.navigateToProjects = navigateToProjects;
+window.navigateToDocuments = navigateToDocuments;
+window.navigateToImportantUrls = navigateToImportantUrls;
+window.navigateToPhoneNumbers = navigateToPhoneNumbers;
+
 // Scroll to weather section function
 function scrollToWeatherSection() {
     const weatherSection =

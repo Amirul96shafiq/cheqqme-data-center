@@ -213,7 +213,8 @@
                 </div>
 
                 <!-- Greeting Section (60% width on desktop, 100% on mobile) - Order 1 on small devices, Order 2 on large devices -->
-                <div class="p-6 flex flex-col justify-end bg-cover bg-center bg-no-repeat w-full lg:w-3/5 order-1 lg:order-2"
+                <div class="p-6 flex flex-col justify-end bg-cover bg-center bg-no-repeat w-full lg:w-3/5 order-1 lg:order-2 relative"
+                     x-data="{ resourcesDropdownOpen: false }"
                      style="background-image: url('{{ \App\Services\ImageOptimizationService::getCachedPublicImageUrl("images/greeting-light.png") }}'); background-position: top center; background-size: contain;" data-bg-light="{{ \App\Services\ImageOptimizationService::getCachedPublicImageUrl('images/greeting-light.png') }}"
                      data-bg-dark="{{ \App\Services\ImageOptimizationService::getCachedPublicImageUrl('images/greeting-dark.png') }}">
 
@@ -381,7 +382,7 @@
                                 </p>
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('data-management-video')?.classList.contains('hidden')">
-                                <span class="text-sm text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors mr-2">{{ __('greetings.view_action') }}</span>
+                                <span @click.stop="$dispatch('toggle-resources-dropdown')" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">{{ __('greetings.view_action') }}</span>
                                 <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
@@ -408,6 +409,91 @@
                                 </svg>
                             </div>
                         </button>
+                    </div>
+
+                    <!-- Resources Dropdown (Outside the scrollable container) -->
+                    <div
+                        x-show="resourcesDropdownOpen"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        @click.away="resourcesDropdownOpen = false"
+                        @toggle-resources-dropdown.window="resourcesDropdownOpen = !resourcesDropdownOpen"
+                        class="absolute bottom-20 right-6 z-[60] min-w-[200px] overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700"
+                        style="display: none;"
+                    >
+                        <div class="p-2 space-y-1">
+
+                            <!-- Trello Boards -->
+                            <button
+                                onclick="navigateToTrelloBoards();"
+                                class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+                            >
+                                <div class="flex-shrink-0">
+                                    @svg('heroicon-o-rectangle-stack', 'w-5 h-5 text-gray-600 dark:text-gray-400')
+                                </div>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-trello-boards') }}</span>
+                            </button>
+
+                            <!-- Clients -->
+                            <button
+                                onclick="navigateToClients();"
+                                class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+                            >
+                                <div class="flex-shrink-0">
+                                    @svg('heroicon-o-briefcase', 'w-5 h-5 text-gray-600 dark:text-gray-400')
+                                </div>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-clients') }}</span>
+                            </button>
+
+                            <!-- Projects -->
+                            <button
+                                onclick="navigateToProjects();"
+                                class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+                            >
+                                <div class="flex-shrink-0">
+                                    @svg('heroicon-o-folder-open', 'w-5 h-5 text-gray-600 dark:text-gray-400')
+                                </div>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-projects') }}</span>
+                            </button>
+
+                            <!-- Documents -->
+                            <button
+                                onclick="navigateToDocuments();"
+                                class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+                            >
+                                <div class="flex-shrink-0">
+                                    @svg('heroicon-o-archive-box', 'w-5 h-5 text-gray-600 dark:text-gray-400')
+                                </div>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-documents') }}</span>
+                            </button>
+
+                            <!-- Important URLs -->
+                            <button
+                                onclick="navigateToImportantUrls();"
+                                class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+                            >
+                                <div class="flex-shrink-0">
+                                    @svg('heroicon-o-link', 'w-5 h-5 text-gray-600 dark:text-gray-400')
+                                </div>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-important-urls') }}</span>
+                            </button>
+
+                            <!-- Phone Numbers -->
+                            <button
+                                onclick="navigateToPhoneNumbers();"
+                                class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+                            >
+                                <div class="flex-shrink-0">
+                                    @svg('heroicon-o-device-phone-mobile', 'w-5 h-5 text-gray-600 dark:text-gray-400')
+                                </div>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('greetingmodal.resource-phone-numbers') }}</span>
+                            </button>
+
+                        </div>
                     </div>
 
                     <!-- Video Container -->

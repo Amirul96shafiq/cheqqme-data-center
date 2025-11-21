@@ -33,4 +33,12 @@ return [
     // Video container content
     'video-title' => 'Tutorial Sumber',
     'video-not-supported' => 'Pelayar anda tidak menyokong tag video.',
+
+    // Resource dropdown items
+    'resource-trello-boards' => 'Papan Trello',
+    'resource-clients' => 'Pelanggan',
+    'resource-projects' => 'Projek',
+    'resource-documents' => 'Dokumen',
+    'resource-important-urls' => 'URL Penting',
+    'resource-phone-numbers' => 'Nombor Telefon',
 ];

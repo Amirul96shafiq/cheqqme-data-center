@@ -33,4 +33,12 @@ return [
     // Video container content
     'video-title' => 'Resources Tutorial',
     'video-not-supported' => 'Your browser does not support the video tag.',
+
+    // Resource dropdown items
+    'resource-trello-boards' => 'Trello Boards',
+    'resource-clients' => 'Clients',
+    'resource-projects' => 'Projects',
+    'resource-documents' => 'Documents',
+    'resource-important-urls' => 'Important URLs',
+    'resource-phone-numbers' => 'Phone Numbers',
 ];
