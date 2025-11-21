@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'morning' => 'Selamat Pagi, Bangunlah 🡥',
-    'afternoon' => 'Selamat Petang, Apa Makan? 🡥',
-    'evening' => 'Selamat Malam, Hwaiting 🡥',
-    'goodnight' => 'Selamat Malam, Chill2 Jer 🡥',
+    'morning' => 'Selamat Pagi 🡥',
+    'afternoon' => 'Selamat Petang 🡥',
+    'evening' => 'Selamat Malam 🡥',
+    'goodnight' => 'Selamat Malam 🡥',
     'profile' => 'Profil',
 ];

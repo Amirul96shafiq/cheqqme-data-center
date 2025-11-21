@@ -7,7 +7,6 @@ use App\Models\TrelloBoard;
 use Awcodes\LightSwitch\Enums\Alignment;
 use Awcodes\LightSwitch\LightSwitchPlugin;
 use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
-use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -179,16 +178,6 @@ class AdminPanelProvider extends PanelProvider
             ->homeUrl(fn () => route('filament.admin.pages.dashboard'))
             ->id('admin')
             ->path('admin')
-            // ->spa() // SPA mode disabled - rendering issues with complex components
-            // ->spaUrlExceptions([
-            //     // Exclude OAuth callback routes from SPA navigation
-            //     '*/auth/google/*',
-            //     '*/auth/spotify/*',
-            //     '*/auth/zoom/*',
-            //     // Exclude login/logout routes
-            //     '*/admin/login',
-            //     '*/logout',
-            // ])
             ->favicon(asset('images/favicon.png'))
             ->brandLogo($currentLogo)
             ->darkModeBrandLogo($currentDarkLogo)
@@ -279,8 +268,8 @@ class AdminPanelProvider extends PanelProvider
                         $hour = now()->hour;
                         $greeting = match (true) {
                             $hour >= 7 && $hour <= 11 => __('greetings.morning'),
-                            $hour >= 12 && $hour <= 19 => __('greetings.afternoon'),
-                            $hour >= 20 && $hour <= 23 => __('greetings.evening'),
+                            $hour >= 12 && $hour <= 14 => __('greetings.afternoon'),
+                            $hour >= 15 && $hour <= 23 => __('greetings.evening'),
                             default => __('greetings.goodnight') // 12AM-6AM
                         };
 
