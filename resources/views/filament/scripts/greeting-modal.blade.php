@@ -284,7 +284,7 @@
                     <div class="space-y-3 mb-6">
 
                         <!-- Profile Quick Action -->
-                        <button onclick="toggleProfileVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                        <button onclick="toggleProfileVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
                                 @svg('heroicon-o-user', 'w-5 h-5 text-primary-600 dark:text-primary-400')
                             </div>
@@ -297,7 +297,7 @@
                                 </p>
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('profile-video')?.classList.contains('hidden')">
-                                <span onclick="event.stopPropagation(); navigateToProfile()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">View →</span>
+                                <span onclick="event.stopPropagation(); navigateToProfile()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">{{ __('greetings.view_action') }}</span>
                                 <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
@@ -305,7 +305,7 @@
                         </button>
 
                         <!-- Settings Quick Action -->
-                        <button onclick="toggleSettingsVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                        <button onclick="toggleSettingsVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
                                 @svg('heroicon-o-cog-6-tooth', 'w-5 h-5 text-primary-600 dark:text-primary-400')
                             </div>
@@ -318,7 +318,7 @@
                                 </p>
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('settings-video')?.classList.contains('hidden')">
-                                <span onclick="event.stopPropagation(); navigateToSettings()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">View →</span>
+                                <span onclick="event.stopPropagation(); navigateToSettings()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">{{ __('greetings.view_action') }}</span>
                                 <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
@@ -326,7 +326,7 @@
                         </button>
 
                         <!-- Action Board Quick Action -->
-                        <button onclick="toggleActionBoardVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                        <button onclick="toggleActionBoardVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
                                 @svg('heroicon-o-rocket-launch', 'w-5 h-5 text-primary-600 dark:text-primary-400')
                             </div>
@@ -339,7 +339,7 @@
                                 </p>
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('action-board-video')?.classList.contains('hidden')">
-                                <span onclick="event.stopPropagation(); navigateToActionBoard()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">View →</span>
+                                <span onclick="event.stopPropagation(); navigateToActionBoard()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">{{ __('greetings.view_action') }}</span>
                                 <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
@@ -347,7 +347,7 @@
                         </button>
 
                         <!-- Resources Quick Action -->
-                        <button onclick="toggleDataManagementVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
+                        <button onclick="toggleDataManagementVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">
                             <div class="w-10 h-10 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 transition-colors flex-shrink-0">
                                 @svg('heroicon-o-table-cells', 'w-5 h-5 text-primary-600 dark:text-primary-400')
                             </div>
@@ -360,7 +360,7 @@
                                 </p>
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('data-management-video')?.classList.contains('hidden')">
-                                <span class="text-sm text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors mr-2">View →</span>
+                                <span class="text-sm text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors mr-2">{{ __('greetings.view_action') }}</span>
                                 <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>

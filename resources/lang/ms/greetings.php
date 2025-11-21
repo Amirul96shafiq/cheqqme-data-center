@@ -6,4 +6,5 @@ return [
     'evening' => 'Selamat Malam 🡥',
     'goodnight' => 'Selamat Malam 🡥',
     'profile' => 'Profil',
+    'view_action' => 'Lihat →',
 ];
