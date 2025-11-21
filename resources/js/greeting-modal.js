@@ -207,6 +207,16 @@ function navigateToActionBoard() {
     window.location.href = "/admin/action-board";
 }
 
+function navigateToMeetingLinks() {
+    closeGreetingModal();
+    window.location.href = "/admin/meeting-links";
+}
+
+function navigateToUsers() {
+    closeGreetingModal();
+    window.location.href = "/admin/users";
+}
+
 // Scroll to weather section function
 function scrollToWeatherSection() {
     const weatherSection =
@@ -1128,6 +1138,8 @@ window.closeGreetingModal = closeGreetingModal;
 window.navigateToProfile = navigateToProfile;
 window.navigateToSettings = navigateToSettings;
 window.navigateToActionBoard = navigateToActionBoard;
+window.navigateToMeetingLinks = navigateToMeetingLinks;
+window.navigateToUsers = navigateToUsers;
 window.scrollToWeatherSection = scrollToWeatherSection;
 // Toggle Profile video container
 function toggleProfileVideo() {
@@ -1150,6 +1162,22 @@ function toggleActionBoardVideo() {
     toggleGenericVideo(
         "action-board-video",
         'button:not([onclick="toggleActionBoardVideo()"])'
+    );
+}
+
+// Toggle Meeting Links video container
+function toggleMeetingLinksVideo() {
+    toggleGenericVideo(
+        "meeting-links-video",
+        'button:not([onclick="toggleMeetingLinksVideo()"])'
+    );
+}
+
+// Toggle Users video container
+function toggleUsersVideo() {
+    toggleGenericVideo(
+        "users-video",
+        'button:not([onclick="toggleUsersVideo()"])'
     );
 }
 
@@ -1185,9 +1213,17 @@ function toggleGenericVideo(videoId, otherActionsSelector) {
                 iconContainer = quickActionsContainer.querySelector(
                     'button[onclick*="toggleActionBoardVideo"] [x-data*="isVideoActive"]'
                 );
+            } else if (videoId === "meeting-links-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleMeetingLinksVideo"] [x-data*="isVideoActive"]'
+                );
             } else if (videoId === "data-management-video") {
                 iconContainer = quickActionsContainer.querySelector(
                     'button[onclick*="toggleDataManagementVideo"] [x-data*="isVideoActive"]'
+                );
+            } else if (videoId === "users-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleUsersVideo"] [x-data*="isVideoActive"]'
                 );
             }
 
@@ -1240,9 +1276,17 @@ function toggleGenericVideo(videoId, otherActionsSelector) {
                 iconContainer = quickActionsContainer.querySelector(
                     'button[onclick*="toggleActionBoardVideo"] [x-data*="isVideoActive"]'
                 );
+            } else if (videoId === "meeting-links-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleMeetingLinksVideo"] [x-data*="isVideoActive"]'
+                );
             } else if (videoId === "data-management-video") {
                 iconContainer = quickActionsContainer.querySelector(
                     'button[onclick*="toggleDataManagementVideo"] [x-data*="isVideoActive"]'
+                );
+            } else if (videoId === "users-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleUsersVideo"] [x-data*="isVideoActive"]'
                 );
             }
 
@@ -1279,5 +1323,7 @@ window.toggleDataManagementVideo = toggleDataManagementVideo;
 window.toggleProfileVideo = toggleProfileVideo;
 window.toggleSettingsVideo = toggleSettingsVideo;
 window.toggleActionBoardVideo = toggleActionBoardVideo;
+window.toggleMeetingLinksVideo = toggleMeetingLinksVideo;
+window.toggleUsersVideo = toggleUsersVideo;
 window.toggleVideoPlay = toggleVideoPlay;
 window.playVideoInFullscreen = playVideoInFullscreen;
