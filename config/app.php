@@ -86,6 +86,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Git Version Override (Optional)
+    |--------------------------------------------------------------------------
+    |
+    | If set, this value will be used by GitHelper instead of running git
+    | commands on every request. This can significantly improve performance
+    | in environments where executing git is slow (for example, on Windows).
+    |
+    */
+
+    'git_version' => env('APP_GIT_VERSION'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Encryption Key
     |--------------------------------------------------------------------------
     |

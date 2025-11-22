@@ -92,11 +92,21 @@ class Project extends Model
 
     public function getDocumentCountAttribute()
     {
+        // Prefer eager-loaded count when available to avoid N+1 queries.
+        if (array_key_exists('documents_count', $this->attributes)) {
+            return (int) $this->attributes['documents_count'];
+        }
+
         return $this->documents()->count();
     }
 
     public function getImportantUrlCountAttribute()
     {
+        // Prefer eager-loaded count when available to avoid N+1 queries.
+        if (array_key_exists('important_urls_count', $this->attributes)) {
+            return (int) $this->attributes['important_urls_count'];
+        }
+
         return $this->importantUrls()->count();
     }
 

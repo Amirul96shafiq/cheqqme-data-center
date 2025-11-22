@@ -5,6 +5,11 @@ namespace App\Helpers;
 class GitHelper
 {
     /**
+     * Cached version string to avoid running git commands on every request.
+     */
+    protected static ?string $cachedVersion = null;
+
+    /**
      * Get the latest commit SHA from git
      */
     public static function getLatestCommitSha(): string
@@ -37,6 +42,22 @@ class GitHelper
      */
     public static function getVersionString(string $prefix = 'v0.3A_', string $suffix = '_local'): string
     {
+        // Return cached value if we've already computed it for this PHP process.
+        if (self::$cachedVersion !== null) {
+            return self::$cachedVersion;
+        }
+
+        // If an explicit version string is configured, prefer that and avoid git calls entirely.
+        if (function_exists('config')) {
+            $configured = config('app.git_version');
+
+            if (! empty($configured)) {
+                self::$cachedVersion = $configured;
+
+                return self::$cachedVersion;
+            }
+        }
+
         $commitSha = self::getLatestCommitSha();
         $commitCount = self::getCommitCount();
 
@@ -45,6 +66,10 @@ class GitHelper
 
         $versionBase = $prefix.$formattedCommitCount.'_';
 
-        return $commitSha !== 'unknown' ? $versionBase.$commitSha.$suffix : $versionBase.'000000'.$suffix;
+        self::$cachedVersion = $commitSha !== 'unknown'
+            ? $versionBase.$commitSha.$suffix
+            : $versionBase.'000000'.$suffix;
+
+        return self::$cachedVersion;
     }
 }

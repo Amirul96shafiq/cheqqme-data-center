@@ -97,14 +97,30 @@ class Client extends Model
     public function projectCount(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->projects->count(),
+            get: function () {
+                // Prefer eager-loaded count when available to avoid N+1 queries.
+                if (array_key_exists('projects_count', $this->attributes)) {
+                    return (int) $this->attributes['projects_count'];
+                }
+
+                // Fallback to querying the relationship.
+                return $this->projects()->count();
+            },
         );
     }
 
     public function importantUrlCount(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->importantUrls->count(),
+            get: function () {
+                // Prefer eager-loaded count when available to avoid N+1 queries.
+                if (array_key_exists('important_urls_count', $this->attributes)) {
+                    return (int) $this->attributes['important_urls_count'];
+                }
+
+                // Fallback to querying the relationship.
+                return $this->importantUrls()->count();
+            },
         );
     }
 

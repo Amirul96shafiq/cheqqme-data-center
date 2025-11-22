@@ -524,7 +524,12 @@ class ProjectResource extends Resource
             // Disable record URL and record action for all records
             ->recordUrl(null)
             ->recordAction(null)
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['client', 'createdBy', 'updatedBy'])->visibleToUser())
+            ->modifyQueryUsing(
+                fn (Builder $query) => $query
+                    ->with(['client', 'createdBy', 'updatedBy'])
+                    ->withCount(['documents', 'importantUrls'])
+                    ->visibleToUser()
+            )
             ->columns([
 
                 TextColumn::make('id')
