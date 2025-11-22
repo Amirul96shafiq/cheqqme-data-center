@@ -48,9 +48,12 @@
                     </div>
 
                     {{-- Forgot Password Header --}}
-                    <header class="mb-20">
+                    <header class="mb-10">
                         <h1 class="text-2xl font-bold text-gray-800 dark:text-white text-center">
                             {{ __('auth.forgot_password')}}
+                        </h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 text-center">
+                            {{ __('auth.forgot_password_subtitle')}}
                         </h1>
                     </header>
                     

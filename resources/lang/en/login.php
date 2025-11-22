@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'title' => 'Sign in',
+    'title' => 'Welcome Back!',
+    'subtitle' => 'Please enter your account details.',
 
     'actions' => [
         'login' => 'Sign In',

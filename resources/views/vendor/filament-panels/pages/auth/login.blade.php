@@ -55,10 +55,13 @@
                     </div>
                     
                     {{-- Sign In Header --}}
-                    <header class="mb-20">
+                    <header class="mb-10">
                         <h1 class="text-2xl font-bold text-gray-800 dark:text-white text-center">
                             {{ __('login.title')}}
                         </h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 text-center">
+                            {{ __('login.subtitle')}}
+                        </p>
                     </header>
 
 					{{-- Success Notification (e.g., after password reset) --}}

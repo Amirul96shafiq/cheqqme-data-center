@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'title' => 'Log Masuk',
+    'title' => 'Selamat Datang Kembali!',
+    'subtitle' => 'Sila masukkan maklumat akaun anda.',
 
     'actions' => [
         'login' => 'Log Masuk',

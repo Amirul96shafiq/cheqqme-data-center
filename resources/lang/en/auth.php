@@ -3,6 +3,7 @@
 return [
     // Forgot Password
     'forgot_password' => 'Forgot Password',
+    'forgot_password_subtitle' => 'Enter your email to reset your password',
     'description_forgot_password' => 'Enter your email to reset your password',
     'email_address' => 'Email Address',
     'send_link' => 'Send Password Reset Link',
@@ -10,6 +11,7 @@ return [
     // Reset Password
     'email' => 'Email Address',
     'reset_password' => 'Reset Password',
+    'reset_password_subtitle' => 'Enter your new password',
     'description_reset_password' => 'Enter your new password',
     'new_password' => 'New Password',
     'confirm_new_password' => 'Confirm New Password',
