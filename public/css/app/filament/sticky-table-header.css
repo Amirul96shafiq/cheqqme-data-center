@@ -2,10 +2,14 @@
     .fi-ta-table thead {
         position: sticky !important;
         top: 0;
+        background-color: rgb(255, 255, 255); /* white */
+        box-shadow: 0 0.5px 0 rgb(229, 231, 235); /* border-gray-200 */
+        z-index: 5 !important;
     }
 
     .dark .fi-ta-table thead {
         background-color: rgb(24, 24, 27);
+        box-shadow: 0 0.5px 0 rgb(39, 39, 42);
     }
 
     /*
@@ -14,7 +18,7 @@
     */
     .fi-ta-content,
     .fi-ta-content-ctn {
-        max-height: calc(100vh - 22rem);
+        max-height: calc(100vh - 26rem);
         overflow-y: auto;
         position: relative;
     }
