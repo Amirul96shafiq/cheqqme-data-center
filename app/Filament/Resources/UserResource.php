@@ -243,7 +243,7 @@ class UserResource extends Resource
 
                 TextColumn::make('id')
                     ->label(__('user.table.id'))
-                    ->url(fn ($record) => route('filament.admin.resources.users.edit', $record->id))
+                    ->url(fn ($record) => $record->trashed() ? null : route('filament.admin.resources.users.edit', $record->id))
                     ->sortable()
                     ->badge()
                     ->color('primary')

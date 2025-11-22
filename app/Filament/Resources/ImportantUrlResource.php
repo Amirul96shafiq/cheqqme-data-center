@@ -304,7 +304,7 @@ class ImportantUrlResource extends Resource
 
                 TextColumn::make('id')
                     ->label(__('importanturl.table.id'))
-                    ->url(fn ($record) => route('filament.admin.resources.important-urls.edit', $record->id))
+                    ->url(fn ($record) => $record->trashed() ? null : route('filament.admin.resources.important-urls.edit', $record->id))
                     ->sortable(),
 
                 Tables\Columns\ViewColumn::make('title')

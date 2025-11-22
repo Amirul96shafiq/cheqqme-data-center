@@ -271,7 +271,7 @@ class PhoneNumberResource extends Resource
 
                 TextColumn::make('id')
                     ->label(__('phonenumber.table.id'))
-                    ->url(fn ($record) => route('filament.admin.resources.phone-numbers.edit', $record->id))
+                    ->url(fn ($record) => $record->trashed() ? null : route('filament.admin.resources.phone-numbers.edit', $record->id))
                     ->sortable(),
 
                 Tables\Columns\ViewColumn::make('title')

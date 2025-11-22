@@ -18,7 +18,6 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
-use Schmeits\FilamentCharacterCounter\Forms\Components\RichEditor;
 
 class MeetingLinkResource extends Resource
 {
@@ -916,7 +915,7 @@ class MeetingLinkResource extends Resource
 
                 Tables\Columns\TextColumn::make('id')
                     ->label(__('meetinglink.table.id'))
-                    ->url(fn ($record) => route('filament.admin.resources.meeting-links.edit', $record->id))
+                    ->url(fn ($record) => $record->trashed() ? null : route('filament.admin.resources.meeting-links.edit', $record->id))
                     ->sortable(),
 
                 Tables\Columns\ViewColumn::make('title')
