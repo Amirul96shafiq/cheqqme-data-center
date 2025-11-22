@@ -4,19 +4,18 @@
 (function () {
     if (typeof window === "undefined") return;
 
-    // Provide global password toggle for reset page loaded via partial nav
-    if (!window.togglePassword) {
-        window.togglePassword = function (id) {
-            var input = document.getElementById(id);
-            if (!input) return;
-            var eyeIcon = document.getElementById(id + "-eye");
-            var eyeOffIcon = document.getElementById(id + "-eye-slash");
-            var isHidden = input.type === "password";
-            input.type = isHidden ? "text" : "password";
-            if (eyeIcon) eyeIcon.classList.toggle("hidden", !isHidden);
-            if (eyeOffIcon) eyeOffIcon.classList.toggle("hidden", isHidden);
-        };
-    }
+    // Global password toggle function for auth pages
+    window.togglePassword = function (id) {
+        var input = document.getElementById(id);
+        if (!input) return;
+        var eyeIcon = document.getElementById(id + "-eye");
+        var eyeOffIcon = document.getElementById(id + "-eye-slash");
+
+        input.type = input.type === "password" ? "text" : "password";
+        var passwordVisible = input.type === "text";
+        if (eyeIcon) eyeIcon.classList.toggle("hidden", passwordVisible);
+        if (eyeOffIcon) eyeOffIcon.classList.toggle("hidden", !passwordVisible);
+    };
 
     // Reinitialize remember me toggle after partial navigation
     function reinitializeRememberMeToggle() {
