@@ -404,7 +404,7 @@ body {
 
     /* Ensure table headers stay in their proper stacking context */
     .fi-ta-table thead {
-        z-index: 10 !important;
+        z-index: 5 !important;
     }
 
     Removing filter brightness from cover image row since it causes issues with z-index of Action Grouping of User Table
