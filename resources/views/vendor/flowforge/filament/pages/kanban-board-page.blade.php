@@ -640,13 +640,19 @@
                             }
                         }
                     }
-                    
+
                     // Clean up URL parameter without reloading
                     const newUrl = new URL(window.location);
                     newUrl.searchParams.delete('create_task');
                     window.history.replaceState({}, '', newUrl);
                 }, 1000); // 1 second delay to ensure page is fully loaded
             }
+
+            // Initialize featured images visibility after Alpine.js is ready
+            setTimeout(() => {
+                const showFeaturedImages = {{ $showFeaturedImages ? 'true' : 'false' }};
+                Livewire.dispatch('featured-images-visibility-changed', [{ visible: showFeaturedImages }]);
+            }, 500); // Small delay to ensure Alpine.js listeners are set up
         });
     </script>
 </x-filament::page>

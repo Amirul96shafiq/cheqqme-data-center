@@ -701,7 +701,6 @@ $usersForFilter = $usersCollection
                     wire:loading.attr="disabled"
                     class="flex items-center justify-center w-10 h-10 bg-white/30 dark:bg-gray-800/30 border border-gray-200/80 dark:border-gray-700/80 rounded-lg text-gray-400 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-gray-800/40 hover:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:border-primary-500 dark:focus:border-primary-500 transition-all duration-200 focus:ring-1 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     type="button"
-                    title="{{ __('action.toggle_featured_images_tooltip') }}"
                 >
                     {{-- Loading Spinner --}}
                     <svg wire:loading wire:target="toggleFeaturedImages" 

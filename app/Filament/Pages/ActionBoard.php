@@ -920,7 +920,7 @@ class ActionBoard extends KanbanBoardPage
     {
         $this->showFeaturedImages = ! $this->showFeaturedImages;
         session(['action_board_show_featured_images' => $this->showFeaturedImages]);
-        $this->dispatch('featured-images-visibility-changed', visible: $this->showFeaturedImages);
+        $this->dispatch('featured-images-visibility-changed', ['visible' => $this->showFeaturedImages]);
     }
 
     public function toggleShowOptions(): void

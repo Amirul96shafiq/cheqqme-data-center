@@ -157,8 +157,9 @@
         showFeaturedImages = true;
 
         // Listen for featured images visibility changes
-        window.addEventListener('featured-images-visibility-changed', (e) => {
-            showFeaturedImages = e?.detail?.visible ?? true;
+        Livewire.on('featured-images-visibility-changed', (e) => {
+            const data = Array.isArray(e) ? e[0] : e;
+            showFeaturedImages = data?.visible ?? true;
         });
 
         // Global drag detection - prevent card clicks during any drag operation
