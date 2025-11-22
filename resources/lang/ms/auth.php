@@ -14,6 +14,7 @@ return [
     'description_reset_password' => 'Masukkan kata laluan baharu anda',
     'new_password' => 'Kata Laluan Baharu',
     'confirm_new_password' => 'Sahkan Kata Laluan Baharu',
+    'generate_strong_password' => 'Jana Kata Laluan Kuat',
     'send_reset_link' => 'Tetapkan Semula Kata Laluan',
     'back_to_forgot_password' => 'Lakukan Semula Lupa Kata Laluan',
 

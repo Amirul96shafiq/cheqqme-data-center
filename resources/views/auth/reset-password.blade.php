@@ -124,6 +124,15 @@
                             </div>
                         </div>
 
+                        {{-- Generate Strong Password Action --}}
+                        <div class="flex justify-center">
+                            <button type="button" onclick="window.generateStrongPassword()"
+                                class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md transition-colors duration-200 border border-gray-300 dark:border-gray-600">
+                                <x-heroicon-o-code-bracket-square class="h-4 w-4 mr-2" />
+                                {{ __('auth.generate_strong_password') }}
+                            </button>
+                        </div>
+
                         {{-- Submit Button --}}
                         <x-loading-submit-button :label="__('auth.send_reset_link')" :sr="__('auth.send_reset_link')" />
 
@@ -187,6 +196,29 @@
 
             eyeIcon.classList.toggle('hidden', !isHidden);
             eyeOffIcon.classList.toggle('hidden', isHidden);
+        }
+
+        {{-- Generate Strong Password Function --}}
+        function generateStrongPassword() {
+            // Generate a 16-character random string (same as Filament implementation)
+            const generated = Math.random().toString(36).substring(2, 10) +
+                             Math.random().toString(36).substring(2, 10);
+
+            // Set the generated password to both password fields
+            const passwordField = document.getElementById('password');
+            const confirmPasswordField = document.getElementById('password_confirmation');
+
+            if (passwordField) {
+                passwordField.value = generated;
+                // Trigger input event to ensure form validation updates
+                passwordField.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+
+            if (confirmPasswordField) {
+                confirmPasswordField.value = generated;
+                // Trigger input event to ensure form validation updates
+                confirmPasswordField.dispatchEvent(new Event('input', { bubbles: true }));
+            }
         }
     </script>
 

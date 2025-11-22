@@ -15,6 +15,7 @@ return [
     'description_reset_password' => 'Enter your new password',
     'new_password' => 'New Password',
     'confirm_new_password' => 'Confirm New Password',
+    'generate_strong_password' => 'Generate Strong Password',
     'send_reset_link' => 'Reset Password',
     'back_to_forgot_password' => 'Redo Forgot Password',
 
