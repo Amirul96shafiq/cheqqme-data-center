@@ -222,17 +222,17 @@ Route::post('/admin/login', function (Illuminate\Http\Request $request) {
     // Increment failed login attempts
     // Keep track of attempts for 1 hour
     RateLimiter::hit($attemptsKey, 3600);
-    
+
     $attempts = RateLimiter::attempts($attemptsKey);
 
     // If 5 or more failed attempts, trigger the 5-minute lockout
     if ($attempts >= 5) {
         // Clear any existing lockout key to ensure we start a fresh 300s timer
         RateLimiter::clear($lockoutKey);
-        
+
         // Hit the lockout key to start the 5-minute timer
         RateLimiter::hit($lockoutKey, 300);
-        
+
         // Clear the attempts counter so it resets after the lockout expires
         RateLimiter::clear($attemptsKey);
 
@@ -293,7 +293,7 @@ Route::get('/debug/google-calendar', function () {
 Route::get('/debug/microsoft-teams', function () {
     $user = auth()->user();
 
-    if (!$user || !$user->microsoft_token) {
+    if (! $user || ! $user->microsoft_token) {
         return response()->json([
             'error' => 'No Microsoft token found. Please connect your Microsoft account first.',
         ], 400);
@@ -310,7 +310,7 @@ Route::get('/debug/microsoft-teams', function () {
 
     return response()->json([
         'user_id' => $user->id,
-        'has_token' => !empty($user->microsoft_token),
+        'has_token' => ! empty($user->microsoft_token),
         'token_length' => strlen($user->microsoft_token ?? ''),
         'result' => $result,
     ]);
@@ -420,7 +420,7 @@ Route::middleware('auth')->group(function () {
         $count = cache()->remember("assigned-active-count-{$userId}", 5, function () use ($userId) {
             return \App\Models\Task::query()
                 ->where('assigned_to', 'like', '%'.$userId.'%')
-                ->whereIn('status', ['todo', 'in_progress', 'toreview', 'issue_tracker'])
+                ->whereIn('status', ['todo', 'in_progress', 'toreview', 'issue_tracker', 'wishlist'])
                 ->count();
         });
 

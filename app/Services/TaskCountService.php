@@ -15,7 +15,7 @@ class TaskCountService
     {
         return Task::query()
             ->where('assigned_to', 'like', '%'.$userId.'%')
-            ->whereIn('status', ['todo', 'in_progress', 'toreview', 'issue_tracker'])
+            ->whereIn('status', ['todo', 'in_progress', 'toreview', 'issue_tracker', 'wishlist'])
             ->count();
     }
 
