@@ -54,6 +54,7 @@
     conversationId = localStorage.getItem(getUserConversationKey());
 
     // Fetches the latest or a new conversation session from the backend
+    // Only called when chatbot is opened, not on initial page load
     async function initializeSession() {
         try {
             const csrfToken = document
@@ -112,13 +113,17 @@
         // Use the centralized visibility setter for consistency
         setChatVisibility(shouldBeOpen);
 
-        // Only load conversation history if chatbot should be open on page load
-        // DON'T load automatically - only when user actually opens chatbot interface
-        // This reduces initial page load by avoiding unnecessary network requests
-        if (shouldBeOpen && conversationId && !conversationLoaded) {
-            setTimeout(() => {
-                loadConversationHistory();
-            }, 300);
+        // Only initialize session and load conversation history if chatbot should be open on page load
+        // This ensures session is only loaded when chatbot is actually opened
+        if (shouldBeOpen) {
+            // Initialize session first, then load conversation history
+            initializeSession().then(() => {
+                if (conversationId && !conversationLoaded) {
+                    setTimeout(() => {
+                        loadConversationHistory();
+                    }, 300);
+                }
+            });
         }
     }
 
@@ -188,14 +193,25 @@
 
         setChatVisibility(shouldBeOpen);
 
-        // If the chatbox should be open, ensure conversation history is loaded
-        if (shouldBeOpen && conversationId && !conversationLoaded) {
-            setTimeout(() => {
-                loadConversationHistory();
-            }, 400);
+        // If the chatbox should be open, initialize session and load conversation history
+        if (shouldBeOpen) {
+            // Initialize session first if not already initialized
+            if (!conversationId) {
+                initializeSession().then(() => {
+                    if (conversationId && !conversationLoaded) {
+                        setTimeout(() => {
+                            loadConversationHistory();
+                        }, 400);
+                    }
+                });
+            } else if (!conversationLoaded) {
+                // Session exists, just load conversation history
+                setTimeout(() => {
+                    loadConversationHistory();
+                }, 400);
+            }
         }
 
-        // History will be loaded automatically after session initialization
         chatbotUIInitialized = true;
     }
 
@@ -204,7 +220,8 @@
         // Delay chatbot initialization until AFTER window.load event completes
         // This ensures the page loads faster by prioritizing critical content
         const initializeChatbot = () => {
-            initializeSession(); // Fetch session info
+            // DON'T initialize session here - only load when chatbot is opened
+            // This reduces initial page load by avoiding unnecessary network requests
 
             // Use a small delay to ensure DOM elements are ready
             setTimeout(() => {
@@ -283,7 +300,22 @@
             window.getComputedStyle(interfaceEl).display === "none";
 
         if (isCurrentlyHidden) {
-            // Opening: use centralized state setter and then animate
+            // Opening: initialize session first if not already initialized
+            if (!conversationId) {
+                initializeSession().then(() => {
+                    // After session is initialized, load conversation history
+                    if (!isLoadingConversation) {
+                        loadConversationHistory();
+                    }
+                });
+            } else {
+                // Session already exists, just load conversation history
+                if (!isLoadingConversation) {
+                    loadConversationHistory();
+                }
+            }
+
+            // Use the centralized state setter and then animate
             setChatVisibility(true);
             interfaceEl.classList.add("open");
             requestAnimationFrame(() => {
@@ -293,9 +325,6 @@
                     scrollToBottom();
                 }, 100);
             });
-            if (!isLoadingConversation) {
-                loadConversationHistory();
-            }
         } else {
             // Closing: animate out then hide
             interfaceEl.classList.remove("open");

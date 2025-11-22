@@ -190,8 +190,11 @@ class AppServiceProvider extends ServiceProvider
                                 clearInterval(pollingInterval);
                             }
                             
-                            // Initial poll
-                            pollForUpdates();
+                            // Delay initial poll to ensure page is fully loaded and settled
+                            // This prevents competing with critical page resources
+                            setTimeout(() => {
+                                pollForUpdates();
+                            }, 1000);
                             
                             // Set up polling interval (every 10 seconds for better performance)
                             // Cache on server reduces need for frequent polling
@@ -242,11 +245,16 @@ class AppServiceProvider extends ServiceProvider
                         
                         // Initialize after full page load to avoid competing with critical assets
                         window.addEventListener('load', function() {
+                            // Wait for page to fully settle before starting polling
                             // Use requestIdleCallback when available for extra deferment
                             if (window.requestIdleCallback) {
-                                window.requestIdleCallback(() => startPolling());
+                                window.requestIdleCallback(() => {
+                                    // Additional delay to ensure all resources are loaded
+                                    setTimeout(() => startPolling(), 500);
+                                }, { timeout: 2000 });
                             } else {
-                                startPolling();
+                                // Fallback: wait a bit longer to ensure page is fully loaded
+                                setTimeout(() => startPolling(), 1500);
                             }
                             
                             // Force refresh function for manual updates
