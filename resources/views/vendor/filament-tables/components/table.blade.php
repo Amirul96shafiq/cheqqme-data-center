@@ -10,7 +10,7 @@
     {{ $attributes->class(['fi-ta-table w-full table-auto divide-y divide-gray-200 text-start dark:divide-white/5']) }}
 >
     @if ($header)
-        <thead class="divide-y divide-gray-200 dark:divide-white/5">
+        <thead class="divide-y divide-gray-200 dark:divide-white/5 z-10">
             @if ($headerGroups)
                 <tr class="bg-gray-100/65 dark:bg-transparent backdrop-blur-lg">
                     {{ $headerGroups }}

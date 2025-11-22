@@ -388,7 +388,25 @@ body {
         border-color: #1d4ed8 !important;
     }
 
-    /*
+    /* Fix: Ensure sidebar dropdown appears above sticky table headers */
+    /* Increase sidebar z-index on desktop to allow dropdowns to stack above table headers */
+    @media (min-width: 1024px) {
+        .fi-sidebar {
+            z-index: 50 !important; /* Higher than table headers (z-10) but lower than modals */
+        }
+    }
+
+    /* Ensure dropdown has high z-index within sidebar context */
+    [x-ref="dropdown"] {
+        z-index: 999999 !important;
+        position: fixed !important;
+    }
+
+    /* Ensure table headers stay in their proper stacking context */
+    .fi-ta-table thead {
+        z-index: 10 !important;
+    }
+
     Removing filter brightness from cover image row since it causes issues with z-index of Action Grouping of User Table
     /*
 
