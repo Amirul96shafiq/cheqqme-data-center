@@ -235,7 +235,7 @@
                             :alt="__('filament-panels::layout.avatar.alt', ['name' => filament()->getUserName(auth()->user())])"
                             :circular="true"
                             size="h-16 w-16"
-                            class="border-4 border-white dark:border-gray-800"
+                            class="border-4 border-white dark:border-gray-900"
                             draggable="false"
                         />
 
