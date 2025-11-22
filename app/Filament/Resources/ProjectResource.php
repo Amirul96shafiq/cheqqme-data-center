@@ -395,7 +395,7 @@ class ProjectResource extends Resource
                         $title = __('project.section.extra_info');
                         $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
+                        return new HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->collapsed()
@@ -478,7 +478,7 @@ class ProjectResource extends Resource
 
                         if ($isEditMode) {
                             // We're editing - get the record from route
-                            $record = \App\Models\Project::find($recordId);
+                            $record = Project::find($recordId);
                             $canEditVisibility = $record && $record->created_by === auth()->id();
                         }
 

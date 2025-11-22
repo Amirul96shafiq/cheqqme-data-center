@@ -36,6 +36,8 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin;
 // Apex Charts by Leandro Costa Ferreira
 use Rmsramos\Activitylog\ActivitylogPlugin;
+// Sticky Table Header by Watheq Alshowaiter
+use WatheqAlshowaiter\FilamentStickyTableHeader\StickyTableHeaderPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -410,6 +412,7 @@ class AdminPanelProvider extends PanelProvider
                 },
             )
             ->plugins([
+
                 LightSwitchPlugin::make()
                     ->position(Alignment::TopCenter)
                     ->enabledOn([
@@ -425,6 +428,9 @@ class AdminPanelProvider extends PanelProvider
                     ->navigationSort(11),
 
                 FilamentApexChartsPlugin::make(),
+
+                StickyTableHeaderPlugin::make(),
+                
             ]);
     }
 }

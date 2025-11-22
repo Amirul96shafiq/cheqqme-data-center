@@ -296,7 +296,7 @@ class ClientResource extends Resource
                         $title = __('client.section.extra_info');
                         $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
+                        return new HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->collapsed()
@@ -379,7 +379,7 @@ class ClientResource extends Resource
 
                         if ($isEditMode) {
                             // We're editing - get the record from route
-                            $record = \App\Models\Client::find($recordId);
+                            $record = Client::find($recordId);
                             $canEditVisibility = $record && $record->created_by === auth()->id();
                         }
 

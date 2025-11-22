@@ -32,6 +32,7 @@
         "socialiteproviders/spotify": "^4.1",
         "spatie/eloquent-sortable": "^4.5.2",
         "spatie/laravel-activitylog": "^4.10",
+        "watheqalshowaiter/filament-sticky-table-header": "^1.1",
         "ysfkaya/filament-phone-input": "^3.2"
     },
     "require-dev": {
