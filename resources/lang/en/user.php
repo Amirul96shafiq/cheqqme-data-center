@@ -125,6 +125,7 @@ return [
         'google_calendar' => 'Google Calendar API Connected',
         'zoom_api' => 'Zoom API Connected',
         'spotify' => 'Spotify Connected',
+        'microsoft_oauth' => 'Microsoft OAuth Connected',
     ],
 
     // Table Columns

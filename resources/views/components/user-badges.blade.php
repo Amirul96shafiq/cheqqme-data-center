@@ -74,6 +74,18 @@
         </x-tooltip>
     @endif
 
+    <!-- Microsoft OAuth Badge -->
+    @if ($user->microsoft_id && $user->microsoft_connected_at)
+        <x-tooltip position="top" text="{{ __('user.badge.microsoft_oauth') }}">
+            <span class="inline-flex items-center {{ $itemGap }} {{ $sizeClasses }} rounded-full font-medium bg-blue-100/90 text-blue-900 shadow-sm">
+                @if($showIcons)
+                    <x-icons.custom-icon name="microsoft" class="{{ $iconSize }}" color="" />
+                @endif
+                <span>Microsoft</span>
+            </span>
+        </x-tooltip>
+    @endif
+
     <!-- Zoom API Badge -->
     @if ($user->zoom_token && $user->zoom_connected_at)
         <x-tooltip position="top" text="{{ __('user.badge.zoom_api') }}">

@@ -818,11 +818,11 @@ class TaskComments extends Component implements HasForms
             ->whereNull('parent_id') // Only top-level comments
             ->with([
                 // Ensure modal has full user info (email, country, timezone, cover_image, online_status, spotify_id, date_of_birth, badges)
-                'user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id,spotify_connected_at,phone,phone_country,date_of_birth,google_id,google_connected_at,google_calendar_token,google_calendar_connected_at,zoom_token,zoom_connected_at',
+                'user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id,spotify_connected_at,phone,phone_country,date_of_birth,google_id,google_connected_at,google_calendar_token,google_calendar_connected_at,zoom_token,zoom_connected_at,microsoft_id,microsoft_connected_at',
                 // Reactions are loaded lazily via API to optimize initial page load
                 'replies' => function ($query) {
                     $query->with([
-                        'user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id,spotify_connected_at,phone,phone_country,date_of_birth,google_id,google_connected_at,google_calendar_token,google_calendar_connected_at,zoom_token,zoom_connected_at',
+                        'user:id,name,username,avatar,email,timezone,country,cover_image,online_status,spotify_id,spotify_connected_at,phone,phone_country,date_of_birth,google_id,google_connected_at,google_calendar_token,google_calendar_connected_at,zoom_token,zoom_connected_at,microsoft_id,microsoft_connected_at',
                         // Reactions for replies are also loaded lazily via API
                     ]);
                 },

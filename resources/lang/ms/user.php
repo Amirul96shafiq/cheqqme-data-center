@@ -124,6 +124,7 @@ return [
         'google_calendar' => 'API Google Calendar Disambungkan',
         'zoom_api' => 'API Zoom Disambungkan',
         'spotify' => 'Spotify Disambungkan',
+        'microsoft_oauth' => 'Microsoft OAuth Disambungkan',
     ],
 
     // Table Columns
