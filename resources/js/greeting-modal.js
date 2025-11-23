@@ -151,6 +151,11 @@ function openGreetingModal(forceOpen = false) {
 
     // Make modal globally accessible
     modalCache.modalOverlay = modal;
+
+    // Initialize navigation buttons
+    setTimeout(() => {
+        initializeNavigationButtons();
+    }, 100);
 }
 
 // Close greeting modal
@@ -1187,27 +1192,96 @@ window.scrollToWeatherSection = scrollToWeatherSection;
 
 // Quick Actions Navigation Functions
 function scrollToTopOfQuickActions() {
-    const container = document.getElementById('quick-actions-container');
+    const container = document.getElementById("quick-actions-container");
     if (container) {
         container.scrollTo({
             top: 0,
-            behavior: 'smooth'
+            behavior: "smooth",
         });
     }
 }
 
 function scrollToBottomOfQuickActions() {
-    const container = document.getElementById('quick-actions-container');
+    const container = document.getElementById("quick-actions-container");
     if (container) {
         container.scrollTo({
             top: container.scrollHeight,
-            behavior: 'smooth'
+            behavior: "smooth",
         });
+    }
+}
+
+// Update navigation button states based on scroll position
+function updateNavigationButtons() {
+    const container = document.getElementById("quick-actions-container");
+    const topBtn = document.querySelector(
+        '[onclick="scrollToTopOfQuickActions()"]'
+    );
+    const bottomBtn = document.querySelector(
+        '[onclick="scrollToBottomOfQuickActions()"]'
+    );
+
+    if (container && topBtn && bottomBtn) {
+        const scrollTop = container.scrollTop;
+        const scrollHeight = container.scrollHeight;
+        const clientHeight = container.clientHeight;
+
+        // Check if at top (scrollTop is 0 or very close to 0)
+        const isAtTop = scrollTop <= 1;
+
+        // Check if at bottom (scrollTop + clientHeight is close to scrollHeight)
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+
+        // Update button states
+        topBtn.disabled = isAtTop;
+        bottomBtn.disabled = isAtBottom;
+
+        // Update visual appearance
+        if (isAtTop) {
+            topBtn.classList.add("opacity-50", "cursor-not-allowed");
+            topBtn.classList.remove(
+                "hover:text-primary-600",
+                "dark:hover:text-primary-400"
+            );
+        } else {
+            topBtn.classList.remove("opacity-50", "cursor-not-allowed");
+            topBtn.classList.add(
+                "hover:text-primary-600",
+                "dark:hover:text-primary-400"
+            );
+        }
+
+        if (isAtBottom) {
+            bottomBtn.classList.add("opacity-50", "cursor-not-allowed");
+            bottomBtn.classList.remove(
+                "hover:text-primary-600",
+                "dark:hover:text-primary-400"
+            );
+        } else {
+            bottomBtn.classList.remove("opacity-50", "cursor-not-allowed");
+            bottomBtn.classList.add(
+                "hover:text-primary-600",
+                "dark:hover:text-primary-400"
+            );
+        }
+    }
+}
+
+// Initialize navigation button states when modal opens
+function initializeNavigationButtons() {
+    const container = document.getElementById("quick-actions-container");
+    if (container) {
+        // Initial check
+        updateNavigationButtons();
+
+        // Add scroll event listener
+        container.addEventListener("scroll", updateNavigationButtons);
     }
 }
 
 window.scrollToTopOfQuickActions = scrollToTopOfQuickActions;
 window.scrollToBottomOfQuickActions = scrollToBottomOfQuickActions;
+window.initializeNavigationButtons = initializeNavigationButtons;
 // Toggle Profile video container
 function toggleProfileVideo() {
     toggleGenericVideo(
