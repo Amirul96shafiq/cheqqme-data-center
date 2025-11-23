@@ -281,8 +281,28 @@
 
                     </div>
 
+                    <!-- Navigation Buttons -->
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center space-x-3">
+                            <button
+                                onclick="scrollToTopOfQuickActions()"
+                                class="flex items-center space-x-1 px-2 py-1 text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors duration-200 text-xs"
+                            >
+                                @svg('heroicon-o-chevron-up', 'w-3 h-3')
+                                <span>{{ __('greetingmodal.nav-top') }}</span>
+                            </button>
+                            <button
+                                onclick="scrollToBottomOfQuickActions()"
+                                class="flex items-center space-x-1 px-2 py-1 text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors duration-200 text-xs"
+                            >
+                                @svg('heroicon-o-chevron-down', 'w-3 h-3')
+                                <span>{{ __('greetingmodal.nav-bottom') }}</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Quick Actions -->
-                    <div class="space-y-3 mb-6 max-h-80 overflow-y-auto scrollbar-none">
+                    <div id="quick-actions-container" class="space-y-3 mb-6 max-h-80 overflow-y-auto scrollbar-none">
 
                         <!-- Profile Quick Action -->
                         <button onclick="toggleProfileVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">

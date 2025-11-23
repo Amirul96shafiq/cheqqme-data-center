@@ -30,6 +30,10 @@ return [
     'action-dismiss' => 'Tolak',
     'no-show-today' => 'Jangan tunjukkan hari ini',
 
+    // Navigation buttons
+    'nav-top' => 'Atas',
+    'nav-bottom' => 'Bawah',
+
     // Video container content
     'video-title' => 'Tutorial Sumber',
     'video-not-supported' => 'Pelayar anda tidak menyokong tag video.',

@@ -30,6 +30,10 @@ return [
     'action-dismiss' => 'Dismiss',
     'no-show-today' => 'Do not show today',
 
+    // Navigation buttons
+    'nav-top' => 'Top',
+    'nav-bottom' => 'Bottom',
+
     // Video container content
     'video-title' => 'Resources Tutorial',
     'video-not-supported' => 'Your browser does not support the video tag.',

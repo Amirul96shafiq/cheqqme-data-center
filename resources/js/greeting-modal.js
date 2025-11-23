@@ -1184,6 +1184,30 @@ window.navigateToActionBoard = navigateToActionBoard;
 window.navigateToMeetingLinks = navigateToMeetingLinks;
 window.navigateToUsers = navigateToUsers;
 window.scrollToWeatherSection = scrollToWeatherSection;
+
+// Quick Actions Navigation Functions
+function scrollToTopOfQuickActions() {
+    const container = document.getElementById('quick-actions-container');
+    if (container) {
+        container.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+}
+
+function scrollToBottomOfQuickActions() {
+    const container = document.getElementById('quick-actions-container');
+    if (container) {
+        container.scrollTo({
+            top: container.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+}
+
+window.scrollToTopOfQuickActions = scrollToTopOfQuickActions;
+window.scrollToBottomOfQuickActions = scrollToBottomOfQuickActions;
 // Toggle Profile video container
 function toggleProfileVideo() {
     toggleGenericVideo(
