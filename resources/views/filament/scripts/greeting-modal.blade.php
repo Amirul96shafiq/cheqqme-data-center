@@ -282,7 +282,7 @@
                     </div>
 
                     <!-- Quick Actions -->
-                    <div class="space-y-3 mb-6 max-h-80 overflow-y-auto">
+                    <div class="space-y-3 mb-6 max-h-80 overflow-y-auto scrollbar-none">
 
                         <!-- Profile Quick Action -->
                         <button onclick="toggleProfileVideo()" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 rounded-lg transition-colors duration-200 group border border-gray-200 dark:border-gray-600 w-full text-left">

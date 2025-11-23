@@ -13,6 +13,16 @@
     /* Removed forced black text for dark mode buttons; rely on Filament defaults. */
 
     /* Removed custom scrollbar styling to use browser defaults and prevent status color interference */
+
+    /* Hide scrollbar utility */
+    .scrollbar-none {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* Internet Explorer */
+    }
+
+    .scrollbar-none::-webkit-scrollbar {
+        display: none; /* WebKit browsers */
+    }
 }
 
 select {
