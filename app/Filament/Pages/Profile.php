@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class Profile extends EditProfile
@@ -228,6 +229,17 @@ class Profile extends EditProfile
                                     ->imageResizeTargetHeight('128')
                                     ->directory('avatars')
                                     ->moveFiles()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                        $path = $file->getRealPath();
+                                        if (file_exists($path) && mime_content_type($path) === 'image/webp') {
+                                            $fileInfo = pathinfo($file->getClientOriginalName());
+
+                                            return $fileInfo['filename'].'.webp';
+                                        }
+
+                                        return $file->getClientOriginalName();
+                                    })
                                     ->columnSpanFull()
                                     ->avatar()
                                     ->afterStateUpdated(function ($state) {
@@ -241,7 +253,7 @@ class Profile extends EditProfile
                                             Storage::delete($oldAvatar);
                                         }
 
-                                        // Server-side ensure 128x128 crop & resize
+                                        // Process and optimize avatar image
                                         $this->resizeAvatar($state);
                                     }),
 
@@ -252,11 +264,20 @@ class Profile extends EditProfile
                                     ->directory('covers')
                                     ->moveFiles()
                                     ->preserveFilenames()
-                                    // ->itemPanelAspectRatio('0.25')
                                     ->imageResizeMode('cover')
                                     ->imageCropAspectRatio('4:1')
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                     ->maxSize(20480) // 20MB
+                                    ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                        $path = $file->getRealPath();
+                                        if (file_exists($path) && mime_content_type($path) === 'image/webp') {
+                                            $fileInfo = pathinfo($file->getClientOriginalName());
+
+                                            return $fileInfo['filename'].'.webp';
+                                        }
+
+                                        return $file->getClientOriginalName();
+                                    })
                                     ->columnSpanFull()
                                     ->helperText(__('profile.form.cover_image_helper'))
                                     ->afterStateUpdated(function ($state) {
@@ -270,7 +291,7 @@ class Profile extends EditProfile
                                             Storage::delete($oldCoverImage);
                                         }
 
-                                        // Auto-resize image to 1600px width with auto height
+                                        // Process and optimize cover image
                                         $this->resizeCoverImage($state);
                                     })
                                     ->uploadingMessage(__('profile.form.uploading'))
@@ -1348,7 +1369,7 @@ class Profile extends EditProfile
             // Read the uploaded file
             $image = $manager->read($file->getRealPath());
 
-            // Get current dimensions
+            // Calculate new dimensions maintaining aspect ratio
             $currentWidth = $image->width();
             $currentHeight = $image->height();
 
@@ -1356,11 +1377,13 @@ class Profile extends EditProfile
             $newWidth = 1600;
             $newHeight = (int) round(($currentHeight / $currentWidth) * $newWidth);
 
-            // Resize image to 1600px width with auto height
+            // Resize and convert to WebP
             $image->resize($newWidth, $newHeight);
+            $image->toWebp(90)->save($file->getRealPath());
 
-            // Save the resized image as WebP back to the temporary file
-            $image->toWebp(90)->save($file->getRealPath()); // 90% quality WebP
+            // Apply additional optimization
+            $optimizerChain = OptimizerChainFactory::create();
+            $optimizerChain->optimize($file->getRealPath());
 
         } catch (\Exception $e) {
             // Log error but don't break the upload process
@@ -1374,8 +1397,10 @@ class Profile extends EditProfile
     private function resizeAvatar(TemporaryUploadedFile $file): void
     {
         try {
+            // Create image manager instance
             $manager = new ImageManager(new Driver);
 
+            // Read the uploaded file
             $image = $manager->read($file->getRealPath());
 
             $width = $image->width();
@@ -1385,16 +1410,21 @@ class Profile extends EditProfile
             $square = min($width, $height);
             $x = (int) max(0, floor(($width - $square) / 2));
             $y = (int) max(0, floor(($height - $square) / 2));
+
             if ($square > 0) {
                 $image->crop($square, $square, $x, $y);
             }
 
-            // Resize to 128x128
+            // Resize to 128x128 and convert to WebP
             $image->resize(128, 128);
-
-            // Save optimized avatar as WebP (90% quality)
             $image->toWebp(90)->save($file->getRealPath());
+
+            // Apply additional optimization
+            $optimizerChain = OptimizerChainFactory::create();
+            $optimizerChain->optimize($file->getRealPath());
+
         } catch (\Exception $e) {
+            // Log error but don't break the upload process
             \Log::error('Failed to resize avatar: '.$e->getMessage());
         }
     }
