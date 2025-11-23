@@ -217,6 +217,11 @@ function navigateToMeetingLinks() {
     window.location.href = "/admin/meeting-links";
 }
 
+function navigateToChatbotHistory() {
+    closeGreetingModal();
+    window.location.href = "/admin/chatbot-history";
+}
+
 function navigateToUsers() {
     closeGreetingModal();
     window.location.href = "/admin/users";
@@ -257,6 +262,7 @@ window.navigateToProfile = navigateToProfile;
 window.navigateToSettings = navigateToSettings;
 window.navigateToActionBoard = navigateToActionBoard;
 window.navigateToMeetingLinks = navigateToMeetingLinks;
+window.navigateToChatbotHistory = navigateToChatbotHistory;
 window.navigateToUsers = navigateToUsers;
 window.navigateToTrelloBoards = navigateToTrelloBoards;
 window.navigateToClients = navigateToClients;
@@ -1187,6 +1193,7 @@ window.navigateToProfile = navigateToProfile;
 window.navigateToSettings = navigateToSettings;
 window.navigateToActionBoard = navigateToActionBoard;
 window.navigateToMeetingLinks = navigateToMeetingLinks;
+window.navigateToChatbotHistory = navigateToChatbotHistory;
 window.navigateToUsers = navigateToUsers;
 window.scrollToWeatherSection = scrollToWeatherSection;
 
@@ -1322,6 +1329,13 @@ function toggleUsersVideo() {
     );
 }
 
+function toggleChatbotHistoryVideo() {
+    toggleGenericVideo(
+        "chatbot-history-video",
+        'button:not([onclick="toggleChatbotHistoryVideo()"])'
+    );
+}
+
 // Generic video toggle function
 function toggleGenericVideo(videoId, otherActionsSelector) {
     const videoContainer = document.getElementById(videoId);
@@ -1365,6 +1379,10 @@ function toggleGenericVideo(videoId, otherActionsSelector) {
             } else if (videoId === "users-video") {
                 iconContainer = quickActionsContainer.querySelector(
                     'button[onclick*="toggleUsersVideo"] [x-data*="isVideoActive"]'
+                );
+            } else if (videoId === "chatbot-history-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleChatbotHistoryVideo"] [x-data*="isVideoActive"]'
                 );
             }
 
@@ -1429,6 +1447,10 @@ function toggleGenericVideo(videoId, otherActionsSelector) {
                 iconContainer = quickActionsContainer.querySelector(
                     'button[onclick*="toggleUsersVideo"] [x-data*="isVideoActive"]'
                 );
+            } else if (videoId === "chatbot-history-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleChatbotHistoryVideo"] [x-data*="isVideoActive"]'
+                );
             }
 
             if (iconContainer && iconContainer._x_dataStack) {
@@ -1465,6 +1487,7 @@ window.toggleProfileVideo = toggleProfileVideo;
 window.toggleSettingsVideo = toggleSettingsVideo;
 window.toggleActionBoardVideo = toggleActionBoardVideo;
 window.toggleMeetingLinksVideo = toggleMeetingLinksVideo;
+window.toggleChatbotHistoryVideo = toggleChatbotHistoryVideo;
 window.toggleUsersVideo = toggleUsersVideo;
 window.toggleVideoPlay = toggleVideoPlay;
 window.playVideoInFullscreen = playVideoInFullscreen;

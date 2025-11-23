@@ -24,6 +24,8 @@ return [
     'action-5-description' => 'Manage, organize, and invite attendees to your meeting links here',
     'action-6-title' => 'Users',
     'action-6-description' => 'View and manage colleagues\' system users here',
+    'action-7-title' => 'Chatbot History',
+    'action-7-description' => 'Manage your chatbot conversation backups and restore previous conversations',
 
     // Footer modal content
     'footer-text' => 'Syncing last updated data...',

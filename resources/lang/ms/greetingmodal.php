@@ -24,6 +24,8 @@ return [
     'action-5-description' => 'Urus, susun, dan undang peserta pautan mesyuarat anda di sini',
     'action-6-title' => 'Pengguna',
     'action-6-description' => 'Lihat dan urus pengguna sistem rakan kerja anda di sini',
+    'action-7-title' => 'Sejarah Chatbot',
+    'action-7-description' => 'Urus sandaran perbualan chatbot anda dan pulihkan perbualan sebelumnya',
 
     // Footer modal content
     'footer-text' => 'Menyegerakkan data terkini...',
