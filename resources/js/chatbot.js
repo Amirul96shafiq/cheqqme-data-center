@@ -8,6 +8,7 @@
     let conversationLoaded = false;
     let emojiPickerInitialized = false; // Flag to prevent multiple initializations
     let addingInitialMessages = false; // Flag to prevent duplicate initial messages
+    let animationInterval = null; // For chat icon animation
 
     // Get user-specific conversation ID from localStorage
     function getUserConversationKey() {
@@ -155,6 +156,9 @@
             closeIcon.style.display = "inline-flex";
             closeIcon.classList.remove("hidden");
 
+            // Stop animation when chat is open
+            stopChatIconAnimation();
+
             // Scroll to bottom after opening
             setTimeout(() => {
                 scrollToBottom();
@@ -170,6 +174,9 @@
             chatIcon.classList.remove("hidden");
             closeIcon.style.display = "none";
             closeIcon.classList.add("hidden");
+
+            // Start animation when chat is closed
+            startChatIconAnimation();
         }
 
         // Persist open state
@@ -1699,6 +1706,55 @@
             }
         });
     });
+
+    // Chat icon animation
+    function startChatIconAnimation() {
+        const closedImage = "/images/chat_closed.webp";
+        const openedImage = "/images/chat_opened.webp";
+        if (animationInterval) return; // Already animating
+
+        const chatIcon = document.getElementById("chat-icon");
+        if (!chatIcon) return;
+
+        let isClosedImage = true;
+
+        function animate() {
+            const newSrc = isClosedImage ? closedImage : openedImage;
+            chatIcon.src = newSrc;
+
+            if (isClosedImage) {
+                // Currently showing closed image, show opened image after 3 seconds
+                animationInterval = setTimeout(() => {
+                    isClosedImage = false;
+                    animate();
+                }, 4000);
+            } else {
+                // Currently showing opened image, show closed image after 1 second
+                animationInterval = setTimeout(() => {
+                    isClosedImage = true;
+                    animate();
+                }, 2000);
+            }
+        }
+
+        animate(); // Start the animation
+    }
+
+    function stopChatIconAnimation() {
+        if (animationInterval) {
+            clearTimeout(animationInterval);
+            animationInterval = null;
+        }
+
+        // Set to opened image when chat is open
+        const chatIcon = document.getElementById("chat-icon");
+        if (chatIcon) {
+            chatIcon.src = "/images/chat_opened.webp";
+        }
+    }
+
+    // Start animation on page load
+    startChatIconAnimation();
 
     // Export functions to the window object
     window.toggleChatbot = toggleChatbot;
