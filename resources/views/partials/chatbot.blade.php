@@ -23,7 +23,7 @@
     .fixed.bottom-4.right-4 {
         z-index: 10 !important;
         position: fixed !important;
-        bottom: 1rem !important;
+        bottom: 2rem !important;
         right: 1rem !important;
     }
     
@@ -416,33 +416,34 @@
         <x-tooltip position="left" text="{{ __('chatbot.action.open_chat') }}">
             <img
                 id="chat-icon"
-                src="{{ asset('images/chat.png') }}"
+                src="{{ asset('images/chat_closed.webp') }}"
                 alt="Chat with Arem"
                 onclick="toggleChatbot()"
                 loading="lazy"
                 fetchpriority="low"
-                class="w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg opacity-80 hover:opacity-100 bounce-bounce"
+                class="w-auto h-20 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer bounce-bounce"
                 draggable="false"
             >
         </x-tooltip>
 
         <!-- Close Icon (shown when chat is open) -->
         <x-tooltip position="left" text="{{ __('chatbot.action.close_chat') }}">
-            <div
+            <img
                 id="close-icon"
+                src="{{ asset('images/chat_opened.webp') }}"
+                alt="Close Chat"
                 onclick="toggleChatbot()"
-                class="w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg bg-primary-600 hover:bg-primary-500 text-primary-900 hidden"
+                loading="lazy"
+                fetchpriority="low"
+                class="w-auto h-20 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hidden"
+                draggable="false"
             >
-                <div class="flex items-center justify-center w-full h-full">
-                    @svg('heroicon-o-x-mark', 'w-8 h-8')
-                </div>
-            </div>
         </x-tooltip>
 
     </div>
 
     <!-- Chat Interface -->
-    <div id="chatbot-interface" class="absolute bottom-16 right-0 w-[380px] h-[680px] bg-white/65 dark:bg-gray-800/65 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden backdrop-blur-sm">
+    <div id="chatbot-interface" class="absolute bottom-16 right-3 w-[380px] h-[680px] bg-white/65 dark:bg-gray-800/65 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden backdrop-blur-sm">
         <div class="flex flex-col h-full w-full">
 
         <!-- Header -->
