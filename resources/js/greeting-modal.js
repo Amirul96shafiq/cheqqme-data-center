@@ -361,6 +361,14 @@ function toggleDataManagementVideo() {
                 action.style.display = "none";
             });
 
+            // Hide navigation buttons
+            const navButtons = document.getElementById(
+                "navigation-buttons-container"
+            );
+            if (navButtons) {
+                navButtons.style.display = "none";
+            }
+
             // Reset video to beginning when showing
             setTimeout(() => {
                 const video = videoContainer.querySelector("video");
@@ -411,6 +419,14 @@ function toggleDataManagementVideo() {
                     otherActions.forEach((action) => {
                         action.style.display = "flex";
                     });
+
+                    // Show navigation buttons
+                    const navButtons = document.getElementById(
+                        "navigation-buttons-container"
+                    );
+                    if (navButtons) {
+                        navButtons.style.display = "flex";
+                    }
                 }, 100); // Additional delay after video container is hidden
             }, 300);
         }
@@ -1277,6 +1293,8 @@ function updateNavigationButtons() {
 // Initialize navigation button states when modal opens
 function initializeNavigationButtons() {
     const container = document.getElementById("quick-actions-container");
+    const navButtons = document.getElementById("navigation-buttons-container");
+
     if (container) {
         // Initial check
         updateNavigationButtons();
@@ -1345,7 +1363,25 @@ function toggleGenericVideo(videoId, otherActionsSelector) {
     if (videoContainer && quickActionsContainer) {
         const isHidden = videoContainer.classList.contains("hidden");
 
+        // Prevent rapid successive calls with debouncing
+        if (videoContainer._videoToggleTimeout) {
+            return;
+        }
+
+        // Set a timeout to prevent calls for the next 350ms (longer than animation)
+        videoContainer._videoToggleTimeout = setTimeout(() => {
+            videoContainer._videoToggleTimeout = null;
+        }, 350);
+
         if (isHidden) {
+            // Hide navigation buttons immediately when opening video
+            const navButtons = document.getElementById(
+                "navigation-buttons-container"
+            );
+            if (navButtons) {
+                navButtons.style.display = "none";
+            }
+
             // Show video container with animation
             videoContainer.classList.remove("hidden");
             // Force reflow to ensure the element is visible before animation
@@ -1421,6 +1457,16 @@ function toggleGenericVideo(videoId, otherActionsSelector) {
             videoContainer.classList.remove("opacity-100", "scale-100");
             videoContainer.classList.add("opacity-0", "scale-95");
 
+            // Show navigation buttons when video is fully closed
+            setTimeout(() => {
+                const navButtons = document.getElementById(
+                    "navigation-buttons-container"
+                );
+                if (navButtons) {
+                    navButtons.style.display = "flex";
+                }
+            }, 300); // Match the animation duration
+
             // Update Alpine.js state for icon rotation - find the specific action button
             let iconContainer = null;
             if (videoId === "profile-video") {
@@ -1466,6 +1512,12 @@ function toggleGenericVideo(videoId, otherActionsSelector) {
             // Hide element after animation completes
             setTimeout(() => {
                 videoContainer.classList.add("hidden");
+
+                // Clear the toggle timeout to allow future calls
+                if (videoContainer._videoToggleTimeout) {
+                    clearTimeout(videoContainer._videoToggleTimeout);
+                    videoContainer._videoToggleTimeout = null;
+                }
 
                 // Show other quick actions after video container is completely hidden
                 setTimeout(() => {

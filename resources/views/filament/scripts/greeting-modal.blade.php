@@ -282,7 +282,7 @@
                     </div>
 
                     <!-- Navigation Buttons -->
-                    <div class="flex justify-between items-center mb-3">
+                    <div id="navigation-buttons-container" class="flex justify-between items-center mb-3">
                         <div class="flex items-center space-x-3">
                             <button
                                 onclick="scrollToTopOfQuickActions()"
