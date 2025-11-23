@@ -185,6 +185,7 @@ class DocumentResource extends Resource
                                 'application/pdf',
                                 'image/jpeg',
                                 'image/png',
+                                'image/webp',
                                 'application/msword', // doc
                                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
                                 'application/vnd.ms-excel', // xls
@@ -195,7 +196,16 @@ class DocumentResource extends Resource
                                 'video/mp4', // mp4
                             ])
                             ->maxFiles(20480) // 20MB
-                            ->nullable(),
+                            ->nullable()
+                            ->afterStateUpdated(function ($state) {
+                                if (! $state instanceof TemporaryUploadedFile) {
+                                    return;
+                                }
+
+                                // Convert image files to WebP format for better compression
+                                $conversionService = new \App\Services\ImageConversionService;
+                                $conversionService->convertTemporaryFile($state, 85);
+                            }),
 
                     ]),
 

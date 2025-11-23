@@ -68,10 +68,12 @@ class TemporaryFileService
 
     /**
      * Move temporary files to permanent storage and return their paths.
+     * Automatically converts image files to WebP format for better compression.
      */
     public function moveToPermanent(array $tempIds): array
     {
         $permanentPaths = [];
+        $conversionService = new \App\Services\ImageConversionService;
 
         foreach ($tempIds as $tempId) {
             $tempDir = 'temp-uploads/'.session()->getId().'/'.$tempId;
@@ -83,8 +85,20 @@ class TemporaryFileService
             $files = Storage::disk('public')->files($tempDir);
 
             foreach ($files as $file) {
-                // Move to permanent tasks directory
                 $fileName = basename($file);
+
+                // Convert images to WebP format for better compression
+                if ($conversionService->isImageFile($file)) {
+                    // Convert to WebP in temporary location first
+                    $convertedPath = $conversionService->convertToWebp($file, 85);
+                    if ($convertedPath) {
+                        // Use the converted file
+                        $file = $convertedPath;
+                        $fileName = basename($convertedPath);
+                    }
+                }
+
+                // Move to permanent tasks directory
                 $permanentPath = 'tasks/'.$fileName;
 
                 // If file already exists, add timestamp to avoid conflicts

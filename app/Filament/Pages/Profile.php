@@ -1359,8 +1359,8 @@ class Profile extends EditProfile
             // Resize image to 1600px width with auto height
             $image->resize($newWidth, $newHeight);
 
-            // Save the resized image back to the temporary file
-            $image->save($file->getRealPath(), 90); // 90% quality
+            // Save the resized image as WebP back to the temporary file
+            $image->toWebp(90)->save($file->getRealPath()); // 90% quality WebP
 
         } catch (\Exception $e) {
             // Log error but don't break the upload process
@@ -1392,8 +1392,8 @@ class Profile extends EditProfile
             // Resize to 128x128
             $image->resize(128, 128);
 
-            // Save optimized avatar (90% quality)
-            $image->save($file->getRealPath(), 90);
+            // Save optimized avatar as WebP (90% quality)
+            $image->toWebp(90)->save($file->getRealPath());
         } catch (\Exception $e) {
             \Log::error('Failed to resize avatar: '.$e->getMessage());
         }

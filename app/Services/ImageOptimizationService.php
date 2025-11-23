@@ -20,7 +20,7 @@ class ImageOptimizationService
 
             $fullPath = Storage::disk('public')->path($imagePath);
             $pathInfo = pathinfo($imagePath);
-            $thumbnailPath = $pathInfo['dirname'].'/thumbnails/'.$pathInfo['filename'].'_kanban.'.$pathInfo['extension'];
+            $thumbnailPath = $pathInfo['dirname'].'/thumbnails/'.$pathInfo['filename'].'_kanban.webp';
 
             // Create thumbnails directory if it doesn't exist
             $thumbnailDir = Storage::disk('public')->path(dirname($thumbnailPath));
@@ -39,7 +39,7 @@ class ImageOptimizationService
                 $image = $image->scaleDown($width, $height); // Scale to fit both dimensions
             }
 
-            $image = $image->toJpeg(95); // Higher quality for better clarity
+            $image = $image->toWebp(95); // Higher quality WebP for better clarity
 
             Storage::disk('public')->put($thumbnailPath, $image);
 
@@ -63,7 +63,7 @@ class ImageOptimizationService
 
             $fullPath = Storage::disk('public')->path($imagePath);
             $pathInfo = pathinfo($imagePath);
-            $mediumPath = $pathInfo['dirname'].'/medium/'.$pathInfo['filename'].'_medium.'.$pathInfo['extension'];
+            $mediumPath = $pathInfo['dirname'].'/medium/'.$pathInfo['filename'].'_medium.webp';
 
             // Create medium directory if it doesn't exist
             $mediumDir = Storage::disk('public')->path(dirname($mediumPath));
@@ -75,7 +75,7 @@ class ImageOptimizationService
             $manager = new ImageManager(new Driver);
             $image = $manager->read($fullPath)
                 ->scaleDown($width, $height)
-                ->toJpeg(90); // Higher quality for medium images
+                ->toWebp(90); // Higher quality WebP for medium images
 
             Storage::disk('public')->put($mediumPath, $image);
 
@@ -102,13 +102,13 @@ class ImageOptimizationService
 
         switch ($size) {
             case 'kanban':
-                $thumbnailPath = $pathInfo['dirname'].'/thumbnails/'.$pathInfo['filename'].'_kanban.'.$pathInfo['extension'];
+                $thumbnailPath = $pathInfo['dirname'].'/thumbnails/'.$pathInfo['filename'].'_kanban.webp';
                 if (! Storage::disk('public')->exists($thumbnailPath)) {
                     $thumbnailPath = $this->generateKanbanThumbnail($imagePath);
                 }
                 break;
             case 'medium':
-                $thumbnailPath = $pathInfo['dirname'].'/medium/'.$pathInfo['filename'].'_medium.'.$pathInfo['extension'];
+                $thumbnailPath = $pathInfo['dirname'].'/medium/'.$pathInfo['filename'].'_medium.webp';
                 if (! Storage::disk('public')->exists($thumbnailPath)) {
                     $thumbnailPath = $this->generateMediumImage($imagePath);
                 }
@@ -147,32 +147,41 @@ class ImageOptimizationService
 
     /**
      * Get cached URL for public images (in public/images/ directory)
-     * Automatically adds version parameter based on file modification time for cache invalidation
+     * Automatically serves WebP versions when available and adds version parameter for cache invalidation
      *
      * @param  string  $imagePath  Path relative to public directory (e.g., 'images/bg-light.png')
+     * @param  bool  $convertIfMissing  Whether to convert to WebP if WebP version doesn't exist
      * @return string URL with version parameter
      */
-    public static function getCachedPublicImageUrl(string $imagePath): string
+    public static function getCachedPublicImageUrl(string $imagePath, bool $convertIfMissing = false): string
     {
-        $url = asset($imagePath);
+        $conversionService = new \App\Services\ImageConversionService;
+        $optimizedUrl = $conversionService->getOptimizedPublicImageUrl($imagePath, $convertIfMissing);
 
-        // Get file path relative to public directory
+        // Get the actual file path for version parameter
         $publicPath = public_path($imagePath);
+
+        // Check if WebP version exists, use that for versioning instead
+        $webpPath = $conversionService->getWebpPath($imagePath);
+        $webpFullPath = public_path($webpPath);
+        if (file_exists($webpFullPath)) {
+            $publicPath = $webpFullPath;
+        }
 
         // Add version parameter based on file modification time for cache invalidation
         if (file_exists($publicPath)) {
             try {
                 $lastModified = filemtime($publicPath);
                 if ($lastModified) {
-                    $url .= '?v='.$lastModified;
+                    $optimizedUrl .= '?v='.$lastModified;
                 }
             } catch (\Exception $e) {
                 // If we can't get modification time, use current timestamp as fallback
-                $url .= '?v='.time();
+                $optimizedUrl .= '?v='.time();
             }
         }
 
-        return $url;
+        return $optimizedUrl;
     }
 
     /**
@@ -186,8 +195,8 @@ class ImageOptimizationService
 
         $pathInfo = pathinfo($imagePath);
         $thumbnailPaths = [
-            $pathInfo['dirname'].'/thumbnails/'.$pathInfo['filename'].'_kanban.'.$pathInfo['extension'],
-            $pathInfo['dirname'].'/medium/'.$pathInfo['filename'].'_medium.'.$pathInfo['extension'],
+            $pathInfo['dirname'].'/thumbnails/'.$pathInfo['filename'].'_kanban.webp',
+            $pathInfo['dirname'].'/medium/'.$pathInfo['filename'].'_medium.webp',
         ];
 
         foreach ($thumbnailPaths as $thumbnailPath) {

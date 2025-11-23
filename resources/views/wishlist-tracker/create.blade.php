@@ -9,7 +9,7 @@
 
   {{-- Favicon --}}
   <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-  <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+  <link rel="icon" type="image/png" href="{{ optimized_asset('images/favicon.png') }}">
 
   @vite(['resources/css/app.css'])
 
@@ -17,7 +17,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="antialiased font-sans bg-auto bg-no-repeat m-0 p-0"
-      style="height: 100vh; margin: 0; padding: 0; background-image: url('{{ asset('images/issue-tracker-bg.png') }}'); background-position: top center; display: flex; flex-direction: column;"
+      style="height: 100vh; margin: 0; padding: 0; background-image: url('{{ optimized_asset('images/issue-tracker-bg.png') }}'); background-position: top center; display: flex; flex-direction: column;"
       x-data="{
         showTrackingTokensModal: false,
         loadingTokens: false,
@@ -70,7 +70,7 @@
 
         {{-- Header --}}
         <div class="text-center">
-          <img src="{{ asset('logos/logo-light.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-32 w-auto mb-8">
+          <img src="{{ optimized_asset('logos/logo-light.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-32 w-auto mb-8">
           <h1 class="text-3xl font-bold text-gray-900">
             Wishlist Submission
           </h1>
@@ -276,12 +276,12 @@
                     <div class="flex gap-2 text-sm text-gray-600">
                       <label for="attachments" class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
                         <span>Upload files</span>
-                        <input id="attachments" name="attachments[]" type="file" multiple accept=".jpg,.jpeg,.png,.pdf,.mp4" class="sr-only" required>
+                        <input id="attachments" name="attachments[]" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.pdf,.mp4" class="sr-only" required>
                       </label>
                       <p>or drag and drop</p>
                     </div>
                     <p class="text-xs text-gray-500">
-                      JPG, JPEG, PNG, PDF, MP4 (max 8MB each)
+                      JPG, JPEG, PNG, WebP, PDF, MP4 (max 8MB each)
                     </p>
                   </div>
                 </div>
@@ -319,7 +319,7 @@
             {{-- Footer --}}
             <div class="text-center">
               <span class="block mb-4 text-xs text-gray-500">Powered by:</span>
-              <img src="{{ asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto">
+              <img src="{{ optimized_asset('logos/logo-dark-vertical.png') }}" alt="{{ config('app.name') }}" class="mx-auto h-16 w-auto">
             </div>
 
       </div>
@@ -499,7 +499,7 @@
         const fileList = document.getElementById('file-list');
         const maxFiles = 5;
         const maxSize = 8 * 1024 * 1024; // 8MB in bytes
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf', 'video/mp4'];
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf', 'video/mp4'];
         let uploadedTempFiles = [];
 
         // Check for existing temp files from previous failed submission
@@ -650,7 +650,7 @@
 
             // Check file type
             if (!allowedTypes.includes(file.type)) {
-              alert(`File "${file.name}" is not an allowed type. Only JPG, JPEG, PNG, PDF, and MP4 files are allowed.`);
+              alert(`File "${file.name}" is not an allowed type. Only JPG, JPEG, PNG, WebP, PDF, and MP4 files are allowed.`);
               continue;
             }
 
@@ -700,7 +700,7 @@
 
             // Check file type
             if (!allowedTypes.includes(file.type)) {
-              alert(`File "${file.name}" is not an allowed type. Only JPG, JPEG, PNG, PDF, and MP4 files are allowed.`);
+              alert(`File "${file.name}" is not an allowed type. Only JPG, JPEG, PNG, WebP, PDF, and MP4 files are allowed.`);
               continue;
             }
 
@@ -757,7 +757,7 @@
 
               // Check file type
               if (!allowedTypes.includes(file.type)) {
-                alert(`File "${file.name}" is not an allowed type. Only JPG, JPEG, PNG, PDF, and MP4 files are allowed.`);
+                alert(`File "${file.name}" is not an allowed type. Only JPG, JPEG, PNG, WebP, PDF, and MP4 files are allowed.`);
                 continue;
               }
 

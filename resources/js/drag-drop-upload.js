@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "application/pdf",
             "image/jpeg",
             "image/png",
+            "image/webp",
             "application/msword", // doc
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // docx
             "application/vnd.ms-excel", // xls

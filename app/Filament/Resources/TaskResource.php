@@ -562,6 +562,17 @@ return false;
                                                         $set('enable_attachments', false);
                                                     }
                                                 })
+                                                ->afterStateUpdated(function ($state) {
+                                                    // Convert image files to WebP format for better compression
+                                                    if (! empty($state) && is_array($state)) {
+                                                        $conversionService = new \App\Services\ImageConversionService;
+                                                        foreach ($state as $file) {
+                                                            if ($file instanceof TemporaryUploadedFile) {
+                                                                $conversionService->convertTemporaryFile($file, 85);
+                                                            }
+                                                        }
+                                                    }
+                                                })
                                                 ->afterStateHydrated(function (Forms\Set $set, $state, ?Task $record) {
                                                     // Enable toggle when form loads with existing attachments
                                                     if (! empty($state) && is_array($state)) {

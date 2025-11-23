@@ -34,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Optimized image URL helper is now loaded globally via composer autoload
+
         // Register Microsoft socialite provider
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('microsoft', \SocialiteProviders\Microsoft\Provider::class);

@@ -165,10 +165,10 @@ class AdminPanelProvider extends PanelProvider
         $isLoginPage = $this->isLoginPage();
 
         // Logo configurations
-        $loginLogo = asset('logos/logo-light.png');
-        $loginDarkLogo = asset('logos/logo-dark.png');
-        $headerLogo = asset('logos/logo-light-vertical.png');
-        $headerDarkLogo = asset('logos/logo-dark-vertical.png');
+        $loginLogo = optimized_asset('logos/logo-light.png');
+        $loginDarkLogo = optimized_asset('logos/logo-dark.png');
+        $headerLogo = optimized_asset('logos/logo-light-vertical.png');
+        $headerDarkLogo = optimized_asset('logos/logo-dark-vertical.png');
 
         // Determine which logo to use based on current page
         $currentLogo = $isLoginPage ? $loginLogo : $headerLogo;
@@ -430,7 +430,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentApexChartsPlugin::make(),
 
                 StickyTableHeaderPlugin::make(),
-                
+
             ]);
     }
 }

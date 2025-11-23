@@ -50,6 +50,9 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         },
+        "files": [
+            "app/Helpers/image_helpers.php"
+        ],
         "exclude-from-classmap": [
             "vendor/google/apiclient-services/src/**",
             "vendor/google/apiclient/tests/**",
