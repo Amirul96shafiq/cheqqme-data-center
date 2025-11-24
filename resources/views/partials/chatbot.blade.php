@@ -421,7 +421,7 @@
                 onclick="toggleChatbot()"
                 loading="lazy"
                 fetchpriority="low"
-                class="w-auto h-20 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer bounce-bounce"
+                class="w-auto h-20 cursor-pointer bounce-bounce"
                 draggable="false"
             >
         </x-tooltip>
@@ -435,7 +435,7 @@
                 onclick="toggleChatbot()"
                 loading="lazy"
                 fetchpriority="low"
-                class="w-auto h-20 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hidden"
+                class="w-auto h-20 cursor-pointer hidden"
                 draggable="false"
             >
         </x-tooltip>
@@ -443,7 +443,7 @@
     </div>
 
     <!-- Chat Interface -->
-    <div id="chatbot-interface" class="absolute bottom-16 right-3 w-[380px] h-[680px] bg-white/65 dark:bg-gray-800/65 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden backdrop-blur-sm">
+    <div id="chatbot-interface" class="absolute bottom-14 right-3 w-[380px] h-[680px] bg-white/65 dark:bg-gray-800/65 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 hidden backdrop-blur-sm">
         <div class="flex flex-col h-full w-full">
 
         <!-- Header -->
