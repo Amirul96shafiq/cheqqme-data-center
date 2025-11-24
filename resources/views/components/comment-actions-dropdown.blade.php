@@ -11,13 +11,13 @@
 <x-filament::dropdown
     placement="bottom-end"
     width="!max-w-[10rem]"
-    :attributes="new \Illuminate\View\ComponentAttributeBag(['style' => 'z-index: 9995;'])"
+    :attributes="new \Illuminate\View\ComponentAttributeBag(['style' => 'z-index: 10;'])"
     x-on:close-dropdown="$el.querySelector('button[data-dropdown-trigger]')?.click()"
 >
     <x-slot name="trigger">
-        <button 
-            type="button" 
-            class="fi-dropdown-trigger flex cursor-pointer p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200"
+        <button
+            type="button"
+            class="fi-dropdown-trigger flex cursor-pointer p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/40 transition-all duration-200 z-0"
             title="{{ __('comments.buttons.more_actions') }}"
             data-dropdown-trigger="{{ $commentId }}"
         >

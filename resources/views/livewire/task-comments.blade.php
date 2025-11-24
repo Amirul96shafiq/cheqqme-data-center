@@ -200,7 +200,7 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 transform translate-y-0"
                  x-transition:leave-end="opacity-0 transform translate-y-2"
-                 class="sticky top-0 z-20 bg-white dark:bg-gray-900 pb-2 border-b border-gray-200 dark:border-gray-700 mb-4">
+                 class="sticky top-0 z-1 bg-white dark:bg-gray-900 pb-2 border-b border-gray-200 dark:border-gray-700 mb-4">
                 <button x-on:click="exitFocusMode()" 
                         type="button" 
                         class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40">
@@ -609,10 +609,10 @@
             <!-- Show more comments button -->
             @if($this->totalComments > $visibleCount)
                 @php $remaining = $this->totalComments - $visibleCount; @endphp
-                <div class="mt-2 relative z-10" x-show="!isFocusMode">
+                <div class="mt-2 relative z-1" x-show="!isFocusMode">
                     <button @click="showMoreComments()" 
                             type="button" 
-                            class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40 relative z-10"
+                            class="w-full text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500/40 relative z-1"
                             :disabled="isLoadingMore">
                         <span x-show="!isLoadingMore">
                             {{ __('comments.list.show_more', ['count' => ($remaining < 5 ? $remaining : 5)]) }}
