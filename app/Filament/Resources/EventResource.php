@@ -764,19 +764,35 @@ class EventResource extends Resource
                     ]),
 
                 // Event Resources Section (matches fourth section in form)
-                Infolists\Components\Section::make(__('event.form.event_resources'))
+                Infolists\Components\Section::make()
+                    ->heading(function ($record) {
+                        // Count the number of resources selected
+                        $project = $record->project_ids ?? [];
+                        $document = $record->document_ids ?? [];
+                        $importantUrl = $record->important_url_ids ?? [];
+
+                        // Ensure arrays are countable (handle corrupted data)
+                        $projectCount = is_array($project) ? count($project) : 0;
+                        $documentCount = is_array($document) ? count($document) : 0;
+                        $importantUrlCount = is_array($importantUrl) ? count($importantUrl) : 0;
+
+                        $count = $projectCount + $documentCount + $importantUrlCount;
+
+                        $title = __('event.form.event_resources');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
+                    })
                     ->collapsible()
                     ->collapsed()
                     ->schema([
                         Infolists\Components\TextEntry::make('project_ids')
                             ->label('Project(s)')
-                            ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return __('No projects selected');
-                                }
+                            ->formatStateUsing(function ($state, $record) {
+                                // Get the value directly from the record to ensure casting is applied
+                                $projectIds = $record->project_ids;
 
-                                $projectIds = is_array($state) ? $state : json_decode($state, true);
-                                if (! is_array($projectIds)) {
+                                if (empty($projectIds) || ! is_array($projectIds)) {
                                     return __('No projects selected');
                                 }
 
@@ -789,13 +805,11 @@ class EventResource extends Resource
 
                         Infolists\Components\TextEntry::make('document_ids')
                             ->label('Document(s)')
-                            ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return __('No documents selected');
-                                }
+                            ->formatStateUsing(function ($state, $record) {
+                                // Get the value directly from the record to ensure casting is applied
+                                $documentIds = $record->document_ids;
 
-                                $documentIds = is_array($state) ? $state : json_decode($state, true);
-                                if (! is_array($documentIds)) {
+                                if (empty($documentIds) || ! is_array($documentIds)) {
                                     return __('No documents selected');
                                 }
 
@@ -808,13 +822,11 @@ class EventResource extends Resource
 
                         Infolists\Components\TextEntry::make('important_url_ids')
                             ->label('Important URL(s)')
-                            ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return __('No important URLs selected');
-                                }
+                            ->formatStateUsing(function ($state, $record) {
+                                // Get the value directly from the record to ensure casting is applied
+                                $urlIds = $record->important_url_ids;
 
-                                $urlIds = is_array($state) ? $state : json_decode($state, true);
-                                if (! is_array($urlIds)) {
+                                if (empty($urlIds) || ! is_array($urlIds)) {
                                     return __('No important URLs selected');
                                 }
 
