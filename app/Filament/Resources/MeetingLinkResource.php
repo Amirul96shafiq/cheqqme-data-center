@@ -1076,7 +1076,8 @@ class MeetingLinkResource extends Resource
                     ->visible(fn ($record) => ! empty($record->meeting_url)),
 
                 Tables\Actions\ViewAction::make()
-                    ->label(__('meetinglink.actions.view')),
+                    ->label(__('meetinglink.actions.view'))
+                    ->slideOver(),
 
                 Tables\Actions\EditAction::make()
                     ->label(__('meetinglink.actions.edit'))
@@ -1174,27 +1175,27 @@ class MeetingLinkResource extends Resource
     {
         return $infolist
             ->schema([
-                Infolists\Components\Section::make(__('meetinglink.infolist.meeting_details'))
+                // Meeting Information Section (matches first section in form)
+                Infolists\Components\Section::make(__('meetinglink.form.meeting_settings'))
                     ->schema([
-                        Infolists\Components\Grid::make(2)
+                        Infolists\Components\TextEntry::make('title')
+                            ->label(__('meetinglink.form.title'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\Grid::make(3)
                             ->schema([
-                                Infolists\Components\TextEntry::make('title')
-                                    ->label(__('meetinglink.infolist.meeting_title')),
                                 Infolists\Components\TextEntry::make('meeting_platform')
-                                    ->label(__('meetinglink.infolist.platform'))
+                                    ->label(__('meetinglink.form.meeting_platform'))
                                     ->badge()
                                     ->color(fn (string $state): string => match ($state) {
                                         'Google Meet', 'Zoom Meeting', 'Teams Meeting' => 'primary',
                                         default => 'gray',
                                     }),
-                            ]),
-                        Infolists\Components\Grid::make(2)
-                            ->schema([
                                 Infolists\Components\TextEntry::make('meeting_start_time')
-                                    ->label(__('meetinglink.infolist.start_time'))
+                                    ->label(__('meetinglink.form.meeting_start_time'))
                                     ->dateTime('j/n/y - h:i A'),
                                 Infolists\Components\TextEntry::make('meeting_duration')
-                                    ->label(__('meetinglink.infolist.duration'))
+                                    ->label(__('meetinglink.form.meeting_duration'))
                                     ->formatStateUsing(fn (int $state): string => match ($state) {
                                         30 => __('meetinglink.duration.30_minutes'),
                                         60 => __('meetinglink.duration.1_hour'),
@@ -1203,14 +1204,166 @@ class MeetingLinkResource extends Resource
                                         default => $state.' minutes'
                                     }),
                             ]),
+
+                        Infolists\Components\TextEntry::make('user_ids')
+                            ->label(__('meetinglink.form.users'))
+                            ->formatStateUsing(function ($state) {
+                                if (empty($state)) {
+                                    return __('No invited users');
+                                }
+
+                                $userIds = is_array($state) ? $state : json_decode($state, true);
+                                if (! is_array($userIds)) {
+                                    return __('No invited users');
+                                }
+
+                                $users = \App\Models\User::whereIn('id', $userIds)->pluck('name')->toArray();
+
+                                return implode(', ', $users);
+                            })
+                            ->columnSpanFull()
+                            ->placeholder(__('No invited users')),
+
                         Infolists\Components\TextEntry::make('meeting_url')
-                            ->label(__('meetinglink.infolist.meeting_url'))
+                            ->label(__('meetinglink.form.meeting_url'))
                             ->copyable()
                             ->url(fn ($record) => $record->meeting_url)
                             ->openUrlInNewTab()
-                            ->placeholder(__('meetinglink.infolist.no_meeting_url')),
+                            ->placeholder(__('meetinglink.infolist.no_meeting_url'))
+                            ->columnSpanFull(),
                     ]),
 
+                // Meeting Information Section (matches second section in form)
+                Infolists\Components\Section::make(__('meetinglink.form.meeting_information'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('meeting_id')
+                            ->label(__('meetinglink.form.meeting_id'))
+                            ->placeholder(__('meetinglink.form.meeting_id_placeholder'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\TextEntry::make('meeting_passcode')
+                            ->label(__('meetinglink.form.meeting_passcode'))
+                            ->placeholder(__('meetinglink.form.meeting_passcode_placeholder'))
+                            ->visible(fn ($record) => $record->meeting_platform === 'Zoom Meeting')
+                            ->columnSpanFull(),
+                    ])
+                    ->visible(fn ($record) => in_array($record->meeting_platform, ['Google Meet', 'Zoom Meeting'])),
+
+                // Meeting Resources Section (matches third section in form)
+                Infolists\Components\Section::make(__('meetinglink.form.meeting_resources'))
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Infolists\Components\TextEntry::make('client_ids')
+                            ->label('Client(s)')
+                            ->formatStateUsing(function ($state) {
+                                if (empty($state)) {
+                                    return __('No clients selected');
+                                }
+
+                                $clientIds = is_array($state) ? $state : json_decode($state, true);
+                                if (! is_array($clientIds)) {
+                                    return __('No clients selected');
+                                }
+
+                                $clients = \App\Models\Client::withTrashed()->whereIn('id', $clientIds)->pluck('pic_name')->toArray();
+
+                                return implode(', ', $clients);
+                            })
+                            ->columnSpanFull()
+                            ->placeholder(__('No clients selected')),
+
+                        Infolists\Components\TextEntry::make('project_ids')
+                            ->label('Project(s)')
+                            ->formatStateUsing(function ($state) {
+                                if (empty($state)) {
+                                    return __('No projects selected');
+                                }
+
+                                $projectIds = is_array($state) ? $state : json_decode($state, true);
+                                if (! is_array($projectIds)) {
+                                    return __('No projects selected');
+                                }
+
+                                $projects = \App\Models\Project::withTrashed()->whereIn('id', $projectIds)->pluck('title')->toArray();
+
+                                return implode(', ', $projects);
+                            })
+                            ->columnSpanFull()
+                            ->placeholder(__('No projects selected')),
+
+                        Infolists\Components\TextEntry::make('document_ids')
+                            ->label('Document(s)')
+                            ->formatStateUsing(function ($state) {
+                                if (empty($state)) {
+                                    return __('No documents selected');
+                                }
+
+                                $documentIds = is_array($state) ? $state : json_decode($state, true);
+                                if (! is_array($documentIds)) {
+                                    return __('No documents selected');
+                                }
+
+                                $documents = \App\Models\Document::withTrashed()->whereIn('id', $documentIds)->pluck('title')->toArray();
+
+                                return implode(', ', $documents);
+                            })
+                            ->columnSpanFull()
+                            ->placeholder(__('No documents selected')),
+
+                        Infolists\Components\TextEntry::make('important_url_ids')
+                            ->label('Important URL(s)')
+                            ->formatStateUsing(function ($state) {
+                                if (empty($state)) {
+                                    return __('No important URLs selected');
+                                }
+
+                                $urlIds = is_array($state) ? $state : json_decode($state, true);
+                                if (! is_array($urlIds)) {
+                                    return __('No important URLs selected');
+                                }
+
+                                $urls = \App\Models\ImportantUrl::withTrashed()->whereIn('id', $urlIds)->pluck('title')->toArray();
+
+                                return implode(', ', $urls);
+                            })
+                            ->columnSpanFull()
+                            ->placeholder(__('No important URLs selected')),
+                    ]),
+
+                // Additional Information Section (matches fourth section in form)
+                Infolists\Components\Section::make(__('meetinglink.form.additional_information'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('notes')
+                            ->label(__('meetinglink.form.description'))
+                            ->markdown()
+                            ->placeholder(__('No notes'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\RepeatableEntry::make('extra_information')
+                            ->label(__('meetinglink.form.extra_information'))
+                            ->schema([
+                                Infolists\Components\TextEntry::make('title')
+                                    ->label(__('meetinglink.form.extra_info_title')),
+                                Infolists\Components\TextEntry::make('value')
+                                    ->label(__('meetinglink.form.extra_info_value'))
+                                    ->markdown(),
+                            ])
+                            ->columns(1)
+                            ->columnSpanFull(),
+                    ])
+                    ->heading(function ($record) {
+                        $count = count($record->extra_information ?? []);
+
+                        $title = __('meetinglink.form.additional_information');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
+                    })
+                    ->collapsible()
+                    ->collapsed(),
+
+                // Metadata Information Section (always visible)
                 Infolists\Components\Section::make(__('meetinglink.infolist.additional_information'))
                     ->schema([
                         Infolists\Components\Grid::make(2)
