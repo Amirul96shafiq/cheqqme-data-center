@@ -75,6 +75,7 @@ return [
         'upcoming' => 'Upcoming',
         'today' => 'Today',
         'this_week' => 'This Week',
+        'this_month' => 'This Month',
         'past' => 'Past',
     ],
 

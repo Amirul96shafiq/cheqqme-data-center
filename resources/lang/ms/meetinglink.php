@@ -86,10 +86,11 @@ return [
 
     'tabs' => [
         'all' => 'Semua',
+        'upcoming' => 'Akan Datang',
         'today' => 'Hari Ini',
-        'tomorrow' => 'Esok',
         'this_week' => 'Minggu Ini',
         'this_month' => 'Bulan Ini',
+        'past' => 'Lampau',
     ],
 
     'actions' => [

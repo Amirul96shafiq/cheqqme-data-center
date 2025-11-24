@@ -31,6 +31,15 @@ class ListEvents extends ListRecords
                     now()->startOfWeek(),
                     now()->endOfWeek(),
                 ])->count()),
+            'this_month' => Tab::make(__('event.tabs.this_month'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereBetween('start_datetime', [
+                    now()->startOfMonth(),
+                    now()->endOfMonth(),
+                ]))
+                ->badge(fn () => \App\Models\Event::whereBetween('start_datetime', [
+                    now()->startOfMonth(),
+                    now()->endOfMonth(),
+                ])->count()),
             'past' => Tab::make(__('event.tabs.past'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('end_datetime', '<', now()))
                 ->badge(fn () => \App\Models\Event::where('end_datetime', '<', now())->count()),

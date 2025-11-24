@@ -32,12 +32,12 @@ class ListMeetingLinks extends ListRecords
     {
         return [
             'all' => Tab::make(__('meetinglink.tabs.all')),
+            'upcoming' => Tab::make(__('meetinglink.tabs.upcoming'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('meeting_start_time', '>', now()))
+                ->badge(fn () => \App\Models\MeetingLink::where('meeting_start_time', '>', now())->count()),
             'today' => Tab::make(__('meetinglink.tabs.today'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereDate('meeting_start_time', now()->toDateString()))
                 ->badge(fn () => \App\Models\MeetingLink::whereDate('meeting_start_time', now()->toDateString())->count()),
-            'tomorrow' => Tab::make(__('meetinglink.tabs.tomorrow'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->whereDate('meeting_start_time', now()->addDay()->toDateString()))
-                ->badge(fn () => \App\Models\MeetingLink::whereDate('meeting_start_time', now()->addDay()->toDateString())->count()),
             'this_week' => Tab::make(__('meetinglink.tabs.this_week'))
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereBetween('meeting_start_time', [
                     now()->startOfWeek(),
@@ -53,6 +53,9 @@ class ListMeetingLinks extends ListRecords
                 ->badge(fn () => \App\Models\MeetingLink::whereMonth('meeting_start_time', now()->month)
                     ->whereYear('meeting_start_time', now()->year)
                     ->count()),
+            'past' => Tab::make(__('meetinglink.tabs.past'))
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('meeting_start_time', '<', now()))
+                ->badge(fn () => \App\Models\MeetingLink::where('meeting_start_time', '<', now())->count()),
         ];
     }
 

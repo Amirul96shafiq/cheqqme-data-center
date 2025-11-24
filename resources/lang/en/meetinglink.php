@@ -86,10 +86,11 @@ return [
 
     'tabs' => [
         'all' => 'All',
+        'upcoming' => 'Upcoming',
         'today' => 'Today',
-        'tomorrow' => 'Tomorrow',
         'this_week' => 'This Week',
         'this_month' => 'This Month',
+        'past' => 'Past',
     ],
 
     'actions' => [
