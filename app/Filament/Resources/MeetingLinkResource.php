@@ -1266,7 +1266,7 @@ class MeetingLinkResource extends Resource
                                     return __('No clients selected');
                                 }
 
-                                $clients = \App\Models\Client::withTrashed()->whereIn('id', $clientIds)->pluck('pic_name')->toArray();
+                                $clients = Client::withTrashed()->whereIn('id', $clientIds)->pluck('pic_name')->toArray();
 
                                 return implode(', ', $clients);
                             })
@@ -1304,7 +1304,7 @@ class MeetingLinkResource extends Resource
                                     return __('No documents selected');
                                 }
 
-                                $documents = \App\Models\Document::withTrashed()->whereIn('id', $documentIds)->pluck('title')->toArray();
+                                $documents = Document::withTrashed()->whereIn('id', $documentIds)->pluck('title')->toArray();
 
                                 return implode(', ', $documents);
                             })

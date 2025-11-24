@@ -13,6 +13,8 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
@@ -110,7 +112,7 @@ class TrelloBoardResource extends Resource
                         $title = __('trelloboard.section.extra_info');
                         $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
 
-                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
+                        return new HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
                     ->collapsed()
@@ -193,7 +195,7 @@ class TrelloBoardResource extends Resource
 
                         if ($isEditMode) {
                             // We're editing - get the record from route
-                            $record = \App\Models\TrelloBoard::find($recordId);
+                            $record = TrelloBoard::find($recordId);
                             $canEditVisibility = $record && $record->created_by === auth()->id();
                         }
 
@@ -363,7 +365,8 @@ class TrelloBoardResource extends Resource
                     }),
 
                 Tables\Actions\ViewAction::make()
-                    ->label(__('trelloboard.actions.view')),
+                    ->label(__('trelloboard.actions.view'))
+                    ->slideOver(),
 
                 Tables\Actions\EditAction::make()
                     ->label(__('trelloboard.actions.edit'))
@@ -473,6 +476,107 @@ class TrelloBoardResource extends Resource
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                // Trello Board Information Section (matches first section in form)
+                Infolists\Components\Section::make(__('trelloboard.section.trello_board_info'))
+                    ->schema([
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('url')
+                                    ->label(__('trelloboard.form.board_url'))
+                                    ->copyable()
+                                    ->url(fn ($record) => $record->url)
+                                    ->openUrlInNewTab()
+                                    ->placeholder(__('trelloboard.form.board_url_note')),
+
+                                Infolists\Components\TextEntry::make('name')
+                                    ->label(__('trelloboard.form.board_name')),
+                            ]),
+                    ]),
+
+                // Additional Information Section (matches second section in form)
+                Infolists\Components\Section::make()
+                    ->heading(function ($record) {
+                        $count = count($record->extra_information ?? []);
+
+                        $title = __('trelloboard.section.extra_info');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+
+                        return new HtmlString($title.' '.$badge);
+                    })
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Infolists\Components\TextEntry::make('notes')
+                            ->label(__('trelloboard.form.trelloboard_notes'))
+                            ->markdown()
+                            ->placeholder(__('No notes'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\RepeatableEntry::make('extra_information')
+                            ->label(__('trelloboard.form.extra_information'))
+                            ->schema([
+                                Infolists\Components\TextEntry::make('title')
+                                    ->label(__('trelloboard.form.extra_title')),
+                                Infolists\Components\TextEntry::make('value')
+                                    ->label(__('trelloboard.form.extra_value'))
+                                    ->markdown(),
+                            ])
+                            ->columns(1)
+                            ->columnSpanFull(),
+                    ]),
+
+                // Display Information Section (matches third section in form)
+                Infolists\Components\Section::make(__('trelloboard.section.display_info'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('show_on_boards')
+                            ->label(__('trelloboard.form.show_on_boards'))
+                            ->badge()
+                            ->color(fn (bool $state): string => $state ? 'success' : 'warning')
+                            ->formatStateUsing(fn (bool $state): string => $state
+                                ? __('trelloboard.table.show_on_boards_true')
+                                : __('trelloboard.table.show_on_boards_false')),
+
+                        Infolists\Components\TextEntry::make('visibility_status')
+                            ->label(__('trelloboard.form.status'))
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'active' => 'success',
+                                'draft' => 'warning',
+                                default => 'gray',
+                            })
+                            ->formatStateUsing(fn (string $state): string => match ($state) {
+                                'active' => __('trelloboard.form.status_active'),
+                                'draft' => __('trelloboard.form.status_draft'),
+                                default => $state,
+                            }),
+
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('createdBy.name')
+                                    ->label(__('Created by'))
+                                    ->placeholder(__('Unknown')),
+                                Infolists\Components\TextEntry::make('created_at')
+                                    ->label(__('Created at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('updatedBy.name')
+                                    ->label(__('Updated by'))
+                                    ->placeholder('-'),
+                                Infolists\Components\TextEntry::make('updated_at')
+                                    ->label(__('Updated at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                    ])
+                    ->collapsible(),
+            ]);
     }
 
     public static function getRelations(): array
