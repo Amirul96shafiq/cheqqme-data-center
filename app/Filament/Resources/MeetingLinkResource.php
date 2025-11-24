@@ -647,11 +647,10 @@ class MeetingLinkResource extends Resource
                                     Forms\Components\Select::make('client_ids')
                                         ->label('Client(s)')
                                         ->options(function () {
-                                            return Client::withTrashed()
-                                                ->orderBy('company_name')
+                                            return Client::orderBy('company_name')
                                                 ->get()
                                                 ->mapWithKeys(fn ($c) => [
-                                                    $c->id => $c->pic_name.' ('.($c->company_name ?: 'Company #'.$c->id).')'.($c->deleted_at ? ' (deleted)' : ''),
+                                                    $c->id => $c->pic_name.' ('.($c->company_name ?: 'Company #'.$c->id).')',
                                                 ])
                                                 ->toArray();
                                         })
