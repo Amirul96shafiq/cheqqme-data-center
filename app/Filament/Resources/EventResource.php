@@ -221,6 +221,11 @@ class EventResource extends Resource
                         return new \Illuminate\Support\HtmlString($title.' '.$badge);
                     })
                     ->collapsible()
+                    ->collapsed(
+                        fn (Forms\Get $get) => empty($get('project_ids')) &&
+                            empty($get('document_ids')) &&
+                            empty($get('important_url_ids'))
+                    )
                     ->live()
                     ->schema([
                         // Projects
