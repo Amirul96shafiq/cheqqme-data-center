@@ -90,8 +90,8 @@ return [
         'make_active' => 'Make Active',
         'make_draft_tooltip' => 'Change this event to Draft (Only visible to creator)',
         'make_active_tooltip' => 'Change this event to Active (Visible to all users)',
-        'event_activated' => 'Event activated successfully',
-        'event_made_draft' => 'Event made draft successfully',
+        'event_activated' => 'Event is now in Active mode and visible to all users',
+        'event_made_draft' => 'Event is now in Draft mode and only visible to you',
         'status_updated' => 'Status updated successfully',
     ],
 ];

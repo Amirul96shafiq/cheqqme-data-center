@@ -562,8 +562,10 @@ class EventResource extends Resource
                 Tables\Columns\BadgeColumn::make('event_type')
                     ->label(__('event.table.event_type'))
                     ->colors([
-                        'success' => 'online',
-                        'warning' => 'offline',
+                        'warning' => [
+                            'online',
+                            'offline',
+                        ],
                     ])
                     ->formatStateUsing(fn (string $state): string => __('event.type.'.$state)),
 
