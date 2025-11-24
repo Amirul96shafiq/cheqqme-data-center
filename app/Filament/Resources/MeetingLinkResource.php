@@ -1207,17 +1207,15 @@ class MeetingLinkResource extends Resource
 
                         Infolists\Components\TextEntry::make('user_ids')
                             ->label(__('meetinglink.form.users'))
-                            ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
+                            ->formatStateUsing(function ($state, $record) {
+                                // Get the value directly from the record to ensure casting is applied
+                                $userIds = $record->user_ids;
+
+                                if (empty($userIds) || ! is_array($userIds)) {
                                     return __('No invited users');
                                 }
 
-                                $userIds = is_array($state) ? $state : json_decode($state, true);
-                                if (! is_array($userIds)) {
-                                    return __('No invited users');
-                                }
-
-                                $users = \App\Models\User::whereIn('id', $userIds)->pluck('name')->toArray();
+                                $users = \App\Models\User::whereIn('id', $userIds)->pluck('username')->toArray();
 
                                 return implode(', ', $users);
                             })
