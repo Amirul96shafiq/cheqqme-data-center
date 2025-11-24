@@ -296,6 +296,7 @@
                                             
                                             <!-- Group actions dropdown (Focus, Edit, Delete) -->
                                             @if(auth()->id() === $comment->user_id)
+                                                {{-- Owner: Always has actions (Edit, Delete, Focus) --}}
                                                 <x-comment-actions-dropdown 
                                                     :comment-id="$comment->id"
                                                     :is-reply="false"
@@ -306,6 +307,7 @@
                                                     :show-focus="true"
                                                 />
                                             @else
+                                                {{-- Non-owner: Only has Focus action (for main comments) --}}
                                                 <x-comment-actions-dropdown 
                                                     :comment-id="$comment->id"
                                                     :is-reply="false"
@@ -509,6 +511,7 @@
                                                                  <div class="flex items-center gap-1">
                                                                      @if(!$reply->isDeleted())
                                                                          @if(auth()->id() === $reply->user_id)
+                                                                             {{-- Owner: Has Edit and Delete actions --}}
                                                                              <x-comment-actions-dropdown 
                                                                                  :comment-id="$reply->id"
                                                                                  :is-reply="true"
@@ -518,17 +521,8 @@
                                                                                  :show-reply="false"
                                                                                  :show-focus="true"
                                                                              />
-                                                                         @else
-                                                                             <x-comment-actions-dropdown 
-                                                                                 :comment-id="$reply->id"
-                                                                                 :is-reply="true"
-                                                                                 :can-edit="false"
-                                                                                 :can-delete="false"
-                                                                                 :can-force-delete="false"
-                                                                                 :show-reply="false"
-                                                                                 :show-focus="true"
-                                                                             />
                                                                          @endif
+                                                                         {{-- Non-owner replies: No actions available (Focus requires !isReply), so don't render dropdown --}}
                                                                      @else
                                                                          <!-- Force delete dropdown for deleted replies -->
                                                                          @if(auth()->id() === $reply->user_id)
