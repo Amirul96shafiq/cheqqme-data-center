@@ -1,0 +1,96 @@
+<?php
+
+return [
+    'navigation_group' => 'Resources',
+
+    'navigation' => [
+        'event' => 'Event',
+        'events' => 'Events',
+    ],
+
+    'model_label' => 'Event',
+    'plural_model_label' => 'Events',
+
+    'form' => [
+        'basic_information' => 'Basic Information',
+        'event_information' => 'Event Information',
+        'event_resources' => 'Event Resources',
+        'additional_information' => 'Event Additional Information',
+        'visibility_info' => 'Resource Visibility Information',
+        'title' => 'Title',
+        'description' => 'Description',
+        'event_type' => 'Event Type',
+        'start_datetime' => 'Start Date & Time',
+        'end_datetime' => 'End Date & Time',
+        'invited_users' => 'Invited Users',
+        'projects' => 'Related Projects',
+        'documents' => 'Related Documents',
+        'important_urls' => 'Related URLs',
+        'meeting_location' => 'Meeting & Location',
+        'meeting_link' => 'Meeting Link',
+        'location_address' => 'Location Address',
+        'location_latitude' => 'Latitude',
+        'location_longitude' => 'Longitude',
+        'featured_image' => 'Featured Image',
+        'featured_image_source' => 'Image Source',
+        'extra_information' => 'Extra Information',
+        'extra_info_title' => 'Title',
+        'extra_info_value' => 'Value',
+        'add_extra_info' => 'Add Extra Info',
+        'status' => 'Status',
+        'status_active' => 'Active',
+        'status_draft' => 'Draft',
+        'status_helper' => 'Active events are visible to all users. Draft events are only visible to their creator.',
+        'status_helper_readonly' => 'Only the creator can change the visibility status.',
+    ],
+
+    'type' => [
+        'online' => 'Online',
+        'offline' => 'Offline',
+    ],
+
+    'image_source' => [
+        'manual' => 'Manual Upload',
+        'places_api' => 'Location Image',
+    ],
+
+    'table' => [
+        'id' => 'ID',
+        'title' => 'Title',
+        'event_type' => 'Type',
+        'start_datetime' => 'Start',
+        'end_datetime' => 'End',
+        'attendees' => 'Attendees',
+        'created_by' => 'Created By',
+        'synced_to_calendar' => 'Synced',
+        'status' => 'Status',
+        'status_active' => 'Active',
+        'status_draft' => 'Draft',
+        'created_at_by' => 'Created At (By)',
+        'updated_at_by' => 'Updated At (By)',
+    ],
+
+    'tabs' => [
+        'all' => 'All',
+        'upcoming' => 'Upcoming',
+        'today' => 'Today',
+        'this_week' => 'This Week',
+        'past' => 'Past',
+    ],
+
+    'actions' => [
+        'create' => 'Create Event',
+        'create_meeting_link' => 'Create Meeting Link',
+        'create_client' => 'Create Client',
+        'create_project' => 'Create Project',
+        'create_document' => 'Create Document',
+        'create_important_url' => 'Create Important URL',
+        'make_draft' => 'Make Draft',
+        'make_active' => 'Make Active',
+        'make_draft_tooltip' => 'Make the event draft',
+        'make_active_tooltip' => 'Make the event active',
+        'event_activated' => 'Event activated successfully',
+        'event_made_draft' => 'Event made draft successfully',
+        'status_updated' => 'Status updated successfully',
+    ],
+];

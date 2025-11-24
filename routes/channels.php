@@ -138,3 +138,13 @@ Broadcast::channel('user-viewers.{userId}', function (User $user, int $userId) {
         'avatar' => $user->getFilamentAvatarUrl(),
     ];
 });
+
+// Presence channel for users viewing a specific event edit page
+Broadcast::channel('event-viewers.{eventId}', function (User $user, int $eventId) {
+    return [
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'avatar' => $user->getFilamentAvatarUrl(),
+    ];
+});

@@ -41,7 +41,7 @@ return [
 
     'section' => [
         'trello_board_info' => 'Trello Board Information',
-        'display_info' => 'Visibility Resource Information',
+        'display_info' => 'Resource Visibility Information',
         'extra_info' => 'Trello Board Additional Information',
         'activity_logs' => 'Activity Logs',
     ],

@@ -29,7 +29,7 @@ return [
         'important_url_info' => 'Important URL Information',
         'extra_info' => 'Important URL Extra Information',
         'activity_logs' => 'Activity Logs',
-        'visibility_status' => 'Visibility Resource Information',
+        'visibility_status' => 'Resource Visibility Information',
     ],
 
     // Form fields

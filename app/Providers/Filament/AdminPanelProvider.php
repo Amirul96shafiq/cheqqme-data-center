@@ -400,7 +400,7 @@ class AdminPanelProvider extends PanelProvider
                                         // Mark as loaded to prevent duplicate loading
                                         window.spotifyPlayerLoaded = true;
                                     }
-                                }, 2000); // Wait 2 seconds after page load before initializing
+                                }, 500); // Wait 0.5 seconds after page load before initializing
                             });
                         </script>';
                 },
