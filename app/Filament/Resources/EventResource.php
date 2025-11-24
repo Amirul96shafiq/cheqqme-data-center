@@ -201,9 +201,27 @@ class EventResource extends Resource
                     ]),
 
                 // 2nd section (full span width) (able to collapsed) (default collapsed)
-                Forms\Components\Section::make(__('event.form.event_resources'))
+                Forms\Components\Section::make()
+                    ->heading(function (Forms\Get $get) {
+                        // Count the number of resources selected
+                        $project = $get('project_ids') ?? [];
+                        $document = $get('document_ids') ?? [];
+                        $importantUrl = $get('important_url_ids') ?? [];
+
+                        // Ensure arrays are countable (handle corrupted data)
+                        $projectCount = is_array($project) ? count($project) : 0;
+                        $documentCount = is_array($document) ? count($document) : 0;
+                        $importantUrlCount = is_array($importantUrl) ? count($importantUrl) : 0;
+
+                        $count = $projectCount + $documentCount + $importantUrlCount;
+
+                        $title = __('event.form.event_resources');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
+                    })
                     ->collapsible()
-                    ->collapsed()
+                    ->live()
                     ->schema([
                         // Projects
                         Forms\Components\Select::make('project_ids')
@@ -348,7 +366,6 @@ class EventResource extends Resource
                         return new \Illuminate\Support\HtmlString($title.' '.$badge);
                     })
                     ->collapsible(true)
-                    ->collapsed()
                     ->live()
                     ->schema([
                         Forms\Components\RichEditor::make('description')
