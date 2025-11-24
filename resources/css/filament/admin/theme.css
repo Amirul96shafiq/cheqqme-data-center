@@ -12,7 +12,7 @@ body {
 @layer utilities {
     /* Custom max content width - 90% instead of full width */
     .fi-main.max-w-full {
-        max-width: 94% !important;
+        max-width: 90% !important;
     }
 
     /* Ensure global loader is above everything */
