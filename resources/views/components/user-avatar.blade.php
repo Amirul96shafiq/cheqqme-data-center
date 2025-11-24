@@ -93,16 +93,16 @@
     <x-clickable-avatar-wrapper :user="$user">
         <div class="relative inline-block">
             @if($avatarUrl)
-                <img 
-                    src="{{ $avatarUrl }}" 
+                <img
+                    src="{{ $avatarUrl }}"
                     alt="{{ $username }}"
-                    class="{{ $avatarSizeClass }} rounded-full object-cover {{ $imageBorderClass }} shadow-sm relative z-10"
+                    class="{{ $avatarSizeClass }} rounded-full object-cover {{ $imageBorderClass }} shadow-sm relative z-1"
                     @if($lazyLoad) loading="lazy" @endif
                     draggable="false"
                 />
             @else
                 <!-- Fallback: Letter avatar -->
-                <div class="{{ $avatarSizeClass }} rounded-full bg-primary-500 {{ $letterBorderClass }} shadow-sm flex items-center justify-center relative z-10">
+                <div class="{{ $avatarSizeClass }} rounded-full bg-primary-500 {{ $letterBorderClass }} shadow-sm flex items-center justify-center relative z-1">
                     <span class="{{ $textSizeClass }} font-medium text-white">
                         {{ strtoupper($userInitial) }}
                     </span>
@@ -110,7 +110,7 @@
             @endif
 
             @if($showStatus)
-                <div class="{{ $statusPosition }} z-20">
+                <div class="{{ $statusPosition }} z-1">
                     <x-online-status-indicator :user="$user" :size="$statusSize" />
                 </div>
             @endif
@@ -119,16 +119,16 @@
 @else
     <div class="relative inline-block">
         @if($avatarUrl)
-            <img 
-                src="{{ $avatarUrl }}" 
+            <img
+                src="{{ $avatarUrl }}"
                 alt="{{ $username }}"
-                class="{{ $avatarSizeClass }} rounded-full object-cover {{ $imageBorderClass }} shadow-sm relative z-10"
+                class="{{ $avatarSizeClass }} rounded-full object-cover {{ $imageBorderClass }} shadow-sm relative z-1"
                 @if($lazyLoad) loading="lazy" @endif
                 draggable="false"
             />
         @else
             <!-- Fallback: Letter avatar -->
-            <div class="{{ $avatarSizeClass }} rounded-full bg-primary-500 {{ $letterBorderClass }} shadow-sm flex items-center justify-center relative z-10">
+            <div class="{{ $avatarSizeClass }} rounded-full bg-primary-500 {{ $letterBorderClass }} shadow-sm flex items-center justify-center relative z-1">
                 <span class="{{ $textSizeClass }} font-medium text-white">
                     {{ strtoupper($userInitial) }}
                 </span>
@@ -136,7 +136,7 @@
         @endif
 
         @if($showStatus)
-            <div class="{{ $statusPosition }} z-20">
+            <div class="{{ $statusPosition }} z-1">
                 <x-online-status-indicator :user="$user" :size="$statusSize" />
             </div>
         @endif
