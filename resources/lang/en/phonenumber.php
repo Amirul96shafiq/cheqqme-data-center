@@ -27,7 +27,7 @@ return [
 
     'section' => [
         'phone_number_info' => 'Phone Number Information',
-        'extra_info' => 'Phone Number Extra Information',
+        'extra_info' => 'Phone Number Additional Information',
         'activity_logs' => 'Activity Logs',
         'visibility_status' => 'Resource Visibility Information',
     ],

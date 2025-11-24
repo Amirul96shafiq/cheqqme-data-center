@@ -24,7 +24,7 @@ return [
         'important_url' => 'Important URL',
         'meeting_settings' => 'Meeting Settings',
         'users' => 'Invite Attendees',
-        'additional_information' => 'Additional Information',
+        'additional_information' => 'Meeting Additional Information',
         'description' => 'Description',
         'notes' => 'Notes',
         'extra_information' => 'Extra Information',

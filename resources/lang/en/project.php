@@ -68,7 +68,7 @@ return [
         'issue_tracker_info' => 'Issue Tracker Information',
         'wishlist_tracker_info' => 'Wishlist Tracker Information',
         'visibility_status' => 'Resource Visibility Information',
-        'extra_info' => 'Project Extra Information',
+        'extra_info' => 'Project Additional Information',
         'project_documents' => 'Project Documents',
         'important_urls' => 'Project Important URLs',
         'activity_logs' => 'Activity Logs',

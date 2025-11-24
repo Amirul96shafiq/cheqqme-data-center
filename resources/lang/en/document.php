@@ -28,7 +28,7 @@ return [
     'section' => [
         'document_info' => 'Document Information',
         'visibility_status' => 'Resource Visibility Information',
-        'extra_info' => 'Document Extra Information',
+        'extra_info' => 'Document Additional Information',
         'activity_logs' => 'Activity Logs',
     ],
 

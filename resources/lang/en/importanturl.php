@@ -27,7 +27,7 @@ return [
 
     'section' => [
         'important_url_info' => 'Important URL Information',
-        'extra_info' => 'Important URL Extra Information',
+        'extra_info' => 'Important URL Additional Information',
         'activity_logs' => 'Activity Logs',
         'visibility_status' => 'Resource Visibility Information',
     ],

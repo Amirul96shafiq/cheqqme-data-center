@@ -19,7 +19,7 @@ return [
         'make_draft' => 'Tukar ke Draf',
         'make_active' => 'Tukar ke Aktif',
         'make_draft_tooltip' => 'Tukar nombor telefon ini ke Draf (Hanya anda boleh melihatnya)',
-        'make_active_tooltip' => 'Tukar nombor telefon ini ke Aktif (Semua pengguna boleh melihatnya)',
+        'make_active_tooltip' => 'Tukar nombor telefon ini ke Aktif (semua pengguna boleh melihatnya)',
         'visibility_status_updated' => 'Status keterlihatan dikemaskini berjaya',
         'phone_number_activated' => 'Nombor telefon kini Aktif dan boleh dilihat oleh semua pengguna.',
         'phone_number_made_draft' => 'Nombor telefon kini dalam status Draf dan boleh dilihat oleh anda sahaja.',
@@ -27,7 +27,7 @@ return [
 
     'section' => [
         'phone_number_info' => 'Maklumat Nombor Telefon',
-        'phone_number_extra_info' => 'Maklumat Tambahan Nombor Telefon',
+        'extra_info' => 'Maklumat Tambahan Nombor Telefon',
         'activity_logs' => 'Log Aktiviti',
         'visibility_status' => 'Maklumat Keterlihatan Sumber',
     ],
