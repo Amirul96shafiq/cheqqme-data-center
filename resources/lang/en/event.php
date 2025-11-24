@@ -22,7 +22,7 @@ return [
         'event_type' => 'Event Type',
         'start_datetime' => 'Start Date & Time',
         'end_datetime' => 'End Date & Time',
-        'invited_users' => 'Invited Users',
+        'invited_users' => 'Invite Attendees',
         'projects' => 'Related Projects',
         'documents' => 'Related Documents',
         'important_urls' => 'Related URLs',
@@ -61,6 +61,8 @@ return [
         'start_datetime' => 'Start Time',
         'end_datetime' => 'End Time',
         'attendees' => 'Attendees',
+        'attendee' => 'attendee',
+        'attendees_plural' => 'attendees',
         'created_by' => 'Created By',
         'synced_to_calendar' => 'Synced',
         'status' => 'Visibility',
@@ -93,5 +95,15 @@ return [
         'event_activated' => 'Event is now in Active mode and visible to all users',
         'event_made_draft' => 'Event is now in Draft mode and only visible to you',
         'status_updated' => 'Status updated successfully',
+    ],
+
+    'notifications' => [
+        'invitation_title' => 'Event Invitation',
+        'invitation_body' => 'You have been invited to an :eventType event ":eventTitle" by :invitedBy',
+        'view_event' => 'View Event',
+        'invitations_sent_title' => 'Invitations Sent',
+        'invitations_sent_body' => 'Invitations sent to :count attendee|Invitations sent to :count attendees',
+        'new_invitations_sent_title' => 'New Invitations Sent',
+        'new_invitations_sent_body' => 'New invitations sent to :count attendee|New invitations sent to :count attendees',
     ],
 ];
