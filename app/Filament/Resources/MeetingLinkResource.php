@@ -671,15 +671,36 @@ class MeetingLinkResource extends Resource
                                         )
                                         ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
                                             if ($state) {
-                                                // Get documents for selected clients
-                                                $documents = Document::whereHas('project', function ($query) use ($state) {
-                                                    $query->whereIn('client_id', $state);
-                                                })
-                                                    ->orderBy('title')
+                                                // Get all projects for selected clients
+                                                $projects = \App\Models\Project::whereIn('client_id', $state)
+                                                    ->withTrashed()
                                                     ->pluck('id')
                                                     ->toArray();
 
+                                                // Get all documents for selected clients' projects
+                                                $documents = Document::whereHas('project', function ($query) use ($state) {
+                                                    $query->whereIn('client_id', $state);
+                                                })
+                                                    ->withTrashed()
+                                                    ->pluck('id')
+                                                    ->toArray();
+
+                                                // Get all important URLs for selected clients' projects
+                                                $importantUrls = \App\Models\ImportantUrl::whereHas('project', function ($query) use ($state) {
+                                                    $query->whereIn('client_id', $state);
+                                                })
+                                                    ->withTrashed()
+                                                    ->pluck('id')
+                                                    ->toArray();
+
+                                                $set('project_ids', $projects);
                                                 $set('document_ids', $documents);
+                                                $set('important_url_ids', $importantUrls);
+                                            } else {
+                                                // Clear all related fields when no clients selected
+                                                $set('project_ids', []);
+                                                $set('document_ids', []);
+                                                $set('important_url_ids', []);
                                             }
                                         }),
 
