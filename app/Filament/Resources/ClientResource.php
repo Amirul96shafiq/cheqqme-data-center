@@ -14,6 +14,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
@@ -625,7 +627,8 @@ class ClientResource extends Resource
 
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->slideOver(),
                 Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
@@ -669,6 +672,143 @@ class ClientResource extends Resource
                 Tables\Actions\ForceDeleteBulkAction::make(),
             ])
             ->defaultSort('updated_at', 'desc');
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                // Client Information Section (matches first section in form)
+                Infolists\Components\Section::make(__('client.section.client_info'))
+                    ->schema([
+                        Infolists\Components\Grid::make(3)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('pic_name')
+                                    ->label(__('client.form.pic_name')),
+                                Infolists\Components\TextEntry::make('pic_contact_number')
+                                    ->label(__('client.form.pic_contact_number')),
+                                Infolists\Components\TextEntry::make('pic_email')
+                                    ->label(__('client.form.pic_email'))
+                                    ->placeholder(__('No email')),
+                            ]),
+                    ]),
+
+                // Staff Information Section (matches second section in form)
+                Infolists\Components\Section::make(__('client.section.staff_info'))
+                    ->description(__('client.section.staff_info_description'))
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Infolists\Components\RepeatableEntry::make('staff_information')
+                            ->label(__('client.form.staff_information'))
+                            ->schema([
+                                Infolists\Components\Grid::make(3)
+                                    ->schema([
+                                        Infolists\Components\TextEntry::make('staff_name')
+                                            ->label(__('client.form.staff_name')),
+                                        Infolists\Components\TextEntry::make('staff_contact_number')
+                                            ->label(__('client.form.staff_contact_number')),
+                                        Infolists\Components\TextEntry::make('staff_email')
+                                            ->label(__('client.form.staff_email'))
+                                            ->placeholder(__('No email')),
+                                    ]),
+                            ])
+                            ->columns(1)
+                            ->columnSpanFull(),
+                    ]),
+
+                // Company Information Section (matches third section in form)
+                Infolists\Components\Section::make(__('client.section.company_info'))
+                    ->schema([
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('company_name')
+                                    ->label(__('client.form.company_name'))
+                                    ->placeholder(__('No company name')),
+                                Infolists\Components\TextEntry::make('company_email')
+                                    ->label(__('client.form.company_email'))
+                                    ->placeholder(__('No company email')),
+                                Infolists\Components\TextEntry::make('company_address')
+                                    ->label(__('client.form.company_address'))
+                                    ->placeholder(__('No company address'))
+                                    ->columnSpanFull(),
+                                Infolists\Components\TextEntry::make('billing_address')
+                                    ->label(__('client.form.billing_address'))
+                                    ->placeholder(__('No billing address'))
+                                    ->columnSpanFull(),
+                            ]),
+                    ]),
+
+                // Additional Information Section (matches fourth section in form)
+                Infolists\Components\Section::make()
+                    ->heading(function ($record) {
+                        $count = count($record->extra_information ?? []);
+
+                        $title = __('client.section.extra_info');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+
+                        return new HtmlString($title.' '.$badge);
+                    })
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Infolists\Components\TextEntry::make('notes')
+                            ->label(__('client.form.notes'))
+                            ->markdown()
+                            ->placeholder(__('No notes'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\RepeatableEntry::make('extra_information')
+                            ->label(__('client.form.extra_information'))
+                            ->schema([
+                                Infolists\Components\TextEntry::make('title')
+                                    ->label(__('client.form.extra_title')),
+                                Infolists\Components\TextEntry::make('value')
+                                    ->label(__('client.form.extra_value'))
+                                    ->markdown(),
+                            ])
+                            ->columns(1)
+                            ->columnSpanFull(),
+                    ]),
+
+                // Status Information Section (matches fifth section in form)
+                Infolists\Components\Section::make(__('client.section.status_info'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('visibility_status')
+                            ->label(__('client.form.status'))
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'active' => 'success',
+                                'draft' => 'warning',
+                                default => 'gray',
+                            })
+                            ->formatStateUsing(fn (string $state): string => match ($state) {
+                                'active' => __('client.form.status_active'),
+                                'draft' => __('client.form.status_draft'),
+                                default => $state,
+                            }),
+
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('createdBy.name')
+                                    ->label(__('Created by'))
+                                    ->placeholder(__('Unknown')),
+                                Infolists\Components\TextEntry::make('created_at')
+                                    ->label(__('Created at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('updatedBy.name')
+                                    ->label(__('Updated by'))
+                                    ->placeholder('-'),
+                                Infolists\Components\TextEntry::make('updated_at')
+                                    ->label(__('Updated at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                    ])
+                    ->collapsible(),
+            ]);
     }
 
     public static function getRelations(): array
