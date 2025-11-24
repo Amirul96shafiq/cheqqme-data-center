@@ -19,6 +19,8 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
@@ -721,7 +723,8 @@ class ProjectResource extends Resource
                     })
                     ->visible(fn ($record) => ! empty($record->wishlist_tracker_code)),
 
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->slideOver(),
 
                 Tables\Actions\EditAction::make()->hidden(fn ($record) => $record->trashed()),
 
@@ -1019,6 +1022,172 @@ class ProjectResource extends Resource
                 Tables\Actions\ForceDeleteBulkAction::make(),
             ])
             ->defaultSort('updated_at', 'desc');
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                // Project Information Section (matches first section in form)
+                Infolists\Components\Section::make(__('project.section.project_info'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('title')
+                            ->label(__('project.form.project_title'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\TextEntry::make('client.company_name')
+                            ->label(__('project.form.client'))
+                            ->placeholder(__('No client assigned')),
+
+                        Infolists\Components\TextEntry::make('status')
+                            ->label(__('project.form.project_status'))
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'Planning' => 'warning',
+                                'In Progress' => 'primary',
+                                'Completed' => 'success',
+                                default => 'gray',
+                            })
+                            ->formatStateUsing(fn (string $state): string => match ($state) {
+                                'Planning' => __('project.status.planning'),
+                                'In Progress' => __('project.status.in_progress'),
+                                'Completed' => __('project.status.completed'),
+                                default => $state,
+                            }),
+
+                        Infolists\Components\TextEntry::make('project_url')
+                            ->label(__('project.form.project_url'))
+                            ->copyable()
+                            ->url(fn ($record) => $record->project_url)
+                            ->openUrlInNewTab()
+                            ->placeholder(__('No project URL'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\TextEntry::make('description')
+                            ->label(__('project.form.project_description'))
+                            ->markdown()
+                            ->placeholder(__('No description'))
+                            ->columnSpanFull(),
+                    ]),
+
+                // Issue Tracker Information Section (matches second section in form)
+                Infolists\Components\Section::make(__('project.section.issue_tracker_info'))
+                    ->visible(fn ($record) => ! empty($record->issue_tracker_code))
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Infolists\Components\RepeatableEntry::make('issue_tracker_info')
+                            ->label('')
+                            ->schema([
+                                Infolists\Components\Grid::make(2)
+                                    ->schema([
+                                        Infolists\Components\TextEntry::make('code')
+                                            ->label(__('project.form.issue_tracker_code')),
+                                        Infolists\Components\TextEntry::make('url')
+                                            ->label(__('project.form.issue_tracker_url'))
+                                            ->copyable()
+                                            ->url(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
+                                            ->openUrlInNewTab(),
+                                    ]),
+                            ])
+                            ->columns(1)
+                            ->columnSpanFull(),
+                    ]),
+
+                // Wishlist Tracker Information Section (matches third section in form)
+                Infolists\Components\Section::make(__('project.section.wishlist_tracker_info'))
+                    ->visible(fn ($record) => ! empty($record->wishlist_tracker_code))
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Infolists\Components\RepeatableEntry::make('wishlist_tracker_info')
+                            ->label('')
+                            ->schema([
+                                Infolists\Components\Grid::make(2)
+                                    ->schema([
+                                        Infolists\Components\TextEntry::make('code')
+                                            ->label(__('project.form.wishlist_tracker_code')),
+                                        Infolists\Components\TextEntry::make('url')
+                                            ->label(__('project.form.wishlist_tracker_url'))
+                                            ->copyable()
+                                            ->url(fn ($record) => $record->wishlist_tracker_code ? route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]) : null)
+                                            ->openUrlInNewTab(),
+                                    ]),
+                            ])
+                            ->columns(1)
+                            ->columnSpanFull(),
+                    ]),
+
+                // Additional Information Section (matches fourth section in form)
+                Infolists\Components\Section::make()
+                    ->heading(function ($record) {
+                        $count = count($record->extra_information ?? []);
+
+                        $title = __('project.section.extra_info');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+
+                        return new HtmlString($title.' '.$badge);
+                    })
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Infolists\Components\TextEntry::make('notes')
+                            ->label(__('project.form.notes'))
+                            ->markdown()
+                            ->placeholder(__('No notes'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\RepeatableEntry::make('extra_information')
+                            ->label(__('project.form.extra_information'))
+                            ->schema([
+                                Infolists\Components\TextEntry::make('title')
+                                    ->label(__('project.form.extra_title')),
+                                Infolists\Components\TextEntry::make('value')
+                                    ->label(__('project.form.extra_value'))
+                                    ->markdown(),
+                            ])
+                            ->columns(1)
+                            ->columnSpanFull(),
+                    ]),
+
+                // Visibility Status Information Section (matches fifth section in form)
+                Infolists\Components\Section::make(__('project.section.visibility_status'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('visibility_status')
+                            ->label(__('project.form.visibility_status'))
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'active' => 'success',
+                                'draft' => 'warning',
+                                default => 'gray',
+                            })
+                            ->formatStateUsing(fn (string $state): string => match ($state) {
+                                'active' => __('project.form.visibility_status_active'),
+                                'draft' => __('project.form.visibility_status_draft'),
+                                default => $state,
+                            }),
+
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('createdBy.name')
+                                    ->label(__('Created by'))
+                                    ->placeholder(__('Unknown')),
+                                Infolists\Components\TextEntry::make('created_at')
+                                    ->label(__('Created at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('updatedBy.name')
+                                    ->label(__('Updated by'))
+                                    ->placeholder('-'),
+                                Infolists\Components\TextEntry::make('updated_at')
+                                    ->label(__('Updated at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                    ])
+                    ->collapsible(),
+            ]);
     }
 
     public static function getRelations(): array

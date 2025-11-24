@@ -300,4 +300,34 @@ class Project extends Model
 
         return $code;
     }
+
+    /**
+     * Get the issue tracker info for infolist display.
+     */
+    public function getIssueTrackerInfoAttribute(): array
+    {
+        if (! $this->issue_tracker_code) {
+            return [];
+        }
+
+        return [[
+            'code' => $this->issue_tracker_code,
+            'url' => route('issue-tracker.show', ['project' => $this->issue_tracker_code]),
+        ]];
+    }
+
+    /**
+     * Get the wishlist tracker info for infolist display.
+     */
+    public function getWishlistTrackerInfoAttribute(): array
+    {
+        if (! $this->wishlist_tracker_code) {
+            return [];
+        }
+
+        return [[
+            'code' => $this->wishlist_tracker_code,
+            'url' => route('wishlist-tracker.show', ['project' => $this->wishlist_tracker_code]),
+        ]];
+    }
 }
