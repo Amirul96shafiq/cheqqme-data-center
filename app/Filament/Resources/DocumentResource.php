@@ -214,7 +214,7 @@ class DocumentResource extends Resource
                 Section::make()
                     ->heading(__('document.section.extra_info'))
                     ->collapsible(true)
-                    ->collapsed()
+                    ->collapsed(fn ($get) => empty($get('notes')))
                     ->live()
                     ->schema([
 

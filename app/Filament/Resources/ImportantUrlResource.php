@@ -164,7 +164,7 @@ class ImportantUrlResource extends Resource
                 Section::make()
                     ->heading(__('importanturl.section.extra_info'))
                     ->collapsible(true)
-                    ->collapsed()
+                    ->collapsed(fn ($get) => empty($get('notes')))
                     ->live()
                     ->schema([
 

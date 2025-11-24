@@ -290,7 +290,7 @@ class ClientResource extends Resource
                 Section::make()
                     ->heading(__('client.section.extra_info'))
                     ->collapsible(true)
-                    ->collapsed()
+                    ->collapsed(fn ($get) => empty($get('notes')))
                     ->live()
                     ->schema([
 

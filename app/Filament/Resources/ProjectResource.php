@@ -389,7 +389,7 @@ class ProjectResource extends Resource
                 Section::make()
                     ->heading(__('project.section.extra_info'))
                     ->collapsible(true)
-                    ->collapsed()
+                    ->collapsed(fn ($get) => empty($get('notes')))
                     ->live()
                     ->schema([
 

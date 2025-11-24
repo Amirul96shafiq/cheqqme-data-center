@@ -859,9 +859,12 @@ class MeetingLinkResource extends Resource
                             // Additional Information Section (Full Width)
                             // -----------------------------
                             Forms\Components\Section::make(__('meetinglink.form.additional_information'))
+                                ->collapsible(true)
+                                ->collapsed(fn ($get) => empty($get('notes')))
+                                ->live()
                                 ->schema([
                                     Forms\Components\RichEditor::make('notes')
-                                        ->label(__('meetinglink.form.description'))
+                                        ->label(__('meetinglink.form.notes'))
                                         ->maxLength(500)
                                         ->toolbarButtons([
                                             'bold',

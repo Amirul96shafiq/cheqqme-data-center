@@ -343,10 +343,11 @@ class EventResource extends Resource
                 Forms\Components\Section::make()
                     ->heading(__('event.form.additional_information'))
                     ->collapsible(true)
+                    ->collapsed(fn ($get) => empty($get('description')))
                     ->live()
                     ->schema([
                         Forms\Components\RichEditor::make('description')
-                            ->label(__('event.form.description'))
+                            ->label(__('event.form.notes'))
                             ->maxLength(500)
                             ->toolbarButtons([
                                 'bold',

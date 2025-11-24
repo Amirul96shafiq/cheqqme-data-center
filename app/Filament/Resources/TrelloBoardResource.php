@@ -104,7 +104,7 @@ class TrelloBoardResource extends Resource
                 Section::make()
                     ->heading(__('trelloboard.section.extra_info'))
                     ->collapsible(true)
-                    ->collapsed()
+                    ->collapsed(fn ($get) => empty($get('notes')))
                     ->live()
                     ->schema([
 

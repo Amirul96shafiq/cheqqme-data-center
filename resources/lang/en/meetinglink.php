@@ -26,6 +26,7 @@ return [
         'users' => 'Invite Attendees',
         'additional_information' => 'Additional Information',
         'description' => 'Description',
+        'notes' => 'Notes',
         'extra_information' => 'Extra Information',
         'extra_info_title' => 'Title',
         'extra_info_value' => 'Value',

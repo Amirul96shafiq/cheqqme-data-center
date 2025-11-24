@@ -34,6 +34,7 @@ return [
         'featured_image' => 'Featured Image',
         'featured_image_source' => 'Image Source',
         'extra_information' => 'Extra Information',
+        'notes' => 'Notes',
         'extra_info_title' => 'Title',
         'extra_info_value' => 'Value',
         'add_extra_info' => 'Add Extra Info',
