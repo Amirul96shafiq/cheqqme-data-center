@@ -15,6 +15,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\View;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
@@ -575,7 +577,8 @@ class DocumentResource extends Resource
                             ($record->type === 'external' && $record->url);
                     }),
 
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->slideOver(),
 
                 Tables\Actions\EditAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
@@ -621,6 +624,140 @@ class DocumentResource extends Resource
                 Tables\Actions\ForceDeleteBulkAction::make(),
             ])
             ->defaultSort('updated_at', 'desc');
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                // Document Information Section (matches first section in form)
+                Infolists\Components\Section::make(__('document.section.document_info'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('title')
+                            ->label(__('document.form.document_title'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\TextEntry::make('project.title')
+                            ->label(__('document.form.project'))
+                            ->placeholder(__('No project assigned')),
+
+                        Infolists\Components\TextEntry::make('type')
+                            ->label(__('document.form.document_type'))
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'internal' => 'primary',
+                                'external' => 'success',
+                                default => 'gray',
+                            })
+                            ->formatStateUsing(fn (string $state): string => match ($state) {
+                                'internal' => __('document.form.internal'),
+                                'external' => __('document.form.external'),
+                                default => ucfirst($state),
+                            }),
+
+                        // Show URL for external documents
+                        Infolists\Components\TextEntry::make('url')
+                            ->label(__('document.form.document_url'))
+                            ->copyable()
+                            ->url(fn ($record) => $record->url)
+                            ->openUrlInNewTab()
+                            ->placeholder(__('No URL'))
+                            ->visible(fn ($record) => $record->type === 'external')
+                            ->columnSpanFull(),
+
+                        // Show file path for internal documents
+                        Infolists\Components\TextEntry::make('file_path')
+                            ->label(__('document.form.document_upload'))
+                            ->formatStateUsing(function ($state) {
+                                if (! $state) {
+                                    return __('No file uploaded');
+                                }
+
+                                $pathInfo = pathinfo($state);
+                                $filename = $pathInfo['filename'] ?? '';
+                                $extension = $pathInfo['extension'] ?? '';
+
+                                // Limit filename to 30 characters and add truncation indicator
+                                $truncatedFilename = strlen($filename) > 30 ? substr($filename, 0, 30).'...' : $filename;
+
+                                return $truncatedFilename.'.'.$extension;
+                            })
+                            ->url(fn ($record) => $record->file_path ? asset('storage/'.$record->file_path) : null)
+                            ->openUrlInNewTab()
+                            ->visible(fn ($record) => $record->type === 'internal' && $record->file_path)
+                            ->columnSpanFull(),
+                    ]),
+
+                // Additional Information Section (matches second section in form)
+                Infolists\Components\Section::make()
+                    ->heading(function ($record) {
+                        $count = count($record->extra_information ?? []);
+
+                        $title = __('document.section.extra_info');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+
+                        return new HtmlString($title.' '.$badge);
+                    })
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Infolists\Components\TextEntry::make('notes')
+                            ->label(__('document.form.notes'))
+                            ->markdown()
+                            ->placeholder(__('No notes'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\RepeatableEntry::make('extra_information')
+                            ->label(__('document.form.extra_information'))
+                            ->schema([
+                                Infolists\Components\TextEntry::make('title')
+                                    ->label(__('document.form.extra_title')),
+                                Infolists\Components\TextEntry::make('value')
+                                    ->label(__('document.form.extra_value'))
+                                    ->markdown(),
+                            ])
+                            ->columns(1)
+                            ->columnSpanFull(),
+                    ]),
+
+                // Visibility Status Information Section (matches third section in form)
+                Infolists\Components\Section::make(__('document.section.visibility_status'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('visibility_status')
+                            ->label(__('document.form.visibility_status'))
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'active' => 'success',
+                                'draft' => 'warning',
+                                default => 'gray',
+                            })
+                            ->formatStateUsing(fn (string $state): string => match ($state) {
+                                'active' => __('document.form.visibility_status_active'),
+                                'draft' => __('document.form.visibility_status_draft'),
+                                default => $state,
+                            }),
+
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('createdBy.name')
+                                    ->label(__('Created by'))
+                                    ->placeholder(__('Unknown')),
+                                Infolists\Components\TextEntry::make('created_at')
+                                    ->label(__('Created at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('updatedBy.name')
+                                    ->label(__('Updated by'))
+                                    ->placeholder('-'),
+                                Infolists\Components\TextEntry::make('updated_at')
+                                    ->label(__('Updated at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                    ])
+                    ->collapsible(),
+            ]);
     }
 
     public static function getRelations(): array
