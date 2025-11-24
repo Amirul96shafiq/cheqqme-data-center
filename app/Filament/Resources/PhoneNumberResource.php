@@ -12,6 +12,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables;
@@ -220,7 +222,7 @@ class PhoneNumberResource extends Resource
 
                         if ($isEditMode) {
                             // We're editing - get the record from route
-                            $record = \App\Models\PhoneNumber::find($recordId);
+                            $record = PhoneNumber::find($recordId);
                             $canEditVisibility = $record && $record->created_by === auth()->id();
                         }
 
@@ -248,7 +250,7 @@ class PhoneNumberResource extends Resource
                             return [
                                 \Filament\Forms\Components\Placeholder::make('visibility_status_readonly')
                                     ->label(__('phonenumber.form.visibility_status'))
-                                    ->content(new \Illuminate\Support\HtmlString(
+                                    ->content(new HtmlString(
                                         __('phonenumber.form.visibility_status_helper_readonly').' '.
                                         \Blade::render('<x-clickable-creator-name :user="$user" />', ['user' => $creator]).
                                         '.'
@@ -454,7 +456,8 @@ class PhoneNumberResource extends Resource
             ])
             ->actions([
 
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->slideOver(),
 
                 Tables\Actions\EditAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
@@ -500,6 +503,94 @@ class PhoneNumberResource extends Resource
                 ]),
             ])
             ->defaultSort('updated_at', 'desc');
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                // Phone Number Information Section (matches first section in form)
+                Infolists\Components\Section::make(__('phonenumber.section.phone_number_info'))
+                    ->schema([
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('title')
+                                    ->label(__('phonenumber.form.phone_number_title')),
+                                Infolists\Components\TextEntry::make('phone')
+                                    ->label(__('phonenumber.form.phone_number')),
+                            ]),
+                    ]),
+
+                // Additional Information Section (matches second section in form)
+                Infolists\Components\Section::make()
+                    ->heading(function ($record) {
+                        $count = count($record->extra_information ?? []);
+
+                        $title = __('phonenumber.section.extra_info');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+
+                        return new HtmlString($title.' '.$badge);
+                    })
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Infolists\Components\TextEntry::make('notes')
+                            ->label(__('phonenumber.form.notes'))
+                            ->markdown()
+                            ->placeholder(__('No notes'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\RepeatableEntry::make('extra_information')
+                            ->label(__('phonenumber.form.extra_information'))
+                            ->schema([
+                                Infolists\Components\TextEntry::make('title')
+                                    ->label(__('phonenumber.form.extra_title')),
+                                Infolists\Components\TextEntry::make('value')
+                                    ->label(__('phonenumber.form.extra_value'))
+                                    ->markdown(),
+                            ])
+                            ->columns(1)
+                            ->columnSpanFull(),
+                    ]),
+
+                // Visibility Status Information Section (matches third section in form)
+                Infolists\Components\Section::make(__('phonenumber.section.visibility_status'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('visibility_status')
+                            ->label(__('phonenumber.form.visibility_status'))
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'active' => 'success',
+                                'draft' => 'warning',
+                                default => 'gray',
+                            })
+                            ->formatStateUsing(fn (string $state): string => match ($state) {
+                                'active' => __('phonenumber.form.visibility_status_active'),
+                                'draft' => __('phonenumber.form.visibility_status_draft'),
+                                default => $state,
+                            }),
+
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('createdBy.name')
+                                    ->label(__('Created by'))
+                                    ->placeholder(__('Unknown')),
+                                Infolists\Components\TextEntry::make('created_at')
+                                    ->label(__('Created at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('updatedBy.name')
+                                    ->label(__('Updated by'))
+                                    ->placeholder('-'),
+                                Infolists\Components\TextEntry::make('updated_at')
+                                    ->label(__('Updated at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                    ])
+                    ->collapsible(),
+            ]);
     }
 
     public static function getRelations(): array
