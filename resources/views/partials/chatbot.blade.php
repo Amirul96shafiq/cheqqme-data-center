@@ -381,6 +381,9 @@
         padding: 0.5rem 1rem !important;
         max-width: none !important;
         border-radius: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
     }
     
     /* Emoji content - large size, centered */
@@ -401,6 +404,7 @@
         margin-top: 0.25rem !important;
         font-size: 0.7rem !important;
         opacity: 0.7 !important;
+        color: inherit !important;
     }
     
 
