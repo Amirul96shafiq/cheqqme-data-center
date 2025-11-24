@@ -102,18 +102,7 @@ class TrelloBoardResource extends Resource
                     ]),
 
                 Section::make()
-                    ->heading(function (Get $get) {
-                        $count = 0;
-
-                        // Add count of extra_information items
-                        $extraInfo = $get('extra_information') ?? [];
-                        $count += count($extraInfo);
-
-                        $title = __('trelloboard.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
-
-                        return new HtmlString($title.' '.$badge);
-                    })
+                    ->heading(__('trelloboard.section.extra_info'))
                     ->collapsible(true)
                     ->collapsed()
                     ->live()

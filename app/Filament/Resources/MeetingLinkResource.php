@@ -622,26 +622,7 @@ class MeetingLinkResource extends Resource
                             // Meeting Resources Section (Full Width)
                             // -----------------------------
                             Forms\Components\Section::make()
-                                ->heading(function (Forms\Get $get) {
-                                    // Count the number of resources selected
-                                    $client = $get('client_ids') ?? [];
-                                    $project = $get('project_ids') ?? [];
-                                    $document = $get('document_ids') ?? [];
-                                    $importantUrl = $get('important_url_ids') ?? [];
-
-                                    // Ensure arrays are countable (handle corrupted data)
-                                    $clientCount = is_array($client) ? count($client) : 0;
-                                    $projectCount = is_array($project) ? count($project) : 0;
-                                    $documentCount = is_array($document) ? count($document) : 0;
-                                    $importantUrlCount = is_array($importantUrl) ? count($importantUrl) : 0;
-
-                                    $count = $clientCount + $projectCount + $documentCount + $importantUrlCount;
-
-                                    $title = __('meetinglink.form.meeting_resources');
-                                    $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
-
-                                    return new \Illuminate\Support\HtmlString($title.' '.$badge);
-                                })
+                                ->heading(__('meetinglink.form.meeting_resources'))
                                 ->schema([
                                     // Client
                                     Forms\Components\Select::make('client_ids')

@@ -128,18 +128,7 @@ class PhoneNumberResource extends Resource
                     ->columns(2),
 
                 Section::make()
-                    ->heading(function (Get $get) {
-                        $count = 0;
-
-                        // Add count of extra_information items
-                        $extraInfo = $get('extra_information') ?? [];
-                        $count += count($extraInfo);
-
-                        $title = __('phonenumber.section.extra_info');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
-
-                        return new HtmlString($title.' '.$badge);
-                    })
+                    ->heading(__('phonenumber.section.extra_info'))
                     ->collapsible(true)
                     ->collapsed()
                     ->live()

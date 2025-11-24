@@ -202,24 +202,7 @@ class EventResource extends Resource
 
                 // 2nd section (full span width) (able to collapsed) (default collapsed)
                 Forms\Components\Section::make()
-                    ->heading(function (Forms\Get $get) {
-                        // Count the number of resources selected
-                        $project = $get('project_ids') ?? [];
-                        $document = $get('document_ids') ?? [];
-                        $importantUrl = $get('important_url_ids') ?? [];
-
-                        // Ensure arrays are countable (handle corrupted data)
-                        $projectCount = is_array($project) ? count($project) : 0;
-                        $documentCount = is_array($document) ? count($document) : 0;
-                        $importantUrlCount = is_array($importantUrl) ? count($importantUrl) : 0;
-
-                        $count = $projectCount + $documentCount + $importantUrlCount;
-
-                        $title = __('event.form.event_resources');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
-
-                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
-                    })
+                    ->heading(__('event.form.event_resources'))
                     ->collapsible()
                     ->collapsed(
                         fn (Forms\Get $get) => empty($get('project_ids')) &&
@@ -358,18 +341,7 @@ class EventResource extends Resource
 
                 // 3rd section (full span width) (able to collapsed) (default collapsed)
                 Forms\Components\Section::make()
-                    ->heading(function (Forms\Get $get) {
-                        $count = 0;
-
-                        // Add count of extra_information items
-                        $extraInfo = $get('extra_information') ?? [];
-                        $count += count($extraInfo);
-
-                        $title = __('event.form.additional_information');
-                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
-
-                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
-                    })
+                    ->heading(__('event.form.additional_information'))
                     ->collapsible(true)
                     ->live()
                     ->schema([
