@@ -205,15 +205,14 @@ class EventResource extends Resource
                     ->collapsible()
                     ->collapsed()
                     ->schema([
-                        // Client
-                        Forms\Components\Select::make('client_ids')
-                            ->label('Client(s)')
+                        // Projects
+                        Forms\Components\Select::make('project_ids')
+                            ->label('Project(s)')
                             ->options(function () {
-                                return \App\Models\Client::withTrashed()
-                                    ->orderBy('company_name')
+                                return \App\Models\Project::orderBy('title')
                                     ->get()
-                                    ->mapWithKeys(fn ($c) => [
-                                        $c->id => $c->pic_name.' ('.($c->company_name ?: 'Company #'.$c->id).')'.($c->deleted_at ? ' (deleted)' : ''),
+                                    ->mapWithKeys(fn ($p) => [
+                                        $p->id => str($p->title)->limit(120),
                                     ])
                                     ->toArray();
                             })
@@ -225,187 +224,113 @@ class EventResource extends Resource
                             ->live()
                             ->reactive()
                             ->suffixAction(
-                                Forms\Components\Actions\Action::make('createClient')
+                                Forms\Components\Actions\Action::make('createProject')
                                     ->icon('heroicon-o-plus')
-                                    ->url(\App\Filament\Resources\ClientResource::getUrl('create'))
+                                    ->url(\App\Filament\Resources\ProjectResource::getUrl('create'))
                                     ->openUrlInNewTab()
-                                    ->label(__('event.actions.create_client'))
-                            )
-                            ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                if ($state) {
-                                    // Get documents for selected clients
-                                    $documents = \App\Models\Document::whereHas('project', function ($query) use ($state) {
-                                        $query->whereIn('client_id', $state);
-                                    })
-                                        ->orderBy('title')
-                                        ->pluck('id')
-                                        ->toArray();
+                                    ->label(__('event.actions.create_project'))
+                            ),
 
-                                    $set('document_ids', $documents);
+                        // Documents
+                        Forms\Components\Select::make('document_ids')
+                            ->label('Document(s)')
+                            ->options(function () {
+                                return \App\Models\Document::orderBy('title')
+                                    ->get()
+                                    ->mapWithKeys(fn ($d) => [
+                                        $d->id => str($d->title)->limit(120),
+                                    ])
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->nullable()
+                            ->multiple()
+                            ->live()
+                            ->reactive()
+                            ->suffixAction(
+                                Forms\Components\Actions\Action::make('createDocument')
+                                    ->icon('heroicon-o-plus')
+                                    ->url(\App\Filament\Resources\DocumentResource::getUrl('create'))
+                                    ->openUrlInNewTab()
+                                    ->label(__('event.actions.create_document'))
+                            ),
+
+                        // Important URLs
+                        Forms\Components\Select::make('important_url_ids')
+                            ->label('Important URL(s)')
+                            ->options(function () {
+                                return \App\Models\ImportantUrl::orderBy('title')
+                                    ->get()
+                                    ->mapWithKeys(fn ($i) => [
+                                        $i->id => str($i->title)->limit(120),
+                                    ])
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->native(false)
+                            ->nullable()
+                            ->multiple()
+                            ->live()
+                            ->reactive()
+                            ->suffixAction(
+                                Forms\Components\Actions\Action::make('createImportantUrl')
+                                    ->icon('heroicon-o-plus')
+                                    ->url(\App\Filament\Resources\ImportantUrlResource::getUrl('create'))
+                                    ->openUrlInNewTab()
+                                    ->label(__('event.actions.create_important_url'))
+                            ),
+
+                        // Display selected items with clickable links
+                        Forms\Components\ViewField::make('selected_items_links')
+                            ->view('filament.components.selected-items-links')
+                            ->viewData(function (Forms\Get $get) {
+                                $selectedProjects = $get('project_ids') ?? [];
+                                $selectedDocuments = $get('document_ids') ?? [];
+                                $selectedUrls = $get('important_url_ids') ?? [];
+
+                                // Filter out documents that no longer exist
+                                if (! empty($selectedDocuments)) {
+                                    $existingDocuments = \App\Models\Document::whereIn('id', $selectedDocuments)->pluck('id')->toArray();
+                                    $selectedDocuments = array_intersect($selectedDocuments, $existingDocuments);
                                 }
-                            }),
 
-                        // Projects
-                        Forms\Components\Grid::make(1)
-                            ->schema([
-                                Forms\Components\Select::make('project_ids')
-                                    ->label('Project(s)')
-                                    ->options(function (Forms\Get $get) {
-                                        $clientIds = $get('client_ids') ?? [];
-                                        if (empty($clientIds)) {
-                                            return [];
-                                        }
+                                // Filter out important URLs that no longer exist
+                                if (! empty($selectedUrls)) {
+                                    $existingUrls = \App\Models\ImportantUrl::whereIn('id', $selectedUrls)->pluck('id')->toArray();
+                                    $selectedUrls = array_intersect($selectedUrls, $existingUrls);
+                                }
 
-                                        return \App\Models\Project::whereIn('client_id', $clientIds)
-                                            ->withTrashed()
-                                            ->orderBy('title')
-                                            ->get()
-                                            ->mapWithKeys(fn ($p) => [
-                                                $p->id => str($p->title)->limit(20).($p->deleted_at ? ' (deleted)' : ''),
-                                            ])
-                                            ->toArray();
-                                    })
-                                    ->searchable()
-                                    ->preload()
-                                    ->native(false)
-                                    ->nullable()
-                                    ->multiple()
-                                    ->live()
-                                    ->reactive()
-                                    ->suffixAction(
-                                        Forms\Components\Actions\Action::make('createProject')
-                                            ->icon('heroicon-o-plus')
-                                            ->url(\App\Filament\Resources\ProjectResource::getUrl('create'))
-                                            ->openUrlInNewTab()
-                                            ->label(__('event.actions.create_project'))
-                                    )
-                                    ->afterStateUpdated(function ($state, Forms\Set $set, Forms\Get $get) {
-                                        $selectedProjects = $state ?? [];
-                                        $currentDocuments = $get('document_ids') ?? [];
+                                return [
+                                    'clientIds' => [],
+                                    'selectedProjects' => $selectedProjects,
+                                    'selectedDocuments' => $selectedDocuments,
+                                    'selectedUrls' => $selectedUrls,
+                                ];
+                            })
+                            ->visible(function (Forms\Get $get) {
+                                $selectedProjects = $get('project_ids') ?? [];
+                                $selectedDocuments = $get('document_ids') ?? [];
+                                $selectedUrls = $get('important_url_ids') ?? [];
 
-                                        if (empty($selectedProjects)) {
-                                            $set('document_ids', []);
+                                // Filter out documents that no longer exist
+                                if (! empty($selectedDocuments)) {
+                                    $existingDocuments = \App\Models\Document::whereIn('id', $selectedDocuments)->pluck('id')->toArray();
+                                    $selectedDocuments = array_intersect($selectedDocuments, $existingDocuments);
+                                }
 
-                                            return;
-                                        }
+                                // Filter out important URLs that no longer exist
+                                if (! empty($selectedUrls)) {
+                                    $existingUrls = \App\Models\ImportantUrl::whereIn('id', $selectedUrls)->pluck('id')->toArray();
+                                    $selectedUrls = array_intersect($selectedUrls, $existingUrls);
+                                }
 
-                                        // Get all documents for the selected projects
-                                        $availableDocuments = \App\Models\Document::whereIn('project_id', $selectedProjects)
-                                            ->withTrashed()
-                                            ->pluck('id')
-                                            ->toArray();
-
-                                        // Keep existing documents that are still valid + add new ones for newly selected projects
-                                        $validCurrentDocuments = array_intersect($currentDocuments, $availableDocuments);
-                                        $newDocuments = array_diff($availableDocuments, $currentDocuments);
-                                        $finalDocuments = array_unique(array_merge($validCurrentDocuments, $newDocuments));
-
-                                        $set('document_ids', $finalDocuments);
-                                    }),
-
-                                // Documents
-                                Forms\Components\Select::make('document_ids')
-                                    ->label('Document(s)')
-                                    ->options(function (Forms\Get $get) {
-                                        $clientIds = $get('client_ids') ?? [];
-                                        $projectIds = $get('project_ids') ?? [];
-
-                                        if (! empty($projectIds)) {
-                                            return \App\Models\Document::whereIn('project_id', $projectIds)
-                                                ->withTrashed()
-                                                ->orderBy('title')
-                                                ->get()
-                                                ->mapWithKeys(fn ($d) => [
-                                                    $d->id => str($d->title)->limit(20).($d->deleted_at ? ' (deleted)' : ''),
-                                                ])
-                                                ->toArray();
-                                        }
-
-                                        if (! empty($clientIds)) {
-                                            return \App\Models\Document::whereHas('project', function ($query) use ($clientIds) {
-                                                $query->whereIn('client_id', $clientIds);
-                                            })
-                                                ->withTrashed()
-                                                ->orderBy('title')
-                                                ->get()
-                                                ->mapWithKeys(fn ($d) => [
-                                                    $d->id => str($d->title)->limit(20).($d->deleted_at ? ' (deleted)' : ''),
-                                                ])
-                                                ->toArray();
-                                        }
-
-                                        return [];
-                                    })
-                                    ->searchable()
-                                    ->preload()
-                                    ->native(false)
-                                    ->nullable()
-                                    ->multiple()
-                                    ->suffixAction(
-                                        Forms\Components\Actions\Action::make('createDocument')
-                                            ->icon('heroicon-o-plus')
-                                            ->url(\App\Filament\Resources\DocumentResource::getUrl('create'))
-                                            ->openUrlInNewTab()
-                                            ->label(__('event.actions.create_document'))
-                                    ),
-
-                                // Important URLs
-                                Forms\Components\Select::make('important_url_ids')
-                                    ->label('Important URL(s)')
-                                    ->options(function (Forms\Get $get) {
-                                        $clientIds = $get('client_ids') ?? [];
-                                        if (empty($clientIds)) {
-                                            return [];
-                                        }
-
-                                        return \App\Models\ImportantUrl::whereHas('project', function ($query) use ($clientIds) {
-                                            $query->whereIn('client_id', $clientIds);
-                                        })
-                                            ->withTrashed()
-                                            ->orderBy('title')
-                                            ->get()
-                                            ->mapWithKeys(fn ($i) => [
-                                                $i->id => str($i->title)->limit(20).($i->deleted_at ? ' (deleted)' : ''),
-                                            ])
-                                            ->toArray();
-                                    })
-                                    ->searchable()
-                                    ->preload()
-                                    ->native(false)
-                                    ->nullable()
-                                    ->multiple()
-                                    ->suffixAction(
-                                        Forms\Components\Actions\Action::make('createImportantUrl')
-                                            ->icon('heroicon-o-plus')
-                                            ->url(\App\Filament\Resources\ImportantUrlResource::getUrl('create'))
-                                            ->openUrlInNewTab()
-                                            ->label(__('event.actions.create_important_url'))
-                                    ),
-
-                                // Display selected items with clickable links
-                                Forms\Components\ViewField::make('selected_items_links')
-                                    ->view('filament.components.selected-items-links')
-                                    ->viewData(function (Forms\Get $get) {
-                                        $clientIds = $get('client_ids') ?? [];
-                                        $selectedProjects = $get('project_ids') ?? [];
-                                        $selectedDocuments = $get('document_ids') ?? [];
-                                        $selectedUrls = $get('important_url_ids') ?? [];
-
-                                        return [
-                                            'clientIds' => $clientIds,
-                                            'selectedProjects' => $selectedProjects,
-                                            'selectedDocuments' => $selectedDocuments,
-                                            'selectedUrls' => $selectedUrls,
-                                        ];
-                                    })
-                                    ->visible(
-                                        fn (Forms\Get $get) => ! empty($get('project_ids')) ||
-                                        ! empty($get('document_ids')) ||
-                                        ! empty($get('important_url_ids'))
-                                    )
-                                    ->live()
-                                    ->columnSpanFull(),
-                            ]),
+                                return ! empty($selectedProjects) || ! empty($selectedDocuments) || ! empty($selectedUrls);
+                            })
+                            ->live()
+                            ->columnSpanFull(),
                     ]),
 
                 // 3rd section (full span width) (able to collapsed) (default collapsed)
@@ -826,25 +751,6 @@ class EventResource extends Resource
                     ->collapsible()
                     ->collapsed()
                     ->schema([
-                        Infolists\Components\TextEntry::make('client_ids')
-                            ->label('Client(s)')
-                            ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return __('No clients selected');
-                                }
-
-                                $clientIds = is_array($state) ? $state : json_decode($state, true);
-                                if (! is_array($clientIds)) {
-                                    return __('No clients selected');
-                                }
-
-                                $clients = \App\Models\Client::withTrashed()->whereIn('id', $clientIds)->pluck('pic_name')->toArray();
-
-                                return implode(', ', $clients);
-                            })
-                            ->columnSpanFull()
-                            ->placeholder(__('No clients selected')),
-
                         Infolists\Components\TextEntry::make('project_ids')
                             ->label('Project(s)')
                             ->formatStateUsing(function ($state) {
@@ -857,7 +763,7 @@ class EventResource extends Resource
                                     return __('No projects selected');
                                 }
 
-                                $projects = \App\Models\Project::withTrashed()->whereIn('id', $projectIds)->pluck('title')->toArray();
+                                $projects = \App\Models\Project::whereIn('id', $projectIds)->pluck('title')->toArray();
 
                                 return implode(', ', $projects);
                             })
@@ -876,7 +782,7 @@ class EventResource extends Resource
                                     return __('No documents selected');
                                 }
 
-                                $documents = \App\Models\Document::withTrashed()->whereIn('id', $documentIds)->pluck('title')->toArray();
+                                $documents = \App\Models\Document::whereIn('id', $documentIds)->pluck('title')->toArray();
 
                                 return implode(', ', $documents);
                             })
@@ -895,7 +801,7 @@ class EventResource extends Resource
                                     return __('No important URLs selected');
                                 }
 
-                                $urls = \App\Models\ImportantUrl::withTrashed()->whereIn('id', $urlIds)->pluck('title')->toArray();
+                                $urls = \App\Models\ImportantUrl::whereIn('id', $urlIds)->pluck('title')->toArray();
 
                                 return implode(', ', $urls);
                             })
