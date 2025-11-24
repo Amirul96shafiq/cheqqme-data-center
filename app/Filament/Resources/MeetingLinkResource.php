@@ -621,7 +621,27 @@ class MeetingLinkResource extends Resource
                             // -----------------------------
                             // Meeting Resources Section (Full Width)
                             // -----------------------------
-                            Forms\Components\Section::make(__('meetinglink.form.meeting_resources'))
+                            Forms\Components\Section::make()
+                                ->heading(function (Forms\Get $get) {
+                                    // Count the number of resources selected
+                                    $client = $get('client_ids') ?? [];
+                                    $project = $get('project_ids') ?? [];
+                                    $document = $get('document_ids') ?? [];
+                                    $importantUrl = $get('important_url_ids') ?? [];
+
+                                    // Ensure arrays are countable (handle corrupted data)
+                                    $clientCount = is_array($client) ? count($client) : 0;
+                                    $projectCount = is_array($project) ? count($project) : 0;
+                                    $documentCount = is_array($document) ? count($document) : 0;
+                                    $importantUrlCount = is_array($importantUrl) ? count($importantUrl) : 0;
+
+                                    $count = $clientCount + $projectCount + $documentCount + $importantUrlCount;
+
+                                    $title = __('meetinglink.form.meeting_resources');
+                                    $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+
+                                    return new \Illuminate\Support\HtmlString($title.' '.$badge);
+                                })
                                 ->schema([
                                     // Client
                                     Forms\Components\Select::make('client_ids')
@@ -828,6 +848,7 @@ class MeetingLinkResource extends Resource
                                 ->collapsible()
                                 ->collapsed(fn (Forms\Get $get) => empty($get('client_ids')) && empty($get('project_ids')) && empty($get('document_ids')) && empty($get('important_url_ids'))
                                 )
+                                ->live()
                                 ->columnSpan([
                                     'default' => 1,
                                     'xl' => 5,
@@ -1249,19 +1270,37 @@ class MeetingLinkResource extends Resource
                     ->visible(fn ($record) => in_array($record->meeting_platform, ['Google Meet', 'Zoom Meeting'])),
 
                 // Meeting Resources Section (matches third section in form)
-                Infolists\Components\Section::make(__('meetinglink.form.meeting_resources'))
+                Infolists\Components\Section::make()
+                    ->heading(function ($record) {
+                        // Count the number of resources selected
+                        $client = $record->client_ids ?? [];
+                        $project = $record->project_ids ?? [];
+                        $document = $record->document_ids ?? [];
+                        $importantUrl = $record->important_url_ids ?? [];
+
+                        // Ensure arrays are countable (handle corrupted data)
+                        $clientCount = is_array($client) ? count($client) : 0;
+                        $projectCount = is_array($project) ? count($project) : 0;
+                        $documentCount = is_array($document) ? count($document) : 0;
+                        $importantUrlCount = is_array($importantUrl) ? count($importantUrl) : 0;
+
+                        $count = $clientCount + $projectCount + $documentCount + $importantUrlCount;
+
+                        $title = __('meetinglink.form.meeting_resources');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+
+                        return new \Illuminate\Support\HtmlString($title.' '.$badge);
+                    })
                     ->collapsible()
                     ->collapsed()
                     ->schema([
                         Infolists\Components\TextEntry::make('client_ids')
                             ->label('Client(s)')
-                            ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return __('No clients selected');
-                                }
+                            ->formatStateUsing(function ($state, $record) {
+                                // Get the value directly from the record to ensure casting is applied
+                                $clientIds = $record->client_ids;
 
-                                $clientIds = is_array($state) ? $state : json_decode($state, true);
-                                if (! is_array($clientIds)) {
+                                if (empty($clientIds) || ! is_array($clientIds)) {
                                     return __('No clients selected');
                                 }
 
@@ -1274,13 +1313,11 @@ class MeetingLinkResource extends Resource
 
                         Infolists\Components\TextEntry::make('project_ids')
                             ->label('Project(s)')
-                            ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return __('No projects selected');
-                                }
+                            ->formatStateUsing(function ($state, $record) {
+                                // Get the value directly from the record to ensure casting is applied
+                                $projectIds = $record->project_ids;
 
-                                $projectIds = is_array($state) ? $state : json_decode($state, true);
-                                if (! is_array($projectIds)) {
+                                if (empty($projectIds) || ! is_array($projectIds)) {
                                     return __('No projects selected');
                                 }
 
@@ -1293,13 +1330,11 @@ class MeetingLinkResource extends Resource
 
                         Infolists\Components\TextEntry::make('document_ids')
                             ->label('Document(s)')
-                            ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return __('No documents selected');
-                                }
+                            ->formatStateUsing(function ($state, $record) {
+                                // Get the value directly from the record to ensure casting is applied
+                                $documentIds = $record->document_ids;
 
-                                $documentIds = is_array($state) ? $state : json_decode($state, true);
-                                if (! is_array($documentIds)) {
+                                if (empty($documentIds) || ! is_array($documentIds)) {
                                     return __('No documents selected');
                                 }
 
@@ -1312,13 +1347,11 @@ class MeetingLinkResource extends Resource
 
                         Infolists\Components\TextEntry::make('important_url_ids')
                             ->label('Important URL(s)')
-                            ->formatStateUsing(function ($state) {
-                                if (empty($state)) {
-                                    return __('No important URLs selected');
-                                }
+                            ->formatStateUsing(function ($state, $record) {
+                                // Get the value directly from the record to ensure casting is applied
+                                $urlIds = $record->important_url_ids;
 
-                                $urlIds = is_array($state) ? $state : json_decode($state, true);
-                                if (! is_array($urlIds)) {
+                                if (empty($urlIds) || ! is_array($urlIds)) {
                                     return __('No important URLs selected');
                                 }
 
