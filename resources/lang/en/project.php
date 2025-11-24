@@ -56,8 +56,8 @@ return [
         // Visibility Status Actions
         'make_draft' => 'Change to Draft',
         'make_active' => 'Change to Active',
-        'make_draft_tooltip' => 'Change this project to Draft status (only you can see it)',
-        'make_active_tooltip' => 'Change this project to Active status (all users can see it)',
+        'make_draft_tooltip' => 'Change this project to Draft (Only visible to creator)',
+        'make_active_tooltip' => 'Change this project to Active (Visible to all users)',
         'visibility_status_updated' => 'Visibility status updated successfully',
         'project_activated' => 'Project is now Active and visible to all users.',
         'project_made_draft' => 'Project is now in Draft mode and only visible to you.',

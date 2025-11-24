@@ -56,8 +56,8 @@ return [
         // Visibility Status Actions
         'make_draft' => 'Tukar ke Draf',
         'make_active' => 'Tukar ke Aktif',
-        'make_draft_tooltip' => 'Tukar projek ini ke status Draf (hanya anda boleh melihatnya)',
-        'make_active_tooltip' => 'Tukar projek ini ke status Aktif (semua pengguna boleh melihatnya)',
+        'make_draft_tooltip' => 'Tukar projek ini ke Draf (Hanya anda boleh melihatnya)',
+        'make_active_tooltip' => 'Tukar projek ini ke Aktif (Semua pengguna boleh melihatnya)',
         'visibility_status_updated' => 'Status keterlihatan berjaya dikemaskini',
         'project_activated' => 'Projek kini Aktif dan boleh dilihat oleh semua pengguna.',
         'project_made_draft' => 'Projek kini dalam mod Draf dan hanya boleh dilihat oleh anda.',
