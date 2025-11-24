@@ -615,7 +615,7 @@ class EventResource extends Resource
                     ->label(__('event.table.status'))
                     ->colors([
                         'success' => 'active',
-                        'warning' => 'draft',
+                        'gray' => 'draft',
                     ])
                     ->formatStateUsing(fn (string $state): string => __('event.table.status_'.$state))
                     ->toggleable(),
@@ -943,13 +943,11 @@ class EventResource extends Resource
                             ->badge()
                             ->color(fn (string $state): string => match ($state) {
                                 'active' => 'success',
-                                'draft' => 'warning',
-                                default => 'gray',
+                                'draft' => 'gray',
                             })
                             ->formatStateUsing(fn (string $state): string => match ($state) {
                                 'active' => __('event.form.status_active'),
                                 'draft' => __('event.form.status_draft'),
-                                default => $state,
                             }),
 
                         Infolists\Components\Grid::make(2)

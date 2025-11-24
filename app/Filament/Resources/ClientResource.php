@@ -497,7 +497,7 @@ class ClientResource extends Resource
                     ->badge()
                     ->color(fn (string $state) => match ($state) {
                         'active' => 'success',
-                        'draft' => 'warning',
+                        'draft' => 'gray',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state) => match ($state) {
@@ -779,7 +779,7 @@ class ClientResource extends Resource
                             ->badge()
                             ->color(fn (string $state): string => match ($state) {
                                 'active' => 'success',
-                                'draft' => 'warning',
+                                'draft' => 'gray',
                                 default => 'gray',
                             })
                             ->formatStateUsing(fn (string $state): string => match ($state) {
