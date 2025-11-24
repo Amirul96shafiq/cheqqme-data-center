@@ -774,9 +774,15 @@ class EventResource extends Resource
                                     return __('No projects selected');
                                 }
 
-                                $projects = \App\Models\Project::whereIn('id', $projectIds)->pluck('title')->toArray();
+                                $projects = \App\Models\Project::withTrashed()->whereIn('id', $projectIds)->get(['id', 'title']);
 
-                                return implode(', ', $projects);
+                                $links = $projects->map(function ($project) {
+                                    $url = $project->trashed() ? null : route('filament.admin.resources.projects.edit', $project->id);
+
+                                    return $url ? '<a href="'.$url.'" class="text-primary-600 hover:text-primary-700 underline" target="_blank" rel="noopener noreferrer">'.e($project->title).'</a>' : e($project->title);
+                                });
+
+                                return new \Illuminate\Support\HtmlString(implode(', ', $links->toArray()));
                             })
                             ->columnSpanFull()
                             ->placeholder(__('No projects selected')),
@@ -791,9 +797,28 @@ class EventResource extends Resource
                                     return __('No documents selected');
                                 }
 
-                                $documents = \App\Models\Document::whereIn('id', $documentIds)->pluck('title')->toArray();
+                                $documents = \App\Models\Document::withTrashed()->whereIn('id', $documentIds)->get(['id', 'title', 'type', 'file_path', 'url']);
 
-                                return implode(', ', $documents);
+                                $links = $documents->map(function ($document) {
+                                    $url = null;
+
+                                    if (! $document->trashed()) {
+                                        if ($document->type === 'internal' && $document->file_path) {
+                                            // For internal documents, link to the uploaded file
+                                            $url = asset('storage/'.$document->file_path);
+                                        } elseif ($document->type === 'external' && $document->url) {
+                                            // For external documents, use the provided URL
+                                            $url = $document->url;
+                                        } else {
+                                            // Fall back to edit page
+                                            $url = route('filament.admin.resources.documents.edit', $document->id);
+                                        }
+                                    }
+
+                                    return $url ? '<a href="'.$url.'" class="text-primary-600 hover:text-primary-700 underline"'.($document->type === 'internal' && $document->file_path ? ' target="_blank" rel="noopener noreferrer"' : '').'>'.e($document->title).'</a>' : e($document->title);
+                                });
+
+                                return new \Illuminate\Support\HtmlString(implode(', ', $links->toArray()));
                             })
                             ->columnSpanFull()
                             ->placeholder(__('No documents selected')),
@@ -808,9 +833,15 @@ class EventResource extends Resource
                                     return __('No important URLs selected');
                                 }
 
-                                $urls = \App\Models\ImportantUrl::whereIn('id', $urlIds)->pluck('title')->toArray();
+                                $urls = \App\Models\ImportantUrl::withTrashed()->whereIn('id', $urlIds)->get(['id', 'title']);
 
-                                return implode(', ', $urls);
+                                $links = $urls->map(function ($url) {
+                                    $editUrl = $url->trashed() ? null : route('filament.admin.resources.important-urls.edit', $url->id);
+
+                                    return $editUrl ? '<a href="'.$editUrl.'" class="text-primary-600 hover:text-primary-700 underline" target="_blank" rel="noopener noreferrer">'.e($url->title).'</a>' : e($url->title);
+                                });
+
+                                return new \Illuminate\Support\HtmlString(implode(', ', $links->toArray()));
                             })
                             ->columnSpanFull()
                             ->placeholder(__('No important URLs selected')),
