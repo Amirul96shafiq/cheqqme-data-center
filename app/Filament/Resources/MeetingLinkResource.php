@@ -826,7 +826,8 @@ class MeetingLinkResource extends Resource
                                         ]),
                                 ])
                                 ->collapsible()
-                                ->collapsed()
+                                ->collapsed(fn (Forms\Get $get) => empty($get('client_ids')) && empty($get('project_ids')) && empty($get('document_ids')) && empty($get('important_url_ids'))
+                                )
                                 ->columnSpan([
                                     'default' => 1,
                                     'xl' => 5,
