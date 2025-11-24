@@ -25,7 +25,9 @@ return [
     'action-6-title' => 'Pengguna',
     'action-6-description' => 'Lihat dan urus pengguna sistem rakan kerja anda di sini',
     'action-7-title' => 'Sejarah Chatbot',
-    'action-7-description' => 'Urus sandaran perbualan chatbot anda dan pulihkan perbualan sebelumnya',
+    'action-7-description' => 'Urus sandaran perbualan chatbot anda dan titik pulihannya di sini',
+    'action-8-title' => 'Acara',
+    'action-8-description' => 'Urus dan jejak acara serta jadual anda di sini',
 
     // Footer modal content
     'footer-text' => 'Menyegerakkan data terkini...',

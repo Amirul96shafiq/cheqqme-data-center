@@ -25,7 +25,9 @@ return [
     'action-6-title' => 'Users',
     'action-6-description' => 'View and manage colleagues\' system users here',
     'action-7-title' => 'Chatbot History',
-    'action-7-description' => 'Manage your chatbot conversation backups and restore previous conversations',
+    'action-7-description' => 'Manage your chatbot conversation backups and it\'s restore points here',
+    'action-8-title' => 'Events',
+    'action-8-description' => 'Manage and track your events and schedules here',
 
     // Footer modal content
     'footer-text' => 'Syncing last updated data...',

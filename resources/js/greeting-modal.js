@@ -257,6 +257,11 @@ function navigateToPhoneNumbers() {
     window.location.href = "/admin/phone-numbers";
 }
 
+function navigateToEvents() {
+    closeGreetingModal();
+    window.location.href = "/admin/events";
+}
+
 // Make navigation functions globally available
 window.navigateToProfile = navigateToProfile;
 window.navigateToSettings = navigateToSettings;
@@ -270,6 +275,7 @@ window.navigateToProjects = navigateToProjects;
 window.navigateToDocuments = navigateToDocuments;
 window.navigateToImportantUrls = navigateToImportantUrls;
 window.navigateToPhoneNumbers = navigateToPhoneNumbers;
+window.navigateToEvents = navigateToEvents;
 
 // Scroll to weather section function
 function scrollToWeatherSection() {
@@ -1354,6 +1360,13 @@ function toggleChatbotHistoryVideo() {
     );
 }
 
+function toggleEventsVideo() {
+    toggleGenericVideo(
+        "events-video",
+        'button:not([onclick="toggleEventsVideo()"])'
+    );
+}
+
 // Generic video toggle function
 function toggleGenericVideo(videoId, otherActionsSelector) {
     const videoContainer = document.getElementById(videoId);
@@ -1540,6 +1553,7 @@ window.toggleSettingsVideo = toggleSettingsVideo;
 window.toggleActionBoardVideo = toggleActionBoardVideo;
 window.toggleMeetingLinksVideo = toggleMeetingLinksVideo;
 window.toggleChatbotHistoryVideo = toggleChatbotHistoryVideo;
+window.toggleEventsVideo = toggleEventsVideo;
 window.toggleUsersVideo = toggleUsersVideo;
 window.toggleVideoPlay = toggleVideoPlay;
 window.playVideoInFullscreen = playVideoInFullscreen;
