@@ -1188,7 +1188,6 @@ import { init, Picker } from "emoji-mart";
                     "places",
                     "objects",
                     "symbols",
-                    "flags",
                 ],
             });
 

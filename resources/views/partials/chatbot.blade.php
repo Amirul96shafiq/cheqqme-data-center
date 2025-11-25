@@ -417,51 +417,23 @@
     color: inherit !important;
 }
 
-/* ===== PICMO EMOJI PICKER STYLING ===== */
-
-/* Base picmo picker styling */
-.chatbot-emoji-picker {
-    width: 100% !important;
-    height: 100% !important;
-    font-family: inherit !important;
+/* Active category icon color */
+emoji-picker {
+    --rgb-accent: 251, 180, 62; /* primary-500 / amber-500 for active elements */
+    --rgb-input: 63, 63, 70;
 }
 
-/* Category buttons */
-.chatbot-emoji-picker .picmo__categoryButton {
-    border-radius: 0.375rem !important;
-    transition: all 0.2s ease !important;
+/* Emoji picker custom styling for dark mode */
+.dark #emoji-picker-container {
+    border: 1px solid rgb(63, 63, 70) !important; /* zinc-700 border */
+    border-radius: 12px !important; /* rounded corners */
+    overflow: hidden !important; /* ensure border-radius works */
 }
 
-/* Emoji buttons */
-.chatbot-emoji-picker .picmo__emoji {
-    border-radius: 0.25rem !important;
-    transition: all 0.2s ease !important;
+.dark emoji-picker {
+    --background-rgb: 39, 39, 42; /* zinc-800 */
+    --rgb-background: 39, 39, 42; /* zinc-800 for various background elements */
 }
-
-/* Search input */
-.chatbot-emoji-picker .picmo__search {
-    border-radius: 0.375rem !important;
-    border: 1px solid rgb(209 213 219) !important;
-    background-color: rgb(249 250 251) !important;
-    color: rgb(0 0 0) !important;
-    font-size: 0.875rem !important;
-    padding: 0.5rem 0.75rem !important;
-    transition: all 0.2s ease !important;
-}
-
-.chatbot-emoji-picker .picmo__search:focus {
-    outline: none !important;
-    border-color: rgb(0 174 159) !important;
-    box-shadow: 0 0 0 2px rgb(0 174 159 / 0.2) !important;
-}
-
-/* Dark mode overrides */
-.dark .chatbot-emoji-picker .picmo__search {
-    border-color: rgb(75 85 99) !important;
-    background-color: rgb(55 65 81) !important;
-    color: rgb(255 255 255) !important;
-}
-    
 
 </style>
 
