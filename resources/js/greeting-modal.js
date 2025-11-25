@@ -1433,6 +1433,10 @@ function toggleGenericVideo(videoId, otherActionsSelector) {
                 iconContainer = quickActionsContainer.querySelector(
                     'button[onclick*="toggleChatbotHistoryVideo"] [x-data*="isVideoActive"]'
                 );
+            } else if (videoId === "events-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleEventsVideo"] [x-data*="isVideoActive"]'
+                );
             }
 
             if (iconContainer && iconContainer._x_dataStack) {
@@ -1509,6 +1513,10 @@ function toggleGenericVideo(videoId, otherActionsSelector) {
             } else if (videoId === "chatbot-history-video") {
                 iconContainer = quickActionsContainer.querySelector(
                     'button[onclick*="toggleChatbotHistoryVideo"] [x-data*="isVideoActive"]'
+                );
+            } else if (videoId === "events-video") {
+                iconContainer = quickActionsContainer.querySelector(
+                    'button[onclick*="toggleEventsVideo"] [x-data*="isVideoActive"]'
                 );
             }
 
