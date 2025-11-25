@@ -586,8 +586,8 @@
         // Get name tag class
         const nameTagClass =
             role === "user"
-                ? "font-semibold text-xs chatbot-user-name-tag"
-                : "font-semibold text-xs chatbot-ai-name-tag";
+                ? "font-semibold text-xs chatbot-user-name-tag mb-2"
+                : "font-semibold text-xs chatbot-ai-name-tag mb-2";
 
         // Check if content is a single emoji
         const isEmoji = isSingleEmoji(content);
@@ -597,7 +597,7 @@
             ? "chatbot-emoji-message"
             : role === "user"
             ? "fi-section bg-[#00AE9F] border-[#00AE9F] chatbot-user-message message-bubble user-message"
-            : "fi-section bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 chatbot-assistant-message message-bubble";
+            : "fi-section bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 chatbot-assistant-message message-bubble";
 
         // Get content class - make emoji bigger
         const contentClass = isEmoji
@@ -666,6 +666,10 @@
             }
         } else {
             // For regular messages, use bubble styling
+            const borderRadiusClass =
+                role === "user"
+                    ? "rounded-xl rounded-tr-none"
+                    : "rounded-xl rounded-tl-none";
             messageDiv.innerHTML =
                 '<div class="' +
                 nameTagClass +
@@ -674,7 +678,9 @@
                 "</div>" +
                 '<div class="' +
                 messageClass +
-                ' rounded-xl px-4 py-3 shadow-sm border max-w-[80%]">' +
+                " " +
+                borderRadiusClass +
+                ' px-4 py-3 border max-w-[80%]">' +
                 '<div class="' +
                 contentClass +
                 '">' +
@@ -731,7 +737,7 @@
         loadingDiv.className = "flex flex-col space-y-1 items-start";
         loadingDiv.innerHTML =
             '<div class="text-gray-600 dark:text-gray-400 font-semibold text-sm px-1">Arem AI</div>' +
-            '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%] message-bubble typing-indicator">' +
+            '<div class="fi-section bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl rounded-tl-none px-4 py-3 max-w-[80%] message-bubble typing-indicator">' +
             '<div class="flex items-center space-x-3">' +
             '<div class="flex space-x-1">' +
             '<div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce"></div>' +
@@ -855,7 +861,7 @@
             chatMessages.innerHTML =
                 '<div class="flex flex-col space-y-1 items-start">' +
                 '<div class="text-gray-600 dark:text-gray-400 font-semibold text-sm px-1">Arem AI</div>' +
-                '<div class="fi-section bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 shadow-sm max-w-[80%] message-bubble">' +
+                '<div class="fi-section bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 max-w-[80%] message-bubble">' +
                 '<p class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">' +
                 (window.chatbot?.clearing_message ||
                     "Clearing conversation...") +

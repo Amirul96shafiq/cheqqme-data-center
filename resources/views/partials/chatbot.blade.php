@@ -494,7 +494,7 @@
         </div>
 
         <!-- Chat Messages -->
-        <div class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-6 space-y-4 bg-gray-50/50 dark:bg-gray-900/50" id="chat-messages" style="min-height: 180px; overflow-y: scroll; overflow-x: hidden;">
+        <div class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-6 space-y-6 bg-gray-50/50 dark:bg-gray-900/50" id="chat-messages" style="min-height: 180px; overflow-y: scroll; overflow-x: hidden;">
         <!-- Messages will be dynamically loaded here -->
         </div>
 
