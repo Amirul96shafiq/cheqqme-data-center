@@ -78,6 +78,11 @@ return [
         'description' => 'View all :total Wishlist Items →',
     ],
 
+    'your_events' => [
+        'title' => 'Your Invited Events',
+        'description' => 'View all :total Events →',
+    ],
+
     'total_trello_boards' => [
         'title' => 'Total Trello Boards',
     ],

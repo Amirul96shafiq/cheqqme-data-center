@@ -4,11 +4,13 @@ namespace App\Filament\Widgets;
 
 use App\Filament\Pages\ActionBoard;
 use App\Filament\Resources\ClientResource;
+use App\Filament\Resources\EventResource;
 use App\Filament\Resources\ImportantUrlResource;
 use App\Filament\Resources\MeetingLinkResource;
 use App\Filament\Resources\PhoneNumberResource;
 use App\Filament\Resources\TrelloBoardResource;
 use App\Models\Client;
+use App\Models\Event;
 use App\Models\ImportantUrl;
 use App\Models\MeetingLink;
 use App\Models\PhoneNumber;
@@ -31,9 +33,12 @@ class TotalWidget extends BaseWidget
 
     public int $viewState = 0; // 0=tasks, 1=issues, 2=wishlists
 
+    public int $meetingViewState = 0; // 0=meeting_links, 1=events
+
     public function mount(): void
     {
         $this->viewState = $this->getStoredViewPreference();
+        $this->meetingViewState = $this->getStoredMeetingViewPreference();
     }
 
     protected function getColumns(): int
@@ -46,6 +51,13 @@ class TotalWidget extends BaseWidget
         $this->viewState = ($this->viewState + 1) % 3; // Cycle through 0, 1, 2
 
         $this->persistViewPreference();
+    }
+
+    public function toggleMeetingView(): void
+    {
+        $this->meetingViewState = ($this->meetingViewState + 1) % 2; // Cycle through 0, 1
+
+        $this->persistMeetingViewPreference();
     }
 
     protected function getStats(): array
@@ -129,14 +141,55 @@ class TotalWidget extends BaseWidget
             ->count();
     }
 
+    protected function getUserInvitedEventsCount(): int
+    {
+        $userId = Auth::id();
+
+        if (! $userId) {
+            return 0;
+        }
+
+        // Count events where the user is invited (user ID is in invited_user_ids array)
+        return Event::where(function ($query) use ($userId) {
+            $query->whereRaw('JSON_EXTRACT(invited_user_ids, "$") LIKE ?', ['%"'.$userId.'"%'])
+                ->orWhereRaw('JSON_EXTRACT(invited_user_ids, "$") LIKE ?', ['%'.$userId.'%']);
+        })
+            ->visibleToUser($userId)
+            ->count();
+    }
+
+    private function getRotatingMeetingStat()
+    {
+        switch ($this->meetingViewState) {
+            case 1: // Events
+                $invitedEventsCount = $this->getUserInvitedEventsCount();
+                $totalEvents = Event::count();
+
+                return StatWithMeetingCycleButton::make(__('dashboard.your_events.title'), $invitedEventsCount)
+                    ->description(__('dashboard.your_events.description', ['total' => $totalEvents]))
+                    ->color('primary')
+                    ->icon(EventResource::getNavigationIcon()) // Use calendar icon for events
+                    ->url(route('filament.admin.resources.events.index'))
+                    ->extraAttributes([
+                        'class' => 'relative',
+                    ]);
+
+            default: // Meeting Links (case 0)
+                return StatWithMeetingCycleButton::make(__('dashboard.your_meeting_links.title'), $this->getUserMeetingLinksCount())
+                    ->description(__('dashboard.your_meeting_links.description', ['total' => MeetingLink::count()]))
+                    ->color('primary')
+                    ->icon(MeetingLinkResource::getNavigationIcon())
+                    ->url(route('filament.admin.resources.meeting-links.index'))
+                    ->extraAttributes([
+                        'class' => 'relative',
+                    ]);
+        }
+    }
+
     private function getSharedStats(): array
     {
         return [
-            Stat::make(__('dashboard.your_meeting_links.title'), $this->getUserMeetingLinksCount())
-                ->description(__('dashboard.your_meeting_links.description', ['total' => MeetingLink::count()]))
-                ->color('primary')
-                ->icon(MeetingLinkResource::getNavigationIcon())
-                ->url(route('filament.admin.resources.meeting-links.index')),
+            $this->getRotatingMeetingStat(),
 
             Stat::make(__('dashboard.total_trello_boards.title'), TrelloBoard::count())
                 ->description(__('dashboard.actions.view_all_trello_boards'))
@@ -235,8 +288,35 @@ class TotalWidget extends BaseWidget
         session()->put($this->getSessionKey($userId), $this->viewState);
     }
 
+    private function persistMeetingViewPreference(): void
+    {
+        $userId = Auth::id();
+
+        if (! $userId) {
+            return;
+        }
+
+        session()->put($this->getMeetingSessionKey($userId), $this->meetingViewState);
+    }
+
+    private function getStoredMeetingViewPreference(): int
+    {
+        $userId = Auth::id();
+
+        if (! $userId) {
+            return 0;
+        }
+
+        return (int) session()->get($this->getMeetingSessionKey($userId), 0);
+    }
+
     private function getSessionKey(int $userId): string
     {
         return 'widgets.total.show_issue_trackers.user_'.$userId;
+    }
+
+    private function getMeetingSessionKey(int $userId): string
+    {
+        return 'widgets.total.meeting_view.user_'.$userId;
     }
 }

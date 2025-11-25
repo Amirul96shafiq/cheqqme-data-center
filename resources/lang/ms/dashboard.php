@@ -78,6 +78,11 @@ return [
         'description' => 'Lihat Semua :total Item Senarai Wishlist →',
     ],
 
+    'your_events' => [
+        'title' => 'Acara Anda Diundang',
+        'description' => 'Lihat Semua :total Acara →',
+    ],
+
     'total_trello_boards' => [
         'title' => 'Jumlah Papan Trello',
     ],
