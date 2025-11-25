@@ -628,16 +628,16 @@
                 contentClass +
                 '">' +
                 "</div>" +
+                "</div>" +
                 '<div class="' +
                 timeClass +
-                ' text-xs text-gray-500 dark:text-gray-400 mt-1">' +
+                '">' +
                 (timestamp ||
                     new Date().toLocaleTimeString("en-US", {
                         hour: "numeric",
                         minute: "2-digit",
                         hour12: true,
                     })) +
-                "</div>" +
                 "</div>";
 
             // Get the content div and add animated emoji
@@ -686,6 +686,7 @@
                 '">' +
                 normalizeContent(marked.parse(processTranslation(content))) +
                 "</div>" +
+                "</div>" +
                 '<div class="' +
                 timeClass +
                 '">' +
@@ -695,7 +696,6 @@
                         minute: "2-digit",
                         hour12: true,
                     })) +
-                "</div>" +
                 "</div>";
 
             // Replace emojis in regular messages with animated versions

@@ -247,20 +247,28 @@
         width: 100%;
     }
     
-    /* User timestamp: white */
+    /* User timestamp: dark gray for visibility on light background */
     .chatbot-user-timestamp {
-        color: white !important;
+        color: #374151 !important; /* gray-700 */
         font-size: 0.7rem;
-        margin-top: 0.5rem;
+        margin-top: 0.25rem;
         font-weight: 500;
+        text-align: right !important;
+        width: 100%;
+        max-width: 80%;
+        display: block !important;
     }
-    
+
     /* AI timestamp: #00000050 */
     .chatbot-assistant-timestamp {
         color: #00000080 !important;
         font-size: 0.7rem;
-        margin-top: 0.5rem;
+        margin-top: 0.25rem;
         font-weight: 500;
+        text-align: left !important;
+        width: 100%;
+        max-width: 80%;
+        display: block !important;
     }
     
     /* === DARK MODE (Class-based) === */
@@ -277,9 +285,11 @@
         color: white !important;
     }
 
-    .dark .chatbot-user-timestamp,
-    .dark .chatbot-assistant-timestamp {
+    .dark .chatbot-user-timestamp {
         color: rgba(255, 255, 255, 0.80) !important;
+    }
+    .dark .chatbot-assistant-timestamp {
+        color: rgba(255, 255, 255, 0.60) !important;
     }
     
     /* ===== MARKDOWN CONTENT STYLING ===== */
