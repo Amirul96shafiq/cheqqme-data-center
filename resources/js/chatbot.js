@@ -1059,9 +1059,6 @@ import { init, Picker } from "emoji-mart";
         }
 
         if (isCurrentlyHidden) {
-            // Position the emoji picker exactly beside the chatbot box with a small gap
-            const chatRect = chatbotInterface.getBoundingClientRect();
-
             // Make picker visible first to get accurate dimensions
             emojiPickerContainer.classList.remove("hidden");
             emojiPickerContainer.style.opacity = "0";
@@ -1070,21 +1067,36 @@ import { init, Picker } from "emoji-mart";
             const emojiPickerWidth = emojiPicker.offsetWidth || 352; // Default emoji picker width
             const emojiPickerHeight = emojiPicker.offsetHeight || 400; // Get actual height or fallback
 
-            // Calculate position: left of chatbox with a small gap (12px)
-            const gap = 12; // Gap between chatbot box and emoji picker
-            const leftPosition = chatRect.left - emojiPickerWidth - gap;
+            // Check if mobile (same breakpoint as CSS: 768px)
+            const isMobile = window.innerWidth <= 768;
 
-            // Align bottom of emoji picker with bottom of chatbot box
-            const topPosition = chatRect.bottom - emojiPickerHeight;
+            if (isMobile) {
+                // Center the emoji picker on mobile
+                const centerX = (window.innerWidth - emojiPickerWidth) / 2;
+                const centerY = (window.innerHeight - emojiPickerHeight) / 2;
 
-            // Ensure it doesn't go off-screen on the left
-            const finalLeftPosition = Math.max(20, leftPosition);
+                emojiPickerContainer.style.left = centerX + "px";
+                emojiPickerContainer.style.top = centerY + "px";
+            } else {
+                // Desktop: Position beside chatbot box with bottom alignment
+                const chatRect = chatbotInterface.getBoundingClientRect();
 
-            // Ensure it doesn't go off-screen on the top
-            const finalTopPosition = Math.max(20, topPosition);
+                // Calculate position: left of chatbox with a small gap (12px)
+                const gap = 12; // Gap between chatbot box and emoji picker
+                const leftPosition = chatRect.left - emojiPickerWidth - gap;
 
-            emojiPickerContainer.style.left = finalLeftPosition + "px";
-            emojiPickerContainer.style.top = finalTopPosition + "px";
+                // Align bottom of emoji picker with bottom of chatbot box
+                const topPosition = chatRect.bottom - emojiPickerHeight;
+
+                // Ensure it doesn't go off-screen on the left
+                const finalLeftPosition = Math.max(20, leftPosition);
+
+                // Ensure it doesn't go off-screen on the top
+                const finalTopPosition = Math.max(20, topPosition);
+
+                emojiPickerContainer.style.left = finalLeftPosition + "px";
+                emojiPickerContainer.style.top = finalTopPosition + "px";
+            }
 
             // Add animation
             emojiPickerContainer.style.transform =
@@ -1304,13 +1316,37 @@ import { init, Picker } from "emoji-mart";
         const emojiPickerContainer = document.getElementById(
             "emoji-picker-container"
         );
+        const emojiPicker = document.getElementById("emoji-picker");
+        const chatbotInterface = document.getElementById("chatbot-interface");
+
         if (
             emojiPickerContainer &&
+            emojiPicker &&
+            chatbotInterface &&
             !emojiPickerContainer.classList.contains("hidden")
         ) {
-            // Close the picker on resize to avoid positioning issues
-            const fakeEvent = { target: null, isCloseAction: true };
-            toggleEmojiPicker(fakeEvent);
+            // Reposition the picker based on current screen size
+            const emojiPickerWidth = emojiPicker.offsetWidth || 352;
+            const emojiPickerHeight = emojiPicker.offsetHeight || 400;
+            const isMobile = window.innerWidth <= 768;
+
+            if (isMobile) {
+                // Center on mobile
+                const centerX = (window.innerWidth - emojiPickerWidth) / 2;
+                const centerY = (window.innerHeight - emojiPickerHeight) / 2;
+                emojiPickerContainer.style.left = centerX + "px";
+                emojiPickerContainer.style.top = centerY + "px";
+            } else {
+                // Reposition beside chatbot box on desktop
+                const chatRect = chatbotInterface.getBoundingClientRect();
+                const gap = 12;
+                const leftPosition = chatRect.left - emojiPickerWidth - gap;
+                const topPosition = chatRect.bottom - emojiPickerHeight;
+                const finalLeftPosition = Math.max(20, leftPosition);
+                const finalTopPosition = Math.max(20, topPosition);
+                emojiPickerContainer.style.left = finalLeftPosition + "px";
+                emojiPickerContainer.style.top = finalTopPosition + "px";
+            }
         }
     });
 
