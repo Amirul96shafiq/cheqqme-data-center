@@ -1045,14 +1045,22 @@ import { init, Picker } from "emoji-mart";
         }
 
         if (isCurrentlyHidden) {
-            // Position the emoji picker on the left side of the chatbox
+            // Position the emoji picker exactly beside the chatbot box with a small gap
             const chatRect = chatbotInterface.getBoundingClientRect();
 
-            // Calculate position: left of chatbox with some spacing
-            const leftPosition = chatRect.left - 420; // 400px width + 20px spacing
+            // Make picker visible first to get accurate dimensions
+            emojiPickerContainer.classList.remove("hidden");
+            emojiPickerContainer.style.opacity = "0";
 
-            // Calculate top position so that bottom of emoji picker aligns with bottom of chatbox
+            // Get emoji picker dimensions after making it visible
+            const emojiPickerWidth = emojiPicker.offsetWidth || 352; // Default emoji picker width
             const emojiPickerHeight = emojiPicker.offsetHeight || 400; // Get actual height or fallback
+
+            // Calculate position: left of chatbox with a small gap (12px)
+            const gap = 12; // Gap between chatbot box and emoji picker
+            const leftPosition = chatRect.left - emojiPickerWidth - gap;
+
+            // Align bottom of emoji picker with bottom of chatbot box
             const topPosition = chatRect.bottom - emojiPickerHeight;
 
             // Ensure it doesn't go off-screen on the left
@@ -1064,10 +1072,7 @@ import { init, Picker } from "emoji-mart";
             emojiPickerContainer.style.left = finalLeftPosition + "px";
             emojiPickerContainer.style.top = finalTopPosition + "px";
 
-            emojiPickerContainer.classList.remove("hidden");
-
             // Add animation
-            emojiPickerContainer.style.opacity = "0";
             emojiPickerContainer.style.transform =
                 "translateX(20px) scale(0.95)";
             requestAnimationFrame(() => {
@@ -1169,11 +1174,11 @@ import { init, Picker } from "emoji-mart";
                 previewPosition: "none",
                 skinTonePosition: "none",
                 searchPosition: "sticky",
-                navPosition: "bottom",
+                navPosition: "top",
                 maxFrequentRows: 1,
-                emojiSize: 24,
-                emojiButtonSize: 36,
-                perLine: 8,
+                emojiSize: 32,
+                emojiButtonSize: 52,
+                perLine: 5,
                 categories: [
                     "frequent",
                     "people",
