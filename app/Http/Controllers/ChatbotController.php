@@ -346,6 +346,15 @@ class ChatbotController extends Controller
             $responseBody = $response->json();
             $statusCode = $response->status();
 
+            // Check for invalid API key error (HTTP 401 or error messages containing invalid/unauthorized)
+            if ($statusCode === 401 ||
+                (isset($responseBody['error']['message']) &&
+                 (stripos($responseBody['error']['message'], 'invalid') !== false ||
+                  stripos($responseBody['error']['message'], 'unauthorized') !== false ||
+                  stripos($responseBody['error']['message'], 'api key') !== false))) {
+                throw new \Exception('Invalid OpenAI API key. Please check your API key configuration.');
+            }
+
             // OpenAI returns 429 for rate limits/billing or 402 for payment required
             // Also check error message for credit/billing related issues
             if ($statusCode === 429 || $statusCode === 402 ||

@@ -10,6 +10,7 @@ return [
     'thinking_message' => 'Arem is thinking...',
     'error_message' => 'Sorry, I encountered an error. Please try again.',
     'insufficient_credits_error' => 'OpenAI credits are insufficient. Please check your billing account at here: https://platform.openai.com/settings/organization/billing/overview',
+    'invalid_api_key_error' => 'Invalid OpenAI API key. Please check your API key configuration.',
     'clearing_message' => 'Clearing conversation...',
     'clear_confirmation_message' => 'Are you sure you want to clear the conversation? All conversation will be resetted. (You can still restore it via backup from Chatbot History)',
     'clear_success_message' => 'Conversation cleared successfully!',
