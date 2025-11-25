@@ -381,41 +381,86 @@
         text-decoration: none;
     }
     
-    /* ===== SINGLE EMOJI MESSAGE STYLING ===== */
-    
-    /* Emoji message container - no background, no border */
-    .chatbot-emoji-message {
-        background: none !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0.5rem 1rem !important;
-        max-width: none !important;
-        border-radius: 0 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-    }
-    
-    /* Emoji content - large size, centered */
-    .chatbot-emoji-content {
-        font-size: 4.5rem !important;
-        line-height: 1 !important;
-        text-align: center !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-height: 5rem !important;
-    }
-    
-    /* Emoji timestamp styling */
-    .chatbot-emoji-message .chatbot-user-timestamp,
-    .chatbot-emoji-message .chatbot-assistant-timestamp {
-        text-align: center !important;
-        margin-top: 0.25rem !important;
-        font-size: 0.7rem !important;
-        opacity: 0.7 !important;
-        color: inherit !important;
-    }
+/* ===== SINGLE EMOJI MESSAGE STYLING ===== */
+
+/* Emoji message container - no background, no border */
+.chatbot-emoji-message {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.5rem 1rem !important;
+    max-width: none !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+}
+
+/* Emoji content - large size, centered */
+.chatbot-emoji-content {
+    font-size: 4.5rem !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 5rem !important;
+}
+
+/* Emoji timestamp styling */
+.chatbot-emoji-message .chatbot-user-timestamp,
+.chatbot-emoji-message .chatbot-assistant-timestamp {
+    text-align: center !important;
+    margin-top: 0.25rem !important;
+    font-size: 0.7rem !important;
+    opacity: 0.7 !important;
+    color: inherit !important;
+}
+
+/* ===== PICMO EMOJI PICKER STYLING ===== */
+
+/* Base picmo picker styling */
+.chatbot-emoji-picker {
+    width: 100% !important;
+    height: 100% !important;
+    font-family: inherit !important;
+}
+
+/* Category buttons */
+.chatbot-emoji-picker .picmo__categoryButton {
+    border-radius: 0.375rem !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Emoji buttons */
+.chatbot-emoji-picker .picmo__emoji {
+    border-radius: 0.25rem !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Search input */
+.chatbot-emoji-picker .picmo__search {
+    border-radius: 0.375rem !important;
+    border: 1px solid rgb(209 213 219) !important;
+    background-color: rgb(249 250 251) !important;
+    color: rgb(0 0 0) !important;
+    font-size: 0.875rem !important;
+    padding: 0.5rem 0.75rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.chatbot-emoji-picker .picmo__search:focus {
+    outline: none !important;
+    border-color: rgb(0 174 159) !important;
+    box-shadow: 0 0 0 2px rgb(0 174 159 / 0.2) !important;
+}
+
+/* Dark mode overrides */
+.dark .chatbot-emoji-picker .picmo__search {
+    border-color: rgb(75 85 99) !important;
+    background-color: rgb(55 65 81) !important;
+    color: rgb(255 255 255) !important;
+}
     
 
 </style>
@@ -521,6 +566,7 @@
                         autocorrect="off"
                         spellcheck="false"
                         placeholder="{{ __('chatbot.input.placeholder') }}"
+                        onclick="preventEmojiPickerOnInputClick(event)"
                         class="fi-input w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-white dark:placeholder-gray-400 transition-colors text-sm"
                     >
 
@@ -528,7 +574,7 @@
                     <button
                         type="button"
                         id="emoji-button"
-                        onclick="toggleEmojiPicker()"
+                        onclick="toggleEmojiPicker(event); event.stopPropagation(); event.preventDefault();"
                         class="absolute left-3 top-3 flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors"
                     >
                         @svg('heroicon-o-face-smile', 'w-5 h-5')
@@ -560,17 +606,14 @@
 <!-- Marked.js for Markdown rendering -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
+
 <!-- Lottie Web for animated emojis -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js" integrity="sha512-jEnuDt6jfecCjthQAJ+ed0MTVA++5ZKmlUcmDGBv2vUI/REn6FuIdixLNnQT+vKusE2hhTk2is3cFvv5wA+Sgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-<!-- Emoji Picker Element -->
-<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 
 <!-- Task Comments CSS -->
 @vite('resources/css/task-comments.css')
 
-<!-- Emoji Picker Theme CSS -->
-@vite('resources/css/emoji-picker-theme.css')
 
 <!-- Typing Animation Styles -->
 @vite('resources/css/typing-animation.css')

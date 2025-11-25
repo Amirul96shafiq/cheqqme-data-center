@@ -13,7 +13,6 @@ export default defineConfig({
                 "resources/js/custom-notifications.js",
                 "resources/js/drag-drop-upload.js",
                 "resources/js/document-upload-handler.js",
-                "resources/css/emoji-picker-theme.css",
                 "resources/css/task-comments.css",
                 "resources/js/presence-status.js",
                 "resources/js/kanban-alpine.js",
@@ -49,7 +48,7 @@ export default defineConfig({
                             return "vendor-core";
                         }
                         // UI libraries - larger, less frequently used
-                        if (id.includes("emoji-picker-element")) {
+                        if (id.includes("emoji-mart")) {
                             return "vendor-ui";
                         }
                         // Alpine.js and Livewire are already bundled by Filament
@@ -89,6 +88,6 @@ export default defineConfig({
         reportCompressedSize: true,
     },
     optimizeDeps: {
-        include: ["axios", "laravel-echo", "emoji-picker-element"],
+        include: ["axios", "laravel-echo", "emoji-mart"],
     },
 });
