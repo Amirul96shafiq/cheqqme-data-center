@@ -80,6 +80,11 @@ return [
         'clear' => 'Clear search',
     ],
 
+    // Chat input
+    'input' => [
+        'placeholder' => 'What\'s on your mind?',
+    ],
+
     // Actions menu
     'actions_menu' => [
         'title' => 'Actions',

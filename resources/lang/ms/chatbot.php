@@ -79,6 +79,11 @@ return [
         'clear' => 'Kosongkan carian',
     ],
 
+    // Chat input
+    'input' => [
+        'placeholder' => 'Apa yang ada di dalam hati anda?',
+    ],
+
     // Actions menu
     'actions_menu' => [
         'title' => 'Tindakan',
