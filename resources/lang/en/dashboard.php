@@ -69,7 +69,7 @@ return [
     ],
 
     'your_meeting_links' => [
-        'title' => 'Your Meeting Links',
+        'title' => 'Your Invited Meeting',
         'description' => 'View all :total Meeting Links →',
     ],
 

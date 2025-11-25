@@ -69,7 +69,7 @@ return [
     ],
 
     'your_meeting_links' => [
-        'title' => 'Pautan Mesyuarat Anda',
+        'title' => 'Mesyuarat Anda Diundang',
         'description' => 'Lihat Semua :total Pautan Mesyuarat →',
     ],
 
