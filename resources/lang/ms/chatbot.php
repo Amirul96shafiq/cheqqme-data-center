@@ -9,6 +9,7 @@ return [
     'help_command' => '/help',
     'thinking_message' => 'Arem sedang berfikir...',
     'error_message' => 'Maaf, saya menghadapi ralat. Sila cuba lagi.',
+    'insufficient_credits_error' => 'Kredit OpenAI tidak mencukupi. Sila semak akaun bil anda di sini: https://platform.openai.com/settings/organization/billing/overview',
     'clearing_message' => 'Menghapus perbualan...',
     'clear_confirmation_message' => 'Adakah anda pasti ingin menghapus perbualan? Semua perbualan akan diset semula. (Anda masih boleh pulihkan melalui backup dari Sejarah Chatbot)',
     'clear_success_message' => 'Perbualan berjaya dihapus!',

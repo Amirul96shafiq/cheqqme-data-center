@@ -837,11 +837,25 @@ import { init, Picker } from "emoji-mart";
                         );
                     }
                 } else {
-                    addMessage(
+                    // Try to get the error message from the response
+                    let errorMessage =
                         window.chatbot?.error_message ||
-                            "Sorry, I encountered an error. Please try again.",
-                        "assistant"
-                    );
+                        "Sorry, I encountered an error. Please try again.";
+
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.error) {
+                            errorMessage = errorData.error;
+                        }
+                    } catch (parseError) {
+                        // If we can't parse the error response, use the default message
+                        console.error(
+                            "Failed to parse error response:",
+                            parseError
+                        );
+                    }
+
+                    addMessage(errorMessage, "assistant");
                 }
             } catch (error) {
                 hideLoading();

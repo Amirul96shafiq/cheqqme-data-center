@@ -143,7 +143,7 @@ class ChatbotController extends Controller
 
             // Store an error message in the database so the user can see what happened
             // This ensures the conversation history is complete even when API fails
-            $errorMessage = 'Sorry, I encountered an error. Please try again.';
+            $errorMessage = $e->getMessage();
 
             try {
                 ChatbotConversation::create([
@@ -158,8 +158,8 @@ class ChatbotController extends Controller
                 Log::error('Failed to store error message in database', ['error' => $dbError->getMessage()]);
             }
 
-            // Return an error response
-            return response()->json(['error' => 'Internal server error'], 500);
+            // Return an error response with the specific error message
+            return response()->json(['error' => $errorMessage], 500);
         }
     }
 
@@ -341,6 +341,23 @@ class ChatbotController extends Controller
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
+
+            // Check for insufficient credits error
+            $responseBody = $response->json();
+            $statusCode = $response->status();
+
+            // OpenAI returns 429 for rate limits/billing or 402 for payment required
+            // Also check error message for credit/billing related issues
+            if ($statusCode === 429 || $statusCode === 402 ||
+                (isset($responseBody['error']['message']) &&
+                 stripos($responseBody['error']['message'], 'billing') !== false) ||
+                (isset($responseBody['error']['message']) &&
+                 stripos($responseBody['error']['message'], 'credit') !== false) ||
+                (isset($responseBody['error']['message']) &&
+                 stripos($responseBody['error']['message'], 'insufficient') !== false)) {
+                throw new \Exception('OpenAI credits are insufficient. Please check your billing account at here: https://platform.openai.com/settings/organization/billing/overview');
+            }
+
             throw new \Exception('Failed to communicate with OpenAI.');
         }
 

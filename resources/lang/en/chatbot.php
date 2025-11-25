@@ -9,6 +9,7 @@ return [
     'help_command' => '/help',
     'thinking_message' => 'Arem is thinking...',
     'error_message' => 'Sorry, I encountered an error. Please try again.',
+    'insufficient_credits_error' => 'OpenAI credits are insufficient. Please check your billing account at here: https://platform.openai.com/settings/organization/billing/overview',
     'clearing_message' => 'Clearing conversation...',
     'clear_confirmation_message' => 'Are you sure you want to clear the conversation? All conversation will be resetted. (You can still restore it via backup from Chatbot History)',
     'clear_success_message' => 'Conversation cleared successfully!',
