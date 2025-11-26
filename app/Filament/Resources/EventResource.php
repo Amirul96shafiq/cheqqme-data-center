@@ -721,23 +721,29 @@ class EventResource extends Resource
                             ->visible(fn ($record) => $record->event_type === 'online'),
 
                         // Offline event fields
-                        Infolists\Components\TextEntry::make('location_address')
-                            ->label(__('event.form.location_address'))
-                            ->placeholder(__('No location address'))
+                        Infolists\Components\TextEntry::make('location_title')
+                            ->label(__('event.form.location_title'))
+                            ->placeholder(__('No location title'))
                             ->visible(fn ($record) => $record->event_type === 'offline'),
 
-                        Infolists\Components\Grid::make(2)
-                            ->schema([
-                                Infolists\Components\TextEntry::make('location_latitude')
-                                    ->label(__('event.form.location_latitude'))
-                                    ->placeholder(__('Not set'))
-                                    ->visible(fn ($record) => $record->event_type === 'offline'),
-                                Infolists\Components\TextEntry::make('location_longitude')
-                                    ->label(__('event.form.location_longitude'))
-                                    ->placeholder(__('Not set'))
-                                    ->visible(fn ($record) => $record->event_type === 'offline'),
-                            ])
+                        Infolists\Components\TextEntry::make('location_full_address')
+                            ->label(__('event.form.location_full_address'))
+                            ->placeholder(__('No location address'))
+                            ->columnSpanFull()
                             ->visible(fn ($record) => $record->event_type === 'offline'),
+
+                        // Google Maps with pinned location
+                        Infolists\Components\ViewEntry::make('location_map')
+                            ->view('components.google-maps-location-viewer')
+                            ->viewData(function ($record) {
+                                return [
+                                    'title' => $record->location_title,
+                                    'address' => $record->location_full_address,
+                                    'id' => 'google-map-location-viewer-'.$record->id,
+                                ];
+                            })
+                            ->columnSpanFull()
+                            ->visible(fn ($record) => $record->event_type === 'offline' && (!empty($record->location_title) || !empty($record->location_full_address))),
                     ]),
 
                 // Featured Image Section (matches third tab in form)

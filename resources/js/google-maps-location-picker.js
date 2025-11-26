@@ -1,3 +1,143 @@
+// Google Maps Location Viewer Alpine.js Component (Static Map)
+if (typeof window.googleMapsLocationViewer === "undefined") {
+    window.googleMapsLocationViewer = function (
+        mapId,
+        title,
+        address,
+        zoom,
+        apiKey
+    ) {
+        return {
+            mapId: mapId,
+            statusMessage: "",
+            statusType: "info",
+            apiKey: apiKey || window.GOOGLE_MAPS_API_KEY || "",
+
+            init() {
+                // console.log("=== GOOGLE MAPS VIEWER INIT ===");
+                // console.log("Map ID:", this.mapId);
+                // console.log("Title:", title);
+                // console.log("Address:", address);
+
+                // Read API key dynamically
+                this.apiKey = this.apiKey || window.GOOGLE_MAPS_API_KEY || "";
+
+                if (!this.apiKey) {
+                    console.error(
+                        "Google Maps API key not found. Check .env file for GOOGLE_MAPS_API_KEY"
+                    );
+                    this.showStatus(
+                        "Google Maps API key not configured. Please check your .env file.",
+                        "error"
+                    );
+                    return;
+                }
+
+                // If we have an address, geocode it to show the static map
+                if (address && address.trim() !== "") {
+                    this.geocodeAddress();
+                } else {
+                    this.showFallbackMap();
+                }
+            },
+
+            geocodeAddress() {
+                if (!address || address.trim() === "") return;
+
+                // Use fetch to call Google Geocoding API directly for static map
+                const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+                    address
+                )}&key=${encodeURIComponent(this.apiKey)}`;
+
+                fetch(geocodingUrl)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (
+                            data.status === "OK" &&
+                            data.results &&
+                            data.results[0]
+                        ) {
+                            const location = data.results[0].geometry.location;
+                            const lat = location.lat;
+                            const lng = location.lng;
+
+                            // Generate high-quality static map URL
+                            const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=1200x600&scale=2&maptype=roadmap&markers=color:red%7Csize:mid%7C${lat},${lng}&key=${encodeURIComponent(
+                                this.apiKey
+                            )}`;
+
+                            // Set the static map as background image
+                            const mapElement = document.getElementById(
+                                this.mapId
+                            );
+                            if (mapElement) {
+                                mapElement.style.backgroundImage = `url('${staticMapUrl}')`;
+                                mapElement.style.backgroundSize = "cover";
+                                mapElement.style.backgroundPosition = "center";
+                                mapElement.style.backgroundRepeat = "no-repeat";
+
+                                // Remove loading placeholder
+                                const loadingPlaceholder =
+                                    mapElement.querySelector(
+                                        ".absolute.inset-0"
+                                    );
+                                if (loadingPlaceholder) {
+                                    loadingPlaceholder.remove();
+                                }
+                            }
+
+                            // console.log("Viewer generated static map for:", lat, lng);
+                        } else {
+                            console.warn(
+                                "Viewer geocoding failed for address:",
+                                address,
+                                "Status:",
+                                data.status
+                            );
+                            this.showFallbackMap();
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(
+                            "Viewer geocoding request failed:",
+                            error
+                        );
+                        this.showFallbackMap();
+                    });
+            },
+
+            showFallbackMap() {
+                const mapElement = document.getElementById(this.mapId);
+                if (mapElement) {
+                    // Default Kuala Lumpur location
+                    const lat = 3.139;
+                    const lng = 101.6869;
+                    const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=10&size=1200x600&scale=2&maptype=roadmap&markers=color:red%7Csize:mid%7C${lat},${lng}&key=${encodeURIComponent(
+                        this.apiKey
+                    )}`;
+
+                    mapElement.style.backgroundImage = `url('${staticMapUrl}')`;
+                    mapElement.style.backgroundSize = "cover";
+                    mapElement.style.backgroundPosition = "center";
+                    mapElement.style.backgroundRepeat = "no-repeat";
+
+                    // Remove loading placeholder
+                    const loadingPlaceholder =
+                        mapElement.querySelector(".absolute.inset-0");
+                    if (loadingPlaceholder) {
+                        loadingPlaceholder.remove();
+                    }
+                }
+            },
+
+            showStatus(message, type = "info") {
+                this.statusMessage = message;
+                this.statusType = type;
+            },
+        };
+    };
+}
+
 // Google Maps Location Picker Alpine.js Component
 if (typeof window.googleMapsLocationPicker === "undefined") {
     window.googleMapsLocationPicker = function (
