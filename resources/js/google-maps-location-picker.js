@@ -416,12 +416,45 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                         // Place marker at selected location
                         this.placeMarker(location);
 
-                        // Update form fields with the formatted address
-                        const address =
-                            place.formatted_address || place.name || "";
-                        this.updateLocationFields(location, address);
+                        // Update form fields with the place name as title and formatted address
+                        const placeName = place.name || "";
+                        const formattedAddress = place.formatted_address || "";
+                        this.updateLocationFields(location, placeName);
 
-                        this.showStatus(`Location set: ${address}`, "success");
+                        // Also update the full address field directly
+                        const updateField = (fieldName, value) => {
+                            const selectors = [
+                                `[name="${fieldName}"]`,
+                                `input[name="${fieldName}"]`,
+                                `[wire\\:model*="${fieldName}"]`,
+                                `[data-field-name="${fieldName}"]`,
+                            ];
+
+                            let field = null;
+                            for (const selector of selectors) {
+                                field = document.querySelector(selector);
+                                if (field) break;
+                            }
+
+                            if (field) {
+                                field.value = value;
+                                ["input", "change", "blur"].forEach(
+                                    (eventType) => {
+                                        field.dispatchEvent(
+                                            new Event(eventType, {
+                                                bubbles: true,
+                                            })
+                                        );
+                                    }
+                                );
+                            }
+                        };
+                        updateField("location_full_address", formattedAddress);
+
+                        this.showStatus(
+                            `Location set: ${placeName}`,
+                            "success"
+                        );
                     });
                 });
             },
@@ -526,7 +559,7 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                 }, 300);
             },
 
-            updateLocationFields(latLng) {
+            updateLocationFields(latLng, placeTitle = null) {
                 // Handle both google.maps.LatLng objects and plain objects
                 let latitude, longitude;
                 if (
@@ -669,15 +702,19 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                     return true;
                 };
 
-                // Update latitude and longitude fields
-                updateField("location_latitude", latValue);
-                updateField("location_longitude", lngValue);
-
-                // Reverse geocode to get address
-                this.reverseGeocode(latLng);
+                // If place title was provided (from search/autocomplete), use it directly
+                if (placeTitle) {
+                    updateField("location_title", placeTitle);
+                    // For autocomplete selections, we still need to reverse geocode to get the full address
+                    // but we pass the existing title so it doesn't get overwritten
+                    this.reverseGeocode(latLng, placeTitle);
+                } else {
+                    // For map clicks, reverse geocode to get both title and address
+                    this.reverseGeocode(latLng);
+                }
             },
 
-            reverseGeocode(latLng) {
+            reverseGeocode(latLng, existingTitle = null) {
                 if (!this.geocoder) return;
 
                 // Convert to google.maps.LatLng if it's a plain object
@@ -707,7 +744,84 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                     (results, status) => {
                         if (status === "OK" && results[0]) {
                             const address = results[0].formatted_address;
-                            // console.log("Reverse geocoded address:", address);
+
+                            // Extract title from address components with improved logic for map clicks
+                            let title = existingTitle;
+                            if (!title && results[0].address_components) {
+                                const components =
+                                    results[0].address_components;
+                                const titleCandidates = [];
+
+                                // Priority order for title extraction (most specific to least specific)
+                                const priorityTypes = [
+                                    "establishment", // Business/POI name
+                                    "point_of_interest", // General POI
+                                    "park", // Parks
+                                    "neighborhood", // Neighborhoods
+                                    "sublocality", // Sub-districts
+                                    "sublocality_level_1", // More specific sub-districts
+                                    "locality", // City/Town
+                                    "route", // Street names
+                                    "administrative_area_level_2", // County/District
+                                    "administrative_area_level_1", // State/Province
+                                    "country", // Country (fallback)
+                                ];
+
+                                // Find the most specific available component
+                                for (const priorityType of priorityTypes) {
+                                    for (const component of components) {
+                                        if (
+                                            component.types.includes(
+                                                priorityType
+                                            )
+                                        ) {
+                                            titleCandidates.push(
+                                                component.long_name
+                                            );
+                                            break; // Found one for this priority level, move to next priority
+                                        }
+                                    }
+                                    if (titleCandidates.length > 0) {
+                                        break; // We found at least one candidate
+                                    }
+                                }
+
+                                // If we found candidates, use the most specific one
+                                if (titleCandidates.length > 0) {
+                                    title = titleCandidates[0];
+                                } else {
+                                    // Last resort: use the first meaningful part of the formatted address
+                                    // Skip common prefixes like numbers or generic terms
+                                    const parts = address.split(", ");
+                                    for (const part of parts) {
+                                        // Skip parts that are just numbers, postal codes, or country names
+                                        if (
+                                            part.length > 2 && // Skip very short parts
+                                            !/^\d+$/.test(part) && // Skip pure numbers
+                                            !/^\d{5}/.test(part) && // Skip postal codes
+                                            ![
+                                                "Malaysia",
+                                                "US",
+                                                "USA",
+                                                "United Kingdom",
+                                                "UK",
+                                            ].includes(part) // Skip country names
+                                        ) {
+                                            title = part;
+                                            break;
+                                        }
+                                    }
+
+                                    // If still no title, just use the first part
+                                    if (!title && parts.length > 0) {
+                                        title = parts[0];
+                                    }
+                                }
+
+                                // console.log("Extracted title from map click:", title, "from address:", address);
+                            }
+
+                            // console.log("Reverse geocoded - Title:", title, "Address:", address);
 
                             // Use the same update mechanism
                             const updateField = (fieldName, value) => {
@@ -830,15 +944,29 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                                 return true;
                             };
 
-                            // Update address field
-                            if (updateField("location_address", address)) {
+                            // Update both title and full address fields
+                            let titleUpdated = true;
+                            let addressUpdated = true;
+
+                            if (title) {
+                                titleUpdated = updateField(
+                                    "location_title",
+                                    title
+                                );
+                            }
+                            addressUpdated = updateField(
+                                "location_full_address",
+                                address
+                            );
+
+                            if (titleUpdated && addressUpdated) {
                                 this.showStatus(
-                                    "Address updated from location!",
+                                    `Location set: ${title || address}`,
                                     "success"
                                 );
                             } else {
                                 this.showStatus(
-                                    "Address found but field not updated. Please check field name.",
+                                    "Location found but fields not updated. Please check field names.",
                                     "warning"
                                 );
                             }
@@ -950,28 +1078,18 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                 }
 
                 // Clear form fields
-                const latField = document.querySelector(
-                    '[name="location_latitude"]'
+                const titleField = document.querySelector(
+                    '[name="location_title"]'
                 );
-                if (latField) {
-                    latField.value = "";
-                    latField.dispatchEvent(
-                        new Event("input", { bubbles: true })
-                    );
-                }
-
-                const lngField = document.querySelector(
-                    '[name="location_longitude"]'
-                );
-                if (lngField) {
-                    lngField.value = "";
-                    lngField.dispatchEvent(
+                if (titleField) {
+                    titleField.value = "";
+                    titleField.dispatchEvent(
                         new Event("input", { bubbles: true })
                     );
                 }
 
                 const addressField = document.querySelector(
-                    '[name="location_address"]'
+                    '[name="location_full_address"]'
                 );
                 if (addressField) {
                     addressField.value = "";
