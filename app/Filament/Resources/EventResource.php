@@ -152,21 +152,19 @@ class EventResource extends Resource
 
                                 // Offline event fields
                                 // Google Maps Location Picker
-                                Forms\Components\Placeholder::make('location_picker_placeholder')
-                                    ->label('')
-                                    ->content('')
-                                    ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline'),
-
-                                Forms\Components\ViewField::make('location_picker')
-                                    ->view('components.google-maps-location-picker')
-                                    ->viewData(function (Forms\Get $get) {
-                                        return [
-                                            'latitude' => $get('location_latitude'),
-                                            'longitude' => $get('location_longitude'),
-                                            'address' => $get('location_address'),
-                                            'id' => 'google-map-location-picker-event-form',
-                                        ];
-                                    })
+                                Forms\Components\Section::make(__('event.form.location_picker'))
+                                    ->schema([
+                                        Forms\Components\ViewField::make('location_picker')
+                                            ->view('components.google-maps-location-picker')
+                                            ->viewData(function (Forms\Get $get) {
+                                                return [
+                                                    'latitude' => $get('location_latitude'),
+                                                    'longitude' => $get('location_longitude'),
+                                                    'address' => $get('location_address'),
+                                                    'id' => 'google-map-location-picker-event-form',
+                                                ];
+                                            })
+                                    ])
                                     ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline')
                                     ->columnSpanFull(),
 

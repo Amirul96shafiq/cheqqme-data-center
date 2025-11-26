@@ -17,6 +17,16 @@
     x-data="googleMapsLocationPicker('{{ $id }}', {{ $latitude ?? 'null' }}, {{ $longitude ?? 'null' }}, '{{ addslashes($address ?? '') }}', {{ $zoom }}, '{{ config("services.google_maps.api_key") }}')"
     x-init="init()"
 >
+    <!-- Search Box -->
+    <div class="mb-4">
+        <input
+            type="text"
+            x-ref="searchInput"
+            placeholder="Search Event's location here"
+            class="w-full px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+        />
+    </div>
+
     <!-- Map Container -->
     <div
         id="{{ $id }}"

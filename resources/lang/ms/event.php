@@ -1,0 +1,111 @@
+<?php
+
+return [
+    'navigation_group' => 'Sumber',
+
+    'navigation' => [
+        'event' => 'Acara',
+        'events' => 'Acara',
+    ],
+
+    'model_label' => 'Acara',
+    'plural_model_label' => 'Acara',
+
+    'form' => [
+        'basic_information' => 'Maklumat Asas',
+        'event_information' => 'Maklumat Acara',
+        'event_resources' => 'Sumber Acara',
+        'additional_information' => 'Maklumat Tambahan Acara',
+        'visibility_info' => 'Maklumat Keterlihatan Sumber',
+        'title' => 'Tajuk Acara',
+        'description' => 'Penerangan',
+        'event_type' => 'Jenis Acara',
+        'start_datetime' => 'Tarikh & Masa Mula',
+        'end_datetime' => 'Tarikh & Masa Tamat',
+        'invited_users' => 'Jemput Peserta',
+        'projects' => 'Projek Berkaitan',
+        'documents' => 'Dokumen Berkaitan',
+        'important_urls' => 'URL Penting Berkaitan',
+        'meeting_location' => 'Mesyuarat & Lokasi',
+        'meeting_link' => 'Pautan Mesyuarat',
+        'location_address' => 'Alamat Lokasi',
+        'location_latitude' => 'Latitud',
+        'location_longitude' => 'Longitud',
+        'location_picker' => 'Pemilih Lokasi',
+        'featured_image' => 'Imej Pilihan',
+        'featured_image_source' => 'Sumber Imej',
+        'extra_information' => 'Maklumat Tambahan',
+        'notes' => 'Nota',
+        'extra_info_title' => 'Tajuk',
+        'extra_info_value' => 'Nilai',
+        'add_extra_info' => 'Tambah Maklumat Tambahan',
+        'status' => 'Status',
+        'status_active' => 'Aktif',
+        'status_draft' => 'Draf',
+        'status_helper' => 'Acara aktif boleh dilihat oleh semua pengguna. Acara draf hanya boleh dilihat oleh penciptanya.',
+        'status_helper_readonly' => 'Hanya pencipta boleh menukar status keterlihatan.',
+    ],
+
+    'type' => [
+        'online' => 'Dalam Talian',
+        'offline' => 'Di Luar Talian',
+    ],
+
+    'image_source' => [
+        'manual' => 'Muat Naik Manual',
+        'places_api' => 'Imej Lokasi',
+    ],
+
+    'table' => [
+        'id' => 'ID',
+        'title' => 'Tajuk',
+        'event_type' => 'Jenis',
+        'start_datetime' => 'Masa Mula',
+        'end_datetime' => 'Masa Tamat',
+        'attendees' => 'Peserta',
+        'attendee' => 'peserta',
+        'attendees_plural' => 'peserta',
+        'created_by' => 'Dicipta Oleh',
+        'synced_to_calendar' => 'Disegerakkan',
+        'status' => 'Keterlihatan',
+        'status_active' => 'Aktif',
+        'status_draft' => 'Draf',
+        'created_at_by' => 'Dicipta Pada (Oleh)',
+        'updated_at_by' => 'Dikemas Kini Pada (Oleh)',
+    ],
+
+    'tabs' => [
+        'all' => 'Semua',
+        'upcoming' => 'Akan Datang',
+        'today' => 'Hari Ini',
+        'this_week' => 'Minggu Ini',
+        'this_month' => 'Bulan Ini',
+        'past' => 'Lalu',
+    ],
+
+    'actions' => [
+        'create' => 'Cipta Acara',
+        'create_meeting_link' => 'Cipta Pautan Mesyuarat',
+        'create_client' => 'Cipta Klien',
+        'create_project' => 'Cipta Projek',
+        'create_document' => 'Cipta Dokumen',
+        'create_important_url' => 'Cipta URL Penting',
+        'make_draft' => 'Jadikan Draf',
+        'make_active' => 'Jadikan Aktif',
+        'make_draft_tooltip' => 'Tukar acara ini kepada Draf (Hanya boleh dilihat oleh pencipta)',
+        'make_active_tooltip' => 'Tukar acara ini kepada Aktif (Boleh dilihat oleh semua pengguna)',
+        'event_activated' => 'Acara kini dalam mod Aktif dan boleh dilihat oleh semua pengguna',
+        'event_made_draft' => 'Acara kini dalam mod Draf dan hanya boleh dilihat oleh anda',
+        'status_updated' => 'Status berjaya dikemas kini',
+    ],
+
+    'notifications' => [
+        'invitation_title' => 'Jemputan Acara',
+        'invitation_body' => 'Anda telah dijemput ke acara :eventType ":eventTitle" oleh :invitedBy',
+        'view_event' => 'Lihat Acara',
+        'invitations_sent_title' => 'Jemputan Dihantar',
+        'invitations_sent_body' => 'Jemputan dihantar kepada :count peserta|Jemputan dihantar kepada :count peserta',
+        'new_invitations_sent_title' => 'Jemputan Baharu Dihantar',
+        'new_invitations_sent_body' => 'Jemputan baharu dihantar kepada :count peserta|Jemputan baharu dihantar kepada :count peserta',
+    ],
+];

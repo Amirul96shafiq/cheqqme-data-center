@@ -13,6 +13,7 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
             map: null,
             marker: null,
             geocoder: null,
+            autocomplete: null,
             statusMessage: "",
             statusType: "info",
             apiKey: apiKey || window.GOOGLE_MAPS_API_KEY || "",
@@ -20,17 +21,49 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
             isInitialized: false,
 
             init() {
-                console.log("=== GOOGLE MAPS COMPONENT INIT ===");
-                console.log("Map ID:", this.mapId);
+                // console.log("=== GOOGLE MAPS COMPONENT INIT ===");
+                //console.log("Map ID:", this.mapId);
+
+                // Check if map element already has a map instance (from previous initialization)
+                const mapElement = document.getElementById(this.mapId);
+                if (mapElement && mapElement._googleMapInstance) {
+                    // console.log("Map already exists, reusing...");
+                    // Map already exists, just sync the component state
+                    this.map = mapElement._googleMapInstance;
+                    this.marker = mapElement._googleMapMarker || null;
+                    this.geocoder = new google.maps.Geocoder();
+                    this.isInitialized = true;
+                    this.isInitializing = false;
+
+                    // Ensure click listener exists (atomic check to prevent duplicates)
+                    if (
+                        !mapElement._googleMapClickListener &&
+                        !mapElement._addingClickListener
+                    ) {
+                        mapElement._addingClickListener = true;
+                        const clickListener = this.map.addListener(
+                            "click",
+                            (event) => {
+                                this.placeMarker(event.latLng);
+                            }
+                        );
+                        mapElement._googleMapClickListener = clickListener;
+                        mapElement._addingClickListener = false;
+                    }
+
+                    // Initialize Autocomplete if needed
+                    this.initializeAutocomplete();
+                    return;
+                }
 
                 // Read API key dynamically (in case it wasn't passed or was set after component creation)
                 this.apiKey = this.apiKey || window.GOOGLE_MAPS_API_KEY || "";
-                console.log(
-                    "API Key:",
-                    this.apiKey
-                        ? "SET (" + this.apiKey.substring(0, 10) + "...)"
-                        : "NOT SET"
-                );
+                // console.log(
+                //     "API Key:",
+                //     this.apiKey
+                //         ? "SET (" + this.apiKey.substring(0, 10) + "...)"
+                //         : "NOT SET"
+                // );
 
                 if (!this.apiKey) {
                     console.error(
@@ -48,17 +81,17 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
 
             loadGoogleMaps() {
                 if (this.isInitializing || this.isInitialized) {
-                    console.log("Map already initializing or initialized");
+                    // console.log("Map already initializing or initialized");
                     return;
                 }
 
                 if (typeof google !== "undefined" && google.maps) {
-                    console.log("Google Maps already loaded");
+                    // console.log("Google Maps already loaded");
                     this.initializeMap();
                     return;
                 }
 
-                console.log("Loading Google Maps API...");
+                // console.log("Loading Google Maps API...");
                 this.isInitializing = true;
 
                 // Check if script is already being loaded
@@ -66,14 +99,14 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                     'script[src*="maps.googleapis.com/maps/api/js"]'
                 );
                 if (existingScript) {
-                    console.log(
-                        "Google Maps script already loading, waiting..."
-                    );
+                    // console.log(
+                    //     "Google Maps script already loading, waiting..."
+                    // );
                     // Poll for Google Maps to be available
                     const checkInterval = setInterval(() => {
                         if (typeof google !== "undefined" && google.maps) {
                             clearInterval(checkInterval);
-                            console.log("Google Maps became available");
+                            // console.log("Google Maps became available");
                             this.initializeMap();
                         }
                     }, 100);
@@ -100,7 +133,7 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
 
                 // Create global callback BEFORE loading script
                 window[callbackName] = () => {
-                    console.log("Google Maps API loaded via callback");
+                    // console.log("Google Maps API loaded via callback");
                     this.initializeMap();
                     // Clean up callback after use
                     try {
@@ -137,11 +170,11 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
             initializeMap() {
                 // Prevent double initialization
                 if (this.isInitialized) {
-                    console.log("Map already initialized, skipping...");
+                    // console.log("Map already initialized, skipping...");
                     return;
                 }
 
-                console.log("Initializing map...");
+                // console.log("Initializing map...");
 
                 // Wait for DOM to be ready if element doesn't exist yet
                 const findMapElement = () => {
@@ -152,9 +185,9 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
 
                 // If element doesn't exist, wait a bit for Livewire to finish rendering
                 if (!mapElement) {
-                    console.log(
-                        "Map element not found yet, waiting for DOM..."
-                    );
+                    // console.log(
+                    //     "Map element not found yet, waiting for DOM..."
+                    // );
                     let attempts = 0;
                     const maxAttempts = 50; // 5 seconds max wait
 
@@ -164,7 +197,7 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
 
                         if (mapElement) {
                             clearInterval(waitForElement);
-                            console.log("Map element found after wait");
+                            // console.log("Map element found after wait");
                             this.proceedWithInitialization(mapElement);
                         } else if (attempts >= maxAttempts) {
                             clearInterval(waitForElement);
@@ -186,14 +219,25 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
             proceedWithInitialization(mapElement) {
                 // Check if map already exists for this element (from previous initialization)
                 if (mapElement._googleMapInstance) {
-                    console.log("Reusing existing map instance");
+                    // console.log("Reusing existing map instance");
                     this.map = mapElement._googleMapInstance;
                     this.marker = mapElement._googleMapMarker || null;
                     this.geocoder = new google.maps.Geocoder();
                     this.isInitialized = true;
                     this.isInitializing = false;
 
-                    // Update map center and marker if coordinates exist
+                    // Ensure click listener exists (but don't add duplicate)
+                    if (!mapElement._googleMapClickListener) {
+                        const clickListener = this.map.addListener(
+                            "click",
+                            (event) => {
+                                this.placeMarker(event.latLng);
+                            }
+                        );
+                        mapElement._googleMapClickListener = clickListener;
+                    }
+
+                    // Only update marker if coordinates exist AND marker doesn't exist or is at different location
                     const lat =
                         initialLat && initialLat !== "null"
                             ? parseFloat(initialLat)
@@ -202,11 +246,15 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                         initialLng && initialLng !== "null"
                             ? parseFloat(initialLng)
                             : null;
-                    if (lat && lng) {
-                        this.map.setCenter({ lat, lng });
-                        this.map.setZoom(zoom || 15);
-                        this.placeMarker({ lat, lng });
-                    }
+
+                    // When reusing map, don't create or modify markers
+                    // Marker position is managed by user interactions (click, autocomplete, etc.)
+                    // Form field values are updated BY marker placement, not the other way around
+                    // Just sync the marker reference - don't place new markers or update positions
+                    // This prevents duplicate markers when Livewire re-renders
+
+                    // Initialize Autocomplete for reused map
+                    this.initializeAutocomplete();
                     return;
                 }
 
@@ -221,14 +269,23 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                             : 101.6869;
                     const mapZoom = zoom || 15;
 
-                    console.log("Creating map at:", defaultLat, defaultLng);
+                    // console.log("Creating map at:", defaultLat, defaultLng);
 
                     this.map = new google.maps.Map(mapElement, {
                         center: { lat: defaultLat, lng: defaultLng },
                         zoom: mapZoom,
-                        mapTypeControl: true,
-                        streetViewControl: true,
-                        fullscreenControl: true,
+                        mapTypeControl: false, // Disable street map/satellite toggle
+                        streetViewControl: false, // Disable drag pegman for Street View
+                        fullscreenControl: false, // Disable fullscreen control
+                        zoomControl: false, // Disable zoom buttons
+                        panControl: false, // Disable pan control
+                        rotateControl: false, // Disable rotate control
+                        scaleControl: false, // Disable scale control
+                        tilt: 0, // Lock camera tilt (no 3D view)
+                        heading: 0, // Lock camera heading (no rotation)
+                        gestureHandling: "cooperative", // Require Ctrl/Cmd for zoom/pan gestures
+                        disableDoubleClickZoom: true, // Disable double-click zoom
+                        keyboardShortcuts: false, // Disable keyboard shortcuts
                     });
 
                     // Store map instance on element for reuse
@@ -237,10 +294,22 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
 
                     this.geocoder = new google.maps.Geocoder();
 
-                    // Add click listener
-                    this.map.addListener("click", (event) => {
-                        this.placeMarker(event.latLng);
-                    });
+                    // Remove existing click listener if it exists
+                    if (mapElement._googleMapClickListener) {
+                        google.maps.event.removeListener(
+                            mapElement._googleMapClickListener
+                        );
+                        mapElement._googleMapClickListener = null;
+                    }
+
+                    // Add click listener and store reference
+                    const clickListener = this.map.addListener(
+                        "click",
+                        (event) => {
+                            this.placeMarker(event.latLng);
+                        }
+                    );
+                    mapElement._googleMapClickListener = clickListener;
 
                     // Create marker if initial coordinates exist
                     if (
@@ -252,7 +321,10 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                         this.placeMarker({ lat: defaultLat, lng: defaultLng });
                     }
 
-                    console.log("Map initialized successfully");
+                    // Initialize Places Autocomplete
+                    this.initializeAutocomplete();
+
+                    // console.log("Map initialized successfully");
                     this.isInitialized = true;
                     this.isInitializing = false;
                     this.showStatus("Map loaded successfully", "success");
@@ -266,35 +338,192 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                 }
             },
 
+            initializeAutocomplete() {
+                // Wait for search input to be available
+                this.$nextTick(() => {
+                    const searchInput = this.$refs.searchInput;
+                    if (!searchInput) {
+                        console.warn(
+                            "Search input not found, autocomplete not initialized"
+                        );
+                        return;
+                    }
+
+                    // Check if autocomplete already exists on this input
+                    if (searchInput._googleAutocomplete) {
+                        // console.log("Autocomplete already exists, reusing...");
+                        this.autocomplete = searchInput._googleAutocomplete;
+                        // Rebind to map bounds in case map was recreated
+                        if (this.map) {
+                            this.autocomplete.bindTo("bounds", this.map);
+                        }
+                        return;
+                    }
+
+                    if (!google || !google.maps || !google.maps.places) {
+                        console.warn(
+                            "Google Maps Places library not available"
+                        );
+                        return;
+                    }
+
+                    // Create Autocomplete instance
+                    this.autocomplete = new google.maps.places.Autocomplete(
+                        searchInput,
+                        {
+                            types: ["geocode", "establishment"], // Include addresses and places
+                            fields: [
+                                "geometry",
+                                "formatted_address",
+                                "name",
+                                "place_id",
+                            ],
+                        }
+                    );
+
+                    // Store autocomplete instance on input element for reuse
+                    searchInput._googleAutocomplete = this.autocomplete;
+
+                    // Bind autocomplete to map bounds
+                    if (this.map) {
+                        this.autocomplete.bindTo("bounds", this.map);
+                    }
+
+                    // Handle place selection
+                    this.autocomplete.addListener("place_changed", () => {
+                        const place = this.autocomplete.getPlace();
+
+                        if (!place.geometry || !place.geometry.location) {
+                            console.warn(
+                                "No geometry found for selected place"
+                            );
+                            this.showStatus(
+                                "No location found for selected place",
+                                "error"
+                            );
+                            return;
+                        }
+
+                        // Get location
+                        const location = place.geometry.location;
+                        const lat = location.lat();
+                        const lng = location.lng();
+
+                        // Update map center and zoom
+                        this.map.setCenter(location);
+                        this.map.setZoom(15);
+
+                        // Place marker at selected location
+                        this.placeMarker(location);
+
+                        // Update form fields with the formatted address
+                        const address =
+                            place.formatted_address || place.name || "";
+                        this.updateLocationFields(location, address);
+
+                        this.showStatus(`Location set: ${address}`, "success");
+                    });
+                });
+            },
+
             placeMarker(location) {
                 if (!this.map) return;
 
-                // Remove existing marker
-                if (this.marker) {
-                    this.marker.setMap(null);
-                }
-
-                // Create new marker
-                this.marker = new google.maps.Marker({
-                    position: location,
-                    map: this.map,
-                    draggable: true,
-                    title: "Selected Location",
-                });
-
-                // Store marker reference on map element for reuse
                 const mapElement = document.getElementById(this.mapId);
-                if (mapElement) {
-                    mapElement._googleMapMarker = this.marker;
+                if (!mapElement) return;
+
+                // Prevent rapid successive calls (debounce) - use timestamp for more reliable checking
+                const now = Date.now();
+                if (
+                    mapElement._placingMarker &&
+                    typeof mapElement._placingMarker === "number" &&
+                    now - mapElement._placingMarker < 500
+                ) {
+                    // console.log(
+                    //     "Marker placement already in progress, skipping (debounced)"
+                    // );
+                    return;
+                }
+                mapElement._placingMarker = now;
+
+                // Get or create the single marker instance
+                // If marker exists, just update its position (don't create a new one)
+                let marker = this.marker || mapElement._googleMapMarker;
+
+                if (marker) {
+                    // Marker exists - just update its position
+                    try {
+                        marker.setPosition(location);
+                        // Ensure it's on the map
+                        if (!marker.getMap()) {
+                            marker.setMap(this.map);
+                        }
+                        // Sync references
+                        this.marker = marker;
+                        mapElement._googleMapMarker = marker;
+                    } catch (e) {
+                        console.warn("Error updating marker position:", e);
+                        // If update fails, remove old marker and create new one
+                        try {
+                            marker.setMap(null);
+                            google.maps.event.clearInstanceListeners(marker);
+                        } catch (e2) {
+                            // Ignore
+                        }
+                        marker = null;
+                    }
                 }
 
-                // Add drag listener
-                this.marker.addListener("dragend", (event) => {
-                    this.updateLocationFields(event.latLng);
-                });
+                // Only create new marker if one doesn't exist
+                if (!marker) {
+                    // Remove any orphaned markers first
+                    if (
+                        mapElement._allMarkers &&
+                        Array.isArray(mapElement._allMarkers)
+                    ) {
+                        mapElement._allMarkers.forEach((m) => {
+                            try {
+                                if (m && typeof m.setMap === "function") {
+                                    m.setMap(null);
+                                    google.maps.event.clearInstanceListeners(m);
+                                }
+                            } catch (e) {
+                                // Ignore errors
+                            }
+                        });
+                    }
+
+                    // Create the single marker instance
+                    marker = new google.maps.Marker({
+                        position: location,
+                        map: this.map,
+                        draggable: true,
+                        title: "Selected Location",
+                    });
+
+                    // Store references
+                    this.marker = marker;
+                    mapElement._googleMapMarker = marker;
+
+                    // Track marker in array for cleanup
+                    if (!mapElement._allMarkers) {
+                        mapElement._allMarkers = [];
+                    }
+                    mapElement._allMarkers = [marker]; // Only one marker in array
+
+                    // Add drag listener (only if not already added)
+                    marker.addListener("dragend", (event) => {
+                        this.updateLocationFields(event.latLng);
+                    });
+                }
 
                 // Update form fields
                 this.updateLocationFields(location);
+
+                // Reset flag after a short delay
+                setTimeout(() => {
+                    mapElement._placingMarker = null;
+                }, 300);
             },
 
             updateLocationFields(latLng) {
@@ -322,7 +551,7 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                 const latValue = latitude.toFixed(6);
                 const lngValue = longitude.toFixed(6);
 
-                console.log("Updating location fields:", latValue, lngValue);
+                // console.log("Updating location fields:", latValue, lngValue);
 
                 // Helper function to update a field
                 const updateField = (fieldName, value) => {
@@ -392,9 +621,9 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                                     for (const path of paths) {
                                         try {
                                             component.set(path, value);
-                                            console.log(
-                                                `Updated Livewire field via path: ${path}`
-                                            );
+                                            // console.log(
+                                            //     `Updated Livewire field via path: ${path}`
+                                            // );
                                             break;
                                         } catch (e) {
                                             // Try next path
@@ -478,7 +707,7 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                     (results, status) => {
                         if (status === "OK" && results[0]) {
                             const address = results[0].formatted_address;
-                            console.log("Reverse geocoded address:", address);
+                            // console.log("Reverse geocoded address:", address);
 
                             // Use the same update mechanism
                             const updateField = (fieldName, value) => {
@@ -552,9 +781,9 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                                                             path,
                                                             value
                                                         );
-                                                        console.log(
-                                                            `Updated Livewire field via path: ${path}`
-                                                        );
+                                                        // console.log(
+                                                        //     `Updated Livewire field via path: ${path}`
+                                                        // );
                                                         break;
                                                     } catch (e) {
                                                         // Try next path
@@ -676,16 +905,48 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
             },
 
             clearLocation() {
-                // Remove marker
+                const mapElement = document.getElementById(this.mapId);
+                if (!mapElement) return;
+
+                // Remove marker from this.marker
                 if (this.marker) {
-                    this.marker.setMap(null);
+                    try {
+                        this.marker.setMap(null);
+                        google.maps.event.clearInstanceListeners(this.marker);
+                    } catch (e) {
+                        console.warn("Error removing marker:", e);
+                    }
                     this.marker = null;
                 }
 
-                // Clear stored marker reference
-                const mapElement = document.getElementById(this.mapId);
-                if (mapElement) {
+                // Remove marker stored on DOM element
+                if (mapElement._googleMapMarker) {
+                    try {
+                        mapElement._googleMapMarker.setMap(null);
+                        google.maps.event.clearInstanceListeners(
+                            mapElement._googleMapMarker
+                        );
+                    } catch (e) {
+                        console.warn("Error removing stored marker:", e);
+                    }
                     mapElement._googleMapMarker = null;
+                }
+
+                // Remove all tracked markers
+                if (mapElement._allMarkers) {
+                    mapElement._allMarkers.forEach((marker) => {
+                        try {
+                            if (marker && marker.getMap) {
+                                marker.setMap(null);
+                                google.maps.event.clearInstanceListeners(
+                                    marker
+                                );
+                            }
+                        } catch (e) {
+                            // Ignore errors
+                        }
+                    });
+                    mapElement._allMarkers = [];
                 }
 
                 // Clear form fields
