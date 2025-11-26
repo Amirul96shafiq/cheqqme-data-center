@@ -1,7 +1,8 @@
 @props([
+    'title' => null,
+    'address' => null,
     'latitude' => null,
     'longitude' => null,
-    'address' => null,
     'height' => '400px',
     'zoom' => 15,
     'id' => 'google-map-location-picker'
@@ -14,7 +15,7 @@
 
 <div 
     class="google-maps-location-picker"
-    x-data="googleMapsLocationPicker('{{ $id }}', {{ $latitude ?? 'null' }}, {{ $longitude ?? 'null' }}, '{{ addslashes($address ?? '') }}', {{ $zoom }}, '{{ config("services.google_maps.api_key") }}')"
+    x-data="googleMapsLocationPicker('{{ $id }}', null, null, '{{ addslashes($address ?? '') }}', {{ $zoom }}, '{{ config("services.google_maps.api_key") }}')"
     x-init="init()"
 >
     <!-- Search Box -->

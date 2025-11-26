@@ -44,11 +44,21 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                         const clickListener = this.map.addListener(
                             "click",
                             (event) => {
-                                this.placeMarker(event.latLng);
+                                this.placeMarker(event.latLng, true); // User action, update fields
                             }
                         );
                         mapElement._googleMapClickListener = clickListener;
                         mapElement._addingClickListener = false;
+                    }
+
+                    // If we have an address but no marker, geocode to place marker
+                    if (
+                        initialAddress &&
+                        initialAddress !== "" &&
+                        initialAddress !== "null" &&
+                        !this.marker
+                    ) {
+                        this.geocodeAndPlaceMarker(initialAddress);
                     }
 
                     // Initialize Autocomplete if needed
@@ -306,7 +316,7 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                     const clickListener = this.map.addListener(
                         "click",
                         (event) => {
-                            this.placeMarker(event.latLng);
+                            this.placeMarker(event.latLng, true); // User action, update fields
                         }
                     );
                     mapElement._googleMapClickListener = clickListener;
@@ -318,7 +328,17 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                         initialLng &&
                         initialLng !== "null"
                     ) {
-                        this.placeMarker({ lat: defaultLat, lng: defaultLng });
+                        this.placeMarker(
+                            { lat: defaultLat, lng: defaultLng },
+                            false
+                        ); // Display only
+                    } else if (
+                        initialAddress &&
+                        initialAddress !== "" &&
+                        initialAddress !== "null"
+                    ) {
+                        // If we have an address but no coordinates, geocode it to place marker
+                        this.geocodeAndPlaceMarker(initialAddress);
                     }
 
                     // Initialize Places Autocomplete
@@ -336,6 +356,56 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                         "error"
                     );
                 }
+            },
+
+            geocodeAndPlaceMarker(address) {
+                if (!this.geocoder || !address) return;
+
+                this.geocoder.geocode(
+                    { address: address },
+                    (results, status) => {
+                        if (status === "OK" && results[0]) {
+                            const location = results[0].geometry.location;
+                            const lat = location.lat();
+                            const lng = location.lng();
+
+                            // Center map on the geocoded location
+                            if (this.map) {
+                                this.map.setCenter(location);
+                                this.map.setZoom(15);
+                            }
+
+                            // Place marker at the geocoded location (display only, don't update fields)
+                            this.placeMarker(location, false);
+
+                            // Update form fields with the geocoded location
+                            // We already have the address, so just update coordinates
+                            // But since we don't store coordinates, we don't need to update them
+                            // The marker placement will handle the form updates
+
+                            console.log(
+                                "Geocoded existing address and placed marker at:",
+                                lat,
+                                lng
+                            );
+                        } else {
+                            console.warn(
+                                "Geocoding failed for address:",
+                                address,
+                                "Status:",
+                                status
+                            );
+                            // Fallback: just center on default location without marker
+                            if (this.map) {
+                                this.map.setCenter({
+                                    lat: 3.139,
+                                    lng: 101.6869,
+                                });
+                                this.map.setZoom(10);
+                            }
+                        }
+                    }
+                );
             },
 
             initializeAutocomplete() {
@@ -413,8 +483,8 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                         this.map.setCenter(location);
                         this.map.setZoom(15);
 
-                        // Place marker at selected location
-                        this.placeMarker(location);
+                        // Place marker at selected location (user action, update fields)
+                        this.placeMarker(location, true);
 
                         // Update form fields with the place name as title and formatted address
                         const placeName = place.name || "";
@@ -459,7 +529,7 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                 });
             },
 
-            placeMarker(location) {
+            placeMarker(location, updateFields = true) {
                 if (!this.map) return;
 
                 const mapElement = document.getElementById(this.mapId);
@@ -550,8 +620,10 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                     });
                 }
 
-                // Update form fields
-                this.updateLocationFields(location);
+                // Update form fields only if requested (not for existing event display)
+                if (updateFields) {
+                    this.updateLocationFields(location);
+                }
 
                 // Reset flag after a short delay
                 setTimeout(() => {
@@ -1003,7 +1075,8 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                             this.map.setZoom(16);
                         }
                         this.placeMarker(
-                            new google.maps.LatLng(location.lat, location.lng)
+                            new google.maps.LatLng(location.lat, location.lng),
+                            true // User action, update fields
                         );
                     },
                     (error) => {
