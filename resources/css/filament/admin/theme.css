@@ -573,7 +573,10 @@ body {
 
     /* Reduce padding for more compact sidebar items - only when sidebar is collapsed */
     .fi-sidebar:not(.fi-sidebar-open) .fi-sidebar-item-button {
-        padding: 0.85rem 0.5rem !important;
+        padding-top: 0.7rem !important;
+        padding-bottom: 0.7rem !important;
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
     }
 
     /* Reduce padding for group buttons */
