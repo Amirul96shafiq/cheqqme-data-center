@@ -420,7 +420,7 @@
 /* Active category icon color */
 emoji-picker {
     --rgb-accent: 251, 180, 62; /* primary-500 / amber-500 for active elements */
-    --rgb-input: 63, 63, 70;
+    --rgb-input: 249, 250, 251;
 }
 
 /* Emoji picker custom styling for dark mode */
@@ -433,6 +433,7 @@ emoji-picker {
 .dark emoji-picker {
     --background-rgb: 39, 39, 42; /* zinc-800 */
     --rgb-background: 39, 39, 42; /* zinc-800 for various background elements */
+    --rgb-input: 63, 63, 70;
 }
 
 </style>
