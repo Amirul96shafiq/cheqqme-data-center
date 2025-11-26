@@ -1,4 +1,4 @@
-<div class="fi-sidebar-footer">
+<div class="fi-sidebar-footer" x-data="{}" x-bind:class="$store.sidebar.isOpen ? 'justify-start' : 'justify-center'">
     <!-- Collapse button (shown when sidebar is open) -->
     <x-tooltip position="right" :text="__('filament-panels::layout.actions.sidebar.collapse.label')">
         <button
