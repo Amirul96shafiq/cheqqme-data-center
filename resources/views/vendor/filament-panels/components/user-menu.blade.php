@@ -202,48 +202,59 @@
             </x-filament::dropdown.list.item>
         @endforeach
 
-        <form
-            action="{{ $logoutItem?->getUrl() ?? filament()->getLogoutUrl() }}"
-            method="post"
-            id="logout-form"
+        <button
+            type="button"
+            class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70 fi-color-danger hover:bg-danger-50 focus-visible:bg-danger-50 dark:hover:bg-danger-400/10 dark:focus-visible:bg-danger-400/10"
             x-data="{ loggingOut: false }"
-            x-init="
-                $el.addEventListener('submit', function() {
-                    loggingOut = true;
-                });
+            x-bind:disabled="loggingOut"
+            x-bind:class="{ 'opacity-70 cursor-wait': loggingOut }"
+            x-on:click="
+                if (loggingOut) return;
+                loggingOut = true;
+
+                // Clear all intervals and timeouts to prevent polling conflicts during logout
+                for (let i = 1; i < 10000; i++) {
+                    clearInterval(i);
+                    clearTimeout(i);
+                }
+
+                // Create and submit logout form directly for reliable session termination
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ $logoutItem?->getUrl() ?? filament()->getLogoutUrl() }}';
+                form.style.display = 'none';
+
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '_token';
+                tokenInput.value = document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+                form.appendChild(tokenInput);
+
+                document.body.appendChild(form);
+                form.submit();
             "
         >
-            @csrf
-            
-            <button
-                type="submit"
-                class="fi-dropdown-list-item flex w-full items-center gap-2 whitespace-nowrap rounded-md p-2 text-sm transition-colors duration-75 outline-none disabled:pointer-events-none disabled:opacity-70 fi-color-danger hover:bg-danger-50 focus-visible:bg-danger-50 dark:hover:bg-danger-400/10 dark:focus-visible:bg-danger-400/10"
-                x-bind:disabled="loggingOut"
-                x-bind:class="{ 'opacity-70 cursor-wait': loggingOut }"
-            >
 
-                <!-- Original icon - hidden when logging out -->
-                <x-filament::icon
-                    icon="heroicon-o-arrow-left-on-rectangle"
-                    x-show="!loggingOut"
-                    class="fi-dropdown-list-item-icon h-5 w-5 text-danger-500 dark:text-danger-400"
-                />
-                
-                <!-- Loading spinner - shown when logging out -->
-                <x-filament::loading-indicator
-                    x-cloak
-                    x-show="loggingOut"
-                    class="fi-dropdown-list-item-icon h-5 w-5 text-danger-500 dark:text-danger-400"
-                />
+            <!-- Original icon - hidden when logging out -->
+            <x-filament::icon
+                icon="heroicon-o-arrow-left-on-rectangle"
+                x-show="!loggingOut"
+                class="fi-dropdown-list-item-icon h-5 w-5 text-danger-500 dark:text-danger-400"
+            />
 
-                <!-- Logout label -->
-                <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-danger-600 dark:text-danger-400">
-                    {{ $logoutItem?->getLabel() ?? __('filament-panels::layout.actions.logout.label') }}
-                </span>
+            <!-- Loading spinner - shown when logging out -->
+            <x-filament::loading-indicator
+                x-cloak
+                x-show="loggingOut"
+                class="fi-dropdown-list-item-icon h-5 w-5 text-danger-500 dark:text-danger-400"
+            />
 
-            </button>
+            <!-- Logout label -->
+            <span class="fi-dropdown-list-item-label flex-1 truncate text-start text-danger-600 dark:text-danger-400">
+                {{ $logoutItem?->getLabel() ?? __('filament-panels::layout.actions.logout.label') }}
+            </span>
 
-        </form>
+        </button>
 
     </x-filament::dropdown.list>
     
