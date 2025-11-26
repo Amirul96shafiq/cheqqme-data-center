@@ -71,4 +71,8 @@ return [
         'base_url' => 'https://www.googleapis.com/calendar/v3',
     ],
 
+    'google_maps' => [
+        'api_key' => env('GOOGLE_MAPS_API_KEY'),
+    ],
+
 ];

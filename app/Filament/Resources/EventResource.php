@@ -85,7 +85,7 @@ class EventResource extends Resource
                                             ->required()
                                             ->searchable()
                                             ->live()
-                                            ->default('online')
+                                            ->default('offline')
                                             ->columnSpan(1),
 
                                         Forms\Components\DateTimePicker::make('start_datetime')
@@ -151,28 +151,64 @@ class EventResource extends Resource
                                     ),
 
                                 // Offline event fields
-                                Forms\Components\TextInput::make('location_address')
-                                    ->label(__('event.form.location_address'))
-                                    ->nullable()
+                                // Google Maps Location Picker
+                                Forms\Components\Placeholder::make('location_picker_placeholder')
+                                    ->label('')
+                                    ->content('')
                                     ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline'),
 
-                                Forms\Components\TextInput::make('location_latitude')
-                                    ->label(__('event.form.location_latitude'))
-                                    ->numeric()
-                                    ->nullable()
-                                    ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline'),
+                                Forms\Components\ViewField::make('location_picker')
+                                    ->view('components.google-maps-location-picker')
+                                    ->viewData(function (Forms\Get $get) {
+                                        return [
+                                            'latitude' => $get('location_latitude'),
+                                            'longitude' => $get('location_longitude'),
+                                            'address' => $get('location_address'),
+                                            'id' => 'google-map-location-picker-event-form',
+                                        ];
+                                    })
+                                    ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline')
+                                    ->columnSpanFull(),
 
-                                Forms\Components\TextInput::make('location_longitude')
-                                    ->label(__('event.form.location_longitude'))
-                                    ->numeric()
-                                    ->nullable()
-                                    ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline'),
+                                Forms\Components\Grid::make(5)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('location_address')
+                                            ->label(__('event.form.location_address'))
+                                            ->nullable()
+                                            ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline')
+                                            ->columnSpan([
+                                                'md' => 3,
+                                                'default' => 5,
+                                            ]),
+
+                                        Forms\Components\TextInput::make('location_latitude')
+                                            ->label(__('event.form.location_latitude'))
+                                            ->numeric()
+                                            ->nullable()
+                                            ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline')
+                                            ->columnSpan([
+                                                'md' => 1,
+                                                'default' => 5,
+                                            ]),
+
+                                        Forms\Components\TextInput::make('location_longitude')
+                                            ->label(__('event.form.location_longitude'))
+                                            ->numeric()
+                                            ->nullable()
+                                            ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline')
+                                            ->columnSpan([
+                                                'md' => 1,
+                                                'default' => 5,
+                                            ]),
+                                    ]),
+
                             ]),
 
                         Forms\Components\Tabs\Tab::make(__('event.form.featured_image'))
                             ->schema([
                                 Forms\Components\FileUpload::make('featured_image')
                                     ->label(__('event.form.featured_image'))
+                                    ->preserveFilenames()
                                     ->directory('events')
                                     ->image()
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])

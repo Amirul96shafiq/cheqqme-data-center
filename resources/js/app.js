@@ -11,3 +11,4 @@ import "./smart-tooltip";
 import "./kanban-mobile-drag";
 import "./greeting-modal";
 import "./greeting-weather";
+import "./google-maps-location-picker";
