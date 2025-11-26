@@ -156,7 +156,8 @@
                             src="/logos/logo_collapsed.png"
                             alt="CheQQme Data Center"
                             draggable="false"
-                            class="w-8 h-8 object-contain hover:opacity-80 transition-opacity"
+                            class="w-8 h-8 object-contain hover:opacity-80 transition-opacity duration-300"
+                            x-bind:class="{ 'opacity-0 pointer-events-none': isFading, 'opacity-100': !isFading && !$store.sidebar.isOpen }"
                         />
                     </a>
                     <x-filament::icon-button
