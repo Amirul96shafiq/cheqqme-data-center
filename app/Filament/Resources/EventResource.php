@@ -156,13 +156,13 @@ class EventResource extends Resource
                                     ->schema([
                                         Forms\Components\ViewField::make('location_picker')
                                             ->view('components.google-maps-location-picker')
-                                    ->viewData(function (Forms\Get $get) {
-                                        return [
-                                            'title' => $get('location_title'),
-                                            'address' => $get('location_full_address'),
-                                            'id' => 'google-map-location-picker-event-form',
-                                        ];
-                                    })
+                                            ->viewData(function (Forms\Get $get) {
+                                                return [
+                                                    'title' => $get('location_title'),
+                                                    'address' => $get('location_full_address'),
+                                                    'id' => 'google-map-location-picker-event-form',
+                                                ];
+                                            }),
                                     ])
                                     ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline')
                                     ->columnSpanFull(),
@@ -706,16 +706,31 @@ class EventResource extends Resource
                     ->visible(fn ($record) => ! empty($record->event_type))
                     ->schema([
                         // Online event fields
-                        Infolists\Components\TextEntry::make('meeting_link.title')
+                        Infolists\Components\TextEntry::make('meeting_link_id')
                             ->label(__('event.form.meeting_link'))
-                            ->formatStateUsing(fn ($record) => $record->meeting_link ? $record->meeting_link->title.' ('.$record->meeting_link->meeting_platform.')' : null)
+                            ->formatStateUsing(function ($state, $record) {
+                                if (! $record->meetingLink) {
+                                    return __('No meeting link');
+                                }
+
+                                $meetingLink = $record->meetingLink;
+                                $url = \App\Filament\Resources\MeetingLinkResource::getUrl('edit', ['record' => $meetingLink->id]);
+
+                                return new \Illuminate\Support\HtmlString(
+                                    '<a href="'.$url.'" class="hover:underline" target="_blank" rel="noopener noreferrer">'.
+                                    e($meetingLink->title).' ('.$meetingLink->meeting_platform.')'.
+                                    '</a>'
+                                );
+                            })
+                            ->color('primary')
                             ->placeholder(__('No meeting link'))
                             ->visible(fn ($record) => $record->event_type === 'online'),
 
-                        Infolists\Components\TextEntry::make('meeting_link.meeting_url')
+                        Infolists\Components\TextEntry::make('meetingLink.meeting_url')
                             ->label(__('Meeting URL'))
+                            ->color('primary')
                             ->copyable()
-                            ->url(fn ($record) => $record->meeting_link?->meeting_url)
+                            ->url(fn ($record) => $record->meetingLink?->meeting_url)
                             ->openUrlInNewTab()
                             ->placeholder(__('No meeting URL'))
                             ->visible(fn ($record) => $record->event_type === 'online'),
@@ -743,7 +758,7 @@ class EventResource extends Resource
                                 ];
                             })
                             ->columnSpanFull()
-                            ->visible(fn ($record) => $record->event_type === 'offline' && (!empty($record->location_title) || !empty($record->location_full_address))),
+                            ->visible(fn ($record) => $record->event_type === 'offline' && (! empty($record->location_title) || ! empty($record->location_full_address))),
                     ]),
 
                 // Featured Image Section (matches third tab in form)
