@@ -24,7 +24,6 @@ class Event extends Model
         'location_place_id',
         'meeting_link_id',
         'featured_image',
-        'featured_image_source',
         'invited_user_ids',
         'project_ids',
         'document_ids',

@@ -206,13 +206,6 @@ class EventResource extends Resource
                                         }
                                     }),
 
-                                Forms\Components\Select::make('featured_image_source')
-                                    ->label(__('event.form.featured_image_source'))
-                                    ->options([
-                                        'manual' => __('event.image_source.manual'),
-                                        'places_api' => __('event.image_source.places_api'),
-                                    ])
-                                    ->nullable(),
                             ]),
                     ]),
 
@@ -768,14 +761,6 @@ class EventResource extends Resource
                             ->label(__('event.form.featured_image'))
                             ->disk('public')
                             ->placeholder(__('No featured image')),
-                        Infolists\Components\TextEntry::make('featured_image_source')
-                            ->label(__('event.form.featured_image_source'))
-                            ->formatStateUsing(fn (string $state): string => match ($state) {
-                                'manual' => __('event.image_source.manual'),
-                                'places_api' => __('event.image_source.places_api'),
-                                default => $state,
-                            })
-                            ->placeholder(__('Not set')),
                     ]),
 
                 // Event Resources Section (matches fourth section in form)
