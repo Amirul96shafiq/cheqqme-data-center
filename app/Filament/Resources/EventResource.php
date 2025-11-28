@@ -652,6 +652,21 @@ class EventResource extends Resource
     {
         return $infolist
             ->schema([
+
+                // Featured Image Section (matches third tab in form)
+                Infolists\Components\Section::make(__('event.form.featured_image'))
+                    ->schema([
+                        Infolists\Components\ViewEntry::make('featured_image')
+                            ->view('components.featured-image-entry')
+                            ->viewData(function ($record) {
+                                return [
+                                    'featuredImage' => $record->featured_image,
+                                    'placeholder' => __('No featured image'),
+                                ];
+                            })
+                            ->columnSpanFull(),
+                    ]),
+                
                 // Event Information Section (matches first tab in form)
                 Infolists\Components\Section::make(__('event.form.event_information'))
                     ->schema([
@@ -752,20 +767,6 @@ class EventResource extends Resource
                             })
                             ->columnSpanFull()
                             ->visible(fn ($record) => $record->event_type === 'offline' && (! empty($record->location_title) || ! empty($record->location_full_address))),
-                    ]),
-
-                // Featured Image Section (matches third tab in form)
-                Infolists\Components\Section::make(__('event.form.featured_image'))
-                    ->schema([
-                        Infolists\Components\ViewEntry::make('featured_image')
-                            ->view('components.featured-image-entry')
-                            ->viewData(function ($record) {
-                                return [
-                                    'featuredImage' => $record->featured_image,
-                                    'placeholder' => __('No featured image'),
-                                ];
-                            })
-                            ->columnSpanFull(),
                     ]),
 
                 // Event Resources Section (matches fourth section in form)
@@ -941,6 +942,7 @@ class EventResource extends Resource
                                     ->dateTime('j/n/y, h:i A'),
                             ]),
                     ]),
+                    
             ]);
     }
 
