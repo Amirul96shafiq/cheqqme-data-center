@@ -32,6 +32,7 @@ return [
         'location_full_address' => 'Full Address',
         'location_picker' => 'Location Picker',
         'featured_image' => 'Featured Image',
+        'no_featured_image' => 'No featured image',
         'featured_image_source' => 'Image Source',
         'extra_information' => 'Extra Information',
         'notes' => 'Notes',

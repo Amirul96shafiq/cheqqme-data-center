@@ -32,6 +32,7 @@ return [
         'location_full_address' => 'Alamat Penuh',
         'location_picker' => 'Pemilih Lokasi',
         'featured_image' => 'Imej Pilihan',
+        'no_featured_image' => 'Tiada imej pilihan',
         'featured_image_source' => 'Sumber Imej',
         'extra_information' => 'Maklumat Tambahan',
         'notes' => 'Nota',

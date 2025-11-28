@@ -757,18 +757,15 @@ class EventResource extends Resource
                 // Featured Image Section (matches third tab in form)
                 Infolists\Components\Section::make(__('event.form.featured_image'))
                     ->schema([
-                        Infolists\Components\ImageEntry::make('featured_image')
-                            ->label(__('event.form.featured_image'))
-                            ->disk('public')
-                            ->extraImgAttributes([
-                                'ondragstart' => 'event.preventDefault(); event.stopPropagation(); return false;',
-                                'ondrag' => 'event.preventDefault(); event.stopPropagation();',
-                                'ondragend' => 'event.preventDefault(); event.stopPropagation();',
-                                'draggable' => 'false',
-                                'style' => 'pointer-events: none; user-drag: none; -webkit-user-drag: none;',
-                                'class' => 'no-drag-image'
-                            ])
-                            ->placeholder(__('No featured image')),
+                        Infolists\Components\ViewEntry::make('featured_image')
+                            ->view('components.featured-image-entry')
+                            ->viewData(function ($record) {
+                                return [
+                                    'featuredImage' => $record->featured_image,
+                                    'placeholder' => __('No featured image'),
+                                ];
+                            })
+                            ->columnSpanFull(),
                     ]),
 
                 // Event Resources Section (matches fourth section in form)
