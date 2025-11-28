@@ -162,6 +162,15 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         handleDragEnter(e) {
+            // Check if the drag originated from an element that should not trigger drag-drop
+            const target = e.target;
+            if (
+                target.closest(".no-drag-image") ||
+                target.classList.contains("no-drag-image")
+            ) {
+                return; // Ignore drag events from no-drag-image elements
+            }
+
             this.dragCounter++;
             if (this.dragCounter === 1) {
                 this.overlay.style.display = "flex";
@@ -169,6 +178,15 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         handleDragOver(e) {
+            // Check if the drag originated from an element that should not trigger drag-drop
+            const target = e.target;
+            if (
+                target.closest(".no-drag-image") ||
+                target.classList.contains("no-drag-image")
+            ) {
+                return; // Ignore drag events from no-drag-image elements
+            }
+
             e.preventDefault();
             this.overlay.style.display = "flex";
         },

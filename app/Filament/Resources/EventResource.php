@@ -760,6 +760,14 @@ class EventResource extends Resource
                         Infolists\Components\ImageEntry::make('featured_image')
                             ->label(__('event.form.featured_image'))
                             ->disk('public')
+                            ->extraImgAttributes([
+                                'ondragstart' => 'event.preventDefault(); event.stopPropagation(); return false;',
+                                'ondrag' => 'event.preventDefault(); event.stopPropagation();',
+                                'ondragend' => 'event.preventDefault(); event.stopPropagation();',
+                                'draggable' => 'false',
+                                'style' => 'pointer-events: none; user-drag: none; -webkit-user-drag: none;',
+                                'class' => 'no-drag-image'
+                            ])
                             ->placeholder(__('No featured image')),
                     ]),
 
