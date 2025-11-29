@@ -952,10 +952,12 @@
                                     {{-- View Location Button (for offline events with location) --}}
                                     <template x-if="event.event_type === 'offline' && (event.location_title || event.location_full_address)">
                                         <x-tooltip text="{{ __('calendar.tooltip.view_location') }}" position="left">
-                                            <button type="button"
-                                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                            <a :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location_full_address || event.location_title)}`"
+                                               target="_blank"
+                                               rel="noopener noreferrer"
+                                               class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
                                                 {{ __('calendar.calendar.view_location') }}
-                                            </button>
+                                            </a>
                                         </x-tooltip>
                                     </template>
 
