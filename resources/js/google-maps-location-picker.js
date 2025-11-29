@@ -661,6 +661,11 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                         };
                         updateField("location_full_address", formattedAddress);
 
+                        // Store the place_id if available
+                        if (place.place_id) {
+                            updateField("location_place_id", place.place_id);
+                        }
+
                         this.showStatus(
                             `Location set: ${placeName}`,
                             "success"

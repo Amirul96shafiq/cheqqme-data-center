@@ -360,6 +360,13 @@ class CalendarModal extends Component
                 ->visibleToUser()
                 ->orderBy('start_datetime')
                 ->get()
+                ->map(function ($event) {
+                    // Add location_url to each event
+                    $event->location_url = $event->location_place_id
+                        ? "https://www.google.com/maps/place/?q=place_id:{$event->location_place_id}"
+                        : "https://www.google.com/maps/search/?api=1&query=" . urlencode($event->location_full_address ?: $event->location_title ?: '');
+                    return $event;
+                })
                 ->groupBy(fn ($event) => Carbon::parse($event->start_datetime)->format('Y-m-d'))
             : collect();
 
