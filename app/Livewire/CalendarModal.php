@@ -354,6 +354,7 @@ class CalendarModal extends Component
         // Fetch events in the calendar range (if event filter is enabled)
         $events = in_array('event', $this->typeFilter)
             ? Event::query()
+                ->with('meetingLink')
                 ->whereNotNull('start_datetime')
                 ->whereBetween('start_datetime', [$calendarStart, $calendarEnd])
                 ->visibleToUser()
