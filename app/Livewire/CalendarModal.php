@@ -182,10 +182,10 @@ class CalendarModal extends Component
     public function getEventClasses(Event $event, bool $isInvited): string
     {
         if ($isInvited) {
-            return 'bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50';
+            return 'bg-sky-100 text-sky-700 hover:bg-sky-200 dark:bg-sky-900/30 dark:text-sky-400 dark:hover:bg-sky-900/50';
         }
 
-        return 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50 text-teal-600 dark:text-teal-400';
+        return 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50 text-sky-600 dark:text-sky-400';
     }
 
     public function getBirthdayClasses(object $birthday): string

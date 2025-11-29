@@ -613,7 +613,7 @@
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
                                                 class="flex items-center px-0.5 py-0.5 sm:px-1 sm:py-1.5 text-[10px] sm:text-xs rounded transition-colors w-full text-left {{ $this->getEventClasses($event, $isInvited) }}"
                                                 title="{{ \App\Filament\Resources\EventResource::generatePreviewTitleFromValues($event->title ?: 'Event', $event->event_type ?: 'offline', $event->start_datetime ? $event->start_datetime->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $event->end_datetime ? $event->end_datetime->format('Y-m-d H:i:s') : now()->addHour()->format('Y-m-d H:i:s')) }}">
-                                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5 flex-shrink-0"></span>
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-sky-500 mr-1.5 flex-shrink-0"></span>
                                             <span class="truncate">{{ $event->start_datetime->format('g:i A') }} {{ Str::limit(\App\Filament\Resources\EventResource::generatePreviewTitleFromValues($event->title ?: 'Event', $event->event_type ?: 'offline', $event->start_datetime ? $event->start_datetime->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $event->end_datetime ? $event->end_datetime->format('Y-m-d H:i:s') : now()->addHour()->format('Y-m-d H:i:s')), 25) }}</span>
                                         </button>
                                     @endforeach
@@ -926,13 +926,13 @@
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('event.navigation.events') }}</p>
                     <template x-for="event in popoverEvents.events" :key="event.id">
                         <div class="px-3 py-2 rounded-lg border-l-4 bg-gray-50 dark:bg-gray-800/50"
-                             :class="event.is_invited ? 'border-teal-500' : 'border-gray-300 dark:border-gray-700'">
+                             :class="event.is_invited ? 'border-sky-500' : 'border-gray-300 dark:border-gray-700'">
                             <div class="flex items-center justify-between mb-1">
                                 <div class="flex items-center gap-2">
                                     <span class="text-[10px] px-2 py-1 rounded-full font-medium"
                                           :class="event.event_type === 'online' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'"
                                           x-text="event.event_type === 'online' ? '{{ __('event.type.online') }}' : '{{ __('event.type.offline') }}'"></span>
-                                    <span x-show="event.is_invited" class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">
+                                    <span x-show="event.is_invited" class="text-[10px] px-2 py-1 rounded-full font-medium bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400">
                                         {{ __('calendar.calendar.invited') }}
                                     </span>
                                 </div>
