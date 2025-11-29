@@ -155,4 +155,34 @@ class Event extends Model
 
         return $this->visibility_status === 'active' || $this->created_by === $userId;
     }
+
+    /**
+     * Get the Google Maps URL for the event location.
+     */
+    public function getGoogleMapsUrl(): ?string
+    {
+        // Always prioritize place URL format when we have a location title
+        if ($this->location_title) {
+            // URL encode the place name (replace spaces with +, encode special chars)
+            $encodedPlaceName = str_replace(' ', '+', $this->location_title);
+            $encodedPlaceName = urlencode($encodedPlaceName);
+
+            // If we have a place_id, include it in the data parameter for precise location
+            if ($this->location_place_id) {
+                return "https://www.google.com/maps/place/{$encodedPlaceName}/data=!4m2!3m1!1s{$this->location_place_id}";
+            }
+
+            // Use place URL format even without place_id - Google Maps will search for the place name
+            return "https://www.google.com/maps/place/{$encodedPlaceName}";
+        }
+
+        // Fallback to search URL if we have an address but no title
+        if ($this->location_full_address) {
+            $encodedQuery = urlencode($this->location_full_address);
+
+            return "https://www.google.com/maps/search/?api=1&query={$encodedQuery}";
+        }
+
+        return null;
+    }
 }

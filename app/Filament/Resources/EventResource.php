@@ -540,6 +540,22 @@ class EventResource extends Resource
                     ->label(__('event.table.end_datetime'))
                     ->dateTime('j/n/y, h:i A'),
 
+                Tables\Columns\TextColumn::make('location')
+                    ->label(__('event.table.location'))
+                    ->getStateUsing(function ($record) {
+                        return $record->location_title ?: $record->location_full_address;
+                    })
+                    ->url(fn ($record) => $record && $record->event_type === 'offline' ? $record->getGoogleMapsUrl() : null)
+                    ->openUrlInNewTab()
+                    ->placeholder(__('No location'))
+                    ->limit(30)
+                    ->tooltip(function ($record) {
+                        $location = $record->location_title ?: $record->location_full_address;
+
+                        return $location ? 'Click to open in Google Maps' : null;
+                    })
+                    ->visible(fn ($record) => $record && $record->event_type === 'offline'),
+
                 Tables\Columns\TextColumn::make('attendees_count')
                     ->label(__('event.table.attendees'))
                     ->badge()
@@ -700,7 +716,7 @@ class EventResource extends Resource
                             })
                             ->columnSpanFull(),
                     ]),
-                
+
                 // Event Information Section (matches first tab in form)
                 Infolists\Components\Section::make(__('event.form.event_information'))
                     ->schema([
@@ -745,7 +761,7 @@ class EventResource extends Resource
 
                 // Meeting Location Section (matches second tab in form)
                 Infolists\Components\Section::make(__('event.form.meeting_location'))
-                    ->visible(fn ($record) => ! empty($record->event_type))
+                    ->visible(fn ($record) => $record && ! empty($record->event_type))
                     ->schema([
                         // Online event fields
                         Infolists\Components\TextEntry::make('meeting_link_id')
@@ -766,7 +782,7 @@ class EventResource extends Resource
                             })
                             ->color('primary')
                             ->placeholder(__('No meeting link'))
-                            ->visible(fn ($record) => $record->event_type === 'online'),
+                            ->visible(fn ($record) => $record && $record->event_type === 'online'),
 
                         Infolists\Components\TextEntry::make('meetingLink.meeting_url')
                             ->label(__('Meeting URL'))
@@ -775,19 +791,19 @@ class EventResource extends Resource
                             ->url(fn ($record) => $record->meetingLink?->meeting_url)
                             ->openUrlInNewTab()
                             ->placeholder(__('No meeting URL'))
-                            ->visible(fn ($record) => $record->event_type === 'online'),
+                            ->visible(fn ($record) => $record && $record->event_type === 'online'),
 
                         // Offline event fields
                         Infolists\Components\TextEntry::make('location_title')
                             ->label(__('event.form.location_title'))
                             ->placeholder(__('No location title'))
-                            ->visible(fn ($record) => $record->event_type === 'offline'),
+                            ->visible(fn ($record) => $record && $record->event_type === 'offline'),
 
                         Infolists\Components\TextEntry::make('location_full_address')
                             ->label(__('event.form.location_full_address'))
                             ->placeholder(__('No location address'))
                             ->columnSpanFull()
-                            ->visible(fn ($record) => $record->event_type === 'offline'),
+                            ->visible(fn ($record) => $record && $record->event_type === 'offline'),
 
                         // Google Maps with pinned location
                         Infolists\Components\ViewEntry::make('location_map')
@@ -796,11 +812,12 @@ class EventResource extends Resource
                                 return [
                                     'title' => $record->location_title,
                                     'address' => $record->location_full_address,
+                                    'url' => $record->getGoogleMapsUrl(),
                                     'id' => 'google-map-location-viewer-'.$record->id,
                                 ];
                             })
                             ->columnSpanFull()
-                            ->visible(fn ($record) => $record->event_type === 'offline' && (! empty($record->location_title) || ! empty($record->location_full_address))),
+                            ->visible(fn ($record) => $record && $record->event_type === 'offline' && (! empty($record->location_title) || ! empty($record->location_full_address))),
                     ]),
 
                 // Event Resources Section (matches fourth section in form)
@@ -976,7 +993,7 @@ class EventResource extends Resource
                                     ->dateTime('j/n/y, h:i A'),
                             ]),
                     ]),
-                    
+
             ]);
     }
 
