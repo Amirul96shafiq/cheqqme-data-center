@@ -2,7 +2,7 @@
 
 return [
     'calendar' => [
-        'title' => 'Kalendar Acara',
+        'title' => 'Kalendar & Jadual',
         'subtitle' => 'Lihat acara dan jadual anda',
         'coming_soon' => 'Kalendar Akan Datang',
         'empty_content' => 'Fungsi kalendar akan datang.',

@@ -9,7 +9,7 @@ return [
         'profile-label' => 'Profile',
         'settings-label' => 'Settings',
         'whats-news-label' => "What's New? (Changelog) 🡥",
-        'calendar-label' => 'Event Calendar 🡥',
+        'calendar-label' => 'Calendar & Schedule 🡥',
         'logout-label' => 'Logout',
     ],
 
@@ -17,7 +17,7 @@ return [
         'welcome_back' => 'Welcome Back, :name',
         'dashboard_subtitle' => 'Here\'s what happening with CheQQme Data Center today',
         'view_github' => 'View on GitHub 🡥',
-        'view_calendar' => 'View Event Calendar 🡥',
+        'view_calendar' => 'View Calendar & Schedule 🡥',
         'view_changelog' => 'View What\'s New? (Changelog) 🡥',
     ],
 
