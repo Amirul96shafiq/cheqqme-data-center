@@ -661,7 +661,7 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                         };
                         updateField("location_full_address", formattedAddress);
 
-                        // Store the place_id if available
+                        // Store the place_id if available (for autocomplete selections)
                         if (place.place_id) {
                             updateField("location_place_id", place.place_id);
                         }
@@ -962,6 +962,9 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                         if (status === "OK" && results[0]) {
                             const address = results[0].formatted_address;
 
+                            // For map clicks/drags, also search for nearby places to get place_id
+                            this.findNearbyPlaceId(location, address);
+
                             // Extract title from address components with improved logic for map clicks
                             let title = existingTitle;
                             if (!title && results[0].address_components) {
@@ -1195,6 +1198,106 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                         }
                     }
                 );
+            },
+
+            findNearbyPlaceId(location, address) {
+                if (!google || !google.maps || !google.maps.places) {
+                    console.warn(
+                        "Places API not available for finding place_id"
+                    );
+                    return;
+                }
+
+                // Create Places service
+                const placesService = new google.maps.places.PlacesService(
+                    document.createElement("div")
+                );
+
+                // Search for places near the clicked location
+                const request = {
+                    location: location,
+                    radius: 50, // Search within 50 meters
+                    query: address, // Use the reverse geocoded address as query
+                    fields: ["place_id", "name", "formatted_address"],
+                };
+
+                placesService.textSearch(request, (results, status) => {
+                    if (
+                        status === google.maps.places.PlacesServiceStatus.OK &&
+                        results &&
+                        results.length > 0
+                    ) {
+                        const nearestPlace = results[0]; // Take the first (nearest) result
+
+                        // Update the location_place_id field
+                        const updateField = (fieldName, value) => {
+                            const selectors = [
+                                `[name="${fieldName}"]`,
+                                `input[name="${fieldName}"]`,
+                                `[wire\\:model*="${fieldName}"]`,
+                                `[data-field-name="${fieldName}"]`,
+                            ];
+
+                            let field = null;
+                            for (const selector of selectors) {
+                                field = document.querySelector(selector);
+                                if (field) break;
+                            }
+
+                            if (field) {
+                                field.value = value;
+                                ["input", "change", "blur"].forEach(
+                                    (eventType) => {
+                                        field.dispatchEvent(
+                                            new Event(eventType, {
+                                                bubbles: true,
+                                            })
+                                        );
+                                    }
+                                );
+                            }
+                        };
+
+                        if (nearestPlace.place_id) {
+                            updateField(
+                                "location_place_id",
+                                nearestPlace.place_id
+                            );
+                            // console.log("Updated location_place_id from nearby search:", nearestPlace.place_id);
+                        }
+                    } else {
+                        // If nearby search fails, clear the place_id field
+                        const updateField = (fieldName, value) => {
+                            const selectors = [
+                                `[name="${fieldName}"]`,
+                                `input[name="${fieldName}"]`,
+                                `[wire\\:model*="${fieldName}"]`,
+                                `[data-field-name="${fieldName}"]`,
+                            ];
+
+                            let field = null;
+                            for (const selector of selectors) {
+                                field = document.querySelector(selector);
+                                if (field) break;
+                            }
+
+                            if (field) {
+                                field.value = value || "";
+                                ["input", "change", "blur"].forEach(
+                                    (eventType) => {
+                                        field.dispatchEvent(
+                                            new Event(eventType, {
+                                                bubbles: true,
+                                            })
+                                        );
+                                    }
+                                );
+                            }
+                        };
+                        updateField("location_place_id", "");
+                        // console.log("Cleared location_place_id - no nearby place found");
+                    }
+                });
             },
 
             getCurrentLocation() {

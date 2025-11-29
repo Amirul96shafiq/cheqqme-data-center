@@ -216,6 +216,11 @@ class EventResource extends Resource
                                             ->columnSpan(2),
                                     ]),
 
+                                // Hidden field for Google Places API place_id
+                                Forms\Components\Hidden::make('location_place_id')
+                                    ->nullable()
+                                    ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline'),
+
                             ]),
 
                         Forms\Components\Tabs\Tab::make(__('event.form.featured_image'))
