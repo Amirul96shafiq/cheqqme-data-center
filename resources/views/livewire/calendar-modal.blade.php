@@ -932,7 +932,6 @@
                                     <span class="text-[10px] px-2 py-1 rounded-full font-medium"
                                           :class="event.event_type === 'online' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'"
                                           x-text="event.event_type === 'online' ? '{{ __('event.type.online') }}' : '{{ __('event.type.offline') }}'"></span>
-                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400" x-text="event.start_time + ' - ' + event.end_time"></span>
                                     <span x-show="event.is_invited" class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">
                                         {{ __('calendar.calendar.invited') }}
                                     </span>
