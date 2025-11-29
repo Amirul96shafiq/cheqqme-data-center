@@ -301,10 +301,17 @@
                             </a>
 
                             <!-- Create Meeting Link Button -->
-                            <a href="{{ route('filament.admin.resources.meeting-links.create') }}" 
+                            <a href="{{ route('filament.admin.resources.meeting-links.create') }}"
                             class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors rounded-md mx-2">
                                 <x-heroicon-o-video-camera class="h-4 w-4 text-gray-500 dark:text-gray-400" />
                                 {{ __('calendar.calendar.meeting_link') }}
+                            </a>
+
+                            <!-- Create Event Button -->
+                            <a href="{{ route('filament.admin.resources.events.create') }}"
+                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors rounded-md mx-2">
+                                <x-heroicon-o-calendar class="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                {{ __('event.actions.create') }}
                             </a>
 
                         </div>
@@ -367,8 +374,8 @@
                             
                             <!-- Meeting Filter -->
                             <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
-                                <input 
-                                    type="checkbox" 
+                                <input
+                                    type="checkbox"
                                     value="meeting"
                                     wire:model.live="typeFilter"
                                     class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
@@ -376,6 +383,20 @@
                                 <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
                                     <x-heroicon-m-video-camera class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-3" />
                                     {{ __('calendar.calendar.meeting_link') }}
+                                </span>
+                            </label>
+
+                            <!-- Event Filter -->
+                            <label class="w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-150 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                                <input
+                                    type="checkbox"
+                                    value="event"
+                                    wire:model.live="typeFilter"
+                                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 mr-3"
+                                >
+                                <span class="flex items-center text-gray-700 dark:text-gray-300 flex-1">
+                                    <x-heroicon-m-calendar class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-3" />
+                                    {{ __('event.navigation.events') }}
                                 </span>
                             </label>
                             
@@ -522,9 +543,9 @@
                                         {{ $day['date']->day }}
                                     </span>
                                     
-                                    @if($day['tasks']->count() + $day['meetings']->count() + $day['holidays']->count() + $day['birthdays']->count() > 0)
+                                    @if($day['tasks']->count() + $day['meetings']->count() + $day['events']->count() + $day['holidays']->count() + $day['birthdays']->count() > 0)
                                         @php
-                                            $totalEvents = $day['tasks']->count() + $day['meetings']->count() + $day['holidays']->count() + $day['birthdays']->count();
+                                            $totalEvents = $day['tasks']->count() + $day['meetings']->count() + $day['events']->count() + $day['holidays']->count() + $day['birthdays']->count();
                                         @endphp
                                         <span class="text-[10px] text-gray-500 dark:text-gray-400">
                                             {{ $totalEvents }} {{ $totalEvents === 1 ? __('calendar.calendar.event') : __('calendar.calendar.events') }}
@@ -545,7 +566,8 @@
                                                 @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                             'date' => $this->formatDateWithTranslation($day['date']),
                                                             'tasks' => [['id' => $task->id, 'title' => $task->title, 'priority' => $task->priority, 'status' => $task->status, 'tracking_token' => $task->tracking_token, 'status_url' => $task->status_url ?? null, 'type' => 'task', 'is_assigned' => $isAssigned]],
-                                                            'meetings' => []
+                                                            'meetings' => [],
+                                                            'events' => []
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
                                                 class="flex items-center px-0.5 py-0.5 sm:px-1 sm:py-1.5 text-[10px] sm:text-xs rounded transition-colors w-full text-left {{ $this->getTaskClasses($task, $isAssigned) }}"
                                                 title="{{ $task->title }}">
@@ -563,7 +585,8 @@
                                                 @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                             'date' => $this->formatDateWithTranslation($day['date']),
                                                             'tasks' => [],
-                                                            'meetings' => [['id' => $meeting->id, 'title' => \App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($meeting->title ?: 'CheQQMeeting', $meeting->meeting_platform ?: 'Google Meet', $meeting->meeting_start_time ? $meeting->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $meeting->meeting_duration ?: 60), 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting', 'is_invited' => $isInvited]]
+                                                            'meetings' => [['id' => $meeting->id, 'title' => \App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($meeting->title ?: 'CheQQMeeting', $meeting->meeting_platform ?: 'Google Meet', $meeting->meeting_start_time ? $meeting->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $meeting->meeting_duration ?: 60), 'time' => $meeting->meeting_start_time->format('g:i A'), 'url' => $meeting->meeting_url, 'type' => 'meeting', 'is_invited' => $isInvited]],
+                                                            'events' => []
                                                         ]) }}, { x: $event.clientX, y: $event.clientY })"
                                                 class="flex items-center px-0.5 py-0.5 sm:px-1 sm:py-1.5 text-[10px] sm:text-xs rounded transition-colors w-full text-left {{ $this->getMeetingClasses($meeting, $isInvited) }}"
                                                 title="{{ \App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($meeting->title ?: 'CheQQMeeting', $meeting->meeting_platform ?: 'Google Meet', $meeting->meeting_start_time ? $meeting->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $meeting->meeting_duration ?: 60) }}">
@@ -571,14 +594,42 @@
                                             <span class="truncate">{{ $meeting->meeting_start_time->format('g:i A') }} {{ Str::limit(\App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($meeting->title ?: 'CheQQMeeting', $meeting->meeting_platform ?: 'Google Meet', $meeting->meeting_start_time ? $meeting->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $meeting->meeting_duration ?: 60), 25) }}</span>
                                         </button>
                                     @endforeach
+
+                                    {{-- Events --}}
+                                    @php
+                                        $displayedMeetings = $day['tasks']->take(2)->count() + $day['meetings']->take(2 - $day['tasks']->take(2)->count())->count();
+                                        $remainingSlots = max(0, 2 - $displayedMeetings);
+                                    @endphp
+                                    @foreach($day['events']->take($remainingSlots) as $event)
+                                        @php
+                                            $isInvited = in_array(auth()->id(), $event->invited_user_ids ?? []);
+                                        @endphp
+                                        <button type="button"
+                                                @click="closeAndOpen({{ \Illuminate\Support\Js::from([
+                                                            'date' => $this->formatDateWithTranslation($day['date']),
+                                                            'tasks' => [],
+                                                            'meetings' => [],
+                                                            'events' => [['id' => $event->id, 'title' => \App\Filament\Resources\EventResource::generatePreviewTitleFromValues($event->title ?: 'Event', $event->event_type ?: 'offline', $event->start_datetime ? $event->start_datetime->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $event->end_datetime ? $event->end_datetime->format('Y-m-d H:i:s') : now()->addHour()->format('Y-m-d H:i:s')), 'start_time' => $event->start_datetime->format('g:i A'), 'end_time' => $event->end_datetime->format('g:i A'), 'event_type' => $event->event_type, 'meeting_link_id' => $event->meeting_link_id, 'location_title' => $event->location_title, 'location_full_address' => $event->location_full_address, 'type' => 'event', 'is_invited' => $isInvited]]
+                                                        ]) }}, { x: $event.clientX, y: $event.clientY })"
+                                                class="flex items-center px-0.5 py-0.5 sm:px-1 sm:py-1.5 text-[10px] sm:text-xs rounded transition-colors w-full text-left {{ $this->getEventClasses($event, $isInvited) }}"
+                                                title="{{ \App\Filament\Resources\EventResource::generatePreviewTitleFromValues($event->title ?: 'Event', $event->event_type ?: 'offline', $event->start_datetime ? $event->start_datetime->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $event->end_datetime ? $event->end_datetime->format('Y-m-d H:i:s') : now()->addHour()->format('Y-m-d H:i:s')) }}">
+                                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-teal-500 mr-1.5 flex-shrink-0"></span>
+                                            <span class="truncate">{{ $event->start_datetime->format('g:i A') }} {{ Str::limit(\App\Filament\Resources\EventResource::generatePreviewTitleFromValues($event->title ?: 'Event', $event->event_type ?: 'offline', $event->start_datetime ? $event->start_datetime->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $event->end_datetime ? $event->end_datetime->format('Y-m-d H:i:s') : now()->addHour()->format('Y-m-d H:i:s')), 25) }}</span>
+                                        </button>
+                                    @endforeach
                                     
                                     {{-- Holidays --}}
-                                    @foreach($day['holidays']->take(2 - $day['tasks']->take(2)->count() - $day['meetings']->take(2 - $day['tasks']->take(2)->count())->count()) as $holiday)
+                                    @php
+                                        $displayedEvents = $day['tasks']->take(2)->count() + $day['meetings']->take(2 - $day['tasks']->take(2)->count())->count() + $day['events']->take(max(0, 2 - $day['tasks']->take(2)->count() - $day['meetings']->take(2 - $day['tasks']->take(2)->count())->count()))->count();
+                                        $remainingSlotsForHolidays = max(0, 2 - $displayedEvents);
+                                    @endphp
+                                    @foreach($day['holidays']->take($remainingSlotsForHolidays) as $holiday)
                                         <button type="button"
                                             @click="closeAndOpen({{ \Illuminate\Support\Js::from([
                                                     'date' => $this->formatDateWithTranslation($day['date']),
                                                     'tasks' => [],
                                                     'meetings' => [],
+                                                    'events' => [],
                                                     'holidays' => [['name' => $holiday->name, 'type' => $holiday->type, 'date' => $holiday->date->format('Y-m-d'), 'country_code' => $holiday->country_code]]
                                                 ]) }}, { x: $event.clientX, y: $event.clientY })"
                                             class="flex items-center px-0.5 py-0.5 sm:px-1 sm:py-1 text-[10px] sm:text-xs rounded transition-colors w-full text-left bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50"
@@ -590,7 +641,7 @@
                                     
                                     {{-- Birthdays --}}
                                     @php
-                                        $displayedEvents = $day['tasks']->take(2)->count() + $day['meetings']->take(2 - $day['tasks']->take(2)->count())->count() + $day['holidays']->take(2 - $day['tasks']->take(2)->count() - $day['meetings']->take(2 - $day['tasks']->take(2)->count())->count())->count();
+                                        $displayedEvents = $day['tasks']->take(2)->count() + $day['meetings']->take(2 - $day['tasks']->take(2)->count())->count() + $day['events']->take(max(0, 2 - $day['tasks']->take(2)->count() - $day['meetings']->take(2 - $day['tasks']->take(2)->count())->count()))->count() + $day['holidays']->take($remainingSlotsForHolidays)->count();
                                         $remainingSlots = max(0, 2 - $displayedEvents);
                                     @endphp
                                     @foreach($day['birthdays']->take($remainingSlots) as $birthday)
@@ -599,6 +650,7 @@
                                                     'date' => $this->formatDateWithTranslation($day['date']),
                                                     'tasks' => [],
                                                     'meetings' => [],
+                                                    'events' => [],
                                                     'holidays' => [],
                                                     'birthdays' => [['id' => $birthday->id, 'name' => $birthday->name, 'short_name' => $birthday->short_name, 'age' => $birthday->age, 'is_current_user' => $birthday->is_current_user, 'hooray_text' => __('calendar.calendar.hooray')]]
                                                 ]) }}, { x: $event.clientX, y: $event.clientY })"
@@ -611,7 +663,7 @@
                                     
                                     {{-- More Events Indicator --}}
                                     @php
-                                        $totalEvents = $day['tasks']->count() + $day['meetings']->count() + $day['holidays']->count() + $day['birthdays']->count();
+                                        $totalEvents = $day['tasks']->count() + $day['meetings']->count() + $day['events']->count() + $day['holidays']->count() + $day['birthdays']->count();
                                         $displayedEvents = min(2, $totalEvents);
                                         $remainingEvents = $totalEvents - $displayedEvents;
                                     @endphp
@@ -622,6 +674,7 @@
                                                         'date' => $this->formatDateWithTranslation($day['date']),
                                                          'tasks' => $day['tasks']->map(fn($t) => ['id' => $t->id, 'title' => $t->title, 'priority' => $t->priority, 'status' => $t->status, 'tracking_token' => $t->tracking_token, 'status_url' => $t->status_url ?? null, 'type' => 'task', 'is_assigned' => in_array(auth()->id(), $t->assigned_to ?? [])])->values(),
                                                          'meetings' => $day['meetings']->map(fn($m) => ['id' => $m->id, 'title' => \App\Filament\Resources\MeetingLinkResource::generatePreviewTitleFromValues($m->title ?: 'CheQQMeeting', $m->meeting_platform ?: 'Google Meet', $m->meeting_start_time ? $m->meeting_start_time->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $m->meeting_duration ?: 60), 'time' => $m->meeting_start_time->format('g:i A'), 'url' => $m->meeting_url, 'type' => 'meeting', 'is_invited' => in_array(auth()->id(), $m->user_ids ?? [])])->values(),
+                                                         'events' => $day['events']->map(fn($e) => ['id' => $e->id, 'title' => \App\Filament\Resources\EventResource::generatePreviewTitleFromValues($e->title ?: 'Event', $e->event_type ?: 'offline', $e->start_datetime ? $e->start_datetime->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'), $e->end_datetime ? $e->end_datetime->format('Y-m-d H:i:s') : now()->addHour()->format('Y-m-d H:i:s')), 'start_time' => $e->start_datetime->format('g:i A'), 'end_time' => $e->end_datetime->format('g:i A'), 'event_type' => $e->event_type, 'meeting_link_id' => $e->meeting_link_id, 'location_title' => $e->location_title, 'location_full_address' => $e->location_full_address, 'type' => 'event', 'is_invited' => in_array(auth()->id(), $e->invited_user_ids ?? [])])->values(),
                                                          'holidays' => $day['holidays']->map(fn($h) => ['name' => $h->name, 'type' => $h->type, 'date' => $h->date->format('Y-m-d'), 'country_code' => $h->country_code])->values(),
                                                          'birthdays' => $day['birthdays']->map(fn($b) => ['id' => $b->id, 'name' => $b->name, 'short_name' => $b->short_name, 'age' => $b->age, 'is_current_user' => $b->is_current_user, 'hooray_text' => __('calendar.calendar.hooray')])->values()
                                                     ]) }}, { x: $event.clientX, y: $event.clientY })"
@@ -840,7 +893,7 @@
                                     </span>
                                 </div>
                                 <div class="flex items-center gap-1">
-                                    
+
                                     {{-- Join Meeting Button --}}
                                     <x-tooltip text="{{ __('calendar.tooltip.join') }}" position="left">
                                         <a :href="meeting.url"
@@ -862,6 +915,63 @@
                                 </div>
                             </div>
                             <p class="text-sm text-gray-900 dark:text-gray-100" x-text="meeting.title"></p>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            {{-- Events Section --}}
+            <template x-if="popoverEvents.events && popoverEvents.events.length > 0">
+                <div class="space-y-2">
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('event.navigation.events') }}</p>
+                    <template x-for="event in popoverEvents.events" :key="event.id">
+                        <div class="px-3 py-2 rounded-lg border-l-4 bg-gray-50 dark:bg-gray-800/50"
+                             :class="event.is_invited ? 'border-teal-500' : 'border-gray-300 dark:border-gray-700'">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium"
+                                          :class="event.event_type === 'online' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'"
+                                          x-text="event.event_type === 'online' ? '{{ __('event.type.online') }}' : '{{ __('event.type.offline') }}'"></span>
+                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400" x-text="event.start_time + ' - ' + event.end_time"></span>
+                                    <span x-show="event.is_invited" class="text-[10px] px-2 py-1 rounded-full font-medium bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">
+                                        {{ __('calendar.calendar.invited') }}
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-1">
+
+                                    {{-- Join Meeting Button (for online events with meeting link) --}}
+                                    <template x-if="event.event_type === 'online' && event.meeting_link_id">
+                                        <x-tooltip text="{{ __('calendar.tooltip.join') }}" position="left">
+                                            <a :href="`{{ url('admin/meeting-links') }}/${event.meeting_link_id}/edit`"
+                                            target="_blank"
+                                            class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                                {{ __('calendar.calendar.join') }}
+                                            </a>
+                                        </x-tooltip>
+                                    </template>
+
+                                    {{-- View Location Button (for offline events with location) --}}
+                                    <template x-if="event.event_type === 'offline' && (event.location_title || event.location_full_address)">
+                                        <x-tooltip text="{{ __('calendar.tooltip.view_location') }}" position="left">
+                                            <button type="button"
+                                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                                {{ __('calendar.calendar.view_location') }}
+                                            </button>
+                                        </x-tooltip>
+                                    </template>
+
+                                    {{-- Edit Event Button --}}
+                                    <x-tooltip text="{{ __('calendar.tooltip.edit_task') }}" position="left">
+                                        <a :href="`{{ url('admin/events') }}/${event.id}/edit`"
+                                        target="_blank"
+                                        class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-400 hover:underline transition-colors">
+                                            {{ __('calendar.calendar.edit') }}
+                                        </a>
+                                    </x-tooltip>
+
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-900 dark:text-gray-100" x-text="event.title"></p>
                         </div>
                     </template>
                 </div>

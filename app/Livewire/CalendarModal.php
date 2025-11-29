@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Event;
 use App\Models\MeetingLink;
 use App\Models\Task;
 use App\Models\User;
@@ -22,7 +23,7 @@ class CalendarModal extends Component
         $now = now();
         $this->year = $now->year;
         $this->month = $now->month;
-        $this->typeFilter = ['task', 'meeting', 'holiday', 'birthday']; // Default: show all
+        $this->typeFilter = ['task', 'meeting', 'event', 'holiday', 'birthday']; // Default: show all
     }
 
     public function toggleTypeFilter(string $type): void
@@ -36,7 +37,7 @@ class CalendarModal extends Component
 
     public function clearTypeFilter(): void
     {
-        $this->typeFilter = ['task', 'meeting', 'holiday', 'birthday'];
+        $this->typeFilter = ['task', 'meeting', 'event', 'holiday', 'birthday'];
     }
 
     public function getTaskStatusUrl(Task $task): ?string
@@ -170,6 +171,15 @@ class CalendarModal extends Component
     }
 
     public function getMeetingClasses(MeetingLink $meeting, bool $isInvited): string
+    {
+        if ($isInvited) {
+            return 'bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50';
+        }
+
+        return 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/50 text-teal-600 dark:text-teal-400';
+    }
+
+    public function getEventClasses(Event $event, bool $isInvited): string
     {
         if ($isInvited) {
             return 'bg-teal-100 text-teal-700 hover:bg-teal-200 dark:bg-teal-900/30 dark:text-teal-400 dark:hover:bg-teal-900/50';
@@ -341,6 +351,17 @@ class CalendarModal extends Component
                 ->groupBy(fn ($meeting) => Carbon::parse($meeting->meeting_start_time)->format('Y-m-d'))
             : collect();
 
+        // Fetch events in the calendar range (if event filter is enabled)
+        $events = in_array('event', $this->typeFilter)
+            ? Event::query()
+                ->whereNotNull('start_datetime')
+                ->whereBetween('start_datetime', [$calendarStart, $calendarEnd])
+                ->visibleToUser()
+                ->orderBy('start_datetime')
+                ->get()
+                ->groupBy(fn ($event) => Carbon::parse($event->start_datetime)->format('Y-m-d'))
+            : collect();
+
         // Get holidays for the current month (if holiday filter is enabled)
         $holidays = in_array('holiday', $this->typeFilter)
             ? $this->getHolidaysForMonth()
@@ -371,6 +392,7 @@ class CalendarModal extends Component
                     'is_today' => $currentDate->isToday(),
                     'tasks' => $tasks->get($dateKey, collect()),
                     'meetings' => $meetings->get($dateKey, collect()),
+                    'events' => $events->get($dateKey, collect()),
                     'holidays' => $holidays->get($dateKey, collect()),
                     'birthdays' => $birthdays->get($dateKey, collect()),
                 ];

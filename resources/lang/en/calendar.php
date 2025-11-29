@@ -22,6 +22,7 @@ return [
         'join' => 'Join',
         'invited' => 'Invited',
         'assigned' => 'Assigned',
+        'view_location' => 'View',
         'create' => 'Create',
         'action_task' => 'Action Task',
         'meeting_link' => 'Meeting Link',
@@ -83,6 +84,7 @@ return [
         'view_status' => 'View Status',
         'edit_meeting_link' => 'Edit Meeting Link',
         'join' => 'Join Meeting',
+        'view_location' => 'View Location on Map',
     ],
     'priority' => [
         'high' => 'High',

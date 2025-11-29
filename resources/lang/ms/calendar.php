@@ -22,6 +22,7 @@ return [
         'join' => 'Sertai',
         'invited' => 'Dijemput',
         'assigned' => 'Ditugaskan',
+        'view_location' => 'Lihat',
         'create' => 'Cipta',
         'action_task' => 'Tugasan Tindakan',
         'meeting_link' => 'Pautan Mesyuarat',
@@ -83,6 +84,7 @@ return [
         'view_status' => 'Lihat Status',
         'edit_meeting_link' => 'Sunting Pautan Mesyuarat',
         'join' => 'Sertai Mesyuarat',
+        'view_location' => 'Lihat Lokasi di Peta',
     ],
     'priority' => [
         'high' => 'Tinggi',

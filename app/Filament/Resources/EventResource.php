@@ -58,6 +58,40 @@ class EventResource extends Resource
         ];
     }
 
+    public static function generatePreviewTitleFromValues(string $title, string $eventType, string $startDateTime, string $endDateTime): string
+    {
+        // Format the start date/time
+        $formattedStartDate = 'Start Time';
+        if ($startDateTime) {
+            try {
+                $startDate = \Carbon\Carbon::parse($startDateTime);
+                $formattedStartDate = $startDate->format('j/n/y - h:i A');
+            } catch (\Exception $e) {
+                $formattedStartDate = 'Invalid Start Date';
+            }
+        }
+
+        // Format the end date/time
+        $formattedEndDate = 'End Time';
+        if ($endDateTime) {
+            try {
+                $endDate = \Carbon\Carbon::parse($endDateTime);
+                $formattedEndDate = $endDate->format('j/n/y - h:i A');
+            } catch (\Exception $e) {
+                $formattedEndDate = 'Invalid End Date';
+            }
+        }
+
+        // Format the event type
+        $formattedEventType = match ($eventType) {
+            'online' => 'Online',
+            'offline' => 'Offline',
+            default => $eventType
+        };
+
+        return "{$title} - {$formattedEventType} - {$formattedStartDate} - {$formattedEndDate}";
+    }
+
     public static function form(Form $form): Form
     {
         return $form
