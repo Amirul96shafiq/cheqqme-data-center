@@ -19,9 +19,11 @@ class Event extends Model
         'event_type',
         'start_datetime',
         'end_datetime',
+        'location_method',
         'location_title',
         'location_full_address',
         'location_place_id',
+        'maps_share_url',
         'meeting_link_id',
         'featured_image',
         'invited_user_ids',
@@ -160,19 +162,25 @@ class Event extends Model
      * Get the Google Maps URL for the event location.
      *
      * Uses the most reliable format that Google Maps supports:
+     * - Share URL when location_method is 'url' (most reliable, uses exact Google Maps link)
      * - Place ID when available (most precise, prevents redirects to coordinates)
      * - Place name in URL path (user-friendly fallback)
      * - Address search as last resort
      */
     public function getGoogleMapsUrl(): ?string
     {
-        // Priority 1: Use place_id when available (most precise, prevents coordinate redirects)
+        // Priority 1: Use the original share URL if location method is URL (most reliable)
+        if ($this->location_method === 'url' && $this->maps_share_url) {
+            return $this->maps_share_url;
+        }
+
+        // Priority 2: Use place_id when available (most precise, prevents coordinate redirects)
         if ($this->location_place_id) {
             // Use place_id query parameter format - most reliable for modern Google Place IDs
             return "https://www.google.com/maps/place/?q=place_id:{$this->location_place_id}";
         }
 
-        // Priority 2: If we have a location title, use it in the place URL
+        // Priority 3: If we have a location title, use it in the place URL
         // Note: This may redirect to coordinates if Google Maps can't find exact match
         if ($this->location_title) {
             $encodedPlaceName = urlencode($this->location_title);
@@ -180,7 +188,7 @@ class Event extends Model
             return "https://www.google.com/maps/place/{$encodedPlaceName}";
         }
 
-        // Priority 3: Fallback to search URL if we have an address but no title
+        // Priority 4: Fallback to search URL if we have an address but no title
         if ($this->location_full_address) {
             $encodedQuery = urlencode($this->location_full_address);
 

@@ -159,10 +159,23 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
             apiKey: apiKey || window.GOOGLE_MAPS_API_KEY || "",
             isInitializing: false,
             isInitialized: false,
+            currentAddress: initialAddress,
 
             init() {
                 // console.log("=== GOOGLE MAPS COMPONENT INIT ===");
                 //console.log("Map ID:", this.mapId);
+                //console.log("Initial Address:", initialAddress);
+
+                // Store initial address
+                this.currentAddress = initialAddress;
+
+                // Watch for address changes (for reactivity)
+                this.$watch('currentAddress', (newAddress) => {
+                    if (newAddress && newAddress !== initialAddress && this.isInitialized) {
+                        // console.log("Address changed to:", newAddress);
+                        this.handleAddressUpdate(newAddress);
+                    }
+                });
 
                 // Check if map element already has a map instance (from previous initialization)
                 const mapElement = document.getElementById(this.mapId);
@@ -672,6 +685,62 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                         );
                     });
                 });
+            },
+
+            handleAddressUpdate(newAddress) {
+                if (!newAddress || !newAddress.trim()) {
+                    // console.log("Empty address, skipping update");
+                    return;
+                }
+
+                // console.log("Handling address update:", newAddress);
+
+                if (!this.geocoder) {
+                    this.geocoder = new google.maps.Geocoder();
+                }
+
+                this.geocoder.geocode(
+                    { address: newAddress },
+                    (results, status) => {
+                        if (status === "OK" && results[0]) {
+                            const location = results[0].geometry.location;
+                            const lat = location.lat();
+                            const lng = location.lng();
+
+                            // console.log("Geocoded new address to:", lat, lng);
+
+                            // Center map on the new location
+                            if (this.map) {
+                                this.map.setCenter(location);
+                                this.map.setZoom(15);
+                            }
+
+                            // Place marker at the new location (display only, don't update fields)
+                            this.placeMarker(location, false);
+
+                            // Update search input if it exists
+                            if (this.$refs.searchInput) {
+                                this.$refs.searchInput.value = newAddress;
+                            }
+
+                            this.showStatus(
+                                `Location updated: ${newAddress}`,
+                                "success"
+                            );
+                        } else {
+                            console.warn(
+                                "Geocoding failed for address:",
+                                newAddress,
+                                "Status:",
+                                status
+                            );
+                            this.showStatus(
+                                "Could not find location for the provided address",
+                                "warning"
+                            );
+                        }
+                    }
+                );
             },
 
             placeMarker(location, updateFields = true) {

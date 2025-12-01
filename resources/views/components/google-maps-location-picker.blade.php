@@ -13,10 +13,11 @@
     window.GOOGLE_MAPS_API_KEY = '{{ config("services.google_maps.api_key") }}';
 </script>
 
-<div 
+<div
     class="google-maps-location-picker"
     x-data="googleMapsLocationPicker('{{ $id }}', null, null, '{{ addslashes($address ?? '') }}', {{ $zoom }}, '{{ config("services.google_maps.api_key") }}')"
     x-init="init()"
+    wire:ignore
 >
     <!-- Search Box -->
     <div class="mb-4">
@@ -34,6 +35,7 @@
         wire:ignore
         style="height: {{ $height }}; width: 100%;"
         class="rounded-lg border border-gray-200 dark:border-gray-700"
-    ></div>
+    >    </div>
 
 </div>
+

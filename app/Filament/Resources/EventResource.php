@@ -184,8 +184,81 @@ class EventResource extends Resource
                                             ->openUrlInNewTab()
                                     ),
 
-                                // Offline event fields
-                                // Google Maps Location Picker
+                                // Offline event location method selection
+                                Forms\Components\Radio::make('location_method')
+                                    ->label(__('event.form.location_method'))
+                                    ->options([
+                                        'url' => __('event.form.location_method_url'),
+                                        'picker' => __('event.form.location_method_picker'),
+                                    ])
+                                    ->default('picker')
+                                    ->inline()
+                                    ->live()
+                                    ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline'),
+
+                                // Option 1: Google Maps Share URL
+                                Forms\Components\Grid::make(1)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('maps_share_url')
+                                            ->label(__('event.form.maps_share_url'))
+                                            ->placeholder('https://maps.app.goo.gl/... or https://goo.gl/maps/...')
+                                            ->helperText(__('event.form.maps_share_url_help'))
+                                            ->url()
+                                            ->nullable()
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get, $state) {
+                                                if (! $state) {
+                                                    return;
+                                                }
+
+                                                try {
+                                                    $mapsService = new \App\Services\GoogleMapsService;
+                                                    $locationData = $mapsService->resolveShareUrl($state);
+
+                                                    if ($locationData) {
+                                                        $set('location_title', $locationData['title']);
+                                                        $set('location_full_address', $locationData['address']);
+                                                        if (isset($locationData['place_id'])) {
+                                                            $set('location_place_id', $locationData['place_id']);
+                                                        }
+
+                                                        \Filament\Notifications\Notification::make()
+                                                            ->title('Location loaded successfully')
+                                                            ->body('Location details have been filled from the shared URL.')
+                                                            ->success()
+                                                            ->send();
+                                                    } else {
+                                                        \Filament\Notifications\Notification::make()
+                                                            ->title('URL Resolution Failed')
+                                                            ->body('Could not extract location data from the URL.')
+                                                            ->warning()
+                                                            ->send();
+                                                    }
+                                                } catch (\Exception $e) {
+                                                    \Filament\Notifications\Notification::make()
+                                                        ->title('Error processing URL')
+                                                        ->body('Could not process the Google Maps URL.')
+                                                        ->warning()
+                                                        ->send();
+                                                }
+                                            })
+                                            ->suffixAction(
+                                                \Filament\Forms\Components\Actions\Action::make('clearUrl')
+                                                    ->label(__('Clear'))
+                                                    ->icon('heroicon-o-x-mark')
+                                                    ->color('gray')
+                                                    ->action(function (Forms\Set $set) {
+                                                        $set('maps_share_url', null);
+                                                        $set('location_title', null);
+                                                        $set('location_full_address', null);
+                                                        $set('location_place_id', null);
+                                                    })
+                                                    ->visible(fn (Forms\Get $get) => ! empty($get('maps_share_url')))
+                                            ),
+                                    ])
+                                    ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline' && $get('location_method') === 'url'),
+
+                                // Option 2: Google Maps Location Picker
                                 Forms\Components\Section::make(__('event.form.location_picker'))
                                     ->schema([
                                         Forms\Components\ViewField::make('location_picker')
@@ -198,7 +271,7 @@ class EventResource extends Resource
                                                 ];
                                             }),
                                     ])
-                                    ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline')
+                                    ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline' && $get('location_method') === 'picker')
                                     ->columnSpanFull(),
 
                                 Forms\Components\Grid::make(3)
