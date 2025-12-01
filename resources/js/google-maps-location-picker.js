@@ -170,8 +170,12 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                 this.currentAddress = initialAddress;
 
                 // Watch for address changes (for reactivity)
-                this.$watch('currentAddress', (newAddress) => {
-                    if (newAddress && newAddress !== initialAddress && this.isInitialized) {
+                this.$watch("currentAddress", (newAddress) => {
+                    if (
+                        newAddress &&
+                        newAddress !== initialAddress &&
+                        this.isInitialized
+                    ) {
                         // console.log("Address changed to:", newAddress);
                         this.handleAddressUpdate(newAddress);
                     }
@@ -1282,91 +1286,249 @@ if (typeof window.googleMapsLocationPicker === "undefined") {
                     document.createElement("div")
                 );
 
-                // Search for places near the clicked location
-                const request = {
-                    location: location,
-                    radius: 50, // Search within 50 meters
-                    query: address, // Use the reverse geocoded address as query
-                    fields: ["place_id", "name", "formatted_address"],
+                // Helper function to update form fields
+                const updateField = (fieldName, value) => {
+                    const selectors = [
+                        `[name="${fieldName}"]`,
+                        `input[name="${fieldName}"]`,
+                        `[wire\\:model*="${fieldName}"]`,
+                        `[data-field-name="${fieldName}"]`,
+                    ];
+
+                    let field = null;
+                    for (const selector of selectors) {
+                        field = document.querySelector(selector);
+                        if (field) break;
+                    }
+
+                    if (field) {
+                        field.value = value;
+                        ["input", "change", "blur"].forEach((eventType) => {
+                            field.dispatchEvent(
+                                new Event(eventType, {
+                                    bubbles: true,
+                                })
+                            );
+                        });
+                    }
                 };
 
-                placesService.textSearch(request, (results, status) => {
-                    if (
-                        status === google.maps.places.PlacesServiceStatus.OK &&
-                        results &&
-                        results.length > 0
-                    ) {
-                        const nearestPlace = results[0]; // Take the first (nearest) result
+                // First, try nearbySearch to find establishments near the clicked location
+                const nearbyRequest = {
+                    location: location,
+                    radius: 100, // Search within 100 meters for better coverage
+                    type: ["establishment"], // Look for businesses/establishments
+                    fields: [
+                        "place_id",
+                        "name",
+                        "formatted_address",
+                        "types",
+                        "rating",
+                        "user_ratings_total",
+                    ],
+                };
 
-                        // Update the location_place_id field
-                        const updateField = (fieldName, value) => {
-                            const selectors = [
-                                `[name="${fieldName}"]`,
-                                `input[name="${fieldName}"]`,
-                                `[wire\\:model*="${fieldName}"]`,
-                                `[data-field-name="${fieldName}"]`,
-                            ];
+                placesService.nearbySearch(
+                    nearbyRequest,
+                    (nearbyResults, nearbyStatus) => {
+                        if (
+                            nearbyStatus ===
+                                google.maps.places.PlacesServiceStatus.OK &&
+                            nearbyResults &&
+                            nearbyResults.length > 0
+                        ) {
+                            // Prioritize places: establishments > points of interest > others
+                            let bestPlace = null;
 
-                            let field = null;
-                            for (const selector of selectors) {
-                                field = document.querySelector(selector);
-                                if (field) break;
-                            }
-
-                            if (field) {
-                                field.value = value;
-                                ["input", "change", "blur"].forEach(
-                                    (eventType) => {
-                                        field.dispatchEvent(
-                                            new Event(eventType, {
-                                                bubbles: true,
-                                            })
-                                        );
-                                    }
-                                );
-                            }
-                        };
-
-                        if (nearestPlace.place_id) {
-                            updateField(
-                                "location_place_id",
-                                nearestPlace.place_id
+                            // First, look for establishments
+                            bestPlace = nearbyResults.find(
+                                (place) =>
+                                    place.types &&
+                                    place.types.includes("establishment")
                             );
-                            // console.log("Updated location_place_id from nearby search:", nearestPlace.place_id);
-                        }
-                    } else {
-                        // If nearby search fails, clear the place_id field
-                        const updateField = (fieldName, value) => {
-                            const selectors = [
-                                `[name="${fieldName}"]`,
-                                `input[name="${fieldName}"]`,
-                                `[wire\\:model*="${fieldName}"]`,
-                                `[data-field-name="${fieldName}"]`,
-                            ];
 
-                            let field = null;
-                            for (const selector of selectors) {
-                                field = document.querySelector(selector);
-                                if (field) break;
-                            }
-
-                            if (field) {
-                                field.value = value || "";
-                                ["input", "change", "blur"].forEach(
-                                    (eventType) => {
-                                        field.dispatchEvent(
-                                            new Event(eventType, {
-                                                bubbles: true,
-                                            })
-                                        );
-                                    }
+                            // If no establishment found, look for points of interest
+                            if (!bestPlace) {
+                                bestPlace = nearbyResults.find(
+                                    (place) =>
+                                        place.types &&
+                                        (place.types.includes(
+                                            "point_of_interest"
+                                        ) ||
+                                            place.types.includes(
+                                                "restaurant"
+                                            ) ||
+                                            place.types.includes("food") ||
+                                            place.types.includes("store") ||
+                                            place.types.includes(
+                                                "shopping_mall"
+                                            ))
                                 );
                             }
+
+                            // If still no good match, take the first result with a name
+                            if (!bestPlace) {
+                                bestPlace = nearbyResults.find(
+                                    (place) =>
+                                        place.name && place.name.trim() !== ""
+                                );
+                            }
+
+                            // Last resort: take the first result
+                            if (!bestPlace && nearbyResults.length > 0) {
+                                bestPlace = nearbyResults[0];
+                            }
+
+                            if (bestPlace && bestPlace.place_id) {
+                                // Update fields with the best place found
+                                updateField(
+                                    "location_place_id",
+                                    bestPlace.place_id
+                                );
+
+                                if (bestPlace.name) {
+                                    updateField(
+                                        "location_title",
+                                        bestPlace.name
+                                    );
+                                }
+
+                                if (bestPlace.formatted_address) {
+                                    updateField(
+                                        "location_full_address",
+                                        bestPlace.formatted_address
+                                    );
+                                }
+
+                                console.log(
+                                    "Updated location from nearby establishment:",
+                                    {
+                                        name: bestPlace.name,
+                                        address: bestPlace.formatted_address,
+                                        place_id: bestPlace.place_id,
+                                    }
+                                );
+
+                                return; // Success, exit early
+                            }
+                        }
+
+                        // If nearbySearch failed or found no suitable places, try textSearch as fallback
+                        console.log(
+                            "Nearby search failed or found no suitable places, trying text search fallback"
+                        );
+
+                        const textRequest = {
+                            location: location,
+                            radius: 150, // Slightly larger radius for text search
+                            query: "", // Empty query to find any establishments near the location
+                            type: ["establishment"],
+                            fields: [
+                                "place_id",
+                                "name",
+                                "formatted_address",
+                                "types",
+                            ],
                         };
-                        updateField("location_place_id", "");
-                        // console.log("Cleared location_place_id - no nearby place found");
+
+                        placesService.textSearch(
+                            textRequest,
+                            (textResults, textStatus) => {
+                                if (
+                                    textStatus ===
+                                        google.maps.places.PlacesServiceStatus
+                                            .OK &&
+                                    textResults &&
+                                    textResults.length > 0
+                                ) {
+                                    // Use the same prioritization logic as nearbySearch
+                                    let bestPlace = null;
+
+                                    bestPlace = textResults.find(
+                                        (place) =>
+                                            place.types &&
+                                            place.types.includes(
+                                                "establishment"
+                                            )
+                                    );
+
+                                    if (!bestPlace) {
+                                        bestPlace = textResults.find(
+                                            (place) =>
+                                                place.types &&
+                                                (place.types.includes(
+                                                    "point_of_interest"
+                                                ) ||
+                                                    place.types.includes(
+                                                        "restaurant"
+                                                    ) ||
+                                                    place.types.includes(
+                                                        "food"
+                                                    ) ||
+                                                    place.types.includes(
+                                                        "store"
+                                                    ) ||
+                                                    place.types.includes(
+                                                        "shopping_mall"
+                                                    ))
+                                        );
+                                    }
+
+                                    if (!bestPlace) {
+                                        bestPlace = textResults.find(
+                                            (place) =>
+                                                place.name &&
+                                                place.name.trim() !== ""
+                                        );
+                                    }
+
+                                    if (!bestPlace && textResults.length > 0) {
+                                        bestPlace = textResults[0];
+                                    }
+
+                                    if (bestPlace && bestPlace.place_id) {
+                                        updateField(
+                                            "location_place_id",
+                                            bestPlace.place_id
+                                        );
+
+                                        if (bestPlace.name) {
+                                            updateField(
+                                                "location_title",
+                                                bestPlace.name
+                                            );
+                                        }
+
+                                        if (bestPlace.formatted_address) {
+                                            updateField(
+                                                "location_full_address",
+                                                bestPlace.formatted_address
+                                            );
+                                        }
+
+                                        console.log(
+                                            "Updated location from text search fallback:",
+                                            {
+                                                name: bestPlace.name,
+                                                address:
+                                                    bestPlace.formatted_address,
+                                                place_id: bestPlace.place_id,
+                                            }
+                                        );
+
+                                        return;
+                                    }
+                                }
+
+                                // If both searches failed, clear the place_id field and use reverse geocoding only
+                                console.log(
+                                    "All place searches failed, using reverse geocoding only"
+                                );
+                                updateField("location_place_id", "");
+                            }
+                        );
                     }
-                });
+                );
             },
 
             getCurrentLocation() {
