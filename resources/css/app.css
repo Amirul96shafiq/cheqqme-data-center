@@ -252,3 +252,8 @@ select {
         animation: none;
     }
 }
+
+/* Google Maps Custom Styling */
+.gm-style .transit-container .gm-title {
+    color: #000 !important;
+}
