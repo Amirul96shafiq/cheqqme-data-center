@@ -197,6 +197,8 @@ class EventResource extends Resource
                                             'selectedMethod' => $get('location_method') ?: 'picker',
                                             'urlLabel' => __('event.form.location_method_url'),
                                             'pickerLabel' => __('event.form.location_method_picker'),
+                                            'urlDescription' => __('event.form.maps_share_url_help'),
+                                            'pickerDescription' => __('event.form.location_picker_help'),
                                         ];
                                     })
                                     ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline'),

@@ -1,7 +1,9 @@
 @props([
     'selectedMethod' => 'picker',
     'urlLabel' => 'URL',
-    'pickerLabel' => 'Map Picker'
+    'pickerLabel' => 'Map Picker',
+    'urlDescription' => 'Paste a Google Maps share URL to automatically fill location details',
+    'pickerDescription' => 'Use an interactive map to search and select your location'
 ])
 
 <div
@@ -55,7 +57,7 @@
                     {{ $urlLabel }}
                 </h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    Paste a Google Maps share URL to automatically fill location details
+                    {{ $urlDescription }}
                 </p>
             </div>
         </div>
@@ -101,7 +103,7 @@
                     {{ $pickerLabel }}
                 </h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                    Use an interactive map to search and select your location
+                    {{ $pickerDescription }}
                 </p>
             </div>
         </div>

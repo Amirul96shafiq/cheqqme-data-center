@@ -33,6 +33,7 @@ return [
         'location_method_picker' => 'Use Interactive Map',
         'maps_share_url' => 'Google Maps Share URL',
         'maps_share_url_help' => 'Paste a Google Maps share URL to automatically fill location details',
+        'location_picker_help' => 'Use an interactive map to search and select your location',
         'location_title' => 'Location Title',
         'location_full_address' => 'Full Address',
         'location_picker' => 'Location Picker',
