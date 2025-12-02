@@ -185,15 +185,20 @@ class EventResource extends Resource
                                     ),
 
                                 // Offline event location method selection
-                                Forms\Components\Radio::make('location_method')
-                                    ->label(__('event.form.location_method'))
-                                    ->options([
-                                        'url' => __('event.form.location_method_url'),
-                                        'picker' => __('event.form.location_method_picker'),
-                                    ])
+                                Forms\Components\Hidden::make('location_method')
                                     ->default('picker')
-                                    ->inline()
-                                    ->live()
+                                    ->live(),
+
+                                Forms\Components\ViewField::make('location_method_cards')
+                                    ->label(__('event.form.location_method'))
+                                    ->view('components.location-method-cards')
+                                    ->viewData(function (Forms\Get $get) {
+                                        return [
+                                            'selectedMethod' => $get('location_method') ?: 'picker',
+                                            'urlLabel' => __('event.form.location_method_url'),
+                                            'pickerLabel' => __('event.form.location_method_picker'),
+                                        ];
+                                    })
                                     ->visible(fn (Forms\Get $get) => $get('event_type') === 'offline'),
 
                                 // Option 1: Google Maps Share URL
