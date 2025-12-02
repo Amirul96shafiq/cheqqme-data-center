@@ -186,7 +186,7 @@ class EventResource extends Resource
 
                                 // Offline event location method selection
                                 Forms\Components\Hidden::make('location_method')
-                                    ->default('picker')
+                                    ->default('url')
                                     ->live(),
 
                                 Forms\Components\ViewField::make('location_method_cards')
@@ -194,7 +194,7 @@ class EventResource extends Resource
                                     ->view('components.location-method-cards')
                                     ->viewData(function (Forms\Get $get) {
                                         return [
-                                            'selectedMethod' => $get('location_method') ?: 'picker',
+                                            'selectedMethod' => $get('location_method') ?: 'url',
                                             'urlLabel' => __('event.form.location_method_url'),
                                             'pickerLabel' => __('event.form.location_method_picker'),
                                             'urlDescription' => __('event.form.maps_share_url_help'),
