@@ -55,7 +55,7 @@
         </button>
         
         <!-- Custom Dropdown Menu -->
-        <div 
+        <div
             x-show="open"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
@@ -63,14 +63,14 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
-            class="absolute top-full mt-1 w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50"
+            class="absolute top-full mt-1 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-2 space-y-1 z-50"
             style="display: none;"
         >
             @foreach($statusOptions as $status => $option)
-                <button 
+                <button
                     type="button"
                     @click="updateStatus('{{ $status }}')"
-                    class="w-full flex items-center space-x-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"
+                    class="w-full flex items-center gap-2 p-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-lg"
                     :class="{ 'bg-primary-50 dark:bg-primary-900/10': selectedStatus === '{{ $status }}' }"
                 >
                     <!-- Status Color Circle -->
