@@ -9,6 +9,9 @@ return [
     ],
 
     'form' => [
+        'section_controls' => 'Kawalan Bahagian',
+        'enable_meeting_resources' => 'Sumber Mesyuarat',
+        'enable_additional_information' => 'Maklumat Tambahan',
         'meeting_information' => 'Maklumat Mesyuarat',
         'preview_meeting_title' => 'Pratonton Tajuk Mesyuarat',
         'title' => 'Tajuk Mesyuarat',

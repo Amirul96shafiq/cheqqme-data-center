@@ -160,6 +160,92 @@ class MeetingLinkResource extends Resource
                     ])
                         ->schema([
                             // -----------------------------
+                            // Toggle Controls Section
+                            // -----------------------------
+                            Forms\Components\Fieldset::make(__('meetinglink.form.section_controls'))
+                                ->schema([
+                                    Forms\Components\Grid::make(2)
+                                        ->schema([
+                                            // Meeting Resources Toggle
+                                            Forms\Components\Toggle::make('enable_meeting_resources')
+                                                ->label(__('meetinglink.form.enable_meeting_resources'))
+                                                ->default(function (?MeetingLink $record) {
+                                                    // Enable if record has any resources
+                                                    if ($record) {
+                                                        $hasClient = ! empty($record->client_ids) && is_array($record->client_ids);
+                                                        $hasProject = ! empty($record->project_ids) && is_array($record->project_ids);
+                                                        $hasDocument = ! empty($record->document_ids) && is_array($record->document_ids);
+                                                        $hasImportantUrl = ! empty($record->important_url_ids) && is_array($record->important_url_ids);
+
+                                                        return $hasClient || $hasProject || $hasDocument || $hasImportantUrl;
+                                                    }
+
+                                                    return false;
+                                                })
+                                                ->live()
+                                                ->dehydrated(false)
+                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?MeetingLink $record) {
+                                                    // Double-check resources on hydration and enable toggle if needed
+                                                    if ($record) {
+                                                        $hasClient = ! empty($record->client_ids) && is_array($record->client_ids);
+                                                        $hasProject = ! empty($record->project_ids) && is_array($record->project_ids);
+                                                        $hasDocument = ! empty($record->document_ids) && is_array($record->document_ids);
+                                                        $hasImportantUrl = ! empty($record->important_url_ids) && is_array($record->important_url_ids);
+
+                                                        if ($hasClient || $hasProject || $hasDocument || $hasImportantUrl) {
+                                                            $set('enable_meeting_resources', true);
+                                                        }
+                                                    }
+                                                })
+                                                ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                                    // When toggle is disabled, clear all resources
+                                                    if (! $state) {
+                                                        $set('client_ids', []);
+                                                        $set('project_ids', []);
+                                                        $set('document_ids', []);
+                                                        $set('important_url_ids', []);
+                                                    }
+                                                }),
+
+                                            // Additional Information Toggle
+                                            Forms\Components\Toggle::make('enable_additional_information')
+                                                ->label(__('meetinglink.form.enable_additional_information'))
+                                                ->default(function (?MeetingLink $record) {
+                                                    // Enable if record has notes or extra_information
+                                                    if ($record) {
+                                                        $hasNotes = ! empty($record->notes);
+                                                        $hasExtraInfo = ! empty($record->extra_information) && is_array($record->extra_information);
+
+                                                        return $hasNotes || $hasExtraInfo;
+                                                    }
+
+                                                    return false;
+                                                })
+                                                ->live()
+                                                ->dehydrated(false)
+                                                ->afterStateHydrated(function (Forms\Set $set, $state, ?MeetingLink $record) {
+                                                    // Double-check additional information on hydration and enable toggle if needed
+                                                    if ($record) {
+                                                        $hasNotes = ! empty($record->notes);
+                                                        $hasExtraInfo = ! empty($record->extra_information) && is_array($record->extra_information);
+
+                                                        if ($hasNotes || $hasExtraInfo) {
+                                                            $set('enable_additional_information', true);
+                                                        }
+                                                    }
+                                                })
+                                                ->afterStateUpdated(function ($state, Forms\Set $set, ?MeetingLink $record) {
+                                                    // When toggle is disabled, clear all additional information
+                                                    if (! $state) {
+                                                        $set('notes', null);
+                                                        $set('extra_information', []);
+                                                    }
+                                                }),
+                                        ]),
+                                ])
+                                ->columnSpanFull(),
+
+                            // -----------------------------
                             // Meeting Information Section (60% - 3 columns)
                             // -----------------------------
                             Forms\Components\Section::make(__('meetinglink.form.meeting_settings'))
@@ -623,6 +709,9 @@ class MeetingLinkResource extends Resource
                             // -----------------------------
                             Forms\Components\Section::make()
                                 ->heading(__('meetinglink.form.meeting_resources'))
+                                ->visible(fn (Forms\Get $get) => $get('enable_meeting_resources'))
+                                ->collapsible()
+                                ->collapsed(false)
                                 ->schema([
                                     // Client
                                     Forms\Components\Select::make('client_ids')
@@ -859,9 +948,9 @@ class MeetingLinkResource extends Resource
                             // Additional Information Section (Full Width)
                             // -----------------------------
                             Forms\Components\Section::make(__('meetinglink.form.additional_information'))
-                                ->collapsible(true)
-                                ->collapsed(fn ($get) => empty($get('notes')))
-                                ->live()
+                                ->visible(fn (Forms\Get $get) => $get('enable_additional_information'))
+                                ->collapsible()
+                                ->collapsed(false)
                                 ->schema([
                                     Forms\Components\RichEditor::make('notes')
                                         ->label(__('meetinglink.form.notes'))

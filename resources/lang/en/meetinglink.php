@@ -9,6 +9,9 @@ return [
     ],
 
     'form' => [
+        'section_controls' => 'Section Controls',
+        'enable_meeting_resources' => 'Meeting Resources',
+        'enable_additional_information' => 'Additional Information',
         'meeting_information' => 'Meeting Information',
         'preview_meeting_title' => 'Preview Meeting Title',
         'title' => 'Meeting Title',
