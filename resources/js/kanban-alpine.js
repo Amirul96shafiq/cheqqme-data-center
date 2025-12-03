@@ -310,7 +310,10 @@ window.globalKanbanFilter = function () {
             if (this.assignedToFilter.length === 0) {
                 url.searchParams.delete("assigned");
             } else {
-                url.searchParams.set("assigned", this.assignedToFilter.join(","));
+                url.searchParams.set(
+                    "assigned",
+                    this.assignedToFilter.join(",")
+                );
             }
 
             // Update browser history
@@ -371,6 +374,12 @@ window.globalKanbanFilter = function () {
         clearAssignedFilter() {
             this.assignedToFilter = [];
             window.currentAssignedTo = [];
+
+            // Update URL - remove assigned parameter
+            const url = new URL(window.location);
+            url.searchParams.delete("assigned");
+            window.history.pushState({}, "", url);
+
             this.dispatchFilterEvent();
         },
 
@@ -413,6 +422,18 @@ window.globalKanbanFilter = function () {
                 low: "Low",
             };
             return labels[priority] || priority;
+        },
+
+        clearCardTypeFilter() {
+            this.cardTypeFilter = "all";
+            window.currentCardTypeFilter = "all";
+
+            // Update URL - remove type parameter
+            const url = new URL(window.location);
+            url.searchParams.delete("type");
+            window.history.pushState({}, "", url);
+
+            this.dispatchFilterEvent();
         },
 
         // Card type filter methods
@@ -468,6 +489,19 @@ window.globalKanbanFilter = function () {
             );
             // Update global state
             window.currentAssignedTo = this.assignedToFilter;
+
+            // Update URL
+            const url = new URL(window.location);
+            if (this.assignedToFilter.length === 0) {
+                url.searchParams.delete("assigned");
+            } else {
+                url.searchParams.set(
+                    "assigned",
+                    this.assignedToFilter.join(",")
+                );
+            }
+            window.history.pushState({}, "", url);
+
             // Trigger instant filtering
             this.dispatchFilterEvent();
         },
