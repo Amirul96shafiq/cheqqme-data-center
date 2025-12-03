@@ -1,3 +1,21 @@
+<style>
+@keyframes subtle-bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-2px);
+    }
+    60% {
+        transform: translateY(-1px);
+    }
+}
+
+.animate-subtle-bounce {
+    animation: subtle-bounce 2s ease-in-out infinite;
+}
+</style>
+
 <script>
 // Preload greeting modal background images when page loads
 (function() {

@@ -1270,13 +1270,15 @@ function updateNavigationButtons() {
             topBtn.classList.add("opacity-50", "cursor-not-allowed");
             topBtn.classList.remove(
                 "hover:text-primary-600",
-                "dark:hover:text-primary-400"
+                "dark:hover:text-primary-400",
+                "animate-subtle-bounce"
             );
         } else {
             topBtn.classList.remove("opacity-50", "cursor-not-allowed");
             topBtn.classList.add(
                 "hover:text-primary-600",
-                "dark:hover:text-primary-400"
+                "dark:hover:text-primary-400",
+                "animate-subtle-bounce"
             );
         }
 
@@ -1284,13 +1286,15 @@ function updateNavigationButtons() {
             bottomBtn.classList.add("opacity-50", "cursor-not-allowed");
             bottomBtn.classList.remove(
                 "hover:text-primary-600",
-                "dark:hover:text-primary-400"
+                "dark:hover:text-primary-400",
+                "animate-subtle-bounce"
             );
         } else {
             bottomBtn.classList.remove("opacity-50", "cursor-not-allowed");
             bottomBtn.classList.add(
                 "hover:text-primary-600",
-                "dark:hover:text-primary-400"
+                "dark:hover:text-primary-400",
+                "animate-subtle-bounce"
             );
         }
     }
