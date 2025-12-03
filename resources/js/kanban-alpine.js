@@ -305,6 +305,17 @@ window.globalKanbanFilter = function () {
 
         // Filter methods
         handleAssignedFilterChange() {
+            // Update URL without page refresh
+            const url = new URL(window.location);
+            if (this.assignedToFilter.length === 0) {
+                url.searchParams.delete("assigned");
+            } else {
+                url.searchParams.set("assigned", this.assignedToFilter.join(","));
+            }
+
+            // Update browser history
+            window.history.pushState({}, "", url);
+
             // Update global assigned filter state
             window.currentAssignedTo = this.assignedToFilter;
 

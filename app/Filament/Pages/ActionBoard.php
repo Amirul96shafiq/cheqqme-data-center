@@ -77,6 +77,12 @@ class ActionBoard extends KanbanBoardPage
             $this->cardTypeFilter = 'all';
         }
 
+        // Initialize assigned to filter from URL parameter
+        $assignedParam = request()->query('assigned');
+        if ($assignedParam) {
+            $this->assignedToFilter = array_filter(explode(',', $assignedParam));
+        }
+
         $this
             ->titleField('title')
             ->orderField('order_column')
