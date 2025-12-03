@@ -83,6 +83,12 @@ class ActionBoard extends KanbanBoardPage
             $this->assignedToFilter = array_filter(explode(',', $assignedParam));
         }
 
+        // Initialize priority filter from URL parameter
+        $priorityParam = request()->query('priority');
+        if ($priorityParam) {
+            $this->priorityFilter = array_filter(explode(',', $priorityParam));
+        }
+
         $this
             ->titleField('title')
             ->orderField('order_column')

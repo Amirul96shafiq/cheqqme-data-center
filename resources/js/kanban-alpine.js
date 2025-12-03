@@ -397,6 +397,17 @@ window.globalKanbanFilter = function () {
 
         // Priority filter methods
         handlePriorityFilterChange() {
+            // Update URL without page refresh
+            const url = new URL(window.location);
+            if (this.priorityFilter.length === 0) {
+                url.searchParams.delete("priority");
+            } else {
+                url.searchParams.set("priority", this.priorityFilter.join(","));
+            }
+
+            // Update browser history
+            window.history.pushState({}, "", url);
+
             window.currentPriorityFilter = this.priorityFilter;
             this.dispatchFilterEvent();
         },
@@ -404,6 +415,12 @@ window.globalKanbanFilter = function () {
         clearPriorityFilter() {
             this.priorityFilter = [];
             window.currentPriorityFilter = [];
+
+            // Update URL - remove priority parameter
+            const url = new URL(window.location);
+            url.searchParams.delete("priority");
+            window.history.pushState({}, "", url);
+
             this.dispatchFilterEvent();
         },
 
@@ -412,6 +429,16 @@ window.globalKanbanFilter = function () {
                 (p) => p !== priority
             );
             window.currentPriorityFilter = this.priorityFilter;
+
+            // Update URL
+            const url = new URL(window.location);
+            if (this.priorityFilter.length === 0) {
+                url.searchParams.delete("priority");
+            } else {
+                url.searchParams.set("priority", this.priorityFilter.join(","));
+            }
+            window.history.pushState({}, "", url);
+
             this.dispatchFilterEvent();
         },
 
