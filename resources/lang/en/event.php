@@ -12,6 +12,10 @@ return [
     'plural_model_label' => 'Events',
 
     'form' => [
+        'section_controls' => 'Section Controls',
+        'enable_event_resources' => 'Event Resources',
+        'enable_additional_information' => 'Additional Information',
+        'enable_featured_image' => 'Event Featured Image',
         'basic_information' => 'Basic Information',
         'event_information' => 'Event Information',
         'event_resources' => 'Event Resources',

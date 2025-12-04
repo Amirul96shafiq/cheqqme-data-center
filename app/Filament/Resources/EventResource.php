@@ -96,6 +96,120 @@ class EventResource extends Resource
     {
         return $form
             ->schema([
+                // Section Controls Section
+                Forms\Components\Fieldset::make(__('event.form.section_controls'))
+                    ->schema([
+                        Forms\Components\Grid::make(6)
+                            ->schema([
+
+                                // Featured Image Toggle
+                                Forms\Components\Toggle::make('enable_featured_image')
+                                    ->label(__('event.form.enable_featured_image'))
+                                    ->default(function (?Event $record) {
+                                        // Enable if record has featured image
+                                        if ($record && $record->featured_image) {
+                                            $featuredImage = is_array($record->featured_image) ? $record->featured_image : [];
+
+                                            return ! empty($featuredImage);
+                                        }
+
+                                        return false;
+                                    })
+                                    ->live()
+                                    ->dehydrated(false)
+                                    ->afterStateHydrated(function (Forms\Set $set, $state, ?Event $record) {
+                                        // Double-check featured image on hydration and enable toggle if needed
+                                        if ($record && $record->featured_image) {
+                                            $featuredImage = is_array($record->featured_image) ? $record->featured_image : [];
+                                            if (! empty($featuredImage)) {
+                                                $set('enable_featured_image', true);
+                                            }
+                                        }
+                                    })
+                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                        // When toggle is disabled, clear the featured image
+                                        if (! $state) {
+                                            $set('featured_image', null);
+                                        }
+                                    }),
+
+                                // Event Resources Toggle
+                                Forms\Components\Toggle::make('enable_event_resources')
+                                    ->label(__('event.form.enable_event_resources'))
+                                    ->default(function (?Event $record) {
+                                        // Enable if record has any resources
+                                        if ($record) {
+                                            $hasProject = ! empty($record->project_ids) && is_array($record->project_ids);
+                                            $hasDocument = ! empty($record->document_ids) && is_array($record->document_ids);
+                                            $hasImportantUrl = ! empty($record->important_url_ids) && is_array($record->important_url_ids);
+
+                                            return $hasProject || $hasDocument || $hasImportantUrl;
+                                        }
+
+                                        return false;
+                                    })
+                                    ->live()
+                                    ->dehydrated(false)
+                                    ->afterStateHydrated(function (Forms\Set $set, $state, ?Event $record) {
+                                        // Double-check resources on hydration and enable toggle if needed
+                                        if ($record) {
+                                            $hasProject = ! empty($record->project_ids) && is_array($record->project_ids);
+                                            $hasDocument = ! empty($record->document_ids) && is_array($record->document_ids);
+                                            $hasImportantUrl = ! empty($record->important_url_ids) && is_array($record->important_url_ids);
+
+                                            if ($hasProject || $hasDocument || $hasImportantUrl) {
+                                                $set('enable_event_resources', true);
+                                            }
+                                        }
+                                    })
+                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                        // When toggle is disabled, clear all resources
+                                        if (! $state) {
+                                            $set('project_ids', []);
+                                            $set('document_ids', []);
+                                            $set('important_url_ids', []);
+                                        }
+                                    }),
+
+                                // Additional Information Toggle
+                                Forms\Components\Toggle::make('enable_additional_information')
+                                    ->label(__('event.form.enable_additional_information'))
+                                    ->default(function (?Event $record) {
+                                        // Enable if record has description or extra_information
+                                        if ($record) {
+                                            $hasDescription = ! empty($record->description);
+                                            $hasExtraInfo = ! empty($record->extra_information) && is_array($record->extra_information);
+
+                                            return $hasDescription || $hasExtraInfo;
+                                        }
+
+                                        return false;
+                                    })
+                                    ->live()
+                                    ->dehydrated(false)
+                                    ->afterStateHydrated(function (Forms\Set $set, $state, ?Event $record) {
+                                        // Double-check additional information on hydration and enable toggle if needed
+                                        if ($record) {
+                                            $hasDescription = ! empty($record->description);
+                                            $hasExtraInfo = ! empty($record->extra_information) && is_array($record->extra_information);
+
+                                            if ($hasDescription || $hasExtraInfo) {
+                                                $set('enable_additional_information', true);
+                                            }
+                                        }
+                                    })
+                                    ->afterStateUpdated(function ($state, Forms\Set $set, ?Event $record) {
+                                        // When toggle is disabled, clear all additional information
+                                        if (! $state) {
+                                            $set('description', null);
+                                            $set('extra_information', []);
+                                        }
+                                    }),
+
+                            ]),
+                    ])
+                    ->columnSpanFull(),
+
                 // 1st section (tabs section)
                 Forms\Components\Tabs::make('eventTabs')
                     ->columnSpanFull()
@@ -304,6 +418,7 @@ class EventResource extends Resource
                             ]),
 
                         Forms\Components\Tabs\Tab::make(__('event.form.featured_image'))
+                            ->visible(fn (Forms\Get $get) => $get('enable_featured_image'))
                             ->schema([
                                 Forms\Components\FileUpload::make('featured_image')
                                     ->label(__('event.form.featured_image'))
@@ -331,12 +446,9 @@ class EventResource extends Resource
                 // 2nd section (full span width) (able to collapsed) (default collapsed)
                 Forms\Components\Section::make()
                     ->heading(__('event.form.event_resources'))
+                    ->visible(fn (Forms\Get $get) => $get('enable_event_resources'))
                     ->collapsible()
-                    ->collapsed(
-                        fn (Forms\Get $get) => empty($get('project_ids')) &&
-                            empty($get('document_ids')) &&
-                            empty($get('important_url_ids'))
-                    )
+                    ->collapsed(false)
                     ->live()
                     ->schema([
                         // Projects
@@ -470,8 +582,9 @@ class EventResource extends Resource
                 // 3rd section (full span width) (able to collapsed) (default collapsed)
                 Forms\Components\Section::make()
                     ->heading(__('event.form.additional_information'))
-                    ->collapsible(true)
-                    ->collapsed(fn ($get) => empty($get('description')))
+                    ->visible(fn (Forms\Get $get) => $get('enable_additional_information'))
+                    ->collapsible()
+                    ->collapsed(false)
                     ->live()
                     ->schema([
                         Forms\Components\RichEditor::make('description')

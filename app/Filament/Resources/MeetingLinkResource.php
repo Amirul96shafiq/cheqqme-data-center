@@ -164,7 +164,7 @@ class MeetingLinkResource extends Resource
                             // -----------------------------
                             Forms\Components\Fieldset::make(__('meetinglink.form.section_controls'))
                                 ->schema([
-                                    Forms\Components\Grid::make(2)
+                                    Forms\Components\Grid::make(6)
                                         ->schema([
                                             // Meeting Resources Toggle
                                             Forms\Components\Toggle::make('enable_meeting_resources')

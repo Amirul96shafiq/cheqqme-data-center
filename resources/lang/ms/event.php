@@ -12,6 +12,10 @@ return [
     'plural_model_label' => 'Acara',
 
     'form' => [
+        'section_controls' => 'Kawalan Bahagian',
+        'enable_event_resources' => 'Sumber Acara',
+        'enable_additional_information' => 'Maklumat Tambahan',
+        'enable_featured_image' => 'Imej Pilihan Acara',
         'basic_information' => 'Maklumat Asas',
         'event_information' => 'Maklumat Acara',
         'event_resources' => 'Sumber Acara',
