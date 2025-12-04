@@ -47,6 +47,8 @@ return [
     ],
 
     'form' => [
+        'section_controls' => 'Kawalan Bahagian',
+        'enable_additional_information' => 'Aktifkan Maklumat Tambahan',
         'board_name' => 'Nama Papan',
         'board_url' => 'URL Papan',
         'board_url_note' => 'URL untuk papan Trello luar.',

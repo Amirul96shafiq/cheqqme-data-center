@@ -47,6 +47,8 @@ return [
     ],
 
     'form' => [
+        'section_controls' => 'Section Controls',
+        'enable_additional_information' => 'Enable Additional Information',
         'board_name' => 'Board Name',
         'board_url' => 'Board URL',
         'board_url_note' => 'URL for external Trello boards.',

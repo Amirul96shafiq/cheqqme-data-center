@@ -51,6 +51,49 @@ class TrelloBoardResource extends Resource
     {
         return $form
             ->schema([
+                // Section Controls Section
+                Forms\Components\Fieldset::make(__('trelloboard.form.section_controls'))
+                    ->schema([
+                        Forms\Components\Grid::make()
+                            ->schema([
+
+                                // Additional Information Toggle
+                                Forms\Components\Toggle::make('enable_additional_information')
+                                    ->label(__('trelloboard.form.enable_additional_information'))
+                                    ->default(function (?TrelloBoard $record) {
+                                        // Enable if record has description or extra_information
+                                        if ($record && $record->extra_information) {
+                                            $extraInfo = is_array($record->extra_information) ? $record->extra_information : [];
+
+                                            return ! empty($extraInfo);
+                                        }
+
+                                        return false;
+                                    })  
+                                    ->live()
+                                    ->dehydrated(false)
+                                    ->afterStateHydrated(function (Forms\Set $set, $state, ?TrelloBoard $record) {
+                                        // Double-check additional information on hydration and enable toggle if needed
+                                        if ($record) {
+                                            $extraInfo = is_array($record->extra_information) ? $record->extra_information : [];
+
+                                            if (! empty($extraInfo)) {
+                                                $set('enable_additional_information', true);
+                                            }
+                                        }
+                                    })
+                                    ->afterStateUpdated(function ($state, Forms\Set $set, ?TrelloBoard $record) {
+                                        // When toggle is disabled, clear all additional information
+                                        if (! $state) {
+                                            $set('notes', null);
+                                            $set('extra_information', []);
+                                        }
+                                    }),
+
+                            ]),
+                    ])
+                    ->columnSpanFull(),
+                    
                 Section::make(__('trelloboard.section.trello_board_info'))
                     ->schema([
                         Forms\Components\Grid::make(2)
@@ -103,8 +146,9 @@ class TrelloBoardResource extends Resource
 
                 Section::make()
                     ->heading(__('trelloboard.section.extra_info'))
-                    ->collapsible(true)
-                    ->collapsed(fn ($get) => empty($get('notes')))
+                    ->visible(fn (Get $get) => $get('enable_additional_information'))
+                    ->collapsible()
+                    ->collapsed(false)
                     ->live()
                     ->schema([
 
