@@ -33,6 +33,8 @@ return [
     ],
 
     'form' => [
+        'section_controls' => 'Section Controls',
+        'enable_additional_information' => 'Additional Information',
         'phone_number_title' => 'Phone Number Title',
         'phone_number' => 'Phone Number',
         'notes' => 'Notes',

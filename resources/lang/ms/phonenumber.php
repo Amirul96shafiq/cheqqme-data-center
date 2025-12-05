@@ -33,6 +33,8 @@ return [
     ],
 
     'form' => [
+        'section_controls' => 'Kawalan Bahagian',
+        'enable_additional_information' => 'Maklumat Tambahan',
         'phone_number_title' => 'Tajuk Nombor Telefon',
         'phone_number' => 'Nombor Telefon',
         'notes' => 'Nota',

@@ -9,6 +9,7 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -51,6 +52,49 @@ class PhoneNumberResource extends Resource
     {
         return $form
             ->schema([
+                // Section Controls Section
+                Section::make(__('phonenumber.form.section_controls'))
+                    ->schema([
+                        Grid::make(6)
+                            ->schema([
+                                // Additional Information Toggle
+                                Toggle::make('enable_additional_information')
+                                    ->label(__('phonenumber.form.enable_additional_information'))
+                                    ->default(function (?PhoneNumber $record) {
+                                        // Enable if record has notes or extra_information
+                                        if ($record) {
+                                            $hasNotes = ! empty($record->notes);
+                                            $hasExtraInfo = ! empty($record->extra_information) && is_array($record->extra_information);
+
+                                            return $hasNotes || $hasExtraInfo;
+                                        }
+
+                                        return false;
+                                    })
+                                    ->live()
+                                    ->dehydrated(false)
+                                    ->afterStateHydrated(function (Set $set, $state, ?PhoneNumber $record) {
+                                        // Double-check additional information on hydration and enable toggle if needed
+                                        if ($record) {
+                                            $hasNotes = ! empty($record->notes);
+                                            $hasExtraInfo = ! empty($record->extra_information) && is_array($record->extra_information);
+
+                                            if ($hasNotes || $hasExtraInfo) {
+                                                $set('enable_additional_information', true);
+                                            }
+                                        }
+                                    })
+                                    ->afterStateUpdated(function ($state, Set $set) {
+                                        // When toggle is disabled, clear all additional information
+                                        if (! $state) {
+                                            $set('notes', null);
+                                            $set('extra_information', []);
+                                        }
+                                    }),
+                            ]),
+                    ])
+                    ->columnSpanFull(),
+
                 Section::make(__('phonenumber.section.phone_number_info'))
                     ->schema([
 
@@ -129,8 +173,9 @@ class PhoneNumberResource extends Resource
 
                 Section::make()
                     ->heading(__('phonenumber.section.extra_info'))
+                    ->visible(fn (Get $get) => $get('enable_additional_information'))
                     ->collapsible(true)
-                    ->collapsed(fn ($get) => empty($get('notes')))
+                    ->collapsed(false)
                     ->live()
                     ->schema([
 
