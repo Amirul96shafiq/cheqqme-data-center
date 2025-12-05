@@ -33,6 +33,8 @@ return [
     ],
 
     'form' => [
+        'section_controls' => 'Section Controls',
+        'enable_additional_information' => 'Additional Information',
         'document_title' => 'Document Title',
         'project' => 'Project',
         'client' => 'Client',

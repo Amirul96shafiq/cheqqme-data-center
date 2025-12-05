@@ -33,6 +33,8 @@ return [
     ],
 
     'form' => [
+        'section_controls' => 'Kawalan Bahagian',
+        'enable_additional_information' => 'Maklumat Tambahan',
         'document_title' => 'Tajuk Dokumen',
         'project' => 'Projek',
         'client' => 'Pelanggan',
