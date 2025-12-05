@@ -532,10 +532,10 @@ class ChatbotService
      */
     public function getDocumentUrls(): string
     {
-        $count = Document::whereNull('deleted_at')->count();
+        $count = Document::visibleToUser($this->user->id)->count();
 
         $output = "**Document Management** 📄\n\n";
-        $output .= "There are **{$count}** documents in the system right now.\n\n";
+        $output .= "There are **{$count}** documents available to you right now.\n\n";
         $output .= "Here are the direct links to manage documents:\n\n";
 
         $createUrl = \App\Filament\Resources\DocumentResource::getUrl('create');
@@ -694,7 +694,7 @@ class ChatbotService
             'users' => User::whereNull('deleted_at')->count(),
             'clients' => Client::whereNull('deleted_at')->count(),
             'projects' => Project::whereNull('deleted_at')->count(),
-            'documents' => Document::whereNull('deleted_at')->count(),
+            'documents' => Document::visibleToUser($this->user->id)->count(),
             'important_urls' => ImportantUrl::whereNull('deleted_at')->count(),
             'phone_numbers' => PhoneNumber::whereNull('deleted_at')->count(),
             'trello_boards' => TrelloBoard::whereNull('deleted_at')->count(),
