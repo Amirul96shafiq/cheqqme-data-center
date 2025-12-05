@@ -131,7 +131,35 @@ class UserResource extends Resource
 
                             ]),
 
+                        Grid::make(2)
+                            ->visible(fn (string $context) => $context === 'create')
+                            ->schema([
+
+                                // NEW PASSWORD (create)
+                                TextInput::make('password')
+                                    ->label(__('user.form.new_password'))
+                                    ->helperText(__('user.form.password_helper'))
+                                    ->password()
+                                    ->revealable()
+                                    ->minLength(5)
+                                    ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
+                                    ->dehydrated(fn ($state) => filled($state))
+                                    ->required()
+                                    ->same('password_confirmation'),
+
+                                // CONFIRM NEW PASSWORD (create)
+                                TextInput::make('password_confirmation')
+                                    ->label(label: __('user.form.confirm_new_password'))
+                                    ->password()
+                                    ->revealable()
+                                    ->required(
+                                        fn (Get $get) => filled($get('password'))
+                                    ),
+
+                            ]),
+
                         Grid::make(3)
+                            ->visible(fn (string $context) => $context === 'edit')
                             ->schema([
 
                                 // OLD PASSWORD
@@ -141,7 +169,7 @@ class UserResource extends Resource
                                     ->revealable()
                                     ->dehydrated(false)
                                     ->visible(
-                                        fn (Get $get, string $context) => $context === 'edit' && $get('change_password_toggle') === true
+                                        fn (Get $get) => $get('change_password_toggle') === true
                                     )
                                     ->rule(function (Get $get) {
                                         return function (string $attribute, $value, $fail) use ($get) {
@@ -154,7 +182,7 @@ class UserResource extends Resource
 
                                 // NEW PASSWORD
                                 TextInput::make('password')
-                                    ->label(fn (string $context) => $context === 'edit' ? __('user.form.new_password') : __('user.form.new_password'))
+                                    ->label(__('user.form.new_password'))
                                     ->helperText(__('user.form.password_helper'))
                                     ->password()
                                     ->revealable()
@@ -163,7 +191,7 @@ class UserResource extends Resource
                                     ->dehydrated(fn ($state) => filled($state))
                                     ->required(fn (string $context) => $context === 'create')
                                     ->visible(
-                                        fn (Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
+                                        fn (Get $get) => $get('change_password_toggle')
                                     )
                                     ->same('password_confirmation'),
 
@@ -176,7 +204,7 @@ class UserResource extends Resource
                                         fn (Get $get, string $context) => $context === 'create' || filled($get('password'))
                                     )
                                     ->visible(
-                                        fn (Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
+                                        fn (Get $get) => $get('change_password_toggle')
                                     ),
 
                             ]),
