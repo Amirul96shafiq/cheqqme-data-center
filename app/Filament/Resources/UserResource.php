@@ -17,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action as TableAction;
@@ -41,6 +42,44 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
+
+                // Section Controls
+                Section::make(__('user.form.section_controls'))
+                    ->schema([
+                        Grid::make(6)
+                            ->schema([
+                                // Password Information Toggle
+                                Toggle::make('enable_password_section')
+                                    ->label(__('user.form.enable_password_section'))
+                                    ->default(true)
+                                    ->live()
+                                    ->dehydrated(false)
+                                    ->afterStateUpdated(function (bool $state, Set $set) {
+                                        if (! $state) {
+                                            $set('change_password_toggle', false);
+                                            $set('old_password', null);
+                                            $set('password', null);
+                                            $set('password_confirmation', null);
+                                        }
+                                    }),
+
+                                // Danger Zone Toggle
+                                Toggle::make('enable_danger_zone_section')
+                                    ->label(__('user.form.enable_danger_zone_section'))
+                                    ->default(fn (string $context) => $context === 'edit')
+                                    ->onColor('danger')
+                                    ->offColor('gray')
+                                    ->live()
+                                    ->dehydrated(false)
+                                    ->afterStateUpdated(function (bool $state, Set $set) {
+                                        if (! $state) {
+                                            $set('user_delete', false);
+                                            $set('delete_confirmation', null);
+                                        }
+                                    }),
+                            ]),
+                    ])
+                    ->columnSpanFull(),
 
                 Section::make(heading: __('user.section.user_info'))
                     ->schema([
@@ -96,6 +135,7 @@ class UserResource extends Resource
 
                 Section::make(heading: __('user.section.password_info'))
                     ->description(fn (string $context) => $context === 'edit' ? __('user.section.password_info_description') : null)
+                    ->visible(fn (Get $get) => $get('enable_password_section'))
                     ->schema([
 
                         Grid::make(3)
@@ -216,7 +256,7 @@ class UserResource extends Resource
                 // Account deletion
                 Section::make(heading: __('user.section.danger_zone'))
                     ->description(__('user.section.danger_zone_description'))
-                    ->visible(fn (string $context) => $context === 'edit') // hide entire section when creating
+                    ->visible(fn (Get $get, string $context) => $context === 'edit' && $get('enable_danger_zone_section')) // hide entire section when creating
                     ->Schema([
 
                         // Only show "User Deletion?" during editing

@@ -36,6 +36,9 @@ return [
 
     // Form Fields
     'form' => [
+        'section_controls' => 'Kawalan Bahagian',
+        'enable_password_section' => 'Maklumat Kata Laluan',
+        'enable_danger_zone_section' => 'Zon Bahaya',
         'avatar' => 'Avatar',
         'cover_image' => 'Gambar Cover',
         'cover_image_helper' => 'Muat naik gambar cover (disyorkan: maksimum 20MB)',

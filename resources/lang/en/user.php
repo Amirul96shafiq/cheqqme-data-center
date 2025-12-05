@@ -38,6 +38,9 @@ return [
 
     // Form Fields
     'form' => [
+        'section_controls' => 'Section Controls',
+        'enable_password_section' => 'Password Information',
+        'enable_danger_zone_section' => 'Danger Zone',
         'avatar' => 'Avatar',
         'cover_image' => 'Cover Image',
         'cover_image_helper' => 'Upload a cover image for your profile (recommended: max 20MB)',
