@@ -571,8 +571,8 @@ class ChatbotService
         $output .= "There are **{$count}** important URLs in the system right now.\n\n";
         $output .= "Here are the direct links to manage important URLs:\n\n";
 
-        $createUrl = \App\Filament\Resources\ImportantUrlResource::getUrl('create');
-        $listUrl = \App\Filament\Resources\ImportantUrlResource::getUrl('index');
+        $createUrl = route('filament.admin.resources.important-urls.create');
+        $listUrl = route('filament.admin.resources.important-urls.index');
 
         $output .= "**Create New Important URL**\n";
         $output .= "📝 [{$createUrl}]({$createUrl})\n";
