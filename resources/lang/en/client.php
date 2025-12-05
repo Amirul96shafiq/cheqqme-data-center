@@ -38,6 +38,8 @@ return [
     ],
 
     'form' => [
+        'section_controls' => 'Section Controls',
+        'enable_additional_information' => 'Additional Information',
         'pic_name' => 'PIC Name',
         'pic_email' => 'PIC Email',
         'pic_contact_number' => 'PIC Contact Number',

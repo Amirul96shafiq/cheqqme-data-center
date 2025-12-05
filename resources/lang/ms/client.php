@@ -38,6 +38,8 @@ return [
     ],
 
     'form' => [
+        'section_controls' => 'Kawalan Bahagian',
+        'enable_additional_information' => 'Maklumat Tambahan',
         'pic_name' => 'Nama PIC',
         'pic_email' => 'Emel PIC',
         'pic_contact_number' => 'Nombor Telefon PIC',
