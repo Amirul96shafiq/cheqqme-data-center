@@ -273,6 +273,7 @@ class ChatbotController extends Controller
                 - ALWAYS use the get_resource_counts tool when users type /resources or /resources 
                 - Do NOT respond conversationally to these commands - use the tools instead
                 - The tools will provide the actual content, then you can add a friendly message in the user\'s language
+                - Always keep the total counts shown by each resource tool (client, project, document, important-url, phone-number, user, trello-board, resources, mytask)
 
                 Remember
                 - Do not change the title or use the correct title of the task when you list down the tasks
