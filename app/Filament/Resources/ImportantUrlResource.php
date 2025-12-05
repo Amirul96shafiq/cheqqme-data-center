@@ -12,8 +12,10 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
@@ -53,6 +55,48 @@ class ImportantUrlResource extends Resource
     {
         return $form
             ->schema([
+                // Section Controls Section
+                Section::make(__('importanturl.form.section_controls'))
+                    ->schema([
+                        Grid::make(6)
+                            ->schema([
+                                // Additional Information Toggle
+                                Toggle::make('enable_additional_information')
+                                    ->label(__('importanturl.form.enable_additional_information'))
+                                    ->default(function (?ImportantUrl $record) {
+                                        // Enable if record has notes or extra_information
+                                        if ($record) {
+                                            $hasNotes = ! empty($record->notes);
+                                            $hasExtraInfo = ! empty($record->extra_information) && is_array($record->extra_information);
+
+                                            return $hasNotes || $hasExtraInfo;
+                                        }
+
+                                        return false;
+                                    })
+                                    ->live()
+                                    ->dehydrated(false)
+                                    ->afterStateHydrated(function (Set $set, $state, ?ImportantUrl $record) {
+                                        // Double-check additional information on hydration and enable toggle if needed
+                                        if ($record) {
+                                            $hasNotes = ! empty($record->notes);
+                                            $hasExtraInfo = ! empty($record->extra_information) && is_array($record->extra_information);
+
+                                            if ($hasNotes || $hasExtraInfo) {
+                                                $set('enable_additional_information', true);
+                                            }
+                                        }
+                                    })
+                                    ->afterStateUpdated(function ($state, Set $set) {
+                                        // When toggle is disabled, clear all additional information
+                                        if (! $state) {
+                                            $set('notes', null);
+                                            $set('extra_information', []);
+                                        }
+                                    }),
+                            ]),
+                    ])
+                    ->columnSpanFull(),
 
                 Section::make(__('importanturl.section.important_url_info'))->schema([
                     Grid::make([
@@ -163,8 +207,9 @@ class ImportantUrlResource extends Resource
 
                 Section::make()
                     ->heading(__('importanturl.section.extra_info'))
+                    ->visible(fn (Get $get) => $get('enable_additional_information'))
                     ->collapsible(true)
-                    ->collapsed(fn ($get) => empty($get('notes')))
+                    ->collapsed(false)
                     ->live()
                     ->schema([
 

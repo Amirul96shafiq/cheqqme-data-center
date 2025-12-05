@@ -34,6 +34,8 @@ return [
 
     // Form fields
     'form' => [
+        'section_controls' => 'Section Controls',
+        'enable_additional_information' => 'Additional Information',
         'important_url_title' => 'Important URL Title',
         'project' => 'Project',
         'client' => 'Client',
@@ -90,14 +92,14 @@ return [
         'this_month' => 'This Month',
         'this_year' => 'This Year',
     ],
-    
+
     // Search
     'search' => [
         'project' => 'Project',
         'client' => 'Client',
         'url' => 'URL',
     ],
-    
+
     'filter' => [
         'trashed' => 'Trashed Records',
     ],
