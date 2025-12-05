@@ -327,44 +327,19 @@ class ChatbotService
             ],
         ];
 
-        // Return help content in multiple languages - AI will choose based on conversation context
-        $output = "**Available Help Commands** 🤖\n\n";
-        $output .= "Here are the available shortcuts in multiple languages:\n\n";
+        // Default to English-only output
+        $selected = $helpContent['english'];
 
-        // Malay
-        $output .= "**Bahasa Melayu:**\n";
-        $output .= $helpContent['malay']['title']."\n";
-        $output .= $helpContent['malay']['intro']."\n";
+        $output = "{$selected['title']}\n\n";
+        $output .= "{$selected['intro']}\n";
+
         $counter = 1;
-        foreach ($helpContent['malay']['shortcuts'] as $shortcut => $description) {
+        foreach ($selected['shortcuts'] as $shortcut => $description) {
             $output .= "{$counter}. **{$shortcut}** - {$description}\n";
             $counter++;
         }
-        $output .= $helpContent['malay']['footer']."\n\n";
 
-        // Korean
-        $output .= "**한국어:**\n";
-        $output .= $helpContent['korean']['title']."\n";
-        $output .= $helpContent['korean']['intro']."\n";
-        $counter = 1;
-        foreach ($helpContent['korean']['shortcuts'] as $shortcut => $description) {
-            $output .= "{$counter}. **{$shortcut}** - {$description}\n";
-            $counter++;
-        }
-        $output .= $helpContent['korean']['footer']."\n\n";
-
-        // English
-        $output .= "**English:**\n";
-        $output .= $helpContent['english']['title']."\n";
-        $output .= $helpContent['english']['intro']."\n";
-        $counter = 1;
-        foreach ($helpContent['english']['shortcuts'] as $shortcut => $description) {
-            $output .= "{$counter}. **{$shortcut}** - {$description}\n";
-            $counter++;
-        }
-        $output .= $helpContent['english']['footer']."\n\n";
-
-        $output .= '**Note:** Choose the language that matches your conversation! 🌍';
+        $output .= "\n{$selected['footer']}";
 
         return $output;
     }

@@ -74,6 +74,25 @@ class ChatbotController extends Controller
                 'last_activity' => now(),
             ]);
 
+            // Short-circuit /help to avoid OpenAI for static help content
+            if ($this->isHelpCommand($message)) {
+                $chatbotService = new ChatbotService($user);
+                $botReply = $this->normalizeContent($chatbotService->showHelp());
+
+                ChatbotConversation::create([
+                    'user_id' => $user->id,
+                    'conversation_id' => $conversationId,
+                    'role' => 'assistant',
+                    'content' => $botReply,
+                    'last_activity' => now(),
+                ]);
+
+                return response()->json([
+                    'reply' => $botReply,
+                    'conversation_id' => $conversationId,
+                ]);
+            }
+
             // Get the conversation history
             $conversationHistory = ChatbotConversation::where('conversation_id', $conversationId)
                 ->orderBy('created_at')
@@ -663,6 +682,14 @@ class ChatbotController extends Controller
                 'error' => $e->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * Determine whether the message triggers the /help shortcut
+     */
+    protected function isHelpCommand(string $message): bool
+    {
+        return (bool) preg_match('/^\/help(\s|$)/i', trim($message));
     }
 
     /**
