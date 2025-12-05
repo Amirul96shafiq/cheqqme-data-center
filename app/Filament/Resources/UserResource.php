@@ -105,6 +105,7 @@ class UserResource extends Resource
                                 Toggle::make('change_password_toggle')
                                     ->label(__('user.form.change_password'))
                                     ->live()
+                                    ->columnSpan(3)
                                     ->afterStateUpdated(function (bool $state, callable $set) {
                                         if (! $state) {
                                             $set('old_password', null);
@@ -127,7 +128,8 @@ class UserResource extends Resource
                                         ->visible(
                                             fn (Get $get, string $context) => $context === 'create' || $get('change_password_toggle')
                                         ),
-                                ]),
+                                ])
+                                    ->columnSpan(3),
 
                             ]),
 
