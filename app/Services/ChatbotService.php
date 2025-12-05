@@ -11,6 +11,8 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\TrelloBoard;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ChatbotService
 {
@@ -33,6 +35,35 @@ class ChatbotService
     {
         $this->user = $user;
         $this->registerTools();
+    }
+
+    /**
+     * Calculate active and trashed counts for a model with optional constraints.
+     *
+     * @param  class-string<Model>  $modelClass
+     */
+    protected function calculateModelCounts(string $modelClass, ?callable $constraint = null): array
+    {
+        $query = $modelClass::query();
+
+        if ($constraint) {
+            $query = $constraint($query);
+        }
+
+        $activeCount = (clone $query)->count();
+
+        $usesSoftDeletes = in_array(SoftDeletes::class, class_uses_recursive($modelClass));
+        $trashedCount = 0;
+
+        if ($usesSoftDeletes) {
+            $trashedCount = (clone $query)->onlyTrashed()->count();
+        }
+
+        return [
+            'active' => $activeCount,
+            'trashed' => $trashedCount,
+            'total' => $activeCount + $trashedCount,
+        ];
     }
 
     /**
@@ -467,10 +498,16 @@ class ChatbotService
      */
     public function getClientUrls(): string
     {
-        $count = Client::whereNull('deleted_at')->count();
+        $counts = $this->calculateModelCounts(Client::class);
 
         $output = "**Client Management** 👥\n\n";
-        $output .= "There are **{$count}** clients in the system right now.\n\n";
+        $output .= "There are **{$counts['active']}** clients in the system right now";
+
+        if ($counts['trashed'] > 0) {
+            $output .= " ({$counts['trashed']} archived)";
+        }
+
+        $output .= ".\n\n";
         $output .= "Here are the direct links to manage clients:\n\n";
 
         $createUrl = \App\Filament\Resources\ClientResource::getUrl('create');
@@ -499,10 +536,16 @@ class ChatbotService
      */
     public function getProjectUrls(): string
     {
-        $count = Project::whereNull('deleted_at')->count();
+        $counts = $this->calculateModelCounts(Project::class);
 
         $output = "**Project Management** 📁\n\n";
-        $output .= "There are **{$count}** projects in the system right now.\n\n";
+        $output .= "There are **{$counts['active']}** projects in the system right now";
+
+        if ($counts['trashed'] > 0) {
+            $output .= " ({$counts['trashed']} archived)";
+        }
+
+        $output .= ".\n\n";
         $output .= "Here are the direct links to manage projects:\n\n";
 
         $createUrl = \App\Filament\Resources\ProjectResource::getUrl('create');
@@ -532,10 +575,19 @@ class ChatbotService
      */
     public function getDocumentUrls(): string
     {
-        $count = Document::visibleToUser($this->user->id)->count();
+        $counts = $this->calculateModelCounts(
+            Document::class,
+            fn ($query) => $query->visibleToUser($this->user->id)
+        );
 
         $output = "**Document Management** 📄\n\n";
-        $output .= "There are **{$count}** documents available to you right now.\n\n";
+        $output .= "There are **{$counts['active']}** documents available to you right now";
+
+        if ($counts['trashed'] > 0) {
+            $output .= " ({$counts['trashed']} archived)";
+        }
+
+        $output .= ".\n\n";
         $output .= "Here are the direct links to manage documents:\n\n";
 
         $createUrl = \App\Filament\Resources\DocumentResource::getUrl('create');
@@ -565,10 +617,16 @@ class ChatbotService
      */
     public function getImportantUrlUrls(): string
     {
-        $count = ImportantUrl::whereNull('deleted_at')->count();
+        $counts = $this->calculateModelCounts(ImportantUrl::class);
 
         $output = "**Important URL Management** 🔗\n\n";
-        $output .= "There are **{$count}** important URLs in the system right now.\n\n";
+        $output .= "There are **{$counts['active']}** important URLs in the system right now";
+
+        if ($counts['trashed'] > 0) {
+            $output .= " ({$counts['trashed']} archived)";
+        }
+
+        $output .= ".\n\n";
         $output .= "Here are the direct links to manage important URLs:\n\n";
 
         $createUrl = route('filament.admin.resources.important-urls.create');
@@ -597,10 +655,16 @@ class ChatbotService
      */
     public function getPhoneNumberUrls(): string
     {
-        $count = PhoneNumber::whereNull('deleted_at')->count();
+        $counts = $this->calculateModelCounts(PhoneNumber::class);
 
         $output = "**Phone Number Management** 📞\n\n";
-        $output .= "There are **{$count}** phone numbers in the system right now.\n\n";
+        $output .= "There are **{$counts['active']}** phone numbers in the system right now";
+
+        if ($counts['trashed'] > 0) {
+            $output .= " ({$counts['trashed']} archived)";
+        }
+
+        $output .= ".\n\n";
         $output .= "Here are the direct links to manage phone numbers:\n\n";
 
         $createUrl = \App\Filament\Resources\PhoneNumberResource::getUrl('create');
@@ -629,10 +693,16 @@ class ChatbotService
      */
     public function getUserUrls(): string
     {
-        $count = User::whereNull('deleted_at')->count();
+        $counts = $this->calculateModelCounts(User::class);
 
         $output = "**User Management** 👤\n\n";
-        $output .= "There are **{$count}** users in the system right now.\n\n";
+        $output .= "There are **{$counts['active']}** users in the system right now";
+
+        if ($counts['trashed'] > 0) {
+            $output .= " ({$counts['trashed']} archived)";
+        }
+
+        $output .= ".\n\n";
         $output .= "Here are the direct links to manage users:\n\n";
 
         $createUrl = \App\Filament\Resources\UserResource::getUrl('create');
@@ -657,10 +727,16 @@ class ChatbotService
      */
     public function getTrelloBoardUrls(): string
     {
-        $count = TrelloBoard::whereNull('deleted_at')->count();
+        $counts = $this->calculateModelCounts(TrelloBoard::class);
 
         $output = "**Trello Board Management** 📊\n\n";
-        $output .= "There are **{$count}** Trello boards in the system right now.\n\n";
+        $output .= "There are **{$counts['active']}** Trello boards in the system right now";
+
+        if ($counts['trashed'] > 0) {
+            $output .= " ({$counts['trashed']} archived)";
+        }
+
+        $output .= ".\n\n";
         $output .= "Here are the direct links to manage Trello boards:\n\n";
 
         $createUrl = \App\Filament\Resources\TrelloBoardResource::getUrl('create');
@@ -691,25 +767,62 @@ class ChatbotService
     public function getResourceCounts(): string
     {
         $counts = [
-            'users' => User::whereNull('deleted_at')->count(),
-            'clients' => Client::whereNull('deleted_at')->count(),
-            'projects' => Project::whereNull('deleted_at')->count(),
-            'documents' => Document::visibleToUser($this->user->id)->count(),
-            'important_urls' => ImportantUrl::whereNull('deleted_at')->count(),
-            'phone_numbers' => PhoneNumber::whereNull('deleted_at')->count(),
-            'trello_boards' => TrelloBoard::whereNull('deleted_at')->count(),
+            'users' => $this->calculateModelCounts(User::class),
+            'clients' => $this->calculateModelCounts(Client::class),
+            'projects' => $this->calculateModelCounts(Project::class),
+            'documents' => $this->calculateModelCounts(
+                Document::class,
+                fn ($query) => $query->visibleToUser($this->user->id)
+            ),
+            'important_urls' => $this->calculateModelCounts(ImportantUrl::class),
+            'phone_numbers' => $this->calculateModelCounts(PhoneNumber::class),
+            'trello_boards' => $this->calculateModelCounts(TrelloBoard::class),
         ];
 
         $output = "**Resource Counts Overview** 📊\n\n";
         $output .= "Here's the current count of all resources in your system:\n\n";
 
-        $output .= "**👤 Users:** {$counts['users']}\n";
-        $output .= "**👥 Clients:** {$counts['clients']}\n";
-        $output .= "**📁 Projects:** {$counts['projects']}\n";
-        $output .= "**📄 Documents:** {$counts['documents']}\n";
-        $output .= "**🔗 Important URLs:** {$counts['important_urls']}\n";
-        $output .= "**📞 Phone Numbers:** {$counts['phone_numbers']}\n";
-        $output .= "**📊 Trello Boards:** {$counts['trello_boards']}\n\n";
+        $output .= "**👤 Users:** {$counts['users']['active']}";
+        if ($counts['users']['trashed'] > 0) {
+            $output .= " ({$counts['users']['trashed']} archived)";
+        }
+        $output .= "\n";
+
+        $output .= "**👥 Clients:** {$counts['clients']['active']}";
+        if ($counts['clients']['trashed'] > 0) {
+            $output .= " ({$counts['clients']['trashed']} archived)";
+        }
+        $output .= "\n";
+
+        $output .= "**📁 Projects:** {$counts['projects']['active']}";
+        if ($counts['projects']['trashed'] > 0) {
+            $output .= " ({$counts['projects']['trashed']} archived)";
+        }
+        $output .= "\n";
+
+        $output .= "**📄 Documents:** {$counts['documents']['active']}";
+        if ($counts['documents']['trashed'] > 0) {
+            $output .= " ({$counts['documents']['trashed']} archived)";
+        }
+        $output .= "\n";
+
+        $output .= "**🔗 Important URLs:** {$counts['important_urls']['active']}";
+        if ($counts['important_urls']['trashed'] > 0) {
+            $output .= " ({$counts['important_urls']['trashed']} archived)";
+        }
+        $output .= "\n";
+
+        $output .= "**📞 Phone Numbers:** {$counts['phone_numbers']['active']}";
+        if ($counts['phone_numbers']['trashed'] > 0) {
+            $output .= " ({$counts['phone_numbers']['trashed']} archived)";
+        }
+        $output .= "\n";
+
+        $output .= "**📊 Trello Boards:** {$counts['trello_boards']['active']}";
+        if ($counts['trello_boards']['trashed'] > 0) {
+            $output .= " ({$counts['trello_boards']['trashed']} archived)";
+        }
+        $output .= "\n\n";
 
         $output .= 'Want to see details for a specific resource? Use the individual shortcuts like /users or /clients! 🚀';
 
