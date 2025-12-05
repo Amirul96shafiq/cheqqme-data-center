@@ -75,6 +75,8 @@ return [
     ],
 
     'form' => [
+        'section_controls' => 'Kawalan Bahagian',
+        'enable_additional_information' => 'Maklumat Tambahan',
         'project_title' => 'Tajuk Projek',
         'client' => 'Pelanggan',
         'project_url' => 'URL Projek',

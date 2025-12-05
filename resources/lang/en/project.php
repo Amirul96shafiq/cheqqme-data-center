@@ -75,6 +75,8 @@ return [
     ],
 
     'form' => [
+        'section_controls' => 'Section Controls',
+        'enable_additional_information' => 'Additional Information',
         'project_title' => 'Project Title',
         'client' => 'Client',
         'project_url' => 'Project URL',

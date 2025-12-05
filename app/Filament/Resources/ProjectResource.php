@@ -17,6 +17,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Infolists;
@@ -200,6 +201,49 @@ class ProjectResource extends Resource
     {
         return $form
             ->schema([
+                // Section Controls Section
+                Section::make(__('project.form.section_controls'))
+                    ->schema([
+                        Grid::make(6)
+                            ->schema([
+                                // Additional Information Toggle
+                                Toggle::make('enable_additional_information')
+                                    ->label(__('project.form.enable_additional_information'))
+                                    ->default(function (?Project $record) {
+                                        // Enable if record has notes or extra_information
+                                        if ($record) {
+                                            $hasNotes = ! empty($record->notes);
+                                            $hasExtraInfo = ! empty($record->extra_information) && is_array($record->extra_information);
+
+                                            return $hasNotes || $hasExtraInfo;
+                                        }
+
+                                        return false;
+                                    })
+                                    ->live()
+                                    ->dehydrated(false)
+                                    ->afterStateHydrated(function (Forms\Set $set, $state, ?Project $record) {
+                                        // Double-check additional information on hydration and enable toggle if needed
+                                        if ($record) {
+                                            $hasNotes = ! empty($record->notes);
+                                            $hasExtraInfo = ! empty($record->extra_information) && is_array($record->extra_information);
+
+                                            if ($hasNotes || $hasExtraInfo) {
+                                                $set('enable_additional_information', true);
+                                            }
+                                        }
+                                    })
+                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                        // When toggle is disabled, clear all additional information
+                                        if (! $state) {
+                                            $set('notes', null);
+                                            $set('extra_information', []);
+                                        }
+                                    }),
+                            ]),
+                    ])
+                    ->columnSpanFull(),
+
                 Section::make(__('project.section.project_info'))
                     ->schema([
 
@@ -388,8 +432,9 @@ class ProjectResource extends Resource
 
                 Section::make()
                     ->heading(__('project.section.extra_info'))
+                    ->visible(fn (Get $get) => $get('enable_additional_information'))
                     ->collapsible(true)
-                    ->collapsed(fn ($get) => empty($get('notes')))
+                    ->collapsed(false)
                     ->live()
                     ->schema([
 
