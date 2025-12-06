@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Filament\Resources\TaskResource;
 use App\Models\Client;
 use App\Models\Document;
+use App\Models\Event;
 use App\Models\ImportantUrl;
+use App\Models\MeetingLink;
 use App\Models\PhoneNumber;
 use App\Models\Project;
 use App\Models\Task;
@@ -74,12 +76,16 @@ class ChatbotService
         $this->tools = [
             'show_help' => [$this, 'showHelp'], // Show all available shortcuts and commands. Shortcut: /help
             'get_incomplete_tasks' => [$this, 'getIncompleteTasks'], // Get incomplete tasks with count and/or detailed breakdown by status with URLs. Shortcut: /mytask
+            'get_issue_tasks' => [$this, 'getIssueTasks'], // Get issue tracker tasks assigned to the current user. Shortcut: /myissue
+            'get_wishlist_tasks' => [$this, 'getWishlistTasks'], // Get wishlist tracker tasks assigned to the current user. Shortcut: /mywishlist
             'get_client_urls' => [$this, 'getClientUrls'], // Get URLs for client management (create new, list all) with total count. Shortcut: /client
             'get_project_urls' => [$this, 'getProjectUrls'], // Get URLs for project management (create new, list all) with total count. Shortcut: /project
             'get_document_urls' => [$this, 'getDocumentUrls'], // Get URLs for document management (create new, list all) with total count. Shortcut: /document
             'get_important_url_urls' => [$this, 'getImportantUrlUrls'], // Get URLs for important URL management (create new, list all) with total count. Shortcut: /important-url
             'get_phone_number_urls' => [$this, 'getPhoneNumberUrls'], // Get URLs for phone number management (create new, list all) with total count. Shortcut: /phone-number
             'get_user_urls' => [$this, 'getUserUrls'], // Get URLs for user management (create new, list all) with total count. Shortcut: /user
+            'get_meeting_link_urls' => [$this, 'getMeetingLinkUrls'], // Get upcoming meeting link counts and management URLs. Shortcut: /meeting-link
+            'get_event_urls' => [$this, 'getEventUrls'], // Get upcoming event counts and management URLs. Shortcut: /event
             'get_resource_counts' => [$this, 'getResourceCounts'], // Get total counts for all resources. Shortcut: /resources
             'get_trello_board_urls' => [$this, 'getTrelloBoardUrls'], // Get URLs for Trello board management (create new, list all) with total count. Shortcut: /trello-board
         ];
@@ -106,6 +112,48 @@ class ChatbotService
                             'include_count' => [
                                 'type' => 'boolean',
                                 'description' => 'Whether to include the total count of incomplete tasks. Default is true.',
+                            ],
+                        ],
+                        'required' => [],
+                    ],
+                ],
+            ],
+            'get_issue_tasks' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_issue_tasks',
+                    'description' => 'MUST be called when user types /myissue. Get issue tracker tasks assigned to the current user (upcoming/incomplete statuses only) with counts and details. Respond in the user\'s language. Shortcut: /myissue',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'include_details' => [
+                                'type' => 'boolean',
+                                'description' => 'Whether to include detailed task breakdown by status with URLs. Default is true.',
+                            ],
+                            'include_count' => [
+                                'type' => 'boolean',
+                                'description' => 'Whether to include the total count of issue tracker tasks. Default is true.',
+                            ],
+                        ],
+                        'required' => [],
+                    ],
+                ],
+            ],
+            'get_wishlist_tasks' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_wishlist_tasks',
+                    'description' => 'MUST be called when user types /mywishlist. Get wishlist tracker tasks assigned to the current user (upcoming/incomplete statuses only) with counts and details. Respond in the user\'s language. Shortcut: /mywishlist',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'include_details' => [
+                                'type' => 'boolean',
+                                'description' => 'Whether to include detailed task breakdown by status with URLs. Default is true.',
+                            ],
+                            'include_count' => [
+                                'type' => 'boolean',
+                                'description' => 'Whether to include the total count of wishlist tracker tasks. Default is true.',
                             ],
                         ],
                         'required' => [],
@@ -197,6 +245,30 @@ class ChatbotService
                     ],
                 ],
             ],
+            'get_meeting_link_urls' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_meeting_link_urls',
+                    'description' => 'MUST be called when user types /meeting-link. Get upcoming meeting link totals (overall and invited) plus create/list URLs. Respond in the user\'s language. Shortcut: /meeting-link',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
+                        'required' => [],
+                    ],
+                ],
+            ],
+            'get_event_urls' => [
+                'type' => 'function',
+                'function' => [
+                    'name' => 'get_event_urls',
+                    'description' => 'MUST be called when user types /event. Get upcoming event totals (overall and invited) plus create/list URLs. Respond in the user\'s language. Shortcut: /event',
+                    'parameters' => [
+                        'type' => 'object',
+                        'properties' => (object) [],
+                        'required' => [],
+                    ],
+                ],
+            ],
             'get_resource_counts' => [
                 'type' => 'function',
                 'function' => [
@@ -260,12 +332,16 @@ class ChatbotService
                 'shortcuts' => [
                     '/help' => 'Tunjukkan mesej bantuan ini dengan semua pintasan yang tersedia',
                     '/mytask' => 'Dapatkan tugas yang belum selesai dengan pecahan terperinci mengikut status',
+                    '/myissue' => 'Dapatkan tugasan penjejak isu dengan pecahan terperinci',
+                    '/mywishlist' => 'Dapatkan tugasan wishlist dengan pecahan terperinci',
                     '/client' => 'Dapatkan URL untuk pengurusan pelanggan dengan jumlah keseluruhan',
                     '/project' => 'Dapatkan URL untuk pengurusan projek dengan jumlah keseluruhan',
                     '/document' => 'Dapatkan URL untuk pengurusan dokumen dengan jumlah keseluruhan',
                     '/important-url' => 'Dapatkan URL untuk pengurusan URL penting dengan jumlah keseluruhan',
                     '/phone-number' => 'Dapatkan URL untuk pengurusan nombor telefon dengan jumlah keseluruhan',
                     '/user' => 'Dapatkan URL untuk pengurusan pengguna dengan jumlah keseluruhan',
+                    '/meeting-link' => 'Dapatkan jumlah mesyuarat akan datang dan pautan pengurusan',
+                    '/event' => 'Dapatkan jumlah acara akan datang dan pautan pengurusan',
                     '/resources' => 'Dapatkan jumlah keseluruhan untuk semua sumber dalam sistem',
                     '/trello-board' => 'Dapatkan URL untuk pengurusan papan Trello dengan jumlah keseluruhan',
                 ],
@@ -277,12 +353,16 @@ class ChatbotService
                 'shortcuts' => [
                     '/help' => 'Tampilkan pesan bantuan ini dengan semua pintasan yang tersedia',
                     '/mytask' => 'Dapatkan tugas yang belum selesai dengan rincian terperinci berdasarkan status',
+                    '/myissue' => 'Dapatkan tugas issue tracker dengan rincian terperinci',
+                    '/mywishlist' => 'Dapatkan tugas wishlist dengan rincian terperinci',
                     '/client' => 'Dapatkan URL untuk manajemen klien dengan jumlah total',
                     '/project' => 'Dapatkan URL untuk manajemen proyek dengan jumlah total',
                     '/document' => 'Dapatkan URL untuk manajemen dokumen dengan jumlah total',
                     '/important-url' => 'Dapatkan URL untuk manajemen URL penting dengan jumlah total',
                     '/phone-number' => 'Dapatkan URL untuk manajemen nomor telepon dengan jumlah total',
                     '/user' => 'Dapatkan URL untuk manajemen pengguna dengan jumlah total',
+                    '/meeting-link' => 'Dapatkan jumlah meeting mendatang dan tautan manajemen',
+                    '/event' => 'Dapatkan jumlah event mendatang dan tautan manajemen',
                     '/resources' => 'Dapatkan jumlah total untuk semua sumber dalam sistem',
                     '/trello-board' => 'Dapatkan URL untuk manajemen papan Trello dengan jumlah total',
                 ],
@@ -294,12 +374,16 @@ class ChatbotService
                 'shortcuts' => [
                     '/help' => '显示此帮助消息和所有可用的快捷方式',
                     '/mytask' => '获取您未完成的任务，按状态详细分类',
+                    '/myissue' => '获取问题跟踪任务，带详细分类',
+                    '/mywishlist' => '获取心愿单任务，带详细分类',
                     '/client' => '获取客户管理URL和总数',
                     '/project' => '获取项目管理URL和总数',
                     '/document' => '获取文档管理URL和总数',
                     '/important-url' => '获取重要URL管理URL和总数',
                     '/phone-number' => '获取电话号码管理URL和总数',
                     '/user' => '获取用户管理URL和总数',
+                    '/meeting-link' => '获取即将到来的会议链接数量和管理链接',
+                    '/event' => '获取即将到来的活动数量和管理链接',
                     '/resources' => '获取系统中所有资源的总数',
                     '/trello-board' => '获取Trello看板管理URL和总数',
                 ],
@@ -311,12 +395,16 @@ class ChatbotService
                 'shortcuts' => [
                     '/help' => '모든 사용 가능한 단축키와 함께 이 도움말 메시지를 표시',
                     '/mytask' => '상태별 세부 분석과 함께 미완료 작업 가져오기',
+                    '/myissue' => '이슈 트래커 작업 세부 분석 보기',
+                    '/mywishlist' => '위시리스트 작업 세부 분석 보기',
                     '/client' => '총 수와 함께 클라이언트 관리 URL 가져오기',
                     '/project' => '총 수와 함께 프로젝트 관리 URL 가져오기',
                     '/document' => '총 수와 함께 문서 관리 URL 가져오기',
                     '/important-url' => '총 수와 함께 중요한 URL 관리 URL 가져오기',
                     '/phone-number' => '총 수와 함께 전화번호 관리 URL 가져오기',
                     '/user' => '총 수와 함께 사용자 관리 URL 가져오기',
+                    '/meeting-link' => '다가오는 미팅 링크 수와 관리 링크 확인',
+                    '/event' => '다가오는 이벤트 수와 관리 링크 확인',
                     '/resources' => '시스템의 모든 리소스 총 수 가져오기',
                     '/trello-board' => '총 수와 함께 트렐로 보드 관리 URL 가져오기',
                 ],
@@ -328,12 +416,16 @@ class ChatbotService
                 'shortcuts' => [
                     '/help' => '利用可能なすべてのショートカットと共にこのヘルプメッセージを表示',
                     '/mytask' => 'ステータス別の詳細分析と共に未完了タスクを取得',
+                    '/myissue' => '課題トラッカーのタスクを詳細付きで取得',
+                    '/mywishlist' => 'ウィッシュリストのタスクを詳細付きで取得',
                     '/client' => '総数と共にクライアント管理URLを取得',
                     '/project' => '総数と共にプロジェクト管理URLを取得',
                     '/document' => '総数と共にドキュメント管理URLを取得',
                     '/important-url' => '総数と共に重要なURL管理URLを取得',
                     '/phone-number' => '総数와 함께 전화번호 관리 URL 가져오기',
                     '/user' => '総数와 함께 사용자 관리 URL 가져오기',
+                    '/meeting-link' => '今後のミーティング数と管理リンクを取得',
+                    '/event' => '今後のイベント数と管理リンクを取得',
                     '/resources' => '시스템의 모든 리소스 총 수 가져오기',
                     '/trello-board' => '総数와 함께 트렐로 보드 관리 URL 가져오기',
                 ],
@@ -345,12 +437,16 @@ class ChatbotService
                 'shortcuts' => [
                     '/help' => 'Show this help message with all available shortcuts',
                     '/mytask' => 'Get your incomplete tasks with detailed breakdown by status',
+                    '/myissue' => 'Get your issue tracker tasks with detailed breakdown',
+                    '/mywishlist' => 'Get your wishlist tasks with detailed breakdown',
                     '/client' => 'Get URLs for client management with total count',
                     '/project' => 'Get URLs for project management with total count',
                     '/document' => 'Get URLs for document management with total count',
                     '/important-url' => 'Get URLs for important URL management with total count',
                     '/phone-number' => 'Get URLs for phone number management with total count',
                     '/user' => 'Get URLs for user management with total count',
+                    '/meeting-link' => 'Get upcoming meeting links, invites, and management links',
+                    '/event' => 'Get upcoming events, invites, and management links',
                     '/resources' => 'Get total counts for all resources in the system',
                     '/trello-board' => 'Get URLs for Trello board management with total count',
                 ],
@@ -376,26 +472,29 @@ class ChatbotService
     }
 
     /**
-     * Tool: Get incomplete tasks with count and/or detailed breakdown by status.
-     * Shortcut: /mytask
+     * Build a summary response for tasks assigned to the current user.
+     *
+     * @param  array<string, string>  $statusLabels
      */
-    public function getIncompleteTasks(bool $includeDetails = true, bool $includeCount = true): string
-    {
-        $statuses = [
-            'issue_tracker' => 'Issues',
-            'wishlist' => 'Wishlist',
-            'todo' => 'To Do',
-            'in_progress' => 'In Progress',
-            'toreview' => 'To Review',
-        ];
-
+    protected function summarizeUserTasks(
+        array $statusLabels,
+        bool $includeDetails,
+        bool $includeCount,
+        ?callable $queryModifier = null,
+        string $emptyMessage = 'No incomplete tasks found assigned to you.',
+        ?string $introTemplate = null
+    ): string {
         $userId = $this->user->id;
 
         $query = Task::where(function ($query) use ($userId) {
             $query->whereJsonContains('assigned_to', (int) $userId)
                 ->orWhereJsonContains('assigned_to', (string) $userId);
         })
-            ->whereIn('status', array_keys($statuses));
+            ->whereIn('status', array_keys($statusLabels));
+
+        if ($queryModifier) {
+            $query = $queryModifier($query);
+        }
 
         $tasks = $query->orderBy('status')
             ->orderBy('title')
@@ -403,7 +502,7 @@ class ChatbotService
 
         $tasksByStatus = [];
 
-        foreach ($statuses as $status => $label) {
+        foreach ($statusLabels as $status => $label) {
             $tasksByStatus[$status] = $tasks->where('status', $status)->map(function ($task) {
                 return [
                     'task_name' => $task->title,
@@ -424,7 +523,7 @@ class ChatbotService
         }
 
         $statusCounts = [];
-        foreach ($statuses as $status => $label) {
+        foreach ($statusLabels as $status => $label) {
             $statusCounts[$status] = count($tasksByStatus[$status]);
         }
 
@@ -433,21 +532,22 @@ class ChatbotService
         }
 
         if ($tasks->isEmpty()) {
-            $result['message'] = 'No incomplete tasks found assigned to you.';
+            $result['message'] = $emptyMessage;
 
             return json_encode($result);
         }
 
-        $output = "You've got {$tasks->count()} incomplete tasks grouped by their current status. Here's a quick peek:\n\n";
+        $introTemplate ??= "You've got %d incomplete tasks grouped by their current status. Here's a quick peek:\n\n";
+        $output = sprintf($introTemplate, $tasks->count());
 
         $output .= "Status totals:\n";
-        foreach ($statuses as $status => $label) {
+        foreach ($statusLabels as $status => $label) {
             $output .= "- **{$label}:** {$statusCounts[$status]}\n";
         }
 
         $output .= "\n";
 
-        foreach ($statuses as $status => $label) {
+        foreach ($statusLabels as $status => $label) {
             $statusTasks = $tasksByStatus[$status];
             $count = $statusCounts[$status];
 
@@ -491,6 +591,69 @@ class ChatbotService
         $output .= 'Want more details on any of these or ready to dive into the others? Just say the word! 🚀';
 
         return $output;
+    }
+
+    /**
+     * Tool: Get incomplete tasks with count and/or detailed breakdown by status.
+     * Shortcut: /mytask
+     */
+    public function getIncompleteTasks(bool $includeDetails = true, bool $includeCount = true): string
+    {
+        $statuses = [
+            'issue_tracker' => 'Issues',
+            'wishlist' => 'Wishlist',
+            'todo' => 'To Do',
+            'in_progress' => 'In Progress',
+            'toreview' => 'To Review',
+        ];
+
+        return $this->summarizeUserTasks($statuses, $includeDetails, $includeCount);
+    }
+
+    /**
+     * Tool: Get issue tracker tasks assigned to the current user.
+     * Shortcut: /myissue
+     */
+    public function getIssueTasks(bool $includeDetails = true, bool $includeCount = true): string
+    {
+        $statuses = [
+            'issue_tracker' => 'Issues',
+            'todo' => 'To Do',
+            'in_progress' => 'In Progress',
+            'toreview' => 'To Review',
+        ];
+
+        return $this->summarizeUserTasks(
+            $statuses,
+            $includeDetails,
+            $includeCount,
+            fn ($query) => $query->issueTokens(),
+            'No incomplete issue tracker tasks found assigned to you.',
+            "You've got %d issue tracker tasks grouped by their current status. Here's a quick peek:\n\n"
+        );
+    }
+
+    /**
+     * Tool: Get wishlist tracker tasks assigned to the current user.
+     * Shortcut: /mywishlist
+     */
+    public function getWishlistTasks(bool $includeDetails = true, bool $includeCount = true): string
+    {
+        $statuses = [
+            'wishlist' => 'Wishlist',
+            'todo' => 'To Do',
+            'in_progress' => 'In Progress',
+            'toreview' => 'To Review',
+        ];
+
+        return $this->summarizeUserTasks(
+            $statuses,
+            $includeDetails,
+            $includeCount,
+            fn ($query) => $query->wishlistTokens(),
+            'No incomplete wishlist tasks found assigned to you.',
+            "You've got %d wishlist tasks grouped by their current status. Here's a quick peek:\n\n"
+        );
     }
 
     /**
@@ -716,6 +879,89 @@ class ChatbotService
         $output .= "**List All Users**\n";
         $output .= "📋 [{$listUrl}]({$listUrl})\n";
         $output .= "View, search, and manage all system users.\n\n";
+
+        $output .= 'Need help with something else? Just ask! 🚀';
+
+        return $output;
+    }
+
+    /**
+     * Tool: Get upcoming meeting link counts and management URLs.
+     * Shortcut: /meeting-link
+     */
+    public function getMeetingLinkUrls(): string
+    {
+        $now = now();
+
+        $baseQuery = MeetingLink::whereNotNull('meeting_start_time')
+            ->where('meeting_start_time', '>=', $now);
+
+        $upcomingCount = (clone $baseQuery)->count();
+
+        $invitedCount = (clone $baseQuery)->where(function ($query) {
+            $query->whereJsonContains('user_ids', (int) $this->user->id)
+                ->orWhereJsonContains('user_ids', (string) $this->user->id);
+        })->count();
+
+        $createUrl = \App\Filament\Resources\MeetingLinkResource::getUrl('create');
+        $listUrl = \App\Filament\Resources\MeetingLinkResource::getUrl('index');
+
+        $output = "**Meeting Links** 📅\n\n";
+        $output .= "Upcoming meetings: **{$upcomingCount}**\n";
+        $output .= "You're invited to: **{$invitedCount}** upcoming meeting(s)\n\n";
+        $output .= "Here are the direct links to manage meeting links:\n\n";
+
+        $output .= "**Create New Meeting Link**\n";
+        $output .= "📝 [{$createUrl}]({$createUrl})\n";
+        $output .= "Create or import meeting links with platform, duration, and invitees.\n\n";
+
+        $output .= "**List All Meeting Links**\n";
+        $output .= "📋 [{$listUrl}]({$listUrl})\n";
+        $output .= "Review upcoming and past meetings, filter by invitees or projects.\n\n";
+
+        $output .= 'Need help with something else? Just ask! 🚀';
+
+        return $output;
+    }
+
+    /**
+     * Tool: Get upcoming events with invited counts and management URLs.
+     * Shortcut: /event
+     */
+    public function getEventUrls(): string
+    {
+        $now = now();
+        $userId = $this->user->id;
+
+        $events = Event::visibleToUser($userId)
+            ->whereNotNull('start_datetime')
+            ->where('start_datetime', '>=', $now)
+            ->get();
+
+        $upcomingCount = $events->count();
+
+        $invitedCount = $events->filter(function ($event) use ($userId) {
+            $invited = $event->invited_user_ids ?? [];
+
+            return in_array($userId, $invited, true)
+                || in_array((string) $userId, $invited, true);
+        })->count();
+
+        $createUrl = \App\Filament\Resources\EventResource::getUrl('create');
+        $listUrl = \App\Filament\Resources\EventResource::getUrl('index');
+
+        $output = "**Events** 📆\n\n";
+        $output .= "Upcoming events: **{$upcomingCount}**\n";
+        $output .= "You're invited to: **{$invitedCount}** upcoming event(s)\n\n";
+        $output .= "Here are the direct links to manage events:\n\n";
+
+        $output .= "**Create New Event**\n";
+        $output .= "📝 [{$createUrl}]({$createUrl})\n";
+        $output .= "Plan new events with schedule, location, and meeting links.\n\n";
+
+        $output .= "**List All Events**\n";
+        $output .= "📋 [{$listUrl}]({$listUrl})\n";
+        $output .= "Browse upcoming and draft events, filter by invitations or visibility.\n\n";
 
         $output .= 'Need help with something else? Just ask! 🚀';
 

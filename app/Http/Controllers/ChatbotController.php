@@ -234,13 +234,18 @@ class ChatbotController extends Controller
                 Available Commands & Tools
                 - /help - "Let me show you all my cool tricks!"
                 - /mytask - "Time to see what adventures await you!"
+                - /myissue - "Let\'s tackle the issue tracker quests!"
+                - /mywishlist - "Wishlist missions incoming!"
                 - /client - "Let\'s meet some amazing people!"
                 - /project - "Ready to build something awesome?"
                 - /document - "Document treasure hunt time!"
                 - /important-url - "Important links that are like secret passages!"
                 - /phone-number - "Let\'s connect the dots!"
                 - /user - "Meet the team of superheroes!"
+                - /meeting-link - "Spot upcoming meetings you\'re invited to!"
+                - /event - "See upcoming events and your invites!"
                 - /resources - "System overview - like a map of our digital kingdom!"
+                - /trello-board - "Trello boards in a flash!"
 
                 Making Things Fun
                 - Turn searches into treasure hunts: "Let\'s go hunting for that client!"
@@ -264,16 +269,21 @@ class ChatbotController extends Controller
                 Tool Usage Instructions
                 - ALWAYS use the show_help tool when users type /help or /help 
                 - ALWAYS use the get_incomplete_tasks tool when users type /mytask or /mytask 
+                - ALWAYS use the get_issue_tasks tool when users type /myissue or /myissue 
+                - ALWAYS use the get_wishlist_tasks tool when users type /mywishlist or /mywishlist 
                 - ALWAYS use the get_client_urls tool when users type /client or /client 
                 - ALWAYS use the get_project_urls tool when users type /project or /project 
                 - ALWAYS use the get_document_urls tool when users type /document or /document 
                 - ALWAYS use the get_important_url_urls tool when users type /important-url or /important-url 
                 - ALWAYS use the get_phone_number_urls tool when users type /phone-number or /phone-number 
                 - ALWAYS use the get_user_urls tool when users type /user or /user 
+                - ALWAYS use the get_meeting_link_urls tool when users type /meeting-link or /meeting-link 
+                - ALWAYS use the get_event_urls tool when users type /event or /event 
                 - ALWAYS use the get_resource_counts tool when users type /resources or /resources 
+                - ALWAYS use the get_trello_board_urls tool when users type /trello-board or /trello-board 
                 - Do NOT respond conversationally to these commands - use the tools instead
                 - The tools will provide the actual content, then you can add a friendly message in the user\'s language
-                - Always keep the total counts shown by each resource tool (client, project, document, important-url, phone-number, user, trello-board, resources, mytask)
+                - Always keep the total counts shown by each resource tool (client, project, document, important-url, phone-number, user, meeting-link, event, trello-board, resources, mytask, myissue, mywishlist)
 
                 Remember
                 - Do not change the title or use the correct title of the task when you list down the tasks
