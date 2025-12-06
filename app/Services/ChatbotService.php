@@ -381,25 +381,51 @@ class ChatbotService
      */
     public function getIncompleteTasks(bool $includeDetails = true, bool $includeCount = true): string
     {
-        $query = Task::where('assigned_to', $this->user->id)
-            ->whereIn('status', ['todo', 'in_progress', 'toreview', 'issue_tracker']);
+        $statuses = [
+            'issue_tracker' => 'Issues',
+            'wishlist' => 'Wishlist',
+            'todo' => 'To Do',
+            'in_progress' => 'In Progress',
+            'toreview' => 'To Review',
+        ];
 
-        // If only count is needed, return early
-        if (! $includeDetails && $includeCount) {
-            $count = $query->count();
+        $userId = $this->user->id;
 
-            return json_encode(['task_count' => $count]);
-        }
+        $query = Task::where(function ($query) use ($userId) {
+            $query->whereJsonContains('assigned_to', (int) $userId)
+                ->orWhereJsonContains('assigned_to', (string) $userId);
+        })
+            ->whereIn('status', array_keys($statuses));
 
-        // Get the tasks for detailed breakdown
         $tasks = $query->orderBy('status')
             ->orderBy('title')
             ->get();
 
-        $result = [];
+        $tasksByStatus = [];
+
+        foreach ($statuses as $status => $label) {
+            $tasksByStatus[$status] = $tasks->where('status', $status)->map(function ($task) {
+                return [
+                    'task_name' => $task->title,
+                    'url' => TaskResource::getUrl('edit', ['record' => $task]),
+                    'due_date' => $task->due_date ?
+                        (is_string($task->due_date) ? $task->due_date : $task->due_date->format('Y-m-d')) :
+                        null,
+                ];
+            })->values()->all();
+        }
+
+        $result = [
+            'tasks_by_status' => $tasksByStatus,
+        ];
 
         if ($includeCount) {
             $result['task_count'] = $tasks->count();
+        }
+
+        $statusCounts = [];
+        foreach ($statuses as $status => $label) {
+            $statusCounts[$status] = count($tasksByStatus[$status]);
         }
 
         if (! $includeDetails) {
@@ -412,43 +438,18 @@ class ChatbotService
             return json_encode($result);
         }
 
-        // Group tasks by status
-        $tasksByStatus = [
-            'todo' => [],
-            'in_progress' => [],
-            'toreview' => [],
-        ];
+        $output = "You've got {$tasks->count()} incomplete tasks grouped by their current status. Here's a quick peek:\n\n";
 
-        foreach ($tasks as $task) {
-            $tasksByStatus[$task->status][] = [
-                'task_name' => $task->title,
-                'url' => TaskResource::getUrl('edit', ['record' => $task]),
-                'due_date' => $task->due_date ?
-                    (is_string($task->due_date) ? $task->due_date : $task->due_date->format('Y-m-d')) :
-                    null,
-            ];
+        $output .= "Status totals:\n";
+        foreach ($statuses as $status => $label) {
+            $output .= "- **{$label}:** {$statusCounts[$status]}\n";
         }
 
-        $result['tasks_by_status'] = $tasksByStatus;
+        $output .= "\n";
 
-        // If count only, return JSON
-        if (! $includeDetails) {
-            return json_encode($result);
-        }
-
-        // Format as structured text with proper styling
-        $output = "You've got ".$tasks->count()." incomplete tasks grouped by their current status. Here's a quick peek:\n\n";
-
-        // Define status labels and their counts
-        $statusLabels = [
-            'todo' => 'To Do',
-            'in_progress' => 'In Progress',
-            'toreview' => 'To Review',
-        ];
-
-        foreach ($statusLabels as $status => $label) {
+        foreach ($statuses as $status => $label) {
             $statusTasks = $tasksByStatus[$status];
-            $count = count($statusTasks);
+            $count = $statusCounts[$status];
 
             if ($count > 0) {
                 $output .= "**{$label} ({$count} tasks)**\n\n";
