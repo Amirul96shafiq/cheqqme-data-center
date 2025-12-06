@@ -350,6 +350,9 @@ class ChatbotController extends Controller
             ->timeout(120)
             ->post($endpoint, $payload);
 
+        $responseBody = $response->json();
+        $usage = $responseBody['usage'] ?? [];
+
         // Get the duration
         $duration = (microtime(true) - $startTime) * 1000;
 
@@ -363,6 +366,9 @@ class ChatbotController extends Controller
             'response_text' => $response->body(),
             'status_code' => $response->status(),
             'duration_ms' => $duration,
+            'prompt_tokens' => $usage['prompt_tokens'] ?? null,
+            'completion_tokens' => $usage['completion_tokens'] ?? null,
+            'total_tokens' => $usage['total_tokens'] ?? null,
         ]);
 
         // If the request failed, log the error and throw an exception
@@ -373,7 +379,6 @@ class ChatbotController extends Controller
             ]);
 
             // Check for insufficient credits error
-            $responseBody = $response->json();
             $statusCode = $response->status();
 
             // Check for invalid API key error (HTTP 401 or error messages containing invalid/unauthorized)
@@ -401,7 +406,7 @@ class ChatbotController extends Controller
         }
 
         // Return the response
-        return $response->json();
+        return $responseBody ?? [];
     }
 
     /**
