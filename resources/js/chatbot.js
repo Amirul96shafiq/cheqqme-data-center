@@ -717,22 +717,6 @@ import { init, Picker } from "emoji-mart";
                         hour12: true,
                     })) +
                 "</div>";
-
-            // Replace emojis in regular messages with animated versions
-            if (
-                window.NotoEmojiAnimation &&
-                window.NotoEmojiAnimation.replaceEmojisInElement
-            ) {
-                const contentDiv = messageDiv.querySelector(
-                    "." + contentClass.split(" ")[0]
-                );
-                if (contentDiv) {
-                    // Process the content to replace emojis with animations
-                    window.NotoEmojiAnimation.replaceEmojisInElement(
-                        contentDiv
-                    );
-                }
-            }
         }
 
         // Apply animation delay if specified
