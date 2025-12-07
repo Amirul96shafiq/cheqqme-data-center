@@ -1012,14 +1012,23 @@ import { init, Picker } from "emoji-mart";
             // Close any open pickers first
             closeAllMediaPickers();
 
-            // Position menu above the button
-            const buttonRect = emojiButton.getBoundingClientRect();
-            menu.style.left = "0px";
+            // Position menu above the button, centered
+            // Make menu visible temporarily to get its width
+            menu.classList.remove("hidden");
+            menu.style.visibility = "hidden";
+            menu.style.opacity = "0";
+            const menuWidth = menu.offsetWidth || 140; // fallback to min-width
+            const buttonWidth = emojiButton.offsetWidth || 20; // fallback to icon size
+
+            // Calculate left position to center menu relative to button
+            // Since both are in the same parent container, we center relative to button center
+            const leftPosition = (buttonWidth - menuWidth) / 2;
+
+            // Set position and make visible
+            menu.style.left = leftPosition + "px";
             menu.style.bottom = "100%";
             menu.style.marginBottom = "16px";
-
-            // Show menu
-            menu.classList.remove("hidden");
+            menu.style.visibility = "visible";
 
             // Add animation
             menu.style.opacity = "0";
