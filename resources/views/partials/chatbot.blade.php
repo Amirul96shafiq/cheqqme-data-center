@@ -530,7 +530,7 @@ emoji-picker {
         <div class="border-t border-gray-200 dark:border-gray-700 p-5 bg-white dark:bg-gray-800 rounded-b-xl">
             <form onsubmit="sendMessage(event)" class="flex space-x-3" autocomplete="off">
 
-                <!-- Chat Input with Emoji Button Inside -->
+                <!-- Chat Input with Emoji, GIF, and Sticker Button Inside -->
                 <div class="flex-1 relative">
                     <input
                         type="text"
@@ -543,15 +543,19 @@ emoji-picker {
                         class="fi-input w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-white dark:placeholder-gray-400 transition-colors text-sm"
                     >
 
-                    <!-- Emoji Button Inside Input -->
-                    <button
-                        type="button"
-                        id="emoji-button"
-                        onclick="toggleEmojiPicker(event); event.stopPropagation(); event.preventDefault();"
-                        class="absolute left-3 top-3 flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors"
-                    >
-                        @svg('heroicon-o-face-smile', 'w-5 h-5')
-                    </button>
+                    <!-- Emoji, GIF, and Sticker Button Inside Input -->
+                    <div class="absolute left-3 top-3">
+                        <x-tooltip position="top" text="{{ __('chatbot.action.add_emojis_gifs_stickers') }}">
+                            <button
+                                type="button"
+                                id="emoji-gif-sticker-button"
+                                onclick="toggleEmojiPicker(event); event.stopPropagation(); event.preventDefault();"
+                                class="flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors"
+                            >
+                                @svg('heroicon-o-plus-circle', 'w-5 h-5')
+                            </button>
+                        </x-tooltip>
+                    </div>
 
                 </div>
 

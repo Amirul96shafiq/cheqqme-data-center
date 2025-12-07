@@ -1005,7 +1005,7 @@ import { init, Picker } from "emoji-mart";
         );
         const emojiPicker = document.getElementById("emoji-picker");
         const chatbotInterface = document.getElementById("chatbot-interface");
-        const emojiButton = document.getElementById("emoji-button");
+        const emojiButton = document.getElementById("emoji-gif-sticker-button");
 
         if (
             !emojiPickerContainer ||
@@ -1035,7 +1035,7 @@ import { init, Picker } from "emoji-mart";
             const isClickOnEmojiButton =
                 emojiButton === event.target ||
                 emojiButton.contains(event.target) ||
-                event.target.closest("#emoji-button");
+                event.target.closest("#emoji-gif-sticker-button");
 
             if (!isClickOnEmojiButton) {
                 return; // Don't open if click is not on emoji button
@@ -1152,7 +1152,9 @@ import { init, Picker } from "emoji-mart";
                     }
 
                     // Close picker when clicking outside, but not on emoji button or input
-                    const emojiButton = document.getElementById("emoji-button");
+                    const emojiButton = document.getElementById(
+                        "emoji-gif-sticker-button"
+                    );
                     const chatInput = document.getElementById("chat-input");
 
                     // Check if click is on emoji button, input, or inside picker container
@@ -1160,7 +1162,7 @@ import { init, Picker } from "emoji-mart";
                         emojiButton &&
                         (emojiButton === event.target ||
                             emojiButton.contains(event.target) ||
-                            event.target.closest("#emoji-button"));
+                            event.target.closest("#emoji-gif-sticker-button"));
                     const isClickOnInput =
                         chatInput &&
                         (chatInput === event.target ||
@@ -1247,7 +1249,7 @@ import { init, Picker } from "emoji-mart";
         const emojiPickerContainer = document.getElementById(
             "emoji-picker-container"
         );
-        const emojiButton = document.getElementById("emoji-button");
+        const emojiButton = document.getElementById("emoji-gif-sticker-button");
         const chatInput = document.getElementById("chat-input");
 
         if (
@@ -1259,7 +1261,7 @@ import { init, Picker } from "emoji-mart";
                 emojiButton &&
                 (emojiButton === event.target ||
                     emojiButton.contains(event.target) ||
-                    event.target.closest("#emoji-button"));
+                    event.target.closest("#emoji-gif-sticker-button"));
             const isClickOnInput =
                 chatInput &&
                 (chatInput === event.target ||

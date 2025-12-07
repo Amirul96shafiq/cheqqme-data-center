@@ -20,6 +20,7 @@ return [
         'open_chat' => 'Chat with Arem AI',
         'close_chat' => 'Close chat',
         'clear_conversation' => 'Clear Conversation',
+        'add_emojis_gifs_stickers' => 'Emojis, GIFs, Stickers',
     ],
 
     // Header
