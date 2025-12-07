@@ -1152,8 +1152,9 @@ import { init, Picker } from "emoji-mart";
         gifPickerContainer.classList.remove("hidden");
         gifPickerContainer.style.opacity = "0";
 
-        const gifPickerWidth = 352; // Same as emoji picker
-        const gifPickerHeight = 400;
+        // Get actual width including padding, or use emoji picker width as reference
+        const gifPickerWidth = gifPickerContainer.offsetWidth || 288; // Match emoji picker width
+        const gifPickerHeight = gifPickerContainer.offsetHeight || 435;
 
         // Check if mobile
         const isMobile = window.innerWidth <= 768;
@@ -1201,8 +1202,9 @@ import { init, Picker } from "emoji-mart";
         stickerPickerContainer.classList.remove("hidden");
         stickerPickerContainer.style.opacity = "0";
 
-        const stickerPickerWidth = 352; // Same as emoji picker
-        const stickerPickerHeight = 400;
+        // Get actual width including padding, or use emoji picker width as reference
+        const stickerPickerWidth = stickerPickerContainer.offsetWidth || 288; // Match emoji picker width
+        const stickerPickerHeight = stickerPickerContainer.offsetHeight || 435;
 
         // Check if mobile
         const isMobile = window.innerWidth <= 768;

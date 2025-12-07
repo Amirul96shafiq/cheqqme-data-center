@@ -631,8 +631,8 @@ emoji-picker {
 </div>
 
 <!-- Floating GIF Picker Container -->
-<div id="gif-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4">
-    <div class="w-[352px] h-[400px] flex items-center justify-center text-gray-400 dark:text-gray-500">
+<div id="gif-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-[288px] h-[435px]">
+    <div class="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 p-4">
         <div class="text-center">
             <p class="text-lg mb-2">🎬</p>
             <p class="text-sm">{{ __('chatbot.action.select_gifs') }}</p>
@@ -642,8 +642,8 @@ emoji-picker {
 </div>
 
 <!-- Floating Sticker Picker Container -->
-<div id="sticker-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4">
-    <div class="w-[352px] h-[400px] flex items-center justify-center text-gray-400 dark:text-gray-500">
+<div id="sticker-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-[288px] h-[435px]">
+    <div class="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 p-4">
         <div class="text-center">
             <p class="text-lg mb-2">🎨</p>
             <p class="text-sm">{{ __('chatbot.action.select_stickers') }}</p>
