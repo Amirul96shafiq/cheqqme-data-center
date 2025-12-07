@@ -580,7 +580,7 @@ emoji-picker {
                         </x-tooltip>
                         
                         <!-- Media Selection Menu -->
-                        <div id="media-selection-menu" class="absolute bottom-full left-0 mb-1 hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-2 space-y-1 min-w-[140px] z-[12] overflow-hidden">
+                        <div id="media-selection-menu" class="absolute bottom-full left-0 mb-4 hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-2 space-y-1 min-w-[140px] z-[12] overflow-hidden">
                             <button
                                 type="button"
                                 onclick="openMediaPicker('emojis'); event.stopPropagation();"

@@ -1016,7 +1016,7 @@ import { init, Picker } from "emoji-mart";
             const buttonRect = emojiButton.getBoundingClientRect();
             menu.style.left = "0px";
             menu.style.bottom = "100%";
-            menu.style.marginBottom = "8px";
+            menu.style.marginBottom = "16px";
 
             // Show menu
             menu.classList.remove("hidden");
