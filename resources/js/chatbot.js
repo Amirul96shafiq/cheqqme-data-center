@@ -1012,20 +1012,30 @@ import { init, Picker } from "emoji-mart";
             // Close any open pickers first
             closeAllMediaPickers();
 
-            // Position menu above the button, centered
+            // Position menu above the button
             // Make menu visible temporarily to get its width
             menu.classList.remove("hidden");
             menu.style.visibility = "hidden";
             menu.style.opacity = "0";
-            const menuWidth = menu.offsetWidth || 140; // fallback to min-width
-            const buttonWidth = emojiButton.offsetWidth || 20; // fallback to icon size
 
-            // Calculate left position to center menu relative to button
-            // Since both are in the same parent container, we center relative to button center
-            const leftPosition = (buttonWidth - menuWidth) / 2;
+            // Check if mobile (same breakpoint as CSS: 768px)
+            const isMobile = window.innerWidth <= 768;
+
+            if (isMobile) {
+                // On mobile, align to left (no centering)
+                menu.style.left = "0px";
+            } else {
+                // On desktop, center menu relative to button
+                const menuWidth = menu.offsetWidth || 140; // fallback to min-width
+                const buttonWidth = emojiButton.offsetWidth || 20; // fallback to icon size
+
+                // Calculate left position to center menu relative to button
+                // Since both are in the same parent container, we center relative to button center
+                const leftPosition = (buttonWidth - menuWidth) / 2;
+                menu.style.left = leftPosition + "px";
+            }
 
             // Set position and make visible
-            menu.style.left = leftPosition + "px";
             menu.style.bottom = "100%";
             menu.style.marginBottom = "16px";
             menu.style.visibility = "visible";
