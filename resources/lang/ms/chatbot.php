@@ -21,6 +21,9 @@ return [
         'close_chat' => 'Tutup Chat',
         'clear_conversation' => 'Kosongkan Perbualan',
         'add_emojis_gifs_stickers' => 'Emojis, GIFs, Stickers',
+        'select_emojis' => 'Emojis',
+        'select_gifs' => 'GIFs',
+        'select_stickers' => 'Stickers',
     ],
 
     // Header

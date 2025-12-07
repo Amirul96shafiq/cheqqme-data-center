@@ -997,6 +997,249 @@ import { init, Picker } from "emoji-mart";
         // );
     }
 
+    // Media selection menu functionality
+    function toggleMediaMenu(event) {
+        const menu = document.getElementById("media-selection-menu");
+        const emojiButton = document.getElementById("emoji-gif-sticker-button");
+
+        if (!menu || !emojiButton) {
+            return;
+        }
+
+        const isCurrentlyHidden = menu.classList.contains("hidden");
+
+        if (isCurrentlyHidden) {
+            // Close any open pickers first
+            closeAllMediaPickers();
+
+            // Position menu above the button
+            const buttonRect = emojiButton.getBoundingClientRect();
+            menu.style.left = "0px";
+            menu.style.bottom = "100%";
+            menu.style.marginBottom = "8px";
+
+            // Show menu
+            menu.classList.remove("hidden");
+
+            // Add animation
+            menu.style.opacity = "0";
+            menu.style.transform = "translateY(10px) scale(0.95)";
+            requestAnimationFrame(() => {
+                menu.style.transition =
+                    "opacity 0.2s ease, transform 0.2s ease";
+                menu.style.opacity = "1";
+                menu.style.transform = "translateY(0) scale(1)";
+            });
+        } else {
+            // Hide menu
+            menu.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+            menu.style.opacity = "0";
+            menu.style.transform = "translateY(10px) scale(0.95)";
+            setTimeout(() => {
+                menu.classList.add("hidden");
+            }, 200);
+        }
+    }
+
+    // Close all media pickers
+    function closeAllMediaPickers() {
+        const emojiPicker = document.getElementById("emoji-picker-container");
+        const gifPicker = document.getElementById("gif-picker-container");
+        const stickerPicker = document.getElementById(
+            "sticker-picker-container"
+        );
+        const menu = document.getElementById("media-selection-menu");
+
+        if (emojiPicker && !emojiPicker.classList.contains("hidden")) {
+            const fakeEvent = { target: null, isCloseAction: true };
+            toggleEmojiPicker(fakeEvent);
+        }
+
+        if (gifPicker && !gifPicker.classList.contains("hidden")) {
+            closeMediaPicker("gifs");
+        }
+
+        if (stickerPicker && !stickerPicker.classList.contains("hidden")) {
+            closeMediaPicker("stickers");
+        }
+
+        if (menu && !menu.classList.contains("hidden")) {
+            menu.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+            menu.style.opacity = "0";
+            menu.style.transform = "translateY(10px) scale(0.95)";
+            setTimeout(() => {
+                menu.classList.add("hidden");
+            }, 200);
+        }
+    }
+
+    // Open specific media picker
+    function openMediaPicker(type) {
+        // Close menu first
+        const menu = document.getElementById("media-selection-menu");
+        if (menu && !menu.classList.contains("hidden")) {
+            menu.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+            menu.style.opacity = "0";
+            menu.style.transform = "translateY(10px) scale(0.95)";
+            setTimeout(() => {
+                menu.classList.add("hidden");
+            }, 200);
+        }
+
+        // Close other pickers
+        if (type !== "emojis") {
+            const emojiPicker = document.getElementById(
+                "emoji-picker-container"
+            );
+            if (emojiPicker && !emojiPicker.classList.contains("hidden")) {
+                const fakeEvent = { target: null, isCloseAction: true };
+                toggleEmojiPicker(fakeEvent);
+            }
+        }
+        if (type !== "gifs") {
+            closeMediaPicker("gifs");
+        }
+        if (type !== "stickers") {
+            closeMediaPicker("stickers");
+        }
+
+        // Open selected picker
+        if (type === "emojis") {
+            // Create a fake event to open emoji picker
+            const fakeEvent = {
+                target: document.getElementById("emoji-gif-sticker-button"),
+                isCloseAction: false,
+            };
+            toggleEmojiPicker(fakeEvent);
+        } else if (type === "gifs") {
+            openGifPicker();
+        } else if (type === "stickers") {
+            openStickerPicker();
+        }
+    }
+
+    // Open GIF picker
+    function openGifPicker() {
+        const gifPickerContainer = document.getElementById(
+            "gif-picker-container"
+        );
+        const chatbotInterface = document.getElementById("chatbot-interface");
+
+        if (!gifPickerContainer || !chatbotInterface) {
+            return;
+        }
+
+        // Make picker visible first to get accurate dimensions
+        gifPickerContainer.classList.remove("hidden");
+        gifPickerContainer.style.opacity = "0";
+
+        const gifPickerWidth = 352; // Same as emoji picker
+        const gifPickerHeight = 400;
+
+        // Check if mobile
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+            // Center the picker on mobile
+            const centerX = (window.innerWidth - gifPickerWidth) / 2;
+            const centerY = (window.innerHeight - gifPickerHeight) / 2;
+            gifPickerContainer.style.left = centerX + "px";
+            gifPickerContainer.style.top = centerY + "px";
+        } else {
+            // Desktop: Position beside chatbot box
+            const chatRect = chatbotInterface.getBoundingClientRect();
+            const gap = 12;
+            const leftPosition = chatRect.left - gifPickerWidth - gap;
+            const topPosition = chatRect.bottom - gifPickerHeight;
+            const finalLeftPosition = Math.max(20, leftPosition);
+            const finalTopPosition = Math.max(20, topPosition);
+            gifPickerContainer.style.left = finalLeftPosition + "px";
+            gifPickerContainer.style.top = finalTopPosition + "px";
+        }
+
+        // Add animation
+        gifPickerContainer.style.transform = "translateX(20px) scale(0.95)";
+        requestAnimationFrame(() => {
+            gifPickerContainer.style.transition =
+                "opacity 0.2s ease, transform 0.2s ease";
+            gifPickerContainer.style.opacity = "1";
+            gifPickerContainer.style.transform = "translateX(0) scale(1)";
+        });
+    }
+
+    // Open Sticker picker
+    function openStickerPicker() {
+        const stickerPickerContainer = document.getElementById(
+            "sticker-picker-container"
+        );
+        const chatbotInterface = document.getElementById("chatbot-interface");
+
+        if (!stickerPickerContainer || !chatbotInterface) {
+            return;
+        }
+
+        // Make picker visible first to get accurate dimensions
+        stickerPickerContainer.classList.remove("hidden");
+        stickerPickerContainer.style.opacity = "0";
+
+        const stickerPickerWidth = 352; // Same as emoji picker
+        const stickerPickerHeight = 400;
+
+        // Check if mobile
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+            // Center the picker on mobile
+            const centerX = (window.innerWidth - stickerPickerWidth) / 2;
+            const centerY = (window.innerHeight - stickerPickerHeight) / 2;
+            stickerPickerContainer.style.left = centerX + "px";
+            stickerPickerContainer.style.top = centerY + "px";
+        } else {
+            // Desktop: Position beside chatbot box
+            const chatRect = chatbotInterface.getBoundingClientRect();
+            const gap = 12;
+            const leftPosition = chatRect.left - stickerPickerWidth - gap;
+            const topPosition = chatRect.bottom - stickerPickerHeight;
+            const finalLeftPosition = Math.max(20, leftPosition);
+            const finalTopPosition = Math.max(20, topPosition);
+            stickerPickerContainer.style.left = finalLeftPosition + "px";
+            stickerPickerContainer.style.top = finalTopPosition + "px";
+        }
+
+        // Add animation
+        stickerPickerContainer.style.transform = "translateX(20px) scale(0.95)";
+        requestAnimationFrame(() => {
+            stickerPickerContainer.style.transition =
+                "opacity 0.2s ease, transform 0.2s ease";
+            stickerPickerContainer.style.opacity = "1";
+            stickerPickerContainer.style.transform = "translateX(0) scale(1)";
+        });
+    }
+
+    // Close media picker (for GIFs and Stickers)
+    function closeMediaPicker(type) {
+        let pickerContainer;
+        if (type === "gifs") {
+            pickerContainer = document.getElementById("gif-picker-container");
+        } else if (type === "stickers") {
+            pickerContainer = document.getElementById(
+                "sticker-picker-container"
+            );
+        }
+
+        if (!pickerContainer || pickerContainer.classList.contains("hidden")) {
+            return;
+        }
+
+        pickerContainer.style.transition =
+            "opacity 0.2s ease, transform 0.2s ease";
+        pickerContainer.style.opacity = "0";
+        pickerContainer.style.transform = "translateX(20px) scale(0.95)";
+        setTimeout(() => {
+            pickerContainer.classList.add("hidden");
+        }, 200);
+    }
+
     // Emoji picker functionality
     // Only opens when explicitly called from emoji button click
     function toggleEmojiPicker(event) {
@@ -1244,86 +1487,188 @@ import { init, Picker } from "emoji-mart";
         input.dispatchEvent(new Event("input", { bubbles: true }));
     }
 
-    // Close emoji picker when clicking outside
+    // Close media pickers and menu when clicking outside
     document.addEventListener("click", function (event) {
         const emojiPickerContainer = document.getElementById(
             "emoji-picker-container"
         );
+        const gifPickerContainer = document.getElementById(
+            "gif-picker-container"
+        );
+        const stickerPickerContainer = document.getElementById(
+            "sticker-picker-container"
+        );
+        const mediaMenu = document.getElementById("media-selection-menu");
         const emojiButton = document.getElementById("emoji-gif-sticker-button");
         const chatInput = document.getElementById("chat-input");
 
+        // Check if click is on emoji button, input, or inside any picker/menu
+        const isClickOnEmojiButton =
+            emojiButton &&
+            (emojiButton === event.target ||
+                emojiButton.contains(event.target) ||
+                event.target.closest("#emoji-gif-sticker-button"));
+        const isClickOnInput =
+            chatInput &&
+            (chatInput === event.target ||
+                chatInput.contains(event.target) ||
+                event.target.closest("#chat-input"));
+        const isClickOnEmojiPicker =
+            emojiPickerContainer &&
+            (emojiPickerContainer === event.target ||
+                emojiPickerContainer.contains(event.target) ||
+                event.target.closest("#emoji-picker-container"));
+        const isClickOnGifPicker =
+            gifPickerContainer &&
+            (gifPickerContainer === event.target ||
+                gifPickerContainer.contains(event.target) ||
+                event.target.closest("#gif-picker-container"));
+        const isClickOnStickerPicker =
+            stickerPickerContainer &&
+            (stickerPickerContainer === event.target ||
+                stickerPickerContainer.contains(event.target) ||
+                event.target.closest("#sticker-picker-container"));
+        const isClickOnMenu =
+            mediaMenu &&
+            (mediaMenu === event.target ||
+                mediaMenu.contains(event.target) ||
+                event.target.closest("#media-selection-menu"));
+
+        // Close emoji picker if open and clicking outside
         if (
             emojiPickerContainer &&
-            !emojiPickerContainer.classList.contains("hidden")
+            !emojiPickerContainer.classList.contains("hidden") &&
+            !isClickOnEmojiButton &&
+            !isClickOnInput &&
+            !isClickOnEmojiPicker
         ) {
-            // Check if click is on emoji button, input, or inside picker container
-            const isClickOnEmojiButton =
-                emojiButton &&
-                (emojiButton === event.target ||
-                    emojiButton.contains(event.target) ||
-                    event.target.closest("#emoji-gif-sticker-button"));
-            const isClickOnInput =
-                chatInput &&
-                (chatInput === event.target ||
-                    chatInput.contains(event.target) ||
-                    event.target.closest("#chat-input"));
-            const isClickOnPicker =
-                emojiPickerContainer &&
-                (emojiPickerContainer === event.target ||
-                    emojiPickerContainer.contains(event.target) ||
-                    event.target.closest("#emoji-picker-container"));
+            toggleEmojiPicker(event);
+        }
 
-            // Only close if clicking outside all these elements
-            if (!isClickOnEmojiButton && !isClickOnInput && !isClickOnPicker) {
-                toggleEmojiPicker(event);
-            }
+        // Close GIF picker if open and clicking outside
+        if (
+            gifPickerContainer &&
+            !gifPickerContainer.classList.contains("hidden") &&
+            !isClickOnEmojiButton &&
+            !isClickOnInput &&
+            !isClickOnGifPicker
+        ) {
+            closeMediaPicker("gifs");
+        }
+
+        // Close Sticker picker if open and clicking outside
+        if (
+            stickerPickerContainer &&
+            !stickerPickerContainer.classList.contains("hidden") &&
+            !isClickOnEmojiButton &&
+            !isClickOnInput &&
+            !isClickOnStickerPicker
+        ) {
+            closeMediaPicker("stickers");
+        }
+
+        // Close menu if open and clicking outside
+        if (
+            mediaMenu &&
+            !mediaMenu.classList.contains("hidden") &&
+            !isClickOnEmojiButton &&
+            !isClickOnMenu
+        ) {
+            mediaMenu.style.transition =
+                "opacity 0.2s ease, transform 0.2s ease";
+            mediaMenu.style.opacity = "0";
+            mediaMenu.style.transform = "translateY(10px) scale(0.95)";
+            setTimeout(() => {
+                mediaMenu.classList.add("hidden");
+            }, 200);
         }
     });
 
-    // Close emoji picker on Escape key
+    // Close media pickers and menu on Escape key
     document.addEventListener("keydown", function (event) {
         if (event.key === "Escape") {
             const emojiPickerContainer = document.getElementById(
                 "emoji-picker-container"
             );
+            const gifPickerContainer = document.getElementById(
+                "gif-picker-container"
+            );
+            const stickerPickerContainer = document.getElementById(
+                "sticker-picker-container"
+            );
+            const mediaMenu = document.getElementById("media-selection-menu");
+
+            // Close menu first if open
+            if (mediaMenu && !mediaMenu.classList.contains("hidden")) {
+                mediaMenu.style.transition =
+                    "opacity 0.2s ease, transform 0.2s ease";
+                mediaMenu.style.opacity = "0";
+                mediaMenu.style.transform = "translateY(10px) scale(0.95)";
+                setTimeout(() => {
+                    mediaMenu.classList.add("hidden");
+                }, 200);
+            }
+
+            // Close emoji picker if open
             if (
                 emojiPickerContainer &&
                 !emojiPickerContainer.classList.contains("hidden")
             ) {
-                // Create a fake event to indicate this is a close action (not opening)
                 const fakeEvent = { target: null, isCloseAction: true };
                 toggleEmojiPicker(fakeEvent);
+            }
+
+            // Close GIF picker if open
+            if (
+                gifPickerContainer &&
+                !gifPickerContainer.classList.contains("hidden")
+            ) {
+                closeMediaPicker("gifs");
+            }
+
+            // Close Sticker picker if open
+            if (
+                stickerPickerContainer &&
+                !stickerPickerContainer.classList.contains("hidden")
+            ) {
+                closeMediaPicker("stickers");
             }
         }
     });
 
-    // Reposition emoji picker on window resize
+    // Reposition all media pickers on window resize
     window.addEventListener("resize", function () {
         const emojiPickerContainer = document.getElementById(
             "emoji-picker-container"
         );
         const emojiPicker = document.getElementById("emoji-picker");
+        const gifPickerContainer = document.getElementById(
+            "gif-picker-container"
+        );
+        const stickerPickerContainer = document.getElementById(
+            "sticker-picker-container"
+        );
         const chatbotInterface = document.getElementById("chatbot-interface");
 
+        if (!chatbotInterface) return;
+
+        const isMobile = window.innerWidth <= 768;
+
+        // Reposition emoji picker
         if (
             emojiPickerContainer &&
             emojiPicker &&
-            chatbotInterface &&
             !emojiPickerContainer.classList.contains("hidden")
         ) {
-            // Reposition the picker based on current screen size
             const emojiPickerWidth = emojiPicker.offsetWidth || 352;
             const emojiPickerHeight = emojiPicker.offsetHeight || 400;
-            const isMobile = window.innerWidth <= 768;
 
             if (isMobile) {
-                // Center on mobile
                 const centerX = (window.innerWidth - emojiPickerWidth) / 2;
                 const centerY = (window.innerHeight - emojiPickerHeight) / 2;
                 emojiPickerContainer.style.left = centerX + "px";
                 emojiPickerContainer.style.top = centerY + "px";
             } else {
-                // Reposition beside chatbot box on desktop
                 const chatRect = chatbotInterface.getBoundingClientRect();
                 const gap = 12;
                 const leftPosition = chatRect.left - emojiPickerWidth - gap;
@@ -1332,6 +1677,56 @@ import { init, Picker } from "emoji-mart";
                 const finalTopPosition = Math.max(20, topPosition);
                 emojiPickerContainer.style.left = finalLeftPosition + "px";
                 emojiPickerContainer.style.top = finalTopPosition + "px";
+            }
+        }
+
+        // Reposition GIF picker
+        if (
+            gifPickerContainer &&
+            !gifPickerContainer.classList.contains("hidden")
+        ) {
+            const gifPickerWidth = 352;
+            const gifPickerHeight = 400;
+
+            if (isMobile) {
+                const centerX = (window.innerWidth - gifPickerWidth) / 2;
+                const centerY = (window.innerHeight - gifPickerHeight) / 2;
+                gifPickerContainer.style.left = centerX + "px";
+                gifPickerContainer.style.top = centerY + "px";
+            } else {
+                const chatRect = chatbotInterface.getBoundingClientRect();
+                const gap = 12;
+                const leftPosition = chatRect.left - gifPickerWidth - gap;
+                const topPosition = chatRect.bottom - gifPickerHeight;
+                const finalLeftPosition = Math.max(20, leftPosition);
+                const finalTopPosition = Math.max(20, topPosition);
+                gifPickerContainer.style.left = finalLeftPosition + "px";
+                gifPickerContainer.style.top = finalTopPosition + "px";
+            }
+        }
+
+        // Reposition Sticker picker
+        if (
+            stickerPickerContainer &&
+            !stickerPickerContainer.classList.contains("hidden")
+        ) {
+            const stickerPickerWidth = 352;
+            const stickerPickerHeight = 400;
+
+            if (isMobile) {
+                const centerX = (window.innerWidth - stickerPickerWidth) / 2;
+                const centerY = (window.innerHeight - stickerPickerHeight) / 2;
+                stickerPickerContainer.style.left = centerX + "px";
+                stickerPickerContainer.style.top = centerY + "px";
+            } else {
+                const chatRect = chatbotInterface.getBoundingClientRect();
+                const gap = 12;
+                const leftPosition = chatRect.left - stickerPickerWidth - gap;
+                const topPosition = chatRect.bottom - stickerPickerHeight;
+                const finalLeftPosition = Math.max(20, leftPosition);
+                const finalTopPosition = Math.max(20, topPosition);
+                stickerPickerContainer.style.left = finalLeftPosition + "px";
+                stickerPickerContainer.style.top = finalTopPosition + "px";
             }
         }
     });
@@ -1449,6 +1844,9 @@ import { init, Picker } from "emoji-mart";
     window.insertEmoji = insertEmoji;
     window.executeClearConversation = executeClearConversation;
     window.preventEmojiPickerOnInputClick = preventEmojiPickerOnInputClick;
+    window.toggleMediaMenu = toggleMediaMenu;
+    window.openMediaPicker = openMediaPicker;
+    window.closeAllMediaPickers = closeAllMediaPickers;
 
     // Persist open state on page unload to help with navigation
     window.addEventListener("beforeunload", function () {

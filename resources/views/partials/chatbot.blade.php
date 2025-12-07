@@ -103,6 +103,13 @@
         #emoji-picker-container {
             z-index: 51 !important;
         }
+        
+        /* Ensure media menu and pickers appear above chatbot interface on mobile */
+        #media-selection-menu,
+        #gif-picker-container,
+        #sticker-picker-container {
+            z-index: 51 !important;
+        }
     }
     
     /* Open chatbot interface */
@@ -436,6 +443,22 @@ emoji-picker {
     --rgb-input: 63, 63, 70;
 }
 
+/* Media selection menu styling - matches online status dropdown */
+#media-selection-menu {
+    /* shadow-xl is already applied via Tailwind class */
+}
+
+/* GIF and Sticker picker styling */
+#gif-picker-container,
+#sticker-picker-container {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.dark #gif-picker-container,
+.dark #sticker-picker-container {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
 </style>
 
 <!-- Chatbot Widget -->
@@ -549,12 +572,40 @@ emoji-picker {
                             <button
                                 type="button"
                                 id="emoji-gif-sticker-button"
-                                onclick="toggleEmojiPicker(event); event.stopPropagation(); event.preventDefault();"
+                                onclick="toggleMediaMenu(event); event.stopPropagation(); event.preventDefault();"
                                 class="flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors"
                             >
                                 @svg('heroicon-o-plus-circle', 'w-5 h-5')
                             </button>
                         </x-tooltip>
+                        
+                        <!-- Media Selection Menu -->
+                        <div id="media-selection-menu" class="absolute bottom-full left-0 mb-1 hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-2 space-y-1 min-w-[140px] z-[12] overflow-hidden">
+                            <button
+                                type="button"
+                                onclick="openMediaPicker('emojis'); event.stopPropagation();"
+                                class="w-full flex items-center gap-2 p-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-lg"
+                            >
+                                @svg('heroicon-m-face-smile', 'w-4 h-4 text-gray-500 dark:text-gray-400')
+                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('chatbot.action.select_emojis') }}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onclick="openMediaPicker('gifs'); event.stopPropagation();"
+                                class="w-full flex items-center gap-2 p-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-lg"
+                            >
+                                @svg('heroicon-m-gif', 'w-4 h-4 text-gray-500 dark:text-gray-400')
+                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('chatbot.action.select_gifs') }}</span>
+                            </button>
+                            <button
+                                type="button"
+                                onclick="openMediaPicker('stickers'); event.stopPropagation();"
+                                class="w-full flex items-center gap-2 p-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-lg"
+                            >
+                                @svg('heroicon-m-sparkles', 'w-4 h-4 text-gray-500 dark:text-gray-400')
+                                <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ __('chatbot.action.select_stickers') }}</span>
+                            </button>
+                        </div>
                     </div>
 
                 </div>
@@ -577,6 +628,28 @@ emoji-picker {
 <!-- Floating Emoji Picker Container -->
 <div id="emoji-picker-container" class="fixed hidden z-[11]">
     <emoji-picker id="emoji-picker"></emoji-picker>
+</div>
+
+<!-- Floating GIF Picker Container -->
+<div id="gif-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4">
+    <div class="w-[352px] h-[400px] flex items-center justify-center text-gray-400 dark:text-gray-500">
+        <div class="text-center">
+            <p class="text-lg mb-2">🎬</p>
+            <p class="text-sm">{{ __('chatbot.action.select_gifs') }}</p>
+            <p class="text-xs mt-2 opacity-75">Coming soon...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Sticker Picker Container -->
+<div id="sticker-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4">
+    <div class="w-[352px] h-[400px] flex items-center justify-center text-gray-400 dark:text-gray-500">
+        <div class="text-center">
+            <p class="text-lg mb-2">🎨</p>
+            <p class="text-sm">{{ __('chatbot.action.select_stickers') }}</p>
+            <p class="text-xs mt-2 opacity-75">Coming soon...</p>
+        </div>
+    </div>
 </div>
 
 
