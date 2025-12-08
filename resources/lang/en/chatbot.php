@@ -147,4 +147,11 @@ return [
         'invalid_structure' => 'The backup file has an invalid structure. Please ensure you upload a valid chatbot backup file.',
         'no_conversations' => 'The backup file contains no conversations.',
     ],
+
+    // Footer
+    'footer' => [
+        'sticker_request' => 'Need new stickers? Go :link to request one!',
+        'gif_request' => 'Need new GIFs? Go :link to request one!',
+        'link_text' => 'Here',
+    ],
 ];

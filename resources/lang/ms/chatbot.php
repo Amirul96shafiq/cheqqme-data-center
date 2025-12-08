@@ -146,4 +146,11 @@ return [
         'invalid_structure' => 'Fail backup mempunyai struktur yang tidak sah. Sila pastikan anda memuat naik fail backup chatbot yang sah.',
         'no_conversations' => 'Fail backup tidak mengandungi sebarang perbualan.',
     ],
+
+    // Footer
+    'footer' => [
+        'sticker_request' => 'Nak sticker baharu? Pergi :link untuk request!',
+        'gif_request' => 'Nak GIF baharu? Pergi :link untuk request!',
+        'link_text' => 'Di Sini',
+    ],
 ];

@@ -630,7 +630,7 @@ emoji-picker {
 
     <!-- GIF Request Footer -->
     <div class="border-t border-gray-200 dark:border-gray-700 p-2 text-center text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg">
-        <p>Need new GIFs? Go <a href="https://github.com/Amirul96shafiq/cheqqme-data-center/discussions/6" target="_blank" class="text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 font-medium hover:underline">Here</a> to request one!</p>
+        <p>{!! str_replace(':link', '<a href="https://github.com/Amirul96shafiq/cheqqme-data-center/discussions/6" target="_blank" class="text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 font-medium hover:underline">' . __('chatbot.footer.link_text') . '</a>', __('chatbot.footer.gif_request')) !!}</p>
     </div>
 </div>
 
@@ -672,7 +672,7 @@ emoji-picker {
 
     <!-- Sticker Request Footer -->
     <div class="border-t border-gray-200 dark:border-gray-700 p-2 text-center text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg">
-        <p>Need new stickers? Go <a href="https://github.com/Amirul96shafiq/cheqqme-data-center/discussions/5" target="_blank" class="text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 font-medium hover:underline">Here</a> to request one!</p>
+        <p>{!! str_replace(':link', '<a href="https://github.com/Amirul96shafiq/cheqqme-data-center/discussions/5" target="_blank" class="text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 font-medium hover:underline">' . __('chatbot.footer.link_text') . '</a>', __('chatbot.footer.sticker_request')) !!}</p>
     </div>
 </div>
 
