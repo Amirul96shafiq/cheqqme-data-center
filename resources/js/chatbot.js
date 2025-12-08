@@ -1109,8 +1109,61 @@ import { init, Picker } from "emoji-mart";
             menu.style.transform = "translateY(10px) scale(0.95)";
             setTimeout(() => {
                 menu.classList.add("hidden");
+                // Clear active button state when all pickers are closed
+                updateActiveMediaButton(null);
             }, 200);
+        } else {
+            // Clear active state immediately if menu is already hidden
+            updateActiveMediaButton(null);
         }
+    }
+
+    // Update active media button state
+    function updateActiveMediaButton(activeType) {
+        const buttons = document.querySelectorAll(".media-button");
+        buttons.forEach((button) => {
+            const mediaType = button.getAttribute("data-media-type");
+            const icon = button.querySelector(".media-icon");
+
+            if (activeType && mediaType === activeType) {
+                // Active state: primary background and primary-900 text/icon
+                button.classList.remove(
+                    "text-gray-900",
+                    "dark:text-white",
+                    "hover:bg-gray-50",
+                    "dark:hover:bg-gray-700"
+                );
+                button.classList.add(
+                    "bg-primary-500",
+                    "text-primary-900",
+                    "hover:bg-primary-600"
+                );
+                if (icon) {
+                    icon.classList.remove(
+                        "text-gray-500",
+                        "dark:text-gray-400"
+                    );
+                    icon.classList.add("text-primary-900");
+                }
+            } else {
+                // Inactive state: default styling
+                button.classList.remove(
+                    "bg-primary-500",
+                    "text-primary-900",
+                    "hover:bg-primary-600"
+                );
+                button.classList.add(
+                    "text-gray-900",
+                    "dark:text-white",
+                    "hover:bg-gray-50",
+                    "dark:hover:bg-gray-700"
+                );
+                if (icon) {
+                    icon.classList.remove("text-primary-900");
+                    icon.classList.add("text-gray-500", "dark:text-gray-400");
+                }
+            }
+        });
     }
 
     // Open specific media picker
@@ -1150,6 +1203,9 @@ import { init, Picker } from "emoji-mart";
         } else if (type === "stickers") {
             openStickerPicker();
         }
+
+        // Update active button state
+        updateActiveMediaButton(type);
     }
 
     // Open GIF picker
@@ -1178,6 +1234,9 @@ import { init, Picker } from "emoji-mart";
             gifPickerContainer.style.opacity = "1";
             gifPickerContainer.style.transform = "translateX(0) scale(1)";
         });
+
+        // Update active button state
+        updateActiveMediaButton("gifs");
     }
 
     // Open Sticker picker
@@ -1206,6 +1265,9 @@ import { init, Picker } from "emoji-mart";
             stickerPickerContainer.style.opacity = "1";
             stickerPickerContainer.style.transform = "translateX(0) scale(1)";
         });
+
+        // Update active button state
+        updateActiveMediaButton("stickers");
     }
 
     // Check if any picker is open
@@ -1244,6 +1306,8 @@ import { init, Picker } from "emoji-mart";
             mediaMenu.style.transform = "translateY(10px) scale(0.95)";
             setTimeout(() => {
                 mediaMenu.classList.add("hidden");
+                // Clear active button state when menu closes
+                updateActiveMediaButton(null);
             }, 200);
         }
     }
@@ -1269,6 +1333,35 @@ import { init, Picker } from "emoji-mart";
         pickerContainer.style.transform = "translateX(20px) scale(0.95)";
         setTimeout(() => {
             pickerContainer.classList.add("hidden");
+            // Update active state - check if any other picker is open
+            if (!hasAnyPickerOpen()) {
+                updateActiveMediaButton(null);
+            } else {
+                // Find which picker is still open and set it as active
+                const emojiPicker = document.getElementById(
+                    "emoji-picker-container"
+                );
+                const gifPicker = document.getElementById(
+                    "gif-picker-container"
+                );
+                const stickerPicker = document.getElementById(
+                    "sticker-picker-container"
+                );
+
+                if (emojiPicker && !emojiPicker.classList.contains("hidden")) {
+                    updateActiveMediaButton("emojis");
+                } else if (
+                    gifPicker &&
+                    !gifPicker.classList.contains("hidden")
+                ) {
+                    updateActiveMediaButton("gifs");
+                } else if (
+                    stickerPicker &&
+                    !stickerPicker.classList.contains("hidden")
+                ) {
+                    updateActiveMediaButton("stickers");
+                }
+            }
             // Close menu if no pickers are open after closing this one
             closeMenuIfNoPickersOpen();
         }, 200);
@@ -1401,6 +1494,9 @@ import { init, Picker } from "emoji-mart";
             // Focus the emoji picker for better UX
             emojiPicker.focus();
 
+            // Update active button state
+            updateActiveMediaButton("emojis");
+
             // Add a small visual indicator that multiple emojis can be selected
             // Handled by the emoji picker's built-in UI
         } else {
@@ -1411,6 +1507,27 @@ import { init, Picker } from "emoji-mart";
                 "translateX(20px) scale(0.95)";
             setTimeout(() => {
                 emojiPickerContainer.classList.add("hidden");
+                // Update active state - check if any other picker is open
+                if (!hasAnyPickerOpen()) {
+                    updateActiveMediaButton(null);
+                } else {
+                    // Find which picker is still open and set it as active
+                    const gifPicker = document.getElementById(
+                        "gif-picker-container"
+                    );
+                    const stickerPicker = document.getElementById(
+                        "sticker-picker-container"
+                    );
+
+                    if (gifPicker && !gifPicker.classList.contains("hidden")) {
+                        updateActiveMediaButton("gifs");
+                    } else if (
+                        stickerPicker &&
+                        !stickerPicker.classList.contains("hidden")
+                    ) {
+                        updateActiveMediaButton("stickers");
+                    }
+                }
                 // Close menu if no pickers are open after closing emoji picker
                 closeMenuIfNoPickersOpen();
             }, 200);

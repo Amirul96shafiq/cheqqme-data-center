@@ -759,26 +759,32 @@ emoji-picker {
 <div id="media-selection-menu" class="fixed hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-1 z-[12] flex items-center gap-1 w-[288px]">
     <button
         type="button"
+        id="media-button-emojis"
+        data-media-type="emojis"
         onclick="openMediaPicker('emojis'); event.stopPropagation();"
-        class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+        class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md media-button"
     >
-        @svg('heroicon-m-face-smile', 'w-4 h-4 text-gray-500 dark:text-gray-400')
+        @svg('heroicon-m-face-smile', 'w-4 h-4 text-gray-500 dark:text-gray-400 media-icon')
         <span class="hidden sm:inline">{{ __('chatbot.action.select_emojis') }}</span>
     </button>
     <button
         type="button"
+        id="media-button-gifs"
+        data-media-type="gifs"
         onclick="openMediaPicker('gifs'); event.stopPropagation();"
-        class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+        class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md media-button"
     >
-        @svg('heroicon-m-gif', 'w-4 h-4 text-gray-500 dark:text-gray-400')
+        @svg('heroicon-m-gif', 'w-4 h-4 text-gray-500 dark:text-gray-400 media-icon')
         <span class="hidden sm:inline">{{ __('chatbot.action.select_gifs') }}</span>
     </button>
     <button
         type="button"
+        id="media-button-stickers"
+        data-media-type="stickers"
         onclick="openMediaPicker('stickers'); event.stopPropagation();"
-        class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md"
+        class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 rounded-md media-button"
     >
-        @svg('heroicon-m-sparkles', 'w-4 h-4 text-gray-500 dark:text-gray-400')
+        @svg('heroicon-m-sparkles', 'w-4 h-4 text-gray-500 dark:text-gray-400 media-icon')
         <span class="hidden sm:inline">{{ __('chatbot.action.select_stickers') }}</span>
     </button>
 </div>
