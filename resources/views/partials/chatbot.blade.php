@@ -731,7 +731,7 @@ emoji-picker {
                             @foreach($stickers as $sticker)
                                 <div class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors flex items-center justify-center aspect-square" 
                                      onclick="sendSticker('{{ $sticker }}')">
-                                    <img src="{{ asset('stickers/' . $sticker) }}" alt="Sticker" class="w-full h-full object-contain pointer-events-none" loading="lazy">
+                                    <img src="{{ asset('stickers/' . $sticker) }}" alt="Sticker" class="w-full h-full object-contain pointer-events-none" loading="lazy" draggable="false">
                                 </div>
                             @endforeach
                         </div>

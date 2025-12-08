@@ -703,6 +703,11 @@ import { init, Picker } from "emoji-mart";
                     contentDiv.innerHTML = normalizeContent(
                         marked.parse(processTranslation(content))
                     );
+                    // Make all sticker images non-draggable
+                    const stickerImages = contentDiv.querySelectorAll("img");
+                    stickerImages.forEach((img) => {
+                        img.setAttribute("draggable", "false");
+                    });
                 } else if (isEmoji) {
                     // For emojis, use animated emoji if available
                     if (
