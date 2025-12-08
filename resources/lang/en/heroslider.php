@@ -8,8 +8,8 @@ return [
   'description3' => 'Create and share meeting links in seconds. No fuss, no extra hassle, all in one place.',
   'title4' => 'Control the Chaos',
   'description4' => 'Track progress, squash bugs / issues, collect wishlists, and let outsiders raise tickets.',
-  'title5' => 'Your Workflow Playground',
+  'title5' => 'Your Workflow Wonderland',
   'description5' => 'Drag, drop, done. A clean flow that keeps your tasks flying forward progressively.',
-  'title6' => 'Stay Ahead Without Trying',
+  'title6' => 'Stay Ahead Without A Sweat',
   'description6' => 'All your meetings, deadlines, plans, and even holidays, synced in one clean view.',
 ];
