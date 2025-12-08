@@ -904,12 +904,20 @@ class ChatbotController extends Controller
         $stickers = [];
 
         if (file_exists($stickersPath)) {
-            $files = scandir($stickersPath);
-            foreach ($files as $file) {
-                if (in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['webp', 'png', 'jpg', 'gif'])) {
-                    $stickers[] = $file;
+            // Recursive scan helper
+            $scan = function($dir, $prefix = '') use (&$scan, &$stickers) {
+                $items = scandir($dir);
+                foreach ($items as $item) {
+                    if ($item === '.' || $item === '..') continue;
+                    $path = $dir . '/' . $item;
+                    if (is_dir($path)) {
+                        $scan($path, $prefix . $item . '/');
+                    } elseif (in_array(strtolower(pathinfo($item, PATHINFO_EXTENSION)), ['webp', 'png', 'jpg', 'gif'])) {
+                        $stickers[] = $prefix . $item;
+                    }
                 }
-            }
+            };
+            $scan($stickersPath);
         }
 
         // If no stickers found, return a default emoji response

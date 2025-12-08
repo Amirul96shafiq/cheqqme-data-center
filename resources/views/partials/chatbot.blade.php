@@ -637,28 +637,78 @@ emoji-picker {
 <!-- Floating Sticker Picker Container -->
 <div id="sticker-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-[288px] h-[435px] flex flex-col">
     @php
-        $stickers = [];
+        $stickerGroups = [];
         $stickersPath = public_path('stickers');
+        
         if (file_exists($stickersPath)) {
-            $files = scandir($stickersPath);
-            foreach ($files as $file) {
-                if (in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['webp', 'png', 'jpg', 'gif'])) {
-                    $stickers[] = $file;
+            $items = scandir($stickersPath);
+            
+            // First pass for root files (General)
+            $rootStickers = [];
+            
+            foreach ($items as $item) {
+                if ($item === '.' || $item === '..') continue;
+                
+                $fullPath = $stickersPath . '/' . $item;
+                
+                if (is_file($fullPath)) {
+                    if (in_array(strtolower(pathinfo($item, PATHINFO_EXTENSION)), ['webp', 'png', 'jpg', 'gif'])) {
+                        $rootStickers[] = $item;
+                    }
+                } elseif (is_dir($fullPath)) {
+                    // It's a directory, scan it
+                    $subFiles = scandir($fullPath);
+                    $groupStickers = [];
+                    foreach ($subFiles as $subFile) {
+                        if (in_array(strtolower(pathinfo($subFile, PATHINFO_EXTENSION)), ['webp', 'png', 'jpg', 'gif'])) {
+                            // Store relative path from stickers/ folder
+                            $groupStickers[] = $item . '/' . $subFile;
+                        }
+                    }
+                    if (!empty($groupStickers)) {
+                        $stickerGroups[$item] = $groupStickers;
+                    }
                 }
+            }
+            
+            // Add General stickers if any
+            if (!empty($rootStickers)) {
+                $stickerGroups = array_merge(['General' => $rootStickers], $stickerGroups);
             }
         }
     @endphp
 
-    @if(count($stickers) > 0)
-        <div class="flex-1 overflow-y-auto p-3 custom-scrollbar">
-            <div class="grid grid-cols-3 gap-2">
-                @foreach($stickers as $sticker)
-                    <div class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors flex items-center justify-center aspect-square" 
-                         onclick="sendSticker('{{ $sticker }}')">
-                        <img src="{{ asset('stickers/' . $sticker) }}" alt="Sticker" class="w-full h-full object-contain pointer-events-none" loading="lazy">
+    @if(count($stickerGroups) > 0)
+        <div x-data="{ activeSection: '{{ array_key_first($stickerGroups) }}' }" class="flex-1 overflow-y-auto p-4 custom-scrollbar">
+            @foreach($stickerGroups as $groupName => $stickers)
+                <div class="mb-4 last:mb-0">
+                    <button 
+                        @click="activeSection = (activeSection === '{{ $groupName }}' ? null : '{{ $groupName }}')"
+                        type="button"
+                        class="w-full flex items-center justify-between text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-150"
+                    >
+                        <div class="flex items-center gap-2">
+                            <span>{{ $groupName }}</span>
+                            <span class="text-[10px] text-gray-400 dark:text-gray-500 font-normal normal-case">({{ count($stickers) }})</span>
+                        </div>
+                        <div :class="{ 'rotate-180': activeSection === '{{ $groupName }}' }" class="transition-transform duration-200">
+                            @svg('heroicon-m-chevron-down', 'w-4 h-4')
+                        </div>
+                    </button>
+                    
+                    <div x-show="activeSection === '{{ $groupName }}'" 
+                         x-collapse>
+                        <div class="grid grid-cols-3 gap-2 pl-1">
+                            @foreach($stickers as $sticker)
+                                <div class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors flex items-center justify-center aspect-square" 
+                                     onclick="sendSticker('{{ $sticker }}')">
+                                    <img src="{{ asset('stickers/' . $sticker) }}" alt="Sticker" class="w-full h-full object-contain pointer-events-none" loading="lazy">
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
-                @endforeach
-            </div>
+                </div>
+            @endforeach
         </div>
     @else
         <div class="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 p-4">
