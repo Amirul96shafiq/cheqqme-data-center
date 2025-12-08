@@ -23,6 +23,25 @@ import { init, Picker } from "emoji-mart";
         return `chatbot_open_${userId}`;
     }
 
+    // Get user-specific preferred media picker key
+    function getUserPreferredMediaPickerKey() {
+        const userId = window.chatbotUserId || "anonymous";
+        return `chatbot_preferred_media_picker_${userId}`;
+    }
+
+    // Get preferred media picker type (defaults to 'emojis')
+    function getPreferredMediaPicker() {
+        const key = getUserPreferredMediaPickerKey();
+        const preferred = localStorage.getItem(key);
+        return preferred || "emojis"; // Default to emojis
+    }
+
+    // Set preferred media picker type
+    function setPreferredMediaPicker(type) {
+        const key = getUserPreferredMediaPickerKey();
+        localStorage.setItem(key, type);
+    }
+
     // Check if user has changed and reset UI state if needed
     function handleUserChange() {
         const currentUserId = window.chatbotUserId || "anonymous";
@@ -1012,51 +1031,12 @@ import { init, Picker } from "emoji-mart";
             // Close any open pickers first
             closeAllMediaPickers();
 
-            // Position menu above the button
-            // Make menu visible temporarily to get its width
-            menu.classList.remove("hidden");
-            menu.style.visibility = "hidden";
-            menu.style.opacity = "0";
-
-            // Check if mobile (same breakpoint as CSS: 768px)
-            const isMobile = window.innerWidth <= 768;
-
-            if (isMobile) {
-                // On mobile, align to left (no centering)
-                menu.style.left = "0px";
-            } else {
-                // On desktop, center menu relative to button
-                const menuWidth = menu.offsetWidth || 140; // fallback to min-width
-                const buttonWidth = emojiButton.offsetWidth || 20; // fallback to icon size
-
-                // Calculate left position to center menu relative to button
-                // Since both are in the same parent container, we center relative to button center
-                const leftPosition = (buttonWidth - menuWidth) / 2;
-                menu.style.left = leftPosition + "px";
-            }
-
-            // Set position and make visible
-            menu.style.bottom = "100%";
-            menu.style.marginBottom = "16px";
-            menu.style.visibility = "visible";
-
-            // Add animation
-            menu.style.opacity = "0";
-            menu.style.transform = "translateY(10px) scale(0.95)";
-            requestAnimationFrame(() => {
-                menu.style.transition =
-                    "opacity 0.2s ease, transform 0.2s ease";
-                menu.style.opacity = "1";
-                menu.style.transform = "translateY(0) scale(1)";
-            });
+            // Automatically open the preferred media picker (or default to emojis)
+            const preferredPicker = getPreferredMediaPicker();
+            openMediaPicker(preferredPicker);
         } else {
-            // Hide menu
-            menu.style.transition = "opacity 0.2s ease, transform 0.2s ease";
-            menu.style.opacity = "0";
-            menu.style.transform = "translateY(10px) scale(0.95)";
-            setTimeout(() => {
-                menu.classList.add("hidden");
-            }, 200);
+            // Close all pickers and menu
+            closeAllMediaPickers();
         }
     }
 
@@ -1094,16 +1074,7 @@ import { init, Picker } from "emoji-mart";
 
     // Open specific media picker
     function openMediaPicker(type) {
-        // Close menu first
-        const menu = document.getElementById("media-selection-menu");
-        if (menu && !menu.classList.contains("hidden")) {
-            menu.style.transition = "opacity 0.2s ease, transform 0.2s ease";
-            menu.style.opacity = "0";
-            menu.style.transform = "translateY(10px) scale(0.95)";
-            setTimeout(() => {
-                menu.classList.add("hidden");
-            }, 200);
-        }
+        // Keep menu open - don't close it when opening a picker
 
         // Close other pickers
         if (type !== "emojis") {
@@ -1121,6 +1092,9 @@ import { init, Picker } from "emoji-mart";
         if (type !== "stickers") {
             closeMediaPicker("stickers");
         }
+
+        // Save user preference
+        setPreferredMediaPicker(type);
 
         // Open selected picker
         if (type === "emojis") {
@@ -1152,30 +1126,8 @@ import { init, Picker } from "emoji-mart";
         gifPickerContainer.classList.remove("hidden");
         gifPickerContainer.style.opacity = "0";
 
-        // Get actual width including padding, or use emoji picker width as reference
-        const gifPickerWidth = gifPickerContainer.offsetWidth || 288; // Match emoji picker width
-        const gifPickerHeight = gifPickerContainer.offsetHeight || 435;
-
-        // Check if mobile
-        const isMobile = window.innerWidth <= 768;
-
-        if (isMobile) {
-            // Center the picker on mobile
-            const centerX = (window.innerWidth - gifPickerWidth) / 2;
-            const centerY = (window.innerHeight - gifPickerHeight) / 2;
-            gifPickerContainer.style.left = centerX + "px";
-            gifPickerContainer.style.top = centerY + "px";
-        } else {
-            // Desktop: Position beside chatbot box
-            const chatRect = chatbotInterface.getBoundingClientRect();
-            const gap = 12;
-            const leftPosition = chatRect.left - gifPickerWidth - gap;
-            const topPosition = chatRect.bottom - gifPickerHeight;
-            const finalLeftPosition = Math.max(20, leftPosition);
-            const finalTopPosition = Math.max(20, topPosition);
-            gifPickerContainer.style.left = finalLeftPosition + "px";
-            gifPickerContainer.style.top = finalTopPosition + "px";
-        }
+        // Position picker and menu
+        positionPickerAndMenu(gifPickerContainer);
 
         // Add animation
         gifPickerContainer.style.transform = "translateX(20px) scale(0.95)";
@@ -1202,30 +1154,8 @@ import { init, Picker } from "emoji-mart";
         stickerPickerContainer.classList.remove("hidden");
         stickerPickerContainer.style.opacity = "0";
 
-        // Get actual width including padding, or use emoji picker width as reference
-        const stickerPickerWidth = stickerPickerContainer.offsetWidth || 288; // Match emoji picker width
-        const stickerPickerHeight = stickerPickerContainer.offsetHeight || 435;
-
-        // Check if mobile
-        const isMobile = window.innerWidth <= 768;
-
-        if (isMobile) {
-            // Center the picker on mobile
-            const centerX = (window.innerWidth - stickerPickerWidth) / 2;
-            const centerY = (window.innerHeight - stickerPickerHeight) / 2;
-            stickerPickerContainer.style.left = centerX + "px";
-            stickerPickerContainer.style.top = centerY + "px";
-        } else {
-            // Desktop: Position beside chatbot box
-            const chatRect = chatbotInterface.getBoundingClientRect();
-            const gap = 12;
-            const leftPosition = chatRect.left - stickerPickerWidth - gap;
-            const topPosition = chatRect.bottom - stickerPickerHeight;
-            const finalLeftPosition = Math.max(20, leftPosition);
-            const finalTopPosition = Math.max(20, topPosition);
-            stickerPickerContainer.style.left = finalLeftPosition + "px";
-            stickerPickerContainer.style.top = finalTopPosition + "px";
-        }
+        // Position picker and menu
+        positionPickerAndMenu(stickerPickerContainer);
 
         // Add animation
         stickerPickerContainer.style.transform = "translateX(20px) scale(0.95)";
@@ -1235,6 +1165,46 @@ import { init, Picker } from "emoji-mart";
             stickerPickerContainer.style.opacity = "1";
             stickerPickerContainer.style.transform = "translateX(0) scale(1)";
         });
+    }
+
+    // Check if any picker is open
+    function hasAnyPickerOpen() {
+        const emojiPickerContainer = document.getElementById(
+            "emoji-picker-container"
+        );
+        const gifPickerContainer = document.getElementById(
+            "gif-picker-container"
+        );
+        const stickerPickerContainer = document.getElementById(
+            "sticker-picker-container"
+        );
+
+        return (
+            (emojiPickerContainer &&
+                !emojiPickerContainer.classList.contains("hidden")) ||
+            (gifPickerContainer &&
+                !gifPickerContainer.classList.contains("hidden")) ||
+            (stickerPickerContainer &&
+                !stickerPickerContainer.classList.contains("hidden"))
+        );
+    }
+
+    // Close menu if no pickers are open
+    function closeMenuIfNoPickersOpen() {
+        const mediaMenu = document.getElementById("media-selection-menu");
+        if (
+            !hasAnyPickerOpen() &&
+            mediaMenu &&
+            !mediaMenu.classList.contains("hidden")
+        ) {
+            mediaMenu.style.transition =
+                "opacity 0.2s ease, transform 0.2s ease";
+            mediaMenu.style.opacity = "0";
+            mediaMenu.style.transform = "translateY(10px) scale(0.95)";
+            setTimeout(() => {
+                mediaMenu.classList.add("hidden");
+            }, 200);
+        }
     }
 
     // Close media picker (for GIFs and Stickers)
@@ -1258,7 +1228,67 @@ import { init, Picker } from "emoji-mart";
         pickerContainer.style.transform = "translateX(20px) scale(0.95)";
         setTimeout(() => {
             pickerContainer.classList.add("hidden");
+            // Close menu if no pickers are open after closing this one
+            closeMenuIfNoPickersOpen();
         }, 200);
+    }
+
+    // Position picker and menu together
+    function positionPickerAndMenu(pickerContainer) {
+        const menu = document.getElementById("media-selection-menu");
+        const chatbotInterface = document.getElementById("chatbot-interface");
+
+        if (!pickerContainer || !menu || !chatbotInterface) return;
+
+        // Ensure menu is visible
+        menu.classList.remove("hidden");
+        menu.style.opacity = "1";
+        menu.style.transform = "scale(1)";
+
+        // Get dimensions
+        const pickerWidth = pickerContainer.offsetWidth || 288;
+        const pickerHeight = pickerContainer.offsetHeight || 400;
+        const menuHeight = menu.offsetHeight || 50;
+        const gap = 8; // Gap between picker and menu
+
+        // Check if mobile
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+            // Center on mobile
+            const centerX = (window.innerWidth - pickerWidth) / 2;
+            // Position picker vertically centered (adjusted for menu)
+            const centerY =
+                (window.innerHeight - pickerHeight - menuHeight - gap) / 2;
+
+            pickerContainer.style.left = centerX + "px";
+            pickerContainer.style.top = centerY + "px";
+
+            // Position menu below picker
+            menu.style.left = centerX + "px";
+            menu.style.top = centerY + pickerHeight + gap + "px";
+        } else {
+            // Desktop: Position beside chatbot box
+            const chatRect = chatbotInterface.getBoundingClientRect();
+            const sideGap = 12;
+
+            // Position picker shifted up to accommodate menu
+            const leftPosition = chatRect.left - pickerWidth - sideGap;
+            // Calculate top so menu bottom aligns with chat bottom (roughly)
+            // Or just shift up by menu height
+            const topPosition =
+                chatRect.bottom - pickerHeight - menuHeight - gap;
+
+            const finalLeftPosition = Math.max(20, leftPosition);
+            const finalTopPosition = Math.max(20, topPosition);
+
+            pickerContainer.style.left = finalLeftPosition + "px";
+            pickerContainer.style.top = finalTopPosition + "px";
+
+            // Position menu below picker
+            menu.style.left = finalLeftPosition + "px";
+            menu.style.top = finalTopPosition + pickerHeight + gap + "px";
+        }
     }
 
     // Emoji picker functionality
@@ -1311,40 +1341,8 @@ import { init, Picker } from "emoji-mart";
             emojiPickerContainer.classList.remove("hidden");
             emojiPickerContainer.style.opacity = "0";
 
-            // Get emoji picker dimensions after making it visible
-            const emojiPickerWidth = emojiPicker.offsetWidth || 352; // Default emoji picker width
-            const emojiPickerHeight = emojiPicker.offsetHeight || 400; // Get actual height or fallback
-
-            // Check if mobile (same breakpoint as CSS: 768px)
-            const isMobile = window.innerWidth <= 768;
-
-            if (isMobile) {
-                // Center the emoji picker on mobile
-                const centerX = (window.innerWidth - emojiPickerWidth) / 2;
-                const centerY = (window.innerHeight - emojiPickerHeight) / 2;
-
-                emojiPickerContainer.style.left = centerX + "px";
-                emojiPickerContainer.style.top = centerY + "px";
-            } else {
-                // Desktop: Position beside chatbot box with bottom alignment
-                const chatRect = chatbotInterface.getBoundingClientRect();
-
-                // Calculate position: left of chatbox with a small gap (12px)
-                const gap = 12; // Gap between chatbot box and emoji picker
-                const leftPosition = chatRect.left - emojiPickerWidth - gap;
-
-                // Align bottom of emoji picker with bottom of chatbot box
-                const topPosition = chatRect.bottom - emojiPickerHeight;
-
-                // Ensure it doesn't go off-screen on the left
-                const finalLeftPosition = Math.max(20, leftPosition);
-
-                // Ensure it doesn't go off-screen on the top
-                const finalTopPosition = Math.max(20, topPosition);
-
-                emojiPickerContainer.style.left = finalLeftPosition + "px";
-                emojiPickerContainer.style.top = finalTopPosition + "px";
-            }
+            // Position picker and menu
+            positionPickerAndMenu(emojiPickerContainer);
 
             // Add animation
             emojiPickerContainer.style.transform =
@@ -1372,6 +1370,8 @@ import { init, Picker } from "emoji-mart";
                 "translateX(20px) scale(0.95)";
             setTimeout(() => {
                 emojiPickerContainer.classList.add("hidden");
+                // Close menu if no pickers are open after closing emoji picker
+                closeMenuIfNoPickersOpen();
             }, 200);
         }
     }
@@ -1588,12 +1588,13 @@ import { init, Picker } from "emoji-mart";
             closeMediaPicker("stickers");
         }
 
-        // Close menu if open and clicking outside
+        // Close menu if open and clicking outside, but only if no pickers are open
         if (
             mediaMenu &&
             !mediaMenu.classList.contains("hidden") &&
             !isClickOnEmojiButton &&
-            !isClickOnMenu
+            !isClickOnMenu &&
+            !hasAnyPickerOpen() // Don't close menu if any picker is open
         ) {
             mediaMenu.style.transition =
                 "opacity 0.2s ease, transform 0.2s ease";
@@ -1662,7 +1663,6 @@ import { init, Picker } from "emoji-mart";
         const emojiPickerContainer = document.getElementById(
             "emoji-picker-container"
         );
-        const emojiPicker = document.getElementById("emoji-picker");
         const gifPickerContainer = document.getElementById(
             "gif-picker-container"
         );
@@ -1673,32 +1673,12 @@ import { init, Picker } from "emoji-mart";
 
         if (!chatbotInterface) return;
 
-        const isMobile = window.innerWidth <= 768;
-
         // Reposition emoji picker
         if (
             emojiPickerContainer &&
-            emojiPicker &&
             !emojiPickerContainer.classList.contains("hidden")
         ) {
-            const emojiPickerWidth = emojiPicker.offsetWidth || 352;
-            const emojiPickerHeight = emojiPicker.offsetHeight || 400;
-
-            if (isMobile) {
-                const centerX = (window.innerWidth - emojiPickerWidth) / 2;
-                const centerY = (window.innerHeight - emojiPickerHeight) / 2;
-                emojiPickerContainer.style.left = centerX + "px";
-                emojiPickerContainer.style.top = centerY + "px";
-            } else {
-                const chatRect = chatbotInterface.getBoundingClientRect();
-                const gap = 12;
-                const leftPosition = chatRect.left - emojiPickerWidth - gap;
-                const topPosition = chatRect.bottom - emojiPickerHeight;
-                const finalLeftPosition = Math.max(20, leftPosition);
-                const finalTopPosition = Math.max(20, topPosition);
-                emojiPickerContainer.style.left = finalLeftPosition + "px";
-                emojiPickerContainer.style.top = finalTopPosition + "px";
-            }
+            positionPickerAndMenu(emojiPickerContainer);
         }
 
         // Reposition GIF picker
@@ -1706,24 +1686,7 @@ import { init, Picker } from "emoji-mart";
             gifPickerContainer &&
             !gifPickerContainer.classList.contains("hidden")
         ) {
-            const gifPickerWidth = 352;
-            const gifPickerHeight = 400;
-
-            if (isMobile) {
-                const centerX = (window.innerWidth - gifPickerWidth) / 2;
-                const centerY = (window.innerHeight - gifPickerHeight) / 2;
-                gifPickerContainer.style.left = centerX + "px";
-                gifPickerContainer.style.top = centerY + "px";
-            } else {
-                const chatRect = chatbotInterface.getBoundingClientRect();
-                const gap = 12;
-                const leftPosition = chatRect.left - gifPickerWidth - gap;
-                const topPosition = chatRect.bottom - gifPickerHeight;
-                const finalLeftPosition = Math.max(20, leftPosition);
-                const finalTopPosition = Math.max(20, topPosition);
-                gifPickerContainer.style.left = finalLeftPosition + "px";
-                gifPickerContainer.style.top = finalTopPosition + "px";
-            }
+            positionPickerAndMenu(gifPickerContainer);
         }
 
         // Reposition Sticker picker
@@ -1731,24 +1694,7 @@ import { init, Picker } from "emoji-mart";
             stickerPickerContainer &&
             !stickerPickerContainer.classList.contains("hidden")
         ) {
-            const stickerPickerWidth = 352;
-            const stickerPickerHeight = 400;
-
-            if (isMobile) {
-                const centerX = (window.innerWidth - stickerPickerWidth) / 2;
-                const centerY = (window.innerHeight - stickerPickerHeight) / 2;
-                stickerPickerContainer.style.left = centerX + "px";
-                stickerPickerContainer.style.top = centerY + "px";
-            } else {
-                const chatRect = chatbotInterface.getBoundingClientRect();
-                const gap = 12;
-                const leftPosition = chatRect.left - stickerPickerWidth - gap;
-                const topPosition = chatRect.bottom - stickerPickerHeight;
-                const finalLeftPosition = Math.max(20, leftPosition);
-                const finalTopPosition = Math.max(20, topPosition);
-                stickerPickerContainer.style.left = finalLeftPosition + "px";
-                stickerPickerContainer.style.top = finalTopPosition + "px";
-            }
+            positionPickerAndMenu(stickerPickerContainer);
         }
     });
 
