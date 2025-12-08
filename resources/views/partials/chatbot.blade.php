@@ -619,13 +619,18 @@ emoji-picker {
 </div>
 
 <!-- Floating GIF Picker Container -->
-<div id="gif-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-[288px] h-[435px]">
-    <div class="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 p-4">
+<div id="gif-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-[288px] h-[435px] flex flex-col">
+    <div class="w-full flex-1 flex items-center justify-center text-gray-400 dark:text-gray-500 p-4">
         <div class="text-center">
             <p class="text-lg mb-2">🎬</p>
             <p class="text-sm">{{ __('chatbot.action.select_gifs') }}</p>
             <p class="text-xs mt-2 opacity-75">Coming soon...</p>
         </div>
+    </div>
+
+    <!-- GIF Request Footer -->
+    <div class="border-t border-gray-200 dark:border-gray-700 p-2 text-center text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg">
+        <p>Need new GIFs? Go <a href="https://github.com/Amirul96shafiq/cheqqme-data-center/discussions/6" target="_blank" class="text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 font-medium hover:underline">Here</a> to request one!</p>
     </div>
 </div>
 
@@ -664,6 +669,11 @@ emoji-picker {
             </div>
         </div>
     @endif
+
+    <!-- Sticker Request Footer -->
+    <div class="border-t border-gray-200 dark:border-gray-700 p-2 text-center text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg">
+        <p>Need new stickers? Go <a href="https://github.com/Amirul96shafiq/cheqqme-data-center/discussions/5" target="_blank" class="text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 font-medium hover:underline">Here</a> to request one!</p>
+    </div>
 </div>
 
 <!-- Media Selection Menu (Fixed Position) -->
