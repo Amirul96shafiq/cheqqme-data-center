@@ -634,6 +634,33 @@ emoji-picker {
     </div>
 </div>
 
+<!-- Sticker Accordion Alpine.js Component -->
+<script>
+    function stickerAccordion(validGroups, firstGroup) {
+        return {
+            activeSection: null,
+            init() {
+                // Get user-specific localStorage key
+                const userId = window.chatbotUserId || 'anonymous';
+                const storageKey = `chatbot_sticker_accordion_${userId}`;
+                
+                // Load saved accordion section from localStorage
+                const savedSection = localStorage.getItem(storageKey);
+                
+                // Use saved section if it exists and is valid, otherwise use first group
+                this.activeSection = savedSection && validGroups.includes(savedSection) 
+                    ? savedSection 
+                    : firstGroup;
+                
+                // Watch for changes and save to localStorage
+                this.$watch('activeSection', (value) => {
+                    localStorage.setItem(storageKey, value || '');
+                });
+            }
+        };
+    }
+</script>
+
 <!-- Floating Sticker Picker Container -->
 <div id="sticker-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-[288px] h-[435px] flex flex-col">
     @php
@@ -679,7 +706,9 @@ emoji-picker {
     @endphp
 
     @if(count($stickerGroups) > 0)
-        <div x-data="{ activeSection: '{{ array_key_first($stickerGroups) }}' }" class="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        <div 
+            x-data="stickerAccordion({{ json_encode(array_keys($stickerGroups)) }}, '{{ array_key_first($stickerGroups) }}')"
+            class="flex-1 overflow-y-auto p-4 custom-scrollbar">
             @foreach($stickerGroups as $groupName => $stickers)
                 <div class="mb-4 last:mb-0">
                     <button 
