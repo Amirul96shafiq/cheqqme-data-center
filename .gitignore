@@ -80,3 +80,7 @@ NUL
 
 # Lighthouse
 lighthouse
+
+# Playwright MCP hidden directory
+.playwright-mcp/
+playwright-sessions

@@ -715,6 +715,47 @@ input:-webkit-autofill:active {
     }
 }
 
+/* 1280x720 specific responsiveness */
+@media (max-width: 1280px) and (max-height: 720px) {
+    /* Reduce spacing between description and slider navigation */
+    .slider-navigation {
+        margin-top: -1rem !important; /* Negative margin to reduce gap */
+    }
+
+    /* Adjust description min-height for better spacing */
+    .min-h-14 {
+        min-height: 3rem !important; /* 48px instead of 3.5rem (56px) */
+    }
+
+    /* Reduce gap in the content container specifically for 1280x720 */
+    .flex.flex-col.justify-start.space-y-6 {
+        gap: 0.5rem !important; /* Reduce from 1.5rem (24px) to 0.5rem (8px) */
+    }
+}
+
+/* 1280px width specific (regardless of height) */
+@media (max-width: 1280px) {
+    /* Fine-tune slider navigation positioning - reduce gap from description */
+    .slider-navigation {
+        margin-top: -1rem !important; /* Pull navigation closer to description */
+    }
+
+    /* Adjust description container for better layout */
+    .min-h-14.xl\:min-h-6 {
+        min-height: 3rem !important;
+    }
+
+    /* Reduce spacing in the flex container that holds title, description, and nav */
+    .flex.flex-col.justify-start.space-y-6.max-w-2xl {
+        gap: 0.5rem !important; /* Reduce from 1.5rem (24px) to 0.5rem (8px) */
+    }
+
+    /* Target the specific container with space-y-6 that contains slider navigation */
+    .w-\[65\%\] .space-y-6 {
+        gap: 0.5rem !important;
+    }
+}
+
 /* Laptop 1024px responsiveness - Show only login form */
 @media (max-width: 1024px) {
     /* Hide the hero section completely */
