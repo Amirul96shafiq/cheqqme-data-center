@@ -424,6 +424,22 @@
     color: inherit !important;
 }
 
+/* Sticker content styling - display images larger */
+.chatbot-sticker-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 5rem !important;
+}
+
+.chatbot-sticker-content img {
+    max-width: 200px !important;
+    max-height: 200px !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+}
+
 /* Active category icon color */
 emoji-picker {
     --rgb-accent: 251, 180, 62; /* primary-500 / amber-500 for active elements */

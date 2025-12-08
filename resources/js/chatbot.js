@@ -572,6 +572,16 @@ import { init, Picker } from "emoji-mart";
         );
     }
 
+    // Check if content is a sticker message (markdown image with /stickers/ path)
+    function isStickerMessage(content) {
+        // Remove HTML tags and normalize whitespace
+        const cleanContent = content.replace(/<[^>]*>/g, "").trim();
+
+        // Check if content matches markdown image syntax with /stickers/ path
+        // Pattern: ![alt text](/stickers/filename.ext)
+        return /^!\[.*?\]\(\/stickers\/[^\)]+\)$/i.test(cleanContent);
+    }
+
     // Normalize content to remove excessive whitespace and line breaks from HTML content
     function normalizeContent(htmlContent) {
         // Clean up excessive whitespace and line breaks from HTML content
@@ -628,19 +638,23 @@ import { init, Picker } from "emoji-mart";
                 ? "font-semibold text-xs chatbot-user-name-tag mb-2"
                 : "font-semibold text-xs chatbot-ai-name-tag mb-2";
 
-        // Check if content is a single emoji
+        // Check if content is a single emoji or sticker
         const isEmoji = isSingleEmoji(content);
+        const isSticker = isStickerMessage(content);
+        const isSpecialContent = isEmoji || isSticker;
 
-        // Get message class - remove bubble styling for single emojis
-        const messageClass = isEmoji
+        // Get message class - remove bubble styling for single emojis and stickers
+        const messageClass = isSpecialContent
             ? "chatbot-emoji-message"
             : role === "user"
             ? "fi-section bg-[#00AE9F] border-[#00AE9F] chatbot-user-message message-bubble user-message"
             : "fi-section bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 chatbot-assistant-message message-bubble";
 
-        // Get content class - make emoji bigger
+        // Get content class - make emoji bigger, stickers display as images
         const contentClass = isEmoji
             ? "text-7xl leading-none chatbot-emoji-content"
+            : isSticker
+            ? "chatbot-sticker-content"
             : role === "user"
             ? "text-sm whitespace-pre-wrap leading-relaxed chatbot-user-content"
             : "text-sm whitespace-pre-wrap leading-relaxed chatbot-assistant-content";
@@ -652,7 +666,7 @@ import { init, Picker } from "emoji-mart";
                 : "chatbot-assistant-timestamp";
 
         // Add message to the chatbot UI
-        if (isEmoji) {
+        if (isSpecialContent) {
             // For single emojis, render without bubble background
             messageDiv.innerHTML =
                 '<div class="' +
@@ -679,28 +693,38 @@ import { init, Picker } from "emoji-mart";
                     })) +
                 "</div>";
 
-            // Get the content div and add animated emoji
+            // Get the content div and add animated emoji or sticker
             const contentDiv = messageDiv.querySelector(
                 "." + contentClass.split(" ")[0]
             );
             if (contentDiv) {
-                if (
-                    window.NotoEmojiAnimation &&
-                    window.NotoEmojiAnimation.createAnimatedEmoji
-                ) {
-                    // Extract emoji from content (remove any HTML tags)
-                    const cleanContent = content.replace(/<[^>]*>/g, "").trim();
-                    const animatedEmoji =
-                        window.NotoEmojiAnimation.createAnimatedEmoji(
-                            cleanContent,
-                            "4.5rem"
-                        );
-                    contentDiv.appendChild(animatedEmoji);
-                } else {
-                    // Fallback to static emoji
+                if (isSticker) {
+                    // For stickers, parse markdown and display the image
                     contentDiv.innerHTML = normalizeContent(
                         marked.parse(processTranslation(content))
                     );
+                } else if (isEmoji) {
+                    // For emojis, use animated emoji if available
+                    if (
+                        window.NotoEmojiAnimation &&
+                        window.NotoEmojiAnimation.createAnimatedEmoji
+                    ) {
+                        // Extract emoji from content (remove any HTML tags)
+                        const cleanContent = content
+                            .replace(/<[^>]*>/g, "")
+                            .trim();
+                        const animatedEmoji =
+                            window.NotoEmojiAnimation.createAnimatedEmoji(
+                                cleanContent,
+                                "4.5rem"
+                            );
+                        contentDiv.appendChild(animatedEmoji);
+                    } else {
+                        // Fallback to static emoji
+                        contentDiv.innerHTML = normalizeContent(
+                            marked.parse(processTranslation(content))
+                        );
+                    }
                 }
             }
         } else {
