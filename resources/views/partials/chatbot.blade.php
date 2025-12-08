@@ -614,14 +614,40 @@ emoji-picker {
 </div>
 
 <!-- Floating Sticker Picker Container -->
-<div id="sticker-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-[288px] h-[435px]">
-    <div class="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 p-4">
-        <div class="text-center">
-            <p class="text-lg mb-2">🎨</p>
-            <p class="text-sm">{{ __('chatbot.action.select_stickers') }}</p>
-            <p class="text-xs mt-2 opacity-75">Coming soon...</p>
+<div id="sticker-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-[288px] h-[435px] flex flex-col">
+    @php
+        $stickers = [];
+        $stickersPath = public_path('stickers');
+        if (file_exists($stickersPath)) {
+            $files = scandir($stickersPath);
+            foreach ($files as $file) {
+                if (in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['webp', 'png', 'jpg', 'gif'])) {
+                    $stickers[] = $file;
+                }
+            }
+        }
+    @endphp
+
+    @if(count($stickers) > 0)
+        <div class="flex-1 overflow-y-auto p-3 custom-scrollbar">
+            <div class="grid grid-cols-3 gap-2">
+                @foreach($stickers as $sticker)
+                    <div class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors flex items-center justify-center aspect-square" 
+                         onclick="sendSticker('{{ $sticker }}')">
+                        <img src="{{ asset('stickers/' . $sticker) }}" alt="Sticker" class="w-full h-full object-contain pointer-events-none" loading="lazy">
+                    </div>
+                @endforeach
+            </div>
         </div>
-    </div>
+    @else
+        <div class="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 p-4">
+            <div class="text-center">
+                <p class="text-lg mb-2">🎨</p>
+                <p class="text-sm">{{ __('chatbot.action.select_stickers') }}</p>
+                <p class="text-xs mt-2 opacity-75">No stickers found</p>
+            </div>
+        </div>
+    @endif
 </div>
 
 <!-- Media Selection Menu (Fixed Position) -->

@@ -786,7 +786,7 @@ import { init, Picker } from "emoji-mart";
 
     // Send message to the chatbot
     async function sendMessage(event) {
-        event.preventDefault();
+        if (event) event.preventDefault();
 
         const input = document.getElementById("chat-input");
         if (!input) return;
@@ -795,9 +795,16 @@ import { init, Picker } from "emoji-mart";
 
         if (!message) return;
 
+        // Clear input immediately
+        input.value = "";
+
+        await processUserMessage(message);
+    }
+
+    // Process user message (text or sticker)
+    async function processUserMessage(message) {
         // Add user message
         addMessage(message, "user");
-        input.value = "";
 
         // Show loading and start API call after a brief delay to let user see their message
         setTimeout(async () => {
@@ -870,6 +877,16 @@ import { init, Picker } from "emoji-mart";
                 console.error("Chatbot error:", error);
             }
         }, 800); // Delay chatbot response to let user see their message
+    }
+
+    // Send sticker
+    async function sendSticker(filename) {
+        // Close sticker picker
+        closeMediaPicker("stickers");
+
+        // Send as markdown image
+        const message = `![sticker](/stickers/${filename})`;
+        await processUserMessage(message);
     }
 
     // Clear conversation
@@ -1806,6 +1823,7 @@ import { init, Picker } from "emoji-mart";
     // Export functions to the window object
     window.toggleChatbot = toggleChatbot;
     window.sendMessage = sendMessage;
+    window.sendSticker = sendSticker;
     window.clearConversation = clearConversation;
     window.toggleEmojiPicker = toggleEmojiPicker;
     window.insertEmoji = insertEmoji;
@@ -1892,6 +1910,9 @@ import { init, Picker } from "emoji-mart";
             !event.target.closest("#chat-icon") &&
             !event.target.closest("#close-icon") &&
             !event.target.closest("#emoji-picker-container") &&
+            !event.target.closest("#sticker-picker-container") &&
+            !event.target.closest("#gif-picker-container") &&
+            !event.target.closest("#media-selection-menu") &&
             !event.target.closest("#global-modal-container")
         ) {
             toggleChatbot();
