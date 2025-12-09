@@ -3,14 +3,19 @@
 namespace App\Filament\Resources\ProjectResource\RelationManagers;
 
 use App\Filament\Resources\DocumentResource;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 class DocumentsRelationManager extends RelationManager
@@ -44,7 +49,7 @@ class DocumentsRelationManager extends RelationManager
         return $table
             ->recordUrl(null)
             ->recordAction(null)
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['createdBy', 'updatedBy']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['project', 'createdBy', 'updatedBy'])->visibleToUser())
             ->columns([
 
                 TextColumn::make('id')
@@ -72,6 +77,23 @@ class DocumentsRelationManager extends RelationManager
                     ->label(__('document.table.file_type'))
                     ->view('filament.resources.document-resource.file-type-column')
                     ->toggleable(),
+
+                TextColumn::make('visibility_status')
+                    ->label(__('document.table.visibility_status'))
+                    ->badge()
+                    ->color(fn (string $state) => match ($state) {
+                        'active' => 'success',
+                        'draft' => 'gray',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state) => match ($state) {
+                        'active' => __('document.table.visibility_status_active'),
+                        'draft' => __('document.table.visibility_status_draft'),
+                        default => $state,
+                    })
+                    ->toggleable()
+                    ->visible(true)
+                    ->alignment(Alignment::Center),
 
                 TextColumn::make('url')
                     ->label(__('document.table.document_url'))
@@ -228,6 +250,19 @@ class DocumentsRelationManager extends RelationManager
                     ->multiple()
                     ->preload()
                     ->searchable(),
+
+                SelectFilter::make('visibility_status')
+                    ->label(__('document.table.visibility_status'))
+                    ->options([
+                        'active' => __('document.table.visibility_status_active'),
+                        'draft' => __('document.table.visibility_status_draft'),
+                    ])
+                    ->preload()
+                    ->searchable(),
+
+                TrashedFilter::make()
+                    ->label(__('document.filter.trashed'))
+                    ->searchable(),
             ])
             ->headerActions([
                 // Intentionally empty to avoid creating from here unless needed
@@ -266,25 +301,187 @@ class DocumentsRelationManager extends RelationManager
                             ($record->type === 'external' && $record->url);
                     }),
 
+                Tables\Actions\ViewAction::make()
+                    ->slideOver(),
+
                 Tables\Actions\EditAction::make()
                     ->url(fn ($record) => DocumentResource::getUrl('edit', ['record' => $record]))
                     ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('toggle_visibility_status')
+                        ->label(fn ($record) => $record->visibility_status === 'active'
+                            ? __('document.actions.make_draft')
+                            : __('document.actions.make_active'))
+                        ->icon(fn ($record) => $record->visibility_status === 'active' ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
+                        ->color(fn ($record) => $record->visibility_status === 'active' ? 'warning' : 'success')
+                        ->action(function ($record) {
+                            $newStatus = $record->visibility_status === 'active' ? 'draft' : 'active';
+
+                            $record->update([
+                                'visibility_status' => $newStatus,
+                                'updated_by' => auth()->id(),
+                            ]);
+
+                            // Show success notification
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('document.actions.visibility_status_updated'))
+                                ->body($newStatus === 'active'
+                                    ? __('document.actions.document_activated')
+                                    : __('document.actions.document_made_draft'))
+                                ->success()
+                                ->send();
+                        })
+                        ->tooltip(fn ($record) => $record->visibility_status === 'active'
+                            ? __('document.actions.make_draft_tooltip')
+                            : __('document.actions.make_active_tooltip'))
+                        ->hidden(fn ($record) => $record->trashed() || $record->created_by !== auth()->id()),
+
                     ActivityLogTimelineTableAction::make('Log'),
                     Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
                 ]),
             ])
             ->bulkActions([
-                // None for now
+                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
+                Tables\Actions\ForceDeleteBulkAction::make(),
             ])
-            ->defaultSort(function ($query) {
-                return $query->orderByRaw('
-                    CASE
-                        WHEN updated_at IS NOT NULL AND updated_at != created_at THEN updated_at
-                        ELSE created_at
-                    END DESC
-                ');
-            });
+            ->defaultSort('updated_at', 'desc');
+    }
+
+    public function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                // Document Information Section (matches first section in form)
+                Infolists\Components\Section::make(__('document.section.document_info'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('title')
+                            ->label(__('document.form.document_title'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\TextEntry::make('project.title')
+                            ->label(__('document.form.project'))
+                            ->placeholder(__('No project assigned')),
+
+                        Infolists\Components\TextEntry::make('type')
+                            ->label(__('document.form.document_type'))
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'internal' => 'primary',
+                                'external' => 'success',
+                                default => 'gray',
+                            })
+                            ->formatStateUsing(fn (string $state): string => match ($state) {
+                                'internal' => __('document.form.internal'),
+                                'external' => __('document.form.external'),
+                                default => ucfirst($state),
+                            }),
+
+                        // Show URL for external documents
+                        Infolists\Components\TextEntry::make('url')
+                            ->label(__('document.form.document_url'))
+                            ->copyable()
+                            ->url(fn ($record) => $record->url)
+                            ->openUrlInNewTab()
+                            ->placeholder(__('No URL'))
+                            ->visible(fn ($record) => $record->type === 'external')
+                            ->columnSpanFull(),
+
+                        // Show file path for internal documents
+                        Infolists\Components\TextEntry::make('file_path')
+                            ->label(__('document.form.document_upload'))
+                            ->formatStateUsing(function ($state) {
+                                if (! $state) {
+                                    return __('No file uploaded');
+                                }
+
+                                $pathInfo = pathinfo($state);
+                                $filename = $pathInfo['filename'] ?? '';
+                                $extension = $pathInfo['extension'] ?? '';
+
+                                // Limit filename to 30 characters and add truncation indicator
+                                $truncatedFilename = strlen($filename) > 30 ? substr($filename, 0, 30).'...' : $filename;
+
+                                return $truncatedFilename.'.'.$extension;
+                            })
+                            ->url(fn ($record) => $record->file_path ? asset('storage/'.$record->file_path) : null)
+                            ->openUrlInNewTab()
+                            ->visible(fn ($record) => $record->type === 'internal' && $record->file_path)
+                            ->columnSpanFull(),
+                    ]),
+
+                // Additional Information Section (matches second section in form)
+                Infolists\Components\Section::make()
+                    ->heading(function ($record) {
+                        $count = count($record->extra_information ?? []);
+
+                        $title = __('document.section.extra_info');
+                        $badge = '<span style="color: #FBB43E; font-weight: 700;">('.$count.')</span>';
+
+                        return new HtmlString($title.' '.$badge);
+                    })
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Infolists\Components\TextEntry::make('notes')
+                            ->label(__('document.form.notes'))
+                            ->markdown()
+                            ->placeholder(__('No notes'))
+                            ->columnSpanFull(),
+
+                        Infolists\Components\RepeatableEntry::make('extra_information')
+                            ->label(__('document.form.extra_information'))
+                            ->schema([
+                                Infolists\Components\TextEntry::make('title')
+                                    ->label(__('document.form.extra_title')),
+                                Infolists\Components\TextEntry::make('value')
+                                    ->label(__('document.form.extra_value'))
+                                    ->markdown(),
+                            ])
+                            ->columns(1)
+                            ->columnSpanFull(),
+                    ]),
+
+                // Visibility Status Information Section (matches third section in form)
+                Infolists\Components\Section::make(__('document.section.visibility_status'))
+                    ->schema([
+                        Infolists\Components\TextEntry::make('visibility_status')
+                            ->label(__('document.form.visibility_status'))
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'active' => 'success',
+                                'draft' => 'gray',
+                                default => 'gray',
+                            })
+                            ->formatStateUsing(fn (string $state): string => match ($state) {
+                                'active' => __('document.form.visibility_status_active'),
+                                'draft' => __('document.form.visibility_status_draft'),
+                                default => $state,
+                            }),
+
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('createdBy.name')
+                                    ->label(__('Created by'))
+                                    ->placeholder(__('Unknown')),
+                                Infolists\Components\TextEntry::make('created_at')
+                                    ->label(__('Created at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                        Infolists\Components\Grid::make(2)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('updatedBy.name')
+                                    ->label(__('Updated by'))
+                                    ->placeholder('-'),
+                                Infolists\Components\TextEntry::make('updated_at')
+                                    ->label(__('Updated at'))
+                                    ->dateTime('j/n/y, h:i A'),
+                            ]),
+                    ])
+                    ->collapsible(),
+            ]);
     }
 }
