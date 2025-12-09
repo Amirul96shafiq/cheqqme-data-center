@@ -438,6 +438,30 @@
     width: auto !important;
     height: auto !important;
     object-fit: contain !important;
+    border-radius: 0.5rem !important;
+}
+
+/* GIF content styling - display images larger with border radius */
+.chatbot-gif-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 5rem !important;
+}
+
+.chatbot-gif-content img {
+    max-width: 200px !important;
+    max-height: 200px !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    border-radius: 0.5rem !important;
+}
+
+/* Apply border radius to GIF images in chat messages */
+.chatbot-user-content img[src*="/gifs/"],
+.chatbot-assistant-content img[src*="/gifs/"] {
+    border-radius: 0.5rem !important;
 }
 
 /* Active category icon color */
@@ -620,13 +644,91 @@ emoji-picker {
 
 <!-- Floating GIF Picker Container -->
 <div id="gif-picker-container" class="fixed hidden z-[11] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 w-[288px] h-[435px] flex flex-col">
-    <div class="w-full flex-1 flex items-center justify-center text-gray-400 dark:text-gray-500 p-4">
-        <div class="text-center">
-            <p class="text-lg mb-2">🎬</p>
-            <p class="text-sm">{{ __('chatbot.action.select_gifs') }}</p>
-            <p class="text-xs mt-2 opacity-75">Coming soon...</p>
+    @php
+        $gifGroups = [];
+        $gifsPath = public_path('gifs');
+        
+        if (file_exists($gifsPath)) {
+            $items = scandir($gifsPath);
+            
+            // First pass for root files (General)
+            $rootGifs = [];
+            
+            foreach ($items as $item) {
+                if ($item === '.' || $item === '..') continue;
+                
+                $fullPath = $gifsPath . '/' . $item;
+                
+                if (is_file($fullPath)) {
+                    if (in_array(strtolower(pathinfo($item, PATHINFO_EXTENSION)), ['gif', 'webp', 'mp4', 'webm'])) {
+                        $rootGifs[] = $item;
+                    }
+                } elseif (is_dir($fullPath)) {
+                    // It's a directory, scan it
+                    $subFiles = scandir($fullPath);
+                    $groupGifs = [];
+                    foreach ($subFiles as $subFile) {
+                        if (in_array(strtolower(pathinfo($subFile, PATHINFO_EXTENSION)), ['gif', 'webp', 'mp4', 'webm'])) {
+                            // Store relative path from gifs/ folder
+                            $groupGifs[] = $item . '/' . $subFile;
+                        }
+                    }
+                    if (!empty($groupGifs)) {
+                        $gifGroups[$item] = $groupGifs;
+                    }
+                }
+            }
+            
+            // Add General GIFs if any
+            if (!empty($rootGifs)) {
+                $gifGroups = array_merge(['General' => $rootGifs], $gifGroups);
+            }
+        }
+    @endphp
+
+    @if(count($gifGroups) > 0)
+        <div 
+            x-data="stickerAccordion({{ json_encode(array_keys($gifGroups)) }}, '{{ array_key_first($gifGroups) }}')"
+            class="flex-1 overflow-y-auto p-4 custom-scrollbar">
+            @foreach($gifGroups as $groupName => $gifs)
+                <div class="mb-4 last:mb-0">
+                    <button 
+                        @click="activeSection = (activeSection === '{{ $groupName }}' ? null : '{{ $groupName }}')"
+                        type="button"
+                        class="w-full flex items-center justify-between text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-150"
+                    >
+                        <div class="flex items-center gap-2">
+                            <span>{{ $groupName }}</span>
+                            <span class="text-[10px] text-gray-400 dark:text-gray-500 font-normal normal-case">({{ count($gifs) }})</span>
+                        </div>
+                        <div :class="{ 'rotate-180': activeSection === '{{ $groupName }}' }" class="transition-transform duration-200">
+                            @svg('heroicon-m-chevron-down', 'w-4 h-4')
+                        </div>
+                    </button>
+                    
+                    <div x-show="activeSection === '{{ $groupName }}'" 
+                         x-collapse>
+                        <div class="grid grid-cols-3 gap-2 pl-1">
+                            @foreach($gifs as $gif)
+                                <div class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-lg transition-colors flex items-center justify-center aspect-square" 
+                                     onclick="sendGif('{{ $gif }}')">
+                                    <img src="{{ asset('gifs/' . $gif) }}" alt="GIF" class="w-full h-full object-cover pointer-events-none rounded-lg" loading="lazy" draggable="false">
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
-    </div>
+    @else
+        <div class="w-full flex-1 flex items-center justify-center text-gray-400 dark:text-gray-500 p-4">
+            <div class="text-center">
+                <p class="text-lg mb-2">🎬</p>
+                <p class="text-sm">{{ __('chatbot.action.select_gifs') }}</p>
+                <p class="text-xs mt-2 opacity-75">No GIFs found</p>
+            </div>
+        </div>
+    @endif
 
     <!-- GIF Request Footer -->
     <div class="border-t border-gray-200 dark:border-gray-700 p-2 text-center text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-b-lg">

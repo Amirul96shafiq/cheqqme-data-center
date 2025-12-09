@@ -582,6 +582,15 @@ import { init, Picker } from "emoji-mart";
         return /^!\[.*?\]\(\/stickers\/[^\)]+\)$/i.test(cleanContent);
     }
 
+    function isGifMessage(content) {
+        // Remove HTML tags and normalize whitespace
+        const cleanContent = content.replace(/<[^>]*>/g, "").trim();
+
+        // Check if content matches markdown image syntax with /gifs/ path
+        // Pattern: ![alt text](/gifs/filename.ext)
+        return /^!\[.*?\]\(\/gifs\/[^\)]+\)$/i.test(cleanContent);
+    }
+
     // Normalize content to remove excessive whitespace and line breaks from HTML content
     function normalizeContent(htmlContent) {
         // Clean up excessive whitespace and line breaks from HTML content
@@ -638,23 +647,26 @@ import { init, Picker } from "emoji-mart";
                 ? "font-semibold text-xs chatbot-user-name-tag mb-2"
                 : "font-semibold text-xs chatbot-ai-name-tag mb-2";
 
-        // Check if content is a single emoji or sticker
+        // Check if content is a single emoji, sticker, or GIF
         const isEmoji = isSingleEmoji(content);
         const isSticker = isStickerMessage(content);
-        const isSpecialContent = isEmoji || isSticker;
+        const isGif = isGifMessage(content);
+        const isSpecialContent = isEmoji || isSticker || isGif;
 
-        // Get message class - remove bubble styling for single emojis and stickers
+        // Get message class - remove bubble styling for single emojis, stickers, and GIFs
         const messageClass = isSpecialContent
             ? "chatbot-emoji-message"
             : role === "user"
             ? "fi-section bg-[#00AE9F] border-[#00AE9F] chatbot-user-message message-bubble user-message"
             : "fi-section bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 chatbot-assistant-message message-bubble";
 
-        // Get content class - make emoji bigger, stickers display as images
+        // Get content class - make emoji bigger, stickers and GIFs display as images
         const contentClass = isEmoji
             ? "text-7xl leading-none chatbot-emoji-content"
             : isSticker
             ? "chatbot-sticker-content"
+            : isGif
+            ? "chatbot-gif-content"
             : role === "user"
             ? "text-sm whitespace-pre-wrap leading-relaxed chatbot-user-content"
             : "text-sm whitespace-pre-wrap leading-relaxed chatbot-assistant-content";
@@ -693,7 +705,7 @@ import { init, Picker } from "emoji-mart";
                     })) +
                 "</div>";
 
-            // Get the content div and add animated emoji or sticker
+            // Get the content div and add animated emoji, sticker, or GIF
             const contentDiv = messageDiv.querySelector(
                 "." + contentClass.split(" ")[0]
             );
@@ -706,6 +718,16 @@ import { init, Picker } from "emoji-mart";
                     // Make all sticker images non-draggable
                     const stickerImages = contentDiv.querySelectorAll("img");
                     stickerImages.forEach((img) => {
+                        img.setAttribute("draggable", "false");
+                    });
+                } else if (isGif) {
+                    // For GIFs, parse markdown and display the image
+                    contentDiv.innerHTML = normalizeContent(
+                        marked.parse(processTranslation(content))
+                    );
+                    // Make all GIF images non-draggable
+                    const gifImages = contentDiv.querySelectorAll("img");
+                    gifImages.forEach((img) => {
                         img.setAttribute("draggable", "false");
                     });
                 } else if (isEmoji) {
@@ -915,6 +937,16 @@ import { init, Picker } from "emoji-mart";
 
         // Send as markdown image
         const message = `![sticker](/stickers/${filename})`;
+        await processUserMessage(message);
+    }
+
+    // Send GIF
+    async function sendGif(filename) {
+        // Close GIF picker
+        closeMediaPicker("gifs");
+
+        // Send as markdown image
+        const message = `![gif](/gifs/${filename})`;
         await processUserMessage(message);
     }
 
@@ -1970,6 +2002,7 @@ import { init, Picker } from "emoji-mart";
     window.toggleChatbot = toggleChatbot;
     window.sendMessage = sendMessage;
     window.sendSticker = sendSticker;
+    window.sendGif = sendGif;
     window.clearConversation = clearConversation;
     window.toggleEmojiPicker = toggleEmojiPicker;
     window.insertEmoji = insertEmoji;

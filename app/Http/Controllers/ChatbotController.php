@@ -35,6 +35,36 @@ class ChatbotController extends Controller
             // Get the conversation ID first
             $conversationId = $request->input('conversation_id') ?? uniqid('conv_');
 
+            // Check if the message is a GIF - respond with random sticker
+            if ($this->isGifMessage($message)) {
+                $botReply = $this->getStickerResponse();
+
+                // Store user message
+                ChatbotConversation::create([
+                    'user_id' => $user->id,
+                    'conversation_id' => $conversationId,
+                    'role' => 'user',
+                    'content' => $message,
+                    'last_activity' => now(),
+                ]);
+
+                // Store bot reply
+                ChatbotConversation::create([
+                    'user_id' => $user->id,
+                    'conversation_id' => $conversationId,
+                    'role' => 'assistant',
+                    'content' => $botReply,
+                    'last_activity' => now(),
+                ]);
+
+                // Return the reply and conversation ID
+                return response()->json([
+                    'reply' => $botReply,
+                    'conversation_id' => $conversationId,
+                    'timestamp' => now()->format('h:i A'),
+                ]);
+            }
+
             // Check if the message is a sticker
             if ($this->isStickerMessage($message)) {
                 $botReply = $this->getStickerResponse();
@@ -883,6 +913,16 @@ class ChatbotController extends Controller
         $defaultResponses = ['😊', '🥰', '😘', '💖', '✨', '🌟', '👍', '🎉', '🤗', '😄'];
 
         return $defaultResponses[array_rand($defaultResponses)];
+    }
+
+    /**
+     * Check if a message is a GIF (markdown image with /gifs/ path)
+     */
+    protected function isGifMessage(string $message): bool
+    {
+        // Check if message matches markdown image syntax with /gifs/ path
+        // Pattern: ![alt text](/gifs/filename.ext)
+        return (bool) preg_match('/^!\[.*?\]\(\/gifs\/[^\)]+\)$/i', trim($message));
     }
 
     /**
