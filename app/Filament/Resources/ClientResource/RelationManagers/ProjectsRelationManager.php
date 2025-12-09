@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ClientResource\RelationManagers;
 
 use App\Filament\Resources\ProjectResource;
+use App\Filament\Resources\ProjectResource\Concerns\HasProjectShareActions;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -17,6 +18,8 @@ use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 class ProjectsRelationManager extends RelationManager
 {
+    use HasProjectShareActions;
+
     protected static string $relationship = 'projects';
 
     protected static ?string $recordTitleAttribute = 'title';
@@ -240,13 +243,58 @@ class ProjectsRelationManager extends RelationManager
                     ->hidden(fn ($record) => $record->trashed()),
 
                 Tables\Actions\ActionGroup::make([
+
+                    static::getShareIssueTrackerLinkAction(fn ($record) => ProjectResource::getUrl('edit', ['record' => $record->id])),
+
+                    static::getShareAllIssueStatusLinksAction(fn ($record) => ProjectResource::getUrl('edit', ['record' => $record->id, 'activeRelationManager' => 0])),
+
+                    static::getShareWishlistTrackerLinkAction(fn ($record) => ProjectResource::getUrl('edit', ['record' => $record->id])),
+
+                    static::getShareAllWishlistStatusLinksAction(fn ($record) => ProjectResource::getUrl('edit', ['record' => $record->id, 'activeRelationManager' => 0])),
+
+                    Tables\Actions\Action::make('toggle_visibility_status')
+                        ->label(fn ($record) => $record->visibility_status === 'active'
+                            ? __('project.actions.make_draft')
+                            : __('project.actions.make_active'))
+                        ->icon(fn ($record) => $record->visibility_status === 'active' ? 'heroicon-o-eye-slash' : 'heroicon-o-eye')
+                        ->color(fn ($record) => $record->visibility_status === 'active' ? 'warning' : 'success')
+                        ->action(function ($record) {
+                            $newStatus = $record->visibility_status === 'active' ? 'draft' : 'active';
+
+                            $record->update([
+                                'visibility_status' => $newStatus,
+                                'updated_by' => auth()->id(),
+                            ]);
+
+                            // Show success notification
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('project.actions.visibility_status_updated'))
+                                ->body($newStatus === 'active'
+                                    ? __('project.actions.project_activated')
+                                    : __('project.actions.project_made_draft'))
+                                ->success()
+                                ->send();
+                        })
+                        ->tooltip(fn ($record) => $record->visibility_status === 'active'
+                            ? __('project.actions.make_draft_tooltip')
+                            : __('project.actions.make_active_tooltip'))
+                        ->hidden(fn ($record) => $record->trashed() || $record->created_by !== auth()->id()),
+
                     ActivityLogTimelineTableAction::make('Log'),
+
                     Tables\Actions\DeleteAction::make(),
+
+                    Tables\Actions\RestoreAction::make(),
+
+                    Tables\Actions\ForceDeleteAction::make(),
+
                 ]),
 
             ])
             ->bulkActions([
-                // None for now
+                Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
+                Tables\Actions\ForceDeleteBulkAction::make(),
             ])
             ->defaultSort('updated_at', 'desc');
     }
@@ -415,5 +463,10 @@ class ProjectsRelationManager extends RelationManager
                     ])
                     ->collapsible(),
             ]);
+    }
+
+    protected static function getProjectEditUrl($record): string
+    {
+        return ProjectResource::getUrl('edit', ['record' => $record->id]);
     }
 }
