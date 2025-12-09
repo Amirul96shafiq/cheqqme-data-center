@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ClientResource\RelationManagers;
 
 use App\Filament\Resources\ProjectResource;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -43,55 +44,101 @@ class ProjectsRelationManager extends RelationManager
             ->recordUrl(null)
             ->recordAction(null)
             ->modifyQueryUsing(function ($query) {
-                return $query->withCount('documents')
-                    ->with(['createdBy', 'updatedBy']);
+                return $query
+                    ->with(['client', 'createdBy', 'updatedBy'])
+                    ->withCount(['documents', 'importantUrls'])
+                    ->visibleToUser();
             })
             ->columns([
 
                 TextColumn::make('id')
                     ->label(__('project.table.id'))
-                    ->url(fn ($record) => route('filament.admin.resources.projects.edit', $record->id))
+                    ->url(fn ($record) => $record->trashed() ? null : route('filament.admin.resources.projects.edit', $record->id))
                     ->sortable(),
 
-                TextColumn::make('title')
+                Tables\Columns\ViewColumn::make('title')
                     ->label(__('project.table.title'))
+                    ->view('filament.resources.project-resource.title-column')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\ViewColumn::make('client_id')
+                    ->label(__('project.table.client'))
+                    ->view('filament.resources.project-resource.client-column')
                     ->searchable()
                     ->sortable()
-                    ->limit(30)
-                    ->tooltip(function ($record) {
-                        return $record->title;
-                    }),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('description')
-                    ->label(__('project.table.description'))
-                    ->searchable()
-                    ->limit(50),
-
-                TextColumn::make('issue_tracker_code')
+                Tables\Columns\TextColumn::make('issue_tracker_code')
                     ->label(__('project.table.issue_tracker_code'))
-                    ->searchable()
                     ->copyable()
                     ->copyableState(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
                     ->color('primary')
                     ->url(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
-                    ->toggleable()
                     ->searchable()
+                    ->toggleable()
                     ->alignCenter(),
 
-                TextColumn::make('status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Planning' => 'primary',
-                        'In Progress' => 'info',
-                        'Completed' => 'success',
-                        default => 'secondary',
-                    })
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('wishlist_tracker_code')
+                    ->label(__('project.table.wishlist_tracker_code'))
+                    ->copyable()
+                    ->copyableState(fn ($record) => $record->wishlist_tracker_code ? route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]) : null)
+                    ->color('success')
+                    ->url(fn ($record) => $record->wishlist_tracker_code ? route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]) : null)
+                    ->searchable()
+                    ->toggleable()
+                    ->alignCenter(),
 
-                TextColumn::make('documents_count')
+                TextColumn::make('tracking_tokens_count')
+                    ->label(__('project.table.tracking_tokens_count'))
+                    ->badge()
+                    ->color('primary')
+                    ->alignCenter()
+                    ->toggleable(),
+
+                TextColumn::make('wishlist_tokens_count')
+                    ->label(__('project.table.wishlist_tokens_count'))
+                    ->badge()
+                    ->color('success')
+                    ->alignCenter()
+                    ->toggleable(),
+
+                Tables\Columns\ViewColumn::make('status')
+                    ->label(__('project.table.status'))
+                    ->view('filament.resources.project-resource.status-column')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('visibility_status')
+                    ->label(__('project.table.visibility_status'))
+                    ->badge()
+                    ->color(fn (string $state) => match ($state) {
+                        'active' => 'success',
+                        'draft' => 'gray',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state) => match ($state) {
+                        'active' => __('project.table.visibility_status_active'),
+                        'draft' => __('project.table.visibility_status_draft'),
+                        default => $state,
+                    })
+                    ->toggleable()
+                    ->visible(true)
+                    ->alignment(Alignment::Center),
+
+                TextColumn::make('document_count')
                     ->label(__('project.table.document_count'))
                     ->badge()
-                    ->alignCenter(),
+                    ->alignCenter()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('important_url_count')
+                    ->label(__('project.table.important_url_count'))
+                    ->badge()
+                    ->alignCenter()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
                     ->label(__('project.table.created_at_by'))
@@ -114,7 +161,8 @@ class ProjectsRelationManager extends RelationManager
 
                         return $creatorName ? $formatted.' ('.$creatorName.')' : $formatted;
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\ViewColumn::make('updated_at')
                     ->label(__('project.table.updated_at_by'))
@@ -123,6 +171,7 @@ class ProjectsRelationManager extends RelationManager
 
             ])
             ->filters([
+
                 SelectFilter::make(__('project.filter.status'))
                     ->options([
                         'Planning' => __('project.filter.planning'),
@@ -132,6 +181,16 @@ class ProjectsRelationManager extends RelationManager
                     ->multiple()
                     ->preload()
                     ->searchable(),
+
+                Tables\Filters\SelectFilter::make('visibility_status')
+                    ->label(__('project.table.visibility_status'))
+                    ->options([
+                        'active' => __('project.table.visibility_status_active'),
+                        'draft' => __('project.table.visibility_status_draft'),
+                    ])
+                    ->preload()
+                    ->searchable(),
+
             ])
             ->headerActions([
                 // Intentionally empty to avoid creating from here unless needed
@@ -154,8 +213,24 @@ class ProjectsRelationManager extends RelationManager
                     })
                     ->visible(fn ($record) => ! empty($record->issue_tracker_code)),
 
-                /*Tables\Actions\ViewAction::make()
-              ->url(fn($record) => ProjectResource::getUrl('view', ['record' => $record])),*/
+                Tables\Actions\Action::make('open_wishlist_tracker')
+                    ->label('')
+                    ->icon('heroicon-o-link')
+                    ->color('success')
+                    ->url(fn ($record) => $record->wishlist_tracker_code ? route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]) : null)
+                    ->openUrlInNewTab()
+                    ->tooltip(function ($record) {
+                        if (! $record->wishlist_tracker_code) {
+                            return null;
+                        }
+                        $url = route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]);
+
+                        return strlen($url) > 50 ? substr($url, 0, 47).'...' : $url;
+                    })
+                    ->visible(fn ($record) => ! empty($record->wishlist_tracker_code)),
+
+                Tables\Actions\ViewAction::make()
+                    ->slideOver(),
 
                 Tables\Actions\EditAction::make()
                     ->url(fn ($record) => ProjectResource::getUrl('edit', ['record' => $record]))
@@ -170,13 +245,6 @@ class ProjectsRelationManager extends RelationManager
             ->bulkActions([
                 // None for now
             ])
-            ->defaultSort(function ($query) {
-                return $query->orderByRaw('
-                    CASE
-                        WHEN updated_at IS NOT NULL AND updated_at != created_at THEN updated_at
-                        ELSE created_at
-                    END DESC
-                ');
-            });
+            ->defaultSort('updated_at', 'desc');
     }
 }
