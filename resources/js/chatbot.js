@@ -729,6 +729,8 @@ import { init, Picker } from "emoji-mart";
                     const gifImages = contentDiv.querySelectorAll("img");
                     gifImages.forEach((img) => {
                         img.setAttribute("draggable", "false");
+                        // Setup one-time playback for GIFs
+                        setupGifPlayback(img);
                     });
                 } else if (isEmoji) {
                     // For emojis, use animated emoji if available
@@ -2143,4 +2145,181 @@ import { init, Picker } from "emoji-mart";
             event.stopPropagation();
         }
     });
+    // --- GIF Playback Control ---
+
+    function setupGifPlayback(img) {
+        // Generate a unique ID for this GIF instance to track state
+        const gifId = "gif-" + Math.random().toString(36).substr(2, 9);
+        img.dataset.gifId = gifId;
+
+        // If we already know the duration (maybe from previous load), use it
+        // Otherwise, fetch it.
+        // To avoid flickering, we let it play immediately.
+
+        getGifDuration(img.src).then((duration) => {
+            // If duration calculation failed or returned 0, fallback to 3s
+            // Most reaction GIFs are short.
+            if (!duration) duration = 3000;
+
+            img.dataset.duration = duration;
+
+            // Set timeout to freeze
+            setTimeout(() => {
+                freezeGif(img);
+            }, duration);
+        });
+    }
+
+    function freezeGif(img) {
+        // If image is already hidden/replaced, do nothing
+        if (img.style.display === "none") return;
+        // Check if attached to DOM or at least has parent (to avoid errors if chat cleared)
+        if (!img.parentNode) return;
+
+        try {
+            // Create canvas
+            const canvas = document.createElement("canvas");
+            canvas.width = img.naturalWidth || img.width;
+            canvas.height = img.naturalHeight || img.height;
+            const ctx = canvas.getContext("2d");
+
+            // Draw the current frame (which should be the last one roughly)
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // Style canvas to match img
+            canvas.className = img.className;
+            // Copy computed styles to ensure identical appearance
+            const computedStyle = window.getComputedStyle(img);
+            canvas.style.borderRadius = computedStyle.borderRadius;
+            canvas.style.objectFit = computedStyle.objectFit;
+            canvas.style.maxWidth = computedStyle.maxWidth;
+            canvas.style.maxHeight = computedStyle.maxHeight;
+            canvas.style.width = computedStyle.width;
+            canvas.style.height = computedStyle.height;
+
+            canvas.style.cursor = "pointer"; // Indicate clickable
+            canvas.title = "Click to replay";
+
+            // Insert canvas after img
+            img.parentNode.insertBefore(canvas, img.nextSibling);
+
+            // Hide img
+            img.style.display = "none";
+
+            // Add replay click handler
+            canvas.onclick = function (e) {
+                e.stopPropagation();
+                replayGif(img, canvas);
+            };
+
+            // Add play icon overlay (optional, but good UX)
+            // For now, cursor pointer is enough as per requirement "user may able to click"
+        } catch (e) {
+            console.error("Error freezing GIF:", e);
+        }
+    }
+
+    function replayGif(img, canvas) {
+        // Lock dimensions to prevent layout collapse/flicker during src reset
+        // We use the computed dimensions from the canvas (which matched the img)
+        if (canvas.style.width && canvas.style.height) {
+            img.style.width = canvas.style.width;
+            img.style.height = canvas.style.height;
+        }
+
+        // Remove canvas
+        canvas.remove();
+
+        // Show img
+        img.style.display = "";
+
+        // Reset src to restart animation
+        // We simply reassign the source to itself. This is usually enough to restart the GIF
+        // without causing a blank frame flash (which img.src="" would do).
+        img.src = img.src;
+
+        // Restore responsiveness: remove explicit dimensions after image has likely loaded/rendered
+        // This prevents the image from being stuck at fixed dimensions if window resizes
+        // We use a small timeout which is usually enough for the browser to repaint the image
+        setTimeout(() => {
+            img.style.width = "";
+            img.style.height = "";
+        }, 50);
+
+        // Schedule freeze again
+        const duration = parseInt(img.dataset.duration) || 3000;
+        setTimeout(() => {
+            freezeGif(img);
+        }, duration);
+    }
+
+    async function getGifDuration(src) {
+        try {
+            const response = await fetch(src);
+            const buffer = await response.arrayBuffer();
+            const view = new Uint8Array(buffer);
+            let duration = 0; // in ms
+            let p = 0;
+
+            // Header "GIF89a" or "GIF87a"
+            if (view[p++] !== 0x47 || view[p++] !== 0x49 || view[p++] !== 0x46)
+                return 0;
+            p += 3;
+
+            // Logical Screen Descriptor
+            p += 7;
+            if (view[p - 3] & 0x80) {
+                // Global Color Table
+                p += 3 * (1 << ((view[p - 3] & 0x07) + 1));
+            }
+
+            // Blocks
+            while (p < view.length) {
+                const introducer = view[p++];
+                if (introducer === 0x3b) break; // Trailer
+
+                if (introducer === 0x21) {
+                    // Extension
+                    const label = view[p++];
+                    if (label === 0xf9) {
+                        // Graphic Control Extension
+                        p++; // Block size (4)
+                        const delay = view[p + 1] | (view[p + 2] << 8);
+                        duration += delay * 10; // delay is in centiseconds
+                        p += 4;
+                        while (view[p++] !== 0); // Block terminator
+                    } else {
+                        while (true) {
+                            const blockSize = view[p++];
+                            if (blockSize === 0) break;
+                            p += blockSize;
+                        }
+                    }
+                } else if (introducer === 0x2c) {
+                    // Image Descriptor
+                    p += 9;
+                    if (view[p - 1] & 0x80) {
+                        // Local Color Table
+                        p += 3 * (1 << ((view[p - 1] & 0x07) + 1));
+                    }
+                    p++; // LZW Min Code Size
+                    while (true) {
+                        const blockSize = view[p++];
+                        if (blockSize === 0) break;
+                        p += blockSize;
+                    }
+                } else {
+                    // Unknown block or just data, simplified parser might fail here for complex GIFs
+                    // but usually works for finding GCEs.
+                    // If we hit image data blocks (which don't have explicit length in header),
+                    // we rely on sub-blocks.
+                    // But standard blocks start with 0x2C.
+                }
+            }
+            return duration;
+        } catch (e) {
+            // console.warn("Could not determine GIF duration, using fallback.", e);
+            return 3000;
+        }
+    }
 })();
