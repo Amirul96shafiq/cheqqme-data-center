@@ -12,7 +12,7 @@ return [
     'insufficient_credits_error' => 'Kredit OpenAI tidak mencukupi. Sila semak akaun bil anda di sini: https://platform.openai.com/settings/organization/billing/overview',
     'invalid_api_key_error' => 'Kunci API OpenAI tidak sah. Sila semak konfigurasi kunci API anda.',
     'clearing_message' => 'Menghapus perbualan...',
-    'clear_confirmation_message' => 'Adakah anda pasti ingin menghapus perbualan? Semua perbualan akan diset semula. (Anda masih boleh pulihkan melalui backup dari Sejarah Chatbot)',
+    'clear_confirmation_message' => 'Hapuskan dan set semula perbualan? Backup dahulu dalam :link yea!.',
     'clear_success_message' => 'Perbualan berjaya dihapus!',
 
     // Actions

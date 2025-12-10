@@ -575,7 +575,11 @@
                 </h2>
 
                 <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-                    {{ __('chatbot.clear_confirmation_message') }}
+                    {!! str_replace(
+                        ':link',
+                        '<a href="' . route('filament.admin.pages.chatbot-history') . '" class="text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400 font-medium hover:underline">' . __('chatbot.history.navigation_label') . '</a>',
+                        __('chatbot.clear_confirmation_message')
+                    ) !!}
                 </p>
 
                 <!-- Actions -->

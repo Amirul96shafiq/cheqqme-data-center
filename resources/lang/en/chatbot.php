@@ -12,7 +12,7 @@ return [
     'insufficient_credits_error' => 'OpenAI credits are insufficient. Please check your billing account at here: https://platform.openai.com/settings/organization/billing/overview',
     'invalid_api_key_error' => 'Invalid OpenAI API key. Please check your API key configuration.',
     'clearing_message' => 'Clearing conversation...',
-    'clear_confirmation_message' => 'Are you sure you want to clear the conversation? All conversation will be resetted. (You can still restore it via backup from Chatbot History)',
+    'clear_confirmation_message' => 'Are you sure you want to clear and reset the conversation? Restore it in :link just in case!',
     'clear_success_message' => 'Conversation cleared successfully!',
 
     // Actions
