@@ -4,7 +4,6 @@ namespace App\Filament\Widgets;
 
 use App\Models\ChatbotConversation;
 use App\Models\OpenaiLog;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Leandrocfe\FilamentApexCharts\Concerns\CanFilter;
 use Leandrocfe\FilamentApexCharts\Widgets\ApexChartWidget;
@@ -56,84 +55,41 @@ class ChatbotUsageChart extends ApexChartWidget
                     'today' => __('dashboard.analytics.chatbot_usage.filters.today'),
                     'yesterday' => __('dashboard.analytics.chatbot_usage.filters.yesterday'),
                     'this_week' => __('dashboard.analytics.chatbot_usage.filters.this_week'),
-                    'this_month' => __('dashboard.analytics.chatbot_usage.filters.this_month'),
-                    'this_year' => __('dashboard.analytics.chatbot_usage.filters.this_year'),
-                    'overall' => __('dashboard.analytics.chatbot_usage.filters.overall'),
                 ])
                 ->searchable()
                 ->default('this_week')
-                ->afterStateUpdated(function ($state, callable $set) {
-                    $this->updateDateRange($state, $set);
-                })
                 ->live(),
-
-            DatePicker::make('date_start')
-                ->label(__('dashboard.analytics.chatbot_usage.filters.date_start'))
-                ->placeholder('DD/MM/YYYY')
-                ->native(false)
-                ->displayFormat('j/n/y')
-                ->default(now()->startOfWeek()->toDateString()),
-
-            DatePicker::make('date_end')
-                ->label(__('dashboard.analytics.chatbot_usage.filters.date_end'))
-                ->placeholder('DD/MM/YYYY')
-                ->native(false)
-                ->displayFormat('j/n/y')
-                ->default(now()->endOfWeek()->toDateString()),
 
         ];
     }
 
-    protected function updateDateRange($filter, callable $set): void
+    protected function getDateRange(): array
     {
+        $quickFilter = $this->filterFormData['quick_filter'] ?? 'this_week';
         $now = now();
 
-        switch ($filter) {
-
-            case 'today':
-                $set('date_start', $now->startOfDay()->toDateString());
-                $set('date_end', $now->endOfDay()->toDateString());
-                break;
-
-            case 'yesterday':
-                $set('date_start', $now->subDay()->startOfDay()->toDateString());
-                $set('date_end', $now->subDay()->endOfDay()->toDateString());
-                break;
-
-            case 'this_week':
-                $set('date_start', $now->startOfWeek()->toDateString());
-                $set('date_end', $now->endOfWeek()->toDateString());
-                break;
-
-            case 'this_month':
-                $set('date_start', $now->startOfMonth()->toDateString());
-                $set('date_end', $now->endOfMonth()->toDateString());
-                break;
-
-            case 'this_year':
-                $set('date_start', $now->startOfYear()->toDateString());
-                $set('date_end', $now->endOfYear()->toDateString());
-                break;
-
-            case 'overall':
-                // For overall, we'll handle this specially in getOptions method
-                $set('date_start', null);
-                $set('date_end', null);
-                break;
-
-        }
+        return match ($quickFilter) {
+            'today' => [
+                'start' => $now->copy()->startOfDay()->toDateString(),
+                'end' => $now->copy()->endOfDay()->toDateString(),
+            ],
+            'yesterday' => [
+                'start' => $now->copy()->subDay()->startOfDay()->toDateString(),
+                'end' => $now->copy()->subDay()->endOfDay()->toDateString(),
+            ],
+            'this_week' => [
+                'start' => $now->copy()->startOfWeek()->toDateString(),
+                'end' => $now->copy()->endOfWeek()->toDateString(),
+            ],
+            default => [
+                'start' => $now->copy()->startOfWeek()->toDateString(),
+                'end' => $now->copy()->endOfWeek()->toDateString(),
+            ],
+        };
     }
 
     protected function getOptions(): array
     {
-        $quickFilter = $this->filterFormData['quick_filter'] ?? 'this_week';
-
-        // For overall filter, we show data for the past year
-        if ($quickFilter === 'overall') {
-            $this->filterFormData['date_start'] = now()->subYear()->toDateString();
-            $this->filterFormData['date_end'] = now()->toDateString();
-        }
-
         return [
             'chart' => [
                 'type' => 'line',
@@ -198,11 +154,9 @@ class ChatbotUsageChart extends ApexChartWidget
 
     protected function getDateCategories(): array
     {
-        $startDate = $this->filterFormData['date_start'] ?? now()->subDays(7)->toDateString();
-        $endDate = $this->filterFormData['date_end'] ?? now()->toDateString();
-
-        $start = \Carbon\Carbon::parse($startDate);
-        $end = \Carbon\Carbon::parse($endDate);
+        $dateRange = $this->getDateRange();
+        $start = \Carbon\Carbon::parse($dateRange['start']);
+        $end = \Carbon\Carbon::parse($dateRange['end']);
 
         $categories = [];
         $current = $start->copy();
@@ -217,12 +171,11 @@ class ChatbotUsageChart extends ApexChartWidget
 
     protected function getConversationsData(): array
     {
-        $startDate = $this->filterFormData['date_start'] ?? now()->subDays(7)->toDateString();
-        $endDate = $this->filterFormData['date_end'] ?? now()->toDateString();
+        $dateRange = $this->getDateRange();
         $userId = $this->filterFormData['user_ids'] ?? null;
 
-        $start = \Carbon\Carbon::parse($startDate);
-        $end = \Carbon\Carbon::parse($endDate);
+        $start = \Carbon\Carbon::parse($dateRange['start']);
+        $end = \Carbon\Carbon::parse($dateRange['end']);
 
         $data = [];
         $current = $start->copy();
@@ -244,12 +197,11 @@ class ChatbotUsageChart extends ApexChartWidget
 
     protected function getApiCallsData(): array
     {
-        $startDate = $this->filterFormData['date_start'] ?? now()->subDays(7)->toDateString();
-        $endDate = $this->filterFormData['date_end'] ?? now()->toDateString();
+        $dateRange = $this->getDateRange();
         $userId = $this->filterFormData['user_ids'] ?? null;
 
-        $start = \Carbon\Carbon::parse($startDate);
-        $end = \Carbon\Carbon::parse($endDate);
+        $start = \Carbon\Carbon::parse($dateRange['start']);
+        $end = \Carbon\Carbon::parse($dateRange['end']);
 
         $data = [];
         $current = $start->copy();
