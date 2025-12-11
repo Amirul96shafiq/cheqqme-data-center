@@ -499,6 +499,15 @@ emoji-picker {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
 }
 
+    /* Hide scrollbars for command dropdown */
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
 </style>
 
 <!-- Chatbot Widget -->
@@ -657,7 +666,7 @@ emoji-picker {
 </div>
 
 <!-- Command Selection Menu -->
-<div id="command-selection-menu" class="fixed hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-[12] w-[240px] max-h-80 overflow-y-auto flex flex-col p-2 gap-1">
+<div id="command-selection-menu" class="fixed hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-[12] w-[240px] max-h-80 overflow-y-auto no-scrollbar flex flex-col p-2 gap-1">
     <button type="button" onclick="executeCommand('/help', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
         <div class="flex flex-col">
             <span class="font-medium">Help</span>
