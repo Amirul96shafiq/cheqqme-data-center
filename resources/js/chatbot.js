@@ -621,9 +621,17 @@ import { init, Picker } from "emoji-mart";
     }
 
     // Add a message to the chatbot UI
-    function addMessage(content, role, timestamp = null, animationDelay = 0) {
+    function addMessage(
+        content,
+        role,
+        timestamp = null,
+        animationDelay = 0,
+        options = {}
+    ) {
         const chatMessages = document.getElementById("chat-messages");
         if (!chatMessages) return;
+
+        const { animateTyping = false } = options;
 
         // Create message container
         const messageDiv = document.createElement("div");
@@ -776,7 +784,11 @@ import { init, Picker } from "emoji-mart";
                 '<div class="' +
                 contentClass +
                 '">' +
-                normalizeContent(marked.parse(processTranslation(content))) +
+                (animateTyping
+                    ? ""
+                    : normalizeContent(
+                          marked.parse(processTranslation(content))
+                      )) +
                 "</div>" +
                 "</div>" +
                 '<div class="' +
@@ -800,7 +812,53 @@ import { init, Picker } from "emoji-mart";
         }
 
         chatMessages.appendChild(messageDiv);
-        scrollToBottom();
+
+        const contentElement = messageDiv.querySelector(
+            "." + contentClass.split(" ")[0]
+        );
+        if (animateTyping && contentElement) {
+            startAssistantTypingEffect(contentElement, content);
+        } else {
+            scrollToBottom();
+        }
+    }
+
+    // Smoothly render assistant replies word-by-word, then finalize with markdown
+    function startAssistantTypingEffect(targetEl, content) {
+        if (!targetEl) return;
+
+        const translatedContent = processTranslation(content);
+        const tokens = translatedContent.match(/\S+|\s+/g) || [];
+        let index = 0;
+
+        const step = () => {
+            if (!document.body.contains(targetEl)) return;
+
+            if (index >= tokens.length) {
+                targetEl.innerHTML = normalizeContent(
+                    marked.parse(translatedContent)
+                );
+                scrollToBottom();
+                return;
+            }
+
+            targetEl.textContent += tokens[index];
+            index += 1;
+
+            scrollToBottom();
+            const delay = getTypingDelay(tokens[index - 1]);
+            setTimeout(step, delay);
+        };
+
+        step();
+    }
+
+    function getTypingDelay(token) {
+        const baseDelay = 35;
+        if (!token) return baseDelay;
+        if (token.includes("\n")) return 60;
+        if (/[.,!?]$/.test(token.trim())) return 110;
+        return baseDelay;
     }
 
     // Show loading indicator
@@ -888,8 +946,10 @@ import { init, Picker } from "emoji-mart";
                 if (response.ok) {
                     const data = await response.json();
 
-                    // Add AI response
-                    addMessage(data.reply, "assistant", data.timestamp);
+                    // Add AI response with typing animation
+                    addMessage(data.reply, "assistant", data.timestamp, 0, {
+                        animateTyping: true,
+                    });
 
                     // Update conversation ID if provided
                     if (data.conversation_id) {
