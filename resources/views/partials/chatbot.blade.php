@@ -657,7 +657,7 @@ emoji-picker {
 </div>
 
 <!-- Command Selection Menu -->
-<div id="command-selection-menu" class="fixed hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-[12] w-[240px] overflow-hidden flex flex-col py-1">
+<div id="command-selection-menu" class="fixed hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-[12] w-[240px] max-h-80 overflow-y-auto flex flex-col py-1">
     <button type="button" onclick="executeCommand('/help', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
         @svg('heroicon-m-question-mark-circle', 'w-4 h-4 text-primary-500')
         <div class="flex flex-col">
