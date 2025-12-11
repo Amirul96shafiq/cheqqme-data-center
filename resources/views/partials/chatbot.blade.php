@@ -603,17 +603,31 @@ emoji-picker {
                         spellcheck="false"
                         placeholder="{{ __('chatbot.input.placeholder') }}"
                         onclick="preventEmojiPickerOnInputClick(event)"
-                        class="fi-input w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-white dark:placeholder-gray-400 transition-colors text-sm"
+                        class="fi-input w-full pl-20 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-white dark:placeholder-gray-400 transition-colors text-sm"
                     >
 
-                    <!-- Emoji, GIF, and Sticker Button Inside Input -->
-                    <div class="absolute left-3 top-3">
+                    <!-- Input Actions: Command Menu & Media Picker -->
+                    <div class="absolute left-3 top-3 flex items-center space-x-1">
+                        
+                        <!-- Command Menu Button -->
+                         <x-tooltip position="top" text="{{ __('chatbot.action.commands') ?? 'Commands' }}">
+                            <button
+                                type="button"
+                                id="command-menu-button"
+                                onclick="toggleCommandMenu(event); event.stopPropagation(); event.preventDefault();"
+                                class="flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors p-1"
+                            >
+                                @svg('heroicon-o-command-line', 'w-5 h-5')
+                            </button>
+                        </x-tooltip>
+
+                        <!-- Emoji, GIF, and Sticker Button -->
                         <x-tooltip position="top" text="{{ __('chatbot.action.add_emojis_gifs_stickers') }}">
                             <button
                                 type="button"
                                 id="emoji-gif-sticker-button"
                                 onclick="toggleMediaMenu(event); event.stopPropagation(); event.preventDefault();"
-                                class="flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors"
+                                class="flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors p-1"
                             >
                                 @svg('heroicon-o-plus-circle', 'w-5 h-5')
                             </button>
@@ -640,6 +654,108 @@ emoji-picker {
 <!-- Floating Emoji Picker Container -->
 <div id="emoji-picker-container" class="fixed hidden z-[11]">
     <emoji-picker id="emoji-picker"></emoji-picker>
+</div>
+
+<!-- Command Selection Menu -->
+<div id="command-selection-menu" class="fixed hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-[12] w-[240px] overflow-hidden flex flex-col py-1">
+    <button type="button" onclick="executeCommand('/help', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-question-mark-circle', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">Help</span>
+            <span class="text-[10px] text-gray-400">/help</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/mytask', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-clipboard-document-list', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">My Tasks</span>
+            <span class="text-[10px] text-gray-400">/mytask</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/myissue', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-bug-ant', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">My Issues</span>
+            <span class="text-[10px] text-gray-400">/myissue</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/mywishlist', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-heart', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">My Wishlist</span>
+            <span class="text-[10px] text-gray-400">/mywishlist</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/client', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-building-office', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">Clients</span>
+            <span class="text-[10px] text-gray-400">/client</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/project', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-briefcase', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">Projects</span>
+            <span class="text-[10px] text-gray-400">/project</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/document', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-document-text', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">Documents</span>
+            <span class="text-[10px] text-gray-400">/document</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/important-url', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-link', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">Important URLs</span>
+            <span class="text-[10px] text-gray-400">/important-url</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/phone-number', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover-bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-phone', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">Phone Numbers</span>
+            <span class="text-[10px] text-gray-400">/phone-number</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/user', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-user-group', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">Users</span>
+            <span class="text-[10px] text-gray-400">/user</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/meeting-link', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-calendar-days', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">Meeting Links</span>
+            <span class="text-[10px] text-gray-400">/meeting-link</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/event', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-sparkles', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">Events</span>
+            <span class="text-[10px] text-gray-400">/event</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/resources', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-archive-box', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">Resources</span>
+            <span class="text-[10px] text-gray-400">/resources</span>
+        </div>
+    </button>
+    <button type="button" onclick="executeCommand('/trello-board', event);" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-3">
+        @svg('heroicon-m-view-columns', 'w-4 h-4 text-primary-500')
+        <div class="flex flex-col">
+            <span class="font-medium">Trello Boards</span>
+            <span class="text-[10px] text-gray-400">/trello-board</span>
+        </div>
+    </button>
 </div>
 
 <!-- Floating GIF Picker Container -->

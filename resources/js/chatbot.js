@@ -1156,6 +1156,123 @@ import { init, Picker } from "emoji-mart";
         // );
     }
 
+    // --- Command Menu Functionality ---
+
+    // Toggle command menu visibility
+    function toggleCommandMenu(event) {
+        const menu = document.getElementById("command-selection-menu");
+        const button = document.getElementById("command-menu-button");
+
+        if (!menu || !button) return;
+
+        const isCurrentlyHidden = menu.classList.contains("hidden");
+
+        if (isCurrentlyHidden) {
+            // Close other pickers first
+            closeAllMediaPickers();
+
+            // Show menu
+            menu.classList.remove("hidden");
+            menu.style.opacity = "0";
+
+            // Position menu
+            positionCommandMenu(menu, button);
+
+            // Animate in
+            menu.style.transform = "translateY(10px) scale(0.95)";
+            requestAnimationFrame(() => {
+                menu.style.transition =
+                    "opacity 0.2s ease, transform 0.2s ease";
+                menu.style.opacity = "1";
+                menu.style.transform = "translateY(0) scale(1)";
+            });
+
+            // Update button state
+            button.classList.add("text-primary-500", "dark:text-primary-400");
+            button.classList.remove("text-gray-400", "dark:text-gray-500");
+        } else {
+            closeCommandMenu();
+        }
+    }
+
+    // Close command menu
+    function closeCommandMenu() {
+        const menu = document.getElementById("command-selection-menu");
+        const button = document.getElementById("command-menu-button");
+
+        if (menu && !menu.classList.contains("hidden")) {
+            menu.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+            menu.style.opacity = "0";
+            menu.style.transform = "translateY(10px) scale(0.95)";
+
+            setTimeout(() => {
+                menu.classList.add("hidden");
+
+                // Reset button state
+                if (button) {
+                    button.classList.remove(
+                        "text-primary-500",
+                        "dark:text-primary-400"
+                    );
+                    button.classList.add("text-gray-400", "dark:text-gray-500");
+                }
+            }, 200);
+        }
+    }
+
+    // Position command menu
+    function positionCommandMenu(menu, button) {
+        const chatbotInterface = document.getElementById("chatbot-interface");
+        if (!chatbotInterface) return;
+
+        // Get dimensions
+        const menuWidth = menu.offsetWidth || 220;
+        // Use a default height if offsetHeight is 0 (hidden)
+        const menuHeight = menu.offsetHeight || 100;
+        const buttonRect = button.getBoundingClientRect();
+
+        // Check if mobile
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+            // Center on mobile
+            const centerX = (window.innerWidth - menuWidth) / 2;
+            const centerY = (window.innerHeight - menuHeight) / 2;
+
+            menu.style.left = centerX + "px";
+            menu.style.top = centerY + "px";
+        } else {
+            // Position above the button, aligned left
+            // Fixed position requires viewport coordinates
+
+            let left = buttonRect.left;
+            // Position above button with some gap
+            let top = buttonRect.top - menuHeight - 10;
+
+            // Ensure it doesn't go off screen
+            if (left + menuWidth > window.innerWidth) {
+                left = window.innerWidth - menuWidth - 20;
+            }
+            if (left < 20) left = 20;
+
+            if (top < 20) {
+                top = 20;
+            }
+
+            menu.style.left = left + "px";
+            menu.style.top = top + "px";
+        }
+    }
+
+    // Execute command
+    async function executeCommand(command, event) {
+        if (event) {
+            event.stopPropagation();
+        }
+        closeCommandMenu();
+        await processUserMessage(command);
+    }
+
     // Media selection menu functionality
     function toggleMediaMenu(event) {
         const menu = document.getElementById("media-selection-menu");
@@ -1188,6 +1305,9 @@ import { init, Picker } from "emoji-mart";
             "sticker-picker-container"
         );
         const menu = document.getElementById("media-selection-menu");
+
+        // Close command menu as well
+        closeCommandMenu();
 
         if (emojiPicker && !emojiPicker.classList.contains("hidden")) {
             const fakeEvent = { target: null, isCloseAction: true };
@@ -1777,7 +1897,9 @@ import { init, Picker } from "emoji-mart";
             "sticker-picker-container"
         );
         const mediaMenu = document.getElementById("media-selection-menu");
+        const commandMenu = document.getElementById("command-selection-menu");
         const emojiButton = document.getElementById("emoji-gif-sticker-button");
+        const commandButton = document.getElementById("command-menu-button");
         const chatInput = document.getElementById("chat-input");
 
         // Check if click is on emoji button, input, or inside any picker/menu
@@ -1786,6 +1908,11 @@ import { init, Picker } from "emoji-mart";
             (emojiButton === event.target ||
                 emojiButton.contains(event.target) ||
                 event.target.closest("#emoji-gif-sticker-button"));
+        const isClickOnCommandButton =
+            commandButton &&
+            (commandButton === event.target ||
+                commandButton.contains(event.target) ||
+                event.target.closest("#command-menu-button"));
         const isClickOnInput =
             chatInput &&
             (chatInput === event.target ||
@@ -1811,6 +1938,21 @@ import { init, Picker } from "emoji-mart";
             (mediaMenu === event.target ||
                 mediaMenu.contains(event.target) ||
                 event.target.closest("#media-selection-menu"));
+        const isClickOnCommandMenu =
+            commandMenu &&
+            (commandMenu === event.target ||
+                commandMenu.contains(event.target) ||
+                event.target.closest("#command-selection-menu"));
+
+        // Close command menu if open and clicking outside
+        if (
+            commandMenu &&
+            !commandMenu.classList.contains("hidden") &&
+            !isClickOnCommandButton &&
+            !isClickOnCommandMenu
+        ) {
+            closeCommandMenu();
+        }
 
         // Close emoji picker if open and clicking outside
         if (
@@ -1876,6 +2018,12 @@ import { init, Picker } from "emoji-mart";
                 "sticker-picker-container"
             );
             const mediaMenu = document.getElementById("media-selection-menu");
+            const commandMenu = document.getElementById(
+                "command-selection-menu"
+            );
+
+            // Close command menu
+            closeCommandMenu();
 
             // Close menu first if open
             if (mediaMenu && !mediaMenu.classList.contains("hidden")) {
@@ -2071,6 +2219,8 @@ import { init, Picker } from "emoji-mart";
     window.executeClearConversation = executeClearConversation;
     window.preventEmojiPickerOnInputClick = preventEmojiPickerOnInputClick;
     window.toggleMediaMenu = toggleMediaMenu;
+    window.toggleCommandMenu = toggleCommandMenu;
+    window.executeCommand = executeCommand;
     window.openMediaPicker = openMediaPicker;
     window.closeAllMediaPickers = closeAllMediaPickers;
 
@@ -2154,6 +2304,7 @@ import { init, Picker } from "emoji-mart";
             !event.target.closest("#sticker-picker-container") &&
             !event.target.closest("#gif-picker-container") &&
             !event.target.closest("#media-selection-menu") &&
+            !event.target.closest("#command-selection-menu") &&
             !event.target.closest("#global-modal-container")
         ) {
             toggleChatbot();
