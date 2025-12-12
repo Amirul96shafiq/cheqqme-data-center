@@ -1,6 +1,7 @@
 // -----------------------------
 // Chatbot functionality
 // -----------------------------
+import data from "@emoji-mart/data";
 import { init, Picker } from "emoji-mart";
 (function () {
     let conversationId = null; // Start with null ID
@@ -1769,7 +1770,7 @@ import { init, Picker } from "emoji-mart";
         emojiPickerInitialized = true;
 
         // Initialize emoji-mart
-        init({}).then(() => {
+        init({ data }).then(() => {
             const isDarkMode =
                 document.documentElement.classList.contains("dark");
 

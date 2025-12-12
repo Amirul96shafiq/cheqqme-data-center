@@ -465,7 +465,7 @@
 }
 
 /* Active category icon color */
-emoji-picker {
+#emoji-picker {
     --rgb-accent: 251, 180, 62; /* primary-500 / amber-500 for active elements */
     --rgb-input: 249, 250, 251;
 }
@@ -477,10 +477,10 @@ emoji-picker {
     overflow: hidden !important; /* ensure border-radius works */
 }
 
-.dark emoji-picker {
-    --background-rgb: 39, 39, 42; /* zinc-800 */
-    --rgb-background: 39, 39, 42; /* zinc-800 for various background elements */
+.dark #emoji-picker {
+    --rgb-background: 39, 39, 42; /* zinc-800 */
     --rgb-input: 63, 63, 70;
+    --rgb-color: 228, 228, 231; /* zinc-200 for text */
 }
 
 /* Media selection menu styling - matches online status dropdown */
@@ -663,7 +663,7 @@ emoji-picker {
 
 <!-- Floating Emoji Picker Container -->
 <div id="emoji-picker-container" class="fixed hidden z-[11]">
-    <emoji-picker id="emoji-picker"></emoji-picker>
+    <div id="emoji-picker"></div>
 </div>
 
 <!-- Command Selection Menu -->
