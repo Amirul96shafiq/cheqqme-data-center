@@ -603,52 +603,53 @@ emoji-picker {
             <form onsubmit="sendMessage(event)" class="flex space-x-3" autocomplete="off">
 
                 <!-- Chat Input with Emoji, GIF, and Sticker Button Inside -->
-                <div class="flex-1 relative">
-                    <input
-                        type="text"
-                        id="chat-input"
-                        autocomplete="off"
-                        autocorrect="off"
-                        spellcheck="false"
-                        placeholder="{{ __('chatbot.input.placeholder') }}"
-                        onclick="preventEmojiPickerOnInputClick(event)"
-                        class="fi-input w-full pl-20 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-white dark:placeholder-gray-400 transition-colors text-sm"
-                    >
+                <div class="flex-1">
+                    <div class="flex items-center w-full p-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500 transition-colors text-sm">
+                        <div class="flex items-center">
 
-                    <!-- Input Actions: Command Menu & Media Picker -->
-                    <div class="absolute left-3 top-3 flex items-center space-x-1">
-                        
-                        <!-- Command Menu Button -->
-                         <x-tooltip position="top" text="{{ __('chatbot.action.commands') ?? 'Commands' }}">
-                            <button
-                                type="button"
-                                id="command-menu-button"
-                                onclick="toggleCommandMenu(event); event.stopPropagation(); event.preventDefault();"
-                                class="flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors p-1"
-                            >
-                                @svg('heroicon-o-command-line', 'w-5 h-5')
-                            </button>
-                        </x-tooltip>
+                            <!-- Command Menu Button -->
+                            <x-tooltip position="top" text="{{ __('chatbot.action.commands') ?? 'Commands' }}">
+                                <button
+                                    type="button"
+                                    id="command-menu-button"
+                                    onclick="toggleCommandMenu(event); event.stopPropagation(); event.preventDefault();"
+                                    class="flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors p-1"
+                                >
+                                    @svg('heroicon-o-command-line', 'w-5 h-5')
+                                </button>
+                            </x-tooltip>
 
-                        <!-- Emoji, GIF, and Sticker Button -->
-                        <x-tooltip position="top" text="{{ __('chatbot.action.add_emojis_gifs_stickers') }}">
-                            <button
-                                type="button"
-                                id="emoji-gif-sticker-button"
-                                onclick="toggleMediaMenu(event); event.stopPropagation(); event.preventDefault();"
-                                class="flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors p-1"
-                            >
-                                @svg('heroicon-o-plus-circle', 'w-5 h-5')
-                            </button>
-                        </x-tooltip>
+                            <!-- Emoji, GIF, and Sticker Button -->
+                            <x-tooltip position="top" text="{{ __('chatbot.action.add_emojis_gifs_stickers') }}">
+                                <button
+                                    type="button"
+                                    id="emoji-gif-sticker-button"
+                                    onclick="toggleMediaMenu(event); event.stopPropagation(); event.preventDefault();"
+                                    class="flex items-center justify-center text-gray-400 hover:text-primary-500 dark:text-gray-500 dark:hover:text-primary-400 transition-colors p-1"
+                                >
+                                    @svg('heroicon-o-plus-circle', 'w-5 h-5')
+                                </button>
+                            </x-tooltip>
+
+                        </div>
+
+                        <input
+                            type="text"
+                            id="chat-input"
+                            autocomplete="off"
+                            autocorrect="off"
+                            spellcheck="false"
+                            placeholder="{{ __('chatbot.input.placeholder') }}"
+                            onclick="preventEmojiPickerOnInputClick(event)"
+                            class="fi-input flex-1 bg-transparent border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 text-sm"
+                        >
                     </div>
-
                 </div>
 
                 <!-- Send Message Button -->
                 <button
                     type="submit"
-                    class="fi-btn fi-btn-size-md 3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors px-3"
+                    class="fi-btn fi-btn-size-md 3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:text-white transition-colors p-4"
                 >
                     @svg('heroicon-m-paper-airplane', 'w-4 h-4')
                 </button>
