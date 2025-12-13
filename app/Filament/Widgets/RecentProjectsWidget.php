@@ -92,7 +92,8 @@ class RecentProjectsWidget extends TableWidget
                 ->url(route('filament.admin.resources.projects.index'))
                 ->icon('heroicon-m-arrow-right')
                 ->button()
-                ->color('gray'),
+                ->color('gray')
+                ->visible(fn () => Project::count() > 5),
         ];
     }
 
