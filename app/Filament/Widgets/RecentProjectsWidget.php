@@ -64,6 +64,14 @@ class RecentProjectsWidget extends TableWidget
                 ->visible(fn (Project $record) => filled($record->issue_tracker_code))
                 ->openUrlInNewTab(),
 
+            Action::make('viewWishlist')
+                ->label('')
+                ->icon('heroicon-o-link')
+                ->color('success')
+                ->url(fn (Project $record) => route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]))
+                ->visible(fn (Project $record) => filled($record->wishlist_tracker_code))
+                ->openUrlInNewTab(),
+
             EditAction::make()
                 ->label(__('dashboard.actions.edit'))
                 ->url(fn (Project $record) => route('filament.admin.resources.projects.edit', $record)),
