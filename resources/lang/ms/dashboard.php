@@ -38,7 +38,8 @@ return [
         'id' => 'ID',
         'project_title' => 'Tajuk Projek',
         'issue_tracker' => 'Pelapor Isu',
-        'tracking_tokens' => 'Token Penjejakan',
+        'issues' => 'Isu',
+        'wishlist' => 'Wishlist',
         'created_at' => 'Dicipta Pada',
     ],
 

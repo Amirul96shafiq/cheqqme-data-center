@@ -38,7 +38,8 @@ return [
         'id' => 'ID',
         'project_title' => 'Project Title',
         'issue_tracker' => 'Issue Tracker',
-        'tracking_tokens' => 'Tracking Tokens',
+        'issues' => 'Issues',
+        'wishlist' => 'Wishlist',
         'created_at' => 'Created At',
     ],
 

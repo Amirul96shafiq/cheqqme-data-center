@@ -28,20 +28,22 @@ class RecentProjectsWidget extends TableWidget
                 ->label(__('dashboard.recent_projects.project_title'))
                 ->view('filament.widgets.recent-projects-title-column'),
 
-            TextColumn::make('issue_tracker_code')
-                ->label(__('dashboard.recent_projects.issue_tracker'))
-                ->badge()
-                ->color(fn ($state) => filled($state) ? 'primary' : 'gray')
-                ->alignCenter()
-                ->copyable()
-                ->copyableState(fn (Project $record) => filled($record->issue_tracker_code) ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
-                ->url(fn (Project $record) => filled($record->issue_tracker_code) ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
-                ->openUrlInNewTab(),
-
             TextColumn::make('tracking_tokens_count')
-                ->label(__('dashboard.recent_projects.tracking_tokens'))
+                ->label(__('dashboard.recent_projects.issues'))
                 ->badge()
-                ->color(fn ($state) => (int) $state > 0 ? 'primary' : 'gray')
+                ->copyable()
+                ->copyableState(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
+                ->color('primary')
+                ->url(fn ($record) => $record->issue_tracker_code ? route('issue-tracker.show', ['project' => $record->issue_tracker_code]) : null)
+                ->alignCenter(),
+
+            TextColumn::make('wishlist_tokens_count')
+                ->label(__('dashboard.recent_projects.wishlist'))
+                ->badge()
+                ->copyable()
+                ->copyableState(fn ($record) => $record->wishlist_tracker_code ? route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]) : null)
+                ->color('success')
+                ->url(fn ($record) => $record->wishlist_tracker_code ? route('wishlist-tracker.show', ['project' => $record->wishlist_tracker_code]) : null)
                 ->alignCenter(),
 
             TextColumn::make('created_at')
