@@ -508,6 +508,31 @@
         display: none;
     }
 
+    /* Input error state - red placeholder */
+    #chat-input.error-state::placeholder {
+        color: #ef4444 !important; /* red-500 */
+    }
+    .dark #chat-input.error-state::placeholder {
+        color: #f87171 !important; /* red-400 for dark mode */
+    }
+
+    /* Shake animation for empty input */
+    @keyframes shake {
+        0%, 100% {
+            transform: translateX(0) translateY(0);
+        }
+        10%, 30%, 50%, 70%, 90% {
+            transform: translateX(-2px) translateY(-2px);
+        }
+        20%, 40%, 60%, 80% {
+            transform: translateX(2px) translateY(2px);
+        }
+    }
+
+    #chat-input.shake {
+        animation: shake 0.4s ease-in-out;
+    }
+
 </style>
 
 <!-- Chatbot Widget -->

@@ -905,7 +905,30 @@ import { init, Picker } from "emoji-mart";
 
         const message = input.value.trim();
 
-        if (!message) return;
+        if (!message) {
+            // Add error state class to show red placeholder
+            input.classList.add("error-state");
+
+            // Add shake animation
+            input.classList.add("shake");
+
+            // Remove shake animation after it completes
+            setTimeout(() => {
+                input.classList.remove("shake");
+            }, 400); // Match animation duration
+
+            // Remove error state when user starts typing
+            const removeErrorOnInput = () => {
+                input.classList.remove("error-state");
+                input.removeEventListener("input", removeErrorOnInput);
+            };
+            input.addEventListener("input", removeErrorOnInput);
+
+            return;
+        }
+
+        // Remove error state if it exists
+        input.classList.remove("error-state");
 
         // Clear input immediately
         input.value = "";
@@ -946,6 +969,12 @@ import { init, Picker } from "emoji-mart";
 
                 if (response.ok) {
                     const data = await response.json();
+
+                    // Reset input error state on successful send
+                    const input = document.getElementById("chat-input");
+                    if (input) {
+                        input.classList.remove("error-state");
+                    }
 
                     // Add AI response with typing animation
                     addMessage(data.reply, "assistant", data.timestamp, 0, {
