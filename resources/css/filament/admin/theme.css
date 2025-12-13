@@ -812,3 +812,8 @@ body {
         display: none !important;
     }
 }
+
+/* Ensure table widget headers maintain consistent height even when actions are hidden */
+.fi-wi-table .fi-ta-header-ctn .fi-ta-header {
+    min-height: 4.5rem; /* Match height when actions are visible */
+}
