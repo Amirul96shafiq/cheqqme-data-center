@@ -1014,75 +1014,39 @@ class ChatbotService
     public function getResourceCounts(): string
     {
         $counts = [
-            'users' => $this->calculateModelCounts(User::class),
-            'clients' => $this->calculateModelCounts(Client::class),
-            'projects' => $this->calculateModelCounts(Project::class),
-            'documents' => $this->calculateModelCounts(
-                Document::class,
-                fn ($query) => $query->visibleToUser($this->user->id)
-            ),
             'tasks' => $this->calculateModelCounts(Task::class),
-            'important_urls' => $this->calculateModelCounts(ImportantUrl::class),
-            'phone_numbers' => $this->calculateModelCounts(PhoneNumber::class),
             'meeting_links' => $this->calculateModelCounts(MeetingLink::class),
             'events' => $this->calculateModelCounts(
                 Event::class,
                 fn ($query) => $query->visibleToUser($this->user->id)
             ),
             'trello_boards' => $this->calculateModelCounts(TrelloBoard::class),
+            'clients' => $this->calculateModelCounts(Client::class),
+            'projects' => $this->calculateModelCounts(Project::class),
+            'documents' => $this->calculateModelCounts(
+                Document::class,
+                fn ($query) => $query->visibleToUser($this->user->id)
+            ),
+            'important_urls' => $this->calculateModelCounts(ImportantUrl::class),
+            'phone_numbers' => $this->calculateModelCounts(PhoneNumber::class),
+            'users' => $this->calculateModelCounts(User::class),
         ];
 
         $output = "**Resource Counts Overview** 📊\n\n";
         $output .= "Here's the current count of all resources in your system:\n\n";
-
-        $output .= "**👤 Users:** {$counts['users']['active']}";
-        if ($counts['users']['trashed'] > 0) {
-            $output .= " ({$counts['users']['trashed']} archived)";
-        }
-        $output .= "\n";
-
-        $output .= "**👥 Clients:** {$counts['clients']['active']}";
-        if ($counts['clients']['trashed'] > 0) {
-            $output .= " ({$counts['clients']['trashed']} archived)";
-        }
-        $output .= "\n";
-
-        $output .= "**📁 Projects:** {$counts['projects']['active']}";
-        if ($counts['projects']['trashed'] > 0) {
-            $output .= " ({$counts['projects']['trashed']} archived)";
-        }
-        $output .= "\n";
-
-        $output .= "**📄 Documents:** {$counts['documents']['active']}";
-        if ($counts['documents']['trashed'] > 0) {
-            $output .= " ({$counts['documents']['trashed']} archived)";
-        }
-        $output .= "\n";
 
         $output .= "**✅ Tasks:** {$counts['tasks']['active']}";
         if ($counts['tasks']['trashed'] > 0) {
             $output .= " ({$counts['tasks']['trashed']} archived)";
         }
         $output .= "\n";
-
-        $output .= "**🔗 Important URLs:** {$counts['important_urls']['active']}";
-        if ($counts['important_urls']['trashed'] > 0) {
-            $output .= " ({$counts['important_urls']['trashed']} archived)";
-        }
-        $output .= "\n";
-
-        $output .= "**📞 Phone Numbers:** {$counts['phone_numbers']['active']}";
-        if ($counts['phone_numbers']['trashed'] > 0) {
-            $output .= " ({$counts['phone_numbers']['trashed']} archived)";
-        }
-        $output .= "\n";
-
+        
         $output .= "**📅 Meeting Links:** {$counts['meeting_links']['active']}";
         if ($counts['meeting_links']['trashed'] > 0) {
             $output .= " ({$counts['meeting_links']['trashed']} archived)";
         }
         $output .= "\n";
-
+        
         $output .= "**📆 Events:** {$counts['events']['active']}";
         if ($counts['events']['trashed'] > 0) {
             $output .= " ({$counts['events']['trashed']} archived)";
@@ -1093,8 +1057,46 @@ class ChatbotService
         if ($counts['trello_boards']['trashed'] > 0) {
             $output .= " ({$counts['trello_boards']['trashed']} archived)";
         }
-        $output .= "\n\n";
+        $output .= "\n";
 
+        $output .= "**👥 Clients:** {$counts['clients']['active']}";
+        if ($counts['clients']['trashed'] > 0) {
+            $output .= " ({$counts['clients']['trashed']} archived)";
+        }
+        $output .= "\n";
+        
+        $output .= "**📁 Projects:** {$counts['projects']['active']}";
+        if ($counts['projects']['trashed'] > 0) {
+            $output .= " ({$counts['projects']['trashed']} archived)";
+        }
+        $output .= "\n";
+        
+        $output .= "**📄 Documents:** {$counts['documents']['active']}";
+        if ($counts['documents']['trashed'] > 0) {
+            $output .= " ({$counts['documents']['trashed']} archived)";
+        }
+        $output .= "\n";
+        
+        
+        $output .= "**🔗 Important URLs:** {$counts['important_urls']['active']}";
+        if ($counts['important_urls']['trashed'] > 0) {
+            $output .= " ({$counts['important_urls']['trashed']} archived)";
+        }
+        $output .= "\n";
+        
+        $output .= "**📞 Phone Numbers:** {$counts['phone_numbers']['active']}";
+        if ($counts['phone_numbers']['trashed'] > 0) {
+            $output .= " ({$counts['phone_numbers']['trashed']} archived)";
+        }
+        $output .= "\n";
+        
+
+        $output .= "**👤 Users:** {$counts['users']['active']}";
+        if ($counts['users']['trashed'] > 0) {
+            $output .= " ({$counts['users']['trashed']} archived)";
+        }
+        $output .= "\n";
+        
         $output .= 'Want to see details for a specific resource? Use the individual shortcuts like /users or /clients! 🚀';
 
         return $output;
