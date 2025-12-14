@@ -107,7 +107,8 @@
         /* Ensure media menu and pickers appear above chatbot interface on mobile */
         #media-selection-menu,
         #gif-picker-container,
-        #sticker-picker-container {
+        #sticker-picker-container,
+        #command-selection-menu {
             z-index: 51 !important;
         }
     }
