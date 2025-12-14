@@ -331,19 +331,19 @@ class ChatbotService
                 'intro' => 'Berikut adalah pintasan yang boleh anda gunakan untuk mengakses ciri-ciri dengan cepat:',
                 'shortcuts' => [
                     '/help' => 'Tunjukkan mesej bantuan ini dengan semua pintasan yang tersedia',
+                    '/resources' => 'Dapatkan jumlah keseluruhan untuk semua sumber dalam sistem',
                     '/mytask' => 'Dapatkan tugas yang belum selesai dengan pecahan terperinci mengikut status',
                     '/myissue' => 'Dapatkan tugasan penjejak isu dengan pecahan terperinci',
                     '/mywishlist' => 'Dapatkan tugasan wishlist dengan pecahan terperinci',
+                    '/meeting-link' => 'Dapatkan jumlah mesyuarat akan datang dan pautan pengurusan',
+                    '/event' => 'Dapatkan jumlah acara akan datang dan pautan pengurusan',
+                    '/trello-board' => 'Dapatkan URL untuk pengurusan papan Trello dengan jumlah keseluruhan',
                     '/client' => 'Dapatkan URL untuk pengurusan pelanggan dengan jumlah keseluruhan',
                     '/project' => 'Dapatkan URL untuk pengurusan projek dengan jumlah keseluruhan',
                     '/document' => 'Dapatkan URL untuk pengurusan dokumen dengan jumlah keseluruhan',
                     '/important-url' => 'Dapatkan URL untuk pengurusan URL penting dengan jumlah keseluruhan',
                     '/phone-number' => 'Dapatkan URL untuk pengurusan nombor telefon dengan jumlah keseluruhan',
                     '/user' => 'Dapatkan URL untuk pengurusan pengguna dengan jumlah keseluruhan',
-                    '/meeting-link' => 'Dapatkan jumlah mesyuarat akan datang dan pautan pengurusan',
-                    '/event' => 'Dapatkan jumlah acara akan datang dan pautan pengurusan',
-                    '/resources' => 'Dapatkan jumlah keseluruhan untuk semua sumber dalam sistem',
-                    '/trello-board' => 'Dapatkan URL untuk pengurusan papan Trello dengan jumlah keseluruhan',
                 ],
                 'footer' => 'Hanya taip mana-mana pintasan ini dalam mesej anda untuk menggunakannya dengan cepat! 🚀',
             ],
@@ -352,19 +352,19 @@ class ChatbotService
                 'intro' => 'Berikut adalah pintasan yang dapat Anda gunakan untuk mengakses fitur dengan cepat:',
                 'shortcuts' => [
                     '/help' => 'Tampilkan pesan bantuan ini dengan semua pintasan yang tersedia',
+                    '/resources' => 'Dapatkan jumlah total untuk semua sumber dalam sistem',
                     '/mytask' => 'Dapatkan tugas yang belum selesai dengan rincian terperinci berdasarkan status',
                     '/myissue' => 'Dapatkan tugas issue tracker dengan rincian terperinci',
                     '/mywishlist' => 'Dapatkan tugas wishlist dengan rincian terperinci',
+                    '/meeting-link' => 'Dapatkan jumlah meeting mendatang dan tautan manajemen',
+                    '/event' => 'Dapatkan jumlah event mendatang dan tautan manajemen',
+                    '/trello-board' => 'Dapatkan URL untuk manajemen papan Trello dengan jumlah total',
                     '/client' => 'Dapatkan URL untuk manajemen klien dengan jumlah total',
                     '/project' => 'Dapatkan URL untuk manajemen proyek dengan jumlah total',
                     '/document' => 'Dapatkan URL untuk manajemen dokumen dengan jumlah total',
                     '/important-url' => 'Dapatkan URL untuk manajemen URL penting dengan jumlah total',
                     '/phone-number' => 'Dapatkan URL untuk manajemen nomor telepon dengan jumlah total',
                     '/user' => 'Dapatkan URL untuk manajemen pengguna dengan jumlah total',
-                    '/meeting-link' => 'Dapatkan jumlah meeting mendatang dan tautan manajemen',
-                    '/event' => 'Dapatkan jumlah event mendatang dan tautan manajemen',
-                    '/resources' => 'Dapatkan jumlah total untuk semua sumber dalam sistem',
-                    '/trello-board' => 'Dapatkan URL untuk manajemen papan Trello dengan jumlah total',
                 ],
                 'footer' => 'Cukup ketik salah satu pintasan ini dalam pesan Anda untuk menggunakannya dengan cepat! 🚀',
             ],
@@ -373,19 +373,19 @@ class ChatbotService
                 'intro' => '以下是您可以用来快速访问功能的快捷方式：',
                 'shortcuts' => [
                     '/help' => '显示此帮助消息和所有可用的快捷方式',
+                    '/resources' => '获取系统中所有资源的总数',
                     '/mytask' => '获取您未完成的任务，按状态详细分类',
                     '/myissue' => '获取问题跟踪任务，带详细分类',
                     '/mywishlist' => '获取心愿单任务，带详细分类',
+                    '/meeting-link' => '获取即将到来的会议链接数量和管理链接',
+                    '/event' => '获取即将到来的活动数量和管理链接',
+                    '/trello-board' => '获取Trello看板管理URL和总数',
                     '/client' => '获取客户管理URL和总数',
                     '/project' => '获取项目管理URL和总数',
                     '/document' => '获取文档管理URL和总数',
                     '/important-url' => '获取重要URL管理URL和总数',
                     '/phone-number' => '获取电话号码管理URL和总数',
                     '/user' => '获取用户管理URL和总数',
-                    '/meeting-link' => '获取即将到来的会议链接数量和管理链接',
-                    '/event' => '获取即将到来的活动数量和管理链接',
-                    '/resources' => '获取系统中所有资源的总数',
-                    '/trello-board' => '获取Trello看板管理URL和总数',
                 ],
                 'footer' => '只需在消息中输入这些快捷方式中的任何一个即可快速使用！🚀',
             ],
@@ -394,19 +394,19 @@ class ChatbotService
                 'intro' => '다음은 기능에 빠르게 액세스할 수 있는 단축키입니다:',
                 'shortcuts' => [
                     '/help' => '모든 사용 가능한 단축키와 함께 이 도움말 메시지를 표시',
+                    '/resources' => '시스템의 모든 리소스 총 수 가져오기',
                     '/mytask' => '상태별 세부 분석과 함께 미완료 작업 가져오기',
                     '/myissue' => '이슈 트래커 작업 세부 분석 보기',
                     '/mywishlist' => '위시리스트 작업 세부 분석 보기',
+                    '/meeting-link' => '다가오는 미팅 링크 수와 관리 링크 확인',
+                    '/event' => '다가오는 이벤트 수와 관리 링크 확인',
+                    '/trello-board' => '총 수와 함께 트렐로 보드 관리 URL 가져오기',
                     '/client' => '총 수와 함께 클라이언트 관리 URL 가져오기',
                     '/project' => '총 수와 함께 프로젝트 관리 URL 가져오기',
                     '/document' => '총 수와 함께 문서 관리 URL 가져오기',
                     '/important-url' => '총 수와 함께 중요한 URL 관리 URL 가져오기',
                     '/phone-number' => '총 수와 함께 전화번호 관리 URL 가져오기',
                     '/user' => '총 수와 함께 사용자 관리 URL 가져오기',
-                    '/meeting-link' => '다가오는 미팅 링크 수와 관리 링크 확인',
-                    '/event' => '다가오는 이벤트 수와 관리 링크 확인',
-                    '/resources' => '시스템의 모든 리소스 총 수 가져오기',
-                    '/trello-board' => '총 수와 함께 트렐로 보드 관리 URL 가져오기',
                 ],
                 'footer' => '메시지에 이러한 단축키 중 하나를 입력하여 빠르게 사용하세요! 🚀',
             ],
@@ -415,19 +415,19 @@ class ChatbotService
                 'intro' => '以下は機能に素早くアクセスするためのショートカットです:',
                 'shortcuts' => [
                     '/help' => '利用可能なすべてのショートカットと共にこのヘルプメッセージを表示',
+                    '/resources' => 'システム内のすべてのリソースの総数を取得',
                     '/mytask' => 'ステータス別の詳細分析と共に未完了タスクを取得',
                     '/myissue' => '課題トラッカーのタスクを詳細付きで取得',
                     '/mywishlist' => 'ウィッシュリストのタスクを詳細付きで取得',
+                    '/meeting-link' => '今後のミーティング数と管理リンクを取得',
+                    '/event' => '今後のイベント数と管理リンクを取得',
+                    '/trello-board' => '総数と共にTrelloボード管理URLを取得',
                     '/client' => '総数と共にクライアント管理URLを取得',
                     '/project' => '総数と共にプロジェクト管理URLを取得',
                     '/document' => '総数と共にドキュメント管理URLを取得',
                     '/important-url' => '総数と共に重要なURL管理URLを取得',
-                    '/phone-number' => '総数와 함께 전화번호 관리 URL 가져오기',
-                    '/user' => '総数와 함께 사용자 관리 URL 가져오기',
-                    '/meeting-link' => '今後のミーティング数と管理リンクを取得',
-                    '/event' => '今後のイベント数と管理リンクを取得',
-                    '/resources' => '시스템의 모든 리소스 총 수 가져오기',
-                    '/trello-board' => '総数와 함께 트렐로 보드 관리 URL 가져오기',
+                    '/phone-number' => '総数と共に電話番号管理URLを取得',
+                    '/user' => '総数と共にユーザー管理URLを取得',
                 ],
                 'footer' => 'メッセージにこれらのショートカットのいずれかを入力して素早く使用してください！🚀',
             ],
@@ -436,19 +436,19 @@ class ChatbotService
                 'intro' => 'Here are the shortcuts you can use to quickly access features:',
                 'shortcuts' => [
                     '/help' => 'Show this help message with all available shortcuts',
+                    '/resources' => 'Get total counts for all resources in the system',
                     '/mytask' => 'Get your incomplete tasks with detailed breakdown by status',
                     '/myissue' => 'Get your issue tracker tasks with detailed breakdown',
                     '/mywishlist' => 'Get your wishlist tasks with detailed breakdown',
+                    '/meeting-link' => 'Get upcoming meeting links, invites, and management links',
+                    '/event' => 'Get upcoming events, invites, and management links',
+                    '/trello-board' => 'Get URLs for Trello board management with total count',
                     '/client' => 'Get URLs for client management with total count',
                     '/project' => 'Get URLs for project management with total count',
                     '/document' => 'Get URLs for document management with total count',
                     '/important-url' => 'Get URLs for important URL management with total count',
                     '/phone-number' => 'Get URLs for phone number management with total count',
                     '/user' => 'Get URLs for user management with total count',
-                    '/meeting-link' => 'Get upcoming meeting links, invites, and management links',
-                    '/event' => 'Get upcoming events, invites, and management links',
-                    '/resources' => 'Get total counts for all resources in the system',
-                    '/trello-board' => 'Get URLs for Trello board management with total count',
                 ],
                 'footer' => 'Just type any of these shortcuts in your message to use them quickly! 🚀',
             ],
@@ -1040,13 +1040,13 @@ class ChatbotService
             $output .= " ({$counts['tasks']['trashed']} archived)";
         }
         $output .= "\n";
-        
+
         $output .= "**📅 Meeting Links:** {$counts['meeting_links']['active']}";
         if ($counts['meeting_links']['trashed'] > 0) {
             $output .= " ({$counts['meeting_links']['trashed']} archived)";
         }
         $output .= "\n";
-        
+
         $output .= "**📆 Events:** {$counts['events']['active']}";
         if ($counts['events']['trashed'] > 0) {
             $output .= " ({$counts['events']['trashed']} archived)";
@@ -1064,39 +1064,37 @@ class ChatbotService
             $output .= " ({$counts['clients']['trashed']} archived)";
         }
         $output .= "\n";
-        
+
         $output .= "**📁 Projects:** {$counts['projects']['active']}";
         if ($counts['projects']['trashed'] > 0) {
             $output .= " ({$counts['projects']['trashed']} archived)";
         }
         $output .= "\n";
-        
+
         $output .= "**📄 Documents:** {$counts['documents']['active']}";
         if ($counts['documents']['trashed'] > 0) {
             $output .= " ({$counts['documents']['trashed']} archived)";
         }
         $output .= "\n";
-        
-        
+
         $output .= "**🔗 Important URLs:** {$counts['important_urls']['active']}";
         if ($counts['important_urls']['trashed'] > 0) {
             $output .= " ({$counts['important_urls']['trashed']} archived)";
         }
         $output .= "\n";
-        
+
         $output .= "**📞 Phone Numbers:** {$counts['phone_numbers']['active']}";
         if ($counts['phone_numbers']['trashed'] > 0) {
             $output .= " ({$counts['phone_numbers']['trashed']} archived)";
         }
         $output .= "\n";
-        
 
         $output .= "**👤 Users:** {$counts['users']['active']}";
         if ($counts['users']['trashed'] > 0) {
             $output .= " ({$counts['users']['trashed']} archived)";
         }
         $output .= "\n";
-        
+
         $output .= 'Want to see details for a specific resource? Use the individual shortcuts like /users or /clients! 🚀';
 
         return $output;
