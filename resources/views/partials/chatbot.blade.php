@@ -693,90 +693,135 @@
 
 <!-- Command Selection Menu -->
 <div id="command-selection-menu" class="fixed hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-[12] w-[240px] max-h-80 overflow-y-auto no-scrollbar flex flex-col p-2 gap-1">
+    
+    <!-- Help Command -->
+    <!-- /help -->
     <button type="button" onclick="executeCommand('/help', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
         <div class="flex flex-col">
             <span class="font-medium">Help</span>
             <span class="text-[10px] text-gray-400">/help</span>
         </div>
     </button>
-    <button type="button" onclick="executeCommand('/mytask', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">My Tasks</span>
-            <span class="text-[10px] text-gray-400">/mytask</span>
-        </div>
-    </button>
-    <button type="button" onclick="executeCommand('/myissue', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">My Issues</span>
-            <span class="text-[10px] text-gray-400">/myissue</span>
-        </div>
-    </button>
-    <button type="button" onclick="executeCommand('/mywishlist', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">My Wishlist</span>
-            <span class="text-[10px] text-gray-400">/mywishlist</span>
-        </div>
-    </button>
-    <button type="button" onclick="executeCommand('/client', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Clients</span>
-            <span class="text-[10px] text-gray-400">/client</span>
-        </div>
-    </button>
-    <button type="button" onclick="executeCommand('/project', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Projects</span>
-            <span class="text-[10px] text-gray-400">/project</span>
-        </div>
-    </button>
-    <button type="button" onclick="executeCommand('/document', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Documents</span>
-            <span class="text-[10px] text-gray-400">/document</span>
-        </div>
-    </button>
-    <button type="button" onclick="executeCommand('/important-url', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Important URLs</span>
-            <span class="text-[10px] text-gray-400">/important-url</span>
-        </div>
-    </button>
-    <button type="button" onclick="executeCommand('/phone-number', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Phone Numbers</span>
-            <span class="text-[10px] text-gray-400">/phone-number</span>
-        </div>
-    </button>
-    <button type="button" onclick="executeCommand('/user', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Users</span>
-            <span class="text-[10px] text-gray-400">/user</span>
-        </div>
-    </button>
-    <button type="button" onclick="executeCommand('/meeting-link', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Meeting Links</span>
-            <span class="text-[10px] text-gray-400">/meeting-link</span>
-        </div>
-    </button>
-    <button type="button" onclick="executeCommand('/event', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Events</span>
-            <span class="text-[10px] text-gray-400">/event</span>
-        </div>
-    </button>
+    
+    <!-- Resources Command -->
+    <!-- /resources -->
     <button type="button" onclick="executeCommand('/resources', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
         <div class="flex flex-col">
             <span class="font-medium">Resources</span>
             <span class="text-[10px] text-gray-400">/resources</span>
         </div>
     </button>
+
+    <!-- My Tasks Command -->
+    <!-- /mytask -->
+    <button type="button" onclick="executeCommand('/mytask', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+        <div class="flex flex-col">
+            <span class="font-medium">My Tasks</span>
+            <span class="text-[10px] text-gray-400">/mytask</span>
+        </div>
+    </button>
+
+    <!-- My Issues Command -->
+    <!-- /myissue -->
+    <button type="button" onclick="executeCommand('/myissue', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+        <div class="flex flex-col">
+            <span class="font-medium">My Issues</span>
+            <span class="text-[10px] text-gray-400">/myissue</span>
+        </div>
+    </button>
+    
+    <!-- My Wishlist Command -->
+    <!-- /mywishlist -->
+    <button type="button" onclick="executeCommand('/mywishlist', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+        <div class="flex flex-col">
+            <span class="font-medium">My Wishlist</span>
+            <span class="text-[10px] text-gray-400">/mywishlist</span>
+        </div>
+    </button>
+    
+    <!-- Meeting Links Command -->
+    <!-- /meeting-link -->
+    <button type="button" onclick="executeCommand('/meeting-link', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+        <div class="flex flex-col">
+            <span class="font-medium">Meeting Links</span>
+            <span class="text-[10px] text-gray-400">/meeting-link</span>
+        </div>
+    </button>
+
+    <!-- Events Command -->
+    <!-- /event -->
+    <button type="button" onclick="executeCommand('/event', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+        <div class="flex flex-col">
+            <span class="font-medium">Events</span>
+            <span class="text-[10px] text-gray-400">/event</span>
+        </div>
+    </button>
+
+
+    <!-- Trello Boards Command -->
+    <!-- /trello-board -->
     <button type="button" onclick="executeCommand('/trello-board', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
         <div class="flex flex-col">
             <span class="font-medium">Trello Boards</span>
             <span class="text-[10px] text-gray-400">/trello-board</span>
         </div>
     </button>
+    
+    <!-- Clients Command -->
+    <!-- /client -->
+    <button type="button" onclick="executeCommand('/client', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+        <div class="flex flex-col">
+            <span class="font-medium">Clients</span>
+            <span class="text-[10px] text-gray-400">/client</span>
+        </div>
+    </button>
+
+    <!-- Projects Command -->
+    <!-- /project -->
+    <button type="button" onclick="executeCommand('/project', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+        <div class="flex flex-col">
+            <span class="font-medium">Projects</span>
+            <span class="text-[10px] text-gray-400">/project</span>
+        </div>
+    </button>
+
+    <!-- Documents Command -->
+    <!-- /document -->
+    <button type="button" onclick="executeCommand('/document', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+        <div class="flex flex-col">
+            <span class="font-medium">Documents</span>
+            <span class="text-[10px] text-gray-400">/document</span>
+        </div>
+    </button>
+
+    <!-- Important URLs Command -->
+    <!-- /important-url -->
+    <button type="button" onclick="executeCommand('/important-url', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+        <div class="flex flex-col">
+            <span class="font-medium">Important URLs</span>
+            <span class="text-[10px] text-gray-400">/important-url</span>
+        </div>
+    </button>
+
+    <!-- Phone Numbers Command -->
+    <!-- /phone-number -->
+    <button type="button" onclick="executeCommand('/phone-number', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+        <div class="flex flex-col">
+            <span class="font-medium">Phone Numbers</span>
+            <span class="text-[10px] text-gray-400">/phone-number</span>
+        </div>
+    </button>
+
+    <!-- Users Command -->
+    <!-- /user -->
+    <button type="button" onclick="executeCommand('/user', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+        <div class="flex flex-col">
+            <span class="font-medium">Users</span>
+            <span class="text-[10px] text-gray-400">/user</span>
+        </div>
+    </button>
+
+
 </div>
 
 <!-- Floating GIF Picker Container -->
