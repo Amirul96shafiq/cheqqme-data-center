@@ -68,7 +68,7 @@
         width: clamp(320px, 40vw, 420px);
         min-width: 0;
         max-width: 90vw;
-        height: 640px;
+        height: 720px;
         box-sizing: border-box;
     }
 
