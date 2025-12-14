@@ -293,9 +293,9 @@ class ChatbotController extends Controller
 
                 Available Commands & Tools
                 - /help - "Let me show you all my cool tricks!"
-                - /mytask - "Time to see what adventures await you!"
-                - /myissue - "Let\'s tackle the issue tracker quests!"
-                - /mywishlist - "Wishlist missions incoming!"
+                - /my-task - "Time to see what adventures await you!"
+                - /my-issue - "Let\'s tackle the issue tracker quests!"
+                - /my-wishlist - "Wishlist missions incoming!"
                 - /client - "Let\'s meet some amazing people!"
                 - /project - "Ready to build something awesome?"
                 - /document - "Document treasure hunt time!"
@@ -321,16 +321,16 @@ class ChatbotController extends Controller
                 - If the user writes in Korean, respond in Korean
                 - If the user writes in Indonesian, respond in Indonesian
                 - If the user writes in English or any other language, respond in English
-                - IMPORTANT: When users type commands like /help, /mytask, etc., respond in their language
+                - IMPORTANT: When users type commands like /help, /my-task, etc., respond in their language
                 - Translate command responses to match the user\'s conversation language
                 - If the conversation has been in Malay or Korean, respond to /help in Malay or Korean
                 - Maintain language consistency throughout the entire conversation
 
                 Tool Usage Instructions
                 - ALWAYS use the show_help tool when users type /help or /help 
-                - ALWAYS use the get_incomplete_tasks tool when users type /mytask or /mytask 
-                - ALWAYS use the get_issue_tasks tool when users type /myissue or /myissue 
-                - ALWAYS use the get_wishlist_tasks tool when users type /mywishlist or /mywishlist 
+                - ALWAYS use the get_incomplete_tasks tool when users type /my-task or /my-task 
+                - ALWAYS use the get_issue_tasks tool when users type /my-issue or /my-issue 
+                - ALWAYS use the get_wishlist_tasks tool when users type /my-wishlist or /my-wishlist 
                 - ALWAYS use the get_client_urls tool when users type /client or /client 
                 - ALWAYS use the get_project_urls tool when users type /project or /project 
                 - ALWAYS use the get_document_urls tool when users type /document or /document 
@@ -343,7 +343,7 @@ class ChatbotController extends Controller
                 - ALWAYS use the get_trello_board_urls tool when users type /trello-board or /trello-board 
                 - Do NOT respond conversationally to these commands - use the tools instead
                 - The tools will provide the actual content, then you can add a friendly message in the user\'s language
-                - Always keep the total counts shown by each resource tool (client, project, document, important-url, phone-number, user, meeting-link, event, trello-board, resources, mytask, myissue, mywishlist)
+                - Always keep the total counts shown by each resource tool (client, project, document, important-url, phone-number, user, meeting-link, event, trello-board, resources, my-task, my-issue, my-wishlist)
 
                 Remember
                 - Do not change the title or use the correct title of the task when you list down the tasks
@@ -945,15 +945,17 @@ class ChatbotController extends Controller
 
         if (file_exists($stickersPath)) {
             // Recursive scan helper
-            $scan = function($dir, $prefix = '') use (&$scan, &$stickers) {
+            $scan = function ($dir, $prefix = '') use (&$scan, &$stickers) {
                 $items = scandir($dir);
                 foreach ($items as $item) {
-                    if ($item === '.' || $item === '..') continue;
-                    $path = $dir . '/' . $item;
+                    if ($item === '.' || $item === '..') {
+                        continue;
+                    }
+                    $path = $dir.'/'.$item;
                     if (is_dir($path)) {
-                        $scan($path, $prefix . $item . '/');
+                        $scan($path, $prefix.$item.'/');
                     } elseif (in_array(strtolower(pathinfo($item, PATHINFO_EXTENSION)), ['webp', 'png', 'jpg', 'gif'])) {
-                        $stickers[] = $prefix . $item;
+                        $stickers[] = $prefix.$item;
                     }
                 }
             };

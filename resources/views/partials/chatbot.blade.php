@@ -713,29 +713,29 @@
     </button>
 
     <!-- My Tasks Command -->
-    <!-- /mytask -->
-    <button type="button" onclick="executeCommand('/mytask', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+    <!-- /my-task -->
+    <button type="button" onclick="executeCommand('/my-task', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
         <div class="flex flex-col">
             <span class="font-medium">My Tasks</span>
-            <span class="text-[10px] text-gray-400">/mytask</span>
+            <span class="text-[10px] text-gray-400">/my-task</span>
         </div>
     </button>
 
     <!-- My Issues Command -->
-    <!-- /myissue -->
-    <button type="button" onclick="executeCommand('/myissue', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+    <!-- /my-issue -->
+    <button type="button" onclick="executeCommand('/my-issue', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
         <div class="flex flex-col">
             <span class="font-medium">My Issues</span>
-            <span class="text-[10px] text-gray-400">/myissue</span>
+            <span class="text-[10px] text-gray-400">/my-issue</span>
         </div>
     </button>
     
     <!-- My Wishlist Command -->
-    <!-- /mywishlist -->
-    <button type="button" onclick="executeCommand('/mywishlist', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
+    <!-- /my-wishlist -->
+    <button type="button" onclick="executeCommand('/my-wishlist', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
         <div class="flex flex-col">
             <span class="font-medium">My Wishlist</span>
-            <span class="text-[10px] text-gray-400">/mywishlist</span>
+            <span class="text-[10px] text-gray-400">/my-wishlist</span>
         </div>
     </button>
     
@@ -766,7 +766,7 @@
             <span class="text-[10px] text-gray-400">/trello-board</span>
         </div>
     </button>
-    
+
     <!-- Clients Command -->
     <!-- /client -->
     <button type="button" onclick="executeCommand('/client', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">

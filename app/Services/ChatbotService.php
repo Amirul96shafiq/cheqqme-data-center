@@ -75,9 +75,9 @@ class ChatbotService
     {
         $this->tools = [
             'show_help' => [$this, 'showHelp'], // Show all available shortcuts and commands. Shortcut: /help
-            'get_incomplete_tasks' => [$this, 'getIncompleteTasks'], // Get incomplete tasks with count and/or detailed breakdown by status with URLs. Shortcut: /mytask
-            'get_issue_tasks' => [$this, 'getIssueTasks'], // Get issue tracker tasks assigned to the current user. Shortcut: /myissue
-            'get_wishlist_tasks' => [$this, 'getWishlistTasks'], // Get wishlist tracker tasks assigned to the current user. Shortcut: /mywishlist
+            'get_incomplete_tasks' => [$this, 'getIncompleteTasks'], // Get incomplete tasks with count and/or detailed breakdown by status with URLs. Shortcut: /my-task
+            'get_issue_tasks' => [$this, 'getIssueTasks'], // Get issue tracker tasks assigned to the current user. Shortcut: /my-issue
+            'get_wishlist_tasks' => [$this, 'getWishlistTasks'], // Get wishlist tracker tasks assigned to the current user. Shortcut: /my-wishlist
             'get_client_urls' => [$this, 'getClientUrls'], // Get URLs for client management (create new, list all) with total count. Shortcut: /client
             'get_project_urls' => [$this, 'getProjectUrls'], // Get URLs for project management (create new, list all) with total count. Shortcut: /project
             'get_document_urls' => [$this, 'getDocumentUrls'], // Get URLs for document management (create new, list all) with total count. Shortcut: /document
@@ -101,7 +101,7 @@ class ChatbotService
                 'type' => 'function',
                 'function' => [
                     'name' => 'get_incomplete_tasks',
-                    'description' => 'MUST be called when user types /mytask or /mytask . Get incomplete tasks assigned to the current user. Respond in the user\'s language. Can return just the count, detailed breakdown by status, or both. Shortcut: /mytask',
+                    'description' => 'MUST be called when user types /my-task or /my-task . Get incomplete tasks assigned to the current user. Respond in the user\'s language. Can return just the count, detailed breakdown by status, or both. Shortcut: /my-task',
                     'parameters' => [
                         'type' => 'object',
                         'properties' => [
@@ -122,7 +122,7 @@ class ChatbotService
                 'type' => 'function',
                 'function' => [
                     'name' => 'get_issue_tasks',
-                    'description' => 'MUST be called when user types /myissue. Get issue tracker tasks assigned to the current user (upcoming/incomplete statuses only) with counts and details. Respond in the user\'s language. Shortcut: /myissue',
+                    'description' => 'MUST be called when user types /my-issue. Get issue tracker tasks assigned to the current user (upcoming/incomplete statuses only) with counts and details. Respond in the user\'s language. Shortcut: /my-issue',
                     'parameters' => [
                         'type' => 'object',
                         'properties' => [
@@ -143,7 +143,7 @@ class ChatbotService
                 'type' => 'function',
                 'function' => [
                     'name' => 'get_wishlist_tasks',
-                    'description' => 'MUST be called when user types /mywishlist. Get wishlist tracker tasks assigned to the current user (upcoming/incomplete statuses only) with counts and details. Respond in the user\'s language. Shortcut: /mywishlist',
+                    'description' => 'MUST be called when user types /my-wishlist. Get wishlist tracker tasks assigned to the current user (upcoming/incomplete statuses only) with counts and details. Respond in the user\'s language. Shortcut: /my-wishlist',
                     'parameters' => [
                         'type' => 'object',
                         'properties' => [
@@ -332,9 +332,9 @@ class ChatbotService
                 'shortcuts' => [
                     '/help' => 'Tunjukkan mesej bantuan ini dengan semua pintasan yang tersedia',
                     '/resources' => 'Dapatkan jumlah keseluruhan untuk semua sumber dalam sistem',
-                    '/mytask' => 'Dapatkan tugas yang belum selesai dengan pecahan terperinci mengikut status',
-                    '/myissue' => 'Dapatkan tugasan penjejak isu dengan pecahan terperinci',
-                    '/mywishlist' => 'Dapatkan tugasan wishlist dengan pecahan terperinci',
+                    '/my-task' => 'Dapatkan tugas yang belum selesai dengan pecahan terperinci mengikut status',
+                    '/my-issue' => 'Dapatkan tugasan penjejak isu dengan pecahan terperinci',
+                    '/my-wishlist' => 'Dapatkan tugasan wishlist dengan pecahan terperinci',
                     '/meeting-link' => 'Dapatkan jumlah mesyuarat akan datang dan pautan pengurusan',
                     '/event' => 'Dapatkan jumlah acara akan datang dan pautan pengurusan',
                     '/trello-board' => 'Dapatkan URL untuk pengurusan papan Trello dengan jumlah keseluruhan',
@@ -353,9 +353,9 @@ class ChatbotService
                 'shortcuts' => [
                     '/help' => 'Tampilkan pesan bantuan ini dengan semua pintasan yang tersedia',
                     '/resources' => 'Dapatkan jumlah total untuk semua sumber dalam sistem',
-                    '/mytask' => 'Dapatkan tugas yang belum selesai dengan rincian terperinci berdasarkan status',
-                    '/myissue' => 'Dapatkan tugas issue tracker dengan rincian terperinci',
-                    '/mywishlist' => 'Dapatkan tugas wishlist dengan rincian terperinci',
+                    '/my-task' => 'Dapatkan tugas yang belum selesai dengan rincian terperinci berdasarkan status',
+                    '/my-issue' => 'Dapatkan tugas issue tracker dengan rincian terperinci',
+                    '/my-wishlist' => 'Dapatkan tugas wishlist dengan rincian terperinci',
                     '/meeting-link' => 'Dapatkan jumlah meeting mendatang dan tautan manajemen',
                     '/event' => 'Dapatkan jumlah event mendatang dan tautan manajemen',
                     '/trello-board' => 'Dapatkan URL untuk manajemen papan Trello dengan jumlah total',
@@ -374,9 +374,9 @@ class ChatbotService
                 'shortcuts' => [
                     '/help' => '显示此帮助消息和所有可用的快捷方式',
                     '/resources' => '获取系统中所有资源的总数',
-                    '/mytask' => '获取您未完成的任务，按状态详细分类',
-                    '/myissue' => '获取问题跟踪任务，带详细分类',
-                    '/mywishlist' => '获取心愿单任务，带详细分类',
+                    '/my-task' => '获取您未完成的任务，按状态详细分类',
+                    '/my-issue' => '获取问题跟踪任务，带详细分类',
+                    '/my-wishlist' => '获取心愿单任务，带详细分类',
                     '/meeting-link' => '获取即将到来的会议链接数量和管理链接',
                     '/event' => '获取即将到来的活动数量和管理链接',
                     '/trello-board' => '获取Trello看板管理URL和总数',
@@ -395,9 +395,9 @@ class ChatbotService
                 'shortcuts' => [
                     '/help' => '모든 사용 가능한 단축키와 함께 이 도움말 메시지를 표시',
                     '/resources' => '시스템의 모든 리소스 총 수 가져오기',
-                    '/mytask' => '상태별 세부 분석과 함께 미완료 작업 가져오기',
-                    '/myissue' => '이슈 트래커 작업 세부 분석 보기',
-                    '/mywishlist' => '위시리스트 작업 세부 분석 보기',
+                    '/my-task' => '상태별 세부 분석과 함께 미완료 작업 가져오기',
+                    '/my-issue' => '이슈 트래커 작업 세부 분석 보기',
+                    '/my-wishlist' => '위시리스트 작업 세부 분석 보기',
                     '/meeting-link' => '다가오는 미팅 링크 수와 관리 링크 확인',
                     '/event' => '다가오는 이벤트 수와 관리 링크 확인',
                     '/trello-board' => '총 수와 함께 트렐로 보드 관리 URL 가져오기',
@@ -416,9 +416,9 @@ class ChatbotService
                 'shortcuts' => [
                     '/help' => '利用可能なすべてのショートカットと共にこのヘルプメッセージを表示',
                     '/resources' => 'システム内のすべてのリソースの総数を取得',
-                    '/mytask' => 'ステータス別の詳細分析と共に未完了タスクを取得',
-                    '/myissue' => '課題トラッカーのタスクを詳細付きで取得',
-                    '/mywishlist' => 'ウィッシュリストのタスクを詳細付きで取得',
+                    '/my-task' => 'ステータス別の詳細分析と共に未完了タスクを取得',
+                    '/my-issue' => '課題トラッカーのタスクを詳細付きで取得',
+                    '/my-wishlist' => 'ウィッシュリストのタスクを詳細付きで取得',
                     '/meeting-link' => '今後のミーティング数と管理リンクを取得',
                     '/event' => '今後のイベント数と管理リンクを取得',
                     '/trello-board' => '総数と共にTrelloボード管理URLを取得',
@@ -437,9 +437,9 @@ class ChatbotService
                 'shortcuts' => [
                     '/help' => 'Show this help message with all available shortcuts',
                     '/resources' => 'Get total counts for all resources in the system',
-                    '/mytask' => 'Get your incomplete tasks with detailed breakdown by status',
-                    '/myissue' => 'Get your issue tracker tasks with detailed breakdown',
-                    '/mywishlist' => 'Get your wishlist tasks with detailed breakdown',
+                    '/my-task' => 'Get your incomplete tasks with detailed breakdown by status',
+                    '/my-issue' => 'Get your issue tracker tasks with detailed breakdown',
+                    '/my-wishlist' => 'Get your wishlist tasks with detailed breakdown',
                     '/meeting-link' => 'Get upcoming meeting links, invites, and management links',
                     '/event' => 'Get upcoming events, invites, and management links',
                     '/trello-board' => 'Get URLs for Trello board management with total count',
@@ -595,7 +595,7 @@ class ChatbotService
 
     /**
      * Tool: Get incomplete tasks with count and/or detailed breakdown by status.
-     * Shortcut: /mytask
+     * Shortcut: /my-task
      */
     public function getIncompleteTasks(bool $includeDetails = true, bool $includeCount = true): string
     {
@@ -612,7 +612,7 @@ class ChatbotService
 
     /**
      * Tool: Get issue tracker tasks assigned to the current user.
-     * Shortcut: /myissue
+     * Shortcut: /my-issue
      */
     public function getIssueTasks(bool $includeDetails = true, bool $includeCount = true): string
     {
@@ -635,7 +635,7 @@ class ChatbotService
 
     /**
      * Tool: Get wishlist tracker tasks assigned to the current user.
-     * Shortcut: /mywishlist
+     * Shortcut: /my-wishlist
      */
     public function getWishlistTasks(bool $includeDetails = true, bool $includeCount = true): string
     {
