@@ -1021,8 +1021,14 @@ class ChatbotService
                 Document::class,
                 fn ($query) => $query->visibleToUser($this->user->id)
             ),
+            'tasks' => $this->calculateModelCounts(Task::class),
             'important_urls' => $this->calculateModelCounts(ImportantUrl::class),
             'phone_numbers' => $this->calculateModelCounts(PhoneNumber::class),
+            'meeting_links' => $this->calculateModelCounts(MeetingLink::class),
+            'events' => $this->calculateModelCounts(
+                Event::class,
+                fn ($query) => $query->visibleToUser($this->user->id)
+            ),
             'trello_boards' => $this->calculateModelCounts(TrelloBoard::class),
         ];
 
@@ -1053,6 +1059,12 @@ class ChatbotService
         }
         $output .= "\n";
 
+        $output .= "**✅ Tasks:** {$counts['tasks']['active']}";
+        if ($counts['tasks']['trashed'] > 0) {
+            $output .= " ({$counts['tasks']['trashed']} archived)";
+        }
+        $output .= "\n";
+
         $output .= "**🔗 Important URLs:** {$counts['important_urls']['active']}";
         if ($counts['important_urls']['trashed'] > 0) {
             $output .= " ({$counts['important_urls']['trashed']} archived)";
@@ -1062,6 +1074,18 @@ class ChatbotService
         $output .= "**📞 Phone Numbers:** {$counts['phone_numbers']['active']}";
         if ($counts['phone_numbers']['trashed'] > 0) {
             $output .= " ({$counts['phone_numbers']['trashed']} archived)";
+        }
+        $output .= "\n";
+
+        $output .= "**📅 Meeting Links:** {$counts['meeting_links']['active']}";
+        if ($counts['meeting_links']['trashed'] > 0) {
+            $output .= " ({$counts['meeting_links']['trashed']} archived)";
+        }
+        $output .= "\n";
+
+        $output .= "**📆 Events:** {$counts['events']['active']}";
+        if ($counts['events']['trashed'] > 0) {
+            $output .= " ({$counts['events']['trashed']} archived)";
         }
         $output .= "\n";
 
