@@ -693,133 +693,91 @@
 </div>
 
 <!-- Command Selection Menu -->
-<div id="command-selection-menu" class="fixed hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-[12] w-[240px] max-h-80 overflow-y-auto no-scrollbar flex flex-col p-2 gap-1">
+<div id="command-selection-menu" class="fixed hidden bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-[12] w-[300px] max-h-80 overflow-y-auto no-scrollbar flex flex-row flex-wrap content-start p-2 gap-2">
     
     <!-- Help Command -->
     <!-- /help -->
-    <button type="button" onclick="executeCommand('/help', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Help</span>
-            <span class="text-[10px] text-gray-400">/help</span>
-        </div>
+    <button type="button" onclick="executeCommand('/help', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/help</span>
     </button>
     
     <!-- Resources Command -->
     <!-- /resources -->
-    <button type="button" onclick="executeCommand('/resources', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Resources</span>
-            <span class="text-[10px] text-gray-400">/resources</span>
-        </div>
+    <button type="button" onclick="executeCommand('/resources', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/resources</span>
     </button>
 
     <!-- My Tasks Command -->
     <!-- /my-task -->
-    <button type="button" onclick="executeCommand('/my-task', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">My Tasks</span>
-            <span class="text-[10px] text-gray-400">/my-task</span>
-        </div>
+    <button type="button" onclick="executeCommand('/my-task', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/my-task</span>
     </button>
 
     <!-- My Issues Command -->
     <!-- /my-issue -->
-    <button type="button" onclick="executeCommand('/my-issue', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">My Issues</span>
-            <span class="text-[10px] text-gray-400">/my-issue</span>
-        </div>
+    <button type="button" onclick="executeCommand('/my-issue', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/my-issue</span>
     </button>
     
     <!-- My Wishlist Command -->
     <!-- /my-wishlist -->
-    <button type="button" onclick="executeCommand('/my-wishlist', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">My Wishlist</span>
-            <span class="text-[10px] text-gray-400">/my-wishlist</span>
-        </div>
+    <button type="button" onclick="executeCommand('/my-wishlist', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/my-wishlist</span>
     </button>
     
     <!-- Meeting Links Command -->
     <!-- /meeting-link -->
-    <button type="button" onclick="executeCommand('/meeting-link', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Meeting Links</span>
-            <span class="text-[10px] text-gray-400">/meeting-link</span>
-        </div>
+    <button type="button" onclick="executeCommand('/meeting-link', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/meeting-link</span>
     </button>
 
     <!-- Events Command -->
     <!-- /event -->
-    <button type="button" onclick="executeCommand('/event', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Events</span>
-            <span class="text-[10px] text-gray-400">/event</span>
-        </div>
+    <button type="button" onclick="executeCommand('/event', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/event</span>
     </button>
 
 
     <!-- Trello Boards Command -->
     <!-- /trello-board -->
-    <button type="button" onclick="executeCommand('/trello-board', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Trello Boards</span>
-            <span class="text-[10px] text-gray-400">/trello-board</span>
-        </div>
+    <button type="button" onclick="executeCommand('/trello-board', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/trello-board</span>
     </button>
 
     <!-- Clients Command -->
     <!-- /client -->
-    <button type="button" onclick="executeCommand('/client', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Clients</span>
-            <span class="text-[10px] text-gray-400">/client</span>
-        </div>
+    <button type="button" onclick="executeCommand('/client', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/client</span>
     </button>
 
     <!-- Projects Command -->
     <!-- /project -->
-    <button type="button" onclick="executeCommand('/project', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Projects</span>
-            <span class="text-[10px] text-gray-400">/project</span>
-        </div>
+    <button type="button" onclick="executeCommand('/project', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/project</span>
     </button>
 
     <!-- Documents Command -->
     <!-- /document -->
-    <button type="button" onclick="executeCommand('/document', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Documents</span>
-            <span class="text-[10px] text-gray-400">/document</span>
-        </div>
+    <button type="button" onclick="executeCommand('/document', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/document</span>
     </button>
 
     <!-- Important URLs Command -->
     <!-- /important-url -->
-    <button type="button" onclick="executeCommand('/important-url', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Important URLs</span>
-            <span class="text-[10px] text-gray-400">/important-url</span>
-        </div>
+    <button type="button" onclick="executeCommand('/important-url', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/important-url</span>
     </button>
 
     <!-- Phone Numbers Command -->
     <!-- /phone-number -->
-    <button type="button" onclick="executeCommand('/phone-number', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Phone Numbers</span>
-            <span class="text-[10px] text-gray-400">/phone-number</span>
-        </div>
+    <button type="button" onclick="executeCommand('/phone-number', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/phone-number</span>
     </button>
 
     <!-- Users Command -->
     <!-- /user -->
-    <button type="button" onclick="executeCommand('/user', event);" class="w-full text-left px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 flex items-center gap-3 rounded-md">
-        <div class="flex flex-col">
-            <span class="font-medium">Users</span>
-            <span class="text-[10px] text-gray-400">/user</span>
-        </div>
+    <button type="button" onclick="executeCommand('/user', event);" class="group flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-primary-500 hover:text-primary-900 dark:hover:text-primary-900 dark:hover:bg-primary-500 rounded-full border border-gray-200 dark:border-gray-600 transition-all duration-200">
+        <span>/user</span>
     </button>
 
 
