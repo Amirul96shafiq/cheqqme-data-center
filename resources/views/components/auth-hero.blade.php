@@ -205,7 +205,7 @@
                 currentSlide: 0,
                 videoUrls: [
                     '{{ asset("videos/vid_slide_01.mp4") }}', // Slide 1
-                    '{{ asset("videos/resources_tutorial_video01.mp4") }}', // Slide 2
+                    '{{ asset("videos/vid_slide_02.mp4") }}', // Slide 2
                     '{{ asset("videos/resources_tutorial_video01.mp4") }}', // Slide 3
                     '{{ asset("videos/resources_tutorial_video01.mp4") }}', // Slide 4
                     '{{ asset("videos/resources_tutorial_video01.mp4") }}', // Slide 5
