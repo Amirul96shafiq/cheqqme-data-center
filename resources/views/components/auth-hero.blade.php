@@ -209,7 +209,7 @@
                     '{{ asset("videos/vid_slide_03.mp4") }}', // Slide 3
                     '{{ asset("videos/vid_slide_04.mp4") }}', // Slide 4
                     '{{ asset("videos/vid_slide_05.mp4") }}', // Slide 5
-                    '{{ asset("videos/resources_tutorial_video01.mp4") }}', // Slide 6
+                    '{{ asset("videos/vid_slide_06.mp4") }}', // Slide 6
                 ],
 
                 init() {
