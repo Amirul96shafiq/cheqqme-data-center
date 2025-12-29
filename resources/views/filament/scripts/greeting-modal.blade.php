@@ -337,7 +337,7 @@
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('profile-video')?.classList.contains('hidden')">
                                 <span onclick="event.stopPropagation(); navigateToProfile()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">{{ __('greetings.view_action') }}</span>
-                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                             </div>
@@ -358,7 +358,7 @@
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('settings-video')?.classList.contains('hidden')">
                                 <span onclick="event.stopPropagation(); navigateToSettings()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">{{ __('greetings.view_action') }}</span>
-                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                             </div>
@@ -379,7 +379,7 @@
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('chatbot-history-video')?.classList.contains('hidden')">
                                 <span onclick="event.stopPropagation(); navigateToChatbotHistory()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">{{ __('greetings.view_action') }}</span>
-                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                             </div>
@@ -400,7 +400,7 @@
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('action-board-video')?.classList.contains('hidden')">
                                 <span onclick="event.stopPropagation(); navigateToActionBoard()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">{{ __('greetings.view_action') }}</span>
-                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                             </div>
@@ -421,7 +421,7 @@
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('meeting-links-video')?.classList.contains('hidden')">
                                 <span onclick="event.stopPropagation(); navigateToMeetingLinks()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">{{ __('greetings.view_action') }}</span>
-                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                             </div>
@@ -442,7 +442,7 @@
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('events-video')?.classList.contains('hidden')">
                                 <span onclick="event.stopPropagation(); navigateToEvents()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">{{ __('greetings.view_action') }}</span>
-                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                             </div>
@@ -463,7 +463,7 @@
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('data-management-video')?.classList.contains('hidden')">
                                 <span @click.stop="$dispatch('toggle-resources-dropdown')" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">{{ __('greetings.view_action') }}</span>
-                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                             </div>
@@ -484,7 +484,7 @@
                             </div>
                             <div class="flex-shrink-0 flex items-center" x-data="{ isVideoActive: false }" x-init="isVideoActive = !document.getElementById('users-video')?.classList.contains('hidden')">
                                 <span onclick="event.stopPropagation(); navigateToUsers()" class="text-sm text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-2 cursor-pointer">{{ __('greetings.view_action') }}</span>
-                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-all duration-200" x-bind:class="{ 'rotate-90': isVideoActive }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                             </div>
