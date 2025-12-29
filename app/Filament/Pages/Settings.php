@@ -169,11 +169,8 @@ class Settings extends Page
     // Handle location detection failed
     public function handleLocationDetectionFailed(): void
     {
-        Notification::make()
-            ->title(__('settings.notifications.location_detection_failed'))
-            ->body(__('settings.notifications.location_detection_failed_body'))
-            ->danger()
-            ->send();
+        // Silent fail - IP-based geolocation should work in most cases
+        // If it fails, user can manually enter location
     }
 
     // Update location data in form
@@ -523,14 +520,8 @@ class Settings extends Page
             ->icon('heroicon-o-map-pin')
             ->color('gray')
             ->action(function ($set) {
-                // Dispatch browser event to detect location
+                // Dispatch browser event to detect location (IP-based)
                 $this->dispatch('detect-user-location');
-
-                Notification::make()
-                    ->title(__('settings.notifications.location_detection_started'))
-                    ->body(__('settings.notifications.location_detection_started_body'))
-                    ->info()
-                    ->send();
             });
     }
 
