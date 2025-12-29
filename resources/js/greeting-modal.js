@@ -289,14 +289,33 @@ function scrollToWeatherSection() {
     }
 }
 
-// Video source URL constant
-const TUTORIAL_VIDEO_SRC = "/videos/resources_tutorial_video01.mp4";
+// Video source mapping for each quick action container
+const TUTORIAL_VIDEO_SOURCES = {
+    "data-management-video": "/videos/resources_tutorial_video01.mp4",
+    "profile-video": "/videos/resources_tutorial_video02_profile.mp4",
+    "settings-video": "/videos/resources_tutorial_video01.mp4",
+    "action-board-video": "/videos/resources_tutorial_video01.mp4",
+    "meeting-links-video":
+        "/videos/resources_tutorial_video01.mp4",
+    "users-video": "/videos/resources_tutorial_video01.mp4",
+    "chatbot-history-video":
+        "/videos/resources_tutorial_video01.mp4",
+    "events-video": "/videos/resources_tutorial_video01.mp4",
+};
+
+// Helper function to get video source based on container ID
+function getVideoSourceForContainer(containerId) {
+    return (
+        TUTORIAL_VIDEO_SOURCES[containerId] ||
+        "/videos/resources_tutorial_video01.mp4"
+    );
+}
 
 // Helper function to load video source dynamically
-function loadVideoSource(video) {
+function loadVideoSource(video, containerId) {
     if (!video.querySelector("source")) {
         const source = document.createElement("source");
-        source.src = TUTORIAL_VIDEO_SRC;
+        source.src = getVideoSourceForContainer(containerId);
         source.type = "video/mp4";
         video.appendChild(source);
         video.load();
@@ -385,7 +404,7 @@ function toggleDataManagementVideo() {
                 //     "data-management-video"
                 // );
                 if (video) {
-                    loadVideoSource(video);
+                    loadVideoSource(video, "data-management-video");
                     playVideoSafely(video);
                 } else {
                     console.error(
@@ -1464,7 +1483,7 @@ function toggleGenericVideo(videoId, otherActionsSelector) {
                 //     videoId
                 // );
                 if (video) {
-                    loadVideoSource(video);
+                    loadVideoSource(video, videoId);
                     playVideoSafely(video);
                 } else {
                     console.error(
