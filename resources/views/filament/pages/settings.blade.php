@@ -95,78 +95,108 @@
         document.addEventListener('livewire:init', function () {
             // Listen for location detection request
             Livewire.on('detect-user-location', function () {
-                console.log('Location detection requested');
+                // console.log('[Location Detection] Location detection requested');
                 
-                if (!navigator.geolocation) {
-                    console.error('Geolocation is not supported by this browser');
-                    Livewire.dispatch('location-detection-failed');
-                    return;
-                }
-
-                // Show loading state
-                console.log('Requesting location permission...');
+                // Track start time for timeout debugging
+                const startTime = Date.now();
                 
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        console.log('Location detected:', position.coords);
-                        
-                        const latitude = position.coords.latitude;
-                        const longitude = position.coords.longitude;
-                        
-                        // Reverse geocoding to get city and country
-                        fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`)
-                            .then(response => response.json())
-                            .then(data => {
-                                console.log('Reverse geocoding result:', data);
-                                
-                                const city = data.city || data.locality || 'Unknown';
-                                const country = data.countryCode || 'Unknown';
-                                
-                                // Dispatch success event with location data
-                                Livewire.dispatch('location-detected', {
-                                    latitude: latitude,
-                                    longitude: longitude,
-                                    city: city,
-                                    country: country
-                                });
-                            })
-                            .catch(error => {
-                                console.error('Reverse geocoding failed:', error);
-                                
-                                // Still dispatch with coordinates even if reverse geocoding fails
-                                Livewire.dispatch('location-detected', {
-                                    latitude: latitude,
-                                    longitude: longitude,
-                                    city: 'Unknown',
-                                    country: 'Unknown'
-                                });
+                // IP-based geolocation fallback function (doesn't require browser geolocation API)
+                function attemptIpBasedGeolocation() {
+                    // console.log('[Location Detection] Attempting IP-based geolocation...');
+                    
+                    // Try ipapi.co first (free, no API key required)
+                    fetch('https://ipapi.co/json/')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // console.log('[Location Detection] IP-based geolocation result:', data);
+                            
+                            if (data.error) {
+                                throw new Error(data.reason || 'IP geolocation error');
+                            }
+                            
+                            const latitude = parseFloat(data.latitude);
+                            const longitude = parseFloat(data.longitude);
+                            const city = data.city || 'Unknown';
+                            const country = data.country_code || 'Unknown';
+                            
+                            if (isNaN(latitude) || isNaN(longitude)) {
+                                throw new Error('Invalid coordinates from IP geolocation');
+                            }
+                            
+                            // console.log('[Location Detection] IP-based location detected:', {
+                            //     latitude,
+                            //     longitude,
+                            //     city,
+                            //     country
+                            // });
+                            
+                            // Dispatch success event with IP-based location data
+                            Livewire.dispatch('location-detected', {
+                                latitude: latitude,
+                                longitude: longitude,
+                                city: city,
+                                country: country
                             });
-                    },
-                    function(error) {
-                        console.error('Location detection failed:', error);
-                        
-                        let errorMessage = 'Unknown error';
-                        switch(error.code) {
-                            case error.PERMISSION_DENIED:
-                                errorMessage = 'Location access denied by user';
-                                break;
-                            case error.POSITION_UNAVAILABLE:
-                                errorMessage = 'Location information unavailable';
-                                break;
-                            case error.TIMEOUT:
-                                errorMessage = 'Location request timed out';
-                                break;
-                        }
-                        
-                        console.error('Error details:', errorMessage);
-                        Livewire.dispatch('location-detection-failed');
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 300000 // 5 minutes
-                    }
-                );
+                        })
+                        .catch(error => {
+                            console.error('[Location Detection] IP-based geolocation (ipapi.co) failed:', error);
+                            
+                            // Try alternative service: ip-api.com
+                            // console.log('[Location Detection] Trying alternative IP geolocation service...');
+                            fetch('http://ip-api.com/json/?fields=status,message,lat,lon,city,countryCode')
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    // console.log('[Location Detection] Alternative IP geolocation result:', data);
+                                    
+                                    if (data.status === 'fail') {
+                                        throw new Error(data.message || 'IP geolocation failed');
+                                    }
+                                    
+                                    const latitude = parseFloat(data.lat);
+                                    const longitude = parseFloat(data.lon);
+                                    const city = data.city || 'Unknown';
+                                    const country = data.countryCode || 'Unknown';
+                                    
+                                    if (isNaN(latitude) || isNaN(longitude)) {
+                                        throw new Error('Invalid coordinates from IP geolocation');
+                                    }
+                                    
+                                    // console.log('[Location Detection] Alternative IP-based location detected:', {
+                                    //     latitude,
+                                    //     longitude,
+                                    //     city,
+                                    //     country
+                                    // });
+                                    
+                                    // Dispatch success event with IP-based location data
+                                    Livewire.dispatch('location-detected', {
+                                        latitude: latitude,
+                                        longitude: longitude,
+                                        city: city,
+                                        country: country
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('[Location Detection] Alternative IP geolocation also failed:', error);
+                                    console.error('[Location Detection] All location detection methods failed');
+                                    Livewire.dispatch('location-detection-failed');
+                                });
+                        });
+                }
+                
+                // Use IP-based geolocation directly (faster and more reliable)
+                // console.log('[Location Detection] Using IP-based geolocation (skipping browser geolocation)...');
+                attemptIpBasedGeolocation();
             });
         });
 
