@@ -293,7 +293,7 @@ function scrollToWeatherSection() {
 const TUTORIAL_VIDEO_SOURCES = {
     "data-management-video": "/videos/resources_tutorial_video01.mp4",
     "profile-video": "/videos/resources_tutorial_video02_profile.mp4",
-    "settings-video": "/videos/resources_tutorial_video01.mp4",
+    "settings-video": "/videos/resources_tutorial_video03_settings.mp4",
     "action-board-video": "/videos/resources_tutorial_video01.mp4",
     "meeting-links-video":
         "/videos/resources_tutorial_video01.mp4",
