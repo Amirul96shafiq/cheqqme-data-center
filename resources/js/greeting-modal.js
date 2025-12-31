@@ -297,9 +297,8 @@ const TUTORIAL_VIDEO_SOURCES = {
     "action-board-video": "/videos/vid_slide_05.mp4",
     "meeting-links-video": "/videos/vid_slide_03.mp4",
     "users-video": "/videos/resources_tutorial_video01.mp4",
-    "chatbot-history-video":
-        "/videos/resources_tutorial_video04_chatbotHistory.mp4",
-    "events-video": "/videos/resources_tutorial_video01.mp4",
+    "chatbot-history-video": "/videos/resources_tutorial_video04_chatbotHistory.mp4",
+    "events-video": "/videos/resources_tutorial_video05_eventResource.mp4",
 };
 
 // Helper function to get video source based on container ID
