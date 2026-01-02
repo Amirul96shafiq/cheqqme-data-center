@@ -296,7 +296,7 @@ const TUTORIAL_VIDEO_SOURCES = {
     "settings-video": "/videos/resources_tutorial_video03_settings.mp4",
     "action-board-video": "/videos/vid_slide_05.mp4",
     "meeting-links-video": "/videos/vid_slide_03.mp4",
-    "users-video": "/videos/resources_tutorial_video01.mp4",
+    "users-video": "/videos/resources_tutorial_video06_userResource.mp4",
     "chatbot-history-video": "/videos/resources_tutorial_video04_chatbotHistory.mp4",
     "events-video": "/videos/resources_tutorial_video05_eventResource.mp4",
 };
