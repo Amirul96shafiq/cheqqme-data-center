@@ -71,6 +71,7 @@ class UserResource extends Resource
                                     ->offColor('gray')
                                     ->live()
                                     ->dehydrated(false)
+                                    ->visible(fn (string $context) => $context === 'edit')
                                     ->afterStateUpdated(function (bool $state, Set $set) {
                                         if (! $state) {
                                             $set('user_delete', false);
