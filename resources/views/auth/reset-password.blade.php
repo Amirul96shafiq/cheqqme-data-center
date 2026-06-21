@@ -28,6 +28,9 @@
         {{-- Left Section (70%) - Hero Section --}}
         <x-auth-hero />
 
+        {{-- Global Modals for Changelog --}}
+        <x-global-modals />
+
         {{-- Right Section (30%) - Reset Password Form --}}
         <div class="w-full lg:w-[30%] flex flex-col bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 custom-scrollbar overflow-y-auto">
             {{-- Header Section --}}
