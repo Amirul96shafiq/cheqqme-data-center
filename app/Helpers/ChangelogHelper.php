@@ -59,6 +59,26 @@ class ChangelogHelper
                     [$shortHash, $fullHash, $date, $authorName, $authorEmail, $message] = $parts;
                     $body = $parts[6] ?? '';
 
+                    $message = trim($message);
+                    $description = trim($body);
+
+                    // Check for long commit messages with many pointers/bullet points separated by ' - '
+                    if (str_contains($message, ' - ')) {
+                        $msgParts = explode(' - ', $message);
+                        $message = trim(array_shift($msgParts));
+
+                        $bulletPoints = array_map(function ($part) {
+                            return '- '.trim($part);
+                        }, $msgParts);
+
+                        $newDescription = implode("\n", $bulletPoints);
+                        if (! empty($description)) {
+                            $description = $newDescription."\n\n".$description;
+                        } else {
+                            $description = $newDescription;
+                        }
+                    }
+
                     $currentCommit = [
                         'short_hash' => $shortHash,
                         'full_hash' => $fullHash,
@@ -67,7 +87,7 @@ class ChangelogHelper
                         'author_email' => $authorEmail,
                         'author_avatar' => self::getAuthorAvatar($authorEmail),
                         'message' => $message,
-                        'description' => trim($body),
+                        'description' => $description,
                         'tags' => self::getCommitTags($fullHash),
                     ];
                 } else {
