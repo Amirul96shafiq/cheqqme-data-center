@@ -44,6 +44,11 @@ class Profile extends EditProfile
             session()->forget('spotify_connection_success');
         }
 
+        if (session('github_connection_success')) {
+            $this->showGithubConnectionSuccess();
+            session()->forget('github_connection_success');
+        }
+
         if (session('success')) {
             $successMessage = session('success');
             // Check if it's a Zoom connection success message
@@ -60,6 +65,11 @@ class Profile extends EditProfile
             if (sessionStorage.getItem("google_connection_success") === "true") {
                 sessionStorage.removeItem("google_connection_success");
                 $wire.call("showGoogleConnectionSuccess");
+            }
+            
+            if (sessionStorage.getItem("github_connection_success") === "true") {
+                sessionStorage.removeItem("github_connection_success");
+                $wire.call("showGithubConnectionSuccess");
             }
             
             if (sessionStorage.getItem("spotify_connection_success") === "true") {
@@ -94,7 +104,7 @@ class Profile extends EditProfile
         logger('Profile: updateOnlineStatusField called with status: '.$user->online_status);
 
         // Force a re-render of the component
-        $this->dispatch('$refresh');
+        $this->dispatch('refresh');
     }
 
     protected function getStatusIcons(): array
@@ -578,6 +588,90 @@ class Profile extends EditProfile
                             ->columns(['lg' => 5])
                             ->columnSpanFull(),
 
+                        // GitHub OAuth Connection
+                        Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
+                            '<div class="flex items-center gap-2">
+                                <img src="'.asset('images/github-icon.svg').'" alt="GitHub" class="w-5 h-5">
+                                <span>'.__('profile.form.github_connection').'</span>
+                            </div>'
+                        ))
+                            ->schema([
+                                Forms\Components\Placeholder::make('github_status')
+                                    ->label(__('profile.form.connection_status'))
+                                    ->helperText(new \Illuminate\Support\HtmlString('<span class="text-xs">'.__('profile.fieldset.description.github_text').'</span>'))
+                                    ->content(function () {
+                                        $icons = $this->getStatusIcons();
+                                        $user = auth()->user();
+                                        if ($user->hasGithubAuth()) {
+                                            return new \Illuminate\Support\HtmlString(
+                                                '<div class="flex items-center gap-2">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                                                        '.$icons['check'].'
+                                                        '.__('profile.form.connected').'
+                                                    </span>
+                                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                        '.__('profile.form.connected_on').' '.($user->github_connected_at ? $user->github_connected_at->format('j/n/y, h:i A') : $user->updated_at->format('j/n/y, h:i A')).'
+                                                    </span>
+                                                </div>'
+                                            );
+                                        }
+
+                                        return new \Illuminate\Support\HtmlString(
+                                            '<div class="flex items-center gap-2">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+                                                    '.$icons['x-mark'].'
+                                                    '.__('profile.form.not_connected').'
+                                                </span>
+                                            </div>'
+                                        );
+                                    })
+                                    ->columnSpan(['default' => 'full', 'lg' => 4]),
+
+                                Forms\Components\Actions::make([
+                                    Forms\Components\Actions\Action::make('connect_github')
+                                        ->label(__('profile.form.connect_github'))
+                                        ->color('primary')
+                                        ->icon('heroicon-o-link')
+                                        ->visible(fn () => ! auth()->user()->hasGithubAuth())
+                                        ->requiresConfirmation()
+                                        ->modalIcon('heroicon-o-link')
+                                        ->modalHeading(__('profile.form.connect_github'))
+                                        ->modalDescription(__('profile.form.github_description'))
+                                        ->modalSubmitActionLabel(__('profile.form.connect_github'))
+                                        ->modalCancelActionLabel(__('profile.form.cancel'))
+                                        ->modalWidth('md')
+                                        ->extraAttributes(['class' => 'w-full'])
+                                        ->action(function () {
+                                            $this->openGithubAuthPopup();
+                                        }),
+
+                                    Forms\Components\Actions\Action::make('disconnect_github')
+                                        ->label(__('profile.form.disconnect_github'))
+                                        ->color('danger')
+                                        ->outlined()
+                                        ->icon('heroicon-o-link-slash')
+                                        ->visible(fn () => auth()->user()->hasGithubAuth())
+                                        ->requiresConfirmation()
+                                        ->modalIcon('heroicon-o-link-slash')
+                                        ->modalHeading(__('profile.form.disconnect_github_confirm'))
+                                        ->modalDescription(__('profile.form.disconnect_github_description'))
+                                        ->modalSubmitActionLabel(__('profile.form.disconnect'))
+                                        ->modalCancelActionLabel(__('profile.form.cancel'))
+                                        ->modalWidth('md')
+                                        ->extraAttributes(['class' => 'w-full'])
+                                        ->action(function () {
+                                            $this->confirmDisconnectGithub();
+                                        }),
+                                ])
+                                    ->columnSpan(['default' => 'full', 'lg' => 1])
+                                    ->alignment(Alignment::End)
+                                    ->extraAttributes([
+                                        'class' => 'lg:-mt-2.5 mt-0',
+                                    ]),
+                            ])
+                            ->columns(['lg' => 5])
+                            ->columnSpanFull(),
+
                         // Google Calendar Connection
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
@@ -1027,6 +1121,112 @@ class Profile extends EditProfile
             ->body(__('profile.form.google_connected_body'))
             ->success()
             ->send();
+    }
+
+    /**
+     * Confirm disconnect GitHub account
+     */
+    public function confirmDisconnectGithub(): void
+    {
+        $user = auth()->user();
+        if (! $user) {
+            return;
+        }
+
+        $user->disconnectGithub();
+
+        Notification::make()
+            ->title(__('profile.form.github_disconnected'))
+            ->body(__('profile.form.github_disconnected_body'))
+            ->success()
+            ->send();
+    }
+
+    /**
+     * Show success notification for GitHub connection
+     */
+    public function showGithubConnectionSuccess(): void
+    {
+        Notification::make()
+            ->title(__('profile.form.github_connected'))
+            ->body(__('profile.form.github_connected_body'))
+            ->success()
+            ->send();
+    }
+
+    /**
+     * Show error notification for GitHub connection
+     */
+    public function showGithubConnectionError(string $message): void
+    {
+        Notification::make()
+            ->title(__('profile.form.github_connection_failed'))
+            ->body($message)
+            ->danger()
+            ->send();
+    }
+
+    /**
+     * Open GitHub OAuth popup window for account connection
+     */
+    public function openGithubAuthPopup(): void
+    {
+        $this->js('
+            const popup = window.open(
+                "'.route('auth.github', ['source' => 'profile']).'",
+                "githubSignIn",
+                "width=460,height=800,scrollbars=yes,resizable=yes,top=" +
+                    Math.max(0, (screen.height - 800) / 2) +
+                    ",left=" +
+                    Math.max(0, (screen.width - 460) / 2)
+            );
+            
+            if (!popup) {
+                alert("Popup window was blocked. Please allow popups for this site.");
+                return;
+            }
+            
+            // Listen for messages from the popup
+            const messageListener = (event) => {
+                if (event.origin !== window.location.origin) return;
+                
+                if (event.data.success === true) {
+                    popup.close();
+                    window.removeEventListener("message", messageListener);
+                    // Show success notification using custom notification system
+                    if (typeof showSuccessNotification === "function") {
+                        showSuccessNotification(event.data.message || "GitHub account connected successfully!");
+                    } else if (typeof showNotification === "function") {
+                        showNotification("success", event.data.message || "GitHub account connected successfully!");
+                    }
+                    // Store success in session storage and redirect
+                    sessionStorage.setItem("github_connection_success", "true");
+                    window.location.href = "'.route('filament.admin.auth.profile').'";
+                } else if (event.data.success === false) {
+                    popup.close();
+                    window.removeEventListener("message", messageListener);
+                    // Show error notification using custom notification system
+                    if (typeof showErrorNotification === "function") {
+                        showErrorNotification(event.data.message || "Failed to connect GitHub account");
+                    } else if (typeof showNotification === "function") {
+                        showNotification("error", event.data.message || "Failed to connect GitHub account");
+                    } else {
+                        // Fallback to Livewire notification
+                        $wire.call("showGithubConnectionError", event.data.message || "Failed to connect GitHub account");
+                    }
+                }
+            };
+            
+            window.addEventListener("message", messageListener);
+            
+            // Check if popup was closed manually
+            const checkClosed = setInterval(function () {
+                if (popup.closed) {
+                    clearInterval(checkClosed);
+                    window.removeEventListener("message", messageListener);
+                }
+            }, 1000);
+        ');
     }
 
     /**

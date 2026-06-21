@@ -65,7 +65,7 @@ class ChangelogHelper
                         'date' => \Carbon\Carbon::parse($date),
                         'author_name' => $authorName,
                         'author_email' => $authorEmail,
-                        'author_avatar' => self::getGravatarUrl($authorEmail),
+                        'author_avatar' => self::getAuthorAvatar($authorEmail),
                         'message' => $message,
                         'description' => trim($body),
                         'tags' => self::getCommitTags($fullHash),
@@ -105,6 +105,19 @@ class ChangelogHelper
 
             return new LengthAwarePaginator(collect(), 0, $perPage, $page);
         }
+    }
+
+    /**
+     * Get Author Avatar (Checks DB for GitHub/other connected avatars, fallback to Gravatar)
+     */
+    protected static function getAuthorAvatar(string $email, int $size = 32): string
+    {
+        $user = \App\Models\User::where('email', $email)->first();
+        if ($user && $user->github_avatar_url) {
+            return $user->github_avatar_url;
+        }
+
+        return self::getGravatarUrl($email, $size);
     }
 
     /**

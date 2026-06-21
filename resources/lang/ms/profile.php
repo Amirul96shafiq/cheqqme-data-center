@@ -15,6 +15,7 @@ return [
             'zoom_text' => 'Sambungkan akaun Zoom anda untuk menghasilkan pautan mesyuarat dengan segera dan mengurus mesyuarat virtual dengan lancar dalam CheQQme.',
             'microsoft_title' => 'Kegunaan',
             'microsoft_text' => 'Integrasi Microsoft OAuth akan datang tidak lama lagi. Ini akan membolehkan anda log masuk dengan akaun Microsoft dan mensinkronkan profil Microsoft anda.',
+            'github_text' => 'Sambungkan akaun GitHub anda untuk log masuk yang lebih cepat menggunakan OAuth dan mensinkronkan avatar GitHub dengan profil CheQQme anda secara automatik.',
             'spotify_title' => 'Kegunaan',
             'spotify_text' => 'Sambungkan akaun Spotify anda untuk memaparkan muzik yang sedang dimainkan, mensinkronkan profil Spotify anda, dan mengaktifkan ciri integrasi muzik.',
         ],
@@ -113,6 +114,19 @@ return [
         'microsoft_connected' => 'Akaun Microsoft Disambungkan',
         'microsoft_connected_body' => 'Akaun Microsoft anda telah berjaya disambungkan. Anda kini boleh log masuk menggunakan Microsoft.',
         'microsoft_connection_failed' => 'Sambungan Microsoft Gagal',
+
+        // GitHub Connection
+        'connect_github' => 'Sambung',
+        'github_connection' => 'GitHub oAuth',
+        'github_description' => 'Sambungkan akaun GitHub anda untuk log masuk yang lebih cepat & menyesuaikan avatar GitHub dengan profil anda.',
+        'disconnect_github' => 'Putuskan Sambungan',
+        'disconnect_github_confirm' => 'Putuskan Sambungan Akaun GitHub',
+        'disconnect_github_description' => 'Adakah anda pasti ingin memutuskan sambungan akaun GitHub anda? Anda tidak lagi boleh log masuk menggunakan GitHub, tetapi anda masih boleh menggunakan nama pengguna dan kata laluan.',
+        'github_disconnected' => 'Akaun GitHub Diputuskan',
+        'github_disconnected_body' => 'Akaun GitHub anda telah berjaya diputuskan. Anda masih boleh log masuk menggunakan nama pengguna dan kata laluan.',
+        'github_connected' => 'Akaun GitHub Disambungkan',
+        'github_connected_body' => 'Akaun GitHub anda telah berjaya disambungkan. Anda kini boleh log masuk menggunakan GitHub.',
+        'github_connection_failed' => 'Sambungan GitHub Gagal',
 
         // Spotify Connection
         'connect_spotify' => 'Sambung',

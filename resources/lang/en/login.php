@@ -9,8 +9,8 @@ return [
         'forgotPassword' => 'Forgot Password?',
         'signInWith' => 'Sign in with',
         'googleSignin' => 'Google oAuth Sign-in',
+        'githubSignin' => 'GitHub oAuth Sign-in',
         'microsoftSignin' => 'Microsoft oAuth Sign-in',
-        'githubSignin' => 'Coming Soon',
     ],
 
     'tooltips' => [
@@ -35,10 +35,14 @@ return [
     ],
 
     'errors' => [
-        'googleAccountNotFound' => 'Failed to login. The selected Google Account does not exist in CheQQme Data Center.',
+        'googleAccountNotFound' => 'Google account is not connected to any existing user. Please sign in with username/email and password first, then connect your Google account from your profile settings.',
         'googleAuthenticationFailed' => 'Failed to authenticate with Google. Please try again.',
         'googleAccountConnected' => 'Google account connected successfully!',
         'googleSigninSuccess' => 'Successfully signed in with Google!',
+        'githubAccountConnected' => 'GitHub account connected successfully!',
+        'githubSigninSuccess' => 'Successfully signed in with GitHub!',
+        'githubAuthenticationFailed' => 'Failed to authenticate with GitHub. Please try again.',
+        'githubAccountNotFound' => 'GitHub account is not connected to any existing user. Please sign in with username/email and password first, then connect your GitHub account from your profile settings.',
         'spotifyAccountNotFound' => 'Failed to login. The selected Spotify Account does not exist in CheQQme Data Center.',
         'spotifyAuthenticationFailed' => 'Failed to authenticate with Spotify. Please try again.',
         'spotifyAccountConnected' => 'Spotify account connected successfully!',

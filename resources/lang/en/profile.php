@@ -15,6 +15,7 @@ return [
             'zoom_text' => 'Connect your Zoom account to generate meeting links instantly and manage virtual meetings seamlessly within CheQQme.',
             'microsoft_title' => 'Purpose',
             'microsoft_text' => 'Microsoft OAuth integration is coming soon. This will allow you to sign in with your Microsoft account and sync your Microsoft profile.',
+            'github_text' => 'Connect your GitHub account for faster sign-in using OAuth and automatically sync your GitHub avatar with your CheQQme profile.',
             'spotify_title' => 'Purpose',
             'spotify_text' => 'Link your Spotify account to display your current playing music, sync your Spotify profile, and enable music integration features.',
         ],
@@ -113,6 +114,19 @@ return [
         'microsoft_connected' => 'Microsoft Account Connected',
         'microsoft_connected_body' => 'Your Microsoft account has been successfully connected. You can now sign in using Microsoft.',
         'microsoft_connection_failed' => 'Microsoft Connection Failed',
+
+        // GitHub Connection
+        'connect_github' => 'Connect Now',
+        'github_connection' => 'GitHub oAuth',
+        'github_description' => 'Connect your GitHub account for faster login and synchronize your GitHub avatar with your profile.',
+        'disconnect_github' => 'Disconnect',
+        'disconnect_github_confirm' => 'Disconnect GitHub Account',
+        'disconnect_github_description' => 'Are you sure you want to disconnect your GitHub account? You will no longer be able to sign in using GitHub, but you can still use your username and password.',
+        'github_disconnected' => 'GitHub Account Disconnected',
+        'github_disconnected_body' => 'Your GitHub account has been successfully disconnected. You can still sign in using your username and password.',
+        'github_connected' => 'GitHub Account Connected',
+        'github_connected_body' => 'Your GitHub account has been successfully connected. You can now sign in using GitHub.',
+        'github_connection_failed' => 'GitHub Connection Failed',
 
         // Spotify Connection
         'connect_spotify' => 'Connect Now',

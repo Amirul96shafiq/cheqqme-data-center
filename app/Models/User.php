@@ -59,6 +59,11 @@ class User extends Authenticatable implements HasAvatar
         'spotify_connected_at',
         'spotify_access_token',
         'spotify_refresh_token',
+        'github_id',
+        'github_avatar_url',
+        'github_connected_at',
+        'github_token',
+        'github_refresh_token',
         'timezone',
         'timezone_source',
         'password',
@@ -136,6 +141,8 @@ class User extends Authenticatable implements HasAvatar
         'remember_token',
         'microsoft_token',
         'microsoft_refresh_token',
+        'github_token',
+        'github_refresh_token',
     ];
 
     /**
@@ -160,6 +167,7 @@ class User extends Authenticatable implements HasAvatar
             'zoom_connected_at' => 'datetime',
             'microsoft_connected_at' => 'datetime',
             'spotify_connected_at' => 'datetime',
+            'github_connected_at' => 'datetime',
         ];
     }
 
@@ -241,6 +249,11 @@ class User extends Authenticatable implements HasAvatar
             return $this->microsoft_avatar_url;
         }
 
+        // Priority 4: GitHub avatar (CAN be overwritten by custom upload)
+        if ($this->github_avatar_url) {
+            return $this->github_avatar_url;
+        }
+
         // Priority 3: Default Filament avatar (CAN be overwritten by both)
         return null; // Filament handles default avatar generation
     }
@@ -319,15 +332,11 @@ class User extends Authenticatable implements HasAvatar
     }
 
     /**
-     * Update Google avatar URL (only if no custom avatar exists)
+     * Update Google avatar URL
      */
     public function updateGoogleAvatar(string $googleAvatarUrl): void
     {
-        // Only update Google avatar if no custom avatar exists
-        if (! $this->avatar) {
-            $this->update(['google_avatar_url' => $googleAvatarUrl]);
-        }
-        // If custom avatar exists, do nothing (preserve custom avatar)
+        $this->update(['google_avatar_url' => $googleAvatarUrl]);
     }
 
     /**
@@ -351,15 +360,11 @@ class User extends Authenticatable implements HasAvatar
     }
 
     /**
-     * Update Microsoft avatar URL (only if no custom avatar exists)
+     * Update Microsoft avatar URL
      */
     public function updateMicrosoftAvatar(string $microsoftAvatarUrl): void
     {
-        // Only update Microsoft avatar if no custom avatar exists
-        if (! $this->avatar) {
-            $this->update(['microsoft_avatar_url' => $microsoftAvatarUrl]);
-        }
-        // If custom avatar exists, do nothing (preserve custom avatar)
+        $this->update(['microsoft_avatar_url' => $microsoftAvatarUrl]);
     }
 
     /**
@@ -391,15 +396,11 @@ class User extends Authenticatable implements HasAvatar
     }
 
     /**
-     * Update Spotify avatar URL (only if no custom avatar exists)
+     * Update Spotify avatar URL
      */
     public function updateSpotifyAvatar(string $spotifyAvatarUrl): void
     {
-        // Only update Spotify avatar if no custom avatar exists
-        if (! $this->avatar) {
-            $this->update(['spotify_avatar_url' => $spotifyAvatarUrl]);
-        }
-        // If custom avatar exists, do nothing (preserve custom avatar)
+        $this->update(['spotify_avatar_url' => $spotifyAvatarUrl]);
     }
 
     /**
@@ -413,6 +414,36 @@ class User extends Authenticatable implements HasAvatar
             'spotify_access_token' => null,
             'spotify_refresh_token' => null,
             'spotify_connected_at' => null, // Clear connection date
+        ]);
+    }
+
+    /**
+     * Check if user has GitHub authentication linked
+     */
+    public function hasGithubAuth(): bool
+    {
+        return ! empty($this->github_id);
+    }
+
+    /**
+     * Update GitHub avatar URL
+     */
+    public function updateGithubAvatar(string $githubAvatarUrl): void
+    {
+        $this->update(['github_avatar_url' => $githubAvatarUrl]);
+    }
+
+    /**
+     * Disconnect GitHub account from user
+     */
+    public function disconnectGithub(): void
+    {
+        $this->update([
+            'github_id' => null,
+            'github_avatar_url' => null, // Also clear GitHub avatar
+            'github_token' => null,
+            'github_refresh_token' => null,
+            'github_connected_at' => null, // Clear connection date
         ]);
     }
 

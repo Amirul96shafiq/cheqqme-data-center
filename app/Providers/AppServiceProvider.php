@@ -75,6 +75,13 @@ class AppServiceProvider extends ServiceProvider
         // Register custom KanbanBoard Livewire component alias
         if (class_exists(\Livewire\Livewire::class)) {
             \Livewire\Livewire::component('relaticle.flowforge.kanban-board', \App\Http\Livewire\Relaticle\Flowforge\KanbanBoard::class);
+
+            // Intercept magic method calls like $refresh and $set to prevent MethodNotFoundException
+            \Livewire\Livewire::listen('call', function ($component, $method, $params, $addEffect, $earlyReturn) {
+                if (in_array($method, ['$refresh', '$set', '$toggle'])) {
+                    $earlyReturn();
+                }
+            });
         }
 
         // Register custom language switch

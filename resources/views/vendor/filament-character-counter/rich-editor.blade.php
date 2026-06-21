@@ -79,7 +79,7 @@
                                 return
                             }
 
-                            $wire.call('$refresh')
+                            $wire.$refresh()
                         })
                     "
                 @endif
@@ -382,7 +382,7 @@
                     placeholder="{{ $getPlaceholder() }}"
                     toolbar="trix-toolbar-{{ $id }}"
                     @if ($isLiveOnBlur())
-                        x-on:blur="$wire.call('$refresh')"
+                        x-on:blur="$wire.$refresh()"
                     @endif
                     x-ref="trix"
                     wire:ignore

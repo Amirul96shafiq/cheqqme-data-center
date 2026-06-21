@@ -264,6 +264,11 @@ Route::get('/auth/google', [\App\Http\Controllers\Auth\GoogleAuthController::cla
 Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 Route::get('/auth/google/popup-callback', [\App\Http\Controllers\Auth\GoogleAuthController::class, 'showPopupCallback'])->name('auth.google.popup-callback');
 
+// GitHub OAuth routes
+Route::get('/auth/github', [\App\Http\Controllers\Auth\GithubAuthController::class, 'redirectToGithub'])->name('auth.github');
+Route::get('/auth/github/callback', [\App\Http\Controllers\Auth\GithubAuthController::class, 'handleGithubCallback'])->name('auth.github.callback');
+Route::get('/auth/github/popup-callback', [\App\Http\Controllers\Auth\GithubAuthController::class, 'showPopupCallback'])->name('auth.github.popup-callback');
+
 // Google Calendar OAuth routes
 Route::get('/auth/google/calendar', [GoogleCalendarController::class, 'redirectToGoogleCalendar'])->name('auth.google.calendar')->middleware('auth');
 Route::get('/auth/google/calendar/callback', [GoogleCalendarController::class, 'handleGoogleCalendarCallback'])->name('auth.google.calendar.callback');

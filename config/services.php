@@ -66,6 +66,12 @@ return [
         'redirect' => env('SPOTIFY_REDIRECT_URI', env('APP_URL').'/auth/spotify/callback'),
     ],
 
+    'github' => [
+        'client_id' => env('GITHUB_CLIENT_ID'),
+        'client_secret' => env('GITHUB_CLIENT_SECRET'),
+        'redirect' => env('GITHUB_REDIRECT_URI', env('APP_URL').'/auth/github/callback'),
+    ],
+
     'google_calendar' => [
         'key' => env('GOOGLE_CALENDAR_API_KEY'),
         'base_url' => 'https://www.googleapis.com/calendar/v3',

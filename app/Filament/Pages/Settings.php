@@ -1237,7 +1237,7 @@ class Settings extends Page
                     ->send();
 
                 // Refresh the component
-                $this->dispatch('$refresh');
+                $this->dispatch('refresh');
             });
     }
 
