@@ -78,7 +78,7 @@ class AppServiceProvider extends ServiceProvider
 
             // Intercept magic method calls like $refresh and $set to prevent MethodNotFoundException
             \Livewire\Livewire::listen('call', function ($component, $method, $params, $addEffect, $earlyReturn) {
-                if (in_array($method, ['$refresh', '$set', '$toggle'])) {
+                if (in_array($method, ['$refresh', '$set', '$toggle', '$commit'])) {
                     $earlyReturn();
                 }
             });
