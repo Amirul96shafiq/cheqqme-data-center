@@ -62,6 +62,18 @@
         </x-tooltip>
     @endif
 
+    <!-- GitHub OAuth Badge -->
+    @if ($user->github_id && $user->github_connected_at)
+        <x-tooltip position="top" text="{{ __('user.badge.github_oauth') }}">
+            <span class="inline-flex items-center {{ $itemGap }} {{ $sizeClasses }} rounded-full font-medium bg-gray-100/90 text-gray-900 shadow-sm">
+                @if($showIcons)
+                    <x-icons.custom-icon name="github" class="{{ $iconSize }}" color="" />
+                @endif
+                <span>GitHub</span>
+            </span>
+        </x-tooltip>
+    @endif
+
     <!-- Google Calendar Badge -->
     @if ($user->google_calendar_token && $user->google_calendar_connected_at)
         <x-tooltip position="top" text="{{ __('user.badge.google_calendar') }}">

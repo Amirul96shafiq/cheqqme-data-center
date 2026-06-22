@@ -125,6 +125,7 @@ return [
         'country' => 'Country',
         'timezone' => 'Timezone',
         'google_oauth' => 'Google OAuth Connected',
+        'github_oauth' => 'GitHub OAuth Connected',
         'google_calendar' => 'Google Calendar API Connected',
         'zoom_api' => 'Zoom API Connected',
         'spotify' => 'Spotify Connected',

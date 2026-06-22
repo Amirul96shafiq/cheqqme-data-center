@@ -124,6 +124,7 @@ return [
         'country' => 'Negara',
         'timezone' => 'Zon Waktu',
         'google_oauth' => 'Google OAuth Disambungkan',
+        'github_oauth' => 'GitHub OAuth Disambungkan',
         'google_calendar' => 'API Google Calendar Disambungkan',
         'zoom_api' => 'API Zoom Disambungkan',
         'spotify' => 'Spotify Disambungkan',

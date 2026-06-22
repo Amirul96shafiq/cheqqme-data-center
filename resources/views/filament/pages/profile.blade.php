@@ -92,7 +92,9 @@
                     </div>
 
                     {{-- Badges --}}
-                    <x-user-badges :user="$user" size="md" gap="2" :showIcons="true" />
+                    <div class="max-w-md mx-auto">
+                        <x-user-badges :user="$user" size="md" gap="2" :showIcons="true" />
+                    </div>
 
                 </div>
 
