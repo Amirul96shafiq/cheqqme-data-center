@@ -591,7 +591,7 @@ class Profile extends EditProfile
                         // GitHub OAuth Connection
                         Forms\Components\Fieldset::make(new \Illuminate\Support\HtmlString(
                             '<div class="flex items-center gap-2">
-                                <img src="'.asset('images/github-icon.svg').'" alt="GitHub" class="w-5 h-5">
+                                <img src="'.asset('images/github-icon.svg').'" alt="GitHub" class="w-5 h-5 dark:invert">
                                 <span>'.__('profile.form.github_connection').'</span>
                             </div>'
                         ))
