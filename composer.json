@@ -63,11 +63,7 @@
             "vendor/mockery/**/tests/**",
             "vendor/symfony/**/Tests/**",
             "vendor/symfony/**/tests/**",
-            "vendor/guzzlehttp/**/tests/**",
-            "vendor/**/test/**",
-            "vendor/**/Test/**",
-            "vendor/**/Tests/**",
-            "vendor/**/tests/**"
+            "vendor/guzzlehttp/**/tests/**"
         ]
     },
     "autoload-dev": {

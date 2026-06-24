@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('meeting_links', function (Blueprint $table) {
-            $table->json('project_ids')->nullable()->after('client_ids');
-            $table->json('important_url_ids')->nullable()->after('document_ids');
-            $table->json('user_ids')->nullable()->after('important_url_ids');
+            if (! Schema::hasColumn('meeting_links', 'project_ids')) {
+                $table->json('project_ids')->nullable()->after('client_ids');
+            }
+            if (! Schema::hasColumn('meeting_links', 'important_url_ids')) {
+                $table->json('important_url_ids')->nullable()->after('document_ids');
+            }
+            if (! Schema::hasColumn('meeting_links', 'user_ids')) {
+                $table->json('user_ids')->nullable()->after('important_url_ids');
+            }
         });
     }
 
@@ -24,7 +30,19 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('meeting_links', function (Blueprint $table) {
-            $table->dropColumn(['project_ids', 'important_url_ids', 'user_ids']);
+            $columnsToDrop = [];
+            if (Schema::hasColumn('meeting_links', 'project_ids')) {
+                $columnsToDrop[] = 'project_ids';
+            }
+            if (Schema::hasColumn('meeting_links', 'important_url_ids')) {
+                $columnsToDrop[] = 'important_url_ids';
+            }
+            if (Schema::hasColumn('meeting_links', 'user_ids')) {
+                $columnsToDrop[] = 'user_ids';
+            }
+            if (!empty($columnsToDrop)) {
+                $table->dropColumn($columnsToDrop);
+            }
         });
     }
 };
