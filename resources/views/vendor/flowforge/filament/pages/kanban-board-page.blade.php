@@ -1,23 +1,24 @@
 <x-filament::page>
     
-    {{-- Custom Kanban Search Bar --}}
-    @if($showOptions)
-        <x-kanban-search-filter
-            :search="$search"
-            :placeholder="__('action.search_placeholder')"
-            :clear-label="__('action.clear_search')"
-            wire-model="search"
-            wire-clear="clearSearch"
-            :show-filter="true"
-            :assigned-to-filter="$assignedToFilter"
-            :due-date-preset="$dueDatePreset"
-            :due-date-from="$dueDateFrom"
-            :due-date-to="$dueDateTo"
-            :priority-filter="$priorityFilter"
-            :card-type-filter="$cardTypeFilter"
-            :show-featured-images="$showFeaturedImages"
-        />
-    @endif
+    <div wire:key="action-board-filters-container">
+        @if($showOptions)
+            <x-kanban-search-filter
+                :search="$search"
+                :placeholder="__('action.search_placeholder')"
+                :clear-label="__('action.clear_search')"
+                wire-model="search"
+                wire-clear="clearSearch"
+                :show-filter="true"
+                :assigned-to-filter="$assignedToFilter"
+                :due-date-preset="$dueDatePreset"
+                :due-date-from="$dueDateFrom"
+                :due-date-to="$dueDateTo"
+                :priority-filter="$priorityFilter"
+                :card-type-filter="$cardTypeFilter"
+                :show-featured-images="$showFeaturedImages"
+            />
+        @endif
+    </div>
     
     <div class="h-[calc(100vh-16rem)] min-h-[400px] pb-8 md:pb-0">
 
@@ -33,10 +34,11 @@
         
         {{-- Kanban Board --}}
         <div id="kanban-board-container" class="h-full">
-            @livewire('relaticle.flowforge.kanban-board', [
-                'adapter' => $this->getAdapter(),
-                'pageClass' => $this::class
-            ])
+            <livewire:relaticle.flowforge.kanban-board
+                :adapter="$this->getAdapter()"
+                :page-class="$this::class"
+                wire:key="action-board-kanban-component"
+            />
         </div>
 
     </div>

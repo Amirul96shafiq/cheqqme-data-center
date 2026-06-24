@@ -40,10 +40,6 @@ class ActionBoard extends KanbanBoardPage
     public function getSubject(): Builder
     {
         $query = Task::query()
-            ->with(['comments' => function ($query) {
-                // Only load comment count for performance
-                $query->select('task_id', 'id');
-            }])
             ->withCount('comments') // Add comments_count attribute
             ->select([
                 'id', 'title', 'description', 'status', 'priority', 'order_column',
@@ -58,37 +54,8 @@ class ActionBoard extends KanbanBoardPage
         return $query;
     }
 
-    public function mount(): void
+    public function boot(): void
     {
-        // Load featured images visibility preference from session
-        $this->showFeaturedImages = session('action_board_show_featured_images', true);
-        // Load options visibility preference from session
-        $this->showOptions = session('action_board_show_options', false);
-
-        // Initialize card type filter from URL parameter
-        $typeParam = request()->query('type');
-        if ($typeParam === 'task') {
-            $this->cardTypeFilter = 'tasks';
-        } elseif ($typeParam === 'issue') {
-            $this->cardTypeFilter = 'issue_trackers';
-        } elseif ($typeParam === 'wishlist') {
-            $this->cardTypeFilter = 'wishlist_trackers';
-        } else {
-            $this->cardTypeFilter = 'all';
-        }
-
-        // Initialize assigned to filter from URL parameter
-        $assignedParam = request()->query('assigned');
-        if ($assignedParam) {
-            $this->assignedToFilter = array_filter(explode(',', $assignedParam));
-        }
-
-        // Initialize priority filter from URL parameter
-        $priorityParam = request()->query('priority');
-        if ($priorityParam) {
-            $this->priorityFilter = array_filter(explode(',', $priorityParam));
-        }
-
         $this
             ->titleField('title')
             ->orderField('order_column')
@@ -144,6 +111,38 @@ class ActionBoard extends KanbanBoardPage
             ->columnColors(array_fill_keys(array_keys(Task::availableStatuses()), 'gray'))
             ->cardLabel(__('action.card_label'))
             ->pluralCardLabel(__('action.card_label_plural'));
+    }
+
+    public function mount(): void
+    {
+        // Load featured images visibility preference from session
+        $this->showFeaturedImages = session('action_board_show_featured_images', true);
+        // Load options visibility preference from session
+        $this->showOptions = session('action_board_show_options', false);
+
+        // Initialize card type filter from URL parameter
+        $typeParam = request()->query('type');
+        if ($typeParam === 'task') {
+            $this->cardTypeFilter = 'tasks';
+        } elseif ($typeParam === 'issue') {
+            $this->cardTypeFilter = 'issue_trackers';
+        } elseif ($typeParam === 'wishlist') {
+            $this->cardTypeFilter = 'wishlist_trackers';
+        } else {
+            $this->cardTypeFilter = 'all';
+        }
+
+        // Initialize assigned to filter from URL parameter
+        $assignedParam = request()->query('assigned');
+        if ($assignedParam) {
+            $this->assignedToFilter = array_filter(explode(',', $assignedParam));
+        }
+
+        // Initialize priority filter from URL parameter
+        $priorityParam = request()->query('priority');
+        if ($priorityParam) {
+            $this->priorityFilter = array_filter(explode(',', $priorityParam));
+        }
     }
 
     public function createAction(Action $action): Action

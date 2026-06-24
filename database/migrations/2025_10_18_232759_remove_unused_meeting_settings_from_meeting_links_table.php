@@ -12,12 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('meeting_links', function (Blueprint $table) {
-            $table->dropColumn([
+            $columnsToDrop = [];
+            foreach ([
                 'mute_attendees',
                 'allow_attendees_screen_share',
                 'allow_record_meeting',
                 'allow_transcript_meeting',
-            ]);
+            ] as $column) {
+                if (Schema::hasColumn('meeting_links', $column)) {
+                    $columnsToDrop[] = $column;
+                }
+            }
+            if (!empty($columnsToDrop)) {
+                $table->dropColumn($columnsToDrop);
+            }
         });
     }
 
